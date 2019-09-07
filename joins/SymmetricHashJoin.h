@@ -6,11 +6,13 @@
 #define ALLIANCEDB_SYMMETRICHASHJOIN_H
 
 
+#include "../storage/TupleIterator.h"
+
 class SymmetricHashJoin {
 
 
 public:
-    void symHashJoin();
+    void symHashJoin(TupleIterator R, TupleIterator S);
 
 };
 

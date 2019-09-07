@@ -3,3 +3,7 @@
 //
 
 #include "TupleDesc.h"
+
+TupleDesc::TupleDesc(Type *pType) {
+
+}

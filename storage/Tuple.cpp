@@ -3,3 +3,16 @@
 //
 
 #include "Tuple.h"
+
+Tuple::Tuple(TupleDesc td) {
+
+
+}
+
+void Tuple::setField(int i, Field f) {
+
+}
+
+Field Tuple::getField(int i) {
+    return fields[i];
+}

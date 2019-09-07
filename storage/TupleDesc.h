@@ -6,8 +6,12 @@
 #define ALLIANCEDB_TUPLEDESC_H
 
 
+#include "type/Type.h"
+
 class TupleDesc {
 
+public:
+    TupleDesc(Type *pType);
 };
 
 

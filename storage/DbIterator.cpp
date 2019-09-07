@@ -3,3 +3,7 @@
 //
 
 #include "DbIterator.h"
+
+void DbIterator::open() {
+
+}

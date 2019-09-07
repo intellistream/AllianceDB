@@ -12,10 +12,7 @@
 class DbIterator {
 
 public:
-    /**
-        * Opens the iterator. This must be called before any of the other methods.
-     */
-    void open();
+    void open();//Opens the iterator. This must be called before any of the other methods.
 
     /** Returns true if the iterator has more tuples.
         * @return true if the iterator has more tuples.

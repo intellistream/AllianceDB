@@ -6,9 +6,18 @@
 #define ALLIANCEDB_TUPLEITERATOR_H
 
 
+#include <vector>
 #include "DbIterator.h"
 
-class TupleIterator : DbIterator{
+class TupleIterator : DbIterator {
+
+public:
+    TupleIterator(TupleDesc desc, std::vector<Tuple> vector, TupleDesc td);
+
+    void open();//Opens the iterator. This must be called before any of the other methods.
+
+protected:
+    TupleDesc td;
 
 };
 
