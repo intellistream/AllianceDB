@@ -4,7 +4,7 @@
 
 #include "Tuple.h"
 
-Tuple::Tuple(TupleDesc td) {
+Tuple::Tuple(TupleDescription td) {
 
 
 }

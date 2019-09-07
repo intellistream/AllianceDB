@@ -7,3 +7,7 @@
 void DbIterator::open() {
 
 }
+
+TupleDescription DbIterator::getTupleDesc() {
+    return TupleDescription(nullptr);
+}

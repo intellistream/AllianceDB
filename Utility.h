@@ -18,8 +18,8 @@ public:
     /**
      * @return a TupleDesc with n fields of type Type.INT_TYPE
      */
-    static TupleDesc getTupleDesc(int n) {
-        return TupleDesc(getTypes(n));
+    static TupleDescription getTupleDesc(int n) {
+        return TupleDescription(getTypes(n));
     }
 
     /**

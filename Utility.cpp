@@ -20,7 +20,7 @@ TupleIterator *Utility::createTupleList(int width, int *tupdata) {
         tuplist.push_back(tup);
     }
 
-    TupleIterator *result = new TupleIterator(Utility::getTupleDesc(width), tuplist, TupleDesc(nullptr));
+    TupleIterator *result = new TupleIterator(Utility::getTupleDesc(width), tuplist, TupleDescription(nullptr));
     result->open();
     return result;
 

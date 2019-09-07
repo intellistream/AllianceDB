@@ -5,7 +5,7 @@
 #include <vector>
 #include "TupleIterator.h"
 
-TupleIterator::TupleIterator(TupleDesc desc, std::vector<Tuple> vector, TupleDesc td) : td(td) {
+TupleIterator::TupleIterator(TupleDescription desc, std::vector<Tuple> vector, TupleDescription td) : td(td) {
 
 
 }

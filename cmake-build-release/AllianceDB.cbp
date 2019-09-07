@@ -88,6 +88,24 @@
 		<Unit filename="/Users/shuhaozhang/ClionProjects/AllianceDB/Utility.h">
 			<Option target="AllianceDB"/>
 		</Unit>
+		<Unit filename="/Users/shuhaozhang/ClionProjects/AllianceDB/joins/JoinPredicate.cpp">
+			<Option target="AllianceDB"/>
+		</Unit>
+		<Unit filename="/Users/shuhaozhang/ClionProjects/AllianceDB/joins/JoinPredicate.h">
+			<Option target="AllianceDB"/>
+		</Unit>
+		<Unit filename="/Users/shuhaozhang/ClionProjects/AllianceDB/joins/Op.cpp">
+			<Option target="AllianceDB"/>
+		</Unit>
+		<Unit filename="/Users/shuhaozhang/ClionProjects/AllianceDB/joins/Op.h">
+			<Option target="AllianceDB"/>
+		</Unit>
+		<Unit filename="/Users/shuhaozhang/ClionProjects/AllianceDB/joins/Predicate.cpp">
+			<Option target="AllianceDB"/>
+		</Unit>
+		<Unit filename="/Users/shuhaozhang/ClionProjects/AllianceDB/joins/Predicate.h">
+			<Option target="AllianceDB"/>
+		</Unit>
 		<Unit filename="/Users/shuhaozhang/ClionProjects/AllianceDB/joins/SymmetricHashJoin.cpp">
 			<Option target="AllianceDB"/>
 		</Unit>
@@ -121,10 +139,10 @@
 		<Unit filename="/Users/shuhaozhang/ClionProjects/AllianceDB/storage/Tuple.h">
 			<Option target="AllianceDB"/>
 		</Unit>
-		<Unit filename="/Users/shuhaozhang/ClionProjects/AllianceDB/storage/TupleDesc.cpp">
+		<Unit filename="/Users/shuhaozhang/ClionProjects/AllianceDB/storage/TupleDescription.cpp">
 			<Option target="AllianceDB"/>
 		</Unit>
-		<Unit filename="/Users/shuhaozhang/ClionProjects/AllianceDB/storage/TupleDesc.h">
+		<Unit filename="/Users/shuhaozhang/ClionProjects/AllianceDB/storage/TupleDescription.h">
 			<Option target="AllianceDB"/>
 		</Unit>
 		<Unit filename="/Users/shuhaozhang/ClionProjects/AllianceDB/storage/TupleIterator.cpp">

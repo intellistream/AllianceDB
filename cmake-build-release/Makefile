@@ -150,6 +150,87 @@ Utility.cpp.s:
 	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/Utility.cpp.s
 .PHONY : Utility.cpp.s
 
+joins/JoinPredicate.o: joins/JoinPredicate.cpp.o
+
+.PHONY : joins/JoinPredicate.o
+
+# target to build an object file
+joins/JoinPredicate.cpp.o:
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/joins/JoinPredicate.cpp.o
+.PHONY : joins/JoinPredicate.cpp.o
+
+joins/JoinPredicate.i: joins/JoinPredicate.cpp.i
+
+.PHONY : joins/JoinPredicate.i
+
+# target to preprocess a source file
+joins/JoinPredicate.cpp.i:
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/joins/JoinPredicate.cpp.i
+.PHONY : joins/JoinPredicate.cpp.i
+
+joins/JoinPredicate.s: joins/JoinPredicate.cpp.s
+
+.PHONY : joins/JoinPredicate.s
+
+# target to generate assembly for a file
+joins/JoinPredicate.cpp.s:
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/joins/JoinPredicate.cpp.s
+.PHONY : joins/JoinPredicate.cpp.s
+
+joins/Op.o: joins/Op.cpp.o
+
+.PHONY : joins/Op.o
+
+# target to build an object file
+joins/Op.cpp.o:
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/joins/Op.cpp.o
+.PHONY : joins/Op.cpp.o
+
+joins/Op.i: joins/Op.cpp.i
+
+.PHONY : joins/Op.i
+
+# target to preprocess a source file
+joins/Op.cpp.i:
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/joins/Op.cpp.i
+.PHONY : joins/Op.cpp.i
+
+joins/Op.s: joins/Op.cpp.s
+
+.PHONY : joins/Op.s
+
+# target to generate assembly for a file
+joins/Op.cpp.s:
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/joins/Op.cpp.s
+.PHONY : joins/Op.cpp.s
+
+joins/Predicate.o: joins/Predicate.cpp.o
+
+.PHONY : joins/Predicate.o
+
+# target to build an object file
+joins/Predicate.cpp.o:
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/joins/Predicate.cpp.o
+.PHONY : joins/Predicate.cpp.o
+
+joins/Predicate.i: joins/Predicate.cpp.i
+
+.PHONY : joins/Predicate.i
+
+# target to preprocess a source file
+joins/Predicate.cpp.i:
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/joins/Predicate.cpp.i
+.PHONY : joins/Predicate.cpp.i
+
+joins/Predicate.s: joins/Predicate.cpp.s
+
+.PHONY : joins/Predicate.s
+
+# target to generate assembly for a file
+joins/Predicate.cpp.s:
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/joins/Predicate.cpp.s
+.PHONY : joins/Predicate.cpp.s
+
 joins/SymmetricHashJoin.o: joins/SymmetricHashJoin.cpp.o
 
 .PHONY : joins/SymmetricHashJoin.o
@@ -312,32 +393,32 @@ storage/Tuple.cpp.s:
 	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/storage/Tuple.cpp.s
 .PHONY : storage/Tuple.cpp.s
 
-storage/TupleDesc.o: storage/TupleDesc.cpp.o
+storage/TupleDescription.o: storage/TupleDescription.cpp.o
 
-.PHONY : storage/TupleDesc.o
+.PHONY : storage/TupleDescription.o
 
 # target to build an object file
-storage/TupleDesc.cpp.o:
-	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/storage/TupleDesc.cpp.o
-.PHONY : storage/TupleDesc.cpp.o
+storage/TupleDescription.cpp.o:
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/storage/TupleDescription.cpp.o
+.PHONY : storage/TupleDescription.cpp.o
 
-storage/TupleDesc.i: storage/TupleDesc.cpp.i
+storage/TupleDescription.i: storage/TupleDescription.cpp.i
 
-.PHONY : storage/TupleDesc.i
+.PHONY : storage/TupleDescription.i
 
 # target to preprocess a source file
-storage/TupleDesc.cpp.i:
-	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/storage/TupleDesc.cpp.i
-.PHONY : storage/TupleDesc.cpp.i
+storage/TupleDescription.cpp.i:
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/storage/TupleDescription.cpp.i
+.PHONY : storage/TupleDescription.cpp.i
 
-storage/TupleDesc.s: storage/TupleDesc.cpp.s
+storage/TupleDescription.s: storage/TupleDescription.cpp.s
 
-.PHONY : storage/TupleDesc.s
+.PHONY : storage/TupleDescription.s
 
 # target to generate assembly for a file
-storage/TupleDesc.cpp.s:
-	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/storage/TupleDesc.cpp.s
-.PHONY : storage/TupleDesc.cpp.s
+storage/TupleDescription.cpp.s:
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/storage/TupleDescription.cpp.s
+.PHONY : storage/TupleDescription.cpp.s
 
 storage/TupleIterator.o: storage/TupleIterator.cpp.o
 
@@ -432,6 +513,15 @@ help:
 	@echo "... Utility.o"
 	@echo "... Utility.i"
 	@echo "... Utility.s"
+	@echo "... joins/JoinPredicate.o"
+	@echo "... joins/JoinPredicate.i"
+	@echo "... joins/JoinPredicate.s"
+	@echo "... joins/Op.o"
+	@echo "... joins/Op.i"
+	@echo "... joins/Op.s"
+	@echo "... joins/Predicate.o"
+	@echo "... joins/Predicate.i"
+	@echo "... joins/Predicate.s"
 	@echo "... joins/SymmetricHashJoin.o"
 	@echo "... joins/SymmetricHashJoin.i"
 	@echo "... joins/SymmetricHashJoin.s"
@@ -450,9 +540,9 @@ help:
 	@echo "... storage/Tuple.o"
 	@echo "... storage/Tuple.i"
 	@echo "... storage/Tuple.s"
-	@echo "... storage/TupleDesc.o"
-	@echo "... storage/TupleDesc.i"
-	@echo "... storage/TupleDesc.s"
+	@echo "... storage/TupleDescription.o"
+	@echo "... storage/TupleDescription.i"
+	@echo "... storage/TupleDescription.s"
 	@echo "... storage/TupleIterator.o"
 	@echo "... storage/TupleIterator.i"
 	@echo "... storage/TupleIterator.s"

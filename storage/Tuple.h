@@ -5,7 +5,7 @@
 #ifndef ALLIANCEDB_TUPLE_H
 #define ALLIANCEDB_TUPLE_H
 
-#include "TupleDesc.h"
+#include "TupleDescription.h"
 #include "Field.h"
 
 /**
@@ -19,7 +19,7 @@ private:
     Field *fields;
 
 public:
-    Tuple(TupleDesc td);
+    Tuple(TupleDescription td);
 
     /**
      * /**

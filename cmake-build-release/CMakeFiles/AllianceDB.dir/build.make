@@ -153,28 +153,28 @@ CMakeFiles/AllianceDB.dir/storage/Tuple.cpp.o.provides: CMakeFiles/AllianceDB.di
 CMakeFiles/AllianceDB.dir/storage/Tuple.cpp.o.provides.build: CMakeFiles/AllianceDB.dir/storage/Tuple.cpp.o
 
 
-CMakeFiles/AllianceDB.dir/storage/TupleDesc.cpp.o: CMakeFiles/AllianceDB.dir/flags.make
-CMakeFiles/AllianceDB.dir/storage/TupleDesc.cpp.o: ../storage/TupleDesc.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/shuhaozhang/ClionProjects/AllianceDB/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/AllianceDB.dir/storage/TupleDesc.cpp.o"
-	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/AllianceDB.dir/storage/TupleDesc.cpp.o -c /Users/shuhaozhang/ClionProjects/AllianceDB/storage/TupleDesc.cpp
+CMakeFiles/AllianceDB.dir/storage/TupleDescription.cpp.o: CMakeFiles/AllianceDB.dir/flags.make
+CMakeFiles/AllianceDB.dir/storage/TupleDescription.cpp.o: ../storage/TupleDescription.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/shuhaozhang/ClionProjects/AllianceDB/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/AllianceDB.dir/storage/TupleDescription.cpp.o"
+	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/AllianceDB.dir/storage/TupleDescription.cpp.o -c /Users/shuhaozhang/ClionProjects/AllianceDB/storage/TupleDescription.cpp
 
-CMakeFiles/AllianceDB.dir/storage/TupleDesc.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/AllianceDB.dir/storage/TupleDesc.cpp.i"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/shuhaozhang/ClionProjects/AllianceDB/storage/TupleDesc.cpp > CMakeFiles/AllianceDB.dir/storage/TupleDesc.cpp.i
+CMakeFiles/AllianceDB.dir/storage/TupleDescription.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/AllianceDB.dir/storage/TupleDescription.cpp.i"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/shuhaozhang/ClionProjects/AllianceDB/storage/TupleDescription.cpp > CMakeFiles/AllianceDB.dir/storage/TupleDescription.cpp.i
 
-CMakeFiles/AllianceDB.dir/storage/TupleDesc.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/AllianceDB.dir/storage/TupleDesc.cpp.s"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/shuhaozhang/ClionProjects/AllianceDB/storage/TupleDesc.cpp -o CMakeFiles/AllianceDB.dir/storage/TupleDesc.cpp.s
+CMakeFiles/AllianceDB.dir/storage/TupleDescription.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/AllianceDB.dir/storage/TupleDescription.cpp.s"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/shuhaozhang/ClionProjects/AllianceDB/storage/TupleDescription.cpp -o CMakeFiles/AllianceDB.dir/storage/TupleDescription.cpp.s
 
-CMakeFiles/AllianceDB.dir/storage/TupleDesc.cpp.o.requires:
+CMakeFiles/AllianceDB.dir/storage/TupleDescription.cpp.o.requires:
 
-.PHONY : CMakeFiles/AllianceDB.dir/storage/TupleDesc.cpp.o.requires
+.PHONY : CMakeFiles/AllianceDB.dir/storage/TupleDescription.cpp.o.requires
 
-CMakeFiles/AllianceDB.dir/storage/TupleDesc.cpp.o.provides: CMakeFiles/AllianceDB.dir/storage/TupleDesc.cpp.o.requires
-	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/storage/TupleDesc.cpp.o.provides.build
-.PHONY : CMakeFiles/AllianceDB.dir/storage/TupleDesc.cpp.o.provides
+CMakeFiles/AllianceDB.dir/storage/TupleDescription.cpp.o.provides: CMakeFiles/AllianceDB.dir/storage/TupleDescription.cpp.o.requires
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/storage/TupleDescription.cpp.o.provides.build
+.PHONY : CMakeFiles/AllianceDB.dir/storage/TupleDescription.cpp.o.provides
 
-CMakeFiles/AllianceDB.dir/storage/TupleDesc.cpp.o.provides.build: CMakeFiles/AllianceDB.dir/storage/TupleDesc.cpp.o
+CMakeFiles/AllianceDB.dir/storage/TupleDescription.cpp.o.provides.build: CMakeFiles/AllianceDB.dir/storage/TupleDescription.cpp.o
 
 
 CMakeFiles/AllianceDB.dir/storage/TupleIterator.cpp.o: CMakeFiles/AllianceDB.dir/flags.make
@@ -321,19 +321,94 @@ CMakeFiles/AllianceDB.dir/storage/type/INT_TYPE.cpp.o.provides: CMakeFiles/Allia
 CMakeFiles/AllianceDB.dir/storage/type/INT_TYPE.cpp.o.provides.build: CMakeFiles/AllianceDB.dir/storage/type/INT_TYPE.cpp.o
 
 
+CMakeFiles/AllianceDB.dir/joins/JoinPredicate.cpp.o: CMakeFiles/AllianceDB.dir/flags.make
+CMakeFiles/AllianceDB.dir/joins/JoinPredicate.cpp.o: ../joins/JoinPredicate.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/shuhaozhang/ClionProjects/AllianceDB/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/AllianceDB.dir/joins/JoinPredicate.cpp.o"
+	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/AllianceDB.dir/joins/JoinPredicate.cpp.o -c /Users/shuhaozhang/ClionProjects/AllianceDB/joins/JoinPredicate.cpp
+
+CMakeFiles/AllianceDB.dir/joins/JoinPredicate.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/AllianceDB.dir/joins/JoinPredicate.cpp.i"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/shuhaozhang/ClionProjects/AllianceDB/joins/JoinPredicate.cpp > CMakeFiles/AllianceDB.dir/joins/JoinPredicate.cpp.i
+
+CMakeFiles/AllianceDB.dir/joins/JoinPredicate.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/AllianceDB.dir/joins/JoinPredicate.cpp.s"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/shuhaozhang/ClionProjects/AllianceDB/joins/JoinPredicate.cpp -o CMakeFiles/AllianceDB.dir/joins/JoinPredicate.cpp.s
+
+CMakeFiles/AllianceDB.dir/joins/JoinPredicate.cpp.o.requires:
+
+.PHONY : CMakeFiles/AllianceDB.dir/joins/JoinPredicate.cpp.o.requires
+
+CMakeFiles/AllianceDB.dir/joins/JoinPredicate.cpp.o.provides: CMakeFiles/AllianceDB.dir/joins/JoinPredicate.cpp.o.requires
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/joins/JoinPredicate.cpp.o.provides.build
+.PHONY : CMakeFiles/AllianceDB.dir/joins/JoinPredicate.cpp.o.provides
+
+CMakeFiles/AllianceDB.dir/joins/JoinPredicate.cpp.o.provides.build: CMakeFiles/AllianceDB.dir/joins/JoinPredicate.cpp.o
+
+
+CMakeFiles/AllianceDB.dir/joins/Predicate.cpp.o: CMakeFiles/AllianceDB.dir/flags.make
+CMakeFiles/AllianceDB.dir/joins/Predicate.cpp.o: ../joins/Predicate.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/shuhaozhang/ClionProjects/AllianceDB/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/AllianceDB.dir/joins/Predicate.cpp.o"
+	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/AllianceDB.dir/joins/Predicate.cpp.o -c /Users/shuhaozhang/ClionProjects/AllianceDB/joins/Predicate.cpp
+
+CMakeFiles/AllianceDB.dir/joins/Predicate.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/AllianceDB.dir/joins/Predicate.cpp.i"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/shuhaozhang/ClionProjects/AllianceDB/joins/Predicate.cpp > CMakeFiles/AllianceDB.dir/joins/Predicate.cpp.i
+
+CMakeFiles/AllianceDB.dir/joins/Predicate.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/AllianceDB.dir/joins/Predicate.cpp.s"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/shuhaozhang/ClionProjects/AllianceDB/joins/Predicate.cpp -o CMakeFiles/AllianceDB.dir/joins/Predicate.cpp.s
+
+CMakeFiles/AllianceDB.dir/joins/Predicate.cpp.o.requires:
+
+.PHONY : CMakeFiles/AllianceDB.dir/joins/Predicate.cpp.o.requires
+
+CMakeFiles/AllianceDB.dir/joins/Predicate.cpp.o.provides: CMakeFiles/AllianceDB.dir/joins/Predicate.cpp.o.requires
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/joins/Predicate.cpp.o.provides.build
+.PHONY : CMakeFiles/AllianceDB.dir/joins/Predicate.cpp.o.provides
+
+CMakeFiles/AllianceDB.dir/joins/Predicate.cpp.o.provides.build: CMakeFiles/AllianceDB.dir/joins/Predicate.cpp.o
+
+
+CMakeFiles/AllianceDB.dir/joins/Op.cpp.o: CMakeFiles/AllianceDB.dir/flags.make
+CMakeFiles/AllianceDB.dir/joins/Op.cpp.o: ../joins/Op.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/shuhaozhang/ClionProjects/AllianceDB/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/AllianceDB.dir/joins/Op.cpp.o"
+	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/AllianceDB.dir/joins/Op.cpp.o -c /Users/shuhaozhang/ClionProjects/AllianceDB/joins/Op.cpp
+
+CMakeFiles/AllianceDB.dir/joins/Op.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/AllianceDB.dir/joins/Op.cpp.i"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/shuhaozhang/ClionProjects/AllianceDB/joins/Op.cpp > CMakeFiles/AllianceDB.dir/joins/Op.cpp.i
+
+CMakeFiles/AllianceDB.dir/joins/Op.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/AllianceDB.dir/joins/Op.cpp.s"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/shuhaozhang/ClionProjects/AllianceDB/joins/Op.cpp -o CMakeFiles/AllianceDB.dir/joins/Op.cpp.s
+
+CMakeFiles/AllianceDB.dir/joins/Op.cpp.o.requires:
+
+.PHONY : CMakeFiles/AllianceDB.dir/joins/Op.cpp.o.requires
+
+CMakeFiles/AllianceDB.dir/joins/Op.cpp.o.provides: CMakeFiles/AllianceDB.dir/joins/Op.cpp.o.requires
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/joins/Op.cpp.o.provides.build
+.PHONY : CMakeFiles/AllianceDB.dir/joins/Op.cpp.o.provides
+
+CMakeFiles/AllianceDB.dir/joins/Op.cpp.o.provides.build: CMakeFiles/AllianceDB.dir/joins/Op.cpp.o
+
+
 # Object files for target AllianceDB
 AllianceDB_OBJECTS = \
 "CMakeFiles/AllianceDB.dir/main.cpp.o" \
 "CMakeFiles/AllianceDB.dir/joins/SymmetricHashJoin.cpp.o" \
 "CMakeFiles/AllianceDB.dir/storage/DbIterator.cpp.o" \
 "CMakeFiles/AllianceDB.dir/storage/Tuple.cpp.o" \
-"CMakeFiles/AllianceDB.dir/storage/TupleDesc.cpp.o" \
+"CMakeFiles/AllianceDB.dir/storage/TupleDescription.cpp.o" \
 "CMakeFiles/AllianceDB.dir/storage/TupleIterator.cpp.o" \
 "CMakeFiles/AllianceDB.dir/Utility.cpp.o" \
 "CMakeFiles/AllianceDB.dir/storage/type/Type.cpp.o" \
 "CMakeFiles/AllianceDB.dir/storage/Field.cpp.o" \
 "CMakeFiles/AllianceDB.dir/storage/IntField.cpp.o" \
-"CMakeFiles/AllianceDB.dir/storage/type/INT_TYPE.cpp.o"
+"CMakeFiles/AllianceDB.dir/storage/type/INT_TYPE.cpp.o" \
+"CMakeFiles/AllianceDB.dir/joins/JoinPredicate.cpp.o" \
+"CMakeFiles/AllianceDB.dir/joins/Predicate.cpp.o" \
+"CMakeFiles/AllianceDB.dir/joins/Op.cpp.o"
 
 # External object files for target AllianceDB
 AllianceDB_EXTERNAL_OBJECTS =
@@ -342,16 +417,19 @@ AllianceDB: CMakeFiles/AllianceDB.dir/main.cpp.o
 AllianceDB: CMakeFiles/AllianceDB.dir/joins/SymmetricHashJoin.cpp.o
 AllianceDB: CMakeFiles/AllianceDB.dir/storage/DbIterator.cpp.o
 AllianceDB: CMakeFiles/AllianceDB.dir/storage/Tuple.cpp.o
-AllianceDB: CMakeFiles/AllianceDB.dir/storage/TupleDesc.cpp.o
+AllianceDB: CMakeFiles/AllianceDB.dir/storage/TupleDescription.cpp.o
 AllianceDB: CMakeFiles/AllianceDB.dir/storage/TupleIterator.cpp.o
 AllianceDB: CMakeFiles/AllianceDB.dir/Utility.cpp.o
 AllianceDB: CMakeFiles/AllianceDB.dir/storage/type/Type.cpp.o
 AllianceDB: CMakeFiles/AllianceDB.dir/storage/Field.cpp.o
 AllianceDB: CMakeFiles/AllianceDB.dir/storage/IntField.cpp.o
 AllianceDB: CMakeFiles/AllianceDB.dir/storage/type/INT_TYPE.cpp.o
+AllianceDB: CMakeFiles/AllianceDB.dir/joins/JoinPredicate.cpp.o
+AllianceDB: CMakeFiles/AllianceDB.dir/joins/Predicate.cpp.o
+AllianceDB: CMakeFiles/AllianceDB.dir/joins/Op.cpp.o
 AllianceDB: CMakeFiles/AllianceDB.dir/build.make
 AllianceDB: CMakeFiles/AllianceDB.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/shuhaozhang/ClionProjects/AllianceDB/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Linking CXX executable AllianceDB"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/shuhaozhang/ClionProjects/AllianceDB/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Linking CXX executable AllianceDB"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/AllianceDB.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -363,13 +441,16 @@ CMakeFiles/AllianceDB.dir/requires: CMakeFiles/AllianceDB.dir/main.cpp.o.require
 CMakeFiles/AllianceDB.dir/requires: CMakeFiles/AllianceDB.dir/joins/SymmetricHashJoin.cpp.o.requires
 CMakeFiles/AllianceDB.dir/requires: CMakeFiles/AllianceDB.dir/storage/DbIterator.cpp.o.requires
 CMakeFiles/AllianceDB.dir/requires: CMakeFiles/AllianceDB.dir/storage/Tuple.cpp.o.requires
-CMakeFiles/AllianceDB.dir/requires: CMakeFiles/AllianceDB.dir/storage/TupleDesc.cpp.o.requires
+CMakeFiles/AllianceDB.dir/requires: CMakeFiles/AllianceDB.dir/storage/TupleDescription.cpp.o.requires
 CMakeFiles/AllianceDB.dir/requires: CMakeFiles/AllianceDB.dir/storage/TupleIterator.cpp.o.requires
 CMakeFiles/AllianceDB.dir/requires: CMakeFiles/AllianceDB.dir/Utility.cpp.o.requires
 CMakeFiles/AllianceDB.dir/requires: CMakeFiles/AllianceDB.dir/storage/type/Type.cpp.o.requires
 CMakeFiles/AllianceDB.dir/requires: CMakeFiles/AllianceDB.dir/storage/Field.cpp.o.requires
 CMakeFiles/AllianceDB.dir/requires: CMakeFiles/AllianceDB.dir/storage/IntField.cpp.o.requires
 CMakeFiles/AllianceDB.dir/requires: CMakeFiles/AllianceDB.dir/storage/type/INT_TYPE.cpp.o.requires
+CMakeFiles/AllianceDB.dir/requires: CMakeFiles/AllianceDB.dir/joins/JoinPredicate.cpp.o.requires
+CMakeFiles/AllianceDB.dir/requires: CMakeFiles/AllianceDB.dir/joins/Predicate.cpp.o.requires
+CMakeFiles/AllianceDB.dir/requires: CMakeFiles/AllianceDB.dir/joins/Op.cpp.o.requires
 
 .PHONY : CMakeFiles/AllianceDB.dir/requires
 
