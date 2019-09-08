@@ -2,15 +2,15 @@
 // Created by Shuhao Zhang on 7/9/19.
 //
 
-#include "TupleDescription.h"
+#include "TupleDesc.h"
 
 using namespace std;
 
-TupleDescription::TupleDescription(Type *pType) {
+TupleDesc::TupleDesc(Type *pType) {
 
 }
 
-TupleDescription TupleDescription::merge(TupleDescription td1, TupleDescription td2) {
+TupleDesc TupleDesc::merge(TupleDesc td1, TupleDesc td2) {
     Type *types;
     types = new Type[td1.numFields() + td2.numFields()];
     int size = sizeof(types);
@@ -28,19 +28,19 @@ TupleDescription TupleDescription::merge(TupleDescription td1, TupleDescription 
 
 }
 
-int TupleDescription::numFields() {
+int TupleDesc::numFields() {
     return 0;
 }
 
-Type TupleDescription::getFieldType(int i) {
+Type TupleDesc::getFieldType(int i) {
     return tdItems[i].fieldType;
 }
 
-string TupleDescription::getFieldName(int i) {
+string TupleDesc::getFieldName(int i) {
     return nullptr;
 }
 
-TupleDescription::TupleDescription(Type *typeAr, string *fieldAr) {
+TupleDesc::TupleDesc(Type *typeAr, string *fieldAr) {
 
 }
 

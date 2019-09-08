@@ -8,21 +8,23 @@
 
 #include "../storage/TupleIterator.h"
 #include "JoinPredicate.h"
+#include "../execution/Operator.h"
 
-class SymmetricHashJoin {
+class SymmetricHashJoin : Operator {
 
 
 public:
-    SymmetricHashJoin(JoinPredicate predicate, TupleIterator *R, TupleIterator *S,
-                          TupleDescription comboTD, JoinPredicate _predicate);
+    SymmetricHashJoin(JoinPredicate predicate, TupleIterator *R, TupleIterator *S);
 
     void symHashJoin(TupleIterator R, TupleIterator S);
+
+    void open();
 
 private:
     JoinPredicate _predicate;
     TupleIterator *_R = nullptr;
     TupleIterator *_S = nullptr;
-    TupleDescription _comboTD = nullptr;
+    TupleDesc _comboTD = nullptr;
 
     TupleIterator *inner;
     TupleIterator *outter;

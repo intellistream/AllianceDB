@@ -11,6 +11,7 @@ class Field {
 public:
     void serialize(std::ostream dos);
 
+    virtual bool equals(Field field)= 0;
 
 };
 

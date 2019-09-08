@@ -7,14 +7,15 @@
 
 
 #include <istream>
-#include "../Field.h"
+#include "../field/Field.h"
 
 class Type {
 
 private:
     static const int STRING_LEN = 128;
-
+    int _v;
 public:
+    int getType();
     int getLen();
     Field parse(std::istream dis);
 };

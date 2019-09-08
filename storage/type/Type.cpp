@@ -4,7 +4,6 @@
 
 #include "Type.h"
 
-Field Type::parse(std::istream dis) {
-
-    return Field();
+int Type::getType() {
+    return _v;
 }

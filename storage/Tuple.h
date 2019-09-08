@@ -5,8 +5,8 @@
 #ifndef ALLIANCEDB_TUPLE_H
 #define ALLIANCEDB_TUPLE_H
 
-#include "TupleDescription.h"
-#include "Field.h"
+#include "TupleDesc.h"
+#include "field/Field.h"
 
 /**
  * Tuple maintains information about the contents of a tuple.
@@ -17,9 +17,11 @@ class Tuple {
 
 private:
     Field *fields;
+    TupleDesc _td;
+//    RecordId rid; // source on disk -- may be null
 
 public:
-    Tuple(TupleDescription td);
+    Tuple(TupleDesc td);
 
     /**
      * /**
@@ -40,6 +42,8 @@ public:
      *            field index to return. Must be a valid index.
      */
     Field getField(int i);
+
+    TupleDesc getTupleDesc();
 };
 
 

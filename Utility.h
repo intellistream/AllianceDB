@@ -18,21 +18,19 @@ public:
     /**
      * @return a TupleDesc with n fields of type Type.INT_TYPE
      */
-    static TupleDescription getTupleDesc(int n) {
-        return TupleDescription(getTypes(n));
+    static TupleDesc getTupleDesc(int n) {
+        return TupleDesc(getTypes(n));
     }
 
     /**
     * @return a Type array of length len populated with Type.INT_TYPE
     */
-    static Type *getTypes(int len) {
-        Type *types = new Type[len];
-        for (int i = 0; i < len; ++i)
-            types[i] =  INT_TYPE();
-        return types;
-    }
+    static Type *getTypes(int len);
 
     static Field getField(int n);
+
+
+    static void matchAllTuples(DbIterator expected, DbIterator actual);
 };
 
 

@@ -150,6 +150,33 @@ Utility.cpp.s:
 	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/Utility.cpp.s
 .PHONY : Utility.cpp.s
 
+execution/Operator.o: execution/Operator.cpp.o
+
+.PHONY : execution/Operator.o
+
+# target to build an object file
+execution/Operator.cpp.o:
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/execution/Operator.cpp.o
+.PHONY : execution/Operator.cpp.o
+
+execution/Operator.i: execution/Operator.cpp.i
+
+.PHONY : execution/Operator.i
+
+# target to preprocess a source file
+execution/Operator.cpp.i:
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/execution/Operator.cpp.i
+.PHONY : execution/Operator.cpp.i
+
+execution/Operator.s: execution/Operator.cpp.s
+
+.PHONY : execution/Operator.s
+
+# target to generate assembly for a file
+execution/Operator.cpp.s:
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/execution/Operator.cpp.s
+.PHONY : execution/Operator.cpp.s
+
 joins/JoinPredicate.o: joins/JoinPredicate.cpp.o
 
 .PHONY : joins/JoinPredicate.o
@@ -312,60 +339,6 @@ storage/DbIterator.cpp.s:
 	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/storage/DbIterator.cpp.s
 .PHONY : storage/DbIterator.cpp.s
 
-storage/Field.o: storage/Field.cpp.o
-
-.PHONY : storage/Field.o
-
-# target to build an object file
-storage/Field.cpp.o:
-	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/storage/Field.cpp.o
-.PHONY : storage/Field.cpp.o
-
-storage/Field.i: storage/Field.cpp.i
-
-.PHONY : storage/Field.i
-
-# target to preprocess a source file
-storage/Field.cpp.i:
-	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/storage/Field.cpp.i
-.PHONY : storage/Field.cpp.i
-
-storage/Field.s: storage/Field.cpp.s
-
-.PHONY : storage/Field.s
-
-# target to generate assembly for a file
-storage/Field.cpp.s:
-	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/storage/Field.cpp.s
-.PHONY : storage/Field.cpp.s
-
-storage/IntField.o: storage/IntField.cpp.o
-
-.PHONY : storage/IntField.o
-
-# target to build an object file
-storage/IntField.cpp.o:
-	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/storage/IntField.cpp.o
-.PHONY : storage/IntField.cpp.o
-
-storage/IntField.i: storage/IntField.cpp.i
-
-.PHONY : storage/IntField.i
-
-# target to preprocess a source file
-storage/IntField.cpp.i:
-	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/storage/IntField.cpp.i
-.PHONY : storage/IntField.cpp.i
-
-storage/IntField.s: storage/IntField.cpp.s
-
-.PHONY : storage/IntField.s
-
-# target to generate assembly for a file
-storage/IntField.cpp.s:
-	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/storage/IntField.cpp.s
-.PHONY : storage/IntField.cpp.s
-
 storage/Tuple.o: storage/Tuple.cpp.o
 
 .PHONY : storage/Tuple.o
@@ -393,32 +366,32 @@ storage/Tuple.cpp.s:
 	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/storage/Tuple.cpp.s
 .PHONY : storage/Tuple.cpp.s
 
-storage/TupleDescription.o: storage/TupleDescription.cpp.o
+storage/TupleDesc.o: storage/TupleDesc.cpp.o
 
-.PHONY : storage/TupleDescription.o
+.PHONY : storage/TupleDesc.o
 
 # target to build an object file
-storage/TupleDescription.cpp.o:
-	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/storage/TupleDescription.cpp.o
-.PHONY : storage/TupleDescription.cpp.o
+storage/TupleDesc.cpp.o:
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/storage/TupleDesc.cpp.o
+.PHONY : storage/TupleDesc.cpp.o
 
-storage/TupleDescription.i: storage/TupleDescription.cpp.i
+storage/TupleDesc.i: storage/TupleDesc.cpp.i
 
-.PHONY : storage/TupleDescription.i
+.PHONY : storage/TupleDesc.i
 
 # target to preprocess a source file
-storage/TupleDescription.cpp.i:
-	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/storage/TupleDescription.cpp.i
-.PHONY : storage/TupleDescription.cpp.i
+storage/TupleDesc.cpp.i:
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/storage/TupleDesc.cpp.i
+.PHONY : storage/TupleDesc.cpp.i
 
-storage/TupleDescription.s: storage/TupleDescription.cpp.s
+storage/TupleDesc.s: storage/TupleDesc.cpp.s
 
-.PHONY : storage/TupleDescription.s
+.PHONY : storage/TupleDesc.s
 
 # target to generate assembly for a file
-storage/TupleDescription.cpp.s:
-	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/storage/TupleDescription.cpp.s
-.PHONY : storage/TupleDescription.cpp.s
+storage/TupleDesc.cpp.s:
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/storage/TupleDesc.cpp.s
+.PHONY : storage/TupleDesc.cpp.s
 
 storage/TupleIterator.o: storage/TupleIterator.cpp.o
 
@@ -446,6 +419,60 @@ storage/TupleIterator.s: storage/TupleIterator.cpp.s
 storage/TupleIterator.cpp.s:
 	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/storage/TupleIterator.cpp.s
 .PHONY : storage/TupleIterator.cpp.s
+
+storage/field/Field.o: storage/field/Field.cpp.o
+
+.PHONY : storage/field/Field.o
+
+# target to build an object file
+storage/field/Field.cpp.o:
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/storage/field/Field.cpp.o
+.PHONY : storage/field/Field.cpp.o
+
+storage/field/Field.i: storage/field/Field.cpp.i
+
+.PHONY : storage/field/Field.i
+
+# target to preprocess a source file
+storage/field/Field.cpp.i:
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/storage/field/Field.cpp.i
+.PHONY : storage/field/Field.cpp.i
+
+storage/field/Field.s: storage/field/Field.cpp.s
+
+.PHONY : storage/field/Field.s
+
+# target to generate assembly for a file
+storage/field/Field.cpp.s:
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/storage/field/Field.cpp.s
+.PHONY : storage/field/Field.cpp.s
+
+storage/field/IntField.o: storage/field/IntField.cpp.o
+
+.PHONY : storage/field/IntField.o
+
+# target to build an object file
+storage/field/IntField.cpp.o:
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/storage/field/IntField.cpp.o
+.PHONY : storage/field/IntField.cpp.o
+
+storage/field/IntField.i: storage/field/IntField.cpp.i
+
+.PHONY : storage/field/IntField.i
+
+# target to preprocess a source file
+storage/field/IntField.cpp.i:
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/storage/field/IntField.cpp.i
+.PHONY : storage/field/IntField.cpp.i
+
+storage/field/IntField.s: storage/field/IntField.cpp.s
+
+.PHONY : storage/field/IntField.s
+
+# target to generate assembly for a file
+storage/field/IntField.cpp.s:
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/storage/field/IntField.cpp.s
+.PHONY : storage/field/IntField.cpp.s
 
 storage/type/INT_TYPE.o: storage/type/INT_TYPE.cpp.o
 
@@ -513,6 +540,9 @@ help:
 	@echo "... Utility.o"
 	@echo "... Utility.i"
 	@echo "... Utility.s"
+	@echo "... execution/Operator.o"
+	@echo "... execution/Operator.i"
+	@echo "... execution/Operator.s"
 	@echo "... joins/JoinPredicate.o"
 	@echo "... joins/JoinPredicate.i"
 	@echo "... joins/JoinPredicate.s"
@@ -531,21 +561,21 @@ help:
 	@echo "... storage/DbIterator.o"
 	@echo "... storage/DbIterator.i"
 	@echo "... storage/DbIterator.s"
-	@echo "... storage/Field.o"
-	@echo "... storage/Field.i"
-	@echo "... storage/Field.s"
-	@echo "... storage/IntField.o"
-	@echo "... storage/IntField.i"
-	@echo "... storage/IntField.s"
 	@echo "... storage/Tuple.o"
 	@echo "... storage/Tuple.i"
 	@echo "... storage/Tuple.s"
-	@echo "... storage/TupleDescription.o"
-	@echo "... storage/TupleDescription.i"
-	@echo "... storage/TupleDescription.s"
+	@echo "... storage/TupleDesc.o"
+	@echo "... storage/TupleDesc.i"
+	@echo "... storage/TupleDesc.s"
 	@echo "... storage/TupleIterator.o"
 	@echo "... storage/TupleIterator.i"
 	@echo "... storage/TupleIterator.s"
+	@echo "... storage/field/Field.o"
+	@echo "... storage/field/Field.i"
+	@echo "... storage/field/Field.s"
+	@echo "... storage/field/IntField.o"
+	@echo "... storage/field/IntField.i"
+	@echo "... storage/field/IntField.s"
 	@echo "... storage/type/INT_TYPE.o"
 	@echo "... storage/type/INT_TYPE.i"
 	@echo "... storage/type/INT_TYPE.s"

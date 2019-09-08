@@ -12,16 +12,16 @@
 class TupleIterator : DbIterator {
 
 public:
-    TupleIterator(TupleDescription desc, std::vector<Tuple> vector, TupleDescription td);
+    TupleIterator(TupleDesc desc, std::vector<Tuple> vector, TupleDesc td);
 
     void open();//Opens the iterator. This must be called before any of the other methods.
 
-    TupleDescription getTupleDesc() {
-        return TupleDescription(nullptr);
+    TupleDesc getTupleDesc() {
+        return TupleDesc(nullptr);
     }
 
 protected:
-    TupleDescription td;
+    TupleDesc td;
 
 };
 

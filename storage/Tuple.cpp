@@ -4,8 +4,7 @@
 
 #include "Tuple.h"
 
-Tuple::Tuple(TupleDescription td) {
-
+Tuple::Tuple(TupleDesc td) : _td(td) {
 
 }
 
@@ -15,4 +14,8 @@ void Tuple::setField(int i, Field f) {
 
 Field Tuple::getField(int i) {
     return fields[i];
+}
+
+TupleDesc Tuple::getTupleDesc() {
+    return _td;
 }

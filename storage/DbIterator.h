@@ -7,7 +7,7 @@
 
 
 #include "Tuple.h"
-#include "TupleDescription.h"
+#include "TupleDesc.h"
 
 class DbIterator {
 
@@ -34,7 +34,7 @@ public:
         * Returns the TupleDesc associated with this DbIterator.
         * @return the TupleDesc associated with this DbIterator.
     */
-    virtual TupleDescription getTupleDesc();
+    virtual TupleDesc getTupleDesc();
 
     /**
         * Closes the iterator. When the iterator is closed, calling next(),

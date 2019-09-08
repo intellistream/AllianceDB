@@ -10,10 +10,10 @@
 
 using namespace std;
 
-class TupleDescription {
+class TupleDesc {
 
 public:
-    TupleDescription(Type *pType);
+    TupleDesc(Type *pType);
 
     /**
      * Create a new TupleDesc with typeAr.length fields with fields of the
@@ -26,10 +26,12 @@ public:
      *            array specifying the names of the fields. Note that names may
      *            be null.
      */
-    TupleDescription(Type *typeAr, string *fieldAr);
+    TupleDesc(Type *typeAr, string *fieldAr);
+
+    Type getFieldType(int i);
 
 public:
-    static TupleDescription merge(TupleDescription td1, TupleDescription td2);
+    static TupleDesc merge(TupleDesc td1, TupleDesc td2);
 
     int numFields();
 
@@ -41,8 +43,6 @@ public:
 
 private:
     TDItem *tdItems;
-
-    Type getFieldType(int i);
 
     string getFieldName(int i);
 };

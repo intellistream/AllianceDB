@@ -3,14 +3,15 @@
 #include "joins/JoinPredicate.h"
 #include "joins/Predicate.h"
 #include "joins/SymmetricHashJoin.h"
-#include "storage/TupleDescription.h"
+#include "storage/TupleDesc.h"
 
 int *data1;
 int *data2;
 int *data3;
+
 TupleIterator *R;
 TupleIterator *S;
-TupleIterator *Expected_Rt;
+TupleIterator *JoinResults;
 
 void clean_up() {
 
@@ -43,26 +44,17 @@ void createTupleLists() {
     S = Utility::createTupleList(3, data2
     );
 
-    Expected_Rt = Utility::createTupleList(2 + 3, data3
+    JoinResults = Utility::createTupleList(2 + 3, data3
     );
 }
 
 
 void symHashJoin() {
-//    JoinPredicate pred = new JoinPredicate(0, Predicate.Op.EQUALS, 0);
-//    SymmetricHashJoin op = new SymmetricHashJoin(pred, scan1, scan2);
-//    op.open();
-//    Tuple a = op.fetchNext();
-//
-//    symHashJoin.open();
-//    TestUtil.matchAllTuples(symHashJoin, op);
 
-    JoinPredicate pred(0, 0, 0);
-
-    SymmetricHashJoin op(pred, R, S, TupleDescription::merge(R->getTupleDesc(), S->getTupleDesc()),
-                         JoinPredicate(0, 0, 0));
-
-
+    JoinPredicate pred(0, 0, 0);// new JoinPredicate(0, Predicate.Op.EQUALS, 0);
+    SymmetricHashJoin op(pred, R, S);
+    op.open();
+    JoinResults->open();
 }
 
 int main() {
@@ -73,7 +65,6 @@ int main() {
     createTupleLists();
 
     symHashJoin();
-
 
     return 0;
 }

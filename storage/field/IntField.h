@@ -13,8 +13,9 @@ class IntField : public Field {
 public:
     IntField(int i);
 
-private:
-    const int value;
+    const int _value;
+
+    bool equals(IntField field);
 };
 
 

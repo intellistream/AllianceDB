@@ -8,6 +8,6 @@ void DbIterator::open() {
 
 }
 
-TupleDescription DbIterator::getTupleDesc() {
-    return TupleDescription(nullptr);
+TupleDesc DbIterator::getTupleDesc() {
+    return TupleDesc(nullptr);
 }
