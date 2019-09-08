@@ -81,17 +81,147 @@ CMakeFiles/AllianceDB.dir/main.cpp.o.provides: CMakeFiles/AllianceDB.dir/main.cp
 CMakeFiles/AllianceDB.dir/main.cpp.o.provides.build: CMakeFiles/AllianceDB.dir/main.cpp.o
 
 
+CMakeFiles/AllianceDB.dir/affinity/cpu_mapping.cpp.o: CMakeFiles/AllianceDB.dir/flags.make
+CMakeFiles/AllianceDB.dir/affinity/cpu_mapping.cpp.o: ../affinity/cpu_mapping.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/shuhaozhang/ClionProjects/AllianceDB/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/AllianceDB.dir/affinity/cpu_mapping.cpp.o"
+	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/AllianceDB.dir/affinity/cpu_mapping.cpp.o -c /Users/shuhaozhang/ClionProjects/AllianceDB/affinity/cpu_mapping.cpp
+
+CMakeFiles/AllianceDB.dir/affinity/cpu_mapping.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/AllianceDB.dir/affinity/cpu_mapping.cpp.i"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/shuhaozhang/ClionProjects/AllianceDB/affinity/cpu_mapping.cpp > CMakeFiles/AllianceDB.dir/affinity/cpu_mapping.cpp.i
+
+CMakeFiles/AllianceDB.dir/affinity/cpu_mapping.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/AllianceDB.dir/affinity/cpu_mapping.cpp.s"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/shuhaozhang/ClionProjects/AllianceDB/affinity/cpu_mapping.cpp -o CMakeFiles/AllianceDB.dir/affinity/cpu_mapping.cpp.s
+
+CMakeFiles/AllianceDB.dir/affinity/cpu_mapping.cpp.o.requires:
+
+.PHONY : CMakeFiles/AllianceDB.dir/affinity/cpu_mapping.cpp.o.requires
+
+CMakeFiles/AllianceDB.dir/affinity/cpu_mapping.cpp.o.provides: CMakeFiles/AllianceDB.dir/affinity/cpu_mapping.cpp.o.requires
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/affinity/cpu_mapping.cpp.o.provides.build
+.PHONY : CMakeFiles/AllianceDB.dir/affinity/cpu_mapping.cpp.o.provides
+
+CMakeFiles/AllianceDB.dir/affinity/cpu_mapping.cpp.o.provides.build: CMakeFiles/AllianceDB.dir/affinity/cpu_mapping.cpp.o
+
+
+CMakeFiles/AllianceDB.dir/util/memalloc.cpp.o: CMakeFiles/AllianceDB.dir/flags.make
+CMakeFiles/AllianceDB.dir/util/memalloc.cpp.o: ../util/memalloc.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/shuhaozhang/ClionProjects/AllianceDB/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/AllianceDB.dir/util/memalloc.cpp.o"
+	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/AllianceDB.dir/util/memalloc.cpp.o -c /Users/shuhaozhang/ClionProjects/AllianceDB/util/memalloc.cpp
+
+CMakeFiles/AllianceDB.dir/util/memalloc.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/AllianceDB.dir/util/memalloc.cpp.i"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/shuhaozhang/ClionProjects/AllianceDB/util/memalloc.cpp > CMakeFiles/AllianceDB.dir/util/memalloc.cpp.i
+
+CMakeFiles/AllianceDB.dir/util/memalloc.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/AllianceDB.dir/util/memalloc.cpp.s"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/shuhaozhang/ClionProjects/AllianceDB/util/memalloc.cpp -o CMakeFiles/AllianceDB.dir/util/memalloc.cpp.s
+
+CMakeFiles/AllianceDB.dir/util/memalloc.cpp.o.requires:
+
+.PHONY : CMakeFiles/AllianceDB.dir/util/memalloc.cpp.o.requires
+
+CMakeFiles/AllianceDB.dir/util/memalloc.cpp.o.provides: CMakeFiles/AllianceDB.dir/util/memalloc.cpp.o.requires
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/util/memalloc.cpp.o.provides.build
+.PHONY : CMakeFiles/AllianceDB.dir/util/memalloc.cpp.o.provides
+
+CMakeFiles/AllianceDB.dir/util/memalloc.cpp.o.provides.build: CMakeFiles/AllianceDB.dir/util/memalloc.cpp.o
+
+
+CMakeFiles/AllianceDB.dir/util/numa_shuffle.cpp.o: CMakeFiles/AllianceDB.dir/flags.make
+CMakeFiles/AllianceDB.dir/util/numa_shuffle.cpp.o: ../util/numa_shuffle.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/shuhaozhang/ClionProjects/AllianceDB/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/AllianceDB.dir/util/numa_shuffle.cpp.o"
+	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/AllianceDB.dir/util/numa_shuffle.cpp.o -c /Users/shuhaozhang/ClionProjects/AllianceDB/util/numa_shuffle.cpp
+
+CMakeFiles/AllianceDB.dir/util/numa_shuffle.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/AllianceDB.dir/util/numa_shuffle.cpp.i"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/shuhaozhang/ClionProjects/AllianceDB/util/numa_shuffle.cpp > CMakeFiles/AllianceDB.dir/util/numa_shuffle.cpp.i
+
+CMakeFiles/AllianceDB.dir/util/numa_shuffle.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/AllianceDB.dir/util/numa_shuffle.cpp.s"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/shuhaozhang/ClionProjects/AllianceDB/util/numa_shuffle.cpp -o CMakeFiles/AllianceDB.dir/util/numa_shuffle.cpp.s
+
+CMakeFiles/AllianceDB.dir/util/numa_shuffle.cpp.o.requires:
+
+.PHONY : CMakeFiles/AllianceDB.dir/util/numa_shuffle.cpp.o.requires
+
+CMakeFiles/AllianceDB.dir/util/numa_shuffle.cpp.o.provides: CMakeFiles/AllianceDB.dir/util/numa_shuffle.cpp.o.requires
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/util/numa_shuffle.cpp.o.provides.build
+.PHONY : CMakeFiles/AllianceDB.dir/util/numa_shuffle.cpp.o.provides
+
+CMakeFiles/AllianceDB.dir/util/numa_shuffle.cpp.o.provides.build: CMakeFiles/AllianceDB.dir/util/numa_shuffle.cpp.o
+
+
+CMakeFiles/AllianceDB.dir/joins/joincommon.cpp.o: CMakeFiles/AllianceDB.dir/flags.make
+CMakeFiles/AllianceDB.dir/joins/joincommon.cpp.o: ../joins/joincommon.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/shuhaozhang/ClionProjects/AllianceDB/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/AllianceDB.dir/joins/joincommon.cpp.o"
+	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/AllianceDB.dir/joins/joincommon.cpp.o -c /Users/shuhaozhang/ClionProjects/AllianceDB/joins/joincommon.cpp
+
+CMakeFiles/AllianceDB.dir/joins/joincommon.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/AllianceDB.dir/joins/joincommon.cpp.i"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/shuhaozhang/ClionProjects/AllianceDB/joins/joincommon.cpp > CMakeFiles/AllianceDB.dir/joins/joincommon.cpp.i
+
+CMakeFiles/AllianceDB.dir/joins/joincommon.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/AllianceDB.dir/joins/joincommon.cpp.s"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/shuhaozhang/ClionProjects/AllianceDB/joins/joincommon.cpp -o CMakeFiles/AllianceDB.dir/joins/joincommon.cpp.s
+
+CMakeFiles/AllianceDB.dir/joins/joincommon.cpp.o.requires:
+
+.PHONY : CMakeFiles/AllianceDB.dir/joins/joincommon.cpp.o.requires
+
+CMakeFiles/AllianceDB.dir/joins/joincommon.cpp.o.provides: CMakeFiles/AllianceDB.dir/joins/joincommon.cpp.o.requires
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/joins/joincommon.cpp.o.provides.build
+.PHONY : CMakeFiles/AllianceDB.dir/joins/joincommon.cpp.o.provides
+
+CMakeFiles/AllianceDB.dir/joins/joincommon.cpp.o.provides.build: CMakeFiles/AllianceDB.dir/joins/joincommon.cpp.o
+
+
+CMakeFiles/AllianceDB.dir/util/generic_task_queue.cpp.o: CMakeFiles/AllianceDB.dir/flags.make
+CMakeFiles/AllianceDB.dir/util/generic_task_queue.cpp.o: ../util/generic_task_queue.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/shuhaozhang/ClionProjects/AllianceDB/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/AllianceDB.dir/util/generic_task_queue.cpp.o"
+	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/AllianceDB.dir/util/generic_task_queue.cpp.o -c /Users/shuhaozhang/ClionProjects/AllianceDB/util/generic_task_queue.cpp
+
+CMakeFiles/AllianceDB.dir/util/generic_task_queue.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/AllianceDB.dir/util/generic_task_queue.cpp.i"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/shuhaozhang/ClionProjects/AllianceDB/util/generic_task_queue.cpp > CMakeFiles/AllianceDB.dir/util/generic_task_queue.cpp.i
+
+CMakeFiles/AllianceDB.dir/util/generic_task_queue.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/AllianceDB.dir/util/generic_task_queue.cpp.s"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/shuhaozhang/ClionProjects/AllianceDB/util/generic_task_queue.cpp -o CMakeFiles/AllianceDB.dir/util/generic_task_queue.cpp.s
+
+CMakeFiles/AllianceDB.dir/util/generic_task_queue.cpp.o.requires:
+
+.PHONY : CMakeFiles/AllianceDB.dir/util/generic_task_queue.cpp.o.requires
+
+CMakeFiles/AllianceDB.dir/util/generic_task_queue.cpp.o.provides: CMakeFiles/AllianceDB.dir/util/generic_task_queue.cpp.o.requires
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/util/generic_task_queue.cpp.o.provides.build
+.PHONY : CMakeFiles/AllianceDB.dir/util/generic_task_queue.cpp.o.provides
+
+CMakeFiles/AllianceDB.dir/util/generic_task_queue.cpp.o.provides.build: CMakeFiles/AllianceDB.dir/util/generic_task_queue.cpp.o
+
+
 # Object files for target AllianceDB
 AllianceDB_OBJECTS = \
-"CMakeFiles/AllianceDB.dir/main.cpp.o"
+"CMakeFiles/AllianceDB.dir/main.cpp.o" \
+"CMakeFiles/AllianceDB.dir/affinity/cpu_mapping.cpp.o" \
+"CMakeFiles/AllianceDB.dir/util/memalloc.cpp.o" \
+"CMakeFiles/AllianceDB.dir/util/numa_shuffle.cpp.o" \
+"CMakeFiles/AllianceDB.dir/joins/joincommon.cpp.o" \
+"CMakeFiles/AllianceDB.dir/util/generic_task_queue.cpp.o"
 
 # External object files for target AllianceDB
 AllianceDB_EXTERNAL_OBJECTS =
 
 AllianceDB: CMakeFiles/AllianceDB.dir/main.cpp.o
+AllianceDB: CMakeFiles/AllianceDB.dir/affinity/cpu_mapping.cpp.o
+AllianceDB: CMakeFiles/AllianceDB.dir/util/memalloc.cpp.o
+AllianceDB: CMakeFiles/AllianceDB.dir/util/numa_shuffle.cpp.o
+AllianceDB: CMakeFiles/AllianceDB.dir/joins/joincommon.cpp.o
+AllianceDB: CMakeFiles/AllianceDB.dir/util/generic_task_queue.cpp.o
 AllianceDB: CMakeFiles/AllianceDB.dir/build.make
 AllianceDB: CMakeFiles/AllianceDB.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/shuhaozhang/ClionProjects/AllianceDB/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable AllianceDB"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/shuhaozhang/ClionProjects/AllianceDB/cmake-build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Linking CXX executable AllianceDB"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/AllianceDB.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -100,6 +230,11 @@ CMakeFiles/AllianceDB.dir/build: AllianceDB
 .PHONY : CMakeFiles/AllianceDB.dir/build
 
 CMakeFiles/AllianceDB.dir/requires: CMakeFiles/AllianceDB.dir/main.cpp.o.requires
+CMakeFiles/AllianceDB.dir/requires: CMakeFiles/AllianceDB.dir/affinity/cpu_mapping.cpp.o.requires
+CMakeFiles/AllianceDB.dir/requires: CMakeFiles/AllianceDB.dir/util/memalloc.cpp.o.requires
+CMakeFiles/AllianceDB.dir/requires: CMakeFiles/AllianceDB.dir/util/numa_shuffle.cpp.o.requires
+CMakeFiles/AllianceDB.dir/requires: CMakeFiles/AllianceDB.dir/joins/joincommon.cpp.o.requires
+CMakeFiles/AllianceDB.dir/requires: CMakeFiles/AllianceDB.dir/util/generic_task_queue.cpp.o.requires
 
 .PHONY : CMakeFiles/AllianceDB.dir/requires
 

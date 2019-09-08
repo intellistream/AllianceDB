@@ -123,6 +123,60 @@ AllianceDB/fast:
 	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/build
 .PHONY : AllianceDB/fast
 
+affinity/cpu_mapping.o: affinity/cpu_mapping.cpp.o
+
+.PHONY : affinity/cpu_mapping.o
+
+# target to build an object file
+affinity/cpu_mapping.cpp.o:
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/affinity/cpu_mapping.cpp.o
+.PHONY : affinity/cpu_mapping.cpp.o
+
+affinity/cpu_mapping.i: affinity/cpu_mapping.cpp.i
+
+.PHONY : affinity/cpu_mapping.i
+
+# target to preprocess a source file
+affinity/cpu_mapping.cpp.i:
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/affinity/cpu_mapping.cpp.i
+.PHONY : affinity/cpu_mapping.cpp.i
+
+affinity/cpu_mapping.s: affinity/cpu_mapping.cpp.s
+
+.PHONY : affinity/cpu_mapping.s
+
+# target to generate assembly for a file
+affinity/cpu_mapping.cpp.s:
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/affinity/cpu_mapping.cpp.s
+.PHONY : affinity/cpu_mapping.cpp.s
+
+joins/joincommon.o: joins/joincommon.cpp.o
+
+.PHONY : joins/joincommon.o
+
+# target to build an object file
+joins/joincommon.cpp.o:
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/joins/joincommon.cpp.o
+.PHONY : joins/joincommon.cpp.o
+
+joins/joincommon.i: joins/joincommon.cpp.i
+
+.PHONY : joins/joincommon.i
+
+# target to preprocess a source file
+joins/joincommon.cpp.i:
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/joins/joincommon.cpp.i
+.PHONY : joins/joincommon.cpp.i
+
+joins/joincommon.s: joins/joincommon.cpp.s
+
+.PHONY : joins/joincommon.s
+
+# target to generate assembly for a file
+joins/joincommon.cpp.s:
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/joins/joincommon.cpp.s
+.PHONY : joins/joincommon.cpp.s
+
 main.o: main.cpp.o
 
 .PHONY : main.o
@@ -150,6 +204,87 @@ main.cpp.s:
 	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/main.cpp.s
 .PHONY : main.cpp.s
 
+util/generic_task_queue.o: util/generic_task_queue.cpp.o
+
+.PHONY : util/generic_task_queue.o
+
+# target to build an object file
+util/generic_task_queue.cpp.o:
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/util/generic_task_queue.cpp.o
+.PHONY : util/generic_task_queue.cpp.o
+
+util/generic_task_queue.i: util/generic_task_queue.cpp.i
+
+.PHONY : util/generic_task_queue.i
+
+# target to preprocess a source file
+util/generic_task_queue.cpp.i:
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/util/generic_task_queue.cpp.i
+.PHONY : util/generic_task_queue.cpp.i
+
+util/generic_task_queue.s: util/generic_task_queue.cpp.s
+
+.PHONY : util/generic_task_queue.s
+
+# target to generate assembly for a file
+util/generic_task_queue.cpp.s:
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/util/generic_task_queue.cpp.s
+.PHONY : util/generic_task_queue.cpp.s
+
+util/memalloc.o: util/memalloc.cpp.o
+
+.PHONY : util/memalloc.o
+
+# target to build an object file
+util/memalloc.cpp.o:
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/util/memalloc.cpp.o
+.PHONY : util/memalloc.cpp.o
+
+util/memalloc.i: util/memalloc.cpp.i
+
+.PHONY : util/memalloc.i
+
+# target to preprocess a source file
+util/memalloc.cpp.i:
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/util/memalloc.cpp.i
+.PHONY : util/memalloc.cpp.i
+
+util/memalloc.s: util/memalloc.cpp.s
+
+.PHONY : util/memalloc.s
+
+# target to generate assembly for a file
+util/memalloc.cpp.s:
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/util/memalloc.cpp.s
+.PHONY : util/memalloc.cpp.s
+
+util/numa_shuffle.o: util/numa_shuffle.cpp.o
+
+.PHONY : util/numa_shuffle.o
+
+# target to build an object file
+util/numa_shuffle.cpp.o:
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/util/numa_shuffle.cpp.o
+.PHONY : util/numa_shuffle.cpp.o
+
+util/numa_shuffle.i: util/numa_shuffle.cpp.i
+
+.PHONY : util/numa_shuffle.i
+
+# target to preprocess a source file
+util/numa_shuffle.cpp.i:
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/util/numa_shuffle.cpp.i
+.PHONY : util/numa_shuffle.cpp.i
+
+util/numa_shuffle.s: util/numa_shuffle.cpp.s
+
+.PHONY : util/numa_shuffle.s
+
+# target to generate assembly for a file
+util/numa_shuffle.cpp.s:
+	$(MAKE) -f CMakeFiles/AllianceDB.dir/build.make CMakeFiles/AllianceDB.dir/util/numa_shuffle.cpp.s
+.PHONY : util/numa_shuffle.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -159,9 +294,24 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... AllianceDB"
+	@echo "... affinity/cpu_mapping.o"
+	@echo "... affinity/cpu_mapping.i"
+	@echo "... affinity/cpu_mapping.s"
+	@echo "... joins/joincommon.o"
+	@echo "... joins/joincommon.i"
+	@echo "... joins/joincommon.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
+	@echo "... util/generic_task_queue.o"
+	@echo "... util/generic_task_queue.i"
+	@echo "... util/generic_task_queue.s"
+	@echo "... util/memalloc.o"
+	@echo "... util/memalloc.i"
+	@echo "... util/memalloc.s"
+	@echo "... util/numa_shuffle.o"
+	@echo "... util/numa_shuffle.i"
+	@echo "... util/numa_shuffle.s"
 .PHONY : help
 
 

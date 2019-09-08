@@ -82,7 +82,67 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="/Users/shuhaozhang/ClionProjects/AllianceDB/affinity/affinity.h">
+			<Option target="AllianceDB"/>
+		</Unit>
+		<Unit filename="/Users/shuhaozhang/ClionProjects/AllianceDB/affinity/cpu_mapping.cpp">
+			<Option target="AllianceDB"/>
+		</Unit>
+		<Unit filename="/Users/shuhaozhang/ClionProjects/AllianceDB/affinity/cpu_mapping.h">
+			<Option target="AllianceDB"/>
+		</Unit>
+		<Unit filename="/Users/shuhaozhang/ClionProjects/AllianceDB/datagen/generator.h">
+			<Option target="AllianceDB"/>
+		</Unit>
+		<Unit filename="/Users/shuhaozhang/ClionProjects/AllianceDB/joins/joincommon.cpp">
+			<Option target="AllianceDB"/>
+		</Unit>
+		<Unit filename="/Users/shuhaozhang/ClionProjects/AllianceDB/joins/joincommon.h">
+			<Option target="AllianceDB"/>
+		</Unit>
+		<Unit filename="/Users/shuhaozhang/ClionProjects/AllianceDB/joins/sortmergejoin_mpsm.h">
+			<Option target="AllianceDB"/>
+		</Unit>
+		<Unit filename="/Users/shuhaozhang/ClionProjects/AllianceDB/joins/sortmergejoin_multipass.h">
+			<Option target="AllianceDB"/>
+		</Unit>
+		<Unit filename="/Users/shuhaozhang/ClionProjects/AllianceDB/joins/sortmergejoin_multiway.h">
+			<Option target="AllianceDB"/>
+		</Unit>
+		<Unit filename="/Users/shuhaozhang/ClionProjects/AllianceDB/joins/sortmergejoin_multiway_skewhandling.h">
+			<Option target="AllianceDB"/>
+		</Unit>
 		<Unit filename="/Users/shuhaozhang/ClionProjects/AllianceDB/main.cpp">
+			<Option target="AllianceDB"/>
+		</Unit>
+		<Unit filename="/Users/shuhaozhang/ClionProjects/AllianceDB/util/barrier.h">
+			<Option target="AllianceDB"/>
+		</Unit>
+		<Unit filename="/Users/shuhaozhang/ClionProjects/AllianceDB/util/config.h">
+			<Option target="AllianceDB"/>
+		</Unit>
+		<Unit filename="/Users/shuhaozhang/ClionProjects/AllianceDB/util/generic_task_queue.cpp">
+			<Option target="AllianceDB"/>
+		</Unit>
+		<Unit filename="/Users/shuhaozhang/ClionProjects/AllianceDB/util/generic_task_queue.h">
+			<Option target="AllianceDB"/>
+		</Unit>
+		<Unit filename="/Users/shuhaozhang/ClionProjects/AllianceDB/util/memalloc.cpp">
+			<Option target="AllianceDB"/>
+		</Unit>
+		<Unit filename="/Users/shuhaozhang/ClionProjects/AllianceDB/util/memalloc.h">
+			<Option target="AllianceDB"/>
+		</Unit>
+		<Unit filename="/Users/shuhaozhang/ClionProjects/AllianceDB/util/numa_shuffle.cpp">
+			<Option target="AllianceDB"/>
+		</Unit>
+		<Unit filename="/Users/shuhaozhang/ClionProjects/AllianceDB/util/numa_shuffle.h">
+			<Option target="AllianceDB"/>
+		</Unit>
+		<Unit filename="/Users/shuhaozhang/ClionProjects/AllianceDB/util/params.h">
+			<Option target="AllianceDB"/>
+		</Unit>
+		<Unit filename="/Users/shuhaozhang/ClionProjects/AllianceDB/util/types.h">
 			<Option target="AllianceDB"/>
 		</Unit>
 		<Unit filename="/Users/shuhaozhang/ClionProjects/AllianceDB/CMakeLists.txt">
