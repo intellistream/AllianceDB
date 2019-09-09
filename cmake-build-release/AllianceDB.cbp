@@ -127,6 +127,9 @@
 		<Unit filename="/Users/shuhaozhang/ClionProjects/AllianceDB/util/generic_task_queue.h">
 			<Option target="AllianceDB"/>
 		</Unit>
+		<Unit filename="/Users/shuhaozhang/ClionProjects/AllianceDB/util/lock.h">
+			<Option target="AllianceDB"/>
+		</Unit>
 		<Unit filename="/Users/shuhaozhang/ClionProjects/AllianceDB/util/memalloc.cpp">
 			<Option target="AllianceDB"/>
 		</Unit>

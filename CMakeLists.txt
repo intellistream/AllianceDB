@@ -9,4 +9,4 @@ add_executable(AllianceDB main.cpp util/types.h
         datagen/generator.h
         util/memalloc.cpp util/memalloc.h util/params.h
         util/numa_shuffle.cpp util/numa_shuffle.h joins/joincommon.cpp joins/joincommon.h
-        util/generic_task_queue.cpp util/generic_task_queue.h util/barrier.h)
+        util/generic_task_queue.cpp util/generic_task_queue.h util/barrier.h util/lock.h)

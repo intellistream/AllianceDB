@@ -78,8 +78,7 @@ sortmergejoin_initrun(relation_t * relR, relation_t * relS, joinconfig_t * joinc
                       void * (*jointhread)(void *));
 
 /** Print out timing stats for the given start and end timestamps */
-void
-print_timing(uint64_t numtuples, struct timeval * start, struct timeval * end,
+void print_timing(uint64_t numtuples, struct timeval * start, struct timeval * end,
              FILE * out);
 
 /**
@@ -175,5 +174,7 @@ struct relationpair_t {
     relation_t R;
     relation_t S;
 };
+
+
 
 #endif //ALLIANCEDB_JOINCOMMON_H

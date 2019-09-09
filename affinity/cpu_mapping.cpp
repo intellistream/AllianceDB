@@ -1,13 +1,15 @@
-//
-// Created by Shuhao Zhang on 8/9/19.
-//
-
 #include <stdio.h>  /* FILE, fopen */
 #include <stdlib.h> /* exit, perror */
 #include <unistd.h> /* sysconf */
 #include <assert.h> /* assert() */
 
-#include "cpu_mapping.h"/* HAVE_LIBNUMA */
+#include "../util/config.h" /* HAVE_LIBNUMA */
+
+#ifdef HAVE_NUMA
+#include <numa.h>   /* for automatic NUMA-mappings */
+#endif
+
+#include "cpu_mapping.h"
 
 /** \internal
  * @{
@@ -77,7 +79,6 @@ init_mappings_from_file()
     return 0;
 }
 
-
 /**
  * Initialize NUMA-topology with libnuma.
  */
@@ -99,7 +100,10 @@ numa_default_init()
             numa[0][i] = i;
     }
 }
-static void numa_init() {
+
+static void
+numa_init()
+{
 #ifdef HAVE_NUMA
     int i, k, ncpus, j;
 	struct bitmask *cpus;
@@ -152,18 +156,34 @@ static void numa_init() {
 #endif
 }
 
+void
+cpu_mapping_cleanup()
+{
+    for (int i = 0; i < numnodes ; i++) {
+        free(numa[i]);
+        free(numaactive[i]);
+    }
+    free(numa);
+    free(numaactive);
+    free(numaactivecount);
+}
+
+
+/** @} */
+
 /**
  *  Try custom cpu mapping file first, if does not exist then round-robin
  *  initialization among available CPUs reported by the system.
  */
 void
-cpu_mapping_init() {
-    max_cpus = sysconf(_SC_NPROCESSORS_ONLN);
-    if (init_mappings_from_file() == 0) {
+cpu_mapping_init()
+{
+    max_cpus  = sysconf(_SC_NPROCESSORS_ONLN);
+    if( init_mappings_from_file() == 0 ) {
         int i;
 
         max_threads = max_cpus;
-        for (i = 0; i < max_cpus; i++) {
+        for(i = 0; i < max_cpus; i++){
             cpumapping[i] = i;
         }
     }
@@ -172,3 +192,183 @@ cpu_mapping_init() {
     inited = 1;
 }
 
+void
+numa_thread_mark_active(int phytid)
+{
+    int numaregionid = -1;
+    for(int i = 0; i < numnodes; i++){
+        for(int j = 0; j < thrpernuma; j++){
+            if(numa[i][j] == phytid){
+                numaregionid = i;
+                break;
+            }
+        }
+        if(numaregionid != -1)
+            break;
+    }
+
+    int thridx = -1;
+    for(int i = 0; i < numnodes; i++){
+        for(int j = 0; j < thrpernuma; j++){
+            if(numa[i][j] == phytid){
+                thridx = j;
+                break;
+            }
+        }
+        if(thridx != -1)
+            break;
+    }
+
+    if(numaactive[numaregionid][thridx] == 0){
+        numaactive[numaregionid][thridx] = 1;
+        numaactivecount[numaregionid] ++;
+    }
+}
+
+/**
+ * Returns SMT aware logical to physical CPU mapping for a given logical thr-id.
+ */
+int
+get_cpu_id(int thread_id)
+{
+    if(!inited){
+        cpu_mapping_init();
+        //inited = 1;
+#if 0
+        printf("\n------ Thread mappings -----\n");
+        for(int t = 0; t < max_threads; t++){
+            printf("Thread-%d --> CPU[%d] \n", t, get_cpu_id(t));
+        }
+
+
+        for(int n = 0; n < numnodes; n++){
+            printf("NUMA-%d : ", n);
+            for(int t = 0; t < thrpernuma; t++){
+                printf("numa[%d][%d]=%d, ", n, t, numa[n][t]);
+            }
+            printf("\n");
+        }
+
+#ifdef HAVE_NUMA
+        printf("------ NUMA-1D-mapping of logical threads -----\n");
+        for(int n = 0; n < max_threads; n++){
+            printf("numa1d[%d]=%d, ", n, numamap1d[n]);
+        }
+        printf("\n");
+#endif
+
+#endif
+    }
+
+    return cpumapping[thread_id % max_threads];
+}
+
+/**
+ * Topology of Intel E5-4640 used in our experiments.
+ node 0 cpus: 0 4 8 12 16 20 24 28 32 36 40 44 48 52 56 60
+ node 1 cpus: 1 5 9 13 17 21 25 29 33 37 41 45 49 53 57 61
+ node 2 cpus: 2 6 10 14 18 22 26 30 34 38 42 46 50 54 58 62
+ node 3 cpus: 3 7 11 15 19 23 27 31 35 39 43 47 51 55 59 63
+*/
+/*
+static int numa[][16] = {
+    {0, 4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48, 52, 56, 60},
+    {1, 5, 9, 13, 17, 21, 25, 29, 33, 37, 41, 45, 49, 53, 57, 61},
+    {2, 6, 10, 14, 18, 22, 26, 30, 34, 38, 42, 46, 50, 54, 58, 62},
+    {3, 7, 11, 15, 19, 23, 27, 31, 35, 39, 43, 47, 51, 55, 59, 63} };
+*/
+
+int
+is_first_thread_in_numa_region(int logicaltid)
+{
+    int phytid = get_cpu_id(logicaltid);
+    int ret = 0;
+    for(int i = 0; i < numnodes; i++)
+    {
+        int j = 0;
+        while(j < thrpernuma && !numaactive[i][j])
+            j++;
+        if(j < thrpernuma)
+            ret = ret || (phytid == numa[i][j]);
+    }
+
+    return ret;
+}
+
+int
+get_thread_index_in_numa(int logicaltid)
+{
+    int ret = -1;
+    int phytid = get_cpu_id(logicaltid);
+
+    for(int i = 0; i < numnodes; i++){
+        int active_idx = 0;
+        for(int j = 0; j < thrpernuma; j++){
+            if(numa[i][j] == phytid){
+                assert(numaactive[i][j]);
+                ret = active_idx;
+                break;
+            }
+
+            if(numaactive[i][j])
+                active_idx ++;
+        }
+        if(ret != -1)
+            break;
+    }
+
+
+    return ret;
+}
+
+int
+get_numa_region_id(int logicaltid)
+{
+    int ret = -1;
+    int phytid = get_cpu_id(logicaltid);
+
+    for(int i = 0; i < numnodes; i++){
+        for(int j = 0; j < thrpernuma; j++){
+            if(numa[i][j] == phytid){
+                ret = i;
+                break;
+            }
+        }
+        if(ret != -1)
+            break;
+    }
+
+    return ret;
+}
+
+int
+get_num_numa_regions(void)
+{
+    return numnodes;
+}
+
+int
+get_num_active_threads_in_numa(int numaregionid)
+{
+    return numaactivecount[numaregionid];
+}
+
+int
+get_numa_index_of_logical_thread(int logicaltid)
+{
+#ifdef HAVE_NUMA
+    return numamap1d[logicaltid];
+#else
+    return cpumapping[logicaltid];
+#endif
+}
+
+int
+get_logical_thread_at_numa_index(int numaidx)
+{
+#ifdef HAVE_NUMA
+    return numa[numaidx/thrpernuma][numaidx%thrpernuma];
+#else
+    return cpumapping[numaidx];
+#endif
+}
