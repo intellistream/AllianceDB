@@ -8,9 +8,8 @@
  * (c) 2012, ETH Zurich, Systems Group
  *
  */
-#ifndef ALLIANCEDB_GENERIC_TASK_QUEUE_H
-#define ALLIANCEDB_GENERIC_TASK_QUEUE_H
-
+#ifndef GENERIC_TASK_QUEUE_H
+#define GENERIC_TASK_QUEUE_H
 
 /**
  * @defgroup GenericTaskQueue Generic Task Queue Implementation
@@ -45,4 +44,4 @@ taskqueue_free(taskqueue_t * tq);
 
 /** @} */
 
-#endif //ALLIANCEDB_GENERIC_TASK_QUEUE_H
+#endif /* GENERIC_TASK_QUEUE_H */

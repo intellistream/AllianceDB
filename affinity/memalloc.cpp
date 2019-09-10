@@ -8,7 +8,7 @@
 #endif
 
 #include "memalloc.h"
-#include "params.h"  /* parameters, macro defs. */
+#include "../util/params.h"  /* parameters, macro defs. */
 
 void *
 malloc_aligned(size_t size)

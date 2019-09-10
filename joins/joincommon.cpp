@@ -20,7 +20,7 @@
 #include "joincommon.h"
 #include "../affinity/cpu_mapping.h"        /* get_cpu_id() */
 #include "../affinity/affinity.h"           /* CPU_SET, CPU_ZERO */
-#include "../util/memalloc.h"           /* malloc_aligned() */
+#include "../affinity/memalloc.h"           /* malloc_aligned() */
 
 #ifdef JOIN_MATERIALIZE
 #include "tuple_buffer.h"

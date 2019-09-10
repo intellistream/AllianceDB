@@ -328,9 +328,9 @@ $ cat cpu-mapping.txt
 #include "affinity/cpu_mapping.h"        /* cpu_mapping_cleanup() */
 #include "util/types.h"
 #include "datagen/generator.h"
-#include "util/memalloc.h"           /* malloc_aligned() */
+#include "affinity/memalloc.h"           /* malloc_aligned() */
 #include "util/params.h"             /* macro parameters */
-#include "util/numa_shuffle.h"       /* numa_shuffle_init() */
+#include "affinity/numa_shuffle.h"       /* numa_shuffle_init() */
 
 /**************** include join algorithm thread implementations ***************/
 #include "joins/sortmergejoin_multipass.h"
