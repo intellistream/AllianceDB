@@ -468,11 +468,11 @@ main(int argc, char *argv[])
     cmdparam_t cmd_params;
 
     /* Default values if not specified on command line */
-    cmd_params.algo     = &algos[0]; /* m-pass: sort-merge join with multi-pass merge */
+    cmd_params.algo = &algos[1]; /* m-pass: sort-merge join with multi-pass merge */
     cmd_params.nthreads = 2;
     /* default dataset is Workload B (described in paper) */
-    cmd_params.r_size   = 128000000;
-    cmd_params.s_size   = 128000000;
+    cmd_params.r_size = 12800;
+    cmd_params.s_size = 12800;
     cmd_params.r_seed   = 12345;
     cmd_params.s_seed   = 54321;
     cmd_params.skew     = 0.0;

@@ -6,7 +6,8 @@
 
 /* just make the code compile without AVX support */
 #ifndef HAVE_AVX
-#include "../util/avxintrin_emu.h"
+
+#include "avxintrin_emu.h"
 #endif
 
 /*
