@@ -6,6 +6,8 @@
 #define ALLIANCEDB_NUMA_SHUFFLE_H
 
 #include "types.h" /* enum numa_strategy_t */
+#include "../affinity/cpu_mapping.h" /* get_cpu_id() */
+#include "../datagen/generator.h" /* knuth_shuffle() */
 
 /**
  * \ingroup numa

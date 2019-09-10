@@ -1,7 +1,4 @@
 #include "numa_shuffle.h"
-#include "../affinity/cpu_mapping.h" /* get_cpu_id() */
-#include "../datagen/generator.h" /* knuth_shuffle() */
-
 
 /**
  * Various NUMA shuffling strategies as also described by NUMA-aware

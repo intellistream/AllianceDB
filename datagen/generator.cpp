@@ -1,16 +1,3 @@
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#endif
-
-#include <sched.h>              /* CPU_ZERO, CPU_SET */
-#include <pthread.h>            /* pthread_attr_setaffinity_np */
-#include <stdio.h>              /* perror */
-#include <stdlib.h>             /* RAND_MAX */
-#include <math.h>               /* fmod, pow */
-#include <time.h>               /* time() */
-#include <unistd.h>             /* getpagesize() */
-#include <string.h>             /* memcpy() */
-
 #include "generator.h"
 #include "../affinity/cpu_mapping.h"        /* get_cpu_id() */
 #include "../affinity/affinity.h"           /* pthread_attr_setaffinity_np */
@@ -18,7 +5,6 @@
 #include "../util/lock.h"
 #include "../util/barrier.h"
 
-#include <stdint.h>
 //typedef signed long long int int64_t;
 
 /* return a random number in range [0,N] */
@@ -47,10 +33,10 @@ check_seed() {
 }
 
 
-/** 
+/**
  * Shuffle tuples of the relation using Knuth shuffle.
- * 
- * @param relation 
+ *
+ * @param relation
  */
 void
 knuth_shuffle(relation_t *relation) {
@@ -262,7 +248,7 @@ parallel_create_relation(relation_t *relation, uint64_t num_tuples,
 
     create_arg_t args[nthreads];
     pthread_t tid[nthreads];
-    cpu_set_t set;
+    int set;
     pthread_attr_t attr;
     pthread_barrier_t barrier;
 
@@ -298,7 +284,7 @@ parallel_create_relation(relation_t *relation, uint64_t num_tuples,
 
         CPU_ZERO(&set);
         CPU_SET(cpu_idx, &set);
-        pthread_attr_setaffinity_np(&attr, sizeof(cpu_set_t), &set);
+        pthread_attr_setaffinity_np(&attr, sizeof(int), &set);
 
         args[i].firstkey = (offset + 1) % maxid;
         args[i].maxid = maxid;
@@ -348,7 +334,7 @@ numa_localize(tuple_t *relation, int64_t num_tuples, uint32_t nthreads) {
     /* we need aligned allocation of items */
     create_arg_t args[nthreads];
     pthread_t tid[nthreads];
-    cpu_set_t set;
+    int set;
     pthread_attr_t attr;
 
     unsigned int pagesize;
@@ -370,7 +356,7 @@ numa_localize(tuple_t *relation, int64_t num_tuples, uint32_t nthreads) {
 
         CPU_ZERO(&set);
         CPU_SET(cpu_idx, &set);
-        pthread_attr_setaffinity_np(&attr, sizeof(cpu_set_t), &set);
+        pthread_attr_setaffinity_np(&attr, sizeof(int), &set);
 
         args[i].firstkey = offset + 1;
         args[i].rel.tuples = relation + offset;

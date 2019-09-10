@@ -454,7 +454,7 @@ main(int argc, char *argv[])
     relation_t relS;
 
     /* start initially on CPU-0 */
-    cpu_set_t set;
+    int set;
     CPU_ZERO(&set);
     CPU_SET(0, &set);
     if (sched_setaffinity(0, sizeof(set), &set) <0) {

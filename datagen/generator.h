@@ -15,6 +15,16 @@
 
 #include "../util/types.h" /* relation_t, tuple_t */
 
+#include <sched.h>              /* CPU_ZERO, CPU_SET */
+#include <pthread.h>            /* pthread_attr_setaffinity_np */
+#include <stdio.h>              /* perror */
+#include <stdlib.h>             /* RAND_MAX */
+#include <math.h>               /* fmod, pow */
+#include <time.h>               /* time() */
+#include <unistd.h>             /* getpagesize() */
+#include <string.h>             /* memcpy() */
+#include <stdint.h>
+
 /** 
  * @defgroup DataGeneration Data Set Generation
  *
@@ -94,8 +104,7 @@ parallel_create_relation_fk(relation_t *reln, int64_t ntuples,
  * will be numa local to threads. Just initialize memory to 0 for
  * making sure it will be allocated numa-local.
  */
-int 
-numa_localize(tuple_t * relation, int64_t num_tuples, uint32_t nthreads);
+int numa_localize(tuple_t * relation, int64_t num_tuples, uint32_t nthreads);
 
 /**
  * Write relation to a file.
@@ -103,12 +112,12 @@ numa_localize(tuple_t * relation, int64_t num_tuples, uint32_t nthreads);
 void
 write_relation(relation_t * rel, char * filename);
 
-/** 
+/**
  * Shuffle tuples of the relation using Knuth shuffle.
- * 
- * @param relation 
+ *
+ * @param relation
  */
-void 
+void
 knuth_shuffle(relation_t * relation);
 
 /** @} */

@@ -15,6 +15,7 @@
 #include <math.h>
 
 #include "genzipf.h"
+#include "../util/types.h"
 
 /**
  * Create an alphabet, an array of size @a size with randomly
@@ -94,8 +95,7 @@ gen_zipf_lut (double zipf_factor, unsigned int alphabet_size)
 /**
  * Generate a stream with Zipf-distributed content.
  */
-item_t *
-gen_zipf (unsigned int stream_size,
+item_t * gen_zipf (unsigned int stream_size,
           unsigned int alphabet_size,
           double zipf_factor,
           item_t ** output)

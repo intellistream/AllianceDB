@@ -27,13 +27,11 @@
 #define pthread_attr_setaffinity_np(ATTR, SZ, PTR) setaffinity(ATTR, SZ, PTR)
 #define sched_setaffinity(A, SZ, PTR) setaffinity(A, SZ, PTR)
 
-typedef int cpu_set_t;
-
 static int 
-setaffinity(pthread_attr_t *attr, size_t cpusetsize, const cpu_set_t *cpuset);
+setaffinity(pthread_attr_t *attr, size_t cpusetsize, const int *cpuset);
 
 int 
-setaffinity(pthread_attr_t *attr, size_t cpusetsize, const cpu_set_t *cpuset)
+setaffinity(pthread_attr_t *attr, size_t cpusetsize, const int *cpuset)
 {
     /* Not implemented */
     /*

@@ -39,7 +39,7 @@ sortmergejoin_initrun(relation_t * relR,relation_t * relS, joinconfig_t * joincf
     pthread_t tid[nthreads];
     pthread_attr_t attr;
     pthread_barrier_t barrier;
-    cpu_set_t set;
+    int set;
     arg_t args[nthreads];
 
     int32_t numperthr[2];
@@ -130,7 +130,7 @@ sortmergejoin_initrun(relation_t * relR,relation_t * relS, joinconfig_t * joincf
 
         CPU_ZERO(&set);
         CPU_SET(cpu_idx, &set);
-        pthread_attr_setaffinity_np(&attr, sizeof(cpu_set_t), &set);
+        pthread_attr_setaffinity_np(&attr, sizeof(int), &set);
 
         args[i].relR = relR->tuples + i * (numperthr[0]);
         args[i].relS = relS->tuples + i * (numperthr[1]);
