@@ -346,7 +346,7 @@ $ cat cpu-mapping.txt
 #include "perf_counters.h"      /* PCM_x */
 #endif
 
-#include "util/config.h"          /* autoconf header */
+#include "config.h"          /* autoconf header */
 
 /** Debug msg logging method */
 #ifdef DEBUG

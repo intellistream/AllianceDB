@@ -15,7 +15,7 @@
 #define AFFINITY_H
 
 #include <pthread.h>         /* pthread_* */
-#include "../util/config.h"          /* HAVE_PTHREAD_ATTR_SETAFFINITY_NP */
+#include "../config.h"          /* HAVE_PTHREAD_ATTR_SETAFFINITY_NP */
 
 #ifndef HAVE_PTHREAD_ATTR_SETAFFINITY_NP
 

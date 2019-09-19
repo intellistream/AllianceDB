@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
+    <generated>
+      <config projectName="AllianceDB" targetName="sorting" />
+    </generated>
+  </component>
+  <component name="CMakeSettings" AUTO_RELOAD="true">
+    <configurations>
+      <configuration PROFILE_NAME="Debug" CONFIG_NAME="Debug" />
+    </configurations>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="6e894042-b970-4786-b136-72bfef1ebb12" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/../hashing/.Makefile.swp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../hashing/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../hashing/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../hashing/.idea/hashing.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../hashing/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../hashing/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../hashing/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../hashing/AllianceDB.cbp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../hashing/CMakeCache.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../hashing/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../hashing/FindNuma.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../hashing/Makefile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../hashing/affinity.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../hashing/barrier.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../hashing/cmake_install.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../hashing/config.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../hashing/cpu_mapping.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../hashing/cpu_mapping.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../hashing/generator.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../hashing/generator.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../hashing/genzipf.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../hashing/genzipf.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../hashing/hash_main.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../hashing/hashing" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../hashing/lock.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../hashing/main.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../hashing/no_partitioning_join.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../hashing/no_partitioning_join.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../hashing/npj_params.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../hashing/npj_types.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../hashing/parallel_radix_join.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../hashing/parallel_radix_join.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../hashing/perf_counters.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../hashing/perf_counters.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../hashing/prj_params.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../hashing/rdtsc.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../hashing/task_queue.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../hashing/types.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/.name" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/sorting.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/affinity/affinity.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/affinity/cpu_mapping.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/affinity/cpu_mapping.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/affinity/memalloc.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/affinity/memalloc.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/affinity/numa_shuffle.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/affinity/numa_shuffle.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/sorting.dir/CXX.includecache" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/sorting.dir/affinity/cpu_mapping.cpp.o" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/sorting.dir/affinity/memalloc.cpp.o" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/sorting.dir/affinity/numa_shuffle.cpp.o" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/sorting.dir/datagen/generator.cpp.o" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/sorting.dir/datagen/genzipf.cpp.o" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/sorting.dir/depend.internal" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/sorting.dir/joins/avx_multiwaymerge.cpp.o" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/sorting.dir/joins/avxsort.cpp.o" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/sorting.dir/joins/avxsort_multiway.cpp.o" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/sorting.dir/joins/joincommon.cpp.o" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/sorting.dir/joins/merge.cpp.o" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/sorting.dir/joins/partition.cpp.o" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/sorting.dir/joins/scalar_multiwaymerge.cpp.o" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/sorting.dir/joins/scalarsort.cpp.o" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/sorting.dir/joins/sortmergejoin_mpsm.cpp.o" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/sorting.dir/joins/sortmergejoin_multipass.cpp.o" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/sorting.dir/joins/sortmergejoin_multiway.cpp.o" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/sorting.dir/joins/sortmergejoin_multiway_skewhandling.cpp.o" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/sorting.dir/main.cpp.o" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/sorting.dir/util/generic_task_queue.cpp.o" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/sorting" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/config.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/datagen/generator.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/datagen/generator.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/datagen/genzipf.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/datagen/genzipf.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/joins/avx_multiwaymerge.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/joins/avx_multiwaymerge.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/joins/avxcommon.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/joins/avxintrin_emu.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/joins/avxsort.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/joins/avxsort.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/joins/avxsort_core.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/joins/avxsort_multiway.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/joins/avxsort_multiway.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/joins/joincommon.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/joins/joincommon.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/joins/merge.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/joins/merge.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/joins/partition.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/joins/partition.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/joins/scalar_multiwaymerge.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/joins/scalar_multiwaymerge.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/joins/scalarsort.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/joins/scalarsort.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/joins/sortmergejoin_mpsm.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/joins/sortmergejoin_mpsm.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/joins/sortmergejoin_multipass.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/joins/sortmergejoin_multipass.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/joins/sortmergejoin_multiway.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/joins/sortmergejoin_multiway.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/joins/sortmergejoin_multiway_skewhandling.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/joins/sortmergejoin_multiway_skewhandling.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/main.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/util/barrier.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/util/generic_task_queue.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/util/generic_task_queue.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/util/lock.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/util/params.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/util/rdtsc.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/util/types.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CMakeLists.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/affinity/affinity.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/affinity/cpu_mapping.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/affinity/cpu_mapping.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/affinity/memalloc.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/affinity/memalloc.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/affinity/numa_shuffle.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/affinity/numa_shuffle.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/datagen/generator.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/datagen/generator.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/datagen/genzipf.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/datagen/genzipf.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/joins/avx_multiwaymerge.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/joins/avx_multiwaymerge.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/joins/avxcommon.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/joins/avxintrin_emu.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/joins/avxsort.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/joins/avxsort.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/joins/avxsort_core.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/joins/avxsort_multiway.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/joins/avxsort_multiway.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/joins/joincommon.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/joins/joincommon.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/joins/merge.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/joins/merge.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/joins/partition.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/joins/partition.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/joins/scalar_multiwaymerge.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/joins/scalar_multiwaymerge.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/joins/scalarsort.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/joins/scalarsort.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/joins/sortmergejoin_mpsm.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/joins/sortmergejoin_mpsm.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/joins/sortmergejoin_multipass.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/joins/sortmergejoin_multipass.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/joins/sortmergejoin_multiway.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/joins/sortmergejoin_multiway.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/joins/sortmergejoin_multiway_skewhandling.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/joins/sortmergejoin_multiway_skewhandling.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/main.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/util/barrier.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/util/config.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/util/generic_task_queue.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/util/generic_task_queue.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/util/lock.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/util/params.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/util/rdtsc.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sort-based/util/types.h" beforeDir="false" />
+    </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectId" id="1R3Xrc1wo9YJ3WoyjsBhIsO4eJ2" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager">
+    <configuration name="sorting" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="AllianceDB" TARGET_NAME="sorting" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="AllianceDB" RUN_TARGET_NAME="sorting">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="6e894042-b970-4786-b136-72bfef1ebb12" name="Default Changelist" comment="" />
+      <created>1568896952838</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1568896952838</updated>
+      <workItem from="1568896954158" duration="2149000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

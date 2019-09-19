@@ -3,7 +3,7 @@
 #include <unistd.h> /* sysconf */
 #include <assert.h> /* assert() */
 
-#include "../util/config.h" /* HAVE_LIBNUMA */
+#include "../config.h" /* HAVE_LIBNUMA */
 
 #ifdef HAVE_NUMA
 #include <numa.h>   /* for automatic NUMA-mappings */
