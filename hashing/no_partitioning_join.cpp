@@ -420,7 +420,7 @@ NPO_st(relation_t *relR, relation_t *relS, int nthreads)
  * Writes to buckets are synchronized via latches.
  *
  * @param ht hastable to be built
- * @param rel the build relation
+ * @param rel the build relationO
  * @param overflowbuf pre-allocated chunk of buckets for overflow use.
  */
 void
