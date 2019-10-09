@@ -13,7 +13,7 @@
 #ifndef PARALLEL_RADIX_JOIN_H
 #define PARALLEL_RADIX_JOIN_H
 
-#include "types.h" /* relation_t */
+#include "../utils/types.h" /* relation_t */
 
 /**
  * PRO: Parallel Radix Join Optimized.

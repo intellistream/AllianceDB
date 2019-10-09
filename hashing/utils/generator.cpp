@@ -14,10 +14,10 @@
 
 #include "cpu_mapping.h"        /* get_cpu_id() */
 #include "generator.h"          /* create_relation_*() */
-#include "affinity.h"           /* pthread_attr_setaffinity_np */
+//#include "affinity.h"           /* pthread_attr_setaffinity_np */
 #include "genzipf.h"            /* gen_zipf() */
 #include "lock.h"
-#include "prj_params.h"         /* RELATION_PADDING for Parallel Radix */
+#include "../multiple_thread/prj_params.h"         /* RELATION_PADDING for Parallel Radix */
 #include "barrier.h"
 
 /* return a random number in range [0,N] */
@@ -307,7 +307,7 @@ parallel_create_relation(relation_t *relation, uint64_t num_tuples,
 
     create_arg_t args[nthreads];
     pthread_t tid[nthreads];
-    int set;
+    cpu_set_t set;
     pthread_attr_t attr;
     pthread_barrier_t barrier;
 
@@ -414,7 +414,7 @@ numa_localize(tuple_t * relation, int64_t num_tuples, uint32_t nthreads)
     /* we need aligned allocation of items */
     create_arg_t args[nthreads];
     pthread_t tid[nthreads];
-    int set;
+    cpu_set_t set;
     pthread_attr_t attr;
 
     unsigned int pagesize;

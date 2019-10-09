@@ -235,21 +235,22 @@ cpu-mapping.txt
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif
-#include <sched.h>              /* sched_setaffinity */
+
 #include <stdio.h>              /* printf */
 #include <sys/time.h>           /* gettimeofday */
 #include <getopt.h>             /* getopt */
 #include <stdlib.h>             /* exit */
 #include <string.h>             /* strcmp */
 #include <limits.h>             /* INT_MAX */
+#include <sched.h>
 
-#include "no_partitioning_join.h" /* no partitioning joins: NPO, NPO_st */
-#include "parallel_radix_join.h"  /* parallel radix joins: RJ, PRO, PRH, PRHO */
-#include "generator.h"            /* create_relation_xk */
+#include "single_thread/blocking/no_partitioning_join.h" /* no partitioning joins: NPO, NPO_st */
+#include "multiple_thread/parallel_radix_join.h"  /* parallel radix joins: RJ, PRO, PRH, PRHO */
+#include "utils/generator.h"            /* create_relation_xk */
 
-#include "perf_counters.h" /* PCM_x */
-#include "affinity.h"      /* pthread_attr_setaffinity_np & sched_setaffinity */
-#include "config.h"     /* autoconf header */
+#include "utils/perf_counters.h" /* PCM_x */
+//#include "utils/affinity.h"      /* pthread_attr_setaffinity_np & sched_setaffinity */ only for MAC
+#include "utils/config.h"     /* autoconf header */
 
 #ifdef JOIN_RESULT_MATERIALIZE
 #include "tuple_buffer.h"       /* for materialization */
@@ -260,16 +261,19 @@ int getopt(int argc, char * const argv[],
            const char *optstring);
 #endif
 
-typedef struct algo_t  algo_t;
+
+
+typedef struct algo_t algo_t;
 typedef struct param_t param_t;
 
 struct algo_t {
     char name[128];
-    result_t * (*joinAlgo)(relation_t * , relation_t *, int);
+
+    result_t *(*joinAlgo)(relation_t *, relation_t *, int);
 };
 
 struct param_t {
-    algo_t * algo;
+    algo_t *algo;
     uint32_t nthreads;
     uint64_t r_size;
     uint64_t s_size;
@@ -280,30 +284,30 @@ struct param_t {
     int verbose;
     int fullrange_keys;  /* keys covers full int range? */
     int basic_numa;/* alloc input chunks thread local? */
-    char * perfconf;
-    char * perfout;
+    char *perfconf;
+    char *perfout;
     /** if the relations are load from file */
-    char * loadfileR;
-    char * loadfileS;
+    char *loadfileR;
+    char *loadfileS;
 };
 
-extern char * optarg;
-extern int    optind, opterr, optopt;
+extern char *optarg;
+extern int optind, opterr, optopt;
 
 /** An experimental feature to allocate input relations numa-local */
 extern int numalocalize;  /* defined in generator.c */
 extern int nthreads;      /* defined in generator.c */
 
 /** all available algorithms */
-static struct algo_t algos [] =
+static struct algo_t algos[] =
         {
-                {"PRO", PRO},
-                {"RJ", RJ},
-                {"PRH", PRH},
-                {"PRHO", PRHO},
-                {"NPO", NPO},
+                {"PRO",    PRO},
+                {"RJ",     RJ},
+                {"PRH",    PRH},
+                {"PRHO",   PRHO},
+                {"NPO",    NPO},
                 {"NPO_st", NPO_st}, /* NPO single threaded */
-                {{0}, 0}
+                {{0},      0}
         };
 
 /* command line handling functions */
@@ -314,20 +318,19 @@ void
 print_version();
 
 void
-parse_args(int argc, char ** argv, param_t * cmd_params);
+parse_args(int argc, char **argv, param_t *cmd_params);
 
 int
-main(int argc, char ** argv)
-{
+main(int argc, char **argv) {
     relation_t relR;
     relation_t relS;
-    result_t * results;
+    result_t *results;
 
     /* start initially on CPU-0 */
-    int set;
+    cpu_set_t set;
     CPU_ZERO(&set);
     CPU_SET(0, &set);
-    if (sched_setaffinity(0, sizeof(set), &set) <0) {
+    if (sched_setaffinity(0, sizeof(set), &set) < 0) {
         perror("sched_setaffinity");
     }
 
@@ -335,19 +338,19 @@ main(int argc, char ** argv)
     param_t cmd_params;
 
     /* Default values if not specified on command line */
-    cmd_params.algo     = &algos[0]; /* PRO */
+    cmd_params.algo = &algos[2]; /* PRO, RJ, PRH, PRHO, NPO, NPO_st */
     cmd_params.nthreads = 2;
     /* default dataset is Workload B (described in paper) */
-    cmd_params.r_size   = 128000;
-    cmd_params.s_size   = 128000;
-    cmd_params.r_seed   = 12345;
-    cmd_params.s_seed   = 54321;
-    cmd_params.skew     = 0.0;
-    cmd_params.verbose  = 0;
+    cmd_params.r_size = 128000;
+    cmd_params.s_size = 128000;
+    cmd_params.r_seed = 12345;
+    cmd_params.s_seed = 54321;
+    cmd_params.skew = 0.0;
+    cmd_params.verbose = 0;
     cmd_params.perfconf = NULL;
-    cmd_params.perfout  = NULL;
-    cmd_params.nonunique_keys   = 0;
-    cmd_params.fullrange_keys   = 0;
+    cmd_params.perfout = NULL;
+    cmd_params.nonunique_keys = 0;
+    cmd_params.fullrange_keys = 0;
     cmd_params.basic_numa = 0;
     cmd_params.loadfileR = NULL;
     cmd_params.loadfileS = NULL;
@@ -362,8 +365,8 @@ main(int argc, char ** argv)
     /* create relation R */
     fprintf(stdout,
             "[INFO ] %s relation R with size = %.3lf MiB, #tuples = %llu : ",
-            (cmd_params.loadfileS != NULL)?("Loading"):("Creating"),
-            (double) sizeof(tuple_t) * cmd_params.r_size/1024.0/1024.0,
+            (cmd_params.loadfileS != NULL) ? ("Loading") : ("Creating"),
+            (double) sizeof(tuple_t) * cmd_params.r_size / 1024.0 / 1024.0,
             cmd_params.r_size);
     fflush(stdout);
 
@@ -371,19 +374,16 @@ main(int argc, char ** argv)
 
     /* to pass information to the create_relation methods */
     numalocalize = cmd_params.basic_numa;
-    nthreads     = cmd_params.nthreads;
+    nthreads = cmd_params.nthreads;
 
-    if(cmd_params.loadfileR != NULL){
+    if (cmd_params.loadfileR != NULL) {
         /* load relation from file */
         load_relation(&relR, cmd_params.loadfileR, cmd_params.r_size);
-    }
-    else if(cmd_params.fullrange_keys) {
+    } else if (cmd_params.fullrange_keys) {
         create_relation_nonunique(&relR, cmd_params.r_size, INT_MAX);
-    }
-    else if(cmd_params.nonunique_keys) {
+    } else if (cmd_params.nonunique_keys) {
         create_relation_nonunique(&relR, cmd_params.r_size, cmd_params.r_size);
-    }
-    else {
+    } else {
         //create_relation_pk(&relR, cmd_params.r_size);
         parallel_create_relation(&relR, cmd_params.r_size,
                                  nthreads,
@@ -394,33 +394,29 @@ main(int argc, char ** argv)
     /* create relation S */
     fprintf(stdout,
             "[INFO ] %s relation S with size = %.3lf MiB, #tuples = %lld : ",
-            (cmd_params.loadfileS != NULL)?("Loading"):("Creating"),
-            (double) sizeof(tuple_t) * cmd_params.s_size/1024.0/1024.0,
+            (cmd_params.loadfileS != NULL) ? ("Loading") : ("Creating"),
+            (double) sizeof(tuple_t) * cmd_params.s_size / 1024.0 / 1024.0,
             cmd_params.s_size);
     fflush(stdout);
 
     seed_generator(cmd_params.s_seed);
 
-    if(cmd_params.loadfileS != NULL){
+    if (cmd_params.loadfileS != NULL) {
         /* load relation from file */
         load_relation(&relS, cmd_params.loadfileS, cmd_params.s_size);
-    }
-    else if(cmd_params.fullrange_keys) {
+    } else if (cmd_params.fullrange_keys) {
         create_relation_fk_from_pk(&relS, &relR, cmd_params.s_size);
-    }
-    else if(cmd_params.nonunique_keys) {
+    } else if (cmd_params.nonunique_keys) {
         /* use size of R as the maxid */
         create_relation_nonunique(&relS, cmd_params.s_size, cmd_params.r_size);
-    }
-    else {
+    } else {
         /* if r_size == s_size then equal-dataset, else non-equal dataset */
 
-        if(cmd_params.skew > 0){
+        if (cmd_params.skew > 0) {
             /* S is skewed */
             create_relation_zipf(&relS, cmd_params.s_size,
                                  cmd_params.r_size, cmd_params.skew);
-        }
-        else {
+        } else {
             /* S is uniform foreign key */
             //create_relation_fk(&relS, cmd_params.s_size, cmd_params.r_size);
             parallel_create_relation(&relS, cmd_params.s_size,
@@ -429,7 +425,6 @@ main(int argc, char ** argv)
         }
     }
     printf("OK \n");
-
 
     /* Run the selected join algorithm */
     printf("[INFO ] Running join algorithm %s ...\n", cmd_params.algo->name);
@@ -456,8 +451,7 @@ main(int argc, char ** argv)
 
 /* command line handling functions */
 void
-print_help(char * progname)
-{
+print_help(char *progname) {
     printf("Usage: %s [options]\n", progname);
 
     printf("\
@@ -489,27 +483,24 @@ print_help(char * progname)
 }
 
 void
-print_version()
-{
+print_version() {
     printf("\n%s\n", PACKAGE_STRING);
     printf("Copyright (c) 2012, 2013, ETH Zurich, Systems Group.\n");
     printf("http://www.systems.ethz.ch/projects/paralleljoins\n\n");
 }
 
 static char *
-mystrdup (const char *s)
-{
-    char *ss = (char*) malloc (strlen (s) + 1);
+mystrdup(const char *s) {
+    char *ss = (char *) malloc(strlen(s) + 1);
 
     if (ss != NULL)
-        memcpy (ss, s, strlen(s) + 1);
+        memcpy(ss, s, strlen(s) + 1);
 
     return ss;
 }
 
 void
-parse_args(int argc, char ** argv, param_t * cmd_params)
-{
+parse_args(int argc, char **argv, param_t *cmd_params) {
 
     int c, i, found;
     /* Flag set by ‘--verbose’. */
@@ -518,57 +509,57 @@ parse_args(int argc, char ** argv, param_t * cmd_params)
     static int fullrange_flag;
     static int basic_numa;
 
-    while(1) {
+    while (1) {
         static struct option long_options[] =
                 {
                         /* These options set a flag. */
-                        {"verbose",    no_argument,    &verbose_flag,   1},
-                        {"brief",      no_argument,    &verbose_flag,   0},
-                        {"non-unique", no_argument,    &nonunique_flag, 1},
-                        {"full-range", no_argument,    &fullrange_flag, 1},
-                        {"basic-numa", no_argument,    &basic_numa, 1},
-                        {"help",       no_argument,    0, 'h'},
-                        {"version",    no_argument,    0, 'v'},
+                        {"verbose",    no_argument,       &verbose_flag,   1},
+                        {"brief",      no_argument,       &verbose_flag,   0},
+                        {"non-unique", no_argument,       &nonunique_flag, 1},
+                        {"full-range", no_argument,       &fullrange_flag, 1},
+                        {"basic-numa", no_argument,       &basic_numa,     1},
+                        {"help",       no_argument,       0,               'h'},
+                        {"version",    no_argument,       0,               'v'},
                         /* These options don't set a flag.
                            We distinguish them by their indices. */
-                        {"algo",    required_argument, 0, 'a'},
-                        {"nthreads",required_argument, 0, 'n'},
-                        {"perfconf",required_argument, 0, 'p'},
-                        {"r-size",  required_argument, 0, 'r'},
-                        {"s-size",  required_argument, 0, 's'},
-                        {"perfout", required_argument, 0, 'o'},
-                        {"r-seed",  required_argument, 0, 'x'},
-                        {"s-seed",  required_argument, 0, 'y'},
-                        {"skew",    required_argument, 0, 'z'},
-                        {"r-file",  required_argument, 0, 'R'},
-                        {"s-file",  required_argument, 0, 'S'},
-                        {0, 0, 0, 0}
+                        {"algo",       required_argument, 0,               'a'},
+                        {"nthreads",   required_argument, 0,               'n'},
+                        {"perfconf",   required_argument, 0,               'p'},
+                        {"r-size",     required_argument, 0,               'r'},
+                        {"s-size",     required_argument, 0,               's'},
+                        {"perfout",    required_argument, 0,               'o'},
+                        {"r-seed",     required_argument, 0,               'x'},
+                        {"s-seed",     required_argument, 0,               'y'},
+                        {"skew",       required_argument, 0,               'z'},
+                        {"r-file",     required_argument, 0,               'R'},
+                        {"s-file",     required_argument, 0,               'S'},
+                        {0, 0,                            0,               0}
                 };
         /* getopt_long stores the option index here. */
         int option_index = 0;
 
-        c = getopt_long (argc, argv, "a:n:p:r:s:o:x:y:z:R:S:hv",
-                         long_options, &option_index);
+        c = getopt_long(argc, argv, "a:n:p:r:s:o:x:y:z:R:S:hv",
+                        long_options, &option_index);
 
         /* Detect the end of the options. */
         if (c == -1)
             break;
-        switch (c)
-        {
+        switch (c) {
             case 0:
                 /* If this option set a flag, do nothing else now. */
                 if (long_options[option_index].flag != 0)
                     break;
-                printf ("option %s", long_options[option_index].name);
+                printf("option %s", long_options[option_index].name);
                 if (optarg)
-                    printf (" with arg %s", optarg);
-                printf ("\n");
+                    printf(" with arg %s", optarg);
+                printf("\n");
                 break;
 
             case 'a':
-                i = 0; found = 0;
-                while(algos[i].joinAlgo) {
-                    if(strcmp(optarg, algos[i].name) == 0) {
+                i = 0;
+                found = 0;
+                while (algos[i].joinAlgo) {
+                    if (strcmp(optarg, algos[i].name) == 0) {
                         cmd_params->algo = &algos[i];
                         found = 1;
                         break;
@@ -576,7 +567,7 @@ parse_args(int argc, char ** argv, param_t * cmd_params)
                     i++;
                 }
 
-                if(found == 0) {
+                if (found == 0) {
                     printf("[ERROR] Join algorithm named `%s' does not exist!\n",
                            optarg);
                     print_help(argv[0]);
@@ -645,15 +636,15 @@ parse_args(int argc, char ** argv, param_t * cmd_params)
     /*     printf ("verbose flag is set \n"); */
 
     cmd_params->nonunique_keys = nonunique_flag;
-    cmd_params->verbose        = verbose_flag;
+    cmd_params->verbose = verbose_flag;
     cmd_params->fullrange_keys = fullrange_flag;
-    cmd_params->basic_numa     = basic_numa;
+    cmd_params->basic_numa = basic_numa;
 
     /* Print any remaining command line arguments (not options). */
     if (optind < argc) {
-        printf ("non-option arguments: ");
+        printf("non-option arguments: ");
         while (optind < argc)
-            printf ("%s ", argv[optind++]);
-        printf ("\n");
+            printf("%s ", argv[optind++]);
+        printf("\n");
     }
 }

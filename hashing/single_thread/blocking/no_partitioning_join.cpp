@@ -23,16 +23,17 @@
 #include "no_partitioning_join.h"
 #include "npj_params.h"         /* constant parameters */
 #include "npj_types.h"          /* bucket_t, hashtable_t, bucket_buffer_t */
-#include "rdtsc.h"              /* startTimer, stopTimer */
-#include "lock.h"               /* lock, unlock */
-#include "cpu_mapping.h"        /* get_cpu_id */
+#include "../../utils/rdtsc.h"              /* startTimer, stopTimer */
+#include "../../utils/lock.h"               /* lock, unlock */
+#include "../../utils/cpu_mapping.h"        /* get_cpu_id */
 #ifdef PERF_COUNTERS
 #include "perf_counters.h"      /* PCM_x */
 #endif
 
-#include "barrier.h"            /* pthread_barrier_* */
-#include "affinity.h"           /* pthread_attr_setaffinity_np */
-#include "generator.h"          /* numa_localize() */
+#include "../../utils/barrier.h"            /* pthread_barrier_* */
+//#include "../../utils/affinity.h"           /* pthread_attr_setaffinity_np */
+#include "../../utils/generator.h"          /* numa_localize() */
+#include <sched.h>
 
 #ifdef JOIN_RESULT_MATERIALIZE
 #include "tuple_buffer.h"       /* for materialization */
@@ -595,7 +596,7 @@ NPO(relation_t *relR, relation_t *relS, int nthreads)
     int64_t result = 0;
     int32_t numR, numS, numRthr, numSthr; /* total and per thread num */
     int i, rv;
-    int set;
+    cpu_set_t set;
     arg_t args[nthreads];
     pthread_t tid[nthreads];
     pthread_attr_t attr;

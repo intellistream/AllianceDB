@@ -22,16 +22,17 @@
 
 #include "parallel_radix_join.h"
 #include "prj_params.h"         /* constant parameters */
-#include "task_queue.h"         /* task_queue_* */
-#include "cpu_mapping.h"        /* get_cpu_id */
-#include "rdtsc.h"              /* startTimer, stopTimer */
+#include "../utils/task_queue.h"         /* task_queue_* */
+#include "../utils/cpu_mapping.h"        /* get_cpu_id */
+#include "../utils/rdtsc.h"              /* startTimer, stopTimer */
 #ifdef PERF_COUNTERS
 #include "perf_counters.h"      /* PCM_x */
 #endif
 
-#include "barrier.h"            /* pthread_barrier_* */
-#include "affinity.h"           /* pthread_attr_setaffinity_np */
-#include "generator.h"          /* numa_localize() */
+#include "../utils/barrier.h"            /* pthread_barrier_* */
+#include <sched.h>
+//#include "../utils/affinity.h"           /* pthread_attr_setaffinity_np */
+#include "../utils/generator.h"          /* numa_localize() */
 
 #ifdef JOIN_RESULT_MATERIALIZE
 #include "tuple_buffer.h"       /* for materialization */
@@ -1427,7 +1428,7 @@ join_init_run(relation_t * relR, relation_t * relS, JoinFunction jf, int nthread
     pthread_t tid[nthreads];
     pthread_attr_t attr;
     pthread_barrier_t barrier;
-    int set;
+    cpu_set_t set;
     arg_t args[nthreads];
 
     int32_t ** histR, ** histS;
