@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.9)
+cmake_minimum_required(VERSION 3.5。1)
 project(AllianceDB)
 set(CMAKE_CXX_STANDARD 11)
 
@@ -6,8 +6,8 @@ set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${./bin})
 set (CMAKE_STATIC_LINKER_FLAGS -lnuma)
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -msse4.1")
 
-add_executable(hashing
-        main.cpp no_partitioning_join.cpp no_partitioning_join.h types.h parallel_radix_join.cpp parallel_radix_join.h generator.cpp generator.h perf_counters.cpp perf_counters.h affinity.h cpu_mapping.cpp cpu_mapping.h genzipf.cpp genzipf.h lock.h  npj_types.h npj_params.h rdtsc.h barrier.h prj_params.h task_queue.h config.h)
-
+add_executable(hashing main.cpp utils/types.h utils/generator.cpp utils/generator.h utils/perf_counters.cpp utils/perf_counters.h utils/cpu_mapping.cpp utils/cpu_mapping.h utils/genzipf.cpp utils/genzipf.h utils/lock.h utils/rdtsc.h utils/barrier.h utils/task_queue.h utils/config.h
+        single_thread/blocking/npj_types.h single_thread/blocking/npj_params.h single_thread/blocking/no_partitioning_join.cpp single_thread/blocking/no_partitioning_join.h
+        multiple_thread/parallel_radix_join.cpp multiple_thread/parallel_radix_join.h multiple_thread/prj_params.h)
 target_link_libraries(hashing numa)
 

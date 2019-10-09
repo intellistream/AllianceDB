@@ -13,7 +13,7 @@
 #ifndef NO_PARTITIONING_JOIN_H
 #define NO_PARTITIONING_JOIN_H
 
-#include "types.h" /* relation_t */
+#include "../../utils/types.h" /* relation_t */
 
 /**
  * NPO: No Partitioning Join Optimized.

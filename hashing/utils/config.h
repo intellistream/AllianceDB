@@ -5,7 +5,6 @@
 #ifndef ALLIANCEDB_CONFIG_H
 #define ALLIANCEDB_CONFIG_H
 
-
 /* config.h.  Generated from config.h.in by configure.  */
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
