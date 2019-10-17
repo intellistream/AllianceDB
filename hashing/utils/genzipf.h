@@ -18,9 +18,9 @@
 
 typedef tuple_t item_t;
 
-item_t * gen_zipf (unsigned int stream_size,
-                   unsigned int alphabet_size,
-                   double zipf_factor,
-                   item_t ** output);
+item_t *gen_zipf(unsigned int stream_size,
+                 unsigned int alphabet_size,
+                 double zipf_factor,
+                 item_t **output);
 
 #endif  /* GENZIPF_H */

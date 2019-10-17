@@ -51,7 +51,7 @@ get_num_numa_regions(void);
  * Returns the NUMA-node id of a given memory address
  */
 int
-get_numa_node_of_address(void * ptr);
+get_numa_node_of_address(void *ptr);
 
 /** @} */
 

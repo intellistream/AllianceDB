@@ -13,6 +13,7 @@
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif
+
 #include <sched.h>              /* CPU_ZERO, CPU_SET */
 #include <pthread.h>            /* pthread_* */
 #include <string.h>             /* memset */
@@ -26,6 +27,7 @@
 #include "../../utils/rdtsc.h"              /* startTimer, stopTimer */
 #include "../../utils/lock.h"               /* lock, unlock */
 #include "../../utils/cpu_mapping.h"        /* get_cpu_id */
+
 #ifdef PERF_COUNTERS
 #include "perf_counters.h"      /* PCM_x */
 #endif
@@ -89,22 +91,22 @@ extern int nthreads;      /* defined in generator.c */
 typedef struct arg_t arg_t;
 
 struct arg_t {
-    int32_t             tid;
-    hashtable_t *       ht;
-    relation_t          relR;
-    relation_t          relS;
-    pthread_barrier_t * barrier;
-    int64_t             num_results;
+    int32_t tid;
+    hashtable_t *ht;
+    relation_t relR;
+    relation_t relS;
+    pthread_barrier_t *barrier;
+    int64_t num_results;
 
     /* results of the thread */
-    threadresult_t * threadresult;
+    threadresult_t *threadresult;
 
 #ifndef NO_TIMING
     /* stats about the thread */
     uint64_t timer1, timer2, timer3;
     struct timeval start, end;
 #endif
-} ;
+};
 
 /**
  * @defgroup OverflowBuckets Buffer management for overflowing buckets.
@@ -120,12 +122,11 @@ struct arg_t {
  * @param ppbuf [in,out] bucket buffer to be initialized
  */
 void
-init_bucket_buffer(bucket_buffer_t ** ppbuf)
-{
-    bucket_buffer_t * overflowbuf;
-    overflowbuf = (bucket_buffer_t*) malloc(sizeof(bucket_buffer_t));
+init_bucket_buffer(bucket_buffer_t **ppbuf) {
+    bucket_buffer_t *overflowbuf;
+    overflowbuf = (bucket_buffer_t *) malloc(sizeof(bucket_buffer_t));
     overflowbuf->count = 0;
-    overflowbuf->next  = NULL;
+    overflowbuf->next = NULL;
 
     *ppbuf = overflowbuf;
 }
@@ -139,32 +140,29 @@ init_bucket_buffer(bucket_buffer_t ** ppbuf)
  * @param buf [in,out] the pointer to the bucket_buffer_t pointer
  */
 static inline void
-get_new_bucket(bucket_t ** result, bucket_buffer_t ** buf)
-{
-    if((*buf)->count < OVERFLOW_BUF_SIZE) {
+get_new_bucket(bucket_t **result, bucket_buffer_t **buf) {
+    if ((*buf)->count < OVERFLOW_BUF_SIZE) {
         *result = (*buf)->buf + (*buf)->count;
-        (*buf)->count ++;
-    }
-    else {
+        (*buf)->count++;
+    } else {
         /* need to allocate new buffer */
-        bucket_buffer_t * new_buf = (bucket_buffer_t*)
+        bucket_buffer_t *new_buf = (bucket_buffer_t *)
                 malloc(sizeof(bucket_buffer_t));
         new_buf->count = 1;
-        new_buf->next  = *buf;
-        *buf    = new_buf;
+        new_buf->next = *buf;
+        *buf = new_buf;
         *result = new_buf->buf;
     }
 }
 
 /** De-allocates all the bucket_buffer_t */
 void
-free_bucket_buffer(bucket_buffer_t * buf)
-{
+free_bucket_buffer(bucket_buffer_t *buf) {
     do {
-        bucket_buffer_t * tmp = buf->next;
+        bucket_buffer_t *tmp = buf->next;
         free(buf);
         buf = tmp;
-    } while(buf);
+    } while (buf);
 }
 
 /** @} */
@@ -181,26 +179,25 @@ free_bucket_buffer(bucket_buffer_t * buf)
  * @param ht pointer to a hashtable_t pointer
  */
 void
-allocate_hashtable(hashtable_t ** ppht, uint32_t nbuckets)
-{
-    hashtable_t * ht;
+allocate_hashtable(hashtable_t **ppht, uint32_t nbuckets) {
+    hashtable_t *ht;
 
-    ht              = (hashtable_t*)malloc(sizeof(hashtable_t));
+    ht = (hashtable_t *) malloc(sizeof(hashtable_t));
     ht->num_buckets = nbuckets;
     NEXT_POW_2((ht->num_buckets));
 
     /* allocate hashtable buckets cache line aligned */
-    if (posix_memalign((void**)&ht->buckets, CACHE_LINE_SIZE,
-                       ht->num_buckets * sizeof(bucket_t))){
+    if (posix_memalign((void **) &ht->buckets, CACHE_LINE_SIZE,
+                       ht->num_buckets * sizeof(bucket_t))) {
         perror("Aligned allocation failed!\n");
         exit(EXIT_FAILURE);
     }
 
     /** Not an elegant way of passing whether we will numa-localize, but this
         feature is experimental anyway. */
-    if(numalocalize) {
-        tuple_t * mem = (tuple_t *) ht->buckets;
-        uint32_t ntuples = (ht->num_buckets*sizeof(bucket_t))/sizeof(tuple_t);
+    if (numalocalize) {
+        tuple_t *mem = (tuple_t *) ht->buckets;
+        uint32_t ntuples = (ht->num_buckets * sizeof(bucket_t)) / sizeof(tuple_t);
         numa_localize(mem, ntuples, nthreads);
     }
 
@@ -216,8 +213,7 @@ allocate_hashtable(hashtable_t ** ppht, uint32_t nbuckets)
  * @param ht pointer to hashtable
  */
 void
-destroy_hashtable(hashtable_t * ht)
-{
+destroy_hashtable(hashtable_t *ht) {
     free(ht->buckets);
     free(ht);
 }
@@ -229,39 +225,36 @@ destroy_hashtable(hashtable_t * ht)
  * @param rel the build relation
  */
 void
-build_hashtable_st(hashtable_t *ht, relation_t *rel)
-{
+build_hashtable_st(hashtable_t *ht, relation_t *rel) {
     uint32_t i;
     const uint32_t hashmask = ht->hash_mask;
     const uint32_t skipbits = ht->skip_bits;
 
-    for(i=0; i < rel->num_tuples; i++){
-        tuple_t * dest;
-        bucket_t * curr, * nxt;
+    for (i = 0; i < rel->num_tuples; i++) {
+        tuple_t *dest;
+        bucket_t *curr, *nxt;
         int32_t idx = HASH(rel->tuples[i].key, hashmask, skipbits);
 
         /* copy the tuple to appropriate hash bucket */
         /* if full, follow nxt pointer to find correct place */
         curr = ht->buckets + idx;
-        nxt  = curr->next;
+        nxt = curr->next;
 
-        if(curr->count == BUCKET_SIZE) {
-            if(!nxt || nxt->count == BUCKET_SIZE) {
-                bucket_t * b;
-                b = (bucket_t*) calloc(1, sizeof(bucket_t));
+        if (curr->count == BUCKET_SIZE) {
+            if (!nxt || nxt->count == BUCKET_SIZE) {
+                bucket_t *b;
+                b = (bucket_t *) calloc(1, sizeof(bucket_t));
                 curr->next = b;
                 b->next = nxt;
                 b->count = 1;
                 dest = b->tuples;
-            }
-            else {
+            } else {
                 dest = nxt->tuples + nxt->count;
-                nxt->count ++;
+                nxt->count++;
             }
-        }
-        else {
+        } else {
             dest = curr->tuples + curr->count;
-            curr->count ++;
+            curr->count++;
         }
         *dest = rel->tuples[i];
     }
@@ -278,8 +271,7 @@ build_hashtable_st(hashtable_t *ht, relation_t *rel)
  * @return number of matching tuples
  */
 int64_t
-probe_hashtable(hashtable_t *ht, relation_t *rel, void * output)
-{
+probe_hashtable(hashtable_t *ht, relation_t *rel, void *output) {
     uint32_t i, j;
     int64_t matches;
 
@@ -295,23 +287,22 @@ probe_hashtable(hashtable_t *ht, relation_t *rel, void * output)
     chainedtuplebuffer_t * chainedbuf = (chainedtuplebuffer_t *) output;
 #endif
 
-    for (i = 0; i < rel->num_tuples; i++)
-    {
+    for (i = 0; i < rel->num_tuples; i++) {
 #ifdef PREFETCH_NPJ
         if (prefetch_index < rel->num_tuples) {
-			intkey_t idx_prefetch = HASH(rel->tuples[prefetch_index++].key,
+            intkey_t idx_prefetch = HASH(rel->tuples[prefetch_index++].key,
                                          hashmask, skipbits);
-			__builtin_prefetch(ht->buckets + idx_prefetch, 0, 1);
+            __builtin_prefetch(ht->buckets + idx_prefetch, 0, 1);
         }
 #endif
 
         intkey_t idx = HASH(rel->tuples[i].key, hashmask, skipbits);
-        bucket_t * b = ht->buckets+idx;
+        bucket_t *b = ht->buckets + idx;
 
         do {
-            for(j = 0; j < b->count; j++) {
-                if(rel->tuples[i].key == b->tuples[j].key){
-                    matches ++;
+            for (j = 0; j < b->count; j++) {
+                if (rel->tuples[i].key == b->tuples[j].key) {
+                    matches++;
 
 #ifdef JOIN_RESULT_MATERIALIZE
                     /* copy to the result buffer */
@@ -324,7 +315,7 @@ probe_hashtable(hashtable_t *ht, relation_t *rel, void * output)
             }
 
             b = b->next;/* follow overflow pointer */
-        } while(b);
+        } while (b);
     }
 
     return matches;
@@ -334,10 +325,9 @@ probe_hashtable(hashtable_t *ht, relation_t *rel, void * output)
 static void
 print_timing(uint64_t total, uint64_t build, uint64_t part,
              uint64_t numtuples, int64_t result,
-             struct timeval * start, struct timeval * end)
-{
-    double diff_usec = (((*end).tv_sec*1000000L + (*end).tv_usec)
-                        - ((*start).tv_sec*1000000L+(*start).tv_usec));
+             struct timeval *start, struct timeval *end) {
+    double diff_usec = (((*end).tv_sec * 1000000L + (*end).tv_usec)
+                        - ((*start).tv_sec * 1000000L + (*start).tv_usec));
     double cyclestuple = total;
     cyclestuple /= numtuples;
     fprintf(stdout, "RUNTIME TOTAL, BUILD, PART (cycles): \n");
@@ -355,11 +345,10 @@ print_timing(uint64_t total, uint64_t build, uint64_t part,
 
 /** \copydoc NPO_st */
 result_t *
-NPO_st(relation_t *relR, relation_t *relS, int nthreads)
-{
-    hashtable_t * ht;
+NPO_st(relation_t *relR, relation_t *relS, int nthreads) {
+    hashtable_t *ht;
     int64_t result = 0;
-    result_t * joinresult;
+    result_t *joinresult;
 
 #ifndef NO_TIMING
     struct timeval start, end;
@@ -389,7 +378,7 @@ NPO_st(relation_t *relR, relation_t *relS, int nthreads)
 #ifdef JOIN_RESULT_MATERIALIZE
     chainedtuplebuffer_t * chainedbuf = chainedtuplebuffer_init();
 #else
-    void * chainedbuf = NULL;
+    void *chainedbuf = NULL;
 #endif
 
     result = probe_hashtable(ht, relS, chainedbuf);
@@ -411,7 +400,7 @@ NPO_st(relation_t *relR, relation_t *relS, int nthreads)
     destroy_hashtable(ht);
 
     joinresult->totalresults = result;
-    joinresult->nthreads     = 1;
+    joinresult->nthreads = 1;
 
     return joinresult;
 }
@@ -426,8 +415,7 @@ NPO_st(relation_t *relR, relation_t *relS, int nthreads)
  */
 void
 build_hashtable_mt(hashtable_t *ht, relation_t *rel,
-                   bucket_buffer_t ** overflowbuf)
-{
+                   bucket_buffer_t **overflowbuf) {
     uint32_t i;
     const uint32_t hashmask = ht->hash_mask;
     const uint32_t skipbits = ht->skip_bits;
@@ -436,44 +424,42 @@ build_hashtable_mt(hashtable_t *ht, relation_t *rel,
     size_t prefetch_index = PREFETCH_DISTANCE;
 #endif
 
-    for(i=0; i < rel->num_tuples; i++){
-        tuple_t * dest;
-        bucket_t * curr, * nxt;
+    for (i = 0; i < rel->num_tuples; i++) {
+        tuple_t *dest;
+        bucket_t *curr, *nxt;
 
 #ifdef PREFETCH_NPJ
         if (prefetch_index < rel->num_tuples) {
             intkey_t idx_prefetch = HASH(rel->tuples[prefetch_index++].key,
                                          hashmask, skipbits);
-			__builtin_prefetch(ht->buckets + idx_prefetch, 1, 1);
+            __builtin_prefetch(ht->buckets + idx_prefetch, 1, 1);
         }
 #endif
 
         int32_t idx = HASH(rel->tuples[i].key, hashmask, skipbits);
         /* copy the tuple to appropriate hash bucket */
         /* if full, follow nxt pointer to find correct place */
-        curr = ht->buckets+idx;
+        curr = ht->buckets + idx;
         lock(&curr->latch);
         nxt = curr->next;
 
-        if(curr->count == BUCKET_SIZE) {
-            if(!nxt || nxt->count == BUCKET_SIZE) {
-                bucket_t * b;
+        if (curr->count == BUCKET_SIZE) {
+            if (!nxt || nxt->count == BUCKET_SIZE) {
+                bucket_t *b;
                 /* b = (bucket_t*) calloc(1, sizeof(bucket_t)); */
                 /* instead of calloc() everytime, we pre-allocate */
                 get_new_bucket(&b, overflowbuf);
                 curr->next = b;
-                b->next    = nxt;
-                b->count   = 1;
-                dest       = b->tuples;
-            }
-            else {
+                b->next = nxt;
+                b->count = 1;
+                dest = b->tuples;
+            } else {
                 dest = nxt->tuples + nxt->count;
-                nxt->count ++;
+                nxt->count++;
             }
-        }
-        else {
+        } else {
             dest = curr->tuples + curr->count;
-            curr->count ++;
+            curr->count++;
         }
 
         *dest = rel->tuples[i];
@@ -490,13 +476,12 @@ build_hashtable_mt(hashtable_t *ht, relation_t *rel,
  * @return
  */
 void *
-npo_thread(void * param)
-{
+npo_thread(void *param) {
     int rv;
-    arg_t * args = (arg_t*) param;
+    arg_t *args = (arg_t *) param;
 
     /* allocate overflow buffer for each thread */
-    bucket_buffer_t * overflowbuf;
+    bucket_buffer_t *overflowbuf;
     init_bucket_buffer(&overflowbuf);
 
 #ifdef PERF_COUNTERS
@@ -511,7 +496,7 @@ npo_thread(void * param)
 
 #ifndef NO_TIMING
     /* the first thread checkpoints the start time */
-    if(args->tid == 0){
+    if (args->tid == 0) {
         gettimeofday(&args->start, NULL);
         startTimer(&args->timer1);
         startTimer(&args->timer2);
@@ -539,7 +524,7 @@ npo_thread(void * param)
 
 #ifndef NO_TIMING
     /* build phase finished, thread-0 checkpoints the time */
-    if(args->tid == 0){
+    if (args->tid == 0) {
         stopTimer(&args->timer2);
     }
 #endif
@@ -547,7 +532,7 @@ npo_thread(void * param)
 #ifdef JOIN_RESULT_MATERIALIZE
     chainedtuplebuffer_t * chainedbuf = chainedtuplebuffer_init();
 #else
-    void * chainedbuf = NULL;
+    void *chainedbuf = NULL;
 #endif
 
     /* probe for matching tuples from the assigned part of relS */
@@ -564,7 +549,7 @@ npo_thread(void * param)
     BARRIER_ARRIVE(args->barrier, rv);
 
     /* probe phase finished, thread-0 checkpoints the time */
-    if(args->tid == 0){
+    if (args->tid == 0) {
         stopTimer(&args->timer1);
         gettimeofday(&args->end, NULL);
     }
@@ -590,9 +575,8 @@ npo_thread(void * param)
 
 /** \copydoc NPO */
 result_t *
-NPO(relation_t *relR, relation_t *relS, int nthreads)
-{
-    hashtable_t * ht;
+NPO(relation_t *relR, relation_t *relS, int nthreads) {
+    hashtable_t *ht;
     int64_t result = 0;
     int32_t numR, numS, numRthr, numSthr; /* total and per thread num */
     int i, rv;
@@ -602,7 +586,7 @@ NPO(relation_t *relR, relation_t *relS, int nthreads)
     pthread_attr_t attr;
     pthread_barrier_t barrier;
 
-    result_t * joinresult = 0;
+    result_t *joinresult = 0;
     joinresult = (result_t *) malloc(sizeof(result_t));
 
 #ifdef JOIN_RESULT_MATERIALIZE
@@ -619,13 +603,13 @@ NPO(relation_t *relR, relation_t *relS, int nthreads)
     numSthr = numS / nthreads;
 
     rv = pthread_barrier_init(&barrier, NULL, nthreads);
-    if(rv != 0){
+    if (rv != 0) {
         printf("Couldn't create the barrier\n");
         exit(EXIT_FAILURE);
     }
 
     pthread_attr_init(&attr);
-    for(i = 0; i < nthreads; i++){
+    for (i = 0; i < nthreads; i++) {
         int cpu_idx = get_cpu_id(i);
 
         DEBUGMSG(1, "Assigning thread-%d to CPU-%d\n", i, cpu_idx);
@@ -639,32 +623,32 @@ NPO(relation_t *relR, relation_t *relS, int nthreads)
         args[i].barrier = &barrier;
 
         /* assing part of the relR for next thread */
-        args[i].relR.num_tuples = (i == (nthreads-1)) ? numR : numRthr;
+        args[i].relR.num_tuples = (i == (nthreads - 1)) ? numR : numRthr;
         args[i].relR.tuples = relR->tuples + numRthr * i;
         numR -= numRthr;
 
         /* assing part of the relS for next thread */
-        args[i].relS.num_tuples = (i == (nthreads-1)) ? numS : numSthr;
+        args[i].relS.num_tuples = (i == (nthreads - 1)) ? numS : numSthr;
         args[i].relS.tuples = relS->tuples + numSthr * i;
         numS -= numSthr;
 
         args[i].threadresult = &(joinresult->resultlist[i]);
 
-        rv = pthread_create(&tid[i], &attr, npo_thread, (void*)&args[i]);
-        if (rv){
+        rv = pthread_create(&tid[i], &attr, npo_thread, (void *) &args[i]);
+        if (rv) {
             printf("ERROR; return code from pthread_create() is %d\n", rv);
             exit(-1);
         }
 
     }
 
-    for(i = 0; i < nthreads; i++){
+    for (i = 0; i < nthreads; i++) {
         pthread_join(tid[i], NULL);
         /* sum up results */
         result += args[i].num_results;
     }
     joinresult->totalresults = result;
-    joinresult->nthreads     = nthreads;
+    joinresult->nthreads = nthreads;
 
 
 #ifndef NO_TIMING

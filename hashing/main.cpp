@@ -262,7 +262,6 @@ int getopt(int argc, char * const argv[],
 #endif
 
 
-
 typedef struct algo_t algo_t;
 typedef struct param_t param_t;
 

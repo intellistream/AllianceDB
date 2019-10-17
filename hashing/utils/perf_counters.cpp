@@ -182,7 +182,7 @@ PCM_printResults()
     (*out) << "IPC "
            << getIPC(before_state, after_state) << endl;
 
-	if(numEvents == 0){
+    if(numEvents == 0){
         (*out) << "L2Misses "
                << getL2CacheMisses(before_state, after_state) << endl;
         (*out) << "L3Misses "
@@ -197,10 +197,10 @@ PCM_printResults()
         (*out) << "CyclesLostDueL3CacheMisses "
                << getCyclesLostDueL3CacheMisses(before_state, after_state) << endl;
 #if PER_CORE==0
-		(*out) << "BytesFromMC " << getBytesReadFromMC(before_state, after_state) << endl;
-		(*out) << "BytesWrittenToMC " << getBytesWrittenToMC(before_state, after_state) << endl;
+        (*out) << "BytesFromMC " << getBytesReadFromMC(before_state, after_state) << endl;
+        (*out) << "BytesWrittenToMC " << getBytesWrittenToMC(before_state, after_state) << endl;
 #endif
-	}
+    }
 
     for(int i = 0; i < numEvents; i++) {
         (*out) << MyEventNames[i] << " "
@@ -276,9 +276,9 @@ PCM_printAccumulators()
     (*out) << "L3HitRatio "<< eventAcc[6] << endl;
 
     (*out) << "CyclesLostDueL2CacheMisses "
-	   << eventAcc[7] << endl;
+       << eventAcc[7] << endl;
     (*out) << "CyclesLostDueL3CacheMisses "
-	   << eventAcc[8] << endl;
+       << eventAcc[8] << endl;
 
     (*out) << "BytesFromMC " << eventAcc[9] << endl;
     (*out) << "BytesWrittenToMC " << eventAcc[10] << endl;
@@ -327,13 +327,20 @@ PCM_log(char * msg)
 #else
 
 /* just placeholders */
-void PCM_initPerformanceMonitor(const char * pcmcfg, const char * pcmout){}
-void PCM_start(){}
-void PCM_stop(){}
-void PCM_printResults(){}
-void PCM_cleanup(){}
-void PCM_accumulate(){}
-void PCM_printAccumulators(){}
-void PCM_log(char * msg){}
+void PCM_initPerformanceMonitor(const char *pcmcfg, const char *pcmout) {}
+
+void PCM_start() {}
+
+void PCM_stop() {}
+
+void PCM_printResults() {}
+
+void PCM_cleanup() {}
+
+void PCM_accumulate() {}
+
+void PCM_printAccumulators() {}
+
+void PCM_log(char *msg) {}
 
 #endif /*PERF_COUNTERS*/

@@ -61,7 +61,7 @@ create_relation_fk_from_pk(relation_t *fkrel, relation_t *pkrel, int64_t ntuples
  * - maxid is equivalent to the alphabet size
  */
 int
-create_relation_zipf(relation_t * reln, int64_t ntuples,
+create_relation_zipf(relation_t *reln, int64_t ntuples,
                      const int64_t maxid, const double zipfparam);
 
 
@@ -88,7 +88,7 @@ parallel_create_relation_fk(relation_t *reln, int64_t ntuples,
  * Free memory allocated for only tuples.
  */
 void
-delete_relation(relation_t * reln);
+delete_relation(relation_t *reln);
 
 /**
  * This is just to make sure that chunks of the temporary memory
@@ -96,17 +96,17 @@ delete_relation(relation_t * reln);
  * making sure it will be allocated numa-local.
  */
 int
-numa_localize(tuple_t * relation, int64_t num_tuples, uint32_t nthreads) ;
+numa_localize(tuple_t *relation, int64_t num_tuples, uint32_t nthreads);
 
 /**
  * Write relation to a file.
  */
 void
-write_relation(relation_t * rel, char * filename);
+write_relation(relation_t *rel, char *filename);
 
 /** Load a relation from given file name */
 int
-load_relation(relation_t * relation, char * filename, uint64_t num_tuples);
+load_relation(relation_t *relation, char *filename, uint64_t num_tuples);
 
 /** @} */
 

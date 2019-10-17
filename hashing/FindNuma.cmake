@@ -36,7 +36,7 @@ find_library(NUMA_LIBRARY
 
 if (NUMA_LIBRARY)
     get_filename_component(NUMA_LIBRARY_DIR ${NUMA_LIBRARY} PATH)
-endif()
+endif ()
 
 mark_as_advanced(NUMA_INCLUDE_DIR NUMA_LIBRARY_DIR NUMA_LIBRARY)
 

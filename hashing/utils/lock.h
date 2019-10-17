@@ -20,16 +20,18 @@
 
 typedef volatile char Lock_t;
 
-inline void unlock(Lock_t * _l) __attribute__((always_inline));
-inline void lock(Lock_t * _l) __attribute__((always_inline));
-inline int  tas(volatile char * lock) __attribute__((always_inline));
+inline void unlock(Lock_t *_l) __attribute__((always_inline));
+
+inline void lock(Lock_t *_l) __attribute__((always_inline));
+
+inline int tas(volatile char *lock) __attribute__((always_inline));
 
 /*
  * Non-recursive spinlock. Using `xchg` and `ldstub` as in PostgresSQL.
  */
 /* Call blocks and retunrs only when it has the lock. */
-inline void lock(Lock_t * _l) {
-    while(tas(_l)) {
+inline void lock(Lock_t *_l) {
+    while (tas(_l)) {
 #if defined(__i386__) || defined(__x86_64__)
         __asm__ __volatile__ ("pause\n");
 #endif
@@ -37,12 +39,11 @@ inline void lock(Lock_t * _l) {
 }
 
 /** Unlocks the lock object. */
-inline void unlock(Lock_t * _l) {
+inline void unlock(Lock_t *_l) {
     *_l = 0;
 }
 
-inline int tas(volatile char * lock)
-{
+inline int tas(volatile char *lock) {
     register char res = 1;
 #if defined(__i386__) || defined(__x86_64__)
     __asm__ __volatile__ (

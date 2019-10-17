@@ -36,10 +36,10 @@
 #endif
 
 /** custom performance counters config file, if NULL no custom config. */
-extern char * PCM_CONFIG;
+extern char *PCM_CONFIG;
 
 /** the output file for performance counter results, if NULL output to stdout */
-extern char * PCM_OUT;
+extern char *PCM_OUT;
 
 /**
  * Initializes the Intel Performance Counter Monitor instance.
@@ -50,7 +50,7 @@ extern char * PCM_OUT;
  * @param pcmout output file to which PCM results should go, NULL->stdout
  */
 void
-PCM_initPerformanceMonitor(const char * pcmcfg, const char * pcmout);
+PCM_initPerformanceMonitor(const char *pcmcfg, const char *pcmout);
 
 /**
  * Starts the performance counters.
@@ -101,7 +101,7 @@ PCM_printAccumulators();
  *
  */
 void
-PCM_log(char * msg);
+PCM_log(char *msg);
 
 /** @} */
 

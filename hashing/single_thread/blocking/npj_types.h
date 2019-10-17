@@ -17,11 +17,11 @@
  * @{
  */
 
-typedef struct bucket_t        bucket_t;
-typedef struct hashtable_t     hashtable_t;
+typedef struct bucket_t bucket_t;
+typedef struct hashtable_t hashtable_t;
 typedef struct bucket_buffer_t bucket_buffer_t;
 
-#if PADDED_BUCKET==0
+#if PADDED_BUCKET == 0
 /**
  * Normal hashtable buckets.
  *
@@ -29,11 +29,11 @@ typedef struct bucket_buffer_t bucket_buffer_t;
  * else key is 16B and sizeof(bucket_t) = 32B
  */
 struct bucket_t {
-    volatile char     latch;
+    volatile char latch;
     /* 3B hole */
-    uint32_t          count;
-    tuple_t           tuples[BUCKET_SIZE];
-    struct bucket_t * next;
+    uint32_t count;
+    tuple_t tuples[BUCKET_SIZE];
+    struct bucket_t *next;
 };
 #else /* PADDED_BUCKET: bucket is padded to cache line size */
 /**
@@ -51,15 +51,15 @@ struct bucket_t {
 
 /** Hashtable structure for NPO. */
 struct hashtable_t {
-    bucket_t * buckets;
-    int32_t    num_buckets;
-    uint32_t   hash_mask;
-    uint32_t   skip_bits;
+    bucket_t *buckets;
+    int32_t num_buckets;
+    uint32_t hash_mask;
+    uint32_t skip_bits;
 };
 
 /** Pre-allocated bucket buffers are used for overflow-buckets. */
 struct bucket_buffer_t {
-    struct  bucket_buffer_t * next;
+    struct bucket_buffer_t *next;
     uint32_t count;
     bucket_t buf[OVERFLOW_BUF_SIZE];
 };

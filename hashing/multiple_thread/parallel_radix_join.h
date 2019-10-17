@@ -31,7 +31,7 @@
  * @return number of result tuples
  */
 result_t *
-PRO(relation_t * relR, relation_t * relS, int nthreads);
+PRO(relation_t *relR, relation_t *relS, int nthreads);
 
 /**
  * RJ: Radix Join.
@@ -47,7 +47,7 @@ PRO(relation_t * relR, relation_t * relS, int nthreads);
  * @return number of result tuples
  */
 result_t *
-RJ(relation_t * relR, relation_t * relS, int nthreads);
+RJ(relation_t *relR, relation_t *relS, int nthreads);
 
 /**
  * PRH: Parallel Radix Join Histogram-based.
@@ -63,7 +63,7 @@ RJ(relation_t * relR, relation_t * relS, int nthreads);
  * @return number of result tuples
  */
 result_t *
-PRH(relation_t * relR, relation_t * relS, int nthreads);
+PRH(relation_t *relR, relation_t *relS, int nthreads);
 
 /**
  * PRHO: Parallel Radix Join Histogram-based Optimized.
@@ -79,6 +79,6 @@ PRH(relation_t * relR, relation_t * relS, int nthreads);
  * @return number of result tuples
  */
 result_t *
-PRHO(relation_t * relR, relation_t * relS, int nthreads);
+PRHO(relation_t *relR, relation_t *relS, int nthreads);
 
 #endif /* PARALLEL_RADIX_JOIN_H */
