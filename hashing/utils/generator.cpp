@@ -18,7 +18,7 @@
 //#include "affinity.h"           /* pthread_attr_setaffinity_np */
 #include "genzipf.h"            /* gen_zipf() */
 #include "lock.h"
-#include "../multiple_thread/prj_params.h"         /* RELATION_PADDING for Parallel Radix */
+#include "../joins/prj_params.h"         /* RELATION_PADDING for Parallel Radix */
 #include "barrier.h"
 
 /* return a random number in range [0,N] */

@@ -2,14 +2,26 @@ cmake_minimum_required(VERSION 3.5.1)
 project(AllianceDB)
 set(CMAKE_CXX_STANDARD 11)
 
+find_path(LIBNUMA_INCLUDE numa.h PATHS ${SEARCH_DIRS})
+find_library(LIBNUMA_LIB NAMES libnuma.so PATHS ${SEARCH_DIRS})
+if(LIBNUMA_INCLUDE-NOTFOUND)
+    set (LIBNUMA_INCLUDE "" CACHE PATH "Directory where libnuma header files can be found (consider installing libnuma-dev)")
+else()
+    include_directories(${LIBNUMA_INCLUDE})
+endif()
+if(LIBNUMA_LIB-NOTFOUND)
+    set (LIBNUMA_LIB "" CACHE PATH "Directory where the libnuma library can be found")
+else()
+    link_libraries(${LIBNUMA_LIB})
+endif()
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${./bin})
-
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -msse4.1")
+set (CMAKE_STATIC_LINKER_FLAGS -lnuma)
+SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -msse4.1")
 
 add_executable(sorting
         datagen/generator.h datagen/generator.cpp datagen/genzipf.cpp datagen/genzipf.h
         util/types.h config.h util/rdtsc.h
-        affinity/affinity.h affinity/cpu_mapping.cpp affinity/cpu_mapping.h
+        affinity/cpu_mapping.cpp affinity/cpu_mapping.h
         joins/sortmergejoin_multipass.h joins/sortmergejoin_multiway.h
         joins/sortmergejoin_multiway_skewhandling.h joins/sortmergejoin_mpsm.h
         affinity/memalloc.cpp affinity/memalloc.h util/params.h

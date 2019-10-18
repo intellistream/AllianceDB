@@ -1,6 +1,7 @@
 #include "generator.h"
 #include "../affinity/cpu_mapping.h"        /* get_cpu_id() */
-#include "../affinity/affinity.h"           /* pthread_attr_setaffinity_np */
+//#include "../affinity/affinity.h"           /* pthread_attr_setaffinity_np */
+#include <sched.h>
 #include "genzipf.h"            /* gen_zipf() */
 #include "../util/lock.h"
 #include "../util/barrier.h"
@@ -248,7 +249,7 @@ parallel_create_relation(relation_t *relation, uint64_t num_tuples,
 
     create_arg_t args[nthreads];
     pthread_t tid[nthreads];
-    int set;
+    cpu_set_t set;
     pthread_attr_t attr;
     pthread_barrier_t barrier;
 
@@ -334,7 +335,7 @@ numa_localize(tuple_t *relation, int64_t num_tuples, uint32_t nthreads) {
     /* we need aligned allocation of items */
     create_arg_t args[nthreads];
     pthread_t tid[nthreads];
-    int set;
+    cpu_set_t set;
     pthread_attr_t attr;
 
     unsigned int pagesize;

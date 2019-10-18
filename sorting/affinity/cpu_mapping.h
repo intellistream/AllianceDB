@@ -5,6 +5,7 @@
 #ifndef ALLIANCEDB_CPU_MAPPING_H
 #define ALLIANCEDB_CPU_MAPPING_H
 
+#define HAVE_NUMA
 /**
  * @defgroup cpumapping CPU mapping tool
  * @{

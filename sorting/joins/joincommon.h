@@ -19,7 +19,7 @@
 #ifndef ALLIANCEDB_JOINCOMMON_H
 #define ALLIANCEDB_JOINCOMMON_H
 
-
+#define DEBUG
 #include <stdint.h>
 #include <stdlib.h>             /* posix_memalign, EXIT_FAILURE */
 #include <sys/time.h>           /* gettimeofday */
@@ -61,7 +61,7 @@ typedef struct relationpair_t relationpair_t;
 #define DEBUGMSG(COND, MSG, ...)                                        \
     if(COND) {                                                          \
         fprintf(stdout,                                                 \
-                "[DEBUG @ %s:%d] "MSG, __FILE__, __LINE__, ## __VA_ARGS__); \
+                "[DEBUG @ %s:%d] " MSG, __FILE__, __LINE__, ## __VA_ARGS__); \
     }
 #else
 #define DEBUGMSG(COND, MSG, ...)

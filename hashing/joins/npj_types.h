@@ -10,7 +10,7 @@
 #ifndef NPO_TYPES_H
 #define NPO_TYPES_H
 
-#include "../../utils/types.h" /* tuple_t */
+#include "../utils/types.h" /* tuple_t */
 
 /**
  * @defgroup NPOTypes Type definitions used by NPO.

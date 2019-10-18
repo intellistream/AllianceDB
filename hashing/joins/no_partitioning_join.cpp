@@ -24,17 +24,17 @@
 #include "no_partitioning_join.h"
 #include "npj_params.h"         /* constant parameters */
 #include "npj_types.h"          /* bucket_t, hashtable_t, bucket_buffer_t */
-#include "../../utils/rdtsc.h"              /* startTimer, stopTimer */
-#include "../../utils/lock.h"               /* lock, unlock */
-#include "../../utils/cpu_mapping.h"        /* get_cpu_id */
+#include "../utils/lock.h"               /* lock, unlock */
+#include "../utils/cpu_mapping.h"        /* get_cpu_id */
 
 #ifdef PERF_COUNTERS
 #include "perf_counters.h"      /* PCM_x */
 #endif
 
-#include "../../utils/barrier.h"            /* pthread_barrier_* */
+#include "../utils/barrier.h"            /* pthread_barrier_* */
 //#include "../../utils/affinity.h"           /* pthread_attr_setaffinity_np */
-#include "../../utils/generator.h"          /* numa_localize() */
+#include "../utils/generator.h"          /* numa_localize() */
+#include "../utils/timer.h"
 #include <sched.h>
 
 #ifdef JOIN_RESULT_MATERIALIZE
@@ -319,28 +319,6 @@ probe_hashtable(hashtable_t *ht, relation_t *rel, void *output) {
     }
 
     return matches;
-}
-
-/** print out the execution time statistics of the join */
-static void
-print_timing(uint64_t total, uint64_t build, uint64_t part,
-             uint64_t numtuples, int64_t result,
-             struct timeval *start, struct timeval *end) {
-    double diff_usec = (((*end).tv_sec * 1000000L + (*end).tv_usec)
-                        - ((*start).tv_sec * 1000000L + (*start).tv_usec));
-    double cyclestuple = total;
-    cyclestuple /= numtuples;
-    fprintf(stdout, "RUNTIME TOTAL, BUILD, PART (cycles): \n");
-    fprintf(stderr, "%llu \t %llu \t %llu ",
-            total, build, part);
-    fprintf(stdout, "\n");
-    fprintf(stdout, "TOTAL-TIME-USECS, TOTAL-TUPLES, CYCLES-PER-TUPLE: \n");
-    fprintf(stdout, "%.4lf \t %llu \t ", diff_usec, result);
-    fflush(stdout);
-    fprintf(stderr, "%.4lf ", cyclestuple);
-    fflush(stderr);
-    fprintf(stdout, "\n");
-
 }
 
 /** \copydoc NPO_st */

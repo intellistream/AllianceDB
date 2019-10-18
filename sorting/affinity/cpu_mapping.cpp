@@ -2,6 +2,7 @@
 #include <stdlib.h> /* exit, perror */
 #include <unistd.h> /* sysconf */
 #include <assert.h> /* assert() */
+#include <numa.h>
 
 #include "../config.h" /* HAVE_LIBNUMA */
 

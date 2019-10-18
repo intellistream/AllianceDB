@@ -8,39 +8,35 @@
   <component name="CMakeSettings" AUTO_RELOAD="true">
     <configurations>
       <configuration PROFILE_NAME="Debug" CONFIG_NAME="Debug" />
+      <configuration PROFILE_NAME="Release" CONFIG_NAME="Release" />
     </configurations>
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6e894042-b970-4786-b136-72bfef1ebb12" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/../hashing/configure" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../hashing/joins/onlinejoins_st.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../hashing/joins/onlinejoins_st.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../hashing/utils/timer.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../hashing/utils/timer.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../hashing/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../hashing/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../hashing/affinity.h" beforeDir="false" afterPath="$PROJECT_DIR$/../hashing/utils/affinity.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../hashing/barrier.h" beforeDir="false" afterPath="$PROJECT_DIR$/../hashing/utils/barrier.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../hashing/config.h" beforeDir="false" afterPath="$PROJECT_DIR$/../hashing/utils/config.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../hashing/cpu_mapping.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../hashing/utils/cpu_mapping.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../hashing/cpu_mapping.h" beforeDir="false" afterPath="$PROJECT_DIR$/../hashing/utils/cpu_mapping.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../hashing/generator.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../hashing/utils/generator.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../hashing/generator.h" beforeDir="false" afterPath="$PROJECT_DIR$/../hashing/utils/generator.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../hashing/genzipf.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../hashing/utils/genzipf.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../hashing/genzipf.h" beforeDir="false" afterPath="$PROJECT_DIR$/../hashing/utils/genzipf.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../hashing/hash_main.cpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../hashing/lock.h" beforeDir="false" afterPath="$PROJECT_DIR$/../hashing/utils/lock.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../hashing/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../hashing/main.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../hashing/no_partitioning_join.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../hashing/single_thread/blocking/no_partitioning_join.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../hashing/no_partitioning_join.h" beforeDir="false" afterPath="$PROJECT_DIR$/../hashing/single_thread/blocking/no_partitioning_join.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../hashing/npj_params.h" beforeDir="false" afterPath="$PROJECT_DIR$/../hashing/single_thread/blocking/npj_params.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../hashing/npj_types.h" beforeDir="false" afterPath="$PROJECT_DIR$/../hashing/single_thread/blocking/npj_types.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../hashing/parallel_radix_join.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../hashing/multiple_thread/parallel_radix_join.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../hashing/parallel_radix_join.h" beforeDir="false" afterPath="$PROJECT_DIR$/../hashing/multiple_thread/parallel_radix_join.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../hashing/perf_counters.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../hashing/utils/perf_counters.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../hashing/perf_counters.h" beforeDir="false" afterPath="$PROJECT_DIR$/../hashing/utils/perf_counters.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../hashing/prj_params.h" beforeDir="false" afterPath="$PROJECT_DIR$/../hashing/multiple_thread/prj_params.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../hashing/rdtsc.h" beforeDir="false" afterPath="$PROJECT_DIR$/../hashing/utils/rdtsc.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../hashing/task_queue.h" beforeDir="false" afterPath="$PROJECT_DIR$/../hashing/utils/task_queue.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../hashing/types.h" beforeDir="false" afterPath="$PROJECT_DIR$/../hashing/utils/types.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../hashing/multiple_thread/parallel_radix_join.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../hashing/joins/parallel_radix_join.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../hashing/multiple_thread/parallel_radix_join.h" beforeDir="false" afterPath="$PROJECT_DIR$/../hashing/joins/parallel_radix_join.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../hashing/multiple_thread/prj_params.h" beforeDir="false" afterPath="$PROJECT_DIR$/../hashing/joins/prj_params.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../hashing/single_thread/blocking/no_partitioning_join.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../hashing/joins/no_partitioning_join.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../hashing/single_thread/blocking/no_partitioning_join.h" beforeDir="false" afterPath="$PROJECT_DIR$/../hashing/joins/no_partitioning_join.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../hashing/single_thread/blocking/npj_params.h" beforeDir="false" afterPath="$PROJECT_DIR$/../hashing/joins/npj_params.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../hashing/single_thread/blocking/npj_types.h" beforeDir="false" afterPath="$PROJECT_DIR$/../hashing/joins/npj_types.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../hashing/utils/generator.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../hashing/utils/generator.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/affinity/affinity.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/affinity/cpu_mapping.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/affinity/cpu_mapping.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/affinity/cpu_mapping.h" beforeDir="false" afterPath="$PROJECT_DIR$/affinity/cpu_mapping.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/datagen/generator.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/datagen/generator.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/joins/joincommon.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/joins/joincommon.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/joins/joincommon.h" beforeDir="false" afterPath="$PROJECT_DIR$/joins/joincommon.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/main.cpp" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -55,6 +51,7 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
+  <component name="OCFindUsagesOptions" text="true" ivars="false" properties="true" derivedClasses="false" />
   <component name="ProjectId" id="1R3Xrc1wo9YJ3WoyjsBhIsO4eJ2" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="2" id="Add" />
@@ -64,7 +61,7 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="settings.editor.selected.configurable" value="web.server" />
+    <property name="settings.editor.selected.configurable" value="CMakeSettings" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -102,6 +99,7 @@
       <updated>1568896952838</updated>
       <workItem from="1568896954158" duration="2149000" />
       <workItem from="1570540904607" duration="138000" />
+      <workItem from="1571383272649" duration="5567000" />
     </task>
     <servers />
   </component>

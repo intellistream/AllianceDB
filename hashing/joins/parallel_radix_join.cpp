@@ -25,7 +25,6 @@
 #include "prj_params.h"         /* constant parameters */
 #include "../utils/task_queue.h"         /* task_queue_* */
 #include "../utils/cpu_mapping.h"        /* get_cpu_id */
-#include "../utils/rdtsc.h"              /* startTimer, stopTimer */
 
 #ifdef PERF_COUNTERS
 #include "perf_counters.h"      /* PCM_x */
@@ -35,6 +34,7 @@
 #include <sched.h>
 //#include "../utils/affinity.h"           /* pthread_attr_setaffinity_np */
 #include "../utils/generator.h"          /* numa_localize() */
+#include "../utils/timer.h" /* startTimer, stopTimer */
 
 #ifdef JOIN_RESULT_MATERIALIZE
 #include "tuple_buffer.h"       /* for materialization */
@@ -1375,28 +1375,6 @@ prj_thread(void *param) {
 
     return 0;
 }
-
-/** print out the execution time statistics of the join */
-static void
-print_timing(uint64_t total, uint64_t build, uint64_t part,
-             uint64_t numtuples, int64_t result,
-             struct timeval *start, struct timeval *end) {
-    double diff_usec = (((*end).tv_sec * 1000000L + (*end).tv_usec)
-                        - ((*start).tv_sec * 1000000L + (*start).tv_usec));
-    double cyclestuple = total;
-    cyclestuple /= numtuples;
-    fprintf(stdout, "RUNTIME TOTAL, BUILD, PART (cycles): \n");
-    fprintf(stderr, "%llu \t %llu \t %llu ",
-            total, build, part);
-    fprintf(stdout, "\nTOTAL-TIME-USECS, TOTAL-TUPLES, CYCLES-PER-TUPLE: \n");
-    fprintf(stdout, "%.4lf \t %llu \t ", diff_usec, result);
-    fflush(stdout);
-    fprintf(stderr, "%.4lf ", cyclestuple);
-    fflush(stderr);
-    fprintf(stdout, "\n");
-
-}
-
 
 /**
  * The template function for different joins: Basically each parallel radix join

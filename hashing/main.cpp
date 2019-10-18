@@ -244,8 +244,9 @@ cpu-mapping.txt
 #include <limits.h>             /* INT_MAX */
 #include <sched.h>
 
-#include "single_thread/blocking/no_partitioning_join.h" /* no partitioning joins: NPO, NPO_st */
-#include "multiple_thread/parallel_radix_join.h"  /* parallel radix joins: RJ, PRO, PRH, PRHO */
+#include "joins/no_partitioning_join.h" /* no partitioning joins: NPO, NPO_st */
+#include "joins/parallel_radix_join.h"  /* parallel radix joins: RJ, PRO, PRH, PRHO */
+#include "joins/onlinejoins_st.h"  /* single_thread onlinejoins: SHJ*/
 #include "utils/generator.h"            /* create_relation_xk */
 
 #include "utils/perf_counters.h" /* PCM_x */
@@ -261,6 +262,9 @@ int getopt(int argc, char * const argv[],
            const char *optstring);
 #endif
 
+#ifndef INT_MAX
+#define INT_MAX 2147483647
+#endif
 
 typedef struct algo_t algo_t;
 typedef struct param_t param_t;
@@ -306,6 +310,7 @@ static struct algo_t algos[] =
                 {"PRHO",   PRHO},
                 {"NPO",    NPO},
                 {"NPO_st", NPO_st}, /* NPO single threaded */
+                {"SHJ",    SHJ_st}, /* Symmetric hash join */
                 {{0},      0}
         };
 
@@ -337,7 +342,7 @@ main(int argc, char **argv) {
     param_t cmd_params;
 
     /* Default values if not specified on command line */
-    cmd_params.algo = &algos[2]; /* PRO, RJ, PRH, PRHO, NPO, NPO_st */
+    cmd_params.algo = &algos[6]; /* PRO, RJ, PRH, PRHO, NPO, NPO_st, SHJ_st */
     cmd_params.nthreads = 2;
     /* default dataset is Workload B (described in paper) */
     cmd_params.r_size = 128000;

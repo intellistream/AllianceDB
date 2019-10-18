@@ -324,14 +324,14 @@ $ cat cpu-mapping.txt
 
 /* #include <assert.h> */
 
-#include "affinity/affinity.h"           /* CPU_SET, setaffinity(), pthread_attr_setaffinity_np */
+//#include "affinity/affinity.h"           /* CPU_SET, setaffinity(), pthread_attr_setaffinity_np */
 #include "affinity/cpu_mapping.h"        /* cpu_mapping_cleanup() */
 #include "util/types.h"
 #include "datagen/generator.h"
 #include "affinity/memalloc.h"           /* malloc_aligned() */
 #include "util/params.h"             /* macro parameters */
 #include "affinity/numa_shuffle.h"       /* numa_shuffle_init() */
-
+#include <sched.h>
 /**************** include join algorithm thread implementations ***************/
 #include "joins/sortmergejoin_multipass.h"
 #include "joins/sortmergejoin_multiway.h"
@@ -358,7 +358,9 @@ $ cat cpu-mapping.txt
 #else
 #define DEBUGMSG(COND, MSG, ...)
 #endif
-
+#ifndef INT_MAX
+#define INT_MAX 2147483647
+#endif
 
 /** Print out timing stats for the given start and end timestamps */
 extern void
@@ -454,7 +456,7 @@ main(int argc, char *argv[])
     relation_t relS;
 
     /* start initially on CPU-0 */
-    int set;
+    cpu_set_t set;
     CPU_ZERO(&set);
     CPU_SET(0, &set);
     if (sched_setaffinity(0, sizeof(set), &set) <0) {
