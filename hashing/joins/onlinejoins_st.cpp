@@ -55,6 +55,8 @@
 #define DEBUGMSG(COND, MSG, ...)
 #endif
 
+
+
 /**
  * \ingroup NPO arguments to the threads
  */
@@ -96,8 +98,9 @@ struct arg_t {
  * @param nthreads
  * @return
  */
-long build_probe_st(hashtable_t *ht_R, hashtable_t *ht_S, relation_t *rel_R, relation_t *rel_S,
-                    void *pVoid) {
+long
+build_probe_st(hashtable_t *ht_R, hashtable_t *ht_S, relation_t *rel_R, relation_t *rel_S, void *pVoid,
+               uint64_t *pre_timer, uint64_t *acc_timer, uint64_t progressivetimer[]) {
     uint32_t index_R = 0;//index of rel_R
     uint32_t index_S = 0;//index of rel_S
 
@@ -111,21 +114,24 @@ long build_probe_st(hashtable_t *ht_R, hashtable_t *ht_S, relation_t *rel_R, rel
 
     do {
         if (index_R < rel_R->num_tuples) {
+            startTimer(pre_timer);
             build_hashtable_single(ht_R, rel_R, index_R, hashmask_R, skipbits_R);//(1)
-            matches += proble_hashtable_single(ht_S, rel_R, index_R, hashmask_S, skipbits_S);//(2)
+            accTimer(pre_timer, acc_timer); /* build time */
+            proble_hashtable_single_measure(ht_S, rel_R, index_R, hashmask_S, skipbits_S, &matches, progressivetimer);//(2)
             index_R++;
         }
 
         if (index_S < rel_S->num_tuples) {
+            startTimer(pre_timer);
             build_hashtable_single(ht_S, rel_S, index_S, hashmask_S, skipbits_S);//(3)
-            matches += proble_hashtable_single(ht_R, rel_S, index_S, hashmask_R, skipbits_R);//(4)
+            accTimer(pre_timer, acc_timer); /* build time */
+            proble_hashtable_single_measure(ht_R, rel_S, index_S, hashmask_R, skipbits_R, &matches,progressivetimer);//(4)
             index_S++;
         }
     } while (index_R < rel_R->num_tuples || index_S < rel_S->num_tuples);
 
     return matches;
 }
-
 
 result_t *
 SHJ_st(relation_t *relR, relation_t *relS, int nthreads) {
@@ -136,7 +142,8 @@ SHJ_st(relation_t *relR, relation_t *relS, int nthreads) {
 
 #ifndef NO_TIMING
     struct timeval start, end;
-    uint64_t timer1, timer2, timer3;
+    uint64_t timer1, timer2, timer3, buildtimer = 0;//buildtimer is accumulated.
+    uint64_t progressivetimer[3];//array of progressive timer.
 #endif
 
     //allocate two hashtables.
@@ -155,7 +162,9 @@ SHJ_st(relation_t *relR, relation_t *relS, int nthreads) {
 #ifndef NO_TIMING
     gettimeofday(&start, NULL);
     startTimer(&timer1);
-    startTimer(&timer2);
+    startTimer(&progressivetimer[0]);
+    startTimer(&progressivetimer[1]);
+    startTimer(&progressivetimer[2]);
     timer3 = 0; /* no partitioning */
 #endif
 
@@ -165,7 +174,8 @@ SHJ_st(relation_t *relR, relation_t *relS, int nthreads) {
     void *chainedbuf = NULL;
 #endif
 
-    result = build_probe_st(htR, htS, relR, relS, chainedbuf);//build and probe at the same time.
+    result = build_probe_st(htR, htS, relR, relS, chainedbuf, &timer2, &buildtimer,
+                            progressivetimer);//build and probe at the same time.
 
 #ifdef JOIN_RESULT_MATERIALIZE
     threadresult_t * thrres = &(joinresult->resultlist[0]);/* single-thread */
@@ -178,7 +188,7 @@ SHJ_st(relation_t *relR, relation_t *relS, int nthreads) {
     stopTimer(&timer1); /* over all */
     gettimeofday(&end, NULL);
     /* now print the timing results: */
-    print_timing(timer1, timer2, timer3, relS->num_tuples, result, &start, &end);
+    print_timing(timer1, buildtimer, timer3, relS->num_tuples, result, &start, &end, progressivetimer);
 #endif
 
     destroy_hashtable(htR);

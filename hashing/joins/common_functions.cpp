@@ -154,9 +154,57 @@ int64_t probe_hashtable(hashtable_t *ht, relation_t *rel, void *output) {
     return matches;
 }
 
+bool check1 = false, check2 = false, check3 = false;
+
+int64_t proble_hashtable_single_measure(const hashtable_t *ht, const relation_t *rel, uint32_t index_rel,
+                                        const uint32_t hashmask, const uint32_t skipbits, int64_t *matches,
+                                        uint64_t progressivetimer[]
+) {
+    uint32_t index_ht;
+#ifdef PREFETCH_NPJ
+    if (prefetch_index < rel->num_tuples) {
+            intkey_t idx_prefetch = HASH(rel->tuples[prefetch_index++].key,
+                                         hashmask, skipbits);
+            __builtin_prefetch(ht->buckets + idx_prefetch, 0, 1);
+        }
+#endif
+
+    intkey_t idx = HASH(rel->tuples[index_rel].key, hashmask, skipbits);
+    bucket_t *b = ht->buckets + idx;
+
+    do {
+        for (index_ht = 0; index_ht < b->count; index_ht++) {
+            if (rel->tuples[index_rel].key == b->tuples[index_ht].key) {
+                (*matches)++;
+#ifdef JOIN_RESULT_MATERIALIZE
+                /* copy to the result buffer */
+                tuple_t * joinres = cb_next_writepos(chainedbuf);
+                joinres->key      = b->tuples[j].payload;   /* R-rid */
+                joinres->payload  = rel->tuples[i].payload; /* S-rid */
+#endif
+#ifdef MEASURE
+                if (!check1 && *matches == 0.25 * expected_results) {
+                    stopTimer(&progressivetimer[0]);
+                    check1 = true;
+                } else if (!check2 && *matches == 0.5 * expected_results) {
+                    stopTimer(&progressivetimer[1]);
+                    check2 = true;
+                } else if (!check3 && *matches == 0.75 * expected_results) {
+                    stopTimer(&progressivetimer[2]);
+                    check3 = true;
+                }
+#endif
+            }
+        }
+
+        b = b->next;/* follow overflow pointer */
+    } while (b);
+    return *matches;
+}
+
 int64_t proble_hashtable_single(const hashtable_t *ht, const relation_t *rel, uint32_t index_rel,
                                 const uint32_t hashmask, const uint32_t skipbits) {
-    int64_t matches=0;
+    int64_t matches = 0;
     uint32_t index_ht;
 #ifdef PREFETCH_NPJ
     if (prefetch_index < rel->num_tuples) {

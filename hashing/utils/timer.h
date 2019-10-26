@@ -10,8 +10,7 @@
 #include <sys/time.h>           /* gettimeofday */
 #include <stdio.h>              /* printf */
 
-void print_timing(uint64_t total, uint64_t build, uint64_t part,
-                  uint64_t numtuples, int64_t result,
-                  struct timeval *start, struct timeval *end);
+void print_timing(uint64_t total, uint64_t build, uint64_t part, uint64_t numtuples, int64_t result, timeval *start,
+                  timeval *end, uint64_t progressivetimer[]);
 
 #endif //ALLIANCEDB_TIMER_H

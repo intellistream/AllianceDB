@@ -24,6 +24,9 @@
 #define HASH(X, MASK, SKIP) (((X) & MASK) >> SKIP)
 #endif
 
+#define  MEASURE
+#define expected_results 128000.0
+
 /**
  * Allocates a hashtable of NUM_BUCKETS and inits everything to 0.
  *
@@ -57,6 +60,10 @@ probe_hashtable(hashtable_t *ht, relation_t *rel, void *output);
 void
 build_hashtable_single(const hashtable_t *ht, const relation_t *rel, uint32_t i, const uint32_t hashmask,
                        const uint32_t skipbits);
+
+int64_t proble_hashtable_single_measure(const hashtable_t *ht, const relation_t *rel, uint32_t index_rel,
+                                        const uint32_t hashmask, const uint32_t skipbits, int64_t *matches,
+                                        uint64_t progressivetimer[]);
 
 int64_t proble_hashtable_single(const hashtable_t *ht, const relation_t *rel, uint32_t index_rel,
                                 const uint32_t hashmask, const uint32_t skipbits);

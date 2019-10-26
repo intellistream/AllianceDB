@@ -1546,7 +1546,7 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads)
     /* now print the timing results: */
     print_timing(args[0].timer1, args[0].timer2, args[0].timer3,
                  relS->num_tuples, result,
-                 &args[0].start, &args[0].end);
+                 &args[0].start, &args[0].end, nullptr);
 #endif
 
     /* clean up */
@@ -1728,7 +1728,7 @@ RJ_st(relation_t *relR, relation_t *relS, int nthreads) {
     stopTimer(&timer1);/* probe finished */
     gettimeofday(&end, NULL);
     /* now print the timing results: */
-    print_timing(timer1, timer2, timer3, relS->num_tuples, result, &start, &end);
+    print_timing(timer1, timer2, timer3, relS->num_tuples, result, &start, &end, nullptr);
 #endif
 
     /* clean-up temporary buffers */

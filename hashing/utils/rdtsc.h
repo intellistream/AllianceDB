@@ -56,6 +56,10 @@ static __inline__ void stopTimer(uint64_t *t) {
     *t = curtick() - *t;
 }
 
+static __inline__ void accTimer(uint64_t *pretimer, uint64_t *acctimer) {
+    *acctimer += curtick() - *pretimer;
+}
+
 #ifdef __cplusplus
 }
 #endif
