@@ -11,7 +11,7 @@
 #include <stdio.h>              /* printf */
 
 void print_timing(uint64_t total, uint64_t build, uint64_t part,
-             uint64_t numtuples, int64_t result,
-             struct timeval *start, struct timeval *end);
+                  uint64_t numtuples, int64_t result,
+                  struct timeval *start, struct timeval *end);
 
 #endif //ALLIANCEDB_TIMER_H

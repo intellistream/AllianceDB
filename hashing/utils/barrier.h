@@ -24,15 +24,6 @@
 #define pthread_barrier_destroy(b)  barrier_destroy(b)
 #define pthread_barrier_wait(b)     barrier_wait(b)
 
-#define PTHREAD_BARRIER_SERIAL_THREAD 1
-/** barrier wait macro */
-#define BARRIER_ARRIVE(B, RV)                            \
-    RV = pthread_barrier_wait(B);                       \
-    if(RV !=0 && RV != PTHREAD_BARRIER_SERIAL_THREAD){  \
-        printf("Couldn't wait on barrier\n");           \
-        exit(EXIT_FAILURE);                             \
-    }
-
 typedef struct {
     int needed;
     int called;

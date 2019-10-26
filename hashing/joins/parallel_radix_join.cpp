@@ -1594,7 +1594,7 @@ PRHO(relation_t *relR, relation_t *relS, int nthreads) {
 
 /** \copydoc RJ */
 result_t *
-RJ(relation_t *relR, relation_t *relS, int nthreads) {
+RJ_st(relation_t *relR, relation_t *relS, int nthreads) {
     int64_t result = 0;
     result_t *joinresult;
     uint32_t i;

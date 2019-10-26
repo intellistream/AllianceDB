@@ -35,6 +35,7 @@
 //#include "../../utils/affinity.h"           /* pthread_attr_setaffinity_np */
 #include "../utils/generator.h"          /* numa_localize() */
 #include "../utils/timer.h"
+#include "common_functions.h"
 #include <sched.h>
 
 #ifdef JOIN_RESULT_MATERIALIZE
@@ -51,27 +52,8 @@
     }
 #endif
 
-#ifndef NEXT_POW_2
-/**
- *  compute the next number, greater than or equal to 32-bit unsigned v.
- *  taken from "bit twiddling hacks":
- *  http://graphics.stanford.edu/~seander/bithacks.html
- */
-#define NEXT_POW_2(V)                           \
-    do {                                        \
-        V--;                                    \
-        V |= V >> 1;                            \
-        V |= V >> 2;                            \
-        V |= V >> 4;                            \
-        V |= V >> 8;                            \
-        V |= V >> 16;                           \
-        V++;                                    \
-    } while(0)
-#endif
 
-#ifndef HASH
-#define HASH(X, MASK, SKIP) (((X) & MASK) >> SKIP)
-#endif
+
 
 /** Debug msg logging method */
 #ifdef DEBUG
@@ -81,9 +63,6 @@
 #define DEBUGMSG(COND, MSG, ...)
 #endif
 
-/** An experimental feature to allocate input relations numa-local */
-extern int numalocalize;  /* defined in generator.c */
-extern int nthreads;      /* defined in generator.c */
 
 /**
  * \ingroup NPO arguments to the threads
@@ -107,6 +86,13 @@ struct arg_t {
     struct timeval start, end;
 #endif
 };
+
+/**
+ * @defgroup OverflowBuckets Buffer management for overflowing buckets.
+ * Simple buffer management for overflow-buckets organized as a
+ * linked-list of bucket_buffer_t.
+ * @{
+ */
 
 /**
  * @defgroup OverflowBuckets Buffer management for overflowing buckets.
@@ -155,15 +141,7 @@ get_new_bucket(bucket_t **result, bucket_buffer_t **buf) {
     }
 }
 
-/** De-allocates all the bucket_buffer_t */
-void
-free_bucket_buffer(bucket_buffer_t *buf) {
-    do {
-        bucket_buffer_t *tmp = buf->next;
-        free(buf);
-        buf = tmp;
-    } while (buf);
-}
+
 
 /** @} */
 
@@ -172,154 +150,6 @@ free_bucket_buffer(bucket_buffer_t *buf) {
  * @defgroup NPO The No Partitioning Optimized Join Implementation
  * @{
  */
-
-/**
- * Allocates a hashtable of NUM_BUCKETS and inits everything to 0.
- *
- * @param ht pointer to a hashtable_t pointer
- */
-void
-allocate_hashtable(hashtable_t **ppht, uint32_t nbuckets) {
-    hashtable_t *ht;
-
-    ht = (hashtable_t *) malloc(sizeof(hashtable_t));
-    ht->num_buckets = nbuckets;
-    NEXT_POW_2((ht->num_buckets));
-
-    /* allocate hashtable buckets cache line aligned */
-    if (posix_memalign((void **) &ht->buckets, CACHE_LINE_SIZE,
-                       ht->num_buckets * sizeof(bucket_t))) {
-        perror("Aligned allocation failed!\n");
-        exit(EXIT_FAILURE);
-    }
-
-    /** Not an elegant way of passing whether we will numa-localize, but this
-        feature is experimental anyway. */
-    if (numalocalize) {
-        tuple_t *mem = (tuple_t *) ht->buckets;
-        uint32_t ntuples = (ht->num_buckets * sizeof(bucket_t)) / sizeof(tuple_t);
-        numa_localize(mem, ntuples, nthreads);
-    }
-
-    memset(ht->buckets, 0, ht->num_buckets * sizeof(bucket_t));
-    ht->skip_bits = 0; /* the default for modulo hash */
-    ht->hash_mask = (ht->num_buckets - 1) << ht->skip_bits;
-    *ppht = ht;
-}
-
-/**
- * Releases memory allocated for the hashtable.
- *
- * @param ht pointer to hashtable
- */
-void
-destroy_hashtable(hashtable_t *ht) {
-    free(ht->buckets);
-    free(ht);
-}
-
-/**
- * Single-thread hashtable build method, ht is pre-allocated.
- *
- * @param ht hastable to be built
- * @param rel the build relation
- */
-void
-build_hashtable_st(hashtable_t *ht, relation_t *rel) {
-    uint32_t i;
-    const uint32_t hashmask = ht->hash_mask;
-    const uint32_t skipbits = ht->skip_bits;
-
-    for (i = 0; i < rel->num_tuples; i++) {
-        tuple_t *dest;
-        bucket_t *curr, *nxt;
-        int32_t idx = HASH(rel->tuples[i].key, hashmask, skipbits);
-
-        /* copy the tuple to appropriate hash bucket */
-        /* if full, follow nxt pointer to find correct place */
-        curr = ht->buckets + idx;
-        nxt = curr->next;
-
-        if (curr->count == BUCKET_SIZE) {
-            if (!nxt || nxt->count == BUCKET_SIZE) {
-                bucket_t *b;
-                b = (bucket_t *) calloc(1, sizeof(bucket_t));
-                curr->next = b;
-                b->next = nxt;
-                b->count = 1;
-                dest = b->tuples;
-            } else {
-                dest = nxt->tuples + nxt->count;
-                nxt->count++;
-            }
-        } else {
-            dest = curr->tuples + curr->count;
-            curr->count++;
-        }
-        *dest = rel->tuples[i];
-    }
-}
-
-/**
- * Probes the hashtable for the given outer relation, returns num results.
- * This probing method is used for both single and multi-threaded version.
- *
- * @param ht hashtable to be probed
- * @param rel the probing outer relation
- * @param output chained tuple buffer to write join results, i.e. rid pairs.
- *
- * @return number of matching tuples
- */
-int64_t
-probe_hashtable(hashtable_t *ht, relation_t *rel, void *output) {
-    uint32_t i, j;
-    int64_t matches;
-
-    const uint32_t hashmask = ht->hash_mask;
-    const uint32_t skipbits = ht->skip_bits;
-#ifdef PREFETCH_NPJ
-    size_t prefetch_index = PREFETCH_DISTANCE;
-#endif
-
-    matches = 0;
-
-#ifdef JOIN_RESULT_MATERIALIZE
-    chainedtuplebuffer_t * chainedbuf = (chainedtuplebuffer_t *) output;
-#endif
-
-    for (i = 0; i < rel->num_tuples; i++) {
-#ifdef PREFETCH_NPJ
-        if (prefetch_index < rel->num_tuples) {
-            intkey_t idx_prefetch = HASH(rel->tuples[prefetch_index++].key,
-                                         hashmask, skipbits);
-            __builtin_prefetch(ht->buckets + idx_prefetch, 0, 1);
-        }
-#endif
-
-        intkey_t idx = HASH(rel->tuples[i].key, hashmask, skipbits);
-        bucket_t *b = ht->buckets + idx;
-
-        do {
-            for (j = 0; j < b->count; j++) {
-                if (rel->tuples[i].key == b->tuples[j].key) {
-                    matches++;
-
-#ifdef JOIN_RESULT_MATERIALIZE
-                    /* copy to the result buffer */
-                    tuple_t * joinres = cb_next_writepos(chainedbuf);
-                    joinres->key      = b->tuples[j].payload;   /* R-rid */
-                    joinres->payload  = rel->tuples[i].payload; /* S-rid */
-#endif
-
-                }
-            }
-
-            b = b->next;/* follow overflow pointer */
-        } while (b);
-    }
-
-    return matches;
-}
 
 /** \copydoc NPO_st */
 result_t *

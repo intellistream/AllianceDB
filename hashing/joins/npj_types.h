@@ -11,6 +11,7 @@
 #define NPO_TYPES_H
 
 #include "../utils/types.h" /* tuple_t */
+#include "npj_params.h"
 
 /**
  * @defgroup NPOTypes Type definitions used by NPO.

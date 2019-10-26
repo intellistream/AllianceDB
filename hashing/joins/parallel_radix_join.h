@@ -47,7 +47,7 @@ PRO(relation_t *relR, relation_t *relS, int nthreads);
  * @return number of result tuples
  */
 result_t *
-RJ(relation_t *relR, relation_t *relS, int nthreads);
+RJ_st(relation_t *relR, relation_t *relS, int nthreads);
 
 /**
  * PRH: Parallel Radix Join Histogram-based.

@@ -245,7 +245,7 @@ cpu-mapping.txt
 #include <sched.h>
 
 #include "joins/no_partitioning_join.h" /* no partitioning joins: NPO, NPO_st */
-#include "joins/parallel_radix_join.h"  /* parallel radix joins: RJ, PRO, PRH, PRHO */
+#include "joins/parallel_radix_join.h"  /* parallel radix joins: RJ_st, PRO, PRH, PRHO */
 #include "joins/onlinejoins_st.h"  /* single_thread onlinejoins: SHJ*/
 #include "utils/generator.h"            /* create_relation_xk */
 
@@ -305,7 +305,7 @@ extern int nthreads;      /* defined in generator.c */
 static struct algo_t algos[] =
         {
                 {"PRO",    PRO},
-                {"RJ",     RJ},
+                {"RJ_st",  RJ_st},
                 {"PRH",    PRH},
                 {"PRHO",   PRHO},
                 {"NPO",    NPO},
@@ -342,7 +342,7 @@ main(int argc, char **argv) {
     param_t cmd_params;
 
     /* Default values if not specified on command line */
-    cmd_params.algo = &algos[6]; /* PRO, RJ, PRH, PRHO, NPO, NPO_st, SHJ_st */
+    cmd_params.algo = &algos[6]; /* PRO, RJ_st, PRH, PRHO, NPO, NPO_st, SHJ_st */
     cmd_params.nthreads = 2;
     /* default dataset is Workload B (described in paper) */
     cmd_params.r_size = 128000;
@@ -459,7 +459,7 @@ print_help(char *progname) {
     printf("Usage: %s [options]\n", progname);
 
     printf("\
-    Join algorithm selection, algorithms : RJ, PRO, PRH, PRHO, NPO, NPO_st    \n\
+    Join algorithm selection, algorithms : RJ_st, PRO, PRH, PRHO, NPO, NPO_st    \n\
        -a --algo=<name>    Run the hash join algorithm named <name> [PRO]     \n\
                                                                               \n\
     Other join configuration options, with default values in [] :             \n\
