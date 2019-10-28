@@ -16,10 +16,9 @@
 #include "../utils/types.h" /* relation_t */
 
 /**
- * NPO: No Partitioning Join Optimized.
+ * Join-Matrix Model SHJ.
  *
- * The "No Partitioning Join Optimized" implementation denoted as NPO
- * which was originally proposed by Blanas et al. in SIGMOD 2011.
+ * The "Join-Matrix Model" was originally proposed by Mohammed Elseidy et al. in VLDB 2014.
  *
  * The following is a multi-threaded implementation. Just returns the
  * number of result tuples.
@@ -30,7 +29,7 @@
  * @return number of result tuples
  */
 result_t *
-SHJ(relation_t *relR, relation_t *relS, int nthreads);
+SHJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads);
 
 /**
  * The No Partitioning Join Optimized (NPO) as a single-threaded
@@ -43,6 +42,5 @@ SHJ(relation_t *relR, relation_t *relS, int nthreads);
  */
 result_t *
 SHJ_st(relation_t *relR, relation_t *relS, int nthreads);
-
 
 #endif /* NO_PARTITIONING_JOIN_H */

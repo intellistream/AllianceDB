@@ -64,14 +64,15 @@
 #endif
 
 
+/** @} */
 /**
- * \ingroup NPO arguments to the threads
+ * \ingroup common arguments to the threads
  */
-typedef struct arg_t arg_t;
-
 struct arg_t {
+public:
     int32_t tid;
     hashtable_t *ht;
+
     relation_t relR;
     relation_t relS;
     pthread_barrier_t *barrier;
@@ -82,17 +83,12 @@ struct arg_t {
 
 #ifndef NO_TIMING
     /* stats about the thread */
-    uint64_t timer1, timer2, timer3;
+    uint64_t timer1, timer2, timer3, build_timer = 0;
     struct timeval start, end;
+    uint64_t progressivetimer[3];//array of progressive timer.
 #endif
 };
 
-/**
- * @defgroup OverflowBuckets Buffer management for overflowing buckets.
- * Simple buffer management for overflow-buckets organized as a
- * linked-list of bucket_buffer_t.
- * @{
- */
 
 /**
  * @defgroup OverflowBuckets Buffer management for overflowing buckets.
@@ -117,34 +113,6 @@ init_bucket_buffer(bucket_buffer_t **ppbuf) {
     *ppbuf = overflowbuf;
 }
 
-/**
- * Returns a new bucket_t from the given bucket_buffer_t.
- * If the bucket_buffer_t does not have enough space, then allocates
- * a new bucket_buffer_t and adds to the list.
- *
- * @param result [out] the new bucket
- * @param buf [in,out] the pointer to the bucket_buffer_t pointer
- */
-static inline void
-get_new_bucket(bucket_t **result, bucket_buffer_t **buf) {
-    if ((*buf)->count < OVERFLOW_BUF_SIZE) {
-        *result = (*buf)->buf + (*buf)->count;
-        (*buf)->count++;
-    } else {
-        /* need to allocate new buffer */
-        bucket_buffer_t *new_buf = (bucket_buffer_t *)
-                malloc(sizeof(bucket_buffer_t));
-        new_buf->count = 1;
-        new_buf->next = *buf;
-        *buf = new_buf;
-        *result = new_buf->buf;
-    }
-}
-
-
-
-/** @} */
-
 
 /**
  * @defgroup NPO The No Partitioning Optimized Join Implementation
@@ -161,6 +129,7 @@ NPO_st(relation_t *relR, relation_t *relS, int nthreads) {
 #ifndef NO_TIMING
     struct timeval start, end;
     uint64_t timer1, timer2, timer3;
+    uint64_t progressivetimer[3];//array of progressive timer.
 #endif
     uint32_t nbuckets = (relR->num_tuples / BUCKET_SIZE);
     allocate_hashtable(&ht, nbuckets);
@@ -174,6 +143,9 @@ NPO_st(relation_t *relR, relation_t *relS, int nthreads) {
     gettimeofday(&start, NULL);
     startTimer(&timer1);
     startTimer(&timer2);
+    startTimer(&progressivetimer[0]);
+    startTimer(&progressivetimer[1]);
+    startTimer(&progressivetimer[2]);
     timer3 = 0; /* no partitioning */
 #endif
 
@@ -189,7 +161,7 @@ NPO_st(relation_t *relR, relation_t *relS, int nthreads) {
     void *chainedbuf = NULL;
 #endif
 
-    result = probe_hashtable(ht, relS, chainedbuf);
+    result = probe_hashtable(ht, relS, chainedbuf, progressivetimer);
 
 #ifdef JOIN_RESULT_MATERIALIZE
     threadresult_t * thrres = &(joinresult->resultlist[0]);/* single-thread */
@@ -202,7 +174,8 @@ NPO_st(relation_t *relR, relation_t *relS, int nthreads) {
     stopTimer(&timer1); /* over all */
     gettimeofday(&end, NULL);
     /* now print the timing results: */
-    print_timing(timer1, timer2, timer3, relS->num_tuples, result, &start, &end, nullptr);
+    print_timing(timer1, timer2, timer3, relS->num_tuples,
+                 result, &start, &end, progressivetimer);
 #endif
 
     destroy_hashtable(ht);
@@ -211,69 +184,6 @@ NPO_st(relation_t *relR, relation_t *relS, int nthreads) {
     joinresult->nthreads = 1;
 
     return joinresult;
-}
-
-/**
- * Multi-thread hashtable build method, ht is pre-allocated.
- * Writes to buckets are synchronized via latches.
- *
- * @param ht hastable to be built
- * @param rel the build relationO
- * @param overflowbuf pre-allocated chunk of buckets for overflow use.
- */
-void
-build_hashtable_mt(hashtable_t *ht, relation_t *rel,
-                   bucket_buffer_t **overflowbuf) {
-    uint32_t i;
-    const uint32_t hashmask = ht->hash_mask;
-    const uint32_t skipbits = ht->skip_bits;
-
-#ifdef PREFETCH_NPJ
-    size_t prefetch_index = PREFETCH_DISTANCE;
-#endif
-
-    for (i = 0; i < rel->num_tuples; i++) {
-        tuple_t *dest;
-        bucket_t *curr, *nxt;
-
-#ifdef PREFETCH_NPJ
-        if (prefetch_index < rel->num_tuples) {
-            intkey_t idx_prefetch = HASH(rel->tuples[prefetch_index++].key,
-                                         hashmask, skipbits);
-            __builtin_prefetch(ht->buckets + idx_prefetch, 1, 1);
-        }
-#endif
-
-        int32_t idx = HASH(rel->tuples[i].key, hashmask, skipbits);
-        /* copy the tuple to appropriate hash bucket */
-        /* if full, follow nxt pointer to find correct place */
-        curr = ht->buckets + idx;
-        lock(&curr->latch);
-        nxt = curr->next;
-
-        if (curr->count == BUCKET_SIZE) {
-            if (!nxt || nxt->count == BUCKET_SIZE) {
-                bucket_t *b;
-                /* b = (bucket_t*) calloc(1, sizeof(bucket_t)); */
-                /* instead of calloc() everytime, we pre-allocate */
-                get_new_bucket(&b, overflowbuf);
-                curr->next = b;
-                b->next = nxt;
-                b->count = 1;
-                dest = b->tuples;
-            } else {
-                dest = nxt->tuples + nxt->count;
-                nxt->count++;
-            }
-        } else {
-            dest = curr->tuples + curr->count;
-            curr->count++;
-        }
-
-        *dest = rel->tuples[i];
-        unlock(&curr->latch);
-    }
-
 }
 
 /**
@@ -308,6 +218,9 @@ npo_thread(void *param) {
         gettimeofday(&args->start, NULL);
         startTimer(&args->timer1);
         startTimer(&args->timer2);
+        startTimer(&args->progressivetimer[0]);
+        startTimer(&args->progressivetimer[1]);
+        startTimer(&args->progressivetimer[2]);
         args->timer3 = 0; /* no partitionig phase */
     }
 #endif
@@ -344,7 +257,7 @@ npo_thread(void *param) {
 #endif
 
     /* probe for matching tuples from the assigned part of relS */
-    args->num_results = probe_hashtable(args->ht, &args->relS, chainedbuf);
+    args->num_results = probe_hashtable(args->ht, &args->relS, chainedbuf, args->progressivetimer);
 
 #ifdef JOIN_RESULT_MATERIALIZE
     args->threadresult->nresults = args->num_results;
@@ -380,6 +293,62 @@ npo_thread(void *param) {
 
     return 0;
 }
+
+/**
+ * Multi-thread data partition.
+ * @param relR
+ * @param relS
+ * @param nthreads
+ * @param ht
+ * @param numR
+ * @param numS
+ * @param numRthr
+ * @param numSthr
+ * @param i
+ * @param rv
+ * @param set
+ * @param args
+ * @param tid
+ * @param attr
+ * @param barrier
+ * @param joinresult
+ */
+void
+np_distribute(const relation_t *relR, const relation_t *relS, int nthreads, hashtable_t *ht, int32_t numR, int32_t numS,
+              int32_t numRthr, int32_t numSthr, int i, int rv, cpu_set_t &set, struct arg_t *args, pthread_t *tid,
+              pthread_attr_t &attr, barrier_t &barrier, const result_t *joinresult) {
+    for (i = 0; i < nthreads; i++) {
+        int cpu_idx = get_cpu_id(i);
+
+        DEBUGMSG(1, "Assigning thread-%d to CPU-%d\n", i, cpu_idx);
+        CPU_ZERO(&set);
+        CPU_SET(cpu_idx, &set);
+        pthread_attr_setaffinity_np(&attr, sizeof(cpu_set_t), &set);
+
+        args[i].tid = i;
+        args[i].ht = ht;
+        args[i].barrier = &barrier;
+
+        /* assing part of the relR for next thread */
+        args[i].relR.num_tuples = (i == (nthreads - 1)) ? numR : numRthr;
+        args[i].relR.tuples = relR->tuples + numRthr * i;
+        numR -= numRthr;
+
+        /* assing part of the relS for next thread */
+        args[i].relS.num_tuples = (i == (nthreads - 1)) ? numS : numSthr;
+        args[i].relS.tuples = relS->tuples + numSthr * i;
+        numS -= numSthr;
+
+        args[i].threadresult = &(joinresult->resultlist[i]);
+
+        rv = pthread_create(&tid[i], &attr, npo_thread, (void *) &args[i]);
+        if (rv) {
+            printf("ERROR; return code from pthread_create() is %d\n", rv);
+            exit(-1);
+        }
+    }
+}
+
 
 /** \copydoc NPO */
 result_t *
@@ -417,38 +386,8 @@ NPO(relation_t *relR, relation_t *relS, int nthreads) {
     }
 
     pthread_attr_init(&attr);
-    for (i = 0; i < nthreads; i++) {
-        int cpu_idx = get_cpu_id(i);
-
-        DEBUGMSG(1, "Assigning thread-%d to CPU-%d\n", i, cpu_idx);
-
-        CPU_ZERO(&set);
-        CPU_SET(cpu_idx, &set);
-        pthread_attr_setaffinity_np(&attr, sizeof(cpu_set_t), &set);
-
-        args[i].tid = i;
-        args[i].ht = ht;
-        args[i].barrier = &barrier;
-
-        /* assing part of the relR for next thread */
-        args[i].relR.num_tuples = (i == (nthreads - 1)) ? numR : numRthr;
-        args[i].relR.tuples = relR->tuples + numRthr * i;
-        numR -= numRthr;
-
-        /* assing part of the relS for next thread */
-        args[i].relS.num_tuples = (i == (nthreads - 1)) ? numS : numSthr;
-        args[i].relS.tuples = relS->tuples + numSthr * i;
-        numS -= numSthr;
-
-        args[i].threadresult = &(joinresult->resultlist[i]);
-
-        rv = pthread_create(&tid[i], &attr, npo_thread, (void *) &args[i]);
-        if (rv) {
-            printf("ERROR; return code from pthread_create() is %d\n", rv);
-            exit(-1);
-        }
-
-    }
+    np_distribute(relR, relS, nthreads, ht, numR, numS, numRthr, numSthr, i, rv, set, args, tid, attr, barrier,
+                  joinresult);
 
     for (i = 0; i < nthreads; i++) {
         pthread_join(tid[i], NULL);

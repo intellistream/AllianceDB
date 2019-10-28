@@ -131,7 +131,7 @@ void build_hashtable_single(const hashtable_t *ht, const relation_t *rel, uint32
 }
 
 
-int64_t probe_hashtable(hashtable_t *ht, relation_t *rel, void *output) {
+int64_t probe_hashtable(hashtable_t *ht, relation_t *rel, void *output, uint64_t progressivetimer[]) {
     uint32_t i;
     int64_t matches;
 
@@ -148,7 +148,8 @@ int64_t probe_hashtable(hashtable_t *ht, relation_t *rel, void *output) {
 #endif
 
     for (i = 0; i < rel->num_tuples; i++) {
-        matches += proble_hashtable_single(ht, rel, i, hashmask, skipbits);
+        proble_hashtable_single_measure
+                (ht, rel, i, hashmask, skipbits, &matches, progressivetimer);
     }
 
     return matches;
@@ -183,13 +184,13 @@ int64_t proble_hashtable_single_measure(const hashtable_t *ht, const relation_t 
                 joinres->payload  = rel->tuples[i].payload; /* S-rid */
 #endif
 #ifdef MEASURE
-                if (!check1 && *matches == 0.25 * expected_results) {
+                if (!check1 && *matches == 0.25 * expected_results / nthreads) {
                     stopTimer(&progressivetimer[0]);
                     check1 = true;
-                } else if (!check2 && *matches == 0.5 * expected_results) {
+                } else if (!check2 && *matches == 0.5 * expected_results / nthreads) {
                     stopTimer(&progressivetimer[1]);
                     check2 = true;
-                } else if (!check3 && *matches == 0.75 * expected_results) {
+                } else if (!check3 && *matches == 0.75 * expected_results / nthreads) {
                     stopTimer(&progressivetimer[2]);
                     check3 = true;
                 }
@@ -235,3 +236,82 @@ int64_t proble_hashtable_single(const hashtable_t *ht, const relation_t *rel, ui
     } while (b);
     return matches;
 }
+
+
+/**
+ * Returns a new bucket_t from the given bucket_buffer_t.
+ * If the bucket_buffer_t does not have enough space, then allocates
+ * a new bucket_buffer_t and adds to the list.
+ *
+ * @param result [out] the new bucket
+ * @param buf [in,out] the pointer to the bucket_buffer_t pointer
+ */
+static inline void
+get_new_bucket(bucket_t **result, bucket_buffer_t **buf) {
+    if ((*buf)->count < OVERFLOW_BUF_SIZE) {
+        *result = (*buf)->buf + (*buf)->count;
+        (*buf)->count++;
+    } else {
+        /* need to allocate new buffer */
+        bucket_buffer_t *new_buf = (bucket_buffer_t *)
+                malloc(sizeof(bucket_buffer_t));
+        new_buf->count = 1;
+        new_buf->next = *buf;
+        *buf = new_buf;
+        *result = new_buf->buf;
+    }
+}
+
+void build_hashtable_mt(hashtable_t *ht, relation_t *rel, bucket_buffer_t **overflowbuf) {
+    uint32_t i;
+    const uint32_t hashmask = ht->hash_mask;
+    const uint32_t skipbits = ht->skip_bits;
+
+#ifdef PREFETCH_NPJ
+    size_t prefetch_index = PREFETCH_DISTANCE;
+#endif
+
+    for (i = 0; i < rel->num_tuples; i++) {
+        tuple_t *dest;
+        bucket_t *curr, *nxt;
+
+#ifdef PREFETCH_NPJ
+        if (prefetch_index < rel->num_tuples) {
+            intkey_t idx_prefetch = HASH(rel->tuples[prefetch_index++].key,
+                                         hashmask, skipbits);
+            __builtin_prefetch(ht->buckets + idx_prefetch, 1, 1);
+        }
+#endif
+
+        int32_t idx = HASH(rel->tuples[i].key, hashmask, skipbits);
+        /* copy the tuple to appropriate hash bucket */
+        /* if full, follow nxt pointer to find correct place */
+        curr = ht->buckets + idx;
+        lock(&curr->latch);
+        nxt = curr->next;
+
+        if (curr->count == BUCKET_SIZE) {
+            if (!nxt || nxt->count == BUCKET_SIZE) {
+                bucket_t *b;
+                /* b = (bucket_t*) calloc(1, sizeof(bucket_t)); */
+                /* instead of calloc() everytime, we pre-allocate */
+                get_new_bucket(&b, overflowbuf);
+                curr->next = b;
+                b->next = nxt;
+                b->count = 1;
+                dest = b->tuples;
+            } else {
+                dest = nxt->tuples + nxt->count;
+                nxt->count++;
+            }
+        } else {
+            dest = curr->tuples + curr->count;
+            curr->count++;
+        }
+
+        *dest = rel->tuples[i];
+        unlock(&curr->latch);
+    }
+}
+
+

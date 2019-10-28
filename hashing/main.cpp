@@ -246,7 +246,7 @@ cpu-mapping.txt
 
 #include "joins/no_partitioning_join.h" /* no partitioning joins: NPO, NPO_st */
 #include "joins/parallel_radix_join.h"  /* parallel radix joins: RJ_st, PRO, PRH, PRHO */
-#include "joins/onlinejoins_st.h"  /* single_thread onlinejoins: SHJ*/
+#include "joins/onlinejoins_st.h"  /* single_thread onlinejoins: SHJ_st*/
 #include "utils/generator.h"            /* create_relation_xk */
 
 #include "utils/perf_counters.h" /* PCM_x */
@@ -304,14 +304,15 @@ extern int nthreads;      /* defined in generator.c */
 /** all available algorithms */
 static struct algo_t algos[] =
         {
-                {"PRO",    PRO},
-                {"RJ_st",  RJ_st},
-                {"PRH",    PRH},
-                {"PRHO",   PRHO},
-                {"NPO",    NPO},
-                {"NPO_st", NPO_st}, /* NPO single threaded */
-                {"SHJ",    SHJ_st}, /* Symmetric hash join */
-                {{0},      0}
+                {"PRO",       PRO},
+                {"RJ_st",     RJ_st},
+                {"PRH",       PRH},
+                {"PRHO",      PRHO},
+                {"NPO",       NPO},
+                {"NPO_st",    NPO_st}, /* NPO single threaded */
+                {"SHJ_st",    SHJ_st}, /* Symmetric hash join single_thread*/
+                {"SHJ_JM_NP", SHJ_JM_NP}, /* Symmetric hash join JM Model, No-Partition*/
+                {{0},         0}
         };
 
 /* command line handling functions */
@@ -342,11 +343,11 @@ main(int argc, char **argv) {
     param_t cmd_params;
 
     /* Default values if not specified on command line */
-    cmd_params.algo = &algos[6]; /* PRO, RJ_st, PRH, PRHO, NPO, NPO_st, SHJ_st */
-    cmd_params.nthreads = 2;
+    cmd_params.algo = &algos[7]; /* PRO, RJ_st, PRH, PRHO, NPO, NPO_st, SHJ_st */
+    cmd_params.nthreads = 10;
     /* default dataset is Workload B (described in paper) */
-    cmd_params.r_size = 128000;
-    cmd_params.s_size = 128000;
+    cmd_params.r_size = 12800000;
+    cmd_params.s_size = 12800000;
     cmd_params.r_seed = 12345;
     cmd_params.s_seed = 54321;
     cmd_params.skew = 0.0;

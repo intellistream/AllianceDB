@@ -20,12 +20,25 @@
     }
 #endif
 
+#ifdef JOIN_RESULT_MATERIALIZE
+#include "tuple_buffer.h"       /* for materialization */
+#endif
+
 #ifndef HASH
 #define HASH(X, MASK, SKIP) (((X) & MASK) >> SKIP)
 #endif
 
+/** Debug msg logging method */
+#ifdef DEBUG
+#define DEBUGMSG(COND, MSG, ...)                                    \
+    if(COND) { fprintf(stdout, "[DEBUG] "MSG, ## __VA_ARGS__); }
+#else
+#define DEBUGMSG(COND, MSG, ...)
+#endif
+
+
 #define  MEASURE
-#define expected_results 128000.0
+#define expected_results 12800000.0
 
 /**
  * Allocates a hashtable of NUM_BUCKETS and inits everything to 0.
@@ -54,7 +67,7 @@ build_hashtable_st(hashtable_t *ht, relation_t *rel);
  * @return number of matching tuples
  */
 int64_t
-probe_hashtable(hashtable_t *ht, relation_t *rel, void *output);
+probe_hashtable(hashtable_t *ht, relation_t *rel, void *output, uint64_t progressivetimer[]);
 
 
 void
@@ -67,6 +80,19 @@ int64_t proble_hashtable_single_measure(const hashtable_t *ht, const relation_t 
 
 int64_t proble_hashtable_single(const hashtable_t *ht, const relation_t *rel, uint32_t index_rel,
                                 const uint32_t hashmask, const uint32_t skipbits);
+
+
+/**
+ * Multi-thread hashtable build method, ht is pre-allocated.
+ * Writes to buckets are synchronized via latches.
+ *
+ * @param ht hastable to be built
+ * @param rel the build relationO
+ * @param overflowbuf pre-allocated chunk of buckets for overflow use.
+ */
+void
+build_hashtable_mt(hashtable_t *ht, relation_t *rel,
+                   bucket_buffer_t **overflowbuf);
 
 /**
  * Releases memory allocated for the hashtable.
