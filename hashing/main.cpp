@@ -243,10 +243,11 @@ cpu-mapping.txt
 #include <string.h>             /* strcmp */
 #include <limits.h>             /* INT_MAX */
 #include <sched.h>
+#include <list>
 
 #include "joins/no_partitioning_join.h" /* no partitioning joins: NPO, NPO_st */
 #include "joins/parallel_radix_join.h"  /* parallel radix joins: RJ_st, PRO, PRH, PRHO */
-#include "joins/onlinejoins_st.h"  /* single_thread onlinejoins: SHJ_st*/
+#include "joins/shj.h"  /* single_thread onlinejoins: SHJ_st*/
 #include "utils/generator.h"            /* create_relation_xk */
 
 #include "utils/perf_counters.h" /* PCM_x */
@@ -312,6 +313,7 @@ static struct algo_t algos[] =
                 {"NPO_st",    NPO_st}, /* NPO single threaded */
                 {"SHJ_st",    SHJ_st}, /* Symmetric hash join single_thread*/
                 {"SHJ_JM_NP", SHJ_JM_NP}, /* Symmetric hash join JM Model, No-Partition*/
+                {"SHJ_JM_NP", SHJ_JB_NP}, /* Symmetric hash join JB Model, No-Partition*/
                 {{0},         0}
         };
 
@@ -327,6 +329,7 @@ parse_args(int argc, char **argv, param_t *cmd_params);
 
 int
 main(int argc, char **argv) {
+
     relation_t relR;
     relation_t relS;
     result_t *results;
@@ -343,8 +346,8 @@ main(int argc, char **argv) {
     param_t cmd_params;
 
     /* Default values if not specified on command line */
-    cmd_params.algo = &algos[7]; /* PRO, RJ_st, PRH, PRHO, NPO, NPO_st, SHJ_st */
-    cmd_params.nthreads = 10;
+    cmd_params.algo = &algos[8]; /* PRO, RJ_st, PRH, PRHO, NPO, NPO_st, SHJ_st,SHJ_JM_NP,SHJ_JB_NP */
+    cmd_params.nthreads = 2;
     /* default dataset is Workload B (described in paper) */
     cmd_params.r_size = 12800000;
     cmd_params.s_size = 12800000;

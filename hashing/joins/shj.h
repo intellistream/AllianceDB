@@ -32,6 +32,22 @@ result_t *
 SHJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads);
 
 /**
+ * Join-Biclique Model SHJ.
+ *
+ * The "Join-Biclique Model" was originally proposed by Qian Lin et al. in SIGMOD 2015.
+ *
+ * The following is a multi-threaded implementation. Just returns the
+ * number of result tuples.
+ *
+ * @param relR input relation R - inner relation
+ * @param relS input relation S - outer relation
+ *
+ * @return number of result tuples
+ */
+result_t *
+SHJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads);
+
+/**
  * The No Partitioning Join Optimized (NPO) as a single-threaded
  * implementation. Just returns the number of result tuples.
  *
