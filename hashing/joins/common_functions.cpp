@@ -3,7 +3,7 @@
 //
 
 #include "../utils/barrier.h"            /* pthread_barrier_* */
-#include "../utils/timer.h"
+#include "../utils/t_timer.h"
 #include "../utils/generator.h"          /* numa_localize() */
 #include "../utils/cpu_mapping.h"        /* get_cpu_id */
 #include "../utils/lock.h"               /* lock, unlock */

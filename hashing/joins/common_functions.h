@@ -38,7 +38,7 @@
 
 
 #define  MEASURE
-#define expected_results 12800000.0
+#define expected_results 1280000.0
 
 /**
  * Allocates a hashtable of NUM_BUCKETS and inits everything to 0.

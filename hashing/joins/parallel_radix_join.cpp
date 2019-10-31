@@ -34,7 +34,7 @@
 #include <sched.h>
 //#include "../utils/affinity.h"           /* pthread_attr_setaffinity_np */
 #include "../utils/generator.h"          /* numa_localize() */
-#include "../utils/timer.h" /* startTimer, stopTimer */
+#include "../utils/t_timer.h" /* startTimer, stopTimer */
 
 #ifdef JOIN_RESULT_MATERIALIZE
 #include "tuple_buffer.h"       /* for materialization */
@@ -44,7 +44,7 @@
 
 #ifndef BARRIER_ARRIVE
 /** barrier wait macro */
-#define BARRIER_ARRIVE(B,RV)                            \
+#define BARRIER_ARRIVE(B, RV)                            \
     RV = pthread_barrier_wait(B);                       \
     if(RV !=0 && RV != PTHREAD_BARRIER_SERIAL_THREAD){  \
         printf("Couldn't wait on barrier\n");           \
@@ -182,8 +182,10 @@ struct arg_t {
 
     /* stats about the thread */
     int32_t parts_processed;
-    uint64_t timer1, timer2, timer3;
-    struct timeval start, end;
+
+#ifndef NO_TIMING
+    T_TIMER *timer;
+#endif
 #ifdef SYNCSTATS
     /** Thread local timers : */
     synctimer_t localtimer;
@@ -997,7 +999,7 @@ prj_thread(void *param) {
     }
 #endif
 
-    /* wait at a barrier until each thread starts and then start the timer */
+    /* wait at a barrier until each thread starts and then start the T_TIMER */
     BARRIER_ARRIVE(args->barrier, rv);
 
     /* if monitoring synchronization stats */
@@ -1006,10 +1008,7 @@ prj_thread(void *param) {
 #ifndef NO_TIMING
     if (my_tid == 0) {
         /* thread-0 checkpoints the time */
-        gettimeofday(&args->start, NULL);
-        startTimer(&args->timer1);
-        startTimer(&args->timer2);
-        startTimer(&args->timer3);
+        START_MEASURE_NP((*(args->timer)))
     }
 #endif
 
@@ -1305,7 +1304,7 @@ prj_thread(void *param) {
     SYNC_GLOBAL_STOP(&args->globaltimer->sync4, my_tid);
 
 #ifndef NO_TIMING
-    if (my_tid == 0) stopTimer(&args->timer3);/* partitioning finished */
+    if (my_tid == 0) END_MEASURE_PARTITION((*(args->timer)));/* partitioning finished */
 #endif
 
     DEBUGMSG((my_tid == 0), "Number of join tasks = %d\n", join_queue->count);
@@ -1352,9 +1351,7 @@ prj_thread(void *param) {
     BARRIER_ARRIVE(args->barrier, rv);
     if (my_tid == 0) {
         /* Actually with this setup we're not timing build */
-        stopTimer(&args->timer2);/* build finished */
-        stopTimer(&args->timer1);/* probe finished */
-        gettimeofday(&args->end, NULL);
+        END_MEASURE((*(args->timer)));
     }
 #endif
 
@@ -1544,9 +1541,7 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads)
 
 #ifndef NO_TIMING
     /* now print the timing results: */
-    print_timing(args[0].timer1, args[0].timer2, args[0].timer3,
-                 relS->num_tuples, result,
-                 &args[0].start, &args[0].end, nullptr);
+    print_timing(relS->num_tuples, result, args[0].timer);
 #endif
 
     /* clean up */
@@ -1599,11 +1594,6 @@ RJ_st(relation_t *relR, relation_t *relS, int nthreads) {
     result_t *joinresult;
     uint32_t i;
 
-#ifndef NO_TIMING
-    struct timeval start, end;
-    uint64_t timer1, timer2, timer3;
-#endif
-
     relation_t *outRelR, *outRelS;
 
     outRelR = (relation_t *) malloc(sizeof(relation_t));
@@ -1625,10 +1615,8 @@ RJ_st(relation_t *relR, relation_t *relS, int nthreads) {
     outRelS->num_tuples = relS->num_tuples;
 
 #ifndef NO_TIMING
-    gettimeofday(&start, NULL);
-    startTimer(&timer1);
-    startTimer(&timer2);
-    startTimer(&timer3);
+    T_TIMER timer;
+    START_MEASURE_NP(timer)
 #endif
 
     /***** do the multi-pass partitioning *****/
@@ -1670,7 +1658,7 @@ RJ_st(relation_t *relR, relation_t *relS, int nthreads) {
 
 
 #ifndef NO_TIMING
-    stopTimer(&timer3);
+    END_MEASURE_PARTITION(timer)
 #endif
 
     int *R_count_per_cluster = (int *) calloc((1 << NUM_RADIX_BITS), sizeof(int));
@@ -1724,11 +1712,9 @@ RJ_st(relation_t *relR, relation_t *relS, int nthreads) {
 
 #ifndef NO_TIMING
     /* TODO: actually we're not timing build */
-    stopTimer(&timer2);/* build finished */
-    stopTimer(&timer1);/* probe finished */
-    gettimeofday(&end, NULL);
+    END_MEASURE(timer)
     /* now print the timing results: */
-    print_timing(timer1, timer2, timer3, relS->num_tuples, result, &start, &end, nullptr);
+    print_timing(relS->num_tuples, result, &timer);
 #endif
 
     /* clean-up temporary buffers */

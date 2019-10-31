@@ -34,7 +34,7 @@
 #include "../utils/barrier.h"            /* pthread_barrier_* */
 //#include "../../utils/affinity.h"           /* pthread_attr_setaffinity_np */
 #include "../utils/generator.h"          /* numa_localize() */
-#include "../utils/timer.h"
+#include "../utils/t_timer.h"
 #include "common_functions.h"
 #include <sched.h>
 
@@ -69,7 +69,7 @@
  * \ingroup common arguments to the threads
  */
 struct arg_t {
-public:
+
     int32_t tid;
     hashtable_t *ht;
 
@@ -82,10 +82,7 @@ public:
     threadresult_t *threadresult;
 
 #ifndef NO_TIMING
-    /* stats about the thread */
-    uint64_t timer1, timer2, timer3, build_timer = 0;
-    struct timeval start, end;
-    uint64_t progressivetimer[3];//array of progressive timer.
+    T_TIMER *timer;
 #endif
 };
 
@@ -126,11 +123,6 @@ NPO_st(relation_t *relR, relation_t *relS, int nthreads) {
     int64_t result = 0;
     result_t *joinresult;
 
-#ifndef NO_TIMING
-    struct timeval start, end;
-    uint64_t timer1, timer2, timer3;
-    uint64_t progressivetimer[3];//array of progressive timer.
-#endif
     uint32_t nbuckets = (relR->num_tuples / BUCKET_SIZE);
     allocate_hashtable(&ht, nbuckets);
 
@@ -140,19 +132,15 @@ NPO_st(relation_t *relR, relation_t *relS, int nthreads) {
 #endif
 
 #ifndef NO_TIMING
-    gettimeofday(&start, NULL);
-    startTimer(&timer1);
-    startTimer(&timer2);
-    startTimer(&progressivetimer[0]);
-    startTimer(&progressivetimer[1]);
-    startTimer(&progressivetimer[2]);
-    timer3 = 0; /* no partitioning */
+    T_TIMER timer;
+    START_MEASURE_NP(timer)
+    BEGIN_MEASURE_BUILD(timer)
 #endif
 
     build_hashtable_st(ht, relR);
 
 #ifndef NO_TIMING
-    stopTimer(&timer2); /* for build */
+    END_MEASURE_BUILD(timer)
 #endif
 
 #ifdef JOIN_RESULT_MATERIALIZE
@@ -161,7 +149,7 @@ NPO_st(relation_t *relR, relation_t *relS, int nthreads) {
     void *chainedbuf = NULL;
 #endif
 
-    result = probe_hashtable(ht, relS, chainedbuf, progressivetimer);
+    result = probe_hashtable(ht, relS, chainedbuf, timer.progressivetimer);
 
 #ifdef JOIN_RESULT_MATERIALIZE
     threadresult_t * thrres = &(joinresult->resultlist[0]);/* single-thread */
@@ -171,11 +159,9 @@ NPO_st(relation_t *relR, relation_t *relS, int nthreads) {
 #endif
 
 #ifndef NO_TIMING
-    stopTimer(&timer1); /* over all */
-    gettimeofday(&end, NULL);
+    END_MEASURE(timer)
     /* now print the timing results: */
-    print_timing(timer1, timer2, timer3, relS->num_tuples,
-                 result, &start, &end, progressivetimer);
+    print_timing(relS->num_tuples, result, &timer);
 #endif
 
     destroy_hashtable(ht);
@@ -209,19 +195,13 @@ npo_thread(void *param) {
     }
 #endif
 
-    /* wait at a barrier until each thread starts and start timer */
+    /* wait at a barrier until each thread starts and start T_TIMER */
     BARRIER_ARRIVE(args->barrier, rv);
 
 #ifndef NO_TIMING
     /* the first thread checkpoints the start time */
     if (args->tid == 0) {
-        gettimeofday(&args->start, NULL);
-        startTimer(&args->timer1);
-        startTimer(&args->timer2);
-        startTimer(&args->progressivetimer[0]);
-        startTimer(&args->progressivetimer[1]);
-        startTimer(&args->progressivetimer[2]);
-        args->timer3 = 0; /* no partitionig phase */
+        START_MEASURE_NP((*(args->timer)))
     }
 #endif
 
@@ -246,7 +226,7 @@ npo_thread(void *param) {
 #ifndef NO_TIMING
     /* build phase finished, thread-0 checkpoints the time */
     if (args->tid == 0) {
-        stopTimer(&args->timer2);
+        END_MEASURE((*(args->timer)))
     }
 #endif
 
@@ -257,7 +237,7 @@ npo_thread(void *param) {
 #endif
 
     /* probe for matching tuples from the assigned part of relS */
-    args->num_results = probe_hashtable(args->ht, &args->relS, chainedbuf, args->progressivetimer);
+    args->num_results = probe_hashtable(args->ht, &args->relS, chainedbuf, args->timer->progressivetimer);
 
 #ifdef JOIN_RESULT_MATERIALIZE
     args->threadresult->nresults = args->num_results;
@@ -271,8 +251,7 @@ npo_thread(void *param) {
 
     /* probe phase finished, thread-0 checkpoints the time */
     if (args->tid == 0) {
-        stopTimer(&args->timer1);
-        gettimeofday(&args->end, NULL);
+        END_MEASURE((*(args->timer)))
     }
 #endif
 
@@ -316,7 +295,7 @@ npo_thread(void *param) {
 void
 np_distribute(const relation_t *relR, const relation_t *relS, int nthreads, hashtable_t *ht, int32_t numR, int32_t numS,
               int32_t numRthr, int32_t numSthr, int i, int rv, cpu_set_t &set, struct arg_t *args, pthread_t *tid,
-              pthread_attr_t &attr, barrier_t &barrier, const result_t *joinresult) {
+              pthread_attr_t &attr, barrier_t &barrier, const result_t *joinresult, T_TIMER *timer) {
     for (i = 0; i < nthreads; i++) {
         int cpu_idx = get_cpu_id(i);
 
@@ -326,6 +305,7 @@ np_distribute(const relation_t *relR, const relation_t *relS, int nthreads, hash
         pthread_attr_setaffinity_np(&attr, sizeof(cpu_set_t), &set);
 
         args[i].tid = i;
+        args[i].timer = timer;
         args[i].ht = ht;
         args[i].barrier = &barrier;
 
@@ -371,6 +351,11 @@ NPO(relation_t *relR, relation_t *relS, int nthreads) {
                                                        * nthreads);
 #endif
 
+#ifndef NO_TIMING
+    T_TIMER timer;
+    START_MEASURE_NP(timer)
+#endif
+
     uint32_t nbuckets = (relR->num_tuples / BUCKET_SIZE);
     allocate_hashtable(&ht, nbuckets);
 
@@ -386,8 +371,9 @@ NPO(relation_t *relR, relation_t *relS, int nthreads) {
     }
 
     pthread_attr_init(&attr);
-    np_distribute(relR, relS, nthreads, ht, numR, numS, numRthr, numSthr, i, rv, set, args, tid, attr, barrier,
-                  joinresult);
+    np_distribute(relR, relS, nthreads, ht, numR, numS, numRthr, numSthr,
+                  i, rv, set, args, tid, attr, barrier,
+                  joinresult, &timer);
 
     for (i = 0; i < nthreads; i++) {
         pthread_join(tid[i], NULL);
@@ -399,14 +385,12 @@ NPO(relation_t *relR, relation_t *relS, int nthreads) {
 
 
 #ifndef NO_TIMING
+    END_MEASURE(timer)
     /* now print the timing results: */
-    print_timing(args[0].timer1, args[0].timer2, args[0].timer3,
-                 relS->num_tuples, result,
-                 &args[0].start, &args[0].end, nullptr);
+    print_timing(relS->num_tuples, result, &timer);
+
 #endif
-
     destroy_hashtable(ht);
-
     return joinresult;
 }
 

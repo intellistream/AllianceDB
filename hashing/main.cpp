@@ -313,7 +313,7 @@ static struct algo_t algos[] =
                 {"NPO_st",    NPO_st}, /* NPO single threaded */
                 {"SHJ_st",    SHJ_st}, /* Symmetric hash join single_thread*/
                 {"SHJ_JM_NP", SHJ_JM_NP}, /* Symmetric hash join JM Model, No-Partition*/
-                {"SHJ_JM_NP", SHJ_JB_NP}, /* Symmetric hash join JB Model, No-Partition*/
+                {"SHJ_JB_NP", SHJ_JB_NP}, /* Symmetric hash join JB Model, No-Partition*/
                 {{0},         0}
         };
 
@@ -326,6 +326,36 @@ print_version();
 
 void
 parse_args(int argc, char **argv, param_t *cmd_params);
+
+void createRelation(relation_t &rel, const param_t &cmd_params,
+                    char *loadfile, uint64_t rel_size, uint32_t seed) {
+    fprintf(stdout,
+            "[INFO ] %s relation with size = %.3lf MiB, #tuples = %llu : ",
+            (loadfile != NULL) ? ("Loading") : ("Creating"),
+            (double) sizeof(tuple_t) * rel_size / 1024.0 / 1024.0, rel_size);
+    fflush(stdout);
+
+    seed_generator(seed);
+
+    /* to pass information to the create_relation methods */
+    numalocalize = cmd_params.basic_numa;
+    nthreads = cmd_params.nthreads;
+
+    if (loadfile != NULL) {
+        /* load relation from file */
+        load_relation(&rel, loadfile, rel_size);
+    } else if (cmd_params.fullrange_keys) {
+        create_relation_nonunique(&rel, rel_size, INT_MAX);
+    } else if (cmd_params.nonunique_keys) {
+        create_relation_nonunique(&rel, rel_size, rel_size);
+    } else {
+        //create_relation_pk(&rel, rel_size);
+        parallel_create_relation(&rel, rel_size,
+                                 nthreads,
+                                 rel_size);
+    }
+    printf("OK \n");
+}
 
 int
 main(int argc, char **argv) {
@@ -346,10 +376,11 @@ main(int argc, char **argv) {
     param_t cmd_params;
 
     /* Default values if not specified on command line */
-    cmd_params.algo = &algos[8]; /* PRO, RJ_st, PRH, PRHO, NPO, NPO_st, SHJ_st,SHJ_JM_NP,SHJ_JB_NP */
+    cmd_params.algo = &algos[5]; /* PRO, RJ_st, PRH, PRHO, NPO,
+        * NPO_st (5), SHJ_st, SHJ_JM_NP, SHJ_JB_NP */
     cmd_params.nthreads = 2;
     /* default dataset is Workload B (described in paper) */
-    cmd_params.r_size = 12800000;
+    cmd_params.r_size = 1280000;
     cmd_params.s_size = 12800000;
     cmd_params.r_seed = 12345;
     cmd_params.s_seed = 54321;
@@ -370,69 +401,12 @@ main(int argc, char **argv) {
     PCM_OUT    = cmd_params.perfout;
 #endif
 
+
     /* create relation R */
-    fprintf(stdout,
-            "[INFO ] %s relation R with size = %.3lf MiB, #tuples = %llu : ",
-            (cmd_params.loadfileS != NULL) ? ("Loading") : ("Creating"),
-            (double) sizeof(tuple_t) * cmd_params.r_size / 1024.0 / 1024.0,
-            cmd_params.r_size);
-    fflush(stdout);
-
-    seed_generator(cmd_params.r_seed);
-
-    /* to pass information to the create_relation methods */
-    numalocalize = cmd_params.basic_numa;
-    nthreads = cmd_params.nthreads;
-
-    if (cmd_params.loadfileR != NULL) {
-        /* load relation from file */
-        load_relation(&relR, cmd_params.loadfileR, cmd_params.r_size);
-    } else if (cmd_params.fullrange_keys) {
-        create_relation_nonunique(&relR, cmd_params.r_size, INT_MAX);
-    } else if (cmd_params.nonunique_keys) {
-        create_relation_nonunique(&relR, cmd_params.r_size, cmd_params.r_size);
-    } else {
-        //create_relation_pk(&relR, cmd_params.r_size);
-        parallel_create_relation(&relR, cmd_params.r_size,
-                                 nthreads,
-                                 cmd_params.r_size);
-    }
-    printf("OK \n");
+    createRelation(relR, cmd_params, cmd_params.loadfileR, cmd_params.r_size, cmd_params.r_seed);
 
     /* create relation S */
-    fprintf(stdout,
-            "[INFO ] %s relation S with size = %.3lf MiB, #tuples = %lld : ",
-            (cmd_params.loadfileS != NULL) ? ("Loading") : ("Creating"),
-            (double) sizeof(tuple_t) * cmd_params.s_size / 1024.0 / 1024.0,
-            cmd_params.s_size);
-    fflush(stdout);
-
-    seed_generator(cmd_params.s_seed);
-
-    if (cmd_params.loadfileS != NULL) {
-        /* load relation from file */
-        load_relation(&relS, cmd_params.loadfileS, cmd_params.s_size);
-    } else if (cmd_params.fullrange_keys) {
-        create_relation_fk_from_pk(&relS, &relR, cmd_params.s_size);
-    } else if (cmd_params.nonunique_keys) {
-        /* use size of R as the maxid */
-        create_relation_nonunique(&relS, cmd_params.s_size, cmd_params.r_size);
-    } else {
-        /* if r_size == s_size then equal-dataset, else non-equal dataset */
-
-        if (cmd_params.skew > 0) {
-            /* S is skewed */
-            create_relation_zipf(&relS, cmd_params.s_size,
-                                 cmd_params.r_size, cmd_params.skew);
-        } else {
-            /* S is uniform foreign key */
-            //create_relation_fk(&relS, cmd_params.s_size, cmd_params.r_size);
-            parallel_create_relation(&relS, cmd_params.s_size,
-                                     nthreads,
-                                     cmd_params.r_size);
-        }
-    }
-    printf("OK \n");
+    createRelation(relS, cmd_params, cmd_params.loadfileS, cmd_params.s_size, cmd_params.s_seed);
 
     /* Run the selected join algorithm */
     printf("[INFO ] Running join algorithm %s ...\n", cmd_params.algo->name);
@@ -495,6 +469,7 @@ print_version() {
     printf("\n%s\n", PACKAGE_STRING);
     printf("Copyright (c) 2012, 2013, ETH Zurich, Systems Group.\n");
     printf("http://www.systems.ethz.ch/projects/paralleljoins\n\n");
+    printf("Modified 2019, NUS, Xtra-Computing Group. Shuhao Zhang (Tony)\n");
 }
 
 static char *

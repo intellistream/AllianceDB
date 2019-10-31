@@ -31,10 +31,9 @@
 #include "perf_counters.h"      /* PCM_x */
 #endif
 
-
 //#include "../../utils/affinity.h"           /* pthread_attr_setaffinity_np */
 #include "../utils/generator.h"          /* numa_localize() */
-#include "../utils/timer.h"  /* startTimer, stopTimer */
+#include "../utils/t_timer.h"  /* startTimer, stopTimer */
 #include "common_functions.h"
 #include "../utils/barrier.h"
 #include "../utils/xxhash64.h"
@@ -70,10 +69,7 @@ struct arg_t {
     threadresult_t *threadresult;
 
 #ifndef NO_TIMING
-    /* stats about the thread */
-    uint64_t timer1, timer2, timer3, build_timer = 0;
-    struct timeval start, end;
-    uint64_t progressivetimer[3];//array of progressive timer.
+    T_TIMER *timer;
 #endif
 };
 
@@ -96,9 +92,9 @@ struct arg_t {
  * @return
  */
 long
-_SHJ_JB_st(int32_t tid, hashtable_t *ht_R, hashtable_t *ht_S, relation_t *rel_R, relation_t *rel_S,
+_SHJ_st_JB(int32_t tid, hashtable_t *ht_R, hashtable_t *ht_S, relation_t *rel_R, relation_t *rel_S,
            std::list<int> list_r, std::list<int> list_s, void *pVoid,
-           uint64_t *pre_timer, uint64_t *acc_timer, uint64_t *progressivetimer) {
+           T_TIMER *timer) {
 
     const uint32_t hashmask_R = ht_R->hash_mask;
     const uint32_t skipbits_R = ht_R->skip_bits;
@@ -113,15 +109,15 @@ _SHJ_JB_st(int32_t tid, hashtable_t *ht_R, hashtable_t *ht_S, relation_t *rel_R,
 //        std::cout << *iterator;
 
         if (tid == 0) {
-            startTimer(pre_timer);
+            BEGIN_MEASURE_BUILD_ACC((*timer))
         }
         build_hashtable_single(ht_R, rel_R, *iterator, hashmask_R, skipbits_R);//(1)
         if (tid == 0) {
-            accTimer(pre_timer, acc_timer); /* build time */
+            END_MEASURE_BUILD_ACC((*timer))
         }
         if (tid == 0) {
             proble_hashtable_single_measure(ht_S, rel_R, *iterator, hashmask_S, skipbits_S, &matches,
-                                            progressivetimer);//(2)
+                                            timer->progressivetimer);//(2)
         } else {
             matches += proble_hashtable_single(ht_S, rel_R, *iterator, hashmask_S, skipbits_S);//(4)
         }
@@ -132,15 +128,15 @@ _SHJ_JB_st(int32_t tid, hashtable_t *ht_R, hashtable_t *ht_S, relation_t *rel_R,
 //        std::cout << *iterator;
 
         if (tid == 0) {
-            startTimer(pre_timer);
+            BEGIN_MEASURE_BUILD_ACC((*timer))
         }
         build_hashtable_single(ht_S, rel_S, *iterator, hashmask_S, skipbits_S);//(3)
         if (tid == 0) {
-            accTimer(pre_timer, acc_timer); /* build time */
+            END_MEASURE_BUILD_ACC((*timer))
         }
         if (tid == 0) {
             proble_hashtable_single_measure(ht_R, rel_S, *iterator, hashmask_R, skipbits_R, &matches,
-                                            progressivetimer);//(4)
+                                            timer->progressivetimer);//(4)
         } else {
             matches += proble_hashtable_single(ht_R, rel_S, *iterator, hashmask_R, skipbits_R);//(4)
         }
@@ -167,8 +163,9 @@ _SHJ_JB_st(int32_t tid, hashtable_t *ht_R, hashtable_t *ht_S, relation_t *rel_R,
  * @return
  */
 long
-_SHJ_st(int32_t tid, hashtable_t *ht_R, hashtable_t *ht_S, relation_t *rel_R, relation_t *rel_S, void *pVoid,
-        uint64_t *pre_timer, uint64_t *acc_timer, uint64_t *progressivetimer) {
+_SHJ_st(int32_t tid, hashtable_t *ht_R, hashtable_t *ht_S, relation_t *rel_R,
+        relation_t *rel_S, void *pVoid,
+        T_TIMER *timer) {
     uint32_t index_R = 0;//index of rel_R
     uint32_t index_S = 0;//index of rel_S
 
@@ -183,15 +180,16 @@ _SHJ_st(int32_t tid, hashtable_t *ht_R, hashtable_t *ht_S, relation_t *rel_R, re
     do {
         if (index_R < rel_R->num_tuples) {
             if (tid == 0) {
-                startTimer(pre_timer);
+                BEGIN_MEASURE_BUILD_ACC((*timer))
             }
             build_hashtable_single(ht_R, rel_R, index_R, hashmask_R, skipbits_R);//(1)
             if (tid == 0) {
-                accTimer(pre_timer, acc_timer); /* build time */
+                END_MEASURE_BUILD_ACC((*timer))
             }
             if (tid == 0) {
-                proble_hashtable_single_measure(ht_S, rel_R, index_R, hashmask_S, skipbits_S, &matches,
-                                                progressivetimer);//(2)
+                proble_hashtable_single_measure(ht_S, rel_R,
+                                                index_R, hashmask_S, skipbits_S, &matches,
+                                                timer->progressivetimer);//(2)
             } else {
                 matches += proble_hashtable_single(ht_R, rel_S, index_S, hashmask_R, skipbits_R);//(4)
             }
@@ -200,15 +198,15 @@ _SHJ_st(int32_t tid, hashtable_t *ht_R, hashtable_t *ht_S, relation_t *rel_R, re
 
         if (index_S < rel_S->num_tuples) {
             if (tid == 0) {
-                startTimer(pre_timer);
+                BEGIN_MEASURE_BUILD_ACC((*timer))
             }
             build_hashtable_single(ht_S, rel_S, index_S, hashmask_S, skipbits_S);//(3)
             if (tid == 0) {
-                accTimer(pre_timer, acc_timer); /* build time */
+                END_MEASURE_BUILD_ACC((*timer))
             }
             if (tid == 0) {
                 proble_hashtable_single_measure(ht_R, rel_S, index_S, hashmask_R, skipbits_R, &matches,
-                                                progressivetimer);//(4)
+                                                timer->progressivetimer);//(4)
             } else {
                 matches += proble_hashtable_single(ht_R, rel_S, index_S, hashmask_R, skipbits_R);//(4)
             }
@@ -219,79 +217,6 @@ _SHJ_st(int32_t tid, hashtable_t *ht_R, hashtable_t *ht_S, relation_t *rel_R, re
     return matches;
 }
 
-/**
- * Single thread SHJ
- * @param relR
- * @param relS
- * @param nthreads
- * @return
- */
-result_t *
-SHJ_st(relation_t *relR, relation_t *relS, int nthreads) {
-    hashtable_t *htR;
-    hashtable_t *htS;
-    int64_t result = 0;
-    result_t *joinresult;
-
-#ifndef NO_TIMING
-    struct timeval start, end;
-    uint64_t timer1, timer2, timer3, buildtimer = 0;//buildtimer is accumulated.
-    uint64_t progressivetimer[3];//array of progressive timer.
-#endif
-
-    //allocate two hashtables.
-    uint32_t nbucketsR = (relR->num_tuples / BUCKET_SIZE);
-    allocate_hashtable(&htR, nbucketsR);
-
-    uint32_t nbucketsS = (relS->num_tuples / BUCKET_SIZE);
-    allocate_hashtable(&htS, nbucketsS);
-
-    joinresult = (result_t *) malloc(sizeof(result_t));
-
-#ifdef JOIN_RESULT_MATERIALIZE
-    joinresult->resultlist = (threadresult_t *) malloc(sizeof(threadresult_t));
-#endif
-
-#ifndef NO_TIMING
-    gettimeofday(&start, NULL);
-    startTimer(&timer1);
-    startTimer(&progressivetimer[0]);
-    startTimer(&progressivetimer[1]);
-    startTimer(&progressivetimer[2]);
-    timer3 = 0; /* no partitioning */
-#endif
-
-#ifdef JOIN_RESULT_MATERIALIZE
-    chainedtuplebuffer_t * chainedbuf = chainedtuplebuffer_init();
-#else
-    void *chainedbuf = NULL;
-#endif
-
-    result = _SHJ_st(0, htR, htS, relR, relS, chainedbuf, &timer2, &buildtimer,
-                     progressivetimer);//build and probe at the same time.
-
-#ifdef JOIN_RESULT_MATERIALIZE
-    threadresult_t * thrres = &(joinresult->resultlist[0]);/* single-thread */
-    thrres->nresults = result;
-    thrres->threadid = 0;
-    thrres->results  = (void *) chainedbuf;
-#endif
-
-#ifndef NO_TIMING
-    stopTimer(&timer1); /* over all */
-    gettimeofday(&end, NULL);
-    /* now print the timing results: */
-    print_timing(timer1, buildtimer, timer3, relS->num_tuples, result, &start, &end, progressivetimer);
-#endif
-
-    destroy_hashtable(htR);
-    destroy_hashtable(htS);
-
-    joinresult->totalresults = result;
-    joinresult->nthreads = 1;
-
-    return joinresult;
-}
 
 /**
  * Just a wrapper to call the _shj_st
@@ -302,34 +227,18 @@ SHJ_st(relation_t *relR, relation_t *relS, int nthreads) {
  */
 void *
 shj_JM_thread_task(void *param) {
-    int rv;
     arg_t *args = (arg_t *) param;
-
-//    /* allocate overflow buffer for each thread */
-//    bucket_buffer_t *overflowbuf;
-//    init_bucket_buffer(&overflowbuf);
-
 #ifdef PERF_COUNTERS
     if(args->tid == 0){
         PCM_initPerformanceMonitor(NULL, NULL);
         PCM_start();
     }
 #endif
-//
-//    /* wait at a barrier until each thread starts and start timer */
-//    BARRIER_ARRIVE(args->barrier, rv);
 
 #ifndef NO_TIMING
     /* the first thread checkpoints the start time */
     if (args->tid == 0) {
-        args->build_timer = 0;
-        gettimeofday(&args->start, NULL);
-        startTimer(&args->timer1);
-        startTimer(&args->timer2);
-        startTimer(&args->progressivetimer[0]);
-        startTimer(&args->progressivetimer[1]);
-        startTimer(&args->progressivetimer[2]);
-        args->timer3 = 0; /* no partitionig phase */
+        START_MEASURE_NP((*(args->timer)))
     }
 #endif
 
@@ -360,8 +269,7 @@ shj_JM_thread_task(void *param) {
     args->num_results = _SHJ_st(
             args->tid, args->htR,
             args->htS, &args->relR, &args->relS,
-            chainedbuf, &args->timer2, &args->build_timer,
-            args->progressivetimer);//build and probe at the same time.
+            chainedbuf, args->timer);//build and probe at the same time.
 #ifdef JOIN_RESULT_MATERIALIZE
     args->threadresult->nresults = args->num_results;
     args->threadresult->threadid = args->tid;
@@ -369,13 +277,8 @@ shj_JM_thread_task(void *param) {
 #endif
 
 #ifndef NO_TIMING
-//    /* for a reliable timing we have to wait until all finishes */
-//    BARRIER_ARRIVE(args->barrier, rv);
-
-    /* probe phase finished, thread-0 checkpoints the time */
     if (args->tid == 0) {
-        stopTimer(&args->timer1);
-        gettimeofday(&args->end, NULL);
+        END_MEASURE((*(args->timer)))
     }
 #endif
 
@@ -390,7 +293,6 @@ shj_JM_thread_task(void *param) {
     /* Just to make sure we get consistent performance numbers */
     BARRIER_ARRIVE(args->barrier, rv);
 #endif
-
     return 0;
 }
 
@@ -414,20 +316,13 @@ shj_JB_thread_task(void *param) {
     }
 #endif
 //
-//    /* wait at a barrier until each thread starts and start timer */
+//    /* wait at a barrier until each thread starts and start T_TIMER */
 //    BARRIER_ARRIVE(args->barrier, rv);
 
 #ifndef NO_TIMING
     /* the first thread checkpoints the start time */
     if (args->tid == 0) {
-        args->build_timer = 0;
-        gettimeofday(&args->start, NULL);
-        startTimer(&args->timer1);
-        startTimer(&args->timer2);
-        startTimer(&args->progressivetimer[0]);
-        startTimer(&args->progressivetimer[1]);
-        startTimer(&args->progressivetimer[2]);
-        args->timer3 = 0; /* no partitionig phase */
+        START_MEASURE_NP((*(args->timer)))
     }
 #endif
 
@@ -455,11 +350,10 @@ shj_JB_thread_task(void *param) {
     void *chainedbuf = NULL;
 #endif
 
-    args->num_results = _SHJ_JB_st(
+    args->num_results = _SHJ_st_JB(
             args->tid, args->htR,
             args->htS, &args->relR, &args->relS, *args->list->relR_list, *args->list->relS_list,
-            chainedbuf, &args->timer2, &args->build_timer,
-            args->progressivetimer);//build and probe at the same time.
+            chainedbuf, args->timer);//build and probe at the same time.
 #ifdef JOIN_RESULT_MATERIALIZE
     args->threadresult->nresults = args->num_results;
     args->threadresult->threadid = args->tid;
@@ -467,13 +361,8 @@ shj_JB_thread_task(void *param) {
 #endif
 
 #ifndef NO_TIMING
-//    /* for a reliable timing we have to wait until all finishes */
-//    BARRIER_ARRIVE(args->barrier, rv);
-
-    /* probe phase finished, thread-0 checkpoints the time */
     if (args->tid == 0) {
-        stopTimer(&args->timer1);
-        gettimeofday(&args->end, NULL);
+        END_MEASURE((*(args->timer)))
     }
 #endif
 
@@ -505,11 +394,9 @@ inline bool last_thread(int i, int nthreads) {
  * and (2) replicate short relation.
  */
 void
-jm_np_distribute(const relation_t *relR, const relation_t *relS,
-                 int nthreads, int i, int rv, cpu_set_t &set,
-                 struct arg_t *args, pthread_t *tid,
-                 pthread_attr_t &attr,
-                 result_t *joinresult) {
+jm_np_distribute(const relation_t *relR,
+                 const relation_t *relS, int nthreads, int i, int rv, cpu_set_t &set,
+                 arg_t *args, pthread_t *tid, pthread_attr_t &attr, result_t *joinresult, T_TIMER timer) {
 
     int32_t numR, numS, numRthr, numSthr; /* total and per thread num */
     numR = relR->num_tuples;
@@ -537,6 +424,8 @@ jm_np_distribute(const relation_t *relR, const relation_t *relS,
 
         args[i].threadresult = &(joinresult->resultlist[i]);
 
+        args[i].timer = &timer;
+
         rv = pthread_create(&tid[i], &attr, shj_JM_thread_task, (void *) &args[i]);
         if (rv) {
             printf("ERROR; return code from pthread_create() is %d\n", rv);
@@ -550,11 +439,8 @@ jm_np_distribute(const relation_t *relR, const relation_t *relS,
  * Let's assume extreme hashing.
  */
 void
-jb_np_distribute(const relation_t *relR, const relation_t *relS,
-                 int nthreads, int i, int rv, cpu_set_t &set,
-                 struct arg_t *args, pthread_t *tid,
-                 pthread_attr_t &attr,
-                 result_t *joinresult) {
+jb_np_distribute(const relation_t *relR, const relation_t *relS, int nthreads, int i, int rv, cpu_set_t &set,
+                 arg_t *args, pthread_t *tid, pthread_attr_t &attr, result_t *joinresult, T_TIMER *timer) {
 
     int32_t numR, numS; /* total num */
     numR = relR->num_tuples;
@@ -581,6 +467,7 @@ jb_np_distribute(const relation_t *relR, const relation_t *relS,
         CPU_SET(cpu_idx, &set);
         pthread_attr_setaffinity_np(&attr, sizeof(cpu_set_t), &set);
         args[i].tid = i;
+        args[i].timer = timer;
         args[i].relR.num_tuples = args[i].list->relR_list->size();
         args[i].relR.tuples = relR->tuples;//configure pointer of start point.
         args[i].relS.num_tuples = args[i].list->relS_list->size();
@@ -616,6 +503,11 @@ SHJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads) {
     result_t *joinresult = 0;
     joinresult = (result_t *) malloc(sizeof(result_t));
 
+#ifndef NO_TIMING
+    T_TIMER timer;
+    START_MEASURE_NP(timer)
+#endif
+
 #ifdef JOIN_RESULT_MATERIALIZE
     joinresult->resultlist = (threadresult_t *) malloc(sizeof(threadresult_t)
                                                        * nthreads);
@@ -635,8 +527,7 @@ SHJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads) {
         args[i].list->relS_list = new std::list<int>();
     }
 
-    jb_np_distribute(relR, relS, nthreads,
-                     i, rv, set, args, tid, attr, joinresult);
+    jb_np_distribute(relR, relS, nthreads, i, rv, set, args, tid, attr, joinresult, &timer);
 
     for (i = 0; i < nthreads; i++) {
         pthread_join(tid[i], NULL);
@@ -648,10 +539,9 @@ SHJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads) {
 
 
 #ifndef NO_TIMING
+    END_MEASURE(timer)
     /* now print the timing results: */
-    print_timing(args[0].timer1, args[0].build_timer, args[0].timer3,
-                 relS->num_tuples, result,
-                 &args[0].start, &args[0].end, args[0].progressivetimer);
+    print_timing(relS->num_tuples, result, &timer);
 #endif
 
     return joinresult;
@@ -678,6 +568,11 @@ SHJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads) {
     result_t *joinresult = 0;
     joinresult = (result_t *) malloc(sizeof(result_t));
 
+#ifndef NO_TIMING
+    T_TIMER timer;
+    START_MEASURE_NP(timer)
+#endif
+
 #ifdef JOIN_RESULT_MATERIALIZE
     joinresult->resultlist = (threadresult_t *) malloc(sizeof(threadresult_t)
                                                        * nthreads);
@@ -690,8 +585,7 @@ SHJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads) {
     }
 
     pthread_attr_init(&attr);
-    jm_np_distribute(relR, relS, nthreads,
-                     i, rv, set, args, tid, attr, joinresult);
+    jm_np_distribute(relR, relS, nthreads, i, rv, set, args, tid, attr, joinresult, timer);
 
     for (i = 0; i < nthreads; i++) {
         pthread_join(tid[i], NULL);
@@ -703,13 +597,74 @@ SHJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads) {
 
 
 #ifndef NO_TIMING
+    END_MEASURE(timer)
     /* now print the timing results: */
-    print_timing(args[0].timer1, args[0].build_timer, args[0].timer3,
-                 relS->num_tuples, result,
-                 &args[0].start, &args[0].end, args[0].progressivetimer);
+    print_timing(relS->num_tuples, result, &timer);
 #endif
 
     return joinresult;
 }
 
+
+/**
+ * Single thread SHJ
+ * @param relR
+ * @param relS
+ * @param nthreads
+ * @return
+ */
+result_t *
+SHJ_st(relation_t *relR, relation_t *relS, int nthreads) {
+    hashtable_t *htR;
+    hashtable_t *htS;
+    int64_t result = 0;
+    result_t *joinresult;
+
+    //allocate two hashtables.
+    uint32_t nbucketsR = (relR->num_tuples / BUCKET_SIZE);
+    allocate_hashtable(&htR, nbucketsR);
+
+    uint32_t nbucketsS = (relS->num_tuples / BUCKET_SIZE);
+    allocate_hashtable(&htS, nbucketsS);
+
+    joinresult = (result_t *) malloc(sizeof(result_t));
+
+#ifdef JOIN_RESULT_MATERIALIZE
+    joinresult->resultlist = (threadresult_t *) malloc(sizeof(threadresult_t));
+#endif
+
+#ifndef NO_TIMING
+    T_TIMER timer;
+    START_MEASURE_NP(timer)
+#endif
+
+#ifdef JOIN_RESULT_MATERIALIZE
+    chainedtuplebuffer_t * chainedbuf = chainedtuplebuffer_init();
+#else
+    void *chainedbuf = NULL;
+#endif
+
+    result = _SHJ_st(0, htR, htS, relR, relS, chainedbuf, &timer);//build and probe at the same time.
+
+#ifdef JOIN_RESULT_MATERIALIZE
+    threadresult_t * thrres = &(joinresult->resultlist[0]);/* single-thread */
+    thrres->nresults = result;
+    thrres->threadid = 0;
+    thrres->results  = (void *) chainedbuf;
+#endif
+
+#ifndef NO_TIMING
+    END_MEASURE(timer)
+    /* now print the timing results: */
+    print_timing(relS->num_tuples, result, &timer);
+#endif
+
+    destroy_hashtable(htR);
+    destroy_hashtable(htS);
+
+    joinresult->totalresults = result;
+    joinresult->nthreads = 1;
+
+    return joinresult;
+}
 /** @}*/
