@@ -52,18 +52,19 @@ struct list {
 
 struct arg_t {
     int32_t tid;
-    hashtable_t *htR;
-    hashtable_t *htS;
+    int64_t num_results;
 
     //used in JM
     relation_t relR;//start point of reading relation.
     relation_t relS;//start point of reading relation.
 
+    hashtable_t *htR;
+    hashtable_t *htS;
+
     //used in JB
     struct list *list;
 
     pthread_barrier_t *barrier;
-    int64_t num_results;
 
     /* results of the thread */
     threadresult_t *threadresult;
@@ -166,6 +167,7 @@ long
 _SHJ_st(int32_t tid, hashtable_t *ht_R, hashtable_t *ht_S, relation_t *rel_R,
         relation_t *rel_S, void *pVoid,
         T_TIMER *timer) {
+
     uint32_t index_R = 0;//index of rel_R
     uint32_t index_S = 0;//index of rel_S
 
@@ -226,7 +228,7 @@ _SHJ_st(int32_t tid, hashtable_t *ht_R, hashtable_t *ht_S, relation_t *rel_R,
  * @return
  */
 void *
-shj_JM_thread_task(void *param) {
+shj_thread_jm_np(void *param) {
     arg_t *args = (arg_t *) param;
 #ifdef PERF_COUNTERS
     if(args->tid == 0){
@@ -238,7 +240,7 @@ shj_JM_thread_task(void *param) {
 #ifndef NO_TIMING
     /* the first thread checkpoints the start time */
     if (args->tid == 0) {
-        START_MEASURE_NP((*(args->timer)))
+        START_MEASURE((*(args->timer)))
     }
 #endif
 
@@ -270,6 +272,9 @@ shj_JM_thread_task(void *param) {
             args->tid, args->htR,
             args->htS, &args->relR, &args->relS,
             chainedbuf, args->timer);//build and probe at the same time.
+
+    printf("args->num_results (1): %ld\n", args->num_results);
+
 #ifdef JOIN_RESULT_MATERIALIZE
     args->threadresult->nresults = args->num_results;
     args->threadresult->threadid = args->tid;
@@ -322,7 +327,7 @@ shj_JB_thread_task(void *param) {
 #ifndef NO_TIMING
     /* the first thread checkpoints the start time */
     if (args->tid == 0) {
-        START_MEASURE_NP((*(args->timer)))
+        START_MEASURE((*(args->timer)))
     }
 #endif
 
@@ -396,7 +401,7 @@ inline bool last_thread(int i, int nthreads) {
 void
 jm_np_distribute(const relation_t *relR,
                  const relation_t *relS, int nthreads, int i, int rv, cpu_set_t &set,
-                 arg_t *args, pthread_t *tid, pthread_attr_t &attr, result_t *joinresult, T_TIMER timer) {
+                 arg_t *args, pthread_t *tid, pthread_attr_t &attr, result_t *joinresult, T_TIMER *timer) {
 
     int32_t numR, numS, numRthr, numSthr; /* total and per thread num */
     numR = relR->num_tuples;
@@ -412,6 +417,7 @@ jm_np_distribute(const relation_t *relR,
         CPU_SET(cpu_idx, &set);
         pthread_attr_setaffinity_np(&attr, sizeof(cpu_set_t), &set);
         args[i].tid = i;
+        args[i].timer = timer;
 
         /* replicate relR for next thread */
         args[i].relR.num_tuples = numR;
@@ -424,9 +430,7 @@ jm_np_distribute(const relation_t *relR,
 
         args[i].threadresult = &(joinresult->resultlist[i]);
 
-        args[i].timer = &timer;
-
-        rv = pthread_create(&tid[i], &attr, shj_JM_thread_task, (void *) &args[i]);
+        rv = pthread_create(&tid[i], &attr, shj_thread_jm_np, (void *) &args[i]);
         if (rv) {
             printf("ERROR; return code from pthread_create() is %d\n", rv);
             exit(-1);
@@ -505,7 +509,6 @@ SHJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads) {
 
 #ifndef NO_TIMING
     T_TIMER timer;
-    START_MEASURE_NP(timer)
 #endif
 
 #ifdef JOIN_RESULT_MATERIALIZE
@@ -539,7 +542,6 @@ SHJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads) {
 
 
 #ifndef NO_TIMING
-    END_MEASURE(timer)
     /* now print the timing results: */
     print_timing(relS->num_tuples, result, &timer);
 #endif
@@ -570,7 +572,6 @@ SHJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads) {
 
 #ifndef NO_TIMING
     T_TIMER timer;
-    START_MEASURE_NP(timer)
 #endif
 
 #ifdef JOIN_RESULT_MATERIALIZE
@@ -583,9 +584,9 @@ SHJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads) {
         printf("Couldn't create the barrier\n");
         exit(EXIT_FAILURE);
     }
-
     pthread_attr_init(&attr);
-    jm_np_distribute(relR, relS, nthreads, i, rv, set, args, tid, attr, joinresult, timer);
+
+    jm_np_distribute(relR, relS, nthreads, i, rv, set, args, tid, attr, joinresult, &timer);
 
     for (i = 0; i < nthreads; i++) {
         pthread_join(tid[i], NULL);
@@ -597,7 +598,6 @@ SHJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads) {
 
 
 #ifndef NO_TIMING
-    END_MEASURE(timer)
     /* now print the timing results: */
     print_timing(relS->num_tuples, result, &timer);
 #endif
@@ -615,11 +615,13 @@ SHJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads) {
  */
 result_t *
 SHJ_st(relation_t *relR, relation_t *relS, int nthreads) {
-    hashtable_t *htR;
-    hashtable_t *htS;
+
     int64_t result = 0;
     result_t *joinresult;
+    joinresult = (result_t *) malloc(sizeof(result_t));
 
+    hashtable_t *htR;
+    hashtable_t *htS;
     //allocate two hashtables.
     uint32_t nbucketsR = (relR->num_tuples / BUCKET_SIZE);
     allocate_hashtable(&htR, nbucketsR);
@@ -627,15 +629,13 @@ SHJ_st(relation_t *relR, relation_t *relS, int nthreads) {
     uint32_t nbucketsS = (relS->num_tuples / BUCKET_SIZE);
     allocate_hashtable(&htS, nbucketsS);
 
-    joinresult = (result_t *) malloc(sizeof(result_t));
-
 #ifdef JOIN_RESULT_MATERIALIZE
     joinresult->resultlist = (threadresult_t *) malloc(sizeof(threadresult_t));
 #endif
 
 #ifndef NO_TIMING
     T_TIMER timer;
-    START_MEASURE_NP(timer)
+    START_MEASURE(timer)
 #endif
 
 #ifdef JOIN_RESULT_MATERIALIZE

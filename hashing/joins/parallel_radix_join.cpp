@@ -280,7 +280,7 @@ bucket_chaining_join(const relation_t *const R,
 #endif
 
     /* Disable the following loop for no-probe for the break-down experiments */
-    /* PROBE- LOOP */
+    /* PROBE-LOOP */
     for (uint32_t i = 0; i < numS; i++) {
 
         uint32_t idx = HASH_BIT_MODULO(Stuples[i].key, MASK, NUM_RADIX_BITS);
@@ -1008,7 +1008,7 @@ prj_thread(void *param) {
 #ifndef NO_TIMING
     if (my_tid == 0) {
         /* thread-0 checkpoints the time */
-        START_MEASURE_NP((*(args->timer)))
+        START_MEASURE((*(args->timer)))
     }
 #endif
 
@@ -1351,7 +1351,8 @@ prj_thread(void *param) {
     BARRIER_ARRIVE(args->barrier, rv);
     if (my_tid == 0) {
         /* Actually with this setup we're not timing build */
-        END_MEASURE((*(args->timer)));
+        END_MEASURE_BUILD((*(args->timer)))
+        END_MEASURE((*(args->timer)))
     }
 #endif
 
@@ -1616,7 +1617,8 @@ RJ_st(relation_t *relR, relation_t *relS, int nthreads) {
 
 #ifndef NO_TIMING
     T_TIMER timer;
-    START_MEASURE_NP(timer)
+    START_MEASURE(timer)
+    BEGIN_MEASURE_PARTITION(timer)
 #endif
 
     /***** do the multi-pass partitioning *****/
@@ -1679,8 +1681,11 @@ RJ_st(relation_t *relR, relation_t *relS, int nthreads) {
 #else
     void *chainedbuf = NULL;
 #endif
-
+#ifndef NO_TIMING
+    BEGIN_MEASURE_BUILD(timer)
+#endif
     /* build hashtable on inner */
+
     int r, s; /* start index of next clusters */
     r = s = 0;
     for (i = 0; i < (1 << NUM_RADIX_BITS); i++) {
@@ -1711,7 +1716,8 @@ RJ_st(relation_t *relR, relation_t *relS, int nthreads) {
 #endif
 
 #ifndef NO_TIMING
-    /* TODO: actually we're not timing build */
+    /* TODO: actually we're not timing build, but radix pre */
+    END_MEASURE_BUILD(timer)
     END_MEASURE(timer)
     /* now print the timing results: */
     print_timing(relS->num_tuples, result, &timer);

@@ -133,7 +133,7 @@ NPO_st(relation_t *relR, relation_t *relS, int nthreads) {
 
 #ifndef NO_TIMING
     T_TIMER timer;
-    START_MEASURE_NP(timer)
+    START_MEASURE(timer)
     BEGIN_MEASURE_BUILD(timer)
 #endif
 
@@ -201,7 +201,8 @@ npo_thread(void *param) {
 #ifndef NO_TIMING
     /* the first thread checkpoints the start time */
     if (args->tid == 0) {
-        START_MEASURE_NP((*(args->timer)))
+        START_MEASURE((*(args->timer)))
+        BEGIN_MEASURE_BUILD((*(args->timer)))
     }
 #endif
 
@@ -226,7 +227,7 @@ npo_thread(void *param) {
 #ifndef NO_TIMING
     /* build phase finished, thread-0 checkpoints the time */
     if (args->tid == 0) {
-        END_MEASURE((*(args->timer)))
+        END_MEASURE_BUILD((*(args->timer)))
     }
 #endif
 
@@ -353,7 +354,6 @@ NPO(relation_t *relR, relation_t *relS, int nthreads) {
 
 #ifndef NO_TIMING
     T_TIMER timer;
-    START_MEASURE_NP(timer)
 #endif
 
     uint32_t nbuckets = (relR->num_tuples / BUCKET_SIZE);
@@ -385,10 +385,8 @@ NPO(relation_t *relR, relation_t *relS, int nthreads) {
 
 
 #ifndef NO_TIMING
-    END_MEASURE(timer)
     /* now print the timing results: */
     print_timing(relS->num_tuples, result, &timer);
-
 #endif
     destroy_hashtable(ht);
     return joinresult;

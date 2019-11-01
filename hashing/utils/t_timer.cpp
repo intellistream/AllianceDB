@@ -9,9 +9,9 @@ void print_timing(uint64_t numtuples, int64_t result, T_TIMER *timer) {
                         - ((timer->start).tv_sec * 1000000L + (timer->start).tv_usec));
     double cyclestuple = timer->overall_timer / numtuples;
     fprintf(stdout, "RUNTIME TOTAL, BUILD, PART (cycles): \n");
-    fprintf(stdout, "%llu \t %llu (%.2f%%)  \t %llu ",
+    fprintf(stdout, "%llu \t %llu (%.2f%%)  \t %llu (%.2f%%) ",
             timer->overall_timer, timer->buildtimer, (timer->buildtimer * 100 / (double) timer->overall_timer),
-            timer->partition_timer);
+            timer->partition_timer, (timer->partition_timer * 100 / (double) timer->overall_timer));
     fprintf(stdout, "\n");
     fprintf(stdout, "TOTAL-TIME-USECS, TOTAL-TUPLES, CYCLES-PER-TUPLE: \n");
     fprintf(stdout, "%.4lf \t %ld \t %.4lf", diff_usec, result, cyclestuple);
