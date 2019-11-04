@@ -125,6 +125,7 @@
 #define restrict __restrict__
 #endif
 
+
 /** An experimental feature to allocate input relations numa-local */
 extern int numalocalize;  /* defined in generator.c */
 
@@ -136,21 +137,6 @@ typedef int64_t (*JoinFunction)(const relation_t *const,
                                 const relation_t *const,
                                 relation_t *const,
                                 void *output);
-
-#ifdef SYNCSTATS
-/** holds syncronization timing stats if configured with --enable-syncstats */
-struct synctimer_t {
-    /** Barrier for computation of thread-local histogram */
-    uint64_t sync1[3]; /* for rel R and for rel S */
-    /** Barrier for end of radix partit. pass-1 */
-    uint64_t sync3;
-    /** Barrier before join (build-probe) begins */
-    uint64_t sync4;
-    /** Finish time */
-    uint64_t finish_time;
-};
-#endif
-
 /** holds the arguments passed to each thread */
 struct arg_t {
     int32_t **histR;
@@ -182,7 +168,6 @@ struct arg_t {
 
     /* stats about the thread */
     int32_t parts_processed;
-
 #ifndef NO_TIMING
     T_TIMER *timer;
 #endif
@@ -193,6 +178,63 @@ struct arg_t {
     synctimer_t * globaltimer;
 #endif
 } __attribute__((aligned(CACHE_LINE_SIZE)));
+//
+///** holds the arguments passed to each thread */
+//struct arg_t {
+//    int32_t **histR;
+//    tuple_t *relR;
+//    tuple_t *tmpR;
+//    int32_t **histS;
+//    tuple_t *relS;
+//    tuple_t *tmpS;
+//
+//    int32_t numR;
+//    int32_t numS;
+//    int64_t totalR;
+//    int64_t totalS;
+//
+//    task_queue_t **join_queue;
+//    task_queue_t **part_queue;
+//#ifdef SKEW_HANDLING
+//    task_queue_t *      skew_queue;
+//    task_t **           skewtask;
+//#endif
+//    pthread_barrier_t *barrier;
+////    int64_t (*)(const relation_t *const, const relation_t *const, relation_t *const, void *) join_function;
+//    int64_t result;
+//    int32_t my_tid;
+//    int nthreads;
+//
+//    /* results of the thread */
+//    threadresult_t *threadresult;
+//
+//    /* stats about the thread */
+//    int32_t parts_processed;
+//
+//#ifndef NO_TIMING
+//    T_TIMER *timer;
+//#endif
+//#ifdef SYNCSTATS
+//    /** Thread local timers : */
+//    synctimer_t localtimer;
+//    /** Global synchronization timers, only filled in by thread-0 */
+//    synctimer_t * globaltimer;
+//#endif
+//} __attribute__((aligned(CACHE_LINE_SIZE)));
+
+#ifdef SYNCSTATS
+/** holds syncronization timing stats if configured with --enable-syncstats */
+struct synctimer_t {
+    /** Barrier for computation of thread-local histogram */
+    uint64_t sync1[3]; /* for rel R and for rel S */
+    /** Barrier for end of radix partit. pass-1 */
+    uint64_t sync3;
+    /** Barrier before join (build-probe) begins */
+    uint64_t sync4;
+    /** Finish time */
+    uint64_t finish_time;
+};
+#endif
 
 /** holds arguments passed for partitioning */
 struct part_t {

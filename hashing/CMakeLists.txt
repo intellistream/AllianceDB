@@ -14,12 +14,14 @@ if (LIBNUMA_LIB-NOTFOUND)
 else ()
     link_libraries(${LIBNUMA_LIB})
 endif ()
+
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${./bin})
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -o3 -pthread -msse4.1")
 
 add_executable(hashing main.cpp
         utils/xxhash64.h utils/t_timer.h utils/t_timer.cpp utils/types.h utils/generator.cpp utils/generator.h utils/perf_counters.cpp utils/perf_counters.h utils/cpu_mapping.cpp utils/cpu_mapping.h utils/genzipf.cpp utils/genzipf.h utils/lock.h utils/rdtsc.h utils/barrier.h utils/task_queue.h utils/config.h
         joins/npj_types.h joins/npj_params.h joins/no_partitioning_join.cpp joins/no_partitioning_join.h joins/shj.cpp joins/shj.h
-        joins/parallel_radix_join.cpp joins/parallel_radix_join.h joins/prj_params.h joins/common_functions.cpp joins/common_functions.h utils/xxhash64.h)
+        joins/parallel_radix_join.cpp joins/parallel_radix_join.h joins/prj_params.h joins/common_functions.cpp joins/common_functions.h joins/launcher.cpp joins/launcher.h joins/shj_struct.h joins/thread_task.cpp joins/thread_task.h joins/localjoiner.cpp joins/localjoiner.h distributor.cpp distributor.h lib/types.h lib/pci.h lib/msr.h lib/msr.cpp lib/cpucounters.cpp lib/cpucounters.h lib/utils.cpp lib/utils.h lib/client_bw.cpp lib/client_bw.h lib/mmio.cpp lib/mmio.h lib/width_extender.h lib/mutex.h lib/exceptions/unsupported_processor_exception.hpp lib/pci.cpp)
+
 target_link_libraries(hashing numa)
 

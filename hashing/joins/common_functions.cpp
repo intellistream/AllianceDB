@@ -2,20 +2,14 @@
 // Created by Shuhao Zhang on 26/10/19.
 //
 
-#include "../utils/barrier.h"            /* pthread_barrier_* */
 #include "../utils/t_timer.h"
 #include "../utils/generator.h"          /* numa_localize() */
-#include "../utils/cpu_mapping.h"        /* get_cpu_id */
 #include "../utils/lock.h"               /* lock, unlock */
 #include "npj_types.h"          /* bucket_t, hashtable_t, bucket_buffer_t */
 #include "npj_params.h"         /* constant parameters */
-#include "no_partitioning_join.h"
-#include <sys/time.h>           /* gettimeofday */
 #include <stdlib.h>             /* memalign */
 #include <stdio.h>              /* printf */
 #include <string.h>             /* memset */
-#include <pthread.h>            /* pthread_* */
-#include <sched.h>              /* CPU_ZERO, CPU_SET */
 #include "common_functions.h"
 
 /** An experimental feature to allocate input relations numa-local */
@@ -100,11 +94,13 @@ void build_hashtable_st(hashtable_t *ht, relation_t *rel) {
     }
 }
 
-void build_hashtable_single(const hashtable_t *ht, const relation_t *rel, uint32_t i, const uint32_t hashmask,
+
+void build_hashtable_single(const hashtable_t *ht, const tuple_t *tuple,
+                            const uint32_t hashmask,
                             const uint32_t skipbits) {
     tuple_t *dest;
     bucket_t *curr, *nxt;
-    int32_t idx = HASH(rel->tuples[i].key, hashmask, skipbits);
+    int32_t idx = HASH(tuple->key, hashmask, skipbits);
 
     /* copy the tuple to appropriate hash bucket */
     /* if full, follow nxt pointer to find correct place */
@@ -127,7 +123,12 @@ void build_hashtable_single(const hashtable_t *ht, const relation_t *rel, uint32
         dest = curr->tuples + curr->count;//let dest point to correct place of bucket.
         curr->count++;
     }
-    *dest = rel->tuples[i];//copy the content of rel-tuples[i] to bucket.
+    *dest = *tuple;//copy the content of rel-tuples[i] to bucket.
+}
+
+void build_hashtable_single(const hashtable_t *ht, const relation_t *rel, uint32_t i, const uint32_t hashmask,
+                            const uint32_t skipbits) {
+    build_hashtable_single(ht, &rel->tuples[i], hashmask, skipbits);
 }
 
 
@@ -140,27 +141,22 @@ int64_t probe_hashtable(hashtable_t *ht, relation_t *rel, void *output, uint64_t
 #ifdef PREFETCH_NPJ
     size_t prefetch_index = PREFETCH_DISTANCE;
 #endif
-
     matches = 0;
-
 #ifdef JOIN_RESULT_MATERIALIZE
     chainedtuplebuffer_t * chainedbuf = (chainedtuplebuffer_t *) output;
 #endif
-
     for (i = 0; i < rel->num_tuples; i++) {
         proble_hashtable_single_measure
                 (ht, rel, i, hashmask, skipbits, &matches, progressivetimer);
     }
-
     return matches;
 }
 
 bool check1 = false, check2 = false, check3 = false;
 
-int64_t proble_hashtable_single_measure(const hashtable_t *ht, const relation_t *rel, uint32_t index_rel,
+int64_t proble_hashtable_single_measure(const hashtable_t *ht, const tuple_t *tuple,
                                         const uint32_t hashmask, const uint32_t skipbits, int64_t *matches,
-                                        uint64_t progressivetimer[]
-) {
+                                        uint64_t progressivetimer[]) {
     uint32_t index_ht;
 #ifdef PREFETCH_NPJ
     if (prefetch_index < rel->num_tuples) {
@@ -170,12 +166,12 @@ int64_t proble_hashtable_single_measure(const hashtable_t *ht, const relation_t 
         }
 #endif
 
-    intkey_t idx = HASH(rel->tuples[index_rel].key, hashmask, skipbits);
+    intkey_t idx = HASH(tuple->key, hashmask, skipbits);
     bucket_t *b = ht->buckets + idx;
 
     do {
         for (index_ht = 0; index_ht < b->count; index_ht++) {
-            if (rel->tuples[index_rel].key == b->tuples[index_ht].key) {
+            if (tuple->key == b->tuples[index_ht].key) {
                 (*matches)++;
 #ifdef JOIN_RESULT_MATERIALIZE
                 /* copy to the result buffer */
@@ -203,9 +199,15 @@ int64_t proble_hashtable_single_measure(const hashtable_t *ht, const relation_t 
     return *matches;
 }
 
-int64_t proble_hashtable_single(const hashtable_t *ht, const relation_t *rel, uint32_t index_rel,
-                                const uint32_t hashmask, const uint32_t skipbits) {
-    int64_t matches = 0;
+int64_t proble_hashtable_single_measure(const hashtable_t *ht, const relation_t *rel, uint32_t index_rel,
+                                        const uint32_t hashmask, const uint32_t skipbits, int64_t *matches,
+                                        uint64_t progressivetimer[]) {
+    return proble_hashtable_single_measure(ht, &rel->tuples[index_rel], hashmask, skipbits, matches, progressivetimer);
+}
+
+int64_t proble_hashtable_single(const hashtable_t *ht, const tuple_t *tuple,
+                                const uint32_t hashmask, const uint32_t skipbits, int64_t *matches) {
+
     uint32_t index_ht;
 #ifdef PREFETCH_NPJ
     if (prefetch_index < rel->num_tuples) {
@@ -215,28 +217,30 @@ int64_t proble_hashtable_single(const hashtable_t *ht, const relation_t *rel, ui
         }
 #endif
 
-    intkey_t idx = HASH(rel->tuples[index_rel].key, hashmask, skipbits);
+    intkey_t idx = HASH(tuple->key, hashmask, skipbits);
     bucket_t *b = ht->buckets + idx;
 
     do {
         for (index_ht = 0; index_ht < b->count; index_ht++) {
-            if (rel->tuples[index_rel].key == b->tuples[index_ht].key) {
-                matches++;
+            if (tuple->key == b->tuples[index_ht].key) {
+                (*matches)++;
 #ifdef JOIN_RESULT_MATERIALIZE
                 /* copy to the result buffer */
                 tuple_t * joinres = cb_next_writepos(chainedbuf);
                 joinres->key      = b->tuples[j].payload;   /* R-rid */
                 joinres->payload  = rel->tuples[i].payload; /* S-rid */
 #endif
-
             }
         }
-
         b = b->next;/* follow overflow pointer */
     } while (b);
-    return matches;
+    return *matches;
 }
 
+int64_t proble_hashtable_single(const hashtable_t *ht, const relation_t *rel, uint32_t index_rel,
+                                const uint32_t hashmask, const uint32_t skipbits, int64_t *matches) {
+    return proble_hashtable_single(ht, &rel->tuples[index_rel], hashmask, skipbits, matches);
+}
 
 /**
  * Returns a new bucket_t from the given bucket_buffer_t.

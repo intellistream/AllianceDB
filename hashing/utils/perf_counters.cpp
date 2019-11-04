@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "cpucounters.h" /* intel perf counters monitor */
+#include "../lib/cpucounters.h" /* intel perf counters monitor */
 
 using namespace std;
 

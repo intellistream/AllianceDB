@@ -253,6 +253,7 @@ cpu-mapping.txt
 #include "utils/perf_counters.h" /* PCM_x */
 //#include "utils/affinity.h"      /* pthread_attr_setaffinity_np & sched_setaffinity */ only for MAC
 #include "utils/config.h"     /* autoconf header */
+#include "joins/common_functions.h"
 
 #ifdef JOIN_RESULT_MATERIALIZE
 #include "tuple_buffer.h"       /* for materialization */
@@ -376,11 +377,11 @@ main(int argc, char **argv) {
     param_t cmd_params;
 
     /* Default values if not specified on command line */
-    cmd_params.algo = &algos[8]; /* PRO, RJ_st, PRH, PRHO, NPO,
+    cmd_params.algo = &algos[7]; /* PRO, RJ_st, PRH, PRHO, NPO,
         * NPO_st (5), SHJ_st, SHJ_JM_NP, SHJ_JB_NP */
-    cmd_params.nthreads = 1;
+    cmd_params.nthreads = 40;
     /* default dataset is Workload B (described in paper) */
-    cmd_params.r_size = 1280000;
+    cmd_params.r_size = expected_results;
     cmd_params.s_size = 12800000;
     cmd_params.r_seed = 12345;
     cmd_params.s_seed = 54321;

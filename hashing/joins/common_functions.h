@@ -5,6 +5,7 @@
 #ifndef ALLIANCEDB_COMMON_FUNCTIONS_H
 #define ALLIANCEDB_COMMON_FUNCTIONS_H
 
+#include "npj_types.h"
 
 #ifndef PTHREAD_BARRIER_SERIAL_THREAD
 #define PTHREAD_BARRIER_SERIAL_THREAD 1
@@ -69,17 +70,27 @@ build_hashtable_st(hashtable_t *ht, relation_t *rel);
 int64_t
 probe_hashtable(hashtable_t *ht, relation_t *rel, void *output, uint64_t progressivetimer[]);
 
+void
+build_hashtable_single(const hashtable_t *ht, const tuple_t *, const uint32_t hashmask,
+                       const uint32_t skipbits);
 
 void
 build_hashtable_single(const hashtable_t *ht, const relation_t *rel, uint32_t i, const uint32_t hashmask,
                        const uint32_t skipbits);
 
+int64_t proble_hashtable_single_measure(const hashtable_t *ht, const tuple_t *,
+                                        const uint32_t hashmask, const uint32_t skipbits, int64_t *matches,
+                                        uint64_t progressivetimer[]);
+
 int64_t proble_hashtable_single_measure(const hashtable_t *ht, const relation_t *rel, uint32_t index_rel,
                                         const uint32_t hashmask, const uint32_t skipbits, int64_t *matches,
                                         uint64_t progressivetimer[]);
 
+int64_t proble_hashtable_single(const hashtable_t *ht, const tuple_t *,
+                                const uint32_t hashmask, const uint32_t skipbits, int64_t *matches);
+
 int64_t proble_hashtable_single(const hashtable_t *ht, const relation_t *rel, uint32_t index_rel,
-                                const uint32_t hashmask, const uint32_t skipbits);
+                                const uint32_t hashmask, const uint32_t skipbits, int64_t *matches);
 
 
 /**

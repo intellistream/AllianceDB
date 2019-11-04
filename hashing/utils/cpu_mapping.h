@@ -24,6 +24,7 @@
 #define CUSTOM_CPU_MAPPING "cpu-mapping.txt"
 #endif
 
+
 /**
  * Returns SMT aware logical to physical CPU mapping for a given thread id.
  */
