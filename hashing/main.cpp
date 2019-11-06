@@ -377,7 +377,7 @@ main(int argc, char **argv) {
     param_t cmd_params;
 
     /* Default values if not specified on command line */
-    cmd_params.algo = &algos[7]; /* PRO, RJ_st, PRH, PRHO, NPO,
+    cmd_params.algo = &algos[8]; /* PRO, RJ_st, PRH, PRHO, NPO,
         * NPO_st (5), SHJ_st, SHJ_JM_NP, SHJ_JB_NP */
     cmd_params.nthreads = 40;
     /* default dataset is Workload B (described in paper) */

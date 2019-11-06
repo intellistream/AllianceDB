@@ -29,7 +29,7 @@
 
 #ifndef BARRIER_ARRIVE
 /** barrier wait macro */
-#define BARRIER_ARRIVE(B,RV)                            \
+#define BARRIER_ARRIVE(B, RV)                            \
     RV = pthread_barrier_wait(B);                       \
     if(RV !=0 && RV != PTHREAD_BARRIER_SERIAL_THREAD){  \
         printf("Couldn't wait on barrier\n");           \

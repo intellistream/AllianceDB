@@ -20,10 +20,10 @@
 #include "shj.h"
 #include "../utils/t_timer.h"  /* startTimer, stopTimer */
 #include "../utils/barrier.h"
-#include "launcher.h"
+#include "../helper/launcher.h"
 #include "shj_struct.h"
 #include "localjoiner.h"
-#include "thread_task.h"
+#include "../helper/thread_task.h"
 
 #ifdef PERF_COUNTERS
 #include "perf_counters.h"      /* PCM_x */
@@ -72,8 +72,38 @@ SHJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads) {
                                                        * nthreads);
 #endif
     initialize(nthreads, param);
-    param.distributor = new JB_NP_Distributor(nthreads, relR, relS);
-    LAUNCH(relR, relS, nthreads, param, timer, thread_task)
+    param.fetcher = new JB_NP_Fetcher(nthreads, relR, relS);
+    param.shuffler = new HashShuffler(nthreads, relR, relS);
+    LAUNCH(nthreads, param, timer, THREAD_TASK_SHUFFLE)
+    param = finishing(nthreads, param);
+#ifndef NO_TIMING
+    /* now print the timing results: */
+    print_timing(relS->num_tuples, param.result, &timer);
+#endif
+    return param.joinresult;
+}
+
+/**
+ * Data partition (JM model) then invovle _SHJ_st.
+ * @param relR
+ * @param relS
+ * @param nthreads
+ * @return
+ */
+result_t *
+SHJ_JBCR_NP(relation_t *relR, relation_t *relS, int nthreads) {
+    t_param param(nthreads);
+#ifndef NO_TIMING
+    T_TIMER timer;
+#endif
+#ifdef JOIN_RESULT_MATERIALIZE
+    joinresult->resultlist = (threadresult_t *) malloc(sizeof(threadresult_t)
+                                                       * nthreads);
+#endif
+    initialize(nthreads, param);
+    param.fetcher = new JB_NP_Fetcher(nthreads, relR, relS);
+    param.shuffler = new ContRandShuffler(nthreads, relR, relS);
+    LAUNCH(nthreads, param, timer, THREAD_TASK_SHUFFLE)
     param = finishing(nthreads, param);
 #ifndef NO_TIMING
     /* now print the timing results: */
@@ -101,8 +131,8 @@ SHJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads) {
                                                        * nthreads);
 #endif
     initialize(nthreads, param);
-    param.distributor = new JM_NP_Distributor(nthreads, relR, relS);
-    LAUNCH(relR, relS, nthreads, param, timer, thread_task)
+    param.fetcher = new JM_NP_Fetcher(nthreads, relR, relS);
+    LAUNCH(nthreads, param, timer, THREAD_TASK_NOSHUFFLE)
     param = finishing(nthreads, param);
 #ifndef NO_TIMING
     /* now print the timing results: */

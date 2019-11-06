@@ -6,7 +6,8 @@
 #define ALLIANCEDB_SHJ_STRUCT_H
 
 
-#include "../distributor.h"
+#include "../helper/fetcher.h"
+#include "../helper/shuffler.h"
 
 /**
  * \ingroup arguments to the threads
@@ -16,6 +17,10 @@ struct list {
     std::list<int> *relR_list;
     std::list<int> *relS_list;
 };
+
+/**
+ * Thread-Local Structure.
+ */
 struct arg_t {
     int32_t tid;
     int64_t num_results;
@@ -27,7 +32,8 @@ struct arg_t {
     struct list *list;
 
     pthread_barrier_t *barrier;
-    Base_Distributor *distributor;
+    BaseFetcher *fetcher;
+    BaseShuffler *shuffler;
     /* results of the thread */
     threadresult_t *threadresult;
 
@@ -46,7 +52,8 @@ struct t_param {
     arg_t *args;
     pthread_t *tid;
 
-    Base_Distributor *distributor;
+    BaseFetcher *fetcher;
+    BaseShuffler *shuffler;
 
     t_param(int nthreads) {
         result = 0;

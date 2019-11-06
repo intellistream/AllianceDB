@@ -137,6 +137,7 @@ typedef int64_t (*JoinFunction)(const relation_t *const,
                                 const relation_t *const,
                                 relation_t *const,
                                 void *output);
+
 /** holds the arguments passed to each thread */
 struct arg_t {
     int32_t **histR;

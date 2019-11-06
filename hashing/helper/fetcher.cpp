@@ -3,10 +3,10 @@
 //
 
 #include <cstdio>
-#include "distributor.h"
+#include "fetcher.h"
 
 
-fetch_t *JB_NP_Distributor::next_tuple(int tid) {
+fetch_t *JB_NP_Fetcher::next_tuple(int tid) {
 
 
 }
@@ -19,9 +19,6 @@ fetch_t *JB_NP_Distributor::next_tuple(int tid) {
 //        param.args[i].relS.num_tuples = (last_thread(i, nthreads)) ? numS : numSthr;
 //        param.args[i].relS.tuples = relS->tuples + numSthr * i;
 //        numS -= numSthr;
-
-
-
 
 
 fetch_t *_next_tuple(t_state *state, relation_t *relR, relation_t *relS) {
@@ -48,6 +45,6 @@ fetch_t *_next_tuple(t_state *state, relation_t *relR, relation_t *relS) {
     }
 }
 
-fetch_t *JM_NP_Distributor::next_tuple(int tid) {
+fetch_t *JM_NP_Fetcher::next_tuple(int tid) {
     return _next_tuple(&state[tid], relR, relS);
 }

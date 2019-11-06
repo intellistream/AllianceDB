@@ -5,14 +5,8 @@
 #include "launcher.h"
 
 
-void launch(const relation_t *relR, const relation_t *relS, int nthreads, t_param param, T_TIMER *timer,
-            void *(*thread_fun)(void *)) {
-//    int32_t numR, numS, numRthr, numSthr; /* total and per thread num */
-//    numR = relR->num_tuples;
-//    numS = relS->num_tuples;
-//
-//    numSthr = numS / nthreads;//(1)
-//    numRthr = numR;//(2)
+void launch(int nthreads, t_param param, T_TIMER *timer, void *(*thread_fun)(void *)) {
+
     int i;
     int rv;
     cpu_set_t set;
@@ -26,7 +20,8 @@ void launch(const relation_t *relR, const relation_t *relS, int nthreads, t_para
         param.args[i].tid = i;
         param.args[i].timer = timer;
         param.args[i].barrier = param.barrier;
-        param.args[i].distributor = param.distributor;
+        param.args[i].fetcher = param.fetcher;
+        param.args[i].shuffler = param.shuffler;
         param.args[i].threadresult = &(param.joinresult->resultlist[i]);
         rv = pthread_create(&param.tid[i], param.attr, thread_fun, (void *) &param.args[i]);
         if (rv) {
@@ -47,7 +42,7 @@ void launch(const relation_t *relR, const relation_t *relS, int nthreads, t_para
 //launch_jm_np(const relation_t *relR,
 //             const relation_t *relS, int nthreads, t_param param, T_TIMER *timer) {
 //
-//    launch(relR, relS, nthreads, param, timer, thread_task);
+//    launch(relR, relS, nthreads, param, timer, THREAD_TASK_NOSHUFFLE);
 //}
 
 /**
