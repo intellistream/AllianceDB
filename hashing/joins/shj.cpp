@@ -17,6 +17,7 @@
 #include <stdio.h>              /* printf */
 #include <stdlib.h>             /* memalign */
 #include <sys/time.h>           /* gettimeofday */
+#include <zconf.h>
 #include "shj.h"
 #include "../utils/t_timer.h"  /* startTimer, stopTimer */
 #include "../utils/barrier.h"
@@ -44,8 +45,11 @@ void initialize(int nthreads, const t_param &param) {
 
 t_param &finishing(int nthreads, t_param &param) {
     int i;
+
+//    sleep(60);
     for (i = 0; i < nthreads; i++) {
         pthread_join(param.tid[i], NULL);
+
         /* sum up results */
         param.result += param.args[i].num_results;
     }

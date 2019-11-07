@@ -9,8 +9,12 @@
 #include <stdio.h>
 
 struct fetch_t {
-    tuple_t *tuple;
-    bool flag;
+    fetch_t(fetch_t *fetch);
+
+    fetch_t();
+
+    tuple_t *tuple{};
+    bool flag{};
 
 };
 

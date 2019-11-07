@@ -28,6 +28,8 @@ void launch(int nthreads, t_param param, T_TIMER *timer, void *(*thread_fun)(voi
             printf("ERROR; return code from pthread_create() is %d\n", rv);
             exit(-1);
         }
+        printf("Launch thread[%d] :%lu\n", param.args[i].tid, param.tid[i]);
+        fflush(stdout);
     }
 }
 

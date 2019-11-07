@@ -29,7 +29,7 @@
 #define HASH(X, MASK, SKIP) (((X) & MASK) >> SKIP)
 #endif
 
-#define DEBUG
+//#define DEBUG
 
 /** Debug msg logging method */
 #ifdef DEBUG
@@ -39,8 +39,8 @@
 #define DEBUGMSG(COND, MSG, ...)
 #endif
 
-
-#define  MEASURE
+#define EAGER
+#define MEASURE
 #define expected_results 1280000.0
 
 /**

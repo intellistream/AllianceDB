@@ -250,18 +250,35 @@ void
 
     BaseShuffler *shuffler = args->shuffler;
 
+
+    //fetch: pointer points to state.fetch (*fetch = &(state->fetch))
+    fetch_t *fetch;
     do {
-        fetch_t *fetch = fetcher->next_tuple(args->tid);
+        fetch = fetcher->next_tuple(args->tid);
         if (fetch != nullptr) {
-            shuffler->push(fetch->tuple->key, *fetch);
+            shuffler->push(fetch->tuple->key, fetch);//pass-in pointer points to state.fetch
         }
+
+#ifdef EAGER
+        fetch = shuffler->pull(args->tid);//re-fetch from its shuffler.
+        if (fetch != nullptr) {
+            args->num_results = _shj(
+                    args->tid,
+                    fetch->tuple,
+                    fetch->flag,
+                    args->htR,
+                    args->htS,
+                    &matches,
+                    chainedbuf, args->timer);//build and probe at the same time.
+        }
+#endif
     } while (!fetcher->finish(args->tid));
 
     /* wait at a barrier until each thread finishes fetch*/
     BARRIER_ARRIVE(args->barrier, rv)
 
     do {
-        fetch_t *fetch = shuffler->pull(args->tid);//re-fetch from its shuffler.
+        fetch = shuffler->pull(args->tid);//re-fetch from its shuffler.
         if (fetch != nullptr) {
             args->num_results = _shj(
                     args->tid,
@@ -273,8 +290,6 @@ void
                     chainedbuf, args->timer);//build and probe at the same time.
         } else break;
     } while (true);
-
-    printf("args->num_results (%d): %ld\n", args->tid, args->num_results);
 
 #ifdef JOIN_RESULT_MATERIALIZE
     args->threadresult->nresults = args->num_results;
@@ -299,5 +314,6 @@ void
     /* Just to make sure we get consistent performance numbers */
     BARRIER_ARRIVE(args->barrier, rv);
 #endif
-    return 0;
+    printf("args->num_results (%d): %ld\n", args->tid, args->num_results);
+    fflush(stdout);
 }

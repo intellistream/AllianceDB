@@ -48,3 +48,10 @@ fetch_t *JB_NP_Fetcher::next_tuple(int tid) {
 fetch_t *JM_NP_Fetcher::next_tuple(int tid) {
     return _next_tuple(&state[tid], relR, relS);
 }
+
+fetch_t::fetch_t(fetch_t *fetch) {
+    this->tuple=fetch->tuple;
+    this->flag=fetch->flag;
+}
+
+fetch_t::fetch_t() {}

@@ -15,24 +15,24 @@ int32_t KEY_TO_IDX(intkey_t key, int nthreads) {
     return key % nthreads;
 }
 
-void HashShuffler::push(intkey_t key, fetch_t fetch) {
+//pass-in pointer points to state.fetch
+void HashShuffler::push(intkey_t key, fetch_t *fetch) {
     int32_t idx = KEY_TO_IDX(key, nthreads);
-    moodycamel::ConcurrentQueue<fetch_t *> *queue = queues[idx];
-    queue->enqueue(&fetch);
-    DEBUGMSG(1, "PUSH TID: %d, tuple: %d, queue size:%d\n", idx, fetch.tuple->key, queue->size_approx());
-
+    moodycamel::ConcurrentQueue<fetch_t *> *queue = queues[idx].queue;
+    queue->enqueue(new fetch_t(fetch));
+    DEBUGMSG(1, "PUSH: %d, tuple: %d, queue size:%d\n", idx, fetch->tuple->key, queue->size_approx())
 }
 
 fetch_t *HashShuffler::pull(int32_t tid) {
     int32_t idx = TID_To_IDX(tid);
-    moodycamel::ConcurrentQueue<fetch_t *> *queue = queues[idx];
+    moodycamel::ConcurrentQueue<fetch_t *> *queue = queues[idx].queue;
     fetch_t *tuple;
     bool rt = queue->try_dequeue(tuple);
 
     if (!rt)
         return nullptr;
 //    bool rt =  .try_dequeue(tuple);
-    DEBUGMSG(1, "PULL TID: %d, tuple: %d, queue size:%d\n", idx, tuple->tuple->key, queue->size_approx());
+    DEBUGMSG(1, "PULL: %d, tuple: %d, queue size:%d\n", idx, tuple->tuple->key, queue->size_approx());
     return tuple;
 }
 
@@ -45,19 +45,18 @@ BaseShuffler::BaseShuffler(int nthreads, relation_t *relR, relation_t *relS) {
 
 HashShuffler::HashShuffler(int nthreads, relation_t *relR, relation_t *relS)
         : BaseShuffler(nthreads, relR, relS) {
-    *queues = new moodycamel::ConcurrentQueue<fetch_t *>[nthreads];
-    for (int i = 0; i < nthreads; i++) {
-        queues[i] = new moodycamel::ConcurrentQueue<fetch_t *>();
-    }
+    queues = new T_queue[nthreads];
+//    for (int i = 0; i < nthreads; i++) {
+//        queues[i] = new moodycamel::ConcurrentQueue<fetch_t *>();
+//    }
 }
 
 ContRandShuffler::ContRandShuffler(int nthreads, relation_t *relR, relation_t *relS)
         : BaseShuffler(nthreads, relR, relS) {
-    *queues = new moodycamel::ConcurrentQueue<fetch_t>[nthreads];
-
+    queues = new T_queue[nthreads];
 }
 
-void ContRandShuffler::push(intkey_t key, fetch_t fetch) {
+void ContRandShuffler::push(intkey_t key, fetch_t *fetch) {
 
 }
 
