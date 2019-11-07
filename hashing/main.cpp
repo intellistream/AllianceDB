@@ -379,10 +379,10 @@ main(int argc, char **argv) {
     /* Default values if not specified on command line */
     cmd_params.algo = &algos[8]; /* PRO, RJ_st, PRH, PRHO, NPO,
         * NPO_st (5), SHJ_st, SHJ_JM_NP, SHJ_JB_NP */
-    cmd_params.nthreads = 40;
+    cmd_params.nthreads = 1;
     /* default dataset is Workload B (described in paper) */
-    cmd_params.r_size = expected_results;
-    cmd_params.s_size = 12800000;
+    cmd_params.r_size = 2; //expected_results;
+    cmd_params.s_size = 128;//00000;
     cmd_params.r_seed = 12345;
     cmd_params.s_seed = 54321;
     cmd_params.skew = 0.0;

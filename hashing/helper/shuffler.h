@@ -18,9 +18,7 @@ public:
     BaseShuffler(int tid, relation_t *relR,
                  relation_t *relS);
 
-    virtual void push(intkey_t key, fetch_t *pFetch) = 0;
-
-    virtual bool finish(int32_t i) = 0;
+    virtual void push(intkey_t key, fetch_t fetch) = 0;
 
     virtual fetch_t *pull(int32_t tid) = 0;
 
@@ -34,9 +32,7 @@ public:
 
     HashShuffler(int nthreads, relation_t *relR, relation_t *relS);
 
-    void push(intkey_t key, fetch_t *pFetch) override;
-
-    bool finish(int32_t i) override;
+    void push(intkey_t key, fetch_t fetch) override;
 
     fetch_t *pull(int32_t tid) override;
 };
@@ -46,13 +42,11 @@ class ContRandShuffler : public BaseShuffler {
 public:
 
     //in a extreme case, hash-partition the queue.
-    moodycamel::ConcurrentQueue<fetch_t *> *queues[];//simple hashing first.
+    moodycamel::ConcurrentQueue<fetch_t> *queues[];//simple hashing first.
 
     ContRandShuffler(int nthreads, relation_t *relR, relation_t *relS);
 
-    void push(intkey_t key, fetch_t *pFetch) override;
-
-    bool finish(int32_t i) override;
+    void push(intkey_t key, fetch_t fetch) override;
 
     fetch_t *pull(int32_t tid) override;
 };

@@ -148,7 +148,7 @@ THREAD_TASK_NOSHUFFLE(void *param) {
 #endif
 
     //call different data BaseFetcher.
-    BaseFetcher *distributor = args->fetcher;
+    BaseFetcher *fetcher = args->fetcher;
     int64_t matches = 0;//number of matches.
 
     //allocate two hashtables on each thread assuming input stream statistics are known.
@@ -159,7 +159,7 @@ THREAD_TASK_NOSHUFFLE(void *param) {
     allocate_hashtable(&args->htS, nbucketsS);
 
     do {
-        fetch_t *fetch = distributor->next_tuple(args->tid);
+        fetch_t *fetch = fetcher->next_tuple(args->tid);
 
         if (fetch != nullptr) {
             args->num_results = _shj(
@@ -171,7 +171,7 @@ THREAD_TASK_NOSHUFFLE(void *param) {
                     &matches,
                     chainedbuf, args->timer);//build and probe at the same time.
         }
-    } while (!distributor->finish(args->tid));
+    } while (!fetcher->finish(args->tid));
     printf("args->num_results (%d): %ld\n", args->tid, args->num_results);
 
 #ifdef JOIN_RESULT_MATERIALIZE
@@ -253,11 +253,15 @@ void
     do {
         fetch_t *fetch = fetcher->next_tuple(args->tid);
         if (fetch != nullptr) {
-            shuffler->push(fetch->tuple->key, fetch);
+            shuffler->push(fetch->tuple->key, *fetch);
         }
+    } while (!fetcher->finish(args->tid));
 
-        fetch = shuffler->pull(args->tid);//re-fetch from its shuffler.
+    /* wait at a barrier until each thread finishes fetch*/
+    BARRIER_ARRIVE(args->barrier, rv)
 
+    do {
+        fetch_t *fetch = shuffler->pull(args->tid);//re-fetch from its shuffler.
         if (fetch != nullptr) {
             args->num_results = _shj(
                     args->tid,
@@ -267,8 +271,9 @@ void
                     args->htS,
                     &matches,
                     chainedbuf, args->timer);//build and probe at the same time.
-        }
-    } while (!fetcher->finish(args->tid) || !shuffler->finish(args->tid));
+        } else break;
+    } while (true);
+
     printf("args->num_results (%d): %ld\n", args->tid, args->num_results);
 
 #ifdef JOIN_RESULT_MATERIALIZE

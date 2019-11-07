@@ -14,7 +14,7 @@ long _shj(int32_t tid, tuple_t *tuple, bool tuple_R, hashtable_t *htR, hashtable
     const uint32_t hashmask_S = htS->hash_mask;
     const uint32_t skipbits_S = htS->skip_bits;
 
-    DEBUGMSG("TID: %d, tuple: %d, R?%d\n", tid, tuple->key, tuple_R);
+    DEBUGMSG(1, "TID: %d, tuple: %d, R?%d\n", tid, tuple->key, tuple_R)
     if (tuple_R) {
         if (tid == 0) {
             BEGIN_MEASURE_BUILD_ACC((*timer))

@@ -50,7 +50,6 @@ class JM_NP_Fetcher : public BaseFetcher {
 public:
     fetch_t *next_tuple(int tid) override;
 
-
     bool finish(int tid) {
         return state[tid].start_index_R == state[tid].end_index_R
                && state[tid].start_index_S == state[tid].end_index_S;
@@ -92,21 +91,21 @@ public:
     fetch_t *next_tuple(int tid) override;
 
     bool finish(int tid) {
-
-
+        return state[tid].start_index_R == state[tid].end_index_R
+               && state[tid].start_index_S == state[tid].end_index_S;
     }
 
     JB_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS)
             : BaseFetcher(relR, relS) {
         state = new t_state[nthreads];
-
-        int numSthr = relS->num_tuples / nthreads;//replicate R, partition S.
+        int numRthr = relR->num_tuples / nthreads;// partition R,
+        int numSthr = relS->num_tuples / nthreads;// partition S.
         for (int i = 0; i < nthreads; i++) {
 
             state[i].flag = true;
-            /* replicate relR for next thread */
-            state[i].start_index_S = numSthr * i;
-            state[i].end_index_S = (last_thread(i, nthreads)) ? relS->num_tuples : numSthr * (i + 1);
+            /* assign part of the relR for next thread */
+            state[i].start_index_R = numRthr * i;
+            state[i].end_index_R = (last_thread(i, nthreads)) ? relR->num_tuples : numRthr * (i + 1);
 
             /* assign part of the relS for next thread */
             state[i].start_index_S = numSthr * i;
