@@ -64,7 +64,7 @@ struct arg_t {
     relation_t relR;
     relation_t relS;
     pthread_barrier_t *barrier;
-    int64_t num_results;
+    int64_t nthreads;
 
     /* results of the thread */
     threadresult_t *threadresult;
@@ -228,7 +228,7 @@ npo_thread(void *param) {
 #endif
 
     /* probe for matching tuples from the assigned part of relS */
-    args->num_results = probe_hashtable(args->ht, &args->relS, chainedbuf, args->timer->progressivetimer);
+    args->nthreads = probe_hashtable(args->ht, &args->relS, chainedbuf, args->timer->progressivetimer);
 
 #ifdef JOIN_RESULT_MATERIALIZE
     args->threadresult->nresults = args->num_results;
@@ -368,7 +368,7 @@ NPO(relation_t *relR, relation_t *relS, int nthreads) {
     for (i = 0; i < nthreads; i++) {
         pthread_join(tid[i], NULL);
         /* sum up results */
-        result += args[i].num_results;
+        result += args[i].nthreads;
     }
     joinresult->totalresults = result;
     joinresult->nthreads = nthreads;

@@ -39,6 +39,7 @@
 #define DEBUGMSG(COND, MSG, ...)
 #endif
 
+
 #define EAGER
 #define MEASURE
 #define expected_results 1280000.0
@@ -71,6 +72,19 @@ build_hashtable_st(hashtable_t *ht, relation_t *rel);
  */
 int64_t
 probe_hashtable(hashtable_t *ht, relation_t *rel, void *output, uint64_t progressivetimer[]);
+
+
+/**
+ * Remove the effect of tuple from hashtable. (reverse of build hashtable)
+ * @param ht
+ * @param tuple
+ * @param hashmask
+ * @param skipbits
+ */
+void debuild_hashtable_single(const hashtable_t *ht, const tuple_t *tuple,
+                              const uint32_t hashmask,
+                              const uint32_t skipbits);
+
 
 void
 build_hashtable_single(const hashtable_t *ht, const tuple_t *, const uint32_t hashmask,

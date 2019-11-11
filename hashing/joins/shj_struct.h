@@ -5,7 +5,8 @@
 #ifndef ALLIANCEDB_SHJ_STRUCT_H
 #define ALLIANCEDB_SHJ_STRUCT_H
 
-
+#include "npj_types.h"
+#include "../utils/t_timer.h"
 #include "../helper/fetcher.h"
 #include "../helper/shuffler.h"
 
@@ -13,27 +14,28 @@
  * \ingroup arguments to the threads
  */
 
-struct list {
-    std::list<int> *relR_list;
-    std::list<int> *relS_list;
-};
+//struct list {
+//    std::list<int> *relR_list;
+//    std::list<int> *relS_list;
+//};
 
 /**
  * Thread-Local Structure.
  */
 struct arg_t {
     int32_t tid;
-    int64_t num_results;
+    int64_t nthreads;
+    int64_t results;
 
     hashtable_t *htR;
     hashtable_t *htS;
 
     //used in JB
-    struct list *list;
+//    struct list *list;
 
     pthread_barrier_t *barrier;
-    BaseFetcher *fetcher;
-    BaseShuffler *shuffler;
+    baseFetcher *fetcher;
+    baseShuffler *shuffler;
     /* results of the thread */
     threadresult_t *threadresult;
 
@@ -52,8 +54,8 @@ struct t_param {
     arg_t *args;
     pthread_t *tid;
 
-    BaseFetcher *fetcher;
-    BaseShuffler *shuffler;
+    baseFetcher *fetcher;
+    baseShuffler *shuffler;
 
     t_param(int nthreads) {
         result = 0;

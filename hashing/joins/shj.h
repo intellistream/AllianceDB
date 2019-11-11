@@ -48,6 +48,34 @@ result_t *
 SHJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads);
 
 /**
+ * Join-Biclique Model SHJ with CountRand Algorithm
+ * @param relR
+ * @param relS
+ * @param nthreads
+ * @return
+ */
+result_t *
+SHJ_JBCR_NP(relation_t *relR, relation_t *relS, int nthreads);
+
+
+/**
+ * HandShake Model
+ *
+ * The "HandShake Model" was originally proposed by Teubner et al. in SIGMOD 2011.
+ *
+ * The following is a multi-threaded implementation. Just returns the
+ * number of result tuples.
+ *
+ * @param relR input relation R - inner relation
+ * @param relS input relation S - outer relation
+ *
+ * @return number of result tuples
+ */
+result_t *
+SHJ_HS_NP(relation_t *relR, relation_t *relS, int nthreads);
+
+
+/**
  * The No Partitioning Join Optimized (NPO) as a single-threaded
  * implementation. Just returns the number of result tuples.
  *

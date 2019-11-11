@@ -13,9 +13,11 @@ struct fetch_t {
 
     fetch_t();
 
-    tuple_t *tuple{};
-    bool flag{};
+    tuple_t *tuple;
 
+    bool flag;//whether this tuple from input R or S.
+
+    bool ack;//whether this is just a message. Used in HS model.
 };
 
 //thread local structure
@@ -29,7 +31,7 @@ struct t_state {
     fetch_t fetch;
 };
 
-class BaseFetcher {
+class baseFetcher {
 public:
     virtual fetch_t *next_tuple(int tid) = 0;
 
@@ -40,7 +42,7 @@ public:
 
     virtual bool finish(int32_t tid) = 0;
 
-    BaseFetcher(relation_t *relR, relation_t *relS) {
+    baseFetcher(relation_t *relR, relation_t *relS) {
         this->relR = relR;
         this->relS = relS;
     }
@@ -50,7 +52,51 @@ inline bool last_thread(int i, int nthreads) {
     return i == (nthreads - 1);
 }
 
-class JM_NP_Fetcher : public BaseFetcher {
+class HS_NP_Fetcher : public baseFetcher {
+public:
+    fetch_t *next_tuple(int tid) override;
+
+    bool finish(int tid) {
+        return false;//should not be called.
+    }
+
+    /**
+     * Initialization
+     * @param nthreads
+     * @param relR
+     * @param relS
+     */
+    HS_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS)
+            : baseFetcher(relR, relS) {
+        state = new t_state[nthreads];
+
+        int i;
+        i = 0;
+
+        //let first and last thread to read two streams.
+        state[i].flag = true;
+        /* replicate relR to thread 0 */
+        state[i].start_index_R = 0;
+        state[i].end_index_R = relR->num_tuples;
+        state[i].start_index_S = 0;
+        state[i].end_index_S = 0;
+
+        i = nthreads - 1;
+        /* replicate relS to thread [nthread-1] */
+        state[i].start_index_R = 0;
+        state[i].end_index_R = 0;
+        state[i].start_index_S = 0;
+        state[i].end_index_S = relS->num_tuples;
+
+#ifdef DEBUG
+        printf("TID:%d, R: start_index:%d, end_index:%d\n", i, state[i].start_index_R, state[i].end_index_R);
+        printf("TID:%d, S: start_index:%d, end_index:%d\n", i, state[i].start_index_S, state[i].end_index_S);
+#endif
+
+    }
+};
+
+class JM_NP_Fetcher : public baseFetcher {
 public:
     fetch_t *next_tuple(int tid) override;
 
@@ -66,7 +112,7 @@ public:
      * @param relS
      */
     JM_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS)
-            : BaseFetcher(relR, relS) {
+            : baseFetcher(relR, relS) {
         state = new t_state[nthreads];
 
         int numSthr = relS->num_tuples / nthreads;//replicate R, partition S.
@@ -81,16 +127,15 @@ public:
             state[i].start_index_S = numSthr * i;
             state[i].end_index_S = (last_thread(i, nthreads)) ? relS->num_tuples : numSthr * (i + 1);
 
-
+#ifdef DEBUG
             printf("TID:%d, R: start_index:%d, end_index:%d\n", i, state[i].start_index_R, state[i].end_index_R);
             printf("TID:%d, S: start_index:%d, end_index:%d\n", i, state[i].start_index_S, state[i].end_index_S);
+#endif
         }
     }
-
-
 };
 
-class JB_NP_Fetcher : public BaseFetcher {
+class JB_NP_Fetcher : public baseFetcher {
 public:
     fetch_t *next_tuple(int tid) override;
 
@@ -100,7 +145,7 @@ public:
     }
 
     JB_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS)
-            : BaseFetcher(relR, relS) {
+            : baseFetcher(relR, relS) {
         state = new t_state[nthreads];
         int numRthr = relR->num_tuples / nthreads;// partition R,
         int numSthr = relS->num_tuples / nthreads;// partition S.
@@ -115,8 +160,10 @@ public:
             state[i].start_index_S = numSthr * i;
             state[i].end_index_S = (last_thread(i, nthreads)) ? relS->num_tuples : numSthr * (i + 1);
 
+#ifdef DEBUG
             printf("TID:%d, R: start_index:%d, end_index:%d\n", i, state[i].start_index_R, state[i].end_index_R);
             printf("TID:%d, S: start_index:%d, end_index:%d\n", i, state[i].start_index_S, state[i].end_index_S);
+#endif
         }
     }
 };

@@ -48,6 +48,16 @@ void *
 THREAD_TASK_SHUFFLE(void *param);
 
 /**
+ * Just a wrapper to call the _shj_st Handshake
+ *
+ * @param param the parameters of the thread, i.e. tid, ht, reln, ...
+ *
+ * @return
+ */
+void
+*THREAD_TASK_HSSHUFFLE(void *param);
+
+/**
  * Just a wrapper to call the _shj_st
  *
  * @param param the parameters of the thread, i.e. tid, ht, reln, ...

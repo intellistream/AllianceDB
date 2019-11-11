@@ -95,6 +95,19 @@ void build_hashtable_st(hashtable_t *ht, relation_t *rel) {
 }
 
 
+void
+debuild_hashtable_single(const hashtable_t *ht, const tuple_t *tuple, const uint32_t hashmask,
+                         const uint32_t skipbits) {
+
+    tuple_t *dest;
+    bucket_t *curr, *nxt;
+    int32_t idx = HASH(tuple->key, hashmask, skipbits);
+
+    curr = ht->buckets + idx;
+    dest = curr->tuples + curr->count;//let dest point to correct place of bucket.
+    delete dest;
+}
+
 void build_hashtable_single(const hashtable_t *ht, const tuple_t *tuple,
                             const uint32_t hashmask,
                             const uint32_t skipbits) {

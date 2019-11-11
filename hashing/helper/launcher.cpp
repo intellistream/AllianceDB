@@ -17,6 +17,7 @@ void launch(int nthreads, t_param param, T_TIMER *timer, void *(*thread_fun)(voi
         CPU_ZERO(&set);
         CPU_SET(cpu_idx, &set);
         pthread_attr_setaffinity_np(param.attr, sizeof(cpu_set_t), &set);
+        param.args[i].nthreads = nthreads;
         param.args[i].tid = i;
         param.args[i].timer = timer;
         param.args[i].barrier = param.barrier;
@@ -28,7 +29,7 @@ void launch(int nthreads, t_param param, T_TIMER *timer, void *(*thread_fun)(voi
             printf("ERROR; return code from pthread_create() is %d\n", rv);
             exit(-1);
         }
-        printf("Launch thread[%d] :%lu\n", param.args[i].tid, param.tid[i]);
+//        printf("Launch thread[%d] :%lu\n", param.args[i].tid, param.tid[i]);
         fflush(stdout);
     }
 }

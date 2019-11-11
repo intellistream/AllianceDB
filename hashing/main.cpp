@@ -306,16 +306,18 @@ extern int nthreads;      /* defined in generator.c */
 /** all available algorithms */
 static struct algo_t algos[] =
         {
-                {"PRO",       PRO},
-                {"RJ_st",     RJ_st},
-                {"PRH",       PRH},
-                {"PRHO",      PRHO},
-                {"NPO",       NPO},
-                {"NPO_st",    NPO_st}, /* NPO single threaded */
-                {"SHJ_st",    SHJ_st}, /* Symmetric hash join single_thread*/
-                {"SHJ_JM_NP", SHJ_JM_NP}, /* Symmetric hash join JM Model, No-Partition*/
-                {"SHJ_JB_NP", SHJ_JB_NP}, /* Symmetric hash join JB Model, No-Partition*/
-                {{0},         0}
+                {"PRO",         PRO},
+                {"RJ_st",       RJ_st},
+                {"PRH",         PRH},
+                {"PRHO",        PRHO},
+                {"NPO",         NPO},
+                {"NPO_st",      NPO_st}, /* NPO single threaded */
+                {"SHJ_st",      SHJ_st}, /* Symmetric hash join single_thread*/
+                {"SHJ_JM_NP",   SHJ_JM_NP}, /* Symmetric hash join JM Model, No-Partition*/
+                {"SHJ_JB_NP",   SHJ_JB_NP}, /* Symmetric hash join JB Model, No-Partition*/
+                {"SHJ_JBCR_NP", SHJ_JBCR_NP}, /* Symmetric hash join JB CountRound Model, No-Partition*/
+                {"SHJ_HS_NP",   SHJ_HS_NP}, /* Symmetric hash join HS Model, No-Partition*/
+                {{0},           0}
         };
 
 /* command line handling functions */
@@ -327,6 +329,14 @@ print_version();
 
 void
 parse_args(int argc, char **argv, param_t *cmd_params);
+
+void print_relation(relation_t *rel) {
+    int i;
+    for (i = 0; i < rel->num_tuples; i++) {
+        printf("%d %d\n", rel->tuples[i].key, rel->tuples[i].payload);
+    }
+    fflush(stdout); // Will now print everything in the stdout buffer
+}
 
 void createRelation(relation_t &rel, const param_t &cmd_params,
                     char *loadfile, uint64_t rel_size, uint32_t seed) {
@@ -377,12 +387,16 @@ main(int argc, char **argv) {
     param_t cmd_params;
 
     /* Default values if not specified on command line */
-    cmd_params.algo = &algos[8]; /* PRO, RJ_st, PRH, PRHO, NPO,
-        * NPO_st (5), SHJ_st, SHJ_JM_NP, SHJ_JB_NP */
-    cmd_params.nthreads = 10;
+    /* PRO (0), RJ_st, PRH, PRHO, NPO,
+        * NPO_st (5), SHJ_st, SHJ_JM_NP, SHJ_JB_NP, SHJ_JBCR_NP,
+        * SHJ_HS_NP (10) */
+    cmd_params.algo = &algos[10];
+    cmd_params.nthreads = 2;
+    cmd_params.r_size = 2;
+    cmd_params.s_size = 2;
     /* default dataset is Workload B (described in paper) */
-    cmd_params.r_size = expected_results;
-    cmd_params.s_size = 12800000;
+//    cmd_params.r_size = expected_results;
+//    cmd_params.s_size = 12800000;
     cmd_params.r_seed = 12345;
     cmd_params.s_seed = 54321;
     cmd_params.skew = 0.0;
@@ -405,8 +419,12 @@ main(int argc, char **argv) {
     /* create relation R */
     createRelation(relR, cmd_params, cmd_params.loadfileR, cmd_params.r_size, cmd_params.r_seed);
 
+    print_relation(&relR);
+
     /* create relation S */
     createRelation(relS, cmd_params, cmd_params.loadfileS, cmd_params.s_size, cmd_params.s_seed);
+
+    print_relation(&relS);
 
     /* Run the selected join algorithm */
     printf("[INFO ] Running join algorithm %s ...\n", cmd_params.algo->name);
