@@ -9,6 +9,7 @@
 fetch_t::fetch_t(fetch_t *fetch) {
     this->tuple = fetch->tuple;
     this->flag = fetch->flag;
+    this->ack = fetch->ack;
 }
 
 fetch_t::fetch_t() {}
@@ -57,7 +58,7 @@ fetch_t *HS_NP_Fetcher::next_tuple(int tid) {
     if (tid == 0) {//thread 0 fetches R.
         if (state[tid].start_index_R < state[tid].end_index_R) {
             state[tid].fetch.tuple = &relR->tuples[state[tid].start_index_R++];
-            state[tid].fetch.flag = state[tid].flag;
+            state[tid].fetch.flag = true;
             return &(state[tid].fetch);
         } else {
             return nullptr;
@@ -65,7 +66,7 @@ fetch_t *HS_NP_Fetcher::next_tuple(int tid) {
     } else {//thread n-1 fetches S.
         if (state[tid].start_index_S < state[tid].end_index_S) {
             state[tid].fetch.tuple = &relS->tuples[state[tid].start_index_S++];
-            state[tid].fetch.flag = state[tid].flag;
+            state[tid].fetch.flag = false;
             return &(state[tid].fetch);
         } else {
             return nullptr;

@@ -5,6 +5,9 @@
 #ifndef ALLIANCEDB_COMMON_FUNCTIONS_H
 #define ALLIANCEDB_COMMON_FUNCTIONS_H
 
+#include <iostream>
+#include <list>
+#include <mutex>
 #include "npj_types.h"
 
 #ifndef PTHREAD_BARRIER_SERIAL_THREAD
@@ -43,6 +46,17 @@
 #define EAGER
 #define MEASURE
 #define expected_results 1280000.0
+
+struct t_window {
+    std::list<intkey_t> R_Window;
+    std::list<intkey_t> S_Window;
+    std::mutex mutex;
+};
+extern t_window window0;
+extern t_window window1;
+
+std::string
+print_window(const std::list<intkey_t> &list);
 
 /**
  * Allocates a hashtable of NUM_BUCKETS and inits everything to 0.

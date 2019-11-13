@@ -10,12 +10,14 @@
 #include <stdlib.h>             /* memalign */
 #include <stdio.h>              /* printf */
 #include <string.h>             /* memset */
+#include <list>
 #include "common_functions.h"
 
 /** An experimental feature to allocate input relations numa-local */
 extern int nthreads;      /* defined in generator.c */
 extern int numalocalize;  /* defined in generator.c */
-
+struct t_window window0;
+struct t_window window1;
 
 #ifndef NEXT_POW_2
 /**
@@ -34,6 +36,7 @@ extern int numalocalize;  /* defined in generator.c */
         V++;                                    \
     } while(0)
 #endif
+
 
 /**
  * Allocates a hashtable of NUM_BUCKETS and inits everything to 0.
@@ -99,13 +102,15 @@ void
 debuild_hashtable_single(const hashtable_t *ht, const tuple_t *tuple, const uint32_t hashmask,
                          const uint32_t skipbits) {
 
-    tuple_t *dest;
-    bucket_t *curr, *nxt;
-    int32_t idx = HASH(tuple->key, hashmask, skipbits);
+    uint32_t index_ht;
 
-    curr = ht->buckets + idx;
-    dest = curr->tuples + curr->count;//let dest point to correct place of bucket.
-    delete dest;
+    intkey_t idx = HASH(tuple->key, hashmask, skipbits);
+    bucket_t *b = ht->buckets + idx;
+    for (index_ht = 0; index_ht < b->count; index_ht++) {
+        if (tuple->key == b->tuples[index_ht].key) {
+            b->tuples[index_ht].key = -1;//set it to never match.
+        }
+    }
 }
 
 void build_hashtable_single(const hashtable_t *ht, const tuple_t *tuple,
@@ -135,6 +140,10 @@ void build_hashtable_single(const hashtable_t *ht, const tuple_t *tuple,
     } else {
         dest = curr->tuples + curr->count;//let dest point to correct place of bucket.
         curr->count++;
+
+        if (curr->count > BUCKET_SIZE) {
+            printf("this is wrong 2..\n");
+        }
     }
     *dest = *tuple;//copy the content of rel-tuples[i] to bucket.
 }
@@ -215,7 +224,8 @@ int64_t proble_hashtable_single_measure(const hashtable_t *ht, const tuple_t *tu
 int64_t proble_hashtable_single_measure(const hashtable_t *ht, const relation_t *rel, uint32_t index_rel,
                                         const uint32_t hashmask, const uint32_t skipbits, int64_t *matches,
                                         uint64_t progressivetimer[]) {
-    return proble_hashtable_single_measure(ht, &rel->tuples[index_rel], hashmask, skipbits, matches, progressivetimer);
+    return proble_hashtable_single_measure(ht, &rel->tuples[index_rel], hashmask, skipbits, matches,
+                                           progressivetimer);
 }
 
 int64_t proble_hashtable_single(const hashtable_t *ht, const tuple_t *tuple,
@@ -329,6 +339,21 @@ void build_hashtable_mt(hashtable_t *ht, relation_t *rel, bucket_buffer_t **over
         *dest = rel->tuples[i];
         unlock(&curr->latch);
     }
+}
+
+const std::string red("\033[0;31m");
+const std::string reset("\033[0m");
+
+std::string print_window(const std::list<intkey_t> &list) {
+
+    std::string tmp = "";
+    tmp.append("[");
+
+    for (auto const &v : list)
+        tmp.append(std::to_string(v)).append(",");
+    tmp.append("]\n");
+    return tmp;
+
 }
 
 

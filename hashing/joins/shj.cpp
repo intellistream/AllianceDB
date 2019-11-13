@@ -51,7 +51,7 @@ t_param &finishing(int nthreads, t_param &param) {
         pthread_join(param.tid[i], NULL);
 
         /* sum up results */
-        param.result += param.args[i].nthreads;
+        param.result += param.args[i].results;
     }
     param.joinresult->totalresults = param.result;
     param.joinresult->nthreads = nthreads;

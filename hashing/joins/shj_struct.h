@@ -25,7 +25,7 @@
 struct arg_t {
     int32_t tid;
     int64_t nthreads;
-    int64_t results;
+    int64_t results = 0;
 
     hashtable_t *htR;
     hashtable_t *htS;

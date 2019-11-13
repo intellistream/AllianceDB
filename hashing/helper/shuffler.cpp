@@ -66,25 +66,32 @@ void HSShuffler::push(int32_t tid, fetch_t *fetch, bool pushR) {
  */
 fetch_t *HSShuffler::pull(int32_t tid, bool fetchR) {
     moodycamel::ReaderWriterQueue<fetch_t *> *queue;
-    auto **tuple = new fetch_t *;
+    fetch_t *tuple;
     if (fetchR) {
         queue = leftRecvQueue[tid].queue;
-        bool rt = queue->try_dequeue(*tuple);
+        bool rt = queue->try_dequeue(tuple);
+
         if (!rt)
             return nullptr;
+
     } else {
         queue = rightRecvQueue[tid].queue;
-        bool rt = queue->try_dequeue(*tuple);
+        bool rt = queue->try_dequeue(tuple);
         if (!rt)
             return nullptr;
+
+        if (tuple->flag) {
+            return nullptr;
+        }
+
 //        tuple = queue->peek();//only obtain the pointer to T (fetch *),
         // and does not dequeue it actually.
 //        if (!tuple)
 //            return nullptr;
     }
     DEBUGMSG(1, "PULL: %d, tuple: %d, queue size:%d\n", tid,
-             (*tuple)->tuple->key, queue->size_approx())
-    return *tuple;
+             (tuple)->tuple->key, queue->size_approx())
+    return tuple;
 }
 
 

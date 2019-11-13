@@ -32,7 +32,7 @@ typedef struct bucket_buffer_t bucket_buffer_t;
 struct bucket_t {
     volatile char latch;
     /* 3B hole */
-    uint32_t count;
+    uint32_t count=0;
     tuple_t tuples[BUCKET_SIZE];
     struct bucket_t *next;
 };

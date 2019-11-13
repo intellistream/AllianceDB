@@ -3,12 +3,13 @@
 //
 
 
+#include <execinfo.h>
 #include "../joins/localjoiner.h"
 #include "thread_task.h"
 #include "fetcher.h"
 #include "shuffler.h"
 #include "../utils/perf_counters.h"
-
+#include "boost/stacktrace.hpp"
 
 /**
  * Just a wrapper to call the _shj_st
@@ -32,7 +33,7 @@ shj_thread_jb_np(void *param) {
 ////    /* wait at a barrier until each thread starts and start T_TIMER */
 ////    BARRIER_ARRIVE(args->barrier, rv);
 //
-//#ifndef NO_TIMING
+//#ifdef NO_TIMING
 //    /* the first thread checkpoints the start time */
 //    if (args->tid == 0) {
 //        START_MEASURE((*(args->timer)))
@@ -85,7 +86,7 @@ shj_thread_jb_np(void *param) {
 //    args->threadresult->results  = (void *) chainedbuf;
 //#endif
 //
-//#ifndef NO_TIMING
+//#ifdef NO_TIMING
 //    if (args->tid == 0) {
 //        END_MEASURE((*(args->timer)))
 //    }
@@ -123,7 +124,7 @@ THREAD_TASK_NOSHUFFLE(void *param) {
     }
 #endif
 
-#ifndef NO_TIMING
+#ifdef NO_TIMING
     /* the first thread checkpoints the start time */
     if (args->tid == 0) {
         START_MEASURE((*(args->timer)))
@@ -181,7 +182,7 @@ THREAD_TASK_NOSHUFFLE(void *param) {
     args->threadresult->results  = (void *) chainedbuf;
 #endif
 
-#ifndef NO_TIMING
+#ifdef NO_TIMING
     if (args->tid == 0) {
         END_MEASURE((*(args->timer)))
     }
@@ -212,7 +213,7 @@ void
     }
 #endif
 
-#ifndef NO_TIMING
+#ifdef NO_TIMING
     /* the first thread checkpoints the start time */
     if (args->tid == 0) {
         START_MEASURE((*(args->timer)))
@@ -298,7 +299,7 @@ void
     args->threadresult->results  = (void *) chainedbuf;
 #endif
 
-#ifndef NO_TIMING
+#ifdef NO_TIMING
     if (args->tid == 0) {
         END_MEASURE((*(args->timer)))
     }
@@ -323,14 +324,36 @@ void
 #define LEFT true
 #define RIGHT false
 
+
 void clean(arg_t *arg, fetch_t *fetch, bool cleanR) {
 
     if (cleanR) {
-        //remove ri from R-window.
         //if SHJ is used, we need to clean up hashtable of R.
         debuild_hashtable_single(arg->htR, fetch->tuple, arg->htR->hash_mask, arg->htR->skip_bits);
+
+//        printf( "tid: %d remove tuple r %d from R-window. \n", arg->tid, fetch->tuple->key);
+
+        if (arg->tid == 0) {
+            window0.R_Window.remove(fetch->tuple->key);
+//            print_window(window0.R_Window, 0);
+        } else{
+            window1.R_Window.remove(fetch->tuple->key);
+//            print_window(window1.R_Window, 1);
+        }
     } else {
         debuild_hashtable_single(arg->htS, fetch->tuple, arg->htS->hash_mask, arg->htS->skip_bits);
+
+//        printf("tid: %d remove tuple s %d from S-window. \n", arg->tid, fetch->tuple->key);
+
+        if (arg->tid == 0) {
+            window0.S_Window.remove(fetch->tuple->key);
+//            print_window(window0.S_Window, 0);
+        } else{
+            window1.S_Window.remove(fetch->tuple->key);
+//            print_window(window1.S_Window, 1);
+        }
+//        std::cout << boost::stacktrace::stacktrace() << std::endl;
+
     }
 }
 
@@ -341,8 +364,19 @@ void clean(arg_t *arg, fetch_t *fetch, bool cleanR) {
  */
 void
 processLeft(baseShuffler *shuffler, arg_t *args, fetch_t *fetch, int64_t *matches, void *chainedbuf) {
-    if (fetch->tuple) { //if msg contains a new tuple then
+    if (fetch->ack) {/* msg is an acknowledgment message */
+        //remove oldest tuple from S-window
+        clean(args, fetch, RIGHT);
+    } else if (fetch->tuple) { //if msg contains a new tuple then
+#ifdef DEBUG
+        if (!fetch->flag)//right must be tuple R.
+        {
+            printf("something is wrong \n");
+            fflush(stdout);
+        }
+#else
         assert(fetch->flag);//left must be tuple R.
+#endif
         //scan S-window to find tuples that match ri ;
         //insert ri into R-window ;
         args->results = _shj(
@@ -354,18 +388,25 @@ processLeft(baseShuffler *shuffler, arg_t *args, fetch_t *fetch, int64_t *matche
                 matches,
                 chainedbuf,
                 args->timer);//build and probe at the same time.
-    } else if (fetch->ack) {/* msg is an acknowledgment message */
-        //remove oldest tuple from S-window
-        clean(args, fetch, RIGHT);
     }
 }
+
 
 void
 processRight(baseShuffler *shuffler, arg_t *args, fetch_t *fetch, int64_t *matches, void *chainedbuf) {
 
     //if msg contains a new tuple then
     if (fetch->tuple) {
-        assert(!fetch->flag);//right must be tuple S.
+#ifdef DEBUG
+        if (fetch->flag)//right must be tuple S.
+        {
+            printf("tid:%d processRIGHT: something is wrong, %d \n", args->tid, fetch->tuple->key);
+            fflush(stdout);
+        }
+#else
+        assert(!fetch->flag);
+#endif
+
 //      scan R-window to find tuples that match si ;
 //      insert si into S-window ;
         args->results = _shj(
@@ -377,14 +418,16 @@ processRight(baseShuffler *shuffler, arg_t *args, fetch_t *fetch, int64_t *match
                 matches,
                 chainedbuf,
                 args->timer);//build and probe at the same time.
+    }
 
-        //place acknowledgment for si in rightSendQueue ;
-        if (args->tid != args->nthreads - 1) {
-            fetch->ack = true;
-            printf("tid:%d pushes an acknowledgement of %d towards right\n", args->tid, fetch->tuple->key);
-            fflush(stdout); // Will now print everything in the stdout buffer
-            shuffler->push(args->tid + 1, fetch, LEFT);
-        }
+    //place acknowledgment for si in rightSendQueue ;
+    if (args->tid != args->nthreads - 1) {
+        fetch->ack = true;
+#ifdef DEBUG
+        printf("tid:%d pushes an acknowledgement of %d towards right\n", args->tid, fetch->tuple->key);
+        fflush(stdout); // Will now print everything in the stdout buffer
+#endif
+        shuffler->push(args->tid + 1, fetch, LEFT);
     }
 
 }
@@ -393,9 +436,11 @@ void forward_tuples(baseShuffler *shuffler, arg_t *args, fetch_t *fetchR, fetch_
     //place oldest non-forwarded si into leftSendQueue ;
 
     if (args->tid != 0) {
-        if (fetchS) {
-            printf("tid:%d pushes S towards left\n", args->tid);
+        if (fetchS && !fetchS->ack) {
+#ifdef DEBUG
+            printf("tid:%d pushes S? %d towards left\n", args->tid, fetchS->tuple->key);
             fflush(stdout); // Will now print everything in the stdout buffer
+#endif
             shuffler->push(args->tid - 1, fetchS, RIGHT);//push S towards left.
         }
     }
@@ -405,12 +450,14 @@ void forward_tuples(baseShuffler *shuffler, arg_t *args, fetch_t *fetchR, fetch_
     //place oldest ri into rightSendQueue ;
     if (args->tid != args->nthreads - 1) {
         if (fetchR) {
-            printf("tid:%d pushes R of %d towards right\n", args->tid, fetchR->tuple->key);
+#ifdef DEBUG
+            printf("tid:%d pushes R? %d towards right\n", args->tid, fetchR->tuple->key);
             fflush(stdout); // Will now print everything in the stdout buffer
+#endif
             shuffler->push(args->tid + 1, fetchR, LEFT);//push R towards right.
+            //remove ri from R-window.
+            clean(args, fetchR, LEFT);
         }
-        //remove ri from R-window.
-        clean(args, fetchR, LEFT);
     }
 }
 
@@ -425,7 +472,7 @@ void
     }
 #endif
 
-#ifndef NO_TIMING
+#ifdef NO_TIMING
     /* the first thread checkpoints the start time */
     if (args->tid == 0) {
         START_MEASURE((*(args->timer)))
@@ -461,8 +508,15 @@ void
     baseFetcher *fetcher = args->fetcher;
     baseShuffler *shuffler = args->shuffler;
 
+
     fetch_t *fetchR;
     fetch_t *fetchS;
+
+    int sizeR = args->fetcher->relR->num_tuples;
+    int sizeS = args->fetcher->relS->num_tuples;
+    int cntR = 0;
+    int cntS = 0;
+
     do {
 
         //pull left queue.
@@ -472,8 +526,14 @@ void
             fetchR = shuffler->pull(args->tid, LEFT);//pull itself.
         }
         if (fetchR) {
-            printf("tid:%d, fetchR:%d\n", args->tid, fetchR->tuple->key);
+            cntR++;
+            if (fetchR->ack) {/* msg is an acknowledgment message */
+                cntR--;
+            }
+#ifdef DEBUG
+            printf("tid:%d, fetch R:%d, cntR:%d\n", args->tid, fetchR->tuple->key, cntR);
             fflush(stdout); // Will now print everything in the stdout buffer
+#endif
             processLeft(shuffler, args, fetchR, &matches, chainedbuf);
         }
 
@@ -484,14 +544,29 @@ void
             fetchS = shuffler->pull(args->tid, RIGHT);//pull itself.
         }
         if (fetchS) {
-            printf("tid:%d, fetchS:%d\n", args->tid, fetchS->tuple->key);
+            cntS++;
+#ifdef DEBUG
+            printf("tid:%d, fetch S:%d, ack:%d, cntS:%d\n", args->tid, fetchS->tuple->key, fetchS->ack, cntS);
             fflush(stdout); // Will now print everything in the stdout buffer
+#endif
+
             processRight(shuffler, args, fetchS, &matches, chainedbuf);
         }
+
+        if (fetchR)
+            if (!fetchR->flag && !fetchR->ack) {
+                printf("something is wrong.\n");
+            }
+
+        if (fetchS)
+            if (fetchS->flag) {
+                printf("something is wrong.\n");
+            }
+
         //forward tuple twice!
         forward_tuples(shuffler, args, fetchR, fetchS);
 
-    } while (fetchR || fetchS);
+    } while (cntR < sizeR || cntS < sizeS);
 
 #ifdef JOIN_RESULT_MATERIALIZE
     args->threadresult->nresults = args->num_results;
@@ -499,7 +574,7 @@ void
     args->threadresult->results  = (void *) chainedbuf;
 #endif
 
-#ifndef NO_TIMING
+#ifdef NO_TIMING
     if (args->tid == 0) {
         END_MEASURE((*(args->timer)))
     }
@@ -516,7 +591,7 @@ void
     /* Just to make sure we get consistent performance numbers */
     BARRIER_ARRIVE(args->barrier, rv);
 #endif
-    printf("args->num_results (%d): %ld\n", args->tid, args->results);
+    printf("args (%d)->num_results: %ld, cntR: %d, cntS:%d\n", args->tid, args->results, cntR, cntS);
     fflush(stdout);
 }
 

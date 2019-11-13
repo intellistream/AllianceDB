@@ -15,17 +15,17 @@ struct fetch_t {
 
     tuple_t *tuple;
 
-    bool flag;//whether this tuple from input R or S.
+    bool flag;//whether this tuple from input R (true) or S (false).
 
-    bool ack;//whether this is just a message. Used in HS model.
+    bool ack = false;//whether this is just a message. Used in HS model.
 };
 
 //thread local structure
 struct t_state {
-    int start_index_R;//configure pointer of start reading point.
-    int end_index_R;//configure pointer of end reading point.
-    int start_index_S;//configure pointer of start reading point.
-    int end_index_S;//configure pointer of end reading point.
+    int start_index_R = 0;//configure pointer of start reading point.
+    int end_index_R = 0;//configure pointer of end reading point.
+    int start_index_S = 0;//configure pointer of start reading point.
+    int end_index_S = 0;//configure pointer of end reading point.
     //read R/S alternatively.
     bool flag;
     fetch_t fetch;
@@ -78,13 +78,13 @@ public:
         /* replicate relR to thread 0 */
         state[i].start_index_R = 0;
         state[i].end_index_R = relR->num_tuples;
-        state[i].start_index_S = 0;
-        state[i].end_index_S = 0;
+#ifdef DEBUG
+        printf("TID:%d, R: start_index:%d, end_index:%d\n", i, state[i].start_index_R, state[i].end_index_R);
+        printf("TID:%d, S: start_index:%d, end_index:%d\n", i, state[i].start_index_S, state[i].end_index_S);
+#endif
 
         i = nthreads - 1;
         /* replicate relS to thread [nthread-1] */
-        state[i].start_index_R = 0;
-        state[i].end_index_R = 0;
         state[i].start_index_S = 0;
         state[i].end_index_S = relS->num_tuples;
 

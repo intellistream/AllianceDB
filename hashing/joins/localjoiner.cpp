@@ -2,6 +2,7 @@
 // Created by Shuhao Zhang on 1/11/19.
 //
 
+#include <iostream>
 #include "localjoiner.h"
 
 
@@ -14,34 +15,58 @@ long _shj(int32_t tid, tuple_t *tuple, bool tuple_R, hashtable_t *htR, hashtable
     const uint32_t hashmask_S = htS->hash_mask;
     const uint32_t skipbits_S = htS->skip_bits;
 
-    DEBUGMSG(1, "TID: %d, tuple: %d, R?%d\n", tid, tuple->key, tuple_R)
+//    DEBUGMSG(1, "JOINING: tid: %d, tuple: %d, R?%d\n", tid, tuple->key, tuple_R)
     if (tuple_R) {
         if (tid == 0) {
             BEGIN_MEASURE_BUILD_ACC((*timer))
+            window0.R_Window.push_back(tuple->key);
+        } else {
+            window1.R_Window.push_back(tuple->key);
         }
         build_hashtable_single(htR, tuple, hashmask_R, skipbits_R);//(1)
+//        DEBUGMSG(1, "tid %d add tuple r %d to R-window. \n", tid, tuple->key)
+
         if (tid == 0) {
             END_MEASURE_BUILD_ACC((*timer))
         }
         if (tid == 0) {
             proble_hashtable_single_measure(htS, tuple, hashmask_S, skipbits_S, matches, timer->progressivetimer);//(2)
+            DEBUGMSG(1, "matches:%ld, T0: Join R %d with %s", *matches, tuple->key,
+                     print_window(window0.S_Window).c_str());
         } else {
             proble_hashtable_single(htS, tuple, hashmask_S, skipbits_S, matches);//(4)
+            DEBUGMSG(1, "matches:%ld, T1: Join R %d with %s", *matches, tuple->key,
+                     print_window(window1.S_Window).c_str());
+
         }
     } else {
+//        DEBUGMSG(1, "BUILD TABLE: tid: %d, tuple: %d, R?%d\n", tid, tuple->key, tuple_R)
+
         if (tid == 0) {
             BEGIN_MEASURE_BUILD_ACC((*timer))
+            window0.S_Window.push_back(tuple->key);
+        } else {
+            window1.S_Window.push_back(tuple->key);
         }
         build_hashtable_single(htS, tuple, hashmask_S, skipbits_S);//(3)
+
+//        DEBUGMSG(1, "tid %d add tuple s %d to S-window. \n", tid, tuple->key)
+
         if (tid == 0) {
             END_MEASURE_BUILD_ACC((*timer))
         }
+
+//        DEBUGMSG(1, "BUILD TABLE FINISH: tid: %d, tuple: %d, R?%d\n", tid, tuple->key, tuple_R)
+
         if (tid == 0) {
             proble_hashtable_single_measure(htR, tuple, hashmask_R, skipbits_R, matches, timer->progressivetimer);//(4)
+            DEBUGMSG(1,"matches:%ld, T0: Join S %d with %s", *matches, tuple->key, print_window(window0.R_Window).c_str());
         } else {
             proble_hashtable_single(htR, tuple, hashmask_R, skipbits_R, matches);//(4)
+            DEBUGMSG(1,"matches:%ld, T1: Join S %d with %s", *matches, tuple->key, print_window(window1.R_Window).c_str());
         }
     }
+//    DEBUGMSG(1, "JOINING FINISH: tid: %d, tuple: %d, R?%d\n", tid, tuple->key, tuple_R)
     return *matches;
 }
 

@@ -23,5 +23,7 @@ add_executable(hashing main.cpp
         joins/npj_types.h joins/npj_params.h joins/no_partitioning_join.cpp joins/no_partitioning_join.h joins/shj.cpp joins/shj.h
         joins/parallel_radix_join.cpp joins/parallel_radix_join.h joins/prj_params.h joins/common_functions.cpp joins/common_functions.h helper/launcher.cpp helper/launcher.h helper/thread_task.cpp helper/thread_task.h joins/localjoiner.cpp joins/localjoiner.h helper/shuffler.cpp helper/shuffler.h  helper/fetcher.cpp helper/fetcher.h joins/shj_struct.h  lib/types.h lib/pci.h lib/msr.h lib/msr.cpp lib/cpucounters.cpp lib/cpucounters.h lib/utils.cpp lib/utils.h lib/client_bw.cpp lib/client_bw.h lib/mmio.cpp lib/mmio.h lib/width_extender.h lib/mutex.h lib/exceptions/unsupported_processor_exception.hpp lib/pci.cpp helper/concurrentqueue.h helper/maps/robin_growth_policy.h helper/maps/robin_hash.h helper/maps/robin_map.h helper/maps/robin_set.h helper/readerwriterqueue.h helper/atomicops.h)
 
+target_link_libraries(hashing ${CMAKE_DL_LIBS}) ##used by boost
+
 target_link_libraries(hashing numa)
 

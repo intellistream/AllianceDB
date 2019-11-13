@@ -392,11 +392,12 @@ main(int argc, char **argv) {
         * SHJ_HS_NP (10) */
     cmd_params.algo = &algos[10];
     cmd_params.nthreads = 2;
-    cmd_params.r_size = 2;
-    cmd_params.s_size = 2;
+
     /* default dataset is Workload B (described in paper) */
-//    cmd_params.r_size = expected_results;
-//    cmd_params.s_size = 12800000;
+    cmd_params.r_size = 10;
+    cmd_params.s_size = 10;
+    cmd_params.r_size = 128000;
+    cmd_params.s_size = 128000;
     cmd_params.r_seed = 12345;
     cmd_params.s_seed = 54321;
     cmd_params.skew = 0.0;
@@ -419,12 +420,12 @@ main(int argc, char **argv) {
     /* create relation R */
     createRelation(relR, cmd_params, cmd_params.loadfileR, cmd_params.r_size, cmd_params.r_seed);
 
-    print_relation(&relR);
+//    print_relation(&relR);
 
     /* create relation S */
     createRelation(relS, cmd_params, cmd_params.loadfileS, cmd_params.s_size, cmd_params.s_seed);
 
-    print_relation(&relS);
+//    print_relation(&relS);
 
     /* Run the selected join algorithm */
     printf("[INFO ] Running join algorithm %s ...\n", cmd_params.algo->name);
