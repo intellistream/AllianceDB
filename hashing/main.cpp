@@ -389,9 +389,10 @@ main(int argc, char **argv) {
     /* Default values if not specified on command line */
     /* PRO (0), RJ_st, PRH, PRHO, NPO,
         * NPO_st (5), SHJ_st, SHJ_JM_NP, SHJ_JB_NP, SHJ_JBCR_NP,
-        * SHJ_HS_NP (10) */
+        * SHJ_HS_NP (10)
+        * */
     cmd_params.algo = &algos[10];
-    cmd_params.nthreads = 2;
+    cmd_params.nthreads = 5;
 
     /* default dataset is Workload B (described in paper) */
     cmd_params.r_size = 10;
@@ -432,7 +433,7 @@ main(int argc, char **argv) {
 
     results = cmd_params.algo->joinAlgo(&relR, &relS, cmd_params.nthreads);
 
-    printf("[INFO ] Results = %llu. DONE.\n", results->totalresults);
+    printf("[INFO ] Results = %ld. DONE.\n", results->totalresults);
 
 #if (defined(PERSIST_RELATIONS) && defined(JOIN_RESULT_MATERIALIZE))
     printf("[INFO ] Persisting the join result to \"Out.tbl\" ...\n");

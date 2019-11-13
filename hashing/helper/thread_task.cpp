@@ -33,7 +33,7 @@ shj_thread_jb_np(void *param) {
 ////    /* wait at a barrier until each thread starts and start T_TIMER */
 ////    BARRIER_ARRIVE(args->barrier, rv);
 //
-//#ifdef NO_TIMING
+//#ifndef NO_TIMING
 //    /* the first thread checkpoints the start time */
 //    if (args->tid == 0) {
 //        START_MEASURE((*(args->timer)))
@@ -86,7 +86,7 @@ shj_thread_jb_np(void *param) {
 //    args->threadresult->results  = (void *) chainedbuf;
 //#endif
 //
-//#ifdef NO_TIMING
+//#ifndef NO_TIMING
 //    if (args->tid == 0) {
 //        END_MEASURE((*(args->timer)))
 //    }
@@ -124,7 +124,7 @@ THREAD_TASK_NOSHUFFLE(void *param) {
     }
 #endif
 
-#ifdef NO_TIMING
+#ifndef NO_TIMING
     /* the first thread checkpoints the start time */
     if (args->tid == 0) {
         START_MEASURE((*(args->timer)))
@@ -182,7 +182,7 @@ THREAD_TASK_NOSHUFFLE(void *param) {
     args->threadresult->results  = (void *) chainedbuf;
 #endif
 
-#ifdef NO_TIMING
+#ifndef NO_TIMING
     if (args->tid == 0) {
         END_MEASURE((*(args->timer)))
     }
@@ -213,7 +213,7 @@ void
     }
 #endif
 
-#ifdef NO_TIMING
+#ifndef NO_TIMING
     /* the first thread checkpoints the start time */
     if (args->tid == 0) {
         START_MEASURE((*(args->timer)))
@@ -299,7 +299,7 @@ void
     args->threadresult->results  = (void *) chainedbuf;
 #endif
 
-#ifdef NO_TIMING
+#ifndef NO_TIMING
     if (args->tid == 0) {
         END_MEASURE((*(args->timer)))
     }
@@ -336,7 +336,7 @@ void clean(arg_t *arg, fetch_t *fetch, bool cleanR) {
         if (arg->tid == 0) {
             window0.R_Window.remove(fetch->tuple->key);
 //            print_window(window0.R_Window, 0);
-        } else{
+        } else {
             window1.R_Window.remove(fetch->tuple->key);
 //            print_window(window1.R_Window, 1);
         }
@@ -348,7 +348,7 @@ void clean(arg_t *arg, fetch_t *fetch, bool cleanR) {
         if (arg->tid == 0) {
             window0.S_Window.remove(fetch->tuple->key);
 //            print_window(window0.S_Window, 0);
-        } else{
+        } else {
             window1.S_Window.remove(fetch->tuple->key);
 //            print_window(window1.S_Window, 1);
         }
@@ -367,6 +367,7 @@ processLeft(baseShuffler *shuffler, arg_t *args, fetch_t *fetch, int64_t *matche
     if (fetch->ack) {/* msg is an acknowledgment message */
         //remove oldest tuple from S-window
         clean(args, fetch, RIGHT);
+
     } else if (fetch->tuple) { //if msg contains a new tuple then
 #ifdef DEBUG
         if (!fetch->flag)//right must be tuple R.
@@ -422,12 +423,13 @@ processRight(baseShuffler *shuffler, arg_t *args, fetch_t *fetch, int64_t *match
 
     //place acknowledgment for si in rightSendQueue ;
     if (args->tid != args->nthreads - 1) {
-        fetch->ack = true;
+        auto *ack = new fetch_t(fetch);
+        ack->ack = true;
 #ifdef DEBUG
         printf("tid:%d pushes an acknowledgement of %d towards right\n", args->tid, fetch->tuple->key);
         fflush(stdout); // Will now print everything in the stdout buffer
 #endif
-        shuffler->push(args->tid + 1, fetch, LEFT);
+        shuffler->push(args->tid + 1, ack, LEFT);
     }
 
 }
@@ -472,7 +474,7 @@ void
     }
 #endif
 
-#ifdef NO_TIMING
+#ifndef NO_TIMING
     /* the first thread checkpoints the start time */
     if (args->tid == 0) {
         START_MEASURE((*(args->timer)))
@@ -549,7 +551,6 @@ void
             printf("tid:%d, fetch S:%d, ack:%d, cntS:%d\n", args->tid, fetchS->tuple->key, fetchS->ack, cntS);
             fflush(stdout); // Will now print everything in the stdout buffer
 #endif
-
             processRight(shuffler, args, fetchS, &matches, chainedbuf);
         }
 
@@ -574,7 +575,7 @@ void
     args->threadresult->results  = (void *) chainedbuf;
 #endif
 
-#ifdef NO_TIMING
+#ifndef NO_TIMING
     if (args->tid == 0) {
         END_MEASURE((*(args->timer)))
     }
