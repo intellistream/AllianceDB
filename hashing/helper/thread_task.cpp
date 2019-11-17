@@ -4,107 +4,13 @@
 
 
 #include <execinfo.h>
-#include "../joins/localjoiner.h"
+#include "localjoiner.h"
 #include "thread_task.h"
 #include "fetcher.h"
 #include "shuffler.h"
 #include "../utils/perf_counters.h"
 #include "boost/stacktrace.hpp"
 
-/**
- * Just a wrapper to call the _shj_st
- *
- * @param param the parameters of the thread, i.e. tid, ht, reln, ...
- *
- * @return
- */
-void *
-shj_thread_jb_np(void *param) {
-//    int rv;
-//    arg_t *args = (arg_t *) param;
-//
-//#ifdef PERF_COUNTERS
-//    if(args->tid == 0){
-//        PCM_initPerformanceMonitor(NULL, NULL);
-//        PCM_start();
-//    }
-//#endif
-////
-////    /* wait at a barrier until each thread starts and start T_TIMER */
-////    BARRIER_ARRIVE(args->barrier, rv);
-//
-//#ifndef NO_TIMING
-//    /* the first thread checkpoints the start time */
-//    if (args->tid == 0) {
-//        START_MEASURE((*(args->timer)))
-//    }
-//#endif
-//
-//    //allocate two hashtables.
-//    uint32_t nbucketsR = (args->relR.num_tuples / BUCKET_SIZE);
-//    allocate_hashtable(&args->htR, nbucketsR);
-//
-//    uint32_t nbucketsS = (args->relS.num_tuples / BUCKET_SIZE);
-//    allocate_hashtable(&args->htS, nbucketsS);
-//
-//#ifdef PERF_COUNTERS
-//    if(args->tid == 0){
-//      PCM_stop();
-//      PCM_log("========== Build phase profiling results ==========\n");
-//      PCM_printResults();
-//      PCM_start();
-//    }
-//    /* Just to make sure we get consistent performance numbers */
-//    BARRIER_ARRIVE(args->barrier, rv);
-//#endif
-//
-//#ifdef JOIN_RESULT_MATERIALIZE
-//    chainedtuplebuffer_t * chainedbuf = chainedtuplebuffer_init();
-//#else
-//    void *chainedbuf = NULL;
-//#endif
-//    //call different data BaseFetcher.
-//    JM_NP_Fetcher fetcher(0);
-//    int64_t matches = 0;//number of matches.
-//    do {
-//        fetch_t *fetch = fetcher.next_tuple(args->tid);
-//        if (fetch == nullptr) break;
-//        else {
-//            args->num_results = _shj(
-//                    args->tid,
-//                    fetch->tuple,
-//                    fetch->flag,
-//                    args->htR, args->htS,
-//                    &matches, chainedbuf, args->timer);//build and probe at the same time.
-//        }
-//    } while (true);
-//    printf("args->num_results (1): %ld\n", args->num_results);
-//
-//#ifdef JOIN_RESULT_MATERIALIZE
-//    args->threadresult->nresults = args->num_results;
-//    args->threadresult->threadid = args->tid;
-//    args->threadresult->results  = (void *) chainedbuf;
-//#endif
-//
-//#ifndef NO_TIMING
-//    if (args->tid == 0) {
-//        END_MEASURE((*(args->timer)))
-//    }
-//#endif
-//
-//#ifdef PERF_COUNTERS
-//    if(args->tid == 0) {
-//        PCM_stop();
-//        PCM_log("========== Probe phase profiling results ==========\n");
-//        PCM_printResults();
-//        PCM_log("===================================================\n");
-//        PCM_cleanup();
-//    }
-//    /* Just to make sure we get consistent performance numbers */
-//    BARRIER_ARRIVE(args->barrier, rv);
-//#endif
-//    return 0;
-}
 
 
 /**
@@ -164,7 +70,7 @@ THREAD_TASK_NOSHUFFLE(void *param) {
         fetch_t *fetch = fetcher->next_tuple(args->tid);
 
         if (fetch != nullptr) {
-            args->results = _shj(
+            args->results = args->joiner->join(
                     args->tid,
                     fetch->tuple,
                     fetch->flag,
@@ -264,7 +170,7 @@ void
 #ifdef EAGER
         fetch = shuffler->pull(args->tid, false);//re-fetch from its shuffler.
         if (fetch != nullptr) {
-            args->results = _shj(
+            args->results = args->joiner->join(
                     args->tid,
                     fetch->tuple,
                     fetch->flag,
@@ -282,7 +188,7 @@ void
     do {
         fetch = shuffler->pull(args->tid, false);//re-fetch from its shuffler.
         if (fetch != nullptr) {
-            args->results = _shj(
+            args->results = args->joiner->join(
                     args->tid,
                     fetch->tuple,
                     fetch->flag,
@@ -323,7 +229,6 @@ void
 
 #define LEFT true
 #define RIGHT false
-
 
 void clean(arg_t *arg, fetch_t *fetch, bool cleanR) {
 
@@ -380,7 +285,7 @@ processLeft(baseShuffler *shuffler, arg_t *args, fetch_t *fetch, int64_t *matche
 #endif
         //scan S-window to find tuples that match ri ;
         //insert ri into R-window ;
-        args->results = _shj(
+        args->results = args->joiner->join(
                 args->tid,
                 fetch->tuple,
                 fetch->flag,
@@ -410,7 +315,7 @@ processRight(baseShuffler *shuffler, arg_t *args, fetch_t *fetch, int64_t *match
 
 //      scan R-window to find tuples that match si ;
 //      insert si into S-window ;
-        args->results = _shj(
+        args->results = args->joiner->join(
                 args->tid,
                 fetch->tuple,
                 fetch->flag,

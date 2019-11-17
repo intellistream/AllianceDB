@@ -16,7 +16,7 @@
 #include "../utils/lock.h"               /* lock, unlock */
 #include "../joins/npj_types.h"          /* bucket_t, hashtable_t, bucket_buffer_t */
 #include "../joins/npj_params.h"         /* constant parameters */
-#include "../joins/shj.h"
+#include "../joins/onlinejoins.h"
 #include <sys/time.h>           /* gettimeofday */
 #include <stdlib.h>             /* memalign */
 #include <stdio.h>              /* printf */

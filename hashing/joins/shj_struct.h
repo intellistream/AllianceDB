@@ -9,6 +9,7 @@
 #include "../utils/t_timer.h"
 #include "../helper/fetcher.h"
 #include "../helper/shuffler.h"
+#include "../helper/localjoiner.h"
 
 /**
  * \ingroup arguments to the threads
@@ -30,14 +31,15 @@ struct arg_t {
     hashtable_t *htR;
     hashtable_t *htS;
 
-    //used in JB
-//    struct list *list;
-
     pthread_barrier_t *barrier;
+
     baseFetcher *fetcher;
     baseShuffler *shuffler;
+    localJoiner *joiner;
+
     /* results of the thread */
     threadresult_t *threadresult;
+
 
 #ifndef NO_TIMING
     T_TIMER *timer;
@@ -56,6 +58,7 @@ struct t_param {
 
     baseFetcher *fetcher;
     baseShuffler *shuffler;
+    localJoiner *joiner;
 
     t_param(int nthreads) {
         result = 0;

@@ -33,10 +33,15 @@ typedef struct relation_t relation_t;
 typedef struct result_t result_t;
 typedef struct threadresult_t threadresult_t;
 
-/** Type definition for a tuple, depending on KEY_8B a tuple can be 16B or 8B */
+typedef struct joinconfig_t joinconfig_t;
+
+/**
+ * Type definition for a tuple, depending on KEY_8B a tuple can be 16B or 8B
+ * @note this layout is chosen as a work-around for AVX double operations.
+ */
 struct tuple_t {
-    intkey_t key;
     value_t payload;
+    intkey_t key;
 };
 
 /**
@@ -60,6 +65,27 @@ struct result_t {
     int64_t totalresults;
     threadresult_t *resultlist;
     int nthreads;
+};
+
+
+/**
+ * Various NUMA shuffling strategies for data shuffling phase of join
+ * algorithms as also described by NUMA-aware data shuffling paper [CIDR'13].
+ *
+ * NUMA_SHUFFLE_RANDOM, NUMA_SHUFFLE_RING, NUMA_SHUFFLE_NEXT
+ */
+enum numa_strategy_t {
+    RANDOM, RING, NEXT
+};
+
+/** Join configuration parameters. */
+struct joinconfig_t {
+    int NTHREADS;
+    int PARTFANOUT;
+    int SCALARSORT;
+    int SCALARMERGE;
+    int MWAYMERGEBUFFERSIZE;
+    enum numa_strategy_t NUMASTRATEGY;
 };
 
 /** @} */

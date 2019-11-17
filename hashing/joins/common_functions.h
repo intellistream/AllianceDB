@@ -146,4 +146,5 @@ void destroy_hashtable(hashtable_t *ht);
 void
 free_bucket_buffer(bucket_buffer_t *buf);
 
+
 #endif //ALLIANCEDB_COMMON_FUNCTIONS_H

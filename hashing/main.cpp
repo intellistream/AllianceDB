@@ -247,7 +247,7 @@ cpu-mapping.txt
 
 #include "joins/no_partitioning_join.h" /* no partitioning joins: NPO, NPO_st */
 #include "joins/parallel_radix_join.h"  /* parallel radix joins: RJ_st, PRO, PRH, PRHO */
-#include "joins/shj.h"  /* single_thread onlinejoins: SHJ_st*/
+#include "joins/onlinejoins.h"  /* single_thread onlinejoins: SHJ_st*/
 #include "utils/generator.h"            /* create_relation_xk */
 
 #include "utils/perf_counters.h" /* PCM_x */
@@ -306,7 +306,7 @@ extern int nthreads;      /* defined in generator.c */
 /** all available algorithms */
 static struct algo_t algos[] =
         {
-                {"PRO",         PRO},
+                {"PRO",         PRO}, // The best performing blocking hash join.
                 {"RJ_st",       RJ_st},
                 {"PRH",         PRH},
                 {"PRHO",        PRHO},
@@ -317,6 +317,7 @@ static struct algo_t algos[] =
                 {"SHJ_JB_NP",   SHJ_JB_NP}, /* Symmetric hash join JB Model, No-Partition*/
                 {"SHJ_JBCR_NP", SHJ_JBCR_NP}, /* Symmetric hash join JB CountRound Model, No-Partition*/
                 {"SHJ_HS_NP",   SHJ_HS_NP}, /* Symmetric hash join HS Model, No-Partition*/
+                {"PMJ_st",      PMJ_st}, /* Progressive Merge Join Single_thread*/
                 {{0},           0}
         };
 
@@ -387,18 +388,18 @@ main(int argc, char **argv) {
     param_t cmd_params;
 
     /* Default values if not specified on command line */
-    /* PRO (0), RJ_st, PRH, PRHO, NPO,
-        * NPO_st (5), SHJ_st, SHJ_JM_NP, SHJ_JB_NP, SHJ_JBCR_NP,
-        * SHJ_HS_NP (10)
-        * */
-    cmd_params.algo = &algos[10];
-    cmd_params.nthreads = 5;
+    /* BLOCKING HASHING: PRO (0), RJ_st, PRH, PRHO, NPO, NPO_st (5),
+     * ONLINE HAHSING: SHJ_st, SHJ_JM_NP, SHJ_JB_NP, SHJ_JBCR_NP, SHJ_HS_NP (10)
+     * ONLINE SORTING: PMJ_st (11),
+     * */
+    cmd_params.algo = &algos[11];
+    cmd_params.nthreads = 1;
 
     /* default dataset is Workload B (described in paper) */
-    cmd_params.r_size = 10;
-    cmd_params.s_size = 10;
-    cmd_params.r_size = 128000;
-    cmd_params.s_size = 128000;
+    cmd_params.r_size = 100;
+    cmd_params.s_size = 100;
+//    cmd_params.r_size = 12800000;
+//    cmd_params.s_size = 12800000;
     cmd_params.r_seed = 12345;
     cmd_params.s_seed = 54321;
     cmd_params.skew = 0.0;

@@ -13,6 +13,7 @@
 #include <list>
 #include "common_functions.h"
 
+
 /** An experimental feature to allocate input relations numa-local */
 extern int nthreads;      /* defined in generator.c */
 extern int numalocalize;  /* defined in generator.c */
@@ -353,7 +354,7 @@ std::string print_window(const std::list<intkey_t> &list) {
         tmp.append(std::to_string(v)).append(",");
     tmp.append("]\n");
     return tmp;
-
 }
+
 
 

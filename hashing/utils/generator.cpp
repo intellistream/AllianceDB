@@ -29,7 +29,7 @@
 
 #ifndef BARRIER_ARRIVE
 /** barrier wait macro */
-#define BARRIER_ARRIVE(B, RV)                            \
+#define BARRIER_ARRIVE(B, RV)                           \
     RV = pthread_barrier_wait(B);                       \
     if(RV !=0 && RV != PTHREAD_BARRIER_SERIAL_THREAD){  \
         printf("Couldn't wait on barrier\n");           \
@@ -152,7 +152,8 @@ random_unique_gen_thread(void *args) {
     relation_t *rel = &arg->rel;
     int64_t firstkey = arg->firstkey;
     int64_t maxid = arg->maxid;
-    uint64_t ridstart = arg->ridstart;
+//    uint64_t ridstart = arg->ridstart;
+    value_t randstart = 5; /* rand() % 1000; */ //workaround for 64 bit AVX sort.
     uint64_t i;
 
     /* for randomly seeding nrand48() */
@@ -162,8 +163,7 @@ random_unique_gen_thread(void *args) {
 
     for (i = 0; i < rel->num_tuples; i++) {
         rel->tuples[i].key = firstkey;
-        rel->tuples[i].payload = ridstart + i;
-
+        rel->tuples[i].payload = randstart + i;
         if (firstkey == maxid)
             firstkey = 0;
 
