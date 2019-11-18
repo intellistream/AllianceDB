@@ -8,3 +8,7 @@ hashing/CMakeCache.txt
 hashing/AllianceDB.cbp
 
 hashing/cmake-build-debug-system/*
+
+sorting/cmake-build-debug-system/*
+
+sorting/cmake-build-release/*

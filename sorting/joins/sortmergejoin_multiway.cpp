@@ -395,6 +395,7 @@ partitioning_phase(relation_t ***relRparts, relation_t ***relSparts, arg_t *args
 
 void
 sorting_phase(relation_t **relRparts, relation_t **relSparts, arg_t *args) {
+    //cache-local hash join on individual partition pairs.
     const int PARTFANOUT = args->joincfg->PARTFANOUT;
     const int scalarsortflag = args->joincfg->SCALARSORT;
 
@@ -463,7 +464,6 @@ sorting_phase(relation_t **relRparts, relation_t **relSparts, arg_t *args) {
         /*        my_tid, i, outptr, my_tid, i, (outptr+ntuples_per_part)); */
 
     }
-
 }
 
 

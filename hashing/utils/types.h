@@ -40,6 +40,14 @@ typedef struct joinconfig_t joinconfig_t;
  * @note this layout is chosen as a work-around for AVX double operations.
  */
 struct tuple_t {
+    tuple_t(int key) {
+        this->key = key;
+    }
+
+    tuple_t() {
+
+    }
+
     value_t payload;
     intkey_t key;
 };

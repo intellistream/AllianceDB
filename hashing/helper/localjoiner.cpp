@@ -3,6 +3,9 @@
 //
 
 #include <iostream>
+#include <set>
+#include <vector>
+#include <numeric>
 #include "localjoiner.h"
 #include "avxsort.h"
 #include "sort_common.h"
@@ -63,11 +66,160 @@ shj(int32_t tid, relation_t *rel_R,
 }
 
 
-#define progressive_step 5 //must be aligned with num_tuples.
+#define progressive_step 0.01 //percentile, 0.01 ~ 0.2.
+#define merge_step 1 // number of ``runs" to merge in each round.
 
-void earlyJoinInitialRuns(tuple_t *tupleR, tuple_t *tupleS, int length);
+
+inline tuple_t *read(tuple_t *tuple, int length, int idx) {
+    if (idx >= length) return nullptr;
+    return &tuple[idx];
+}
+
+inline bool EqualPredicate(tuple_t *u, tuple_t *v) {
+    return u->key == v->key;
+}
+
+inline bool LessPredicate(tuple_t *u, tuple_t *v) {
+    return u->key < v->key;
+}
+
+struct run {//a pair of subsequence (mask position only)
+
+    std::vector<int> *posR;//readable position of R. By default should be 0 to size of R/S.
+    std::vector<int> *posS;//readable position of S.
+    run(std::vector<int> *posR, std::vector<int> *posS) {
+        this->posR = posR;
+        this->posS = posS;
+    }
+
+};
+
+struct sweepArea {
+
+    std::set<tuple_t *> sx;
+
+    void insert(tuple_t *tuple) {
+        sx.insert(tuple);
+    }
+
+    void query(tuple_t *tuple, int *matches) {
+
+        //clean elements that are less than the current element.
+        for (auto it = sx.begin(); it != sx.end();) {
+            if (LessPredicate(it.operator*(), tuple)) {
+                it = sx.erase(it);
+            } else {  //perform join.
+                if (EqualPredicate(it.operator*(), tuple)) {
+                    (*matches)++;
+                }
+                ++it;
+            }
+        }
+    }
+};
+
 
 std::string print_relation(tuple_t *tuple, int length);
+
+void earlyJoinInitialRuns(tuple_t *tupleR, tuple_t *tupleS, int length, int i, int *matches);
+
+
+void earlyJoinInitialRuns(tuple_t *tupleR, tuple_t *tupleS, int lengthR, int lengthS, int *matches) {
+    //in early join
+    printf("%s\n", print_relation(tupleR, lengthR).c_str());
+    printf("%s\n", print_relation(tupleS, lengthS).c_str());
+    fflush(stdout);
+
+    int r = 0;
+    int s = 0;
+    sweepArea RM;
+    sweepArea SM;
+    while (r < lengthR || s < lengthS) {
+        tuple_t *tr = read(tupleR, lengthR, r++);
+        tuple_t *ts = read(tupleS, lengthS, s++);
+        if (s == lengthS || (r < lengthR && tr->key <= ts->key)) {
+            RM.insert(tr);
+            SM.query(tr, matches);
+        } else {
+            SM.insert(ts);
+            RM.query(ts, matches);
+        }
+    }
+}
+
+
+void earlyJoinMergedRuns(tuple_t *tupleR, tuple_t *tupleS, std::vector<run> *Q, int merge_itr, int *matches,
+                         std::vector<tuple_t *> sortedR, std::vector<tuple_t *> sortedS);
+
+/**
+ * Merges the input sequences into two larger sequences, which are then joined directly.
+ *
+ * @param tupleR
+ * @param tupleS
+ * @param matches
+ */
+void earlyJoinMergedRuns(tuple_t *tupleR, tuple_t *tupleS, std::vector<run> *Q, int merge_itr, int *matches,
+                         std::vector<tuple_t *> sortedR, std::vector<tuple_t *> sortedS) {
+
+
+    sweepArea RM;
+    sweepArea SM;
+    int m;
+
+    //determine the smallest element of r and s from multiple (#merge_step) subsequences.
+    auto *minR = new tuple_t(INT32_MAX);
+    auto i = -1;
+    auto *minS = new tuple_t(INT32_MAX);
+    auto j = -1;
+
+    auto run_itr = Q->begin() + merge_itr;
+    for (m = 0; m < merge_step; m++) {
+
+        auto posR = run_itr.operator*().posR;
+        auto posS = run_itr.operator*().posS;
+
+        for (auto it = posR->begin(); it != posR->end();) {
+            tuple_t *readR = read(tupleR, 1, it.operator*());
+            if (minR->key > readR->key) {
+                minR = readR;
+                i = m;
+            }
+        }
+
+        for (auto it = posS->begin(); it != posS->end();) {
+            tuple_t *readS = read(tupleS, 1, it.operator*());
+            if (minS->key > readS->key) {
+                minS = readS;
+                j = m;
+            }
+        }
+    }
+
+    if (j == -1 || (i != -1 && LessPredicate(minR, minS))) {
+        RM.insert(minR);
+        SM.query(minR, matches);
+        Q->at(i).posR->erase(Q->at(i).posR->begin());//remove the smallest element from subsequence.
+        sortedR.push_back(minR);//merge multiple subsequences into a longer sorted one.
+    } else {
+        SM.insert(minS);
+        RM.query(minS, matches);
+        Q->at(j).posS->erase(Q->at(j).posS->begin());//remove the smallest element from subsequence.
+        sortedS.push_back(minR);//merge multiple subsequences into a longer sorted one.
+    }
+}
+
+
+void insert(std::vector<run> *Q, int startR, int lengthR, int startS, int lengthS);
+
+void insert(std::vector<run> *Q, int startR, int lengthR, int startS, int lengthS) {
+    std::vector<int> v(lengthR);
+    std::iota(v.begin(), v.end(), startR);
+
+    std::vector<int> u(lengthS);
+    std::iota(u.begin(), u.end(), startS);
+    Q->push_back(run(&v, &u));
+}
+
 
 /**
  *  The main idea of PMJ is to read as much data as can fit in memory.
@@ -93,38 +245,60 @@ pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid, T_TIMER *tim
     int sizeS = rel_S->num_tuples;
     int i = 0;
     int j = 0;
+    int matches = 0;
+    int progressive_stepR = progressive_step * sizeR;
+    int progressive_stepS = progressive_step * sizeS;
+
+    std::vector<run> Q;//let Q be an empty set;
+
+    std::vector<tuple_t *> sortedR;
+    std::vector<tuple_t *> sortedS;
+
+    MSG("Join during run creation")
     do {
         tuple_t *inptrR = nullptr;
         tuple_t *inptrS = nullptr;
         tuple_t *outptrR = nullptr;
         tuple_t *outptrS = nullptr;
-        //take up to progressive_step of R and S and sort.
+        //take subset of R and S to sort and join.
         if (i < sizeR) {
             inptrR = (rel_R->tuples) + i;
-            printf("%s\n", print_relation(rel_R->tuples, progressive_step * (i + 1)).c_str());
-            printf("%s\n", print_relation(rel_S->tuples, progressive_step * (i + 1)).c_str());
-            fflush(stdout);
-            avxsort_tuples(&inptrR, &outptrR, progressive_step);// the method will swap input and output pointers.
+#ifdef DEBUG
+            printf("%s\n", print_relation(rel_R->tuples, progressive_stepR * (i + 1)).c_str());
+#endif
+            avxsort_tuples(&inptrR, &outptrR, progressive_stepR);// the method will swap input and output pointers.
+#ifdef DEBUG
             if (!is_sorted_helper((int64_t *) outptrR, progressive_step)) {
                 printf("===> %d-thread -> R is NOT sorted, size = %d\n", tid, progressive_step);
             }
+#endif
         }
         if (j < sizeS) {
             inptrS = (rel_S->tuples) + j;
-            avxsort_tuples(&inptrS, &outptrS, progressive_step);
+            avxsort_tuples(&inptrS, &outptrS, progressive_stepS);
+#ifdef DEBUG
             if (!is_sorted_helper((int64_t *) outptrS, progressive_step)) {
-                printf("===> %d-thread -> R is NOT sorted, size = %d\n", tid, progressive_step);
+                printf("===> %d-thread -> S is NOT sorted, size = %d\n", tid, progressive_step);
             }
+#endif
         }
-        printf("%s\n", print_relation(rel_R->tuples, progressive_step * (i + 1)).c_str());
-        printf("%s\n", print_relation(rel_S->tuples, progressive_step * (i + 1)).c_str());
-        fflush(stdout);
-        earlyJoinInitialRuns(outptrR, outptrS, progressive_step);
-        i += progressive_step;
-        j += progressive_step;
+        earlyJoinInitialRuns(outptrR, outptrS, progressive_stepR, progressive_stepS, &matches);
+        insert(&Q, i, progressive_stepR, j, progressive_stepS);
+        i += progressive_stepR;
+        j += progressive_stepS;
+    } while (i < sizeR || j < sizeS);//while R!=null, S!=null.
+
+    MSG("Join during run merge")
+    int merge_itr = 0;
+    do {
+        earlyJoinMergedRuns(rel_R->tuples, rel_S->tuples, &Q, merge_itr, &matches, sortedR, sortedS);
+        i += progressive_stepR * merge_step;
+        j += progressive_stepS * merge_step;
+        merge_itr += merge_step;
     } while (i < sizeR || j < sizeS);
     return 0;
 }
+
 
 std::string print_relation(tuple_t *tuple, int length) {
     std::string tmp = "";
@@ -136,15 +310,6 @@ std::string print_relation(tuple_t *tuple, int length) {
     return tmp;
 }
 
-void earlyJoinInitialRuns(tuple_t *tupleR, tuple_t *tupleS, int length) {
-    //in early join
-
-    printf("%s\n", print_relation(tupleR, length).c_str());
-    printf("%s\n", print_relation(tupleS, length).c_str());
-    fflush(stdout);
-
-
-}
 
 /**
  * SHJ algorithm to be used in each thread.
@@ -183,7 +348,8 @@ long SHJJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R,
             END_MEASURE_BUILD_ACC((*timer))
         }
         if (tid == 0) {
-            proble_hashtable_single_measure(htS, tuple, hashmask_S, skipbits_S, matches, timer->progressivetimer);//(2)
+            proble_hashtable_single_measure(htS, tuple, hashmask_S, skipbits_S, matches,
+                                            timer->progressivetimer);//(2)
             DEBUGMSG(1, "matches:%ld, T0: Join R %d with %s", *matches, tuple->key,
                      print_window(window0.S_Window).c_str());
         } else {

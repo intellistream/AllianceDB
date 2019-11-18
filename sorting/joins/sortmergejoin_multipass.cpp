@@ -46,13 +46,12 @@
  *
  */
 void *
-sortmergejoin_multipass_thread(void * param);
+sortmergejoin_multipass_thread(void *param);
 
 result_t *
-sortmergejoin_multipass(relation_t * relR, relation_t * relS, joinconfig_t * joincfg)
-{
+sortmergejoin_multipass(relation_t *relR, relation_t *relS, joinconfig_t *joincfg) {
     /* check whether nr. of threads is a power of 2 */
-    if((joincfg->NTHREADS & (joincfg->NTHREADS-1)) != 0){
+    if ((joincfg->NTHREADS & (joincfg->NTHREADS - 1)) != 0) {
         fprintf(stdout, "[ERROR] m-pass sort-merge join runs with a power of 2 #threads.\n");
         return 0;
     }
@@ -70,11 +69,10 @@ sortmergejoin_multipass(relation_t * relR, relation_t * relS, joinconfig_t * joi
  * @param[in] args thread arguments
  */
 void
-mpass_partitioning_phase(relation_t *** relRparts, relation_t *** relSparts, arg_t * args);
+mpass_partitioning_phase(relation_t ***relRparts, relation_t ***relSparts, arg_t *args);
 
 void
-mpass_partitioning_cleanup(relation_t ** relRparts, relation_t ** relSparts)
-{
+mpass_partitioning_cleanup(relation_t **relRparts, relation_t **relSparts) {
     free(relRparts[0]);
     free(relRparts);
     free(relSparts);
@@ -91,7 +89,7 @@ mpass_partitioning_cleanup(relation_t ** relRparts, relation_t ** relSparts)
  * @param[in] args thread arguments
  */
 void
-mpass_sorting_phase(relation_t ** relRparts, relation_t ** relSparts, arg_t * args);
+mpass_sorting_phase(relation_t **relRparts, relation_t **relSparts, arg_t *args);
 
 /**
  * First merge phase of NUMA-sorted-runs. Brings remote runs to local
@@ -105,9 +103,9 @@ mpass_sorting_phase(relation_t ** relRparts, relation_t ** relSparts, arg_t * ar
  * @param[out] mergerunsS sorted runs of S to be further merged
  */
 void
-mpass_firstnumamerge_phase(arg_t * args,
-                           relation_t * mergedRelR, relation_t * mergedRelS,
-                           int * numrunstomerge, relation_t ** mergerunsR, relation_t ** mergerunsS);
+mpass_firstnumamerge_phase(arg_t *args,
+                           relation_t *mergedRelR, relation_t *mergedRelS,
+                           int *numrunstomerge, relation_t **mergerunsR, relation_t **mergerunsS);
 
 /**
  * Full merge of NUMA-local runs with a 2-way multi-pass merge.
@@ -120,9 +118,9 @@ mpass_firstnumamerge_phase(arg_t * args,
  * @param[in,out] mergedRelS merged relation S
  */
 void
-mpass_fullmultipassmerge_phase(arg_t * args, int numrunstomerge,
-                               relation_t * mergerunsR, relation_t * mergerunsS,
-                               relation_t * mergedRelR, relation_t * mergedRelS);
+mpass_fullmultipassmerge_phase(arg_t *args, int numrunstomerge,
+                               relation_t *mergerunsR, relation_t *mergerunsS,
+                               relation_t *mergedRelR, relation_t *mergedRelS);
 
 /**
  * Evaluate the merge-join over NUMA-local sorted runs.
@@ -132,12 +130,11 @@ mpass_fullmultipassmerge_phase(arg_t * args, int numrunstomerge,
  * @param[in,out] args return values are stored in args
  */
 void
-mpass_mergejoin_phase(relation_t * mergedRelR, relation_t * mergedRelS, arg_t * args);
+mpass_mergejoin_phase(relation_t *mergedRelR, relation_t *mergedRelS, arg_t *args);
 
 void *
-sortmergejoin_multipass_thread(void * param)
-{
-    arg_t * args   = (arg_t*) param;
+sortmergejoin_multipass_thread(void *param) {
+    arg_t *args = (arg_t *) param;
     int32_t my_tid = args->my_tid;
     int rv;
 
@@ -150,7 +147,7 @@ sortmergejoin_multipass_thread(void * param)
 #endif
 
     BARRIER_ARRIVE(args->barrier, rv);
-    if(my_tid == 0) {
+    if (my_tid == 0) {
         gettimeofday(&args->start, NULL);
         startTimer(&args->part);
         startTimer(&args->sort);
@@ -165,13 +162,13 @@ sortmergejoin_multipass_thread(void * param)
      *   Phase.1) NUMA-local partitioning.
      *
      *************************************************************************/
-    relation_t ** partsR = NULL;
-    relation_t ** partsS = NULL;
+    relation_t **partsR = NULL;
+    relation_t **partsS = NULL;
     mpass_partitioning_phase(&partsR, &partsS, args);
 
 
     BARRIER_ARRIVE(args->barrier, rv);
-    if(my_tid == 0) {
+    if (my_tid == 0) {
         stopTimer(&args->part);
     }
 
@@ -185,7 +182,7 @@ sortmergejoin_multipass_thread(void * param)
 
 
     BARRIER_ARRIVE(args->barrier, rv);
-    if(my_tid == 0) {
+    if (my_tid == 0) {
         stopTimer(&args->sort);
     }
 #ifdef PERF_COUNTERS
@@ -204,16 +201,16 @@ sortmergejoin_multipass_thread(void * param)
     relation_t mergedRelR;
     relation_t mergedRelS;
     int numrunstomerge = 0;
-    relation_t * mergerunsR;
-    relation_t * mergerunsS;
+    relation_t *mergerunsR;
+    relation_t *mergerunsS;
     mpass_firstnumamerge_phase(args, &mergedRelR, &mergedRelS,
                                &numrunstomerge, &mergerunsR, &mergerunsS);
 
     BARRIER_ARRIVE(args->barrier, rv);
-    if(my_tid == 0) {
+    if (my_tid == 0) {
         stopTimer(&args->mergedelta);
         /* we don't need the partitioning & sorting temporary spaces any more. */
-        if(args->nthreads > 1){
+        if (args->nthreads > 1) {
             free(args->tmp_partR);
             free(args->tmp_partS);
             free(args->tmp_sortR);
@@ -244,7 +241,7 @@ sortmergejoin_multipass_thread(void * param)
 
 
     BARRIER_ARRIVE(args->barrier, rv);
-    if(my_tid == 0) {
+    if (my_tid == 0) {
         stopTimer(&args->merge);
     }
 #ifdef PERF_COUNTERS
@@ -273,7 +270,7 @@ sortmergejoin_multipass_thread(void * param)
 
     /* for proper timing */
     BARRIER_ARRIVE(args->barrier, rv);
-    if(my_tid == 0) {
+    if (my_tid == 0) {
         stopTimer(&args->join);
         gettimeofday(&args->end, NULL);
     }
@@ -292,32 +289,31 @@ sortmergejoin_multipass_thread(void * param)
 }
 
 void
-mpass_partitioning_phase(relation_t *** relRparts, relation_t *** relSparts, arg_t * args)
-{
+mpass_partitioning_phase(relation_t ***relRparts, relation_t ***relSparts, arg_t *args) {
     const int PARTFANOUT = args->joincfg->PARTFANOUT;
     const int NRADIXBITS = log2(PARTFANOUT);
 
-    relation_t ** partsR = (relation_t **)
+    relation_t **partsR = (relation_t **)
             malloc_aligned(PARTFANOUT * sizeof(relation_t *));
-    relation_t ** partsS = (relation_t **)
+    relation_t **partsS = (relation_t **)
             malloc_aligned(PARTFANOUT * sizeof(relation_t *));
 
     /** note: only free prels[0] when releasing memory */
-    relation_t * prels = (relation_t *) malloc_aligned(2 * PARTFANOUT * sizeof(relation_t));
-    for(int i = 0; i < PARTFANOUT; i++) {
+    relation_t *prels = (relation_t *) malloc_aligned(2 * PARTFANOUT * sizeof(relation_t));
+    for (int i = 0; i < PARTFANOUT; i++) {
         partsR[i] = prels + i;
         partsS[i] = prels + PARTFANOUT + i;
     }
 
     relation_t relR, relS;
     relation_t tmpR, tmpS;
-    relR.tuples     = args->relR;
+    relR.tuples = args->relR;
     relR.num_tuples = args->numR;
-    relS.tuples     = args->relS;
+    relS.tuples = args->relS;
     relS.num_tuples = args->numS;
-    tmpR.tuples     = args->tmp_partR;
+    tmpR.tuples = args->tmp_partR;
     tmpR.num_tuples = args->numR;
-    tmpS.tuples     = args->tmp_partS;
+    tmpS.tuples = args->tmp_partS;
     tmpS.num_tuples = args->numS;
 
     /* after partitioning tmpR, tmpS holds the partitioned data */
@@ -334,9 +330,8 @@ mpass_partitioning_phase(relation_t *** relRparts, relation_t *** relSparts, arg
 }
 
 void
-mpass_sorting_phase(relation_t ** relRparts, relation_t ** relSparts, arg_t * args)
-{
-    const int PARTFANOUT = args->joincfg->PARTFANOUT;
+mpass_sorting_phase(relation_t **relRparts, relation_t **relSparts, arg_t *args) {
+    const int PARTFANOUT = args->joincfg->PARTFANOUT;//how many partitions to handle in one thread.
     const int scalarsortflag = args->joincfg->SCALARSORT;
 
     int32_t my_tid = args->my_tid;
@@ -346,46 +341,45 @@ mpass_sorting_phase(relation_t ** relRparts, relation_t ** relSparts, arg_t * ar
 
     uint64_t ntuples_per_part;
     uint64_t offset = 0;
-    tuple_t * optr = args->tmp_sortR + my_tid * CACHELINEPADDING(PARTFANOUT);
+    tuple_t *optr = args->tmp_sortR + my_tid * CACHELINEPADDING(PARTFANOUT);
 
-    for(int i = 0; i < PARTFANOUT; i++) {
-        tuple_t * inptr  = (relRparts[i]->tuples);
-        tuple_t * outptr = (optr + offset);
-        ntuples_per_part       = relRparts[i]->num_tuples;
-        offset                += ALIGN_NUMTUPLES(ntuples_per_part);
+    for (int i = 0; i < PARTFANOUT; i++) {
+        tuple_t *inptr = (relRparts[i]->tuples);
+        tuple_t *outptr = (optr + offset);
+        ntuples_per_part = relRparts[i]->num_tuples;
+        offset += ALIGN_NUMTUPLES(ntuples_per_part);
 
         DEBUGMSG(1, "PART-%d-SIZE: %"PRIu64"\n", i, relRparts[i]->num_tuples);
 
-        if(scalarsortflag)
+        if (scalarsortflag)
             scalarsort_tuples(&inptr, &outptr, ntuples_per_part);
         else
             avxsort_tuples(&inptr, &outptr, ntuples_per_part);
 
-        /*
-        if(!is_sorted_helper((int64_t*)outptr, ntuples_per_part)){
-            printf("===> %d-thread -> R is NOT sorted, size = %d\n", my_tid,
+
+        if (!is_sorted_helper((int64_t *) outptr, ntuples_per_part)) {
+            printf("===> %d-thread -> R is NOT sorted, size = %lu\n", my_tid,
                    ntuples_per_part);
         }
-        */
 
-        args->threadrelchunks[my_tid][i].R.tuples     = outptr;
+        args->threadrelchunks[my_tid][i].R.tuples = outptr;
         args->threadrelchunks[my_tid][i].R.num_tuples = ntuples_per_part;
     }
 
 
     offset = 0;
     optr = args->tmp_sortS + my_tid * CACHELINEPADDING(PARTFANOUT);
-    for(int i = 0; i < PARTFANOUT; i++) {
-        tuple_t * inptr  = (relSparts[i]->tuples);
-        tuple_t * outptr = (optr + offset);
+    for (int i = 0; i < PARTFANOUT; i++) {
+        tuple_t *inptr = (relSparts[i]->tuples);
+        tuple_t *outptr = (optr + offset);
 
-        ntuples_per_part       = relSparts[i]->num_tuples;
-        offset                += ALIGN_NUMTUPLES(ntuples_per_part);
+        ntuples_per_part = relSparts[i]->num_tuples;
+        offset += ALIGN_NUMTUPLES(ntuples_per_part);
         /*
         if(my_tid==0)
              fprintf(stdout, "PART-%d-SIZE: %d\n", i, relSparts[i]->num_tuples);
         */
-        if(scalarsortflag)
+        if (scalarsortflag)
             scalarsort_tuples(&inptr, &outptr, ntuples_per_part);
         else
             avxsort_tuples(&inptr, &outptr, ntuples_per_part);
@@ -408,10 +402,9 @@ mpass_sorting_phase(relation_t ** relRparts, relation_t ** relSparts, arg_t * ar
 }
 
 void
-mpass_firstnumamerge_phase(arg_t * args,
-                           relation_t * mergedRelR, relation_t * mergedRelS, int * numrunstomerge,
-                           relation_t ** mergerunsR, relation_t ** mergerunsS)
-{
+mpass_firstnumamerge_phase(arg_t *args,
+                           relation_t *mergedRelR, relation_t *mergedRelS, int *numrunstomerge,
+                           relation_t **mergerunsR, relation_t **mergerunsS) {
     const int PARTFANOUT = args->joincfg->PARTFANOUT;
     const int scalarmergeflag = args->joincfg->SCALARMERGE;
 
@@ -419,13 +412,13 @@ mpass_firstnumamerge_phase(arg_t * args,
 
     int numruns = 0;
     uint64_t mergeRtotal = 0, mergeStotal = 0;
-    tuple_t *  tmpoutR;
-    tuple_t *  tmpoutS;
+    tuple_t *tmpoutR;
+    tuple_t *tmpoutS;
 
-    relation_t * Smergeouts = (relation_t *)
-            malloc_aligned(PARTFANOUT*sizeof(relation_t));
-    relation_t * Rmergeouts = (relation_t *)
-            malloc_aligned(PARTFANOUT*sizeof(relation_t));
+    relation_t *Smergeouts = (relation_t *)
+            malloc_aligned(PARTFANOUT * sizeof(relation_t));
+    relation_t *Rmergeouts = (relation_t *)
+            malloc_aligned(PARTFANOUT * sizeof(relation_t));
 
     //relation_t tmpS;
     //tmpR.tuples     = args->tmp_partR;
@@ -433,11 +426,11 @@ mpass_firstnumamerge_phase(arg_t * args,
     //tmpS.tuples     = args->tmp_partS;
     //tmpS.num_tuples = args->numS;
 
-    if(args->nthreads == 1) {
+    if (args->nthreads == 1) {
         /* single threaded execution */
-        for(int i = 0; i < PARTFANOUT; i ++) {
+        for (int i = 0; i < PARTFANOUT; i++) {
 
-            relationpair_t * rels = & args->threadrelchunks[my_tid][i];
+            relationpair_t *rels = &args->threadrelchunks[my_tid][i];
 
             /* output offset in the first merge step */
             Rmergeouts[i].tuples = rels->R.tuples;
@@ -451,8 +444,7 @@ mpass_firstnumamerge_phase(arg_t * args,
         numruns = PARTFANOUT;
         tmpoutR = args->tmp_partR;
         tmpoutS = args->tmp_partS;
-    }
-    else {
+    } else {
         /* multi-threaded execution */
         /* merge remote relations and bring to local memory */
         const int perthread = PARTFANOUT / args->nthreads;
@@ -460,11 +452,11 @@ mpass_firstnumamerge_phase(arg_t * args,
         const int end = start + perthread;
 
         /* compute the size of merged relations to be stored locally */
-        for(int j = start; j < end; j ++) {
-            for(int i = 0; i < args->nthreads; i += 2) {
+        for (int j = start; j < end; j++) {
+            for (int i = 0; i < args->nthreads; i += 2) {
 
-                relationpair_t * rels1 = & args->threadrelchunks[i][j];
-                relationpair_t * rels2 = & args->threadrelchunks[i+1][j];
+                relationpair_t *rels1 = &args->threadrelchunks[i][j];
+                relationpair_t *rels2 = &args->threadrelchunks[i + 1][j];
 
                 /* if(rels1->R.num_tuples % 8 != 0 || */
                 /*    rels2->R.num_tuples % 8 != 0 || */
@@ -486,22 +478,22 @@ mpass_firstnumamerge_phase(arg_t * args,
         tmpoutS = (tuple_t *) malloc_aligned_threadlocal(mergeStotal * sizeof(tuple_t));
 
         uint64_t offsetR = 0, offsetS = 0;
-        for(int j = start; j < end; j ++) {
-            for(int i = 0; i < args->nthreads; i += 2) {
+        for (int j = start; j < end; j++) {
+            for (int i = 0; i < args->nthreads; i += 2) {
 
                 // int tid1 = (((my_tid + i)/2) % (args->nthreads/2)) * 2;
                 // int tid2 = tid1 + 1;
                 int tid1 = (my_tid + i) % (args->nthreads);
                 int tid2 = (tid1 + 1) % (args->nthreads);
 
-                relationpair_t * rels1 = & args->threadrelchunks[tid1][j];
-                relationpair_t * rels2 = & args->threadrelchunks[tid2][j];
+                relationpair_t *rels1 = &args->threadrelchunks[tid1][j];
+                relationpair_t *rels2 = &args->threadrelchunks[tid2][j];
 
                 /* output offset in the first merge step */
                 Rmergeouts[numruns].num_tuples = rels1->R.num_tuples
                                                  + rels2->R.num_tuples;
                 Rmergeouts[numruns].tuples = tmpoutR + offsetR;
-                tuple_t * Rmergeout = Rmergeouts[numruns].tuples;
+                tuple_t *Rmergeout = Rmergeouts[numruns].tuples;
                 /*
             if(!is_sorted_helper((int64_t *) rels1->R.tuples, rels1->R.num_tuples))
             {
@@ -514,7 +506,7 @@ mpass_firstnumamerge_phase(arg_t * args,
             }
                  */
 
-                if(scalarmergeflag)
+                if (scalarmergeflag)
                     scalar_merge_tuples(rels1->R.tuples,
                                         rels2->R.tuples,
                                         Rmergeout,
@@ -562,7 +554,7 @@ mpass_firstnumamerge_phase(arg_t * args,
 
                 Smergeouts[numruns].num_tuples = rels1->S.num_tuples + rels2->S.num_tuples;
                 Smergeouts[numruns].tuples = tmpoutS + offsetS;
-                tuple_t * Smergeout = Smergeouts[numruns].tuples;
+                tuple_t *Smergeout = Smergeouts[numruns].tuples;
 
                 /* if(!is_sorted_helper((int64_t *) rels1->S.tuples, rels1->S.num_tuples)) */
                 /* { */
@@ -576,7 +568,7 @@ mpass_firstnumamerge_phase(arg_t * args,
 
 
 
-                if(scalarmergeflag)
+                if (scalarmergeflag)
                     scalar_merge_tuples(rels1->S.tuples, rels2->S.tuples,
                                         Smergeout,
                                         rels1->S.num_tuples,
@@ -600,7 +592,7 @@ mpass_firstnumamerge_phase(arg_t * args,
                 offsetR += Rmergeouts[numruns].num_tuples;
                 offsetS += Smergeouts[numruns].num_tuples;
 
-                numruns ++;
+                numruns++;
             }
         }
 
@@ -619,85 +611,82 @@ mpass_firstnumamerge_phase(arg_t * args,
 }
 
 void
-mpass_fullmultipassmerge_phase(arg_t * args, int numrunstomerge,
-                               relation_t * mergerunsR, relation_t * mergerunsS,
-                               relation_t * mergedRelR, relation_t * mergedRelS)
-{
+mpass_fullmultipassmerge_phase(arg_t *args, int numrunstomerge,
+                               relation_t *mergerunsR, relation_t *mergerunsS,
+                               relation_t *mergedRelR, relation_t *mergedRelS) {
     int32_t my_tid = args->my_tid;
     const int scalarmergeflag = args->joincfg->SCALARMERGE;
 
     /* Full-merge of relation R */
-    tuple_t * tmpoutR = mergedRelR->tuples;
-    tuple_t * tmpoutR2 = (tuple_t *) malloc_aligned_threadlocal(mergedRelR->num_tuples * sizeof(tuple_t));
-    tuple_t * reclaimR2 = tmpoutR2; /* for releasing */
+    tuple_t *tmpoutR = mergedRelR->tuples;
+    tuple_t *tmpoutR2 = (tuple_t *) malloc_aligned_threadlocal(mergedRelR->num_tuples * sizeof(tuple_t));
+    tuple_t *reclaimR2 = tmpoutR2; /* for releasing */
     int cnt = numrunstomerge;
-    for(; cnt > 1; cnt >>= 1) {
+    for (; cnt > 1; cnt >>= 1) {
         uint64_t offsetR = 0;
-        for(int i = 0, j = 0; i < cnt; i += 2) {
-            tuple_t * inpA = (mergerunsR[i].tuples);
-            tuple_t * inpB = (mergerunsR[i+1].tuples);
-            tuple_t * out  = (tmpoutR2 + offsetR);
+        for (int i = 0, j = 0; i < cnt; i += 2) {
+            tuple_t *inpA = (mergerunsR[i].tuples);
+            tuple_t *inpB = (mergerunsR[i + 1].tuples);
+            tuple_t *out = (tmpoutR2 + offsetR);
 
             uint64_t len1 = mergerunsR[i].num_tuples;
-            uint64_t len2 = mergerunsR[i+1].num_tuples;
+            uint64_t len2 = mergerunsR[i + 1].num_tuples;
 
-            if(scalarmergeflag)
+            if (scalarmergeflag)
                 scalar_merge_tuples(inpA, inpB, out, len1, len2);
             else
                 avx_merge_tuples(inpA, inpB, out, len1, len2);
 
-            mergerunsR[j].tuples     = out;
+            mergerunsR[j].tuples = out;
             mergerunsR[j].num_tuples = len1 + len2;
             offsetR += mergerunsR[j].num_tuples;
             j++;
         }
-        tuple_t * swap = (tuple_t *) tmpoutR;
-        tmpoutR        = (tuple_t *) tmpoutR2;
-        tmpoutR2       = (tuple_t *) swap;
+        tuple_t *swap = (tuple_t *) tmpoutR;
+        tmpoutR = (tuple_t *) tmpoutR2;
+        tmpoutR2 = (tuple_t *) swap;
     }
     /* clean-up tempoutR2 */
-    if(reclaimR2 == tmpoutR2){
+    if (reclaimR2 == tmpoutR2) {
         free_threadlocal(reclaimR2, mergedRelR->num_tuples * sizeof(tuple_t));
-    }
-    else if(my_tid == 0 && args->nthreads > 1){
+    } else if (my_tid == 0 && args->nthreads > 1) {
         free(tmpoutR2);
     }
 
 
     /* Full-merge of relation S */
-    tuple_t * tmpoutS = mergedRelS->tuples;
-    tuple_t * tmpoutS2 = (tuple_t *) malloc_aligned_threadlocal(mergedRelS->num_tuples * sizeof(tuple_t));
-    tuple_t * reclaimS2 = tmpoutS2; /* for releasing */
+    tuple_t *tmpoutS = mergedRelS->tuples;
+    tuple_t *tmpoutS2 = (tuple_t *) malloc_aligned_threadlocal(mergedRelS->num_tuples * sizeof(tuple_t));
+    tuple_t *reclaimS2 = tmpoutS2; /* for releasing */
     cnt = numrunstomerge;
-    for(; cnt > 1; cnt >>= 1) {
+    for (; cnt > 1; cnt >>= 1) {
         uint64_t offsetS = 0;
-        for(int i = 0, j = 0; i < cnt; i += 2) {
-            tuple_t * inpA = (mergerunsS[i].tuples);
-            tuple_t * inpB = (mergerunsS[i+1].tuples);
-            tuple_t * out  = (tmpoutS2 + offsetS);
+        for (int i = 0, j = 0; i < cnt; i += 2) {
+            tuple_t *inpA = (mergerunsS[i].tuples);
+            tuple_t *inpB = (mergerunsS[i + 1].tuples);
+            tuple_t *out = (tmpoutS2 + offsetS);
 
             uint64_t len1 = mergerunsS[i].num_tuples;
-            uint64_t len2 = mergerunsS[i+1].num_tuples;
+            uint64_t len2 = mergerunsS[i + 1].num_tuples;
 
-            if(scalarmergeflag)
+            if (scalarmergeflag)
                 scalar_merge_tuples(inpA, inpB, out, len1, len2);
             else
                 avx_merge_tuples(inpA, inpB, out, len1, len2);
 
-            mergerunsS[j].tuples     = out;
+            mergerunsS[j].tuples = out;
             mergerunsS[j].num_tuples = len1 + len2;
             offsetS += mergerunsS[j].num_tuples;
             j++;
         }
-        tuple_t * swap = (tuple_t *) tmpoutS;
-        tmpoutS        = (tuple_t *) tmpoutS2;
-        tmpoutS2       = (tuple_t *) swap;
+        tuple_t *swap = (tuple_t *) tmpoutS;
+        tmpoutS = (tuple_t *) tmpoutS2;
+        tmpoutS2 = (tuple_t *) swap;
     }
     /* clean-up tempoutS2 */
-    if(reclaimS2 == tmpoutS2){
+    if (reclaimS2 == tmpoutS2) {
         free_threadlocal(reclaimS2, mergedRelS->num_tuples * sizeof(tuple_t));
-    }
-    else if(my_tid == 0 && args->nthreads > 1){
+    } else if (my_tid == 0 && args->nthreads > 1) {
         free(tmpoutS2);
     }
 
@@ -708,16 +697,15 @@ mpass_fullmultipassmerge_phase(arg_t * args, int numrunstomerge,
 }
 
 void
-mpass_mergejoin_phase(relation_t * mergedRelR, relation_t * mergedRelS, arg_t * args)
-{
+mpass_mergejoin_phase(relation_t *mergedRelR, relation_t *mergedRelS, arg_t *args) {
     /* Merge Join */
-    tuple_t * rtuples = (tuple_t *) mergedRelR->tuples;
-    tuple_t * stuples = (tuple_t *) mergedRelS->tuples;
+    tuple_t *rtuples = (tuple_t *) mergedRelR->tuples;
+    tuple_t *stuples = (tuple_t *) mergedRelS->tuples;
 
 #ifdef JOIN_MATERIALIZE
     chainedtuplebuffer_t * chainedbuf = chainedtuplebuffer_init();
 #else
-    void * chainedbuf = NULL;
+    void *chainedbuf = NULL;
 #endif
 
 

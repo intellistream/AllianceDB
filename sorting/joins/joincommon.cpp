@@ -168,12 +168,10 @@ sortmergejoin_initrun(relation_t *relR, relation_t *relS, joinconfig_t *joincfg,
 
         /* run the selected join algorithm thread */
         rv = pthread_create(&tid[i], &attr, jointhread, (void *) &args[i]);
-
         if (rv) {
             printf("[ERROR] return code from pthread_create() is %d\n", rv);
             exit(-1);
         }
-
     }
 
     /* wait for threads to finish */

@@ -32,3 +32,4 @@ add_executable(sorting
         main.cpp
         joins/sortmergejoin_multipass.cpp joins/sortmergejoin_mpsm.cpp joins/sortmergejoin_multiway_skewhandling.cpp
         )
+target_link_libraries(sorting numa)

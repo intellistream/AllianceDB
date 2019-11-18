@@ -1,4 +1,0 @@
-/usr/bin/cmake -DCMAKE_BUILD_TYPE=Release -G "CodeBlocks - Unix Makefiles" /tmp/tmp.P6Wg1V7puC
--- Configuring done
--- Generating done
--- Build files have been written to: /tmp/tmp.P6Wg1V7puC/cmake-build-release

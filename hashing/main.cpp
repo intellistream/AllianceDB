@@ -396,8 +396,8 @@ main(int argc, char **argv) {
     cmd_params.nthreads = 1;
 
     /* default dataset is Workload B (described in paper) */
-    cmd_params.r_size = 100;
-    cmd_params.s_size = 100;
+    cmd_params.r_size = 1000;
+    cmd_params.s_size = 1000;
 //    cmd_params.r_size = 12800000;
 //    cmd_params.s_size = 12800000;
     cmd_params.r_seed = 12345;

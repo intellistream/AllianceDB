@@ -42,6 +42,8 @@
 #define DEBUGMSG(COND, MSG, ...)
 #endif
 
+#define MSG(MSG, ...)                                    \
+    { fprintf(stdout, "[INFO] " MSG, ## __VA_ARGS__); }
 
 #define EAGER
 #define MEASURE
