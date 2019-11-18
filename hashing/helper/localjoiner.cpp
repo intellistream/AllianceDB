@@ -126,8 +126,8 @@ void earlyJoinInitialRuns(tuple_t *tupleR, tuple_t *tupleS, int length, int i, i
 
 void earlyJoinInitialRuns(tuple_t *tupleR, tuple_t *tupleS, int lengthR, int lengthS, int *matches) {
     //in early join
-    printf("%s\n", print_relation(tupleR, lengthR).c_str());
-    printf("%s\n", print_relation(tupleS, lengthS).c_str());
+    printf("Tuple R: %s\n", print_relation(tupleR, lengthR).c_str());
+    printf("Tuple S: %s\n", print_relation(tupleS, lengthS).c_str());
     fflush(stdout);
 
     int r = 0;
@@ -135,14 +135,16 @@ void earlyJoinInitialRuns(tuple_t *tupleR, tuple_t *tupleS, int lengthR, int len
     sweepArea RM;
     sweepArea SM;
     while (r < lengthR || s < lengthS) {
-        tuple_t *tr = read(tupleR, lengthR, r++);
-        tuple_t *ts = read(tupleS, lengthS, s++);
+        tuple_t *tr = read(tupleR, lengthR, r);
+        tuple_t *ts = read(tupleS, lengthS, s);
         if (s == lengthS || (r < lengthR && tr->key <= ts->key)) {
             RM.insert(tr);
             SM.query(tr, matches);
+            r++;//remove tr from tupleR.
         } else {
             SM.insert(ts);
             RM.query(ts, matches);
+            s++;//remove ts from tupleS.
         }
     }
 }
@@ -168,10 +170,10 @@ void earlyJoinMergedRuns(tuple_t *tupleR, tuple_t *tupleS, std::vector<run> *Q, 
 
     //determine the smallest element of r and s from multiple (#merge_step) subsequences.
     auto *minR = new tuple_t();
-    minR->key=INT32_MAX;
+    minR->key = INT32_MAX;
     auto i = -1;
     auto *minS = new tuple_t();
-    minS->key=INT32_MAX;
+    minS->key = INT32_MAX;
     auto j = -1;
 
     auto run_itr = Q->begin() + merge_itr;
