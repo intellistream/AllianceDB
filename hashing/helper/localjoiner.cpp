@@ -167,9 +167,11 @@ void earlyJoinMergedRuns(tuple_t *tupleR, tuple_t *tupleS, std::vector<run> *Q, 
     int m;
 
     //determine the smallest element of r and s from multiple (#merge_step) subsequences.
-    auto *minR = new tuple_t(INT32_MAX);
+    auto *minR = new tuple_t();
+    minR->key=INT32_MAX;
     auto i = -1;
-    auto *minS = new tuple_t(INT32_MAX);
+    auto *minS = new tuple_t();
+    minS->key=INT32_MAX;
     auto j = -1;
 
     auto run_itr = Q->begin() + merge_itr;
