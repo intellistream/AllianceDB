@@ -111,7 +111,10 @@ struct sweepArea {
 
     bool within(tuple_t *const &x, tuple_t *List, std::vector<int> pos) {
         for (auto it = pos.begin(); it != pos.end(); it++) {
-            if (x == read(List, it.operator*())) return true;
+            auto tmpt = read(List, it.operator*());
+            if (x == tmpt) {
+                return true;
+            }
         }
         return false;
     }
@@ -192,11 +195,13 @@ void earlyJoinMergedRuns(tuple_t *tupleR, tuple_t *tupleS, std::vector<run> *Q, 
  */
 void earlyJoinMergedRuns(tuple_t *tupleR, tuple_t *tupleS, std::vector<run> *Q, int *matches,
                          std::vector<int> *sortedR, std::vector<int> *sortedS) {
-    sweepArea RM;
-    sweepArea SM;
     bool findI;
     bool findJ;
     do {
+        //following PMJ vldb'02 implementation.
+        sweepArea *RM = new sweepArea[merge_step];
+        sweepArea *SM = new sweepArea[merge_step];
+
         tuple_t *minR = nullptr;
         tuple_t *minS = nullptr;
         __gnu_cxx::__normal_iterator<run *, std::vector<run>> i;
@@ -206,8 +211,9 @@ void earlyJoinMergedRuns(tuple_t *tupleR, tuple_t *tupleS, std::vector<run> *Q, 
 
         //determine the smallest element of r and s from multiple (#merge_step) subsequences.
         //points to correct starting point.
+        int run_i = 0;
+        int run_j = 0;
         int m = 0;
-
         for (auto run_itr = Q->begin();
              run_itr < Q->begin() + merge_step; ++run_itr) {//iterate through several runs.
             auto posR = (run_itr).operator*().posR;
@@ -218,6 +224,7 @@ void earlyJoinMergedRuns(tuple_t *tupleR, tuple_t *tupleS, std::vector<run> *Q, 
                     minR = readR;
                     i = run_itr;//mark the subsequence to be updated.
                     findI = true;
+                    run_i = m;
                 }
             }
             auto posS = (run_itr).operator*().posS;
@@ -227,6 +234,7 @@ void earlyJoinMergedRuns(tuple_t *tupleR, tuple_t *tupleS, std::vector<run> *Q, 
                     minS = readS;
                     j = run_itr;//mark the subsequence to be updated.
                     findJ = true;
+                    run_j = m;
                 }
             }
             m++;
@@ -237,14 +245,21 @@ void earlyJoinMergedRuns(tuple_t *tupleR, tuple_t *tupleS, std::vector<run> *Q, 
             return;
         }
         if (!findJ || (findI && LessEqualPredicate(minR, minS))) {
-            RM.insert(minR);
-            SM.query(minR, matches, i.operator*().posS, tupleS);// except (r,x)| x belong to Si.
+            RM[run_i].insert(minR);
+            for (auto run_itr = 0; run_itr < merge_step; run_itr++) {
+                if (run_itr != run_i) {// except (r,x)| x belong to Si.
+                    SM[run_itr].query(minR, matches);
+                }
+            }
             sortedR->push_back(i->posR.begin().operator*());//merge multiple subsequences into a longer sorted one.
             i->posR.erase(i->posR.begin());//remove the smallest element from subsequence.
-
         } else {
-            SM.insert(minS);
-            RM.query(minS, matches, j.operator*().posR, tupleR);
+            SM[run_j].insert(minS);
+            for (auto run_itr = 0; run_itr < merge_step; run_itr++) {
+                if (run_itr != run_j) {// except (x,r)| x belong to Rj.
+                    RM[run_itr].query(minS, matches);
+                }
+            }
             sortedS->push_back(j->posS.begin().operator*());//merge multiple subsequences into a longer sorted one.
             j->posS.erase(j->posS.begin());//remove the smallest element from subsequence.
         }
@@ -297,8 +312,10 @@ pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid, T_TIMER *tim
     do {
         tuple_t *inptrR = nullptr;
         tuple_t *inptrS = nullptr;
-        tuple_t *outptrR = nullptr;
-        tuple_t *outptrS = nullptr;
+
+        /**** allocate temporary space for sorting ****/
+        tuple_t *outptrR = new tuple_t[progressive_stepR];//args->tmp_sortR + my_tid * CACHELINEPADDING(PARTFANOUT);
+        tuple_t *outptrS = new tuple_t[progressive_stepS];
         //take subset of R and S to sort and join.
         if (i < sizeR) {
             inptrR = (rel_R->tuples) + i;
@@ -335,8 +352,6 @@ pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid, T_TIMER *tim
         std::vector<int> sortedS;//only records the position.
 
         earlyJoinMergedRuns(rel_R->tuples, rel_S->tuples, &Q, &matches, &sortedR, &sortedS);
-//        i += progressive_stepR * merge_step;
-//        j += progressive_stepS * merge_step;
         Q.emplace_back(sortedR, sortedS);
     } while (Q.size() > 1);
 

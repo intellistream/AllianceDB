@@ -396,8 +396,8 @@ main(int argc, char **argv) {
     cmd_params.nthreads = 1;//TODO: in HS mode, thread must be larger than 1. Fix it when nthread=1.
 
     /* default dataset is Workload B (described in paper) */
-    cmd_params.r_size = 100;
-    cmd_params.s_size = 100;
+    cmd_params.r_size = 10000;
+    cmd_params.s_size = 10000;
 //    cmd_params.r_size = 12800000;
 //    cmd_params.s_size = 12800000;
     cmd_params.r_seed = 12345;
