@@ -7,9 +7,12 @@
 #include <utility>
 #include <vector>
 #include <numeric>
-#include "localjoiner.h"
 #include "avxsort.h"
 #include "sort_common.h"
+#include "localjoiner.h"
+
+#define progressive_step 0.1 //percentile, 0.01 ~ 0.2.
+#define merge_step 2 // number of ``runs" to merge in each round.
 
 /**
  * As an example of join execution, consider a join with join predicate T1.attr1 = T2.attr2.
@@ -67,12 +70,12 @@ shj(int32_t tid, relation_t *rel_R,
 }
 
 
-#define progressive_step 0.01 //percentile, 0.01 ~ 0.2.
-#define merge_step 1 // number of ``runs" to merge in each round.
-
-
 inline tuple_t *read(tuple_t *tuple, int length, int idx) {
     if (idx >= length) return nullptr;
+    return &tuple[idx];
+}
+
+inline tuple_t *read(tuple_t *tuple, int idx) {
     return &tuple[idx];
 }
 
@@ -84,14 +87,18 @@ inline bool LessPredicate(tuple_t *u, tuple_t *v) {
     return u->key < v->key;
 }
 
+inline bool LessEqualPredicate(tuple_t *u, tuple_t *v) {
+    return u->key <= v->key;
+}
+
 struct run {//a pair of subsequence (mask position only)
     std::vector<int> posR;//readable position of R. By default should be 0 to size of R/S.
     std::vector<int> posS;//readable position of S.
-
     run(std::vector<int> posR, std::vector<int> posS) {
         this->posR = std::move(posR);
         this->posS = std::move(posS);
     }
+
 };
 
 struct sweepArea {
@@ -100,6 +107,29 @@ struct sweepArea {
 
     void insert(tuple_t *tuple) {
         sx.insert(tuple);
+    }
+
+    bool within(tuple_t *const &x, tuple_t *List, std::vector<int> pos) {
+        for (auto it = pos.begin(); it != pos.end(); it++) {
+            if (x == read(List, it.operator*())) return true;
+        }
+        return false;
+    }
+
+    void query(tuple_t *tuple, int *matches, std::vector<int> pos, tuple_t *tupleList) {
+
+        //clean elements that are less than the current element.
+        for (auto it = sx.begin(); it != sx.end();) {
+            if (LessPredicate(it.operator*(), tuple)) {
+                it = sx.erase(it);
+            } else {  //perform join.
+                if (EqualPredicate(it.operator*(), tuple)) {
+                    if (!within(it.operator*(), tupleList, pos))//otherwise, they must have already matched before.
+                        (*matches)++;
+                }
+                ++it;
+            }
+        }
     }
 
     void query(tuple_t *tuple, int *matches) {
@@ -150,8 +180,8 @@ void earlyJoinInitialRuns(tuple_t *tupleR, tuple_t *tupleS, int lengthR, int len
 }
 
 
-void earlyJoinMergedRuns(tuple_t *tupleR, tuple_t *tupleS, std::vector<run> *Q, int merge_itr, int *matches,
-                         std::vector<tuple_t *> sortedR, std::vector<tuple_t *> sortedS);
+void earlyJoinMergedRuns(tuple_t *tupleR, tuple_t *tupleS, std::vector<run> *Q, int *matches,
+                         std::vector<int> *sortedR, std::vector<int> *sortedS);
 
 /**
  * Merges the input sequences into two larger sequences, which are then joined directly.
@@ -160,46 +190,65 @@ void earlyJoinMergedRuns(tuple_t *tupleR, tuple_t *tupleS, std::vector<run> *Q, 
  * @param tupleS
  * @param matches
  */
-void earlyJoinMergedRuns(tuple_t *tupleR, tuple_t *tupleS, std::vector<run> *Q, int merge_itr, int *matches,
-                         std::vector<tuple_t *> sortedR, std::vector<tuple_t *> sortedS) {
+void earlyJoinMergedRuns(tuple_t *tupleR, tuple_t *tupleS, std::vector<run> *Q, int *matches,
+                         std::vector<int> *sortedR, std::vector<int> *sortedS) {
     sweepArea RM;
     sweepArea SM;
-    int m;
+    bool findI;
+    bool findJ;
+    do {
+        tuple_t *minR = nullptr;
+        tuple_t *minS = nullptr;
+        __gnu_cxx::__normal_iterator<run *, std::vector<run>> i;
+        __gnu_cxx::__normal_iterator<run *, std::vector<run>> j;
+        findI = false;
+        findJ = false;
 
-    tuple_t *minR = nullptr;
-    auto i = -1;
-    tuple_t *minS = nullptr;
-    auto j = -1;
+        //determine the smallest element of r and s from multiple (#merge_step) subsequences.
+        //points to correct starting point.
+        int m = 0;
 
-    //determine the smallest element of r and s from multiple (#merge_step) subsequences.
-    auto run_itr = Q->begin() + merge_itr;//points to correct starting point.
-    for (m = 0; m < merge_step; m++) {//iterate through several runs.
-        auto posR = (run_itr + m).operator*().posR;
-        //the left most of each subsequence is for sure the smallest item of the subsequence.
-        tuple_t *readR = read(tupleR, 1, posR.at(0));
-        if (!minR || minR->key > readR->key) {
-            minR = readR;
-            i = m;//which subsequence need to be update.
+        for (auto run_itr = Q->begin();
+             run_itr < Q->begin() + merge_step; ++run_itr) {//iterate through several runs.
+            auto posR = (run_itr).operator*().posR;
+            if (!posR.empty()) {
+                //the left most of each subsequence is the smallest item of the subsequence.
+                tuple_t *readR = read(tupleR, posR.at(0));
+                if (!minR || minR->key > readR->key) {
+                    minR = readR;
+                    i = run_itr;//mark the subsequence to be updated.
+                    findI = true;
+                }
+            }
+            auto posS = (run_itr).operator*().posS;
+            if (!posS.empty()) {
+                tuple_t *readS = read(tupleS, posS.at(0));
+                if (!minS || minS->key > readS->key) {
+                    minS = readS;
+                    j = run_itr;//mark the subsequence to be updated.
+                    findJ = true;
+                }
+            }
+            m++;
         }
-        auto posS = (run_itr + m).operator*().posS;
-        tuple_t *readS = read(tupleS, 1, posS.at(0));
-        if (!minS || minS->key > readS->key) {
-            minS = readS;
-            j = m;//which subsequence need to be update.
-        }
-    }
 
-    if (j == -1 || (i != -1 && LessPredicate(minR, minS))) {
-        RM.insert(minR);
-        SM.query(minR, matches);
-        Q->at(i).posR.erase(Q->at(i).posR.begin());//remove the smallest element from subsequence.
-        sortedR.push_back(minR);//merge multiple subsequences into a longer sorted one.
-    } else {
-        SM.insert(minS);
-        RM.query(minS, matches);
-        Q->at(j).posS.erase(Q->at(j).posS.begin());//remove the smallest element from subsequence.
-        sortedS.push_back(minR);//merge multiple subsequences into a longer sorted one.
-    }
+        if (!findI && !findJ) {
+            Q->erase(Q->begin(), Q->begin() + merge_step);//clean Q.
+            return;
+        }
+        if (!findJ || (findI && LessEqualPredicate(minR, minS))) {
+            RM.insert(minR);
+            SM.query(minR, matches, i.operator*().posS, tupleS);// except (r,x)| x belong to Si.
+            sortedR->push_back(i->posR.begin().operator*());//merge multiple subsequences into a longer sorted one.
+            i->posR.erase(i->posR.begin());//remove the smallest element from subsequence.
+
+        } else {
+            SM.insert(minS);
+            RM.query(minS, matches, j.operator*().posR, tupleR);
+            sortedS->push_back(j->posS.begin().operator*());//merge multiple subsequences into a longer sorted one.
+            j->posS.erase(j->posS.begin());//remove the smallest element from subsequence.
+        }
+    } while (true);//must have merged all subsequences.
 }
 
 
@@ -211,7 +260,7 @@ void insert(std::vector<run> *Q, int startR, int lengthR, int startS, int length
 
     std::vector<int> u(lengthS);
     std::iota(u.begin(), u.end(), startS);
-    Q->push_back(run(v, u));
+    Q->emplace_back(v, u);
 }
 
 
@@ -245,10 +294,6 @@ pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid, T_TIMER *tim
 
     std::vector<run> Q;//let Q be an empty set;
 
-    std::vector<tuple_t *> sortedR;
-    std::vector<tuple_t *> sortedS;
-
-    MSG("Join during run creation")
     do {
         tuple_t *inptrR = nullptr;
         tuple_t *inptrS = nullptr;
@@ -282,15 +327,21 @@ pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid, T_TIMER *tim
         j += progressive_stepS;
     } while (i < sizeR || j < sizeS);//while R!=null, S!=null.
 
-    MSG("Join during run merge")
-    int merge_itr = 0;
+    MSG("Join during run creation:%d", matches)
+
     do {
-        earlyJoinMergedRuns(rel_R->tuples, rel_S->tuples, &Q, merge_itr, &matches, sortedR, sortedS);
-        i += progressive_stepR * merge_step;
-        j += progressive_stepS * merge_step;
-        merge_itr += merge_step;
-    } while (i < sizeR || j < sizeS);
-    return 0;
+        //Let them be two empty runs.
+        std::vector<int> sortedR;//only records the position.
+        std::vector<int> sortedS;//only records the position.
+
+        earlyJoinMergedRuns(rel_R->tuples, rel_S->tuples, &Q, &matches, &sortedR, &sortedS);
+//        i += progressive_stepR * merge_step;
+//        j += progressive_stepS * merge_step;
+        Q.emplace_back(sortedR, sortedS);
+    } while (Q.size() > 1);
+
+    MSG("Join during run merge matches:%d", matches)
+    return matches;
 }
 
 
