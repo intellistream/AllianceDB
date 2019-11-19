@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <set>
+#include <utility>
 #include <vector>
 #include <numeric>
 #include "localjoiner.h"
@@ -84,14 +85,13 @@ inline bool LessPredicate(tuple_t *u, tuple_t *v) {
 }
 
 struct run {//a pair of subsequence (mask position only)
+    std::vector<int> posR;//readable position of R. By default should be 0 to size of R/S.
+    std::vector<int> posS;//readable position of S.
 
-    std::vector<int> *posR;//readable position of R. By default should be 0 to size of R/S.
-    std::vector<int> *posS;//readable position of S.
-    run(std::vector<int> *posR, std::vector<int> *posS) {
-        this->posR = posR;
-        this->posS = posS;
+    run(std::vector<int> posR, std::vector<int> posS) {
+        this->posR = std::move(posR);
+        this->posS = std::move(posS);
     }
-
 };
 
 struct sweepArea {
@@ -138,8 +138,8 @@ void earlyJoinInitialRuns(tuple_t *tupleR, tuple_t *tupleS, int lengthR, int len
         tuple_t *tr = read(tupleR, lengthR, r);
         tuple_t *ts = read(tupleS, lengthS, s);
         if (s == lengthS || (r < lengthR && tr->key <= ts->key)) {
-            RM.insert(tr);
-            SM.query(tr, matches);
+            RM.insert(tr); //similar to SHJ's build.
+            SM.query(tr, matches); //similar to SHJ's probe.
             r++;//remove tr from tupleR.
         } else {
             SM.insert(ts);
@@ -162,52 +162,42 @@ void earlyJoinMergedRuns(tuple_t *tupleR, tuple_t *tupleS, std::vector<run> *Q, 
  */
 void earlyJoinMergedRuns(tuple_t *tupleR, tuple_t *tupleS, std::vector<run> *Q, int merge_itr, int *matches,
                          std::vector<tuple_t *> sortedR, std::vector<tuple_t *> sortedS) {
-
-
     sweepArea RM;
     sweepArea SM;
     int m;
 
-    //determine the smallest element of r and s from multiple (#merge_step) subsequences.
-    auto *minR = new tuple_t();
-    minR->key = INT32_MAX;
+    tuple_t *minR = nullptr;
     auto i = -1;
-    auto *minS = new tuple_t();
-    minS->key = INT32_MAX;
+    tuple_t *minS = nullptr;
     auto j = -1;
 
-    auto run_itr = Q->begin() + merge_itr;
-    for (m = 0; m < merge_step; m++) {
-
-        auto posR = run_itr.operator*().posR;
-        auto posS = run_itr.operator*().posS;
-
-        for (auto it = posR->begin(); it != posR->end();) {
-            tuple_t *readR = read(tupleR, 1, it.operator*());
-            if (minR->key > readR->key) {
-                minR = readR;
-                i = m;
-            }
+    //determine the smallest element of r and s from multiple (#merge_step) subsequences.
+    auto run_itr = Q->begin() + merge_itr;//points to correct starting point.
+    for (m = 0; m < merge_step; m++) {//iterate through several runs.
+        auto posR = (run_itr + m).operator*().posR;
+        //the left most of each subsequence is for sure the smallest item of the subsequence.
+        tuple_t *readR = read(tupleR, 1, posR.at(0));
+        if (!minR || minR->key > readR->key) {
+            minR = readR;
+            i = m;//which subsequence need to be update.
         }
-
-        for (auto it = posS->begin(); it != posS->end();) {
-            tuple_t *readS = read(tupleS, 1, it.operator*());
-            if (minS->key > readS->key) {
-                minS = readS;
-                j = m;
-            }
+        auto posS = (run_itr + m).operator*().posS;
+        tuple_t *readS = read(tupleS, 1, posS.at(0));
+        if (!minS || minS->key > readS->key) {
+            minS = readS;
+            j = m;//which subsequence need to be update.
         }
     }
 
     if (j == -1 || (i != -1 && LessPredicate(minR, minS))) {
         RM.insert(minR);
         SM.query(minR, matches);
-        Q->at(i).posR->erase(Q->at(i).posR->begin());//remove the smallest element from subsequence.
+        Q->at(i).posR.erase(Q->at(i).posR.begin());//remove the smallest element from subsequence.
         sortedR.push_back(minR);//merge multiple subsequences into a longer sorted one.
     } else {
         SM.insert(minS);
         RM.query(minS, matches);
-        Q->at(j).posS->erase(Q->at(j).posS->begin());//remove the smallest element from subsequence.
+        Q->at(j).posS.erase(Q->at(j).posS.begin());//remove the smallest element from subsequence.
         sortedS.push_back(minR);//merge multiple subsequences into a longer sorted one.
     }
 }
@@ -221,7 +211,7 @@ void insert(std::vector<run> *Q, int startR, int lengthR, int startS, int length
 
     std::vector<int> u(lengthS);
     std::iota(u.begin(), u.end(), startS);
-    Q->push_back(run(&v, &u));
+    Q->push_back(run(v, u));
 }
 
 
