@@ -353,6 +353,7 @@ $ cat cpu-mapping.txt
 #include "config.h"          /* autoconf header */
 #include "test/testutil.h"
 #include "joins/avxsort.h"
+#include "joins/scalarsort.h"
 
 #define DEBUG
 /** Debug msg logging method */
@@ -467,10 +468,17 @@ check_avx_sort() {
     DEBUGMSG(1, "Original relation: %s",
              print_relation(in, sz).c_str())
 
+//    tuple_t *out2 = (tuple_t *) malloc(sz * sizeof(tuple_t));
+//    scalarsort_tuples(&in, &out2, sz);
+//    DEBUGMSG(1, "scalar sorted relation: %s",
+//             print_relation(out2, sz).c_str())
+
     tuple_t *out = (tuple_t *) malloc(sz * sizeof(tuple_t));
     avxsort_tuples(&in, &out, sz);
     DEBUGMSG(1, "Sorted relation: %s",
              print_relation(out, sz).c_str())
+
+
 
     assert(is_sorted_tuples(out, sz));
     free(in);
