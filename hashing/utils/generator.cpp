@@ -142,6 +142,7 @@ struct create_arg_t {
 };
 
 typedef struct create_arg_t create_arg_t;
+
 /**
  * Create random unique keys starting from firstkey
  */
@@ -157,7 +158,7 @@ random_unique_gen_thread(void *args) {
 
     /* for randomly seeding nrand48() */
     unsigned short state[3] = {0, 0, 0};
-    unsigned int seed = time(NULL) + *(unsigned int *) pthread_self();
+    unsigned int seed = seedValue;//time(NULL) + *(unsigned int *) pthread_self(); //TODO: Not sure why Ca's original implementation use time as the seed.
     memcpy(state, &seed, sizeof(seed));
 
     for (i = 0; i < rel->num_tuples; i++) {

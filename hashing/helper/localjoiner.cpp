@@ -7,11 +7,12 @@
 #include <utility>
 #include <vector>
 #include <numeric>
+#include <assert.h>
 #include "avxsort.h"
 #include "sort_common.h"
 #include "localjoiner.h"
 
-#define progressive_step 0.01 //percentile, 0.01 ~ 0.2.
+#define progressive_step 0.1 //percentile, 0.01 ~ 0.2.
 #define merge_step 2 // number of ``runs" to merge in each round.
 
 /**
@@ -75,19 +76,19 @@ inline tuple_t *read(tuple_t *tuple, int length, int idx) {
     return &tuple[idx];
 }
 
-inline tuple_t *read(tuple_t *tuple, int idx) {
+inline const tuple_t *read(const tuple_t *tuple, int idx) {
     return &tuple[idx];
 }
 
-inline bool EqualPredicate(tuple_t *u, tuple_t *v) {
+inline bool EqualPredicate(const tuple_t *u, const tuple_t *v) {
     return u->key == v->key;
 }
 
-inline bool LessPredicate(tuple_t *u, tuple_t *v) {
+inline bool LessPredicate(const tuple_t *u, const tuple_t *v) {
     return u->key < v->key;
 }
 
-inline bool LessEqualPredicate(tuple_t *u, tuple_t *v) {
+inline bool LessEqualPredicate(const tuple_t *u, const tuple_t *v) {
     return u->key <= v->key;
 }
 
@@ -103,9 +104,9 @@ struct run {//a pair of subsequence (mask position only)
 
 struct sweepArea {
 
-    std::set<tuple_t *> sx;
+    std::set<const tuple_t *> sx;
 
-    void insert(tuple_t *tuple) {
+    void insert(const tuple_t *tuple) {
         sx.insert(tuple);
     }
 
@@ -136,7 +137,7 @@ struct sweepArea {
         }
     }
 */
-    void query(tuple_t *tuple, int *matches) {
+    void query(const tuple_t *tuple, int *matches) {
 
         //clean elements that are less than the current element.
         for (auto it = sx.begin(); it != sx.end();) {
@@ -181,7 +182,7 @@ void earlyJoinInitialRuns(tuple_t *tupleR, tuple_t *tupleS, int lengthR, int len
 }
 
 
-void earlyJoinMergedRuns(tuple_t *tupleR, tuple_t *tupleS, std::vector<run> *Q, int *matches,
+void earlyJoinMergedRuns(const tuple_t *tupleR, const tuple_t *tupleS, std::vector<run> *Q, int *matches,
                          std::vector<int> *sortedR, std::vector<int> *sortedS);
 
 /**
@@ -191,17 +192,17 @@ void earlyJoinMergedRuns(tuple_t *tupleR, tuple_t *tupleS, std::vector<run> *Q, 
  * @param tupleS
  * @param matches
  */
-void earlyJoinMergedRuns(tuple_t *tupleR, tuple_t *tupleS, std::vector<run> *Q, int *matches,
+void earlyJoinMergedRuns(const tuple_t *tupleR, const tuple_t *tupleS, std::vector<run> *Q, int *matches,
                          std::vector<int> *sortedR, std::vector<int> *sortedS) {
     bool findI;
     bool findJ;
-    do {
-        //following PMJ vldb'02 implementation.
-        sweepArea *RM = new sweepArea[merge_step];
-        sweepArea *SM = new sweepArea[merge_step];
+    //following PMJ vldb'02 implementation.
+    auto RM = new sweepArea[merge_step];
+    auto SM = new sweepArea[merge_step];
 
-        tuple_t *minR = nullptr;
-        tuple_t *minS = nullptr;
+    do {
+        const tuple_t *minR = nullptr;
+        const tuple_t *minS = nullptr;
         __gnu_cxx::__normal_iterator<run *, std::vector<run>> i;
         __gnu_cxx::__normal_iterator<run *, std::vector<run>> j;
         findI = false;
@@ -217,7 +218,7 @@ void earlyJoinMergedRuns(tuple_t *tupleR, tuple_t *tupleS, std::vector<run> *Q, 
             auto posR = (run_itr).operator*().posR;
             if (!posR.empty()) {
                 //the left most of each subsequence is the smallest item of the subsequence.
-                tuple_t *readR = read(tupleR, posR.at(0));
+                const tuple_t *readR = read(tupleR, posR.at(0));
                 if (!minR || minR->key > readR->key) {
                     minR = readR;
                     i = run_itr;//mark the subsequence to be updated.
@@ -227,7 +228,7 @@ void earlyJoinMergedRuns(tuple_t *tupleR, tuple_t *tupleS, std::vector<run> *Q, 
             }
             auto posS = (run_itr).operator*().posS;
             if (!posS.empty()) {
-                tuple_t *readS = read(tupleS, posS.at(0));
+                const tuple_t *readS = read(tupleS, posS.at(0));
                 if (!minS || minS->key > readS->key) {
                     minS = readS;
                     j = run_itr;//mark the subsequence to be updated.
@@ -308,6 +309,8 @@ pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid, T_TIMER *tim
     int progressive_stepR = progressive_step * sizeR;
     int progressive_stepS = progressive_step * sizeS;
 
+    assert(progressive_stepR > 0 && progressive_stepS > 0);
+
     std::vector<run> Q;//let Q be an empty set;
 
     /***Sorting***/
@@ -320,8 +323,9 @@ pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid, T_TIMER *tim
     progressive_stepS = sizeS - j;
     sorting_phase(tid, rel_R, rel_S, sizeR, sizeS, progressive_stepR, progressive_stepS, &i, &j, &matches, &Q);
 
-    DEBUGMSG("Join during run creation:%d", matches)
 
+    DEBUGMSG("Join during run creation:%d", matches)
+    fflush(stdout);
     do {
         //Let them be two empty runs.
         std::vector<int> sortedR;//only records the position.
@@ -331,7 +335,7 @@ pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid, T_TIMER *tim
         Q.emplace_back(sortedR, sortedS);
     } while (Q.size() > 1);
 
-    DEBUGMSG( "Join during run merge matches:%d", matches)
+    DEBUGMSG("Join during run merge matches:%d", matches)
     return matches;
 }
 
@@ -346,11 +350,11 @@ void sorting_phase(int32_t tid, const relation_t *rel_R, const relation_t *rel_S
     //take subset of R and S to sort and join.
     if (*i < sizeR) {
         inptrR = (rel_R->tuples) + *i;
-        DEBUGMSG("Initial R: %s",
-                 print_relation(rel_R->tuples + *i, progressive_stepR).c_str())
+//        DEBUGMSG("Initial R: %s",
+//                 print_relation(rel_R->tuples + *i, progressive_stepR).c_str())
         avxsort_tuples(&inptrR, &outptrR, progressive_stepR);// the method will swap input and output pointers.
         DEBUGMSG("Sorted R: %s",
-                 print_relation(outptrR, progressive_stepR).c_str())
+                 print_relation(rel_R->tuples + (*i), progressive_stepR).c_str())
 #ifdef DEBUG
         if (!is_sorted_helper((int64_t *) outptrR, progressive_step)) {
             DEBUGMSG("===> %d-thread -> R is NOT sorted, size = %f\n", tid, progressive_step)
@@ -360,6 +364,8 @@ void sorting_phase(int32_t tid, const relation_t *rel_R, const relation_t *rel_S
     if (*j < sizeS) {
         inptrS = (rel_S->tuples) + *j;
         avxsort_tuples(&inptrS, &outptrS, progressive_stepS);
+        DEBUGMSG("Sorted S: %s",
+                 print_relation(rel_S->tuples + (*i), progressive_stepS).c_str())
 #ifdef DEBUG
         if (!is_sorted_helper((int64_t *) outptrS, progressive_step)) {
             DEBUGMSG("===> %d-thread -> S is NOT sorted, size = %f\n", tid, progressive_step)
