@@ -13,7 +13,7 @@ void launch(int nthreads, t_param param, T_TIMER *timer, void *(*thread_fun)(voi
 
     for (i = 0; i < nthreads; i++) {
         int cpu_idx = get_cpu_id(i);
-        DEBUGMSG(1, "Assigning thread-%d to CPU-%d\n", i, cpu_idx);
+        DEBUGMSG("Assigning thread-%d to CPU-%d\n", i, cpu_idx);
         CPU_ZERO(&set);
         CPU_SET(cpu_idx, &set);
         pthread_attr_setaffinity_np(param.attr, sizeof(cpu_set_t), &set);

@@ -267,6 +267,9 @@ void earlyJoinMergedRuns(tuple_t *tupleR, tuple_t *tupleS, std::vector<run> *Q, 
 
 void insert(std::vector<run> *Q, int startR, int lengthR, int startS, int lengthS);
 
+void sorting_phase(int32_t tid, const relation_t *rel_R, const relation_t *rel_S, int sizeR, int sizeS,
+                   int progressive_stepR, int progressive_stepS, int *i, int *j, int *matches, std::vector<run> *Q);
+
 void insert(std::vector<run> *Q, int startR, int lengthR, int startS, int lengthS) {
     std::vector<int> v(lengthR);
     std::iota(v.begin(), v.end(), startR);
@@ -307,43 +310,17 @@ pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid, T_TIMER *tim
 
     std::vector<run> Q;//let Q be an empty set;
 
+    /***Sorting***/
     do {
-        tuple_t *inptrR = nullptr;
-        tuple_t *inptrS = nullptr;
+        sorting_phase(tid, rel_R, rel_S, sizeR, sizeS, progressive_stepR, progressive_stepS, &i, &j, &matches, &Q);
+    } while (i < sizeR - progressive_stepR || j < sizeS - progressive_stepS);//while R!=null, S!=null.
 
-        /**** allocate temporary space for sorting ****/
-        tuple_t *outptrR = new tuple_t[progressive_stepR];//args->tmp_sortR + my_tid * CACHELINEPADDING(PARTFANOUT);
-        tuple_t *outptrS = new tuple_t[progressive_stepS];
-        //take subset of R and S to sort and join.
-        if (i < sizeR) {
-            inptrR = (rel_R->tuples) + i;
-            DEBUGMSG(1, "Initial R: %s",
-                     print_relation(rel_R->tuples + i, progressive_stepR).c_str())
-            avxsort_tuples(&inptrR, &outptrR, progressive_stepR);// the method will swap input and output pointers.
-            DEBUGMSG(1, "Sorted R: %s",
-                     print_relation(outptrR, progressive_stepR).c_str())
-#ifdef DEBUG
-            if (!is_sorted_helper((int64_t *) outptrR, progressive_step)) {
-                DEBUGMSG(1, "===> %d-thread -> R is NOT sorted, size = %f\n", tid, progressive_step)
-            }
-#endif
-        }
-        if (j < sizeS) {
-            inptrS = (rel_S->tuples) + j;
-            avxsort_tuples(&inptrS, &outptrS, progressive_stepS);
-#ifdef DEBUG
-            if (!is_sorted_helper((int64_t *) outptrS, progressive_step)) {
-                DEBUGMSG(1, "===> %d-thread -> S is NOT sorted, size = %f\n", tid, progressive_step)
-            }
-#endif
-        }
-        earlyJoinInitialRuns(outptrR, outptrS, progressive_stepR, progressive_stepS, &matches);
-        insert(&Q, i, progressive_stepR, j, progressive_stepS);
-        i += progressive_stepR;
-        j += progressive_stepS;
-    } while (i < sizeR || j < sizeS);//while R!=null, S!=null.
+    /***Handling Left-Over***/
+    progressive_stepR = sizeR - i;
+    progressive_stepS = sizeS - j;
+    sorting_phase(tid, rel_R, rel_S, sizeR, sizeS, progressive_stepR, progressive_stepS, &i, &j, &matches, &Q);
 
-    DEBUGMSG(1, "Join during run creation:%d", matches)
+    DEBUGMSG("Join during run creation:%d", matches)
 
     do {
         //Let them be two empty runs.
@@ -354,12 +331,46 @@ pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid, T_TIMER *tim
         Q.emplace_back(sortedR, sortedS);
     } while (Q.size() > 1);
 
-    MSG("Join during run merge matches:%d", matches)
+    DEBUGMSG( "Join during run merge matches:%d", matches)
     return matches;
 }
 
+void sorting_phase(int32_t tid, const relation_t *rel_R, const relation_t *rel_S, int sizeR, int sizeS,
+                   int progressive_stepR, int progressive_stepS, int *i, int *j, int *matches, std::vector<run> *Q) {
+    tuple_t *inptrR = nullptr;
+    tuple_t *inptrS = nullptr;
 
-
+    /**** allocate temporary space for sorting ****/
+    tuple_t *outptrR = new tuple_t[progressive_stepR];//args->tmp_sortR + my_tid * CACHELINEPADDING(PARTFANOUT);
+    tuple_t *outptrS = new tuple_t[progressive_stepS];
+    //take subset of R and S to sort and join.
+    if (*i < sizeR) {
+        inptrR = (rel_R->tuples) + *i;
+        DEBUGMSG("Initial R: %s",
+                 print_relation(rel_R->tuples + *i, progressive_stepR).c_str())
+        avxsort_tuples(&inptrR, &outptrR, progressive_stepR);// the method will swap input and output pointers.
+        DEBUGMSG("Sorted R: %s",
+                 print_relation(outptrR, progressive_stepR).c_str())
+#ifdef DEBUG
+        if (!is_sorted_helper((int64_t *) outptrR, progressive_step)) {
+            DEBUGMSG("===> %d-thread -> R is NOT sorted, size = %f\n", tid, progressive_step)
+        }
+#endif
+    }
+    if (*j < sizeS) {
+        inptrS = (rel_S->tuples) + *j;
+        avxsort_tuples(&inptrS, &outptrS, progressive_stepS);
+#ifdef DEBUG
+        if (!is_sorted_helper((int64_t *) outptrS, progressive_step)) {
+            DEBUGMSG("===> %d-thread -> S is NOT sorted, size = %f\n", tid, progressive_step)
+        }
+#endif
+    }
+    earlyJoinInitialRuns(outptrR, outptrS, progressive_stepR, progressive_stepS, matches);
+    insert(Q, *i, progressive_stepR, *j, progressive_stepS);
+    *i += progressive_stepR;
+    *j += progressive_stepS;
+}
 
 
 /**
@@ -401,11 +412,11 @@ long SHJJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R,
         if (tid == 0) {
             proble_hashtable_single_measure(htS, tuple, hashmask_S, skipbits_S, matches,
                                             timer->progressivetimer);//(2)
-            DEBUGMSG(1, "matches:%ld, T0: Join R %d with %s", *matches, tuple->key,
+            DEBUGMSG("matches:%ld, T0: Join R %d with %s", *matches, tuple->key,
                      print_window(window0.S_Window).c_str());
         } else {
             proble_hashtable_single(htS, tuple, hashmask_S, skipbits_S, matches);//(4)
-            DEBUGMSG(1, "matches:%ld, T1: Join R %d with %s", *matches, tuple->key,
+            DEBUGMSG("matches:%ld, T1: Join R %d with %s", *matches, tuple->key,
                      print_window(window1.S_Window).c_str());
 
         }
@@ -430,11 +441,11 @@ long SHJJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R,
 
         if (tid == 0) {
             proble_hashtable_single_measure(htR, tuple, hashmask_R, skipbits_R, matches, timer->progressivetimer);//(4)
-            DEBUGMSG(1, "matches:%ld, T0: Join S %d with %s", *matches, tuple->key,
+            DEBUGMSG("matches:%ld, T0: Join S %d with %s", *matches, tuple->key,
                      print_window(window0.R_Window).c_str());
         } else {
             proble_hashtable_single(htR, tuple, hashmask_R, skipbits_R, matches);//(4)
-            DEBUGMSG(1, "matches:%ld, T1: Join S %d with %s", *matches, tuple->key,
+            DEBUGMSG("matches:%ld, T1: Join S %d with %s", *matches, tuple->key,
                      print_window(window1.R_Window).c_str());
         }
     }

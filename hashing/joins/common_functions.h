@@ -36,15 +36,18 @@
 
 /** Debug msg logging method */
 #ifdef DEBUG
-#define DEBUGMSG(COND, MSG, ...)                                    \
-    if(COND) { fprintf(stdout, "[DEBUG] @ %s:%d " MSG, __FILE__, __LINE__, ## __VA_ARGS__); }
+#define DEBUGMSG(MSG, ...)                                                        \
+    {                                                               \
+        fprintf(stdout, "[DEBUG] @ %s:%d " MSG, __FILE__, __LINE__, ## __VA_ARGS__);    \
+          fprintf(stdout, "\n");                                                        \
+    }
 #else
-#define DEBUGMSG(COND, MSG, ...)
+#define DEBUGMSG(MSG, ...)
 #endif
 
-#define MSG(MSG, ...)                                                           \
+#define MSG(MSG, ...)                                                                   \
     { fprintf(stdout, "[INFO] @ %s:%d " MSG , __FILE__, __LINE__, ## __VA_ARGS__);      \
-        fprintf(stdout, "\n");                                                  \
+        fprintf(stdout, "\n");                                                          \
     }
 
 #define EAGER
@@ -149,7 +152,6 @@ void destroy_hashtable(hashtable_t *ht);
 /** De-allocates all the bucket_buffer_t */
 void
 free_bucket_buffer(bucket_buffer_t *buf);
-
 
 
 std::string print_relation(tuple_t *tuple, int length);

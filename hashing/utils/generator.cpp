@@ -142,7 +142,6 @@ struct create_arg_t {
 };
 
 typedef struct create_arg_t create_arg_t;
-
 /**
  * Create random unique keys starting from firstkey
  */
@@ -152,9 +151,9 @@ random_unique_gen_thread(void *args) {
     relation_t *rel = &arg->rel;
     int64_t firstkey = arg->firstkey;
     int64_t maxid = arg->maxid;
-//    uint64_t ridstart = arg->ridstart;
-    value_t randstart = 5; /* rand() % 1000; */ //workaround for 64 bit AVX sort.
     uint64_t i;
+
+    value_t randstart = 5; /* rand() % 1000; */
 
     /* for randomly seeding nrand48() */
     unsigned short state[3] = {0, 0, 0};
@@ -164,6 +163,7 @@ random_unique_gen_thread(void *args) {
     for (i = 0; i < rel->num_tuples; i++) {
         rel->tuples[i].key = firstkey;
         rel->tuples[i].payload = randstart + i;
+
         if (firstkey == maxid)
             firstkey = 0;
 
@@ -174,7 +174,8 @@ random_unique_gen_thread(void *args) {
     /* knuth_shuffle48(rel, state); */
 
     /* wait at a barrier until all threads finish initializing data */
-    BARRIER_ARRIVE(arg->barrier, i);
+    int rv;
+    BARRIER_ARRIVE(arg->barrier, rv);
 
     /* parallel synchronized knuth-shuffle */
     volatile char *locks = (volatile char *) (arg->locks);

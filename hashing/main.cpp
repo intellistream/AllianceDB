@@ -388,8 +388,8 @@ main(int argc, char **argv) {
     cmd_params.nthreads = 1;//TODO: in HS mode, thread must be larger than 1. Fix it when nthread=1.
 
     /* default dataset is Workload B (described in paper) */
-    cmd_params.r_size = 1280;
-    cmd_params.s_size = 1280;
+    cmd_params.r_size = 12800;
+    cmd_params.s_size = 12800;
 //    cmd_params.r_size = 12800000;
 //    cmd_params.s_size = 12800000;
     cmd_params.r_seed = 12345;
@@ -414,12 +414,12 @@ main(int argc, char **argv) {
     /* create relation R */
     createRelation(relR, cmd_params, cmd_params.loadfileR, cmd_params.r_size, cmd_params.r_seed);
 
-    DEBUGMSG(1, "relR: %s", print_relation(relR.tuples, cmd_params.r_size).c_str())
+    DEBUGMSG("relR: %s", print_relation(relR.tuples, cmd_params.r_size).c_str())
 
     /* create relation S */
     createRelation(relS, cmd_params, cmd_params.loadfileS, cmd_params.s_size, cmd_params.s_seed);
 
-    DEBUGMSG(1, "relS: %s", print_relation(relS.tuples, cmd_params.s_size).c_str())
+    DEBUGMSG("relS: %s", print_relation(relS.tuples, cmd_params.s_size).c_str())
 
     /* Run the selected join algorithm */
     printf("[INFO ] Running join algorithm %s ...\n", cmd_params.algo->name);

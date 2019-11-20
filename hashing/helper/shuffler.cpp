@@ -20,7 +20,7 @@ void HashShuffler::push(intkey_t key, fetch_t *fetch, bool b) {
     int32_t idx = KEY_TO_IDX(key, nthreads);
     moodycamel::ConcurrentQueue<fetch_t *> *queue = queues[idx].queue;
     queue->enqueue(new fetch_t(fetch));
-    DEBUGMSG(1, "PUSH: %d, tuple: %d, queue size:%d\n", idx,
+    DEBUGMSG("PUSH: %d, tuple: %d, queue size:%d\n", idx,
              fetch->tuple->key,
              queue->size_approx())
 }
@@ -34,7 +34,7 @@ fetch_t *HashShuffler::pull(int32_t tid, bool b) {
     if (!rt)
         return nullptr;
 //    bool rt =  .try_dequeue(tuple);
-    DEBUGMSG(1, "PULL: %d, tuple: %d, queue size:%d\n", idx,
+    DEBUGMSG("PULL: %d, tuple: %d, queue size:%d\n", idx,
              tuple->tuple->key,
              queue->size_approx());
     return tuple;
@@ -89,7 +89,7 @@ fetch_t *HSShuffler::pull(int32_t tid, bool fetchR) {
 //        if (!tuple)
 //            return nullptr;
     }
-    DEBUGMSG(1, "PULL: %d, tuple: %d, queue size:%d\n", tid,
+    DEBUGMSG("PULL: %d, tuple: %d, queue size:%d\n", tid,
              (tuple)->tuple->key, queue->size_approx())
     return tuple;
 }
