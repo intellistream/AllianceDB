@@ -288,11 +288,9 @@ parallel_create_relation(relation_t *relation, uint64_t num_tuples,
 
     relation->num_tuples = num_tuples;
 
-    /* we need aligned allocation of items */
-    relation->tuples = (tuple_t *) MALLOC(num_tuples * sizeof(tuple_t));
 
     if (!relation->tuples) {
-        perror("out of memory");
+        perror("memory must be allocated first");
         return -1;
     }
 
@@ -334,11 +332,10 @@ parallel_create_relation(relation_t *relation, uint64_t num_tuples,
 
         CPU_ZERO(&set);
         CPU_SET(cpu_idx, &set);
-        pthread_attr_setaffinity_np(&attr, sizeof(cpu_set_t), &set);
+        pthread_attr_setaffinity_np(&attr, sizeof(int), &set);
 
         args[i].firstkey = (offset + 1) % maxid;
         args[i].maxid = maxid;
-        args[i].ridstart = offset;
         args[i].rel.tuples = relation->tuples + offset;
         args[i].rel.num_tuples = (i == nthreads - 1) ? ntuples_lastthr
                                                      : ntuples_perthr;
