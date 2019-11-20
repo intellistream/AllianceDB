@@ -98,4 +98,14 @@ SHJ_st(relation_t *relR, relation_t *relS, int nthreads);
 result_t *
 PMJ_st(relation_t *relR, relation_t *relS, int nthreads);
 
+/**
+ * Single thread SHJ
+ * @param relR
+ * @param relS
+ * @param nthreads
+ * @return
+ */
+result_t *
+RPJ_st(relation_t *relR, relation_t *relS, int nthreads);
+
 #endif /* NO_PARTITIONING_JOIN_H */

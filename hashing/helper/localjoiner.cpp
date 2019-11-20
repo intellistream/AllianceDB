@@ -359,6 +359,116 @@ pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid, T_TIMER *tim
 }
 
 
+/**
+ *
+ *
+ * @param relR
+ * @param relS
+ * @param nthreads
+ * @return
+ */
+long
+rpj(int32_t tid, relation_t *rel_R,
+    relation_t *rel_S, void *pVoid,
+    T_TIMER *timer) {
+
+    //allocate two hashtables.
+    hashtable_t *htR;
+    hashtable_t *htS;
+
+    uint32_t nbucketsR = (rel_R->num_tuples / BUCKET_SIZE);
+    allocate_hashtable(&htR, nbucketsR);
+
+    uint32_t nbucketsS = (rel_S->num_tuples / BUCKET_SIZE);
+    allocate_hashtable(&htS, nbucketsS);
+
+    uint32_t index_R = 0;//index of rel_R
+    uint32_t index_S = 0;//index of rel_S
+
+
+    uint32_t cur_step = 1;
+
+    // define the current relation that do predicate
+    relation_t *cur_rel = rel_S;
+
+    uint32_t *cur_rel_pos = &index_S;
+
+    bool is_inner_looping = true;
+
+    int64_t matches = 0;//number of matches.
+
+    RippleJoiner joiner;
+
+//    do {
+//        if (index_R < rel_R->num_tuples) {
+//            joiner.join(tid, &rel_R->tuples[index_R], true, htR, htS, &matches, pVoid, timer);
+//            index_R++;
+//        }
+//        if (index_S < rel_S->num_tuples) {
+//            joiner.join(tid, &rel_S->tuples[index_S], false, htR, htS, &matches, pVoid, timer);
+//            index_S++;
+//        }
+//    } while (index_R < rel_R->num_tuples || index_S < rel_S->num_tuples);
+
+//    do { // loop until return is called
+//        DEBUGMSG(1, "JOINING: tid: %d, cur_rel_pos: %d, %d, %d, %d, %d\n", tid, cur_rel, rel_S, cur_step, *cur_rel_pos, *cur_rel_pos < cur_step - 1)
+//        if (is_inner_looping) { // scaning side of a rectangle
+//            while (*cur_rel_pos < cur_step) {
+//                if (*cur_rel_pos < cur_step - 1 || cur_rel == rel_S) {
+//                    (*cur_rel_pos)++;
+//
+//                    // update index
+//                    if (&rel_R->tuples[index_R].key == &rel_S->tuples[index_S].key) {
+//                        matches++; // predicate match
+//                        // TODO: whether need to output something?
+//                    }
+//                }
+//            }
+//            is_inner_looping = false; // finish a side
+//        } else { // done with one side of a rectangle
+//            if (cur_rel == rel_S) {
+//                cur_step++;
+//            }// finished a step
+//            (*cur_rel_pos)++; // set cur_rel to new cur_step
+//            cur_rel = (cur_rel == rel_S) ? rel_R : rel_S; // toggle cur_rel
+//            cur_rel_pos = (cur_rel_pos == &index_R) ? &index_S : &index_R;
+//            *cur_rel_pos = 0;
+//            is_inner_looping = true;
+//        }
+//    } while (cur_step != rel_R->num_tuples);
+
+
+    do {
+        while (index_R < cur_step) {
+
+
+            const uint32_t hashmask_R = htR->hash_mask;
+            const uint32_t skipbits_R = htR->skip_bits;
+
+            const uint32_t hashmask_S = htS->hash_mask;
+            const uint32_t skipbits_S = htS->skip_bits;
+
+
+            if (rel_R->tuples[index_R].key == rel_S->tuples[cur_step-1].key) {
+                matches++;
+            }
+            index_R++;
+        }
+        while (index_S < cur_step) {
+            if (&rel_R->tuples[cur_step-1].key == &rel_S->tuples[index_S].key) {
+                matches++;
+            }
+            index_S++;
+        }
+        index_R = 0;
+        index_S = 0;
+        cur_step++;
+    } while (cur_step <= rel_R->num_tuples);
+
+    destroy_hashtable(htR);
+    destroy_hashtable(htS);
+    return matches;
+}
 
 
 

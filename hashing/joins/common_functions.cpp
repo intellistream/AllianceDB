@@ -43,7 +43,7 @@ std::string print_relation(tuple_t *tuple, int length) {
     tmp.append("[");
 
     for (int i = 0; i < length; i++)
-        tmp.append(std::to_string(tuple[i].key)).append(",");
+        tmp.append("(").append(std::to_string(tuple[i].key)).append(", ").append(std::to_string(tuple[i].payload)).append(")").append(",");
     tmp.append("]\n");
     return tmp;
 }

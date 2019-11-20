@@ -307,7 +307,7 @@ extern int nthreads;      /* defined in generator.c */
 static struct algo_t algos[] =
         {
                 {"PRO",         PRO}, // The best performing blocking hash join.
-                {"RJ_st",       RJ_st},
+                {"RJ_st",       RJ_st}, // Radix Join Single_thread
                 {"PRH",         PRH},
                 {"PRHO",        PRHO},
                 {"NPO",         NPO},
@@ -318,6 +318,7 @@ static struct algo_t algos[] =
                 {"SHJ_JBCR_NP", SHJ_JBCR_NP}, /* Symmetric hash join JB CountRound Model, No-Partition*/
                 {"SHJ_HS_NP",   SHJ_HS_NP}, /* Symmetric hash join HS Model, No-Partition*/
                 {"PMJ_st",      PMJ_st}, /* Progressive Merge Join Single_thread*/
+                {"RPJ_st",      RPJ_st}, /* Ripple Join Single_thread*/
                 {{0},           0}
         };
 
@@ -384,7 +385,7 @@ main(int argc, char **argv) {
      * ONLINE HAHSING: SHJ_st, SHJ_JM_NP, SHJ_JB_NP, SHJ_JBCR_NP, SHJ_HS_NP (10)
      * ONLINE SORTING: PMJ_st (11),
      * */
-    cmd_params.algo = &algos[11];
+    cmd_params.algo = &algos[12];
     cmd_params.nthreads = 1;//TODO: in HS mode, thread must be larger than 1. Fix it when nthread=1.
 
     /* default dataset is Workload B (described in paper) */
