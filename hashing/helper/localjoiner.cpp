@@ -12,7 +12,7 @@
 #include "sort_common.h"
 #include "localjoiner.h"
 
-#define progressive_step 0.1 //percentile, 0.01 ~ 0.2.
+#define progressive_step 0.2 //percentile, 0.01 ~ 0.2.
 #define merge_step 2 // number of ``runs" to merge in each round.
 
 /**
@@ -271,6 +271,8 @@ void insert(std::vector<run> *Q, int startR, int lengthR, int startS, int length
 void sorting_phase(int32_t tid, const relation_t *rel_R, const relation_t *rel_S, int sizeR, int sizeS,
                    int progressive_stepR, int progressive_stepS, int *i, int *j, int *matches, std::vector<run> *Q);
 
+void merging_phase(const relation_t *rel_R, const relation_t *rel_S, int *matches, std::vector<run> *Q);
+
 void insert(std::vector<run> *Q, int startR, int lengthR, int startS, int lengthS) {
     std::vector<int> v(lengthR);
     std::iota(v.begin(), v.end(), startR);
@@ -326,17 +328,21 @@ pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid, T_TIMER *tim
 
     DEBUGMSG("Join during run creation:%d", matches)
     fflush(stdout);
+
+    merging_phase(rel_R, rel_S, &matches, &Q);
+
+    DEBUGMSG("Join during run merge matches:%d", matches)
+    return matches;
+}
+
+void merging_phase(const relation_t *rel_R, const relation_t *rel_S, int *matches, std::vector<run> *Q) {
     do {
         //Let them be two empty runs.
         std::vector<int> sortedR;//only records the position.
         std::vector<int> sortedS;//only records the position.
-
-        earlyJoinMergedRuns(rel_R->tuples, rel_S->tuples, &Q, &matches, &sortedR, &sortedS);
-        Q.emplace_back(sortedR, sortedS);
-    } while (Q.size() > 1);
-
-    DEBUGMSG("Join during run merge matches:%d", matches)
-    return matches;
+        earlyJoinMergedRuns(rel_R->tuples, rel_S->tuples, Q, matches, &sortedR, &sortedS);
+        Q->emplace_back(sortedR, sortedS);
+    } while (Q->size() > 1);
 }
 
 void sorting_phase(int32_t tid, const relation_t *rel_R, const relation_t *rel_S, int sizeR, int sizeS,
