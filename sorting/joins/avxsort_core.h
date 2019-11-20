@@ -8,9 +8,6 @@
  *
  */
 
-#ifndef ALLIANCEDB_AVXSORT_CORE_H
-#define ALLIANCEDB_AVXSORT_CORE_H
-
 #include <stdio.h>
 #include <stdlib.h>             /* qsort() */
 #include <math.h>               /* log2()  */
@@ -20,10 +17,11 @@
 
 #include "avxcommon.h"
 
-#include "../util/params.h"
+#include "../params.h"
 /* #include "iacaMarks.h" */
 
 /* just make the code compile without AVX support */
+#define HAVE_AVX
 #ifndef HAVE_AVX
 #include "avxintrin_emu.h"
 #endif
@@ -473,7 +471,7 @@ merge16_varlen(int64_t * restrict inpA,
         }
 
         /* flush the register to one of the lists */
-        int64_t hireg[4] __attribute__((aligned(16)));
+        int64_t hireg[4] __attribute__((aligned(32)));
         _mm256_store_pd ( (double *)hireg, outreg2h2);
 
         if(*((int64_t *)inA) >= *((int64_t*)(hireg+3))) {
@@ -1976,7 +1974,7 @@ merge16_varlen_aligned(int64_t * restrict inpA,
         }
 
         /* flush the register to one of the lists */
-        int64_t hireg[4] __attribute__((aligned(16)));
+        int64_t hireg[4] __attribute__((aligned(32))); // original 16, sometimes cause segment fault. REF: https://stackoverflow.com/questions/47010611/why-does-this-avx-intrinsic-cause-segmentation-fault-with-clang-but-not-gcc
         _mm256_store_pd ( (double *)hireg, outreg2h2);
 
         if(*((int64_t *)inA) >= *((int64_t*)(hireg+3))) {
@@ -2312,5 +2310,3 @@ avxsort_rem_aligned(int64_t ** inputptr, int64_t ** outputptr, uint32_t nitems)
 
 #endif
 }
-
-#endif //ALLIANCEDB_AVXSORT_CORE_H

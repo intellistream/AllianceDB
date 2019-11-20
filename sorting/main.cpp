@@ -333,6 +333,9 @@ $ cat cpu-mapping.txt
 #include "affinity/numa_shuffle.h"       /* numa_shuffle_init() */
 #include <sched.h>
 #include <check.h>
+#include <assert.h>
+#include <string>
+#include "joins/joincommon.h"
 /**************** include join algorithm thread implementations ***************/
 #include "joins/sortmergejoin_multipass.h"
 #include "joins/sortmergejoin_multiway.h"
@@ -351,12 +354,13 @@ $ cat cpu-mapping.txt
 #include "test/testutil.h"
 #include "joins/avxsort.h"
 
+#define DEBUG
 /** Debug msg logging method */
 #ifdef DEBUG
 #define DEBUGMSG(COND, MSG, ...)                                        \
     if(COND) {                                                          \
         fprintf(stdout,                                                 \
-                "[DEBUG @ %s:%d\] "MSG, __FILE__, __LINE__, ## __VA_ARGS__); \
+                "[DEBUG @ %s:%d\] " MSG, __FILE__, __LINE__, ## __VA_ARGS__); \
     }
 #else
 #define DEBUGMSG(COND, MSG, ...)
@@ -454,21 +458,29 @@ int check_avx() {
 
 #define MAXTESTSIZE (1<<22)
 
+
+
 void
-check_avs_sort() {
-    int64_t sz = rand() % MAXTESTSIZE;
+check_avx_sort() {
+    int64_t sz = 1000;//rand() % MAXTESTSIZE;
     tuple_t *in = generate_rand_tuples(sz);
-    tuple_t *out = (tuple_t *) malloc(sz * sizeof(tuple_t));;
+    DEBUGMSG(1, "Original relation: %s",
+             print_relation(in, sz).c_str())
+
+    tuple_t *out = (tuple_t *) malloc(sz * sizeof(tuple_t));
     avxsort_tuples(&in, &out, sz);
-    ck_assert_int_eq(is_sorted_tuples(out, sz), 1);
+    DEBUGMSG(1, "Sorted relation: %s",
+             print_relation(out, sz).c_str())
+
+    assert(is_sorted_tuples(out, sz));
     free(in);
     free(out);
 }
 
 int
 main(int argc, char *argv[]) {
-    check_avs_sort();
-
+    check_avx_sort();
+    fflush(stdout);
     struct timeval start, end;
     relation_t relR;
     relation_t relS;
@@ -491,8 +503,8 @@ main(int argc, char *argv[]) {
     cmd_params.algo = &algos[1]; /* m-pass: sort-merge join with multi-pass merge */
     cmd_params.nthreads = 1;
     /* default dataset is Workload B (described in paper) */
-    cmd_params.r_size = 1280000;
-    cmd_params.s_size = 1280000;
+    cmd_params.r_size = 12800;
+    cmd_params.s_size = 12800;
     cmd_params.r_seed = 12345;
     cmd_params.s_seed = 54321;
     cmd_params.skew = 0.0;

@@ -24,6 +24,7 @@
 #include <stdlib.h>             /* posix_memalign, EXIT_FAILURE */
 #include <sys/time.h>           /* gettimeofday */
 #include <stdio.h>              /* FILE */
+#include <string>
 
 #include "../util/types.h"             /* relation_t, tuple_t, result_t */
 #include "../util/barrier.h"            /* pthread_barrier_* */
@@ -71,6 +72,8 @@ typedef struct relationpair_t relationpair_t;
 #ifdef DEBUG
 #define DEBUG_SORT_CHECK 1
 #endif
+
+std::string print_relation(tuple_t *tuple, int length);
 
 /** Initialize and run the given join algorithm with given number of threads */
 result_t *

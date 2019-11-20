@@ -17,7 +17,8 @@ endif()
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${./bin})
 set (CMAKE_STATIC_LINKER_FLAGS -lnuma)
 set (CMAKE_STATIC_LINKER_FLAGS -lrt)
-SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -msse4.1")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse4.2 -mavx")
+SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 
 add_executable(sorting
         datagen/generator.h datagen/generator.cpp datagen/genzipf.cpp datagen/genzipf.h
@@ -29,10 +30,12 @@ add_executable(sorting
         affinity/numa_shuffle.cpp affinity/numa_shuffle.h joins/joincommon.cpp joins/joincommon.h
         util/generic_task_queue.cpp util/generic_task_queue.h util/barrier.h util/lock.h
         joins/avxcommon.h joins/merge.cpp joins/merge.h joins/scalar_multiwaymerge.cpp joins/scalar_multiwaymerge.h
-        joins/partition.cpp joins/partition.h joins/avxsort.cpp joins/avxsort.h joins/avxintrin_emu.h joins/avxsort_core.h joins/scalarsort.cpp joins/scalarsort.h joins/avx_multiwaymerge.cpp joins/avx_multiwaymerge.h joins/avxsort_multiway.cpp joins/avxsort_multiway.h joins/sortmergejoin_multiway.cpp
-        main.cpp
+        joins/partition.cpp joins/partition.h joins/avxsort.cpp joins/avxsort.h joins/avxintrin_emu.h joins/avxsort_core.h
+        joins/scalarsort.cpp joins/scalarsort.h joins/avx_multiwaymerge.cpp joins/avx_multiwaymerge.h joins/avxsort_multiway.cpp
+        joins/avxsort_multiway.h joins/sortmergejoin_multiway.cpp
         joins/sortmergejoin_multipass.cpp joins/sortmergejoin_mpsm.cpp joins/sortmergejoin_multiway_skewhandling.cpp
-        test/check_avxsort.cpp test/testutil.cpp test/testutil.h)
+        test/check_avxsort.cpp test/testutil.cpp test/testutil.h params.h
+        main.cpp)
 
 target_link_libraries(sorting numa)
 target_link_libraries(sorting check)

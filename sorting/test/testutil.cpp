@@ -204,7 +204,7 @@ generate_rand_tuples(int num)
     int64_t NaNlowbitclear = ~(1L << 52U);
     /* generate random data */
     for(j = 0; j < num; j++) {
-        A[j].key = rand() % INT_MAX;
+        A[j].key = rand() % num;
         A[j].payload = 0;
 
         /* avoid NaN in tuples */

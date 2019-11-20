@@ -21,6 +21,7 @@
 #include "../affinity/cpu_mapping.h"        /* get_cpu_id() */
 #include "../affinity/memalloc.h"           /* malloc_aligned() */
 #include <sched.h>
+#include <string>
 
 #ifdef JOIN_MATERIALIZE
 #include "tuple_buffer.h"
@@ -28,6 +29,16 @@
 
 #define REQUIRED_STACK_SIZE (32*1024*1024)
 
+
+std::string print_relation(tuple_t *tuple, int length) {
+    std::string tmp = "";
+    tmp.append("[");
+
+    for (int i = 0; i < length; i++)
+        tmp.append(std::to_string(tuple[i].key)).append(",");
+    tmp.append("]\n");
+    return tmp;
+}
 
 result_t *
 sortmergejoin_initrun(relation_t *relR, relation_t *relS, joinconfig_t *joincfg,
