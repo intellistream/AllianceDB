@@ -32,19 +32,19 @@
 #define HASH(X, MASK, SKIP) (((X) & MASK) >> SKIP)
 #endif
 
-//#define DEBUG
+#define DEBUG
 
 /** Debug msg logging method */
 #ifdef DEBUG
 #define DEBUGMSG(COND, MSG, ...)                                    \
-    if(COND) { fprintf(stdout, "[DEBUG] " MSG, ## __VA_ARGS__); }
+    if(COND) { fprintf(stdout, "[DEBUG] @ %s:%d " MSG, __FILE__, __LINE__, ## __VA_ARGS__); }
 #else
 #define DEBUGMSG(COND, MSG, ...)
 #endif
 
-#define MSG(MSG, ...)                                       \
-    { fprintf(stdout, "[INFO] " MSG , ## __VA_ARGS__);      \
-        fprintf(stdout, "\n");                              \
+#define MSG(MSG, ...)                                                           \
+    { fprintf(stdout, "[INFO] @ %s:%d " MSG , __FILE__, __LINE__, ## __VA_ARGS__);      \
+        fprintf(stdout, "\n");                                                  \
     }
 
 #define EAGER
@@ -150,5 +150,8 @@ void destroy_hashtable(hashtable_t *ht);
 void
 free_bucket_buffer(bucket_buffer_t *buf);
 
+
+
+std::string print_relation(tuple_t *tuple, int length);
 
 #endif //ALLIANCEDB_COMMON_FUNCTIONS_H

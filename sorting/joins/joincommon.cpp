@@ -262,8 +262,12 @@ merge_join(tuple_t *rtuples, tuple_t *stuples,
 
     if (is_sorted_helper((int64_t *) stuples, numS))
         printf("[INFO ] merge_join() -> S is sorted, size = %d\n", numS);
-    else
-        printf("[ERROR] mmerge_join() -> S is NOT sorted, size = %d\n", numS);
+    else {
+        printf("[ERROR] merge_join() -> S is NOT sorted, size = %d\n", numS);
+        for (i = 0; i < numS; i++) {
+            printf("%d,", stuples[i]);
+        }
+    }
 #endif
 
 #ifdef JOIN_MATERIALIZE

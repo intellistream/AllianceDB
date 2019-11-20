@@ -243,7 +243,7 @@ cpu-mapping.txt
 #include <string.h>             /* strcmp */
 #include <limits.h>             /* INT_MAX */
 #include <sched.h>
-#include <list>
+#include "joins/common_functions.h"
 
 #include "joins/no_partitioning_join.h" /* no partitioning joins: NPO, NPO_st */
 #include "joins/parallel_radix_join.h"  /* parallel radix joins: RJ_st, PRO, PRH, PRHO */
@@ -331,14 +331,6 @@ print_version();
 void
 parse_args(int argc, char **argv, param_t *cmd_params);
 
-void print_relation(relation_t *rel) {
-    int i;
-    for (i = 0; i < rel->num_tuples; i++) {
-        printf("%d %d\n", rel->tuples[i].key, rel->tuples[i].payload);
-    }
-    fflush(stdout); // Will now print everything in the stdout buffer
-}
-
 void createRelation(relation_t &rel, const param_t &cmd_params,
                     char *loadfile, uint64_t rel_size, uint32_t seed) {
     fprintf(stdout,
@@ -396,8 +388,8 @@ main(int argc, char **argv) {
     cmd_params.nthreads = 1;//TODO: in HS mode, thread must be larger than 1. Fix it when nthread=1.
 
     /* default dataset is Workload B (described in paper) */
-    cmd_params.r_size = 10000;
-    cmd_params.s_size = 10000;
+    cmd_params.r_size = 1280;
+    cmd_params.s_size = 1280;
 //    cmd_params.r_size = 12800000;
 //    cmd_params.s_size = 12800000;
     cmd_params.r_seed = 12345;
@@ -422,12 +414,12 @@ main(int argc, char **argv) {
     /* create relation R */
     createRelation(relR, cmd_params, cmd_params.loadfileR, cmd_params.r_size, cmd_params.r_seed);
 
-//    print_relation(&relR);
+    DEBUGMSG(1, "relR: %s", print_relation(relR.tuples, cmd_params.r_size).c_str())
 
     /* create relation S */
     createRelation(relS, cmd_params, cmd_params.loadfileS, cmd_params.s_size, cmd_params.s_seed);
 
-//    print_relation(&relS);
+    DEBUGMSG(1, "relS: %s", print_relation(relS.tuples, cmd_params.s_size).c_str())
 
     /* Run the selected join algorithm */
     printf("[INFO ] Running join algorithm %s ...\n", cmd_params.algo->name);

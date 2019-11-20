@@ -473,8 +473,8 @@ main(int argc, char *argv[])
     cmd_params.algo = &algos[1]; /* m-pass: sort-merge join with multi-pass merge */
     cmd_params.nthreads = 1;
     /* default dataset is Workload B (described in paper) */
-    cmd_params.r_size = 12800;
-    cmd_params.s_size = 12800;
+    cmd_params.r_size = 128;
+    cmd_params.s_size = 128;
     cmd_params.r_seed   = 12345;
     cmd_params.s_seed   = 54321;
     cmd_params.skew     = 0.0;
@@ -490,7 +490,6 @@ main(int argc, char *argv[])
     cmd_params.mwaymerge_bufsize = MWAY_MERGE_BUFFER_SIZE_DEFAULT;
 
     parse_args(argc, argv, &cmd_params);
-
     if(check_avx() == 0){
         /* no AVX support, just use scalar variants. */
         fprintf(stdout, "[WARN ] AVX is not supported, using scalar sort & merge.\n");

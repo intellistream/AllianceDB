@@ -11,7 +11,7 @@
 #include "sort_common.h"
 #include "localjoiner.h"
 
-#define progressive_step 0.1 //percentile, 0.01 ~ 0.2.
+#define progressive_step 0.01 //percentile, 0.01 ~ 0.2.
 #define merge_step 2 // number of ``runs" to merge in each round.
 
 /**
@@ -109,6 +109,7 @@ struct sweepArea {
         sx.insert(tuple);
     }
 
+/*
     bool within(tuple_t *const &x, tuple_t *List, std::vector<int> pos) {
         for (auto it = pos.begin(); it != pos.end(); it++) {
             auto tmpt = read(List, it.operator*());
@@ -134,7 +135,7 @@ struct sweepArea {
             }
         }
     }
-
+*/
     void query(tuple_t *tuple, int *matches) {
 
         //clean elements that are less than the current element.
@@ -151,17 +152,14 @@ struct sweepArea {
     }
 };
 
-
-std::string print_relation(tuple_t *tuple, int length);
-
 void earlyJoinInitialRuns(tuple_t *tupleR, tuple_t *tupleS, int length, int i, int *matches);
 
 
 void earlyJoinInitialRuns(tuple_t *tupleR, tuple_t *tupleS, int lengthR, int lengthS, int *matches) {
-    //in early join
-    printf("Tuple R: %s\n", print_relation(tupleR, lengthR).c_str());
-    printf("Tuple S: %s\n", print_relation(tupleS, lengthS).c_str());
-    fflush(stdout);
+//    //in early join
+//    printf("Tuple R: %s\n", print_relation(tupleR, lengthR).c_str());
+//    printf("Tuple S: %s\n", print_relation(tupleS, lengthS).c_str());
+//    fflush(stdout);
 
     int r = 0;
     int s = 0;
@@ -319,13 +317,14 @@ pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid, T_TIMER *tim
         //take subset of R and S to sort and join.
         if (i < sizeR) {
             inptrR = (rel_R->tuples) + i;
-#ifdef DEBUG
-            printf("%s\n", print_relation(rel_R->tuples, progressive_stepR * (i + 1)).c_str());
-#endif
+            DEBUGMSG(1, "Initial R: %s",
+                     print_relation(rel_R->tuples + i, progressive_stepR).c_str())
             avxsort_tuples(&inptrR, &outptrR, progressive_stepR);// the method will swap input and output pointers.
+            DEBUGMSG(1, "Sorted R: %s",
+                     print_relation(outptrR, progressive_stepR).c_str())
 #ifdef DEBUG
             if (!is_sorted_helper((int64_t *) outptrR, progressive_step)) {
-                printf("===> %d-thread -> R is NOT sorted, size = %d\n", tid, progressive_step);
+                DEBUGMSG(1, "===> %d-thread -> R is NOT sorted, size = %f\n", tid, progressive_step)
             }
 #endif
         }
@@ -334,7 +333,7 @@ pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid, T_TIMER *tim
             avxsort_tuples(&inptrS, &outptrS, progressive_stepS);
 #ifdef DEBUG
             if (!is_sorted_helper((int64_t *) outptrS, progressive_step)) {
-                printf("===> %d-thread -> S is NOT sorted, size = %d\n", tid, progressive_step);
+                DEBUGMSG(1, "===> %d-thread -> S is NOT sorted, size = %f\n", tid, progressive_step)
             }
 #endif
         }
@@ -344,7 +343,7 @@ pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid, T_TIMER *tim
         j += progressive_stepS;
     } while (i < sizeR || j < sizeS);//while R!=null, S!=null.
 
-    MSG("Join during run creation:%d", matches)
+    DEBUGMSG(1, "Join during run creation:%d", matches)
 
     do {
         //Let them be two empty runs.
@@ -360,15 +359,7 @@ pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid, T_TIMER *tim
 }
 
 
-std::string print_relation(tuple_t *tuple, int length) {
-    std::string tmp = "";
-    tmp.append("[");
 
-    for (int i = 0; i < length; i++)
-        tmp.append(std::to_string(tuple[i].key)).append(",");
-    tmp.append("]\n");
-    return tmp;
-}
 
 
 /**

@@ -38,7 +38,15 @@ struct t_window window1;
     } while(0)
 #endif
 
+std::string print_relation(tuple_t *tuple, int length) {
+    std::string tmp = "";
+    tmp.append("[");
 
+    for (int i = 0; i < length; i++)
+        tmp.append(std::to_string(tuple[i].key)).append(",");
+    tmp.append("]\n");
+    return tmp;
+}
 /**
  * Allocates a hashtable of NUM_BUCKETS and inits everything to 0.
  *
