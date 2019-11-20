@@ -12,6 +12,7 @@
 #ifndef PARAMS_H_
 #define PARAMS_H_
 
+//CHECK with  lstopo-no-graphics | less
 
 /** The partitioning fan-out for the inital step of sort-merge joins */
 #ifndef NRADIXBITS_DEFAULT
@@ -30,12 +31,12 @@
 
 /** L2 Cache size of the system in bytes */
 #ifndef L2_CACHE_SIZE
-#define L2_CACHE_SIZE (256*1024)
+#define L2_CACHE_SIZE (256*1024) //256KB.
 #endif
 
 /** L3 Cache size of the system in bytes */
 #ifndef L3_CACHE_SIZE
-#define L3_CACHE_SIZE (20*1024*1024)
+#define L3_CACHE_SIZE (25*1024*1024) //25MB.
 #endif
 
 /**

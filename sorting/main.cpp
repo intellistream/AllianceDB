@@ -460,10 +460,9 @@ int check_avx() {
 #define MAXTESTSIZE (1<<22)
 
 
-
 void
 check_avx_sort() {
-    int64_t sz = 1000;//rand() % MAXTESTSIZE;
+    int64_t sz = 500;//rand() % MAXTESTSIZE;
     tuple_t *in = generate_rand_tuples(sz);
     DEBUGMSG(1, "Original relation: %s",
              print_relation(in, sz).c_str())
@@ -474,11 +473,13 @@ check_avx_sort() {
 //             print_relation(out2, sz).c_str())
 
     tuple_t *out = (tuple_t *) malloc(sz * sizeof(tuple_t));
+    for (int i = 0; i < sz; i++) {
+        out[i].key = 0;
+        out[i].payload = 0;
+    }
     avxsort_tuples(&in, &out, sz);
     DEBUGMSG(1, "Sorted relation: %s",
              print_relation(out, sz).c_str())
-
-
 
     assert(is_sorted_tuples(out, sz));
     free(in);
@@ -489,6 +490,7 @@ int
 main(int argc, char *argv[]) {
     check_avx_sort();
     fflush(stdout);
+    exit(0);
     struct timeval start, end;
     relation_t relR;
     relation_t relS;
