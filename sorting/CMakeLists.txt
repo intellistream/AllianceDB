@@ -16,6 +16,7 @@ else()
 endif()
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${./bin})
 set (CMAKE_STATIC_LINKER_FLAGS -lnuma)
+set (CMAKE_STATIC_LINKER_FLAGS -lrt)
 SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -msse4.1")
 
 add_executable(sorting
@@ -31,5 +32,8 @@ add_executable(sorting
         joins/partition.cpp joins/partition.h joins/avxsort.cpp joins/avxsort.h joins/avxintrin_emu.h joins/avxsort_core.h joins/scalarsort.cpp joins/scalarsort.h joins/avx_multiwaymerge.cpp joins/avx_multiwaymerge.h joins/avxsort_multiway.cpp joins/avxsort_multiway.h joins/sortmergejoin_multiway.cpp
         main.cpp
         joins/sortmergejoin_multipass.cpp joins/sortmergejoin_mpsm.cpp joins/sortmergejoin_multiway_skewhandling.cpp
-        )
+        test/check_avxsort.cpp test/testutil.cpp test/testutil.h)
+
 target_link_libraries(sorting numa)
+target_link_libraries(sorting check)
+target_link_libraries(sorting rt)

@@ -210,13 +210,12 @@ avxsort_aligned(int64_t **inputptr, int64_t **outputptr, uint64_t nitems) {
 
 void
 avxsort_tuples(tuple_t **inputptr, tuple_t **outputptr, uint64_t nitems) {
-    int64_t *input = (int64_t *) (*inputptr);
-    int64_t *output = (int64_t *) (*outputptr);
+    auto input = (int64_t *) (*inputptr);
+    auto output = (int64_t *) (*outputptr);
 
     /* choose actual implementation depending on the input alignment */
-    if (((uintptr_t) inputptr % CACHE_LINE_SIZE) == 0
-        && ((uintptr_t) outputptr % CACHE_LINE_SIZE) == 0
-            )
+    if (((uintptr_t) input % CACHE_LINE_SIZE) == 0
+        && ((uintptr_t) output % CACHE_LINE_SIZE) == 0)
         avxsort_aligned(&input, &output, nitems);
     else
         avxsort_unaligned(&input, &output, nitems);

@@ -11,6 +11,7 @@
 #include "avxsort.h"
 #include "sort_common.h"
 #include "localjoiner.h"
+#include "../utils/params.h"
 
 #define progressive_step 0.2 //percentile, 0.01 ~ 0.2.
 #define merge_step 2 // number of ``runs" to merge in each round.
@@ -351,18 +352,30 @@ void sorting_phase(int32_t tid, const relation_t *rel_R, const relation_t *rel_S
     tuple_t *inptrS = nullptr;
 
     /**** allocate temporary space for sorting ****/
-    tuple_t *outptrR = new tuple_t[progressive_stepR];//args->tmp_sortR + my_tid * CACHELINEPADDING(PARTFANOUT);
-    tuple_t *outptrS = new tuple_t[progressive_stepS];
+    size_t relRsz;
+    tuple_t *outptrR;//args->tmp_sortR + my_tid * CACHELINEPADDING(PARTFANOUT);
+    tuple_t *outptrS;
+
+    relRsz = progressive_stepR * sizeof(tuple_t)
+             + RELATION_PADDING(1, CACHELINEPADDING(1));
+
+    outptrR = (tuple_t *) malloc_aligned(relRsz);
+
+    relRsz = progressive_stepS * sizeof(tuple_t)
+             + RELATION_PADDING(1, CACHELINEPADDING(1));
+
+    outptrS = (tuple_t *) malloc_aligned(relRsz);
+
     //take subset of R and S to sort and join.
     if (*i < sizeR) {
-        inptrR = (rel_R->tuples) + *i;
-//        DEBUGMSG("Initial R: %s",
-//                 print_relation(rel_R->tuples + *i, progressive_stepR).c_str())
+        inptrR = rel_R->tuples + *i;
+        DEBUGMSG("Initial R [aligned:%d]: %s", is_aligned(inptrR, CACHE_LINE_SIZE),
+                 print_relation(rel_R->tuples + *i, progressive_stepR).c_str())
         avxsort_tuples(&inptrR, &outptrR, progressive_stepR);// the method will swap input and output pointers.
         DEBUGMSG("Sorted R: %s",
                  print_relation(rel_R->tuples + (*i), progressive_stepR).c_str())
 #ifdef DEBUG
-        if (!is_sorted_helper((int64_t *) outptrR, progressive_step)) {
+        if (!is_sorted_helper((int64_t *) outptrR, progressive_stepR)) {
             DEBUGMSG("===> %d-thread -> R is NOT sorted, size = %f\n", tid, progressive_step)
         }
 #endif
@@ -373,7 +386,7 @@ void sorting_phase(int32_t tid, const relation_t *rel_R, const relation_t *rel_S
         DEBUGMSG("Sorted S: %s",
                  print_relation(rel_S->tuples + (*i), progressive_stepS).c_str())
 #ifdef DEBUG
-        if (!is_sorted_helper((int64_t *) outptrS, progressive_step)) {
+        if (!is_sorted_helper((int64_t *) outptrS, progressive_stepS)) {
             DEBUGMSG("===> %d-thread -> S is NOT sorted, size = %f\n", tid, progressive_step)
         }
 #endif

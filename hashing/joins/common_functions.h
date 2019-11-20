@@ -59,6 +59,13 @@ struct t_window {
     std::list<intkey_t> S_Window;
     std::mutex mutex;
 };
+#define is_aligned(POINTER, BYTE_COUNT) \
+    (((uintptr_t)(POINTER)) % (BYTE_COUNT) == 0)
+
+void *
+malloc_aligned(size_t size);
+
+
 extern t_window window0;
 extern t_window window1;
 

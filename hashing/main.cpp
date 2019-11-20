@@ -243,6 +243,7 @@ cpu-mapping.txt
 #include <string.h>             /* strcmp */
 #include <limits.h>             /* INT_MAX */
 #include <sched.h>
+#include <cpuid.h>
 #include "joins/common_functions.h"
 
 #include "joins/no_partitioning_join.h" /* no partitioning joins: NPO, NPO_st */
@@ -253,7 +254,7 @@ cpu-mapping.txt
 #include "utils/perf_counters.h" /* PCM_x */
 //#include "utils/affinity.h"      /* pthread_attr_setaffinity_np & sched_setaffinity */ only for MAC
 #include "utils/config.h"     /* autoconf header */
-#include "joins/common_functions.h"
+#include "utils/params.h"
 
 #ifdef JOIN_RESULT_MATERIALIZE
 #include "tuple_buffer.h"       /* for materialization */
@@ -291,6 +292,16 @@ struct param_t {
     int basic_numa;/* alloc input chunks thread local? */
     char *perfconf;
     char *perfout;
+
+    int scalar_sort;
+    int scalar_merge;
+    /* partitioning fanout, e.g., 2^rdxbits */
+    int part_fanout;
+    /* multi-way merge buffer size in bytes, corresponds to L3 size */
+    int mwaymerge_bufsize;
+    /* NUMA data shuffling strategy */
+    enum numa_strategy_t numastrategy;
+
     /** if the relations are load from file */
     char *loadfileR;
     char *loadfileS;
@@ -331,7 +342,9 @@ print_version();
 void
 parse_args(int argc, char **argv, param_t *cmd_params);
 
-void createRelation(relation_t &rel, const param_t &cmd_params,
+param_t defaultParam();
+
+void createRelation(relation_t *rel, const param_t &cmd_params,
                     char *loadfile, uint64_t rel_size, uint32_t seed) {
     fprintf(stdout,
             "[INFO ] %s relation with size = %.3lf MiB, #tuples = %llu : ",
@@ -345,20 +358,48 @@ void createRelation(relation_t &rel, const param_t &cmd_params,
     numalocalize = cmd_params.basic_numa;
     nthreads = cmd_params.nthreads;
 
+
+    /** first allocate the memory for relations (+ padding based on numthreads) : */
+    rel->num_tuples = cmd_params.r_size;
+    size_t relRsz = rel->num_tuples * sizeof(tuple_t)
+                    + RELATION_PADDING(cmd_params.nthreads, cmd_params.part_fanout);
+
+    rel->tuples = (tuple_t *) malloc_aligned(relRsz);
+
+
+    //    /* NUMA-localize the input: */
+    //    if(!nonumalocalize){
+    //        numa_localize(relS.tuples, relS.num_tuples, cmd_params.nthreads);
+    //    }
+
     if (loadfile != NULL) {
         /* load relation from file */
-        load_relation(&rel, loadfile, rel_size);
+        load_relation(rel, loadfile, rel_size);
     } else if (cmd_params.fullrange_keys) {
-        create_relation_nonunique(&rel, rel_size, INT_MAX);
+        create_relation_nonunique(rel, rel_size, INT_MAX);
     } else if (cmd_params.nonunique_keys) {
-        create_relation_nonunique(&rel, rel_size, rel_size);
+        create_relation_nonunique(rel, rel_size, rel_size);
     } else {
         //create_relation_pk(&rel, rel_size);
-        parallel_create_relation(&rel, rel_size,
+        parallel_create_relation(rel, rel_size,
                                  nthreads,
                                  rel_size);
     }
     printf("OK \n");
+}
+
+#define AVXFlag     ((1UL<<28)|(1UL<<27))
+
+int check_avx() {
+    unsigned int eax, ebx, ecx, edx;
+    if (!__get_cpuid(1, &eax, &ebx, &ecx, &edx))
+        return 1;
+
+    /* Run AVX test only if host has AVX runtime support.  */
+    if ((ecx & AVXFlag) != AVXFlag)
+        return 0; /* missing feature */
+
+    return 1; /* has AVX support! */
 }
 
 int
@@ -375,36 +416,16 @@ main(int argc, char **argv) {
     if (sched_setaffinity(0, sizeof(set), &set) < 0) {
         perror("sched_setaffinity");
     }
-
-    /* Command line parameters */
-    param_t cmd_params;
-
-    /* Default values if not specified on command line */
-    /* BLOCKING HASHING: PRO (0), RJ_st, PRH, PRHO, NPO, NPO_st (5),
-     * ONLINE HAHSING: SHJ_st, SHJ_JM_NP, SHJ_JB_NP, SHJ_JBCR_NP, SHJ_HS_NP (10)
-     * ONLINE SORTING: PMJ_st (11),
-     * */
-    cmd_params.algo = &algos[11];
-    cmd_params.nthreads = 1;//TODO: in HS mode, thread must be larger than 1. Fix it when nthread=1.
-
-    /* default dataset is Workload B (described in paper) */
-    cmd_params.r_size = 2560;
-    cmd_params.s_size = 2560;
-//    cmd_params.r_size = 12800000;
-//    cmd_params.s_size = 12800000;
-    cmd_params.r_seed = 12345;
-    cmd_params.s_seed = 54321;
-    cmd_params.skew = 0.0;
-    cmd_params.verbose = 0;
-    cmd_params.perfconf = NULL;
-    cmd_params.perfout = NULL;
-    cmd_params.nonunique_keys = 0;
-    cmd_params.fullrange_keys = 0;
-    cmd_params.basic_numa = 0;
-    cmd_params.loadfileR = NULL;
-    cmd_params.loadfileS = NULL;
+    param_t cmd_params = defaultParam();
 
     parse_args(argc, argv, &cmd_params);
+
+    if (check_avx() == 0) {
+        /* no AVX support, just use scalar variants. */
+        fprintf(stdout, "[WARN ] AVX is not supported, using scalar sort & merge.\n");
+        cmd_params.scalar_sort = 1;
+        cmd_params.scalar_merge = 1;
+    }
 
 #ifdef PERF_COUNTERS
     PCM_CONFIG = cmd_params.perfconf;
@@ -412,14 +433,17 @@ main(int argc, char **argv) {
 #endif
 
     /* create relation R */
-    createRelation(relR, cmd_params, cmd_params.loadfileR, cmd_params.r_size, cmd_params.r_seed);
+    createRelation(&relR, cmd_params, cmd_params.loadfileR, cmd_params.r_size, cmd_params.r_seed);
 
-    DEBUGMSG("relR: %s", print_relation(relR.tuples, cmd_params.r_size).c_str())
+    DEBUGMSG("relR [aligned:%d]: %s", is_aligned(relR.tuples, CACHE_LINE_SIZE),
+             print_relation(relR.tuples, cmd_params.r_size).c_str())
+
 
     /* create relation S */
-    createRelation(relS, cmd_params, cmd_params.loadfileS, cmd_params.s_size, cmd_params.s_seed);
+    createRelation(&relS, cmd_params, cmd_params.loadfileS, cmd_params.s_size, cmd_params.s_seed);
 
-    DEBUGMSG("relS: %s", print_relation(relS.tuples, cmd_params.s_size).c_str())
+    DEBUGMSG("relS [aligned:%d]: %s", is_aligned(relS.tuples, CACHE_LINE_SIZE),
+             print_relation(relS.tuples, cmd_params.s_size).c_str())
 
     /* Run the selected join algorithm */
     printf("[INFO ] Running join algorithm %s ...\n", cmd_params.algo->name);
@@ -444,12 +468,47 @@ main(int argc, char **argv) {
     return 0;
 }
 
+param_t defaultParam() {/* Command line parameters */
+    param_t cmd_params;
+
+    /* Default values if not specified on command line */
+    /* BLOCKING HASHING: PRO (0), RJ_st, PRH, PRHO, NPO, NPO_st (5),
+     * ONLINE HAHSING: SHJ_st, SHJ_JM_NP, SHJ_JB_NP, SHJ_JBCR_NP, SHJ_HS_NP (10)
+     * ONLINE SORTING: PMJ_st (11),
+     * */
+    cmd_params.algo = &algos[11];
+    cmd_params.nthreads = 1;//TODO: in HS mode, thread must be larger than 1. Fix it when nthread=1.
+
+    /* default dataset is Workload B (described in paper) */
+    cmd_params.r_size = 2560;
+    cmd_params.s_size = 2560;
+//    cmd_params.r_size = 12800000;
+//    cmd_params.s_size = 12800000;
+    cmd_params.r_seed = 12345;
+    cmd_params.s_seed = 54321;
+    cmd_params.skew = 0.0;
+    cmd_params.verbose = 0;
+    cmd_params.perfconf = NULL;
+    cmd_params.perfout = NULL;
+    cmd_params.nonunique_keys = 0;
+    cmd_params.fullrange_keys = 0;
+    cmd_params.basic_numa = 0;
+    cmd_params.scalar_sort = 0;
+    cmd_params.scalar_merge = 0;
+    /* TODO: get L3 buffer size programmatically. */
+    cmd_params.mwaymerge_bufsize = MWAY_MERGE_BUFFER_SIZE_DEFAULT;
+
+    cmd_params.loadfileR = NULL;
+    cmd_params.loadfileS = NULL;
+    return cmd_params;
+}
+
 /* command line handling functions */
 void
 print_help(char *progname) {
     printf("Usage: %s [options]\n", progname);
 
-    printf("\
+    printf(" \
     Join algorithm selection, algorithms : RJ_st, PRO, PRH, PRHO, NPO, NPO_st    \n\
        -a --algo=<name>    Run the hash join algorithm named <name> [PRO]     \n\
                                                                               \n\
@@ -504,32 +563,39 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
     static int nonunique_flag;
     static int fullrange_flag;
     static int basic_numa;
+    static int scalarsort = 0;
+    static int scalarmerge = 0;
+    static int part_fanout = PARTFANOUT_DEFAULT; /* 128 */
 
     while (1) {
         static struct option long_options[] =
                 {
                         /* These options set a flag. */
-                        {"verbose",    no_argument,       &verbose_flag,   1},
-                        {"brief",      no_argument,       &verbose_flag,   0},
-                        {"non-unique", no_argument,       &nonunique_flag, 1},
-                        {"full-range", no_argument,       &fullrange_flag, 1},
-                        {"basic-numa", no_argument,       &basic_numa,     1},
-                        {"help",       no_argument,       0,               'h'},
-                        {"version",    no_argument,       0,               'v'},
+                        {"verbose",      no_argument,       &verbose_flag,   1},
+                        {"brief",        no_argument,       &verbose_flag,   0},
+                        {"non-unique",   no_argument,       &nonunique_flag, 1},
+                        {"full-range",   no_argument,       &fullrange_flag, 1},
+                        {"basic-numa",   no_argument,       &basic_numa,     1},
+                        {"help",         no_argument,       0,               'h'},
+                        {"version",      no_argument,       0,               'v'},
                         /* These options don't set a flag.
                            We distinguish them by their indices. */
-                        {"algo",       required_argument, 0,               'a'},
-                        {"nthreads",   required_argument, 0,               'n'},
-                        {"perfconf",   required_argument, 0,               'p'},
-                        {"r-size",     required_argument, 0,               'r'},
-                        {"s-size",     required_argument, 0,               's'},
-                        {"perfout",    required_argument, 0,               'o'},
-                        {"r-seed",     required_argument, 0,               'x'},
-                        {"s-seed",     required_argument, 0,               'y'},
-                        {"skew",       required_argument, 0,               'z'},
-                        {"r-file",     required_argument, 0,               'R'},
-                        {"s-file",     required_argument, 0,               'S'},
-                        {0, 0,                            0,               0}
+                        {"algo",         required_argument, 0,               'a'},
+                        {"nthreads",     required_argument, 0,               'n'},
+                        {"perfconf",     required_argument, 0,               'p'},
+                        {"r-size",       required_argument, 0,               'r'},
+                        {"s-size",       required_argument, 0,               's'},
+                        {"perfout",      required_argument, 0,               'o'},
+                        {"r-seed",       required_argument, 0,               'x'},
+                        {"s-seed",       required_argument, 0,               'y'},
+                        {"skew",         required_argument, 0,               'z'},
+                        {"r-file",       required_argument, 0,               'R'},
+                        {"s-file",       required_argument, 0,               'S'},
+                        /* partitioning fanout, e.g., 2^rdxbits */
+                        {"partfanout",   required_argument, 0,               'f'},
+                        {"numastrategy", required_argument, 0,               'N'},
+                        {"mwaybufsize",  required_argument, 0,               'm'},
+                        {0, 0,                              0,               0}
                 };
         /* getopt_long stores the option index here. */
         int option_index = 0;
@@ -613,6 +679,34 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
 
             case 'z':
                 cmd_params->skew = atof(optarg);
+                break;
+
+            case 'f':
+                part_fanout = atoi(optarg);
+                /* check whether fanout is a power of 2 */
+                if ((part_fanout & (part_fanout - 1)) != 0) {
+                    fprintf(stdout, "[ERROR] Partitioning fan-out must be a power of 2 (2^#radixbits).\n");
+
+                    exit(0);
+                }
+
+                break;
+
+            case 'm':
+                cmd_params->mwaymerge_bufsize = atoi(optarg);
+                break;
+
+            case 'N':
+                if (strcmp(optarg, "NEXT") == 0)
+                    cmd_params->numastrategy = NEXT;
+                else if (strcmp(optarg, "RANDOM") == 0)
+                    cmd_params->numastrategy = RANDOM;
+                else if (strcmp(optarg, "RING") == 0)
+                    cmd_params->numastrategy = RING;
+                else {
+                    printf("Invalid NUMA-shuffle strategy. Options: NEXT, RANDOM, RING\n");
+                    printf("Using RING as default.\n");
+                }
                 break;
 
             case 'R':

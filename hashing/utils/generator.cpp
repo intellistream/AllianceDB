@@ -536,10 +536,9 @@ int create_relation_nonunique(relation_t *relation, int64_t num_tuples,
     check_seed();
 
     relation->num_tuples = num_tuples;
-    relation->tuples = (tuple_t *) MALLOC(relation->num_tuples * sizeof(tuple_t));
 
     if (!relation->tuples) {
-        perror("out of memory");
+        perror("memory must be allocated first");
         return -1;
     }
 

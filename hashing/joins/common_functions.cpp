@@ -47,6 +47,22 @@ std::string print_relation(tuple_t *tuple, int length) {
     tmp.append("]\n");
     return tmp;
 }
+
+
+void *
+malloc_aligned(size_t size) {
+    void *ret;
+    int rv;
+    rv = posix_memalign((void **) &ret, CACHE_LINE_SIZE, size);
+
+    if (rv) {
+        perror("[ERROR] malloc_aligned() failed: out of memory");
+        return 0;
+    }
+
+    return ret;
+}
+
 /**
  * Allocates a hashtable of NUM_BUCKETS and inits everything to 0.
  *

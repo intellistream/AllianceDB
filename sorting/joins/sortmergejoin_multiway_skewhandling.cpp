@@ -43,6 +43,7 @@
 
 #include <string.h> /* memcpy() */
 
+
 /** This is a struct used for representing merge tasks when skew handling
     mechanism is enabled. Essentially, large merge tasks are decomposed into
     smaller merge tasks and placed into a task queue. */

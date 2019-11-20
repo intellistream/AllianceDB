@@ -255,10 +255,10 @@ sortmergejoin_multipass_thread(void *param) {
 #endif
 
     /* To check whether sorted? */
-    /*
-    check_sorted((int64_t *)tmpoutR, (int64_t *)tmpoutS,
-                 mergeRtotal, mergeStotal, my_tid);
-     */
+
+//    check_sorted((int64_t *)tmpoutR, (int64_t *)tmpoutS,
+//                 mergeRtotal, mergeStotal, my_tid);
+
 
     /*************************************************************************
      *
@@ -341,7 +341,7 @@ mpass_sorting_phase(relation_t **relRparts, relation_t **relSparts, arg_t *args)
 
     uint64_t ntuples_per_part;
     uint64_t offset = 0;
-    tuple_t *optr = args->tmp_sortR + my_tid * CACHELINEPADDING(PARTFANOUT);
+    tuple_t *optr = args->tmp_sortR + my_tid * CACHELINEPADDING(1);
 
     for (int i = 0; i < PARTFANOUT; i++) {
         tuple_t *inptr = (relRparts[i]->tuples);
