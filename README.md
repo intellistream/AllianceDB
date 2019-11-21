@@ -1,12 +1,23 @@
 # Stream Joins on Modern Multicore Processors
 
-## Data Partition Models
+## Workload Distribution
 
 ### Join-Matrix (JM)
 
 ### Join-Biclique (JB)
 
 ### Handshaking (HS)
+two data stream flow through in opposite direction.
+
+## Data Partitions
+NP or P.
+
+### Non-partition (NP)
+
+Pass the tuple by reference (pointer) only.
+
+### Partitioned (P) 
+Pass the copy of tuples actually (involve tuple replication). This helps ensure later join processing only touches local datasets.
 
 ## Local Joiners
 
@@ -15,15 +26,10 @@
 ### Progressive Merge Join (PMJ)
 
 ### Ripple Join (RJ)
-
-## Design Alternatives
-
-### Non-partition (NP)
-
-### Partitioned (P) 
+Mostly nested-loop-join
 
 ## Current status
 
 Done:
   SHJ Single thread
-  SHJ + NP + JM/JB
+  SHJ + NP + JM/JB/HS
