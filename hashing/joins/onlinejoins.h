@@ -99,7 +99,7 @@ result_t *
 PMJ_st(relation_t *relR, relation_t *relS, int nthreads);
 
 /**
- * Single thread SHJ
+ * Single thread Ripple Join
  * @param relR
  * @param relS
  * @param nthreads
@@ -107,5 +107,21 @@ PMJ_st(relation_t *relR, relation_t *relS, int nthreads);
  */
 result_t *
 RPJ_st(relation_t *relR, relation_t *relS, int nthreads);
+
+/**
+ * Join-Matrix Model RPJ.
+ *
+ * The "Join-Matrix Model" was originally proposed by Mohammed Elseidy et al. in VLDB 2014.
+ *
+ * The following is a multi-threaded implementation. Just returns the
+ * number of result tuples.
+ *
+ * @param relR input relation R - inner relation
+ * @param relS input relation S - outer relation
+ *
+ * @return number of result tuples
+ */
+result_t *
+RPJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads);
 
 #endif /* NO_PARTITIONING_JOIN_H */

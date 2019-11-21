@@ -385,34 +385,32 @@ rpj(int32_t tid, relation_t *rel_R,
     uint32_t index_R = 0;//index of rel_R
     uint32_t index_S = 0;//index of rel_S
 
-
     uint32_t cur_step = 0;
 
     // define the current relation that do predicate
-    relation_t *cur_rel = rel_S;
-
-    uint32_t *cur_rel_pos = &index_S;
-
-    bool is_inner_looping = true;
+//    relation_t *cur_rel = rel_S;
+//    uint32_t *cur_rel_pos = &index_S;
+//    bool is_inner_looping = true;
 
     int64_t matches = 0;//number of matches.
 
     RippleJoiner joiner;
 
 
-//    // square ripple join, but the nested loop has been reduced.
+    // square ripple join, but the nested loop has been reduced.
 //    do { // loop until return is called
 //        if (is_inner_looping) { // scaning side of a rectangle
 //            while (*cur_rel_pos < cur_step) {
 //                if (*cur_rel_pos < cur_step || cur_rel == rel_S) {
 //                    (*cur_rel_pos)++;
-//
 //                    // update index
+//                    DEBUGMSG(1, "JOINING: tid: %d, matches: %d, %d\n", tid, rel_R->tuples[index_R].key, rel_S->tuples[index_S].key)
 //                    if (rel_R->tuples[index_R].key == rel_S->tuples[index_S].key) {
 //                        matches++; // predicate match
 //                        DEBUGMSG(1, "JOINING: tid: %d, matches: %d\n", tid, matches)
-//                        // TODO: whether need to output something?
 //                    }
+//                } else {
+//                    break;
 //                }
 //            }
 //            is_inner_looping = false; // finish a side
@@ -426,9 +424,9 @@ rpj(int32_t tid, relation_t *rel_R,
 //            *cur_rel_pos = 0;
 //            is_inner_looping = true;
 //        }
-//    } while (cur_step <= rel_R->num_tuples || cur_step <= rel_S->num_tuples);
+//    } while (cur_step < rel_R->num_tuples || cur_step < rel_S->num_tuples);
 
-    // just a simple nested loop with progressive response
+    // just a simple nested loop with progressive response, R and S have the same input rate
     do {
         while (index_R < cur_step) {
             if (rel_R->tuples[index_R].key == rel_S->tuples[cur_step].key) {
@@ -453,6 +451,50 @@ rpj(int32_t tid, relation_t *rel_R,
     return matches;
 }
 
+/**
+ *
+ *
+ * @param relR
+ * @param relS
+ * @param nthreads
+ * @return
+ */
+long
+hrpj(int32_t tid, relation_t *rel_R,
+    relation_t *rel_S, void *pVoid,
+    T_TIMER *timer) {
+
+    //allocate two hashtables.
+    hashtable_t *htR;
+    hashtable_t *htS;
+
+    uint32_t nbucketsR = (rel_R->num_tuples / BUCKET_SIZE);
+    allocate_hashtable(&htR, nbucketsR);
+
+    uint32_t nbucketsS = (rel_S->num_tuples / BUCKET_SIZE);
+    allocate_hashtable(&htS, nbucketsS);
+
+    uint32_t index_R = 0;//index of rel_R
+    uint32_t index_S = 0;//index of rel_S
+
+    uint32_t cur_step = 0;
+
+    int64_t matches = 0;//number of matches.
+
+    RippleJoiner joiner;
+
+    // indexed ripple join, assuming R and S have the same input rate.
+    do {
+        joiner.join(tid, &rel_S->tuples[cur_step], false, htR, htS, &matches, pVoid, timer);
+        joiner.join(tid, &rel_R->tuples[cur_step], true, htR, htS, &matches, pVoid, timer);
+        cur_step++;
+        DEBUGMSG(1, "JOINING: tid: %d, cur step: %d, matches: %d\n", tid, cur_step, matches)
+    } while (cur_step < rel_R->num_tuples || cur_step < rel_S->num_tuples);
+
+    destroy_hashtable(htR);
+    destroy_hashtable(htS);
+    return matches;
+}
 
 
 /**
@@ -479,61 +521,103 @@ long SHJJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R,
 
 //    DEBUGMSG(1, "JOINING: tid: %d, tuple: %d, R?%d\n", tid, tuple->key, tuple_R)
     if (tuple_R) {
-        if (tid == 0) {
-            BEGIN_MEASURE_BUILD_ACC((*timer))
-//            window0.R_Window.push_back(tuple->key);
-        } else {
-//            window1.R_Window.push_back(tuple->key);
-        }
         build_hashtable_single(htR, tuple, hashmask_R, skipbits_R);//(1)
 //        DEBUGMSG(1, "tid %d add tuple r %d to R-window. \n", tid, tuple->key)
 
-        if (tid == 0) {
-            END_MEASURE_BUILD_ACC((*timer))
-        }
-        if (tid == 0) {
-            proble_hashtable_single_measure(htS, tuple, hashmask_S, skipbits_S, matches,
-                                            timer->progressivetimer);//(2)
-            DEBUGMSG(1, "matches:%ld, T0: Join R %d with %s", *matches, tuple->key,
-                     print_window(window0.S_Window).c_str());
-        } else {
-            proble_hashtable_single(htS, tuple, hashmask_S, skipbits_S, matches);//(4)
-            DEBUGMSG(1, "matches:%ld, T1: Join R %d with %s", *matches, tuple->key,
-                     print_window(window1.S_Window).c_str());
+        proble_hashtable_single(htS, tuple, hashmask_S, skipbits_S, matches);//(4)
+        DEBUGMSG(1, "matches:%ld, T1: Join R %d with %s", *matches, tuple->key,
+                print_window(window1.S_Window).c_str());
 
-        }
     } else {
-//        DEBUGMSG(1, "BUILD TABLE: tid: %d, tuple: %d, R?%d\n", tid, tuple->key, tuple_R)
-
-        if (tid == 0) {
-            BEGIN_MEASURE_BUILD_ACC((*timer))
-//            window0.S_Window.push_back(tuple->key);
-        } else {
-//            window1.S_Window.push_back(tuple->key);
-        }
         build_hashtable_single(htS, tuple, hashmask_S, skipbits_S);//(3)
 
-//        DEBUGMSG(1, "tid %d add tuple s %d to S-window. \n", tid, tuple->key)
-
-        if (tid == 0) {
-            END_MEASURE_BUILD_ACC((*timer))
-        }
-
-//        DEBUGMSG(1, "BUILD TABLE FINISH: tid: %d, tuple: %d, R?%d\n", tid, tuple->key, tuple_R)
-
-        if (tid == 0) {
-            proble_hashtable_single_measure(htR, tuple, hashmask_R, skipbits_R, matches, timer->progressivetimer);//(4)
-            DEBUGMSG(1, "matches:%ld, T0: Join S %d with %s", *matches, tuple->key,
-                     print_window(window0.R_Window).c_str());
-        } else {
-            proble_hashtable_single(htR, tuple, hashmask_R, skipbits_R, matches);//(4)
-            DEBUGMSG(1, "matches:%ld, T1: Join S %d with %s", *matches, tuple->key,
-                     print_window(window1.R_Window).c_str());
-        }
+        proble_hashtable_single(htR, tuple, hashmask_R, skipbits_R, matches);//(4)
+        DEBUGMSG(1, "matches:%ld, T1: Join S %d with %s", *matches, tuple->key,
+                print_window(window1.R_Window).c_str());
     }
 //    DEBUGMSG(1, "JOINING FINISH: tid: %d, tuple: %d, R?%d\n", tid, tuple->key, tuple_R)
     return *matches;
 }
+
+/**
+ * SHJ algorithm to be used in each thread.
+ * @param tid
+ * @param tuple
+ * @param tuple_R
+ * @param htR
+ * @param htS
+ * @param matches
+ * @param pVoid
+ * @param timer
+ * @return
+ */
+//long SHJJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R,
+//                     hashtable_t *htR, hashtable_t *htS, int64_t *matches,
+//                     void *pVoid, T_TIMER *timer) {
+//
+//    const uint32_t hashmask_R = htR->hash_mask;
+//    const uint32_t skipbits_R = htR->skip_bits;
+//
+//    const uint32_t hashmask_S = htS->hash_mask;
+//    const uint32_t skipbits_S = htS->skip_bits;
+//
+////    DEBUGMSG(1, "JOINING: tid: %d, tuple: %d, R?%d\n", tid, tuple->key, tuple_R)
+//    if (tuple_R) {
+//        if (tid == 0) {
+//            BEGIN_MEASURE_BUILD_ACC((*timer))
+////            window0.R_Window.push_back(tuple->key);
+//        } else {
+////            window1.R_Window.push_back(tuple->key);
+//        }
+//        build_hashtable_single(htR, tuple, hashmask_R, skipbits_R);//(1)
+////        DEBUGMSG(1, "tid %d add tuple r %d to R-window. \n", tid, tuple->key)
+//
+//        if (tid == 0) {
+//            END_MEASURE_BUILD_ACC((*timer))
+//        }
+//        if (tid == 0) {
+//            proble_hashtable_single_measure(htS, tuple, hashmask_S, skipbits_S, matches,
+//                                            timer->progressivetimer);//(2)
+//            DEBUGMSG(1, "matches:%ld, T0: Join R %d with %s", *matches, tuple->key,
+//                     print_window(window0.S_Window).c_str());
+//        } else {
+//            proble_hashtable_single(htS, tuple, hashmask_S, skipbits_S, matches);//(4)
+//            DEBUGMSG(1, "matches:%ld, T1: Join R %d with %s", *matches, tuple->key,
+//                     print_window(window1.S_Window).c_str());
+//
+//        }
+//    } else {
+////        DEBUGMSG(1, "BUILD TABLE: tid: %d, tuple: %d, R?%d\n", tid, tuple->key, tuple_R)
+//
+//        if (tid == 0) {
+//            BEGIN_MEASURE_BUILD_ACC((*timer))
+////            window0.S_Window.push_back(tuple->key);
+//        } else {
+////            window1.S_Window.push_back(tuple->key);
+//        }
+//        build_hashtable_single(htS, tuple, hashmask_S, skipbits_S);//(3)
+//
+////        DEBUGMSG(1, "tid %d add tuple s %d to S-window. \n", tid, tuple->key)
+//
+//        if (tid == 0) {
+//            END_MEASURE_BUILD_ACC((*timer))
+//        }
+//
+////        DEBUGMSG(1, "BUILD TABLE FINISH: tid: %d, tuple: %d, R?%d\n", tid, tuple->key, tuple_R)
+//
+//        if (tid == 0) {
+//            proble_hashtable_single_measure(htR, tuple, hashmask_R, skipbits_R, matches, timer->progressivetimer);//(4)
+//            DEBUGMSG(1, "matches:%ld, T0: Join S %d with %s", *matches, tuple->key,
+//                     print_window(window0.R_Window).c_str());
+//        } else {
+//            proble_hashtable_single(htR, tuple, hashmask_R, skipbits_R, matches);//(4)
+//            DEBUGMSG(1, "matches:%ld, T1: Join S %d with %s", *matches, tuple->key,
+//                     print_window(window1.R_Window).c_str());
+//        }
+//    }
+////    DEBUGMSG(1, "JOINING FINISH: tid: %d, tuple: %d, R?%d\n", tid, tuple->key, tuple_R)
+//    return *matches;
+//}
 
 
 /**
@@ -570,5 +654,68 @@ long PMJJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R, hashtable_t *htR
 
 long RippleJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R, hashtable_t *htR, hashtable_t *htS, int64_t *matches,
                         void *pVoid, T_TIMER *timer) {
-    return 0;
+
+    const uint32_t hashmask_R = htR->hash_mask;
+    const uint32_t skipbits_R = htR->skip_bits;
+
+    const uint32_t hashmask_S = htS->hash_mask;
+    const uint32_t skipbits_S = htS->skip_bits;
+
+//    DEBUGMSG(1, "JOINING: tid: %d, tuple: %d, R?%d\n", tid, tuple->key, tuple_R)
+    if (tuple_R) {
+        if (tid == 0) {
+            BEGIN_MEASURE_BUILD_ACC((*timer))
+//            window0.R_Window.push_back(tuple->key);
+        } else {
+//            window1.R_Window.push_back(tuple->key);
+        }
+        build_hashtable_single(htR, tuple, hashmask_R, skipbits_R);//(1)
+//        DEBUGMSG(1, "tid %d add tuple r %d to R-window. \n", tid, tuple->key)
+
+        if (tid == 0) {
+            END_MEASURE_BUILD_ACC((*timer))
+        }
+        if (tid == 0) {
+            proble_hashtable_single_measure(htS, tuple, hashmask_S, skipbits_S, matches,
+                                            timer->progressivetimer);//(2)
+//            DEBUGMSG(1, "matches:%ld, T0: Join R %d with %s", *matches, tuple->key,
+//                     print_window(window0.S_Window).c_str());
+        } else {
+            proble_hashtable_single(htS, tuple, hashmask_S, skipbits_S, matches);//(4)
+//            DEBUGMSG(1, "matches:%ld, T1: Join R %d with %s", *matches, tuple->key,
+//                     print_window(window1.S_Window).c_str());
+
+        }
+    } else {
+//        DEBUGMSG(1, "BUILD TABLE: tid: %d, tuple: %d, R?%d\n", tid, tuple->key, tuple_R)
+
+        if (tid == 0) {
+            BEGIN_MEASURE_BUILD_ACC((*timer))
+//            window0.S_Window.push_back(tuple->key);
+        } else {
+//            window1.S_Window.push_back(tuple->key);
+        }
+        build_hashtable_single(htS, tuple, hashmask_S, skipbits_S);//(3)
+
+//        DEBUGMSG(1, "tid %d add tuple s %d to S-window. \n", tid, tuple->key)
+
+        if (tid == 0) {
+            END_MEASURE_BUILD_ACC((*timer))
+        }
+
+//        DEBUGMSG(1, "BUILD TABLE FINISH: tid: %d, tuple: %d, R?%d\n", tid, tuple->key, tuple_R)
+
+        if (tid == 0) {
+            proble_hashtable_single_measure(htR, tuple, hashmask_R, skipbits_R, matches, timer->progressivetimer);//(4)
+//            DEBUGMSG(1, "matches:%ld, T0: Join S %d with %s", *matches, tuple->key,
+//                     print_window(window0.R_Window).c_str());
+        } else {
+            proble_hashtable_single(htR, tuple, hashmask_R, skipbits_R, matches);//(4)
+//            DEBUGMSG(1, "matches:%ld, T1: Join S %d with %s", *matches, tuple->key,
+//                     print_window(window1.R_Window).c_str());
+        }
+    }
+    // TODO: Ripple join should output its approximate results, this is the only difference from SHJ
+//    DEBUGMSG(1, "JOINING FINISH: tid: %d, tuple: %d, R?%d\n", tid, tuple->key, tuple_R)
+    return *matches;
 }

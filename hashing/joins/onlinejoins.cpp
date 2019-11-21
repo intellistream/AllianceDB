@@ -266,7 +266,8 @@ result_t *RPJ_st(relation_t *relR, relation_t *relS, int nthreads) {
 
     // No distribution nor partition
     // Directly call the local SHJ joiner.
-    tParam.result = rpj(0, relR, relS, chainedbuf, &timer);//build and probe at the same time.
+    tParam.result = rpj(0, relR, relS, chainedbuf, &timer);// nested loop version.
+//    tParam.result = hrpj(0, relR, relS, chainedbuf, &timer);// hash version.
 
 #ifdef JOIN_RESULT_MATERIALIZE
     threadresult_t * thrres = &(joinresult->resultlist[0]);/* single-thread */
@@ -285,5 +286,29 @@ result_t *RPJ_st(relation_t *relR, relation_t *relS, int nthreads) {
     tParam.joinresult->nthreads = 1;
 
     return tParam.joinresult;
+}
+
+result_t *
+RPJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads) {
+    t_param param(nthreads);
+#ifndef NO_TIMING
+    T_TIMER timer;
+#endif
+
+#ifdef JOIN_RESULT_MATERIALIZE
+    joinresult->resultlist = (threadresult_t *) malloc(sizeof(threadresult_t)
+                                                       * nthreads);
+#endif
+    initialize(nthreads, param);
+    param.fetcher = new JM_NP_Fetcher(nthreads, relR, relS);
+    //no shuffler is required for JM mode.
+    param.joiner = new RippleJoiner();
+    LAUNCH(nthreads, param, timer, THREAD_TASK_NOSHUFFLE)
+    param = finishing(nthreads, param);
+#ifndef NO_TIMING
+    /* now print the timing results: */
+    print_timing(relS->num_tuples, param.result, &timer);
+#endif
+    return param.joinresult;
 }
 /** @}*/
