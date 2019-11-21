@@ -330,7 +330,8 @@ static struct algo_t algos[] =
                 {"SHJ_HS_NP",   SHJ_HS_NP}, /* Symmetric hash join HS Model, No-Partition*/
                 {"PMJ_st",      PMJ_st}, /* Progressive Merge Join Single_thread*/
                 {"RPJ_st",      RPJ_st}, /* Ripple Join Single_thread*/
-                {"RPJ_JM_NP",      RPJ_JM_NP}, /* Ripple Join Single_thread*/
+                {"RPJ_JM_NP",   RPJ_JM_NP}, /* Ripple Join Single_thread*/
+                {"RPJ_JB_NP",   RPJ_JB_NP}, /* Ripple Join Single_thread*/
                 {{0},           0}
         };
 
