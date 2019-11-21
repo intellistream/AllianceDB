@@ -386,7 +386,7 @@ rpj(int32_t tid, relation_t *rel_R,
     uint32_t index_S = 0;//index of rel_S
 
 
-    uint32_t cur_step = 1;
+    uint32_t cur_step = 0;
 
     // define the current relation that do predicate
     relation_t *cur_rel = rel_S;
@@ -399,27 +399,18 @@ rpj(int32_t tid, relation_t *rel_R,
 
     RippleJoiner joiner;
 
-//    do {
-//        if (index_R < rel_R->num_tuples) {
-//            joiner.join(tid, &rel_R->tuples[index_R], true, htR, htS, &matches, pVoid, timer);
-//            index_R++;
-//        }
-//        if (index_S < rel_S->num_tuples) {
-//            joiner.join(tid, &rel_S->tuples[index_S], false, htR, htS, &matches, pVoid, timer);
-//            index_S++;
-//        }
-//    } while (index_R < rel_R->num_tuples || index_S < rel_S->num_tuples);
 
+//    // square ripple join, but the nested loop has been reduced.
 //    do { // loop until return is called
-//        DEBUGMSG(1, "JOINING: tid: %d, cur_rel_pos: %d, %d, %d, %d, %d\n", tid, cur_rel, rel_S, cur_step, *cur_rel_pos, *cur_rel_pos < cur_step - 1)
 //        if (is_inner_looping) { // scaning side of a rectangle
 //            while (*cur_rel_pos < cur_step) {
-//                if (*cur_rel_pos < cur_step - 1 || cur_rel == rel_S) {
+//                if (*cur_rel_pos < cur_step || cur_rel == rel_S) {
 //                    (*cur_rel_pos)++;
 //
 //                    // update index
-//                    if (&rel_R->tuples[index_R].key == &rel_S->tuples[index_S].key) {
+//                    if (rel_R->tuples[index_R].key == rel_S->tuples[index_S].key) {
 //                        matches++; // predicate match
+//                        DEBUGMSG(1, "JOINING: tid: %d, matches: %d\n", tid, matches)
 //                        // TODO: whether need to output something?
 //                    }
 //                }
@@ -435,27 +426,18 @@ rpj(int32_t tid, relation_t *rel_R,
 //            *cur_rel_pos = 0;
 //            is_inner_looping = true;
 //        }
-//    } while (cur_step != rel_R->num_tuples);
+//    } while (cur_step <= rel_R->num_tuples || cur_step <= rel_S->num_tuples);
 
-
+    // just a simple nested loop with progressive response
     do {
         while (index_R < cur_step) {
-
-
-            const uint32_t hashmask_R = htR->hash_mask;
-            const uint32_t skipbits_R = htR->skip_bits;
-
-            const uint32_t hashmask_S = htS->hash_mask;
-            const uint32_t skipbits_S = htS->skip_bits;
-
-
-            if (rel_R->tuples[index_R].key == rel_S->tuples[cur_step-1].key) {
+            if (rel_R->tuples[index_R].key == rel_S->tuples[cur_step].key) {
                 matches++;
             }
             index_R++;
         }
-        while (index_S < cur_step) {
-            if (&rel_R->tuples[cur_step-1].key == &rel_S->tuples[index_S].key) {
+        while (index_S <= cur_step) {
+            if (rel_R->tuples[cur_step].key == rel_S->tuples[index_S].key) {
                 matches++;
             }
             index_S++;
@@ -463,7 +445,8 @@ rpj(int32_t tid, relation_t *rel_R,
         index_R = 0;
         index_S = 0;
         cur_step++;
-    } while (cur_step <= rel_R->num_tuples);
+        DEBUGMSG(1, "JOINING: tid: %d, cur step: %d, matches: %d\n", tid, cur_step, matches)
+    } while (cur_step < rel_R->num_tuples || cur_step < rel_S->num_tuples);
 
     destroy_hashtable(htR);
     destroy_hashtable(htS);
