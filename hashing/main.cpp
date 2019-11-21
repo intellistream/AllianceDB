@@ -318,7 +318,7 @@ extern int nthreads;      /* defined in generator.c */
 static struct algo_t algos[] =
         {
                 {"PRO",         PRO}, // The best performing blocking hash join.
-                {"RJ_st",       RJ_st},
+                {"RJ_st",       RJ_st}, // Radix Join Single_thread
                 {"PRH",         PRH},
                 {"PRHO",        PRHO},
                 {"NPO",         NPO},
@@ -329,6 +329,8 @@ static struct algo_t algos[] =
                 {"SHJ_JBCR_NP", SHJ_JBCR_NP}, /* Symmetric hash join JB CountRound Model, No-Partition*/
                 {"SHJ_HS_NP",   SHJ_HS_NP}, /* Symmetric hash join HS Model, No-Partition*/
                 {"PMJ_st",      PMJ_st}, /* Progressive Merge Join Single_thread*/
+                {"RPJ_st",      RPJ_st}, /* Ripple Join Single_thread*/
+                {"RPJ_JM_NP",      RPJ_JM_NP}, /* Ripple Join Single_thread*/
                 {{0},           0}
         };
 
@@ -416,6 +418,7 @@ main(int argc, char **argv) {
     if (sched_setaffinity(0, sizeof(set), &set) < 0) {
         perror("sched_setaffinity");
     }
+
     param_t cmd_params = defaultParam();
 
     parse_args(argc, argv, &cmd_params);
