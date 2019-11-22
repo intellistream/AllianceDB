@@ -1460,7 +1460,9 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads)
 
     result_t *joinresult = 0;
     joinresult = (result_t *) malloc(sizeof(result_t));
-
+#ifndef NO_TIMING
+    T_TIMER timer;
+#endif
 #ifdef JOIN_RESULT_MATERIALIZE
     joinresult->resultlist = (threadresult_t *) malloc(sizeof(threadresult_t)
                                                        * nthreads);
@@ -1517,7 +1519,7 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads)
         CPU_SET(cpu_idx, &set);
         pthread_attr_setaffinity_np(&attr, sizeof(cpu_set_t), &set);
 
-
+        args[i].timer = &timer;
         args[i].relR = relR->tuples + i * numperthr[0];
         args[i].tmpR = tmpRelR;
         args[i].histR = histR;

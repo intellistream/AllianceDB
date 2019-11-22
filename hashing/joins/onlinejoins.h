@@ -31,6 +31,9 @@
 result_t *
 SHJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads);
 
+result_t *
+SHJ_JM_P(relation_t *relR, relation_t *relS, int nthreads);
+
 /**
  * Join-Biclique Model SHJ.
  *

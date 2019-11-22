@@ -107,6 +107,29 @@ SHJ_JBCR_NP(relation_t *relR, relation_t *relS, int nthreads) {
 
 
 result_t *
+SHJ_JM_P(relation_t *relR, relation_t *relS, int nthreads) {
+    t_param param(nthreads);
+#ifndef NO_TIMING
+    T_TIMER timer;
+#endif
+
+#ifdef JOIN_RESULT_MATERIALIZE
+    joinresult->resultlist = (threadresult_t *) malloc(sizeof(threadresult_t)
+                                                       * nthreads);
+#endif
+    initialize(nthreads, param);
+    param.fetcher = new JM_NP_Fetcher(nthreads, relR, relS);
+    //no shuffler is required for JM mode.
+    param.joiner = new SHJJoiner();
+    LAUNCH(nthreads, param, timer, THREAD_TASK_NOSHUFFLE)
+    param = finishing(nthreads, param);
+#ifndef NO_TIMING
+    /* now print the timing results: */
+    print_timing(relS->num_tuples, param.result, &timer);
+#endif
+    return param.joinresult;
+}
+result_t *
 SHJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads) {
     t_param param(nthreads);
 #ifndef NO_TIMING

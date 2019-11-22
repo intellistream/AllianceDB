@@ -96,6 +96,44 @@ public:
     }
 };
 
+class JM_P_Fetcher : public baseFetcher {
+public:
+    fetch_t *next_tuple(int tid) override;
+
+    bool finish(int tid) {
+        return state[tid].start_index_R == state[tid].end_index_R
+               && state[tid].start_index_S == state[tid].end_index_S;
+    }
+
+    /**
+     * Initialization
+     * @param nthreads
+     * @param relR
+     * @param relS
+     */
+    JM_P_Fetcher(int nthreads, relation_t *relR, relation_t *relS)
+            : baseFetcher(relR, relS) {
+        state = new t_state[nthreads];
+
+        int numSthr = relS->num_tuples / nthreads;//replicate R, partition S.
+        for (int i = 0; i < nthreads; i++) {
+
+            state[i].flag = true;
+            /* replicate relR for next thread */
+            state[i].start_index_R = 0;
+            state[i].end_index_R = relR->num_tuples;
+
+            /* assign part of the relS for next thread */
+            state[i].start_index_S = numSthr * i;
+            state[i].end_index_S = (last_thread(i, nthreads)) ? relS->num_tuples : numSthr * (i + 1);
+#ifdef DEBUG
+            printf("TID:%d, R: start_index:%d, end_index:%d\n", i, state[i].start_index_R, state[i].end_index_R);
+            printf("TID:%d, S: start_index:%d, end_index:%d\n", i, state[i].start_index_S, state[i].end_index_S);
+#endif
+        }
+    }
+};
+
 class JM_NP_Fetcher : public baseFetcher {
 public:
     fetch_t *next_tuple(int tid) override;
@@ -126,7 +164,6 @@ public:
             /* assign part of the relS for next thread */
             state[i].start_index_S = numSthr * i;
             state[i].end_index_S = (last_thread(i, nthreads)) ? relS->num_tuples : numSthr * (i + 1);
-
 #ifdef DEBUG
             printf("TID:%d, R: start_index:%d, end_index:%d\n", i, state[i].start_index_R, state[i].end_index_R);
             printf("TID:%d, S: start_index:%d, end_index:%d\n", i, state[i].start_index_S, state[i].end_index_S);

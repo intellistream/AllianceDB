@@ -274,6 +274,7 @@ typedef struct param_t param_t;
 
 struct algo_t {
     char name[128];
+
     result_t *(*joinAlgo)(relation_t *, relation_t *, int);
 };
 
@@ -454,18 +455,23 @@ main(int argc, char **argv) {
 /** all available algorithms */
 static struct algo_t algos[] =
         {
+/*** Blocking Joins ***/
                 {"PRO",         PRO}, // The best performing blocking hash join (radix partition optimization).
                 {"RJ_st",       RJ_st}, // Radix Join Single_thread
                 {"PRH",         PRH},
                 {"PRHO",        PRHO},
                 {"NPO",         NPO},
                 {"NPO_st",      NPO_st}, /* NPO single threaded */
+/*** Symmetric Hash Join ***/
                 {"SHJ_st",      SHJ_st}, /* Symmetric hash join single_thread*/
+                {"SHJ_JM_P",    SHJ_JM_P}, /* Symmetric hash join JM Model, Partition*/
                 {"SHJ_JM_NP",   SHJ_JM_NP}, /* Symmetric hash join JM Model, No-Partition*/
                 {"SHJ_JB_NP",   SHJ_JB_NP}, /* Symmetric hash join JB Model, No-Partition*/
                 {"SHJ_JBCR_NP", SHJ_JBCR_NP}, /* Symmetric hash join JB CountRound Model, No-Partition*/
                 {"SHJ_HS_NP",   SHJ_HS_NP}, /* Symmetric hash join HS Model, No-Partition*/
+/*** Progressive Merge Join ***/
                 {"PMJ_st",      PMJ_st}, /* Progressive Merge Join Single_thread*/
+/*** Ripple Join ***/
                 {"RPJ_st",      RPJ_st}, /* Ripple Join Single_thread*/
                 {"RPJ_JM_NP",   RPJ_JM_NP}, /* Ripple Join JM*/
                 {"RPJ_JB_NP",   RPJ_JB_NP}, /* Ripple Join JB*/
@@ -478,10 +484,10 @@ param_t defaultParam() {/* Command line parameters */
 
     /* Default values if not specified on command line */
     /* BLOCKING HASHING: PRO (0), RJ_st, PRH, PRHO, NPO, NPO_st (5),
-     * ONLINE HAHSING: SHJ_st, SHJ_JM_NP, SHJ_JB_NP, SHJ_JBCR_NP, SHJ_HS_NP (10)
+     * ONLINE HAHSING: SHJ_st(6), SHJ_JM_P, SHJ_JM_NP, SHJ_JB_NP, SHJ_JBCR_NP, SHJ_HS_NP (10)
      * ONLINE SORTING: PMJ_st (11), RPJ_st, RPJ_JM_NP,  RPJ_JB_NP, RPJ_HS_NP
      * */
-    cmd_params.algo = &algos[15];
+    cmd_params.algo = &algos[0];
     cmd_params.nthreads = 2;//TODO: in HS mode, thread must be larger than 1. Fix it when nthread=1.
 
     /* default dataset is Workload B (described in paper) */
