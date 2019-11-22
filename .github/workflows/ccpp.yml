@@ -8,13 +8,11 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v1
-    - name: change directory
-      run: cd hashing  
+    - uses: actions/checkout@v1 
     - name: make
-      run: cmake .
+      run: ./hashing/cmake .
     - name: make check
-      run: make
+      run: ./hashing/make
     - name: run test
-      run: ./runUnitTests 
+      run: ./hashing/./runUnitTests 
 
