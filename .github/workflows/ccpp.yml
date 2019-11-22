@@ -11,6 +11,12 @@ jobs:
     
     steps:
     - uses: actions/checkout@v1
-    - name: configure
-      run: ./configure
+    - name: cmake
+      run: cmake .
       working-directory: ./hashing
+    - name: make
+      run: make
+      working-directory: ./hashing
+    - name: test
+      run: runUnitTests
+      working-directory: ./hashing  
