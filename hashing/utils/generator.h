@@ -108,6 +108,15 @@ write_relation(relation_t *rel, char *filename);
 int
 load_relation(relation_t *relation, char *filename, uint64_t num_tuples);
 
+
+/**
+ * Shuffle tuples of the relation using Knuth shuffle.
+ *
+ * @param relation
+ */
+void
+knuth_shuffle(relation_t * relation);
+
 /** @} */
 
 #endif /* GENERATOR_H */

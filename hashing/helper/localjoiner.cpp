@@ -568,12 +568,12 @@ long SHJJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R,
         if (tid == 0) {
             proble_hashtable_single_measure(htS, tuple, hashmask_S, skipbits_S, matches,
                                             timer->progressivetimer);//(2)
-            DEBUGMSG("matches:%ld, T0: Join R %d with %s", *matches, tuple->key,
-                     print_window(window0.S_Window).c_str());
+//            DEBUGMSG("matches:%ld, T0: Join R %d with %s", *matches, tuple->key,
+//                     print_window(window0.S_Window).c_str());
         } else {
             proble_hashtable_single(htS, tuple, hashmask_S, skipbits_S, matches);//(4)
-            DEBUGMSG("matches:%ld, T1: Join R %d with %s", *matches, tuple->key,
-                     print_window(window1.S_Window).c_str());
+//            DEBUGMSG("matches:%ld, T1: Join R %d with %s", *matches, tuple->key,
+//                     print_window(window1.S_Window).c_str());
 
         }
     } else {
@@ -589,12 +589,12 @@ long SHJJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R,
             if (tid == 0) {
                 proble_hashtable_single_measure(htR, tuple, hashmask_R, skipbits_R, matches,
                                                 timer->progressivetimer);//(4)
-                DEBUGMSG("matches:%ld, T0: Join S %d with %s", *matches, tuple->key,
-                         print_window(window0.R_Window).c_str());
+//                DEBUGMSG("matches:%ld, T0: Join S %d with %s", *matches, tuple->key,
+//                         print_window(window0.R_Window).c_str());
             } else {
                 proble_hashtable_single(htR, tuple, hashmask_R, skipbits_R, matches);//(4)
-                DEBUGMSG("matches:%ld, T1: Join S %d with %s", *matches, tuple->key,
-                         print_window(window1.R_Window).c_str());
+//                DEBUGMSG("matches:%ld, T1: Join S %d with %s", *matches, tuple->key,
+//                         print_window(window1.R_Window).c_str());
             }
         }
 //    DEBUGMSG(1, "JOINING FINISH: tid: %d, tuple: %d, R?%d\n", tid, tuple->key, tuple_R)

@@ -635,5 +635,7 @@ read_relation(relation_t *rel, char *filename) {
     }
 
     fclose(fp);
-
 }
+
+
+ 

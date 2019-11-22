@@ -3,13 +3,73 @@
 //
 
 #include "gtest/gtest.h"
+#include "../utils/types.h"
+#include "../utils/generator.h"
+#include "../utils/params.h"
+#include "../joins/common_functions.h"
+#include "../joins/onlinejoins.h"
 
-int add(int a, int b) {
-    return a + b;
+int size = 1280;
+
+relation_t relR;
+relation_t relS;
+result_t *results;
+
+tuple_t *
+generate_rand_tuples(int num) {
+
+    relation_t rel;
+    rel.tuples = (tuple_t *) malloc(sizeof(tuple_t) * num);
+    rel.num_tuples = num;
+    uint64_t i;
+
+    for (i = 0; i < num; i++) {
+        rel.tuples[i].key = (i + 1);
+        rel.tuples[i].payload = i;
+    }
+
+    /* randomly shuffle elements */
+    knuth_shuffle(&rel);
+
+    return rel.tuples;
 }
 
-TEST(test1, c1) {
-    EXPECT_EQ(3, add(1, 2));
+void setup() {
+    /* start initially on CPU-0 */
+    cpu_set_t set;
+    CPU_ZERO(&set);
+    CPU_SET(0, &set);
+    if (sched_setaffinity(0, sizeof(set), &set) < 0) {
+        perror("sched_setaffinity");
+    }
+
+    /* create relation R */
+    relR.num_tuples = size;
+    relR.tuples = generate_rand_tuples(size);
+    DEBUGMSG("relR [aligned:%d]: %s", is_aligned(relR.tuples, CACHE_LINE_SIZE),
+             print_relation(relR.tuples, size).c_str())
+
+    /* create relation S */
+    relS.num_tuples = size;
+    relS.tuples = generate_rand_tuples(size);
+    DEBUGMSG("relS [aligned:%d]: %s", is_aligned(relS.tuples, CACHE_LINE_SIZE),
+             print_relation(relS.tuples, size).c_str())
+}
+void cleanup(){
+    /* clean-up */
+    delete_relation(&relR);
+    delete_relation(&relS);
+    free(results);
+}
+
+TEST(JOIN_TEST, SHJ_ST) {
+    setup();
+    /* Run the selected join algorithm */
+    printf("[INFO ] Running join algorithm %s ...\n", "SHJ");
+    results = SHJ_st(&relR, &relS, 1);
+    printf("[INFO ] Results = %ld. DONE.\n", results->totalresults);
+    EXPECT_EQ(results->totalresults, size);
+    cleanup();
 }
 
 GTEST_API_ int main(int argc, char **argv) {

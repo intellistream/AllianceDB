@@ -38,7 +38,7 @@
 #ifdef DEBUG
 #define DEBUGMSG(MSG, ...)                                                        \
     {                                                               \
-        fprintf(stdout, "[DEBUG] @ %s:%d " MSG, __FILE__, __LINE__, ## __VA_ARGS__);    \
+        fprintf(stdout, "\n[DEBUG] @ %s:%d " MSG, __FILE__, __LINE__, ## __VA_ARGS__);    \
           fprintf(stdout, "\n");                                                        \
     }
 #else
@@ -46,7 +46,7 @@
 #endif
 
 #define MSG(MSG, ...)                                                                   \
-    { fprintf(stdout, "[INFO] @ %s:%d " MSG , __FILE__, __LINE__, ## __VA_ARGS__);      \
+    { fprintf(stdout, "\n[INFO] @ %s:%d " MSG , __FILE__, __LINE__, ## __VA_ARGS__);      \
         fprintf(stdout, "\n");                                                          \
     }
 
