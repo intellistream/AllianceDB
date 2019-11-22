@@ -1,3 +1,8 @@
+<p align="left">
+  <a href="https://github.com/ShuhaoZhangTony/AllianceDB">
+    <img alt="GitHub Actions status" src="https://github.com/ShuhaoZhangTony/AllianceDB/workflows/Main%20workflow/badge.svg"></a>
+</p>
+
 # Stream Joins on Modern Multicore Processors
 
 ## Workload Distribution
