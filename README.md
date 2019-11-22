@@ -1,3 +1,5 @@
+![](https://github.com/ShuhaoZhangTony/AllianceDB/workflows/.github/workflows/ccpp.yml/badge.svg)
+
 # Stream Joins on Modern Multicore Processors
 
 ## Workload Distribution
