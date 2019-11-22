@@ -9,8 +9,6 @@ jobs:
     
     steps:
     - uses: actions/checkout@v1 
-    - name: make
-      run: ./hashing/cmake .
     - name: make check
       run: ./hashing/make
     - name: run test
