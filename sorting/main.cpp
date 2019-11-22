@@ -462,7 +462,7 @@ int check_avx() {
 
 void
 check_avx_sort() {
-    int64_t sz = 500;//rand() % MAXTESTSIZE;
+    int64_t sz = 255;//rand() % MAXTESTSIZE;
     tuple_t *in = generate_rand_tuples(sz);
     DEBUGMSG(1, "Original relation: %s",
              print_relation(in, sz).c_str())
@@ -490,7 +490,7 @@ int
 main(int argc, char *argv[]) {
     check_avx_sort();
     fflush(stdout);
-    exit(0);
+//    exit(0);
     struct timeval start, end;
     relation_t relR;
     relation_t relS;
@@ -513,8 +513,8 @@ main(int argc, char *argv[]) {
     cmd_params.algo = &algos[1]; /* m-pass: sort-merge join with multi-pass merge */
     cmd_params.nthreads = 1;
     /* default dataset is Workload B (described in paper) */
-    cmd_params.r_size = 12800;
-    cmd_params.s_size = 12800;
+    cmd_params.r_size = 64*12;
+    cmd_params.s_size = 64*12;
     cmd_params.r_seed = 12345;
     cmd_params.s_seed = 54321;
     cmd_params.skew = 0.0;
