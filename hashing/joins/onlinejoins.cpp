@@ -105,28 +105,6 @@ SHJ_JBCR_NP(relation_t *relR, relation_t *relS, int nthreads) {
     return param.joinresult;
 }
 
-result_t *
-SHJ_HS_NP(relation_t *relR, relation_t *relS, int nthreads) {
-    t_param param(nthreads);
-#ifndef NO_TIMING
-    T_TIMER timer;
-#endif
-#ifdef JOIN_RESULT_MATERIALIZE
-    joinresult->resultlist = (threadresult_t *) malloc(sizeof(threadresult_t)
-                                                       * nthreads);
-#endif
-    initialize(nthreads, param);
-    param.fetcher = new HS_NP_Fetcher(nthreads, relR, relS);
-    param.shuffler = new HSShuffler(nthreads, relR, relS);
-    param.joiner = new SHJJoiner();
-    LAUNCH(nthreads, param, timer, THREAD_TASK_HSSHUFFLE)
-    param = finishing(nthreads, param);
-#ifndef NO_TIMING
-    /* now print the timing results: */
-    print_timing(relS->num_tuples, param.result, &timer);
-#endif
-    return param.joinresult;
-}
 
 result_t *
 SHJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads) {
@@ -202,6 +180,28 @@ SHJ_st(relation_t *relR, relation_t *relS, int nthreads) {
     return tParam.joinresult;
 }
 
+result_t *
+SHJ_HS_NP(relation_t *relR, relation_t *relS, int nthreads) {
+    t_param param(nthreads);
+#ifndef NO_TIMING
+    T_TIMER timer;
+#endif
+#ifdef JOIN_RESULT_MATERIALIZE
+    joinresult->resultlist = (threadresult_t *) malloc(sizeof(threadresult_t)
+                                                       * nthreads);
+#endif
+    initialize(nthreads, param);
+    param.fetcher = new HS_NP_Fetcher(nthreads, relR, relS);
+    param.shuffler = new HSShuffler(nthreads, relR, relS);
+    param.joiner = new SHJJoiner();
+    LAUNCH(nthreads, param, timer, THREAD_TASK_SHUFFLE_HS)
+    param = finishing(nthreads, param);
+#ifndef NO_TIMING
+    /* now print the timing results: */
+    print_timing(relS->num_tuples, param.result, &timer);
+#endif
+    return param.joinresult;
+}
 
 result_t *PMJ_st(relation_t *relR, relation_t *relS, int nthreads) {
 
@@ -334,4 +334,28 @@ RPJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads) {
 #endif
     return param.joinresult;
 }
+
+
+result_t *RPJ_HS_NP(relation_t *relR, relation_t *relS, int nthreads) {
+    t_param param(nthreads);
+#ifndef NO_TIMING
+    T_TIMER timer;
+#endif
+#ifdef JOIN_RESULT_MATERIALIZE
+    joinresult->resultlist = (threadresult_t *) malloc(sizeof(threadresult_t)
+                                                       * nthreads);
+#endif
+    initialize(nthreads, param);
+    param.fetcher = new HS_NP_Fetcher(nthreads, relR, relS);
+    param.shuffler = new HSShuffler(nthreads, relR, relS);
+    param.joiner = new RippleJoiner();
+    LAUNCH(nthreads, param, timer, THREAD_TASK_SHUFFLE_HS)
+    param = finishing(nthreads, param);
+#ifndef NO_TIMING
+    /* now print the timing results: */
+    print_timing(relS->num_tuples, param.result, &timer);
+#endif
+    return param.joinresult;
+}
+
 /** @}*/

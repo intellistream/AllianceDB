@@ -140,4 +140,7 @@ RPJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads);
 result_t *
 RPJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads);
 
+result_t *
+RPJ_HS_NP(relation_t *relR, relation_t *relS, int nthreads);
+
 #endif /* NO_PARTITIONING_JOIN_H */

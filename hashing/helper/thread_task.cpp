@@ -370,7 +370,7 @@ void forward_tuples(baseShuffler *shuffler, arg_t *args, fetch_t *fetchR, fetch_
 
 
 void
-*THREAD_TASK_HSSHUFFLE(void *param) {
+*THREAD_TASK_SHUFFLE_HS(void *param) {
     arg_t *args = (arg_t *) param;
 #ifdef PERF_COUNTERS
     if (args->tid == 0) {

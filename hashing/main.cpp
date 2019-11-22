@@ -469,6 +469,7 @@ static struct algo_t algos[] =
                 {"RPJ_st",      RPJ_st}, /* Ripple Join Single_thread*/
                 {"RPJ_JM_NP",   RPJ_JM_NP}, /* Ripple Join JM*/
                 {"RPJ_JB_NP",   RPJ_JB_NP}, /* Ripple Join JB*/
+                {"RPJ_HS_NP",   RPJ_HS_NP}, /* Ripple Join HS*/
                 {{0},           0}
         };
 
@@ -478,9 +479,9 @@ param_t defaultParam() {/* Command line parameters */
     /* Default values if not specified on command line */
     /* BLOCKING HASHING: PRO (0), RJ_st, PRH, PRHO, NPO, NPO_st (5),
      * ONLINE HAHSING: SHJ_st, SHJ_JM_NP, SHJ_JB_NP, SHJ_JBCR_NP, SHJ_HS_NP (10)
-     * ONLINE SORTING: PMJ_st (11), RPJ_st, RPJ_JM_NP,  RPJ_JB_NP
+     * ONLINE SORTING: PMJ_st (11), RPJ_st, RPJ_JM_NP,  RPJ_JB_NP, RPJ_HS_NP
      * */
-    cmd_params.algo = &algos[13];
+    cmd_params.algo = &algos[15];
     cmd_params.nthreads = 2;//TODO: in HS mode, thread must be larger than 1. Fix it when nthread=1.
 
     /* default dataset is Workload B (described in paper) */

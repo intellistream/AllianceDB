@@ -55,19 +55,30 @@ void setup() {
     DEBUGMSG("relS [aligned:%d]: %s", is_aligned(relS.tuples, CACHE_LINE_SIZE),
              print_relation(relS.tuples, size).c_str())
 }
-void cleanup(){
+
+void cleanup() {
     /* clean-up */
     delete_relation(&relR);
     delete_relation(&relS);
     free(results);
 }
 
+TEST(JOIN_TEST, RPJ_JB_NP) {
+    setup();
+    /* Run the selected join algorithm */
+//    printf("[INFO ] Running join algorithm %s ...\n", "RPJ_JB_NP");
+    results = RPJ_JB_NP(&relR, &relS, 2);
+//    printf("[INFO ] Results = %ld. DONE.\n", results->totalresults);
+    EXPECT_EQ(results->totalresults, size);
+    cleanup();
+}
+
 TEST(JOIN_TEST, SHJ_ST) {
     setup();
     /* Run the selected join algorithm */
-    printf("[INFO ] Running join algorithm %s ...\n", "SHJ");
-    results = SHJ_st(&relR, &relS, 1);
-    printf("[INFO ] Results = %ld. DONE.\n", results->totalresults);
+//    printf("[INFO ] Running join algorithm %s ...\n", "SHJ");
+    results = SHJ_st(&relR, &relS, 2);
+//    printf("[INFO ] Results = %ld. DONE.\n", results->totalresults);
     EXPECT_EQ(results->totalresults, size);
     cleanup();
 }

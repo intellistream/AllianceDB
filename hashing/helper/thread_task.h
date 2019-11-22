@@ -55,7 +55,7 @@ THREAD_TASK_SHUFFLE(void *param);
  * @return
  */
 void
-*THREAD_TASK_HSSHUFFLE(void *param);
+*THREAD_TASK_SHUFFLE_HS(void *param);
 
 /**
  * Just a wrapper to call the _shj_st
