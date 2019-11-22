@@ -18,5 +18,5 @@ jobs:
       run: make
       working-directory: ./hashing
     - name: test
-      run: runUnitTests
+      run: ./runUnitTests
       working-directory: ./hashing  
