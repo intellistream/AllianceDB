@@ -1,5 +1,5 @@
 <p align="left">
-  <a href="https://github.com/ShuhaoZhangTony/AllianceDB">
+  <a href="https://github.com/ShuhaoZhangTony/AllianceDB/actions">
     <img alt="GitHub Actions status" src="https://github.com/ShuhaoZhangTony/AllianceDB/workflows/Main%20workflow/badge.svg"></a>
 </p>
 
