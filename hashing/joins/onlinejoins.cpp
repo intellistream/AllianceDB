@@ -288,7 +288,7 @@ result_t *RPJ_st(relation_t *relR, relation_t *relS, int nthreads) {
 #endif
 
     // No distribution nor partition
-    // Directly call the local SHJ joiner.
+    // Directly call the local joiner.
     tParam.result = rpj(0, relR, relS, chainedbuf, &timer);// nested loop version.
 //    tParam.result = hrpj(0, relR, relS, chainedbuf, &timer);// hash version.
 
