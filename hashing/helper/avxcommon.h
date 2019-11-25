@@ -97,21 +97,22 @@ typedef struct block16 {
         __m256d h2 = _mm256_max_pd(l1p, h1p);                           \
                                                                         \
         /* Level-2 shuffles */                                          \
-        /*__m256d l2p = _mm256_shuffle_pd(l2, h2, 0x0);*/                   \
-        /*__m256d h2p = _mm256_shuffle_pd(l2, h2, 0xF);*/                   \
+        __m256d l2p = _mm256_shuffle_pd(l2, h2, 0x0);                   \
+        __m256d h2p = _mm256_shuffle_pd(l2, h2, 0xF);                   \
                                                                         \
         /* Level-3 comparisons */                                       \
-        /*__m256d l3 = _mm256_min_pd(l2p, h2p);*/                           \
-        /*__m256d h3 = _mm256_max_pd(l2p, h2p);*/                           \
+        __m256d l3 = _mm256_min_pd(l2p, h2p);                           \
+        __m256d h3 = _mm256_max_pd(l2p, h2p);                           \
                                                                         \
         /* Level-3 shuffles implemented with unpcklps unpckhps */       \
         /* AVX cannot shuffle both inputs from same 128-bit lane */     \
         /* so we need 2 more instructions for this operation. */        \
-        /*__m256d l4 = _mm256_unpacklo_pd(l3, h3);*/                        \
-        /*__m256d h4 = _mm256_unpackhi_pd(l3, h3); */                       \
-        /*O1 = _mm256_permute2f128_pd(l4, h4, 0x20); */                     \
-        /*O2 = _mm256_permute2f128_pd(l4, h4, 0x31); */                     \
+        __m256d l4 = _mm256_unpacklo_pd(l3, h3);                        \
+        __m256d h4 = _mm256_unpackhi_pd(l3, h3);                        \
+        O1 = _mm256_permute2f128_pd(l4, h4, 0x20);                      \
+        O2 = _mm256_permute2f128_pd(l4, h4, 0x31);                      \
     } while(0)
+
 
 
 /** Bitonic merge network for 2 x 8 elements without reversing B */
