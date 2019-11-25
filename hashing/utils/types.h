@@ -88,6 +88,13 @@ struct joinconfig_t {
     enum numa_strategy_t NUMASTRATEGY;
 };
 
+typedef struct t_window t_window;
+
+struct t_window_list {
+    t_window *t_windows;
+    int num_threads;
+};
+
 /** @} */
 
 #endif /* TYPES_H */
