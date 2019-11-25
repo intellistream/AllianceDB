@@ -33,8 +33,3 @@ Pass the copy of tuples actually (involve tuple replication). This helps ensure 
 ### Ripple Join (RJ)
 Mostly nested-loop-join
 
-## Current status
-
-Done:
-  SHJ Single thread
-  SHJ + NP + JM/JB/HS
