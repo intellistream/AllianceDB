@@ -14,15 +14,16 @@
 ### Handshaking (HS)
 two data stream flow through in opposite direction.
 
-## Data Partitions
-NP or P.
+## Partition Schemes
 
-### Non-partition (NP)
+### Input data Partition
 
-Pass the tuple by reference (pointer) only.
+- Pass the tuple by reference (pointer) only.
+- Pass the copy of tuples actually (involve tuple replication). This helps ensure later join processing only touches local datasets.
 
-### Partitioned (P) 
-Pass the copy of tuples actually (involve tuple replication). This helps ensure later join processing only touches local datasets.
+### Data Structure Partition
+
+- whether we physically split data structure into sub-copies.
 
 ## Local Joiners
 
