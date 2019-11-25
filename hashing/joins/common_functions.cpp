@@ -290,6 +290,15 @@ int64_t proble_hashtable_single(const hashtable_t *ht, const relation_t *rel, ui
     return proble_hashtable_single(ht, &rel->tuples[index_rel], hashmask, skipbits, matches);
 }
 
+void match_single_tuple(const std::list<intkey_t> list, const tuple_t *tuple, int64_t *matches) {
+    for (auto it=list.begin(); it!=list.end(); it++) {
+        if (tuple->key == *it) {
+            (*matches)++;
+        }
+    }
+    fprintf(stdout, "JOINING: matches: %d, tuple: %d\n", *matches, tuple->key);
+}
+
 /**
  * Returns a new bucket_t from the given bucket_buffer_t.
  * If the bucket_buffer_t does not have enough space, then allocates

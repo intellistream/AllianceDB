@@ -148,43 +148,7 @@ rpj(int32_t tid, relation_t *rel_R,
 
     uint32_t cur_step = 0;
 
-    // define the current relation that do predicate
-//    relation_t *cur_rel = rel_S;
-//    uint32_t *cur_rel_pos = &index_S;
-//    bool is_inner_looping = true;
-
     int64_t matches = 0;//number of matches.
-
-    RippleJoiner joiner;
-
-    // square ripple join, but the nested loop has been reduced.
-//    do { // loop until return is called
-//        if (is_inner_looping) { // scaning side of a rectangle
-//            while (*cur_rel_pos < cur_step) {
-//                if (*cur_rel_pos < cur_step || cur_rel == rel_S) {
-//                    (*cur_rel_pos)++;
-//                    // update index
-//                    DEBUGMSG(1, "JOINING: tid: %d, matches: %d, %d\n", tid, rel_R->tuples[index_R].key, rel_S->tuples[index_S].key)
-//                    if (rel_R->tuples[index_R].key == rel_S->tuples[index_S].key) {
-//                        matches++; // predicate match
-//                        DEBUGMSG(1, "JOINING: tid: %d, matches: %d\n", tid, matches)
-//                    }
-//                } else {
-//                    break;
-//                }
-//            }
-//            is_inner_looping = false; // finish a side
-//        } else { // done with one side of a rectangle
-//            if (cur_rel == rel_S) {
-//                cur_step++;
-//            }// finished a step
-//            (*cur_rel_pos)++; // set cur_rel to new cur_step
-//            cur_rel = (cur_rel == rel_S) ? rel_R : rel_S; // toggle cur_rel
-//            cur_rel_pos = (cur_rel_pos == &index_R) ? &index_S : &index_R;
-//            *cur_rel_pos = 0;
-//            is_inner_looping = true;
-//        }
-//    } while (cur_step < rel_R->num_tuples || cur_step < rel_S->num_tuples);
 
     // just a simple nested loop with progressive response, R and S have the same input rate
     do {
@@ -221,8 +185,8 @@ rpj(int32_t tid, relation_t *rel_R,
  */
 long
 hrpj(int32_t tid, relation_t *rel_R,
-    relation_t *rel_S, void *pVoid,
-    T_TIMER *timer) {
+     relation_t *rel_S, void *pVoid,
+     T_TIMER *timer) {
 
     //allocate two hashtables.
     hashtable_t *htR;
@@ -241,7 +205,7 @@ hrpj(int32_t tid, relation_t *rel_R,
 
     int64_t matches = 0;//number of matches.
 
-    RippleJoiner joiner;
+    RippleJoiner joiner(rel_R, rel_S, 0);
 
     // indexed ripple join, assuming R and S have the same input rate.
     do {
@@ -255,7 +219,6 @@ hrpj(int32_t tid, relation_t *rel_R,
     destroy_hashtable(htS);
     return matches;
 }
-
 
 /**
  * SHJ algorithm to be used in each thread.
@@ -338,7 +301,39 @@ long SHJJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R,
 
 long RippleJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R, hashtable_t *htR, hashtable_t *htS, int64_t *matches,
                         void *pVoid, T_TIMER *timer) {
+    fprintf(stdout, "tid: %d, tuple: %d, R?%d\n", tid, tuple->key, tuple_R);
+    if (tuple_R) {
+        samList.t_windows[tid].R_Window.push_back(tuple->key);
+        match_single_tuple(samList.t_windows[tid].S_Window, tuple, matches);
+    } else {
+        samList.t_windows[tid].S_Window.push_back(tuple->key);
+        match_single_tuple(samList.t_windows[tid].R_Window, tuple, matches);
+    }
 
+    // Compute estimation result
+
+    long estimation_result = 0;
+    if (samList.t_windows[tid].R_Window.size() > 0 && samList.t_windows[tid].S_Window.size() > 0) {
+        estimation_result =
+                ((int) relR->num_tuples * (int) relS->num_tuples)
+                /
+                ((int) samList.t_windows[tid].R_Window.size() * (int) samList.t_windows[tid].S_Window.size())
+                *
+                (int) (*matches);
+    } else {
+        estimation_result = *matches;
+    }
+
+//    fprintf(stdout, "estimation result: %d \n", estimation_result);
+
+    return *matches;
+
+}
+
+RippleJoiner::RippleJoiner(relation_t *relR, relation_t *relS, int nthreads) : relR(
+        relR), relS(relS) {
+    samList.num_threads = nthreads;
+    samList.t_windows = new t_window[nthreads];
 }
 
 /**

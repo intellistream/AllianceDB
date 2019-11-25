@@ -92,7 +92,7 @@
          -s --s-size=<S>    Number of tuples in probe relation S <S> [128000000]
          -x --r-seed=<x>    Seed value for generating relation R <x> [12345]    
          -y --s-seed=<y>    Seed value for generating relation S <y> [54321]    
-         -z --skew=<z>      Zipf skew parameter for probe relation S <z> [0.0]  
+         -z --skew=<z>      Zipf* skew parameter for probe relation S <z> [0.0]
          --non-unique       Use non-unique (duplicated) keys in input relations 
          --full-range       Spread keys in relns. in full 32-bit integer range
          --basic-numa       Numa-localize relations to threads (Experimental)
