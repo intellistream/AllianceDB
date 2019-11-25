@@ -13,3 +13,6 @@ sorting/cmake-build-debug-system/*
 
 sorting/cmake-build-release/*
 sorting.zip
+
+hashing/.idea/*
+sorting/.idea/*
