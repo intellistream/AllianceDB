@@ -462,8 +462,8 @@ int check_avx() {
 
 
 struct temp_tuple {
-    float_t value;
-    float key;
+    int32_t value;
+    int32_t key;
 };
 
 void
@@ -481,7 +481,7 @@ check_avx_sort() {
     items[1].key = 107;
     items[1].value = 4;
 
-    double_t *ditems = (double_t *) in;
+    double_t *ditems = (double_t *) items;
 
     __m256d ra = _mm256_load_pd((double const *) (ditems));
     __m256d rb = _mm256_loadu_pd ((double const *)(ditems + 4));
@@ -502,7 +502,7 @@ check_avx_sort() {
     DEBUGMSG(1, "Sorted relation: %s",
              print_relation(out, sz).c_str())
 
-    assert(is_sorted_tuples(out, sz));
+    assert(is_sorted_tuples(out, sz)==0);
     free(in);
     free(out);
 }
@@ -534,8 +534,8 @@ main(int argc, char *argv[]) {
     cmd_params.algo = &algos[1]; /* m-pass: sort-merge join with multi-pass merge */
     cmd_params.nthreads = 1;
     /* default dataset is Workload B (described in paper) */
-    cmd_params.r_size = 64 * 12;
-    cmd_params.s_size = 64 * 12;
+    cmd_params.r_size = 128000;
+    cmd_params.s_size = 128000;
     cmd_params.r_seed = 12345;
     cmd_params.s_seed = 54321;
     cmd_params.skew = 0.0;

@@ -2,6 +2,7 @@
 // Created by Shuhao Zhang on 22/11/19.
 //
 #include "pmj_helper.h"
+#include "sort_common.h"
 
 
 void earlyJoinInitialRuns(tuple_t *tupleR, tuple_t *tupleS, int lengthR, int lengthS, int *matches) {

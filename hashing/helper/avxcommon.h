@@ -11,6 +11,8 @@
 #ifndef ALLIANCEDB_AVXCOMMON_H
 #define ALLIANCEDB_AVXCOMMON_H
 
+#define HAVE_AVX
+
 #include <immintrin.h> /* AVX intrinsics */
 
 /* just to enable compilation with g++ */

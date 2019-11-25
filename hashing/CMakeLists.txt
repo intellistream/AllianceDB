@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 3.12.4)
+cmake_minimum_required(VERSION 3.5.1)
 project(AllianceDB)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 11)
 
 # Download and unpack googletest at configure time
 configure_file(CMakeLists.txt.in googletest-download/CMakeLists.txt)
@@ -27,7 +27,7 @@ endif ()
 
 #####OTHERS########
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${./bin})
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -o3 -pthread -msse4.1")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -o3 -pthread -msse4.1 -mavx2")
 
 
 #####ADD GOOGLE TEST########

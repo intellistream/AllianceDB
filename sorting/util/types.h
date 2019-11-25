@@ -20,8 +20,8 @@ typedef int64_t intkey_t;
 typedef int64_t value_t;
 #else /* 32-bit key/payload, 8B tuples */
 //AVX only supports floating number!!!
-typedef float float_key_t;
-typedef float value_t;
+typedef int32_t float_key_t;
+typedef int32_t value_t;
 #endif
 
 #if !defined PRId64

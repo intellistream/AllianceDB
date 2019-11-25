@@ -35,6 +35,7 @@
 //#include "../utils/affinity.h"           /* pthread_attr_setaffinity_np */
 #include "../utils/generator.h"          /* numa_localize() */
 #include "../utils/t_timer.h" /* startTimer, stopTimer */
+#include <immintrin.h>
 
 #ifdef JOIN_RESULT_MATERIALIZE
 #include "tuple_buffer.h"       /* for materialization */
