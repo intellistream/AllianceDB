@@ -1553,8 +1553,8 @@ readmerge_scalar_bitand(mergenode_t * node,
 
     while( outnslots > 0 && ri < lenA && li < lenB ) {
 
-        intkey_t ak = A->key;
-        intkey_t bk = B->key;
+        float_key_t ak = A->key;
+        float_key_t bk = B->key;
         if(ak < bk) {
             Out[nt] = *A;
             ri ++;

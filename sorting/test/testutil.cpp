@@ -6,6 +6,7 @@
 
 #include "testutil.h"
 #include "../datagen/generator.h"
+#include "../affinity/memalloc.h"
 
 #ifndef CACHE_LINE_SIZE
 #define CACHE_LINE_SIZE 64
@@ -89,13 +90,13 @@ is_sorted_tuples(tuple_t *items, uint64_t nitems) {
                 warned = 1;
             }
         } else if (items[i].key < curr) {
-            return 0;
+            return 1;
         }
 
         curr = items[i].key;
     }
 
-    return 1;
+    return 0;
 }
 
 int
@@ -184,13 +185,13 @@ tuple_t *
 generate_rand_tuples(int num) {
 
     relation_t rel;
-    rel.tuples = (tuple_t *) malloc(sizeof(tuple_t) * num);
+    rel.tuples = (tuple_t *) malloc_aligned(sizeof(tuple_t) * num);
     rel.num_tuples=num;
     uint64_t i;
 
     for (i = 0; i < num; i++) {
         rel.tuples[i].key = (i + 1);
-        rel.tuples[i].payload = i;
+//        rel.tuples[i].payload = 0;
     }
 
     /* randomly shuffle elements */
@@ -227,7 +228,7 @@ generate_rand_ordered_int32(int num) {
     int j;
     uint32_t INCRMOD = 100;
 
-    intkey_t maxint = ~(1 << 31) - INCRMOD;
+    float_key_t maxint = ~(1 << 31) - INCRMOD;
 
     int32_t *A = (int32_t *) malloc(sizeof(int32_t) * num);
     startA = 1 + rand() % INCRMOD;
@@ -245,11 +246,11 @@ generate_rand_ordered_int32(int num) {
 
 tuple_t *
 generate_rand_ordered_tuples(int num) {
-    intkey_t startA;
+    float_key_t startA;
     int j;
     uint32_t INCRMOD = 100;
 
-    intkey_t maxint = ~(1 << 31) - INCRMOD;
+    float_key_t maxint = ~(1 << 31) - INCRMOD;
 
     tuple_t *A = (tuple_t *) malloc(sizeof(tuple_t) * num);
     startA = 1 + rand() % INCRMOD;

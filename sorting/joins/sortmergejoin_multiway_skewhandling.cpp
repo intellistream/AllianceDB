@@ -149,7 +149,7 @@ mergejoin_phase(relation_t ** relRparts, relation_t ** relSparts,
  */
 void
 balanced_sorted_partition(relation_t ** rels, int nrels, int eqhistsamples,
-                          intkey_t * partkeys /* [out] */, int nparts,
+                          float_key_t * partkeys /* [out] */, int nparts,
                           int my_tid, relation_t ** heavyhitters);
 
 
@@ -161,7 +161,7 @@ balanced_sorted_partition(relation_t ** rels, int nrels, int eqhistsamples,
 void
 create_and_add_merge_tasks(taskqueue_t * mergequeue,
                            mergetask_t ** largest_ret,
-                           intkey_t * merge_splitters,
+                           float_key_t * merge_splitters,
                            relation_t ** relSparts,
                            tuple_t * outputptr,
                            const int ntasks,
@@ -182,13 +182,13 @@ detect_heavy_hitters_and_add_tasks(relation_t * heavyhits,
  * Find the first offset in sortedrun which is >= skey.
  */
 int64_t
-binsearch_lower_bound(tuple_t * sortedrun, int64_t ntups, intkey_t skey);
+binsearch_lower_bound(tuple_t * sortedrun, int64_t ntups, float_key_t skey);
 
 /**
  * Find the maximum offset in sortedrun which is < skey.
  */
 int64_t
-binsearch_upper_bound(tuple_t * sortedrun, int64_t ntup,  intkey_t skey);
+binsearch_upper_bound(tuple_t * sortedrun, int64_t ntup, float_key_t skey);
 
 /**
  * Determines and returns at most SKEW_MAX_HEAVY_HITTERS heavy hitter keys
@@ -555,8 +555,8 @@ multiwaymerge_phase_withskewhandling(int numaregionid,
                first determine how many merge tasks we will create. */
             int nmergetasks = (mergeStotal + DECOMPOSE_THRESHOLD - 1)
                               / DECOMPOSE_THRESHOLD;
-            intkey_t * merge_splitters = (intkey_t *)
-                    malloc(sizeof(intkey_t) * nmergetasks);
+            float_key_t * merge_splitters = (float_key_t *)
+                    malloc(sizeof(float_key_t) * nmergetasks);
             relation_t * heavyhits = 0;
             /* 2) Find splitters for range part. to different merge tasks.*/
             balanced_sorted_partition(Sparts,PARTFANOUT,SKEW_DECOMPOSE_SAMPLES,
@@ -697,7 +697,7 @@ multiwaymerge_phase_withskewhandling(int numaregionid,
  */
 void
 balanced_sorted_partition(relation_t ** rels, int nrels, int eqhistsamples,
-                          intkey_t * partkeys /* [out] */, int nparts, int my_tid,
+                          float_key_t * partkeys /* [out] */, int nparts, int my_tid,
                           relation_t ** heavyhitters)
 {
     /* compute equi-depth histogram for each chunk with p=eqhistsamples values */
@@ -717,7 +717,7 @@ balanced_sorted_partition(relation_t ** rels, int nrels, int eqhistsamples,
             uint64_t  idx               = (p+1) * eqwidth - 1;
             tuple_t * tup               = &(rels[i]->tuples[idx]);
             eqhist[i].tuples[p].key     = tup->key;
-            eqhist[i].tuples[p].payload = eqwidth;
+//            eqhist[i].tuples[p].payload = eqwidth;
         }
     }
 
@@ -736,12 +736,12 @@ balanced_sorted_partition(relation_t ** rels, int nrels, int eqhistsamples,
 
 
     /* merge the histograms, new size can be up to (eqhistsamples * nrels) */
-    std::map<intkey_t, int> cdfhist;
+    std::map<float_key_t, int> cdfhist;
     for(int i = 0; i < nrels; i++){
         //if(my_tid == 3) printf("****************** HIST for %d\n", i);
         for(int p = eqhistsamples-1; p >= 0; p--){
-            intkey_t key          = eqhist[i].tuples[p].key;
-            int      count        = eqhist[i].tuples[p].payload;
+            float_key_t key          = eqhist[i].tuples[p].key;
+            int      count        = 0;//eqhist[i].tuples[p].payload;
             if(cdfhist.find(key) != cdfhist.end()){
                 cdfhist[key]     += count;
             }
@@ -758,11 +758,11 @@ balanced_sorted_partition(relation_t ** rels, int nrels, int eqhistsamples,
 
     int sum = 0;
     int i = 0;
-    for (std::map<intkey_t,int>::iterator it=cdfhist.begin();
+    for (std::map<float_key_t,int>::iterator it=cdfhist.begin();
          it != cdfhist.end(); ++it) {
         sum                         += it->second;
         prefixcdf.tuples[i].key      = it->first;
-        prefixcdf.tuples[i].payload  = sum;
+//        prefixcdf.tuples[i].payload  = sum;
         i++;
     }
 
@@ -782,31 +782,31 @@ balanced_sorted_partition(relation_t ** rels, int nrels, int eqhistsamples,
     for(i = 0; i < nparts-1; i++) {
         value_t count = (i+1) * numperpart;
         for(; j < prefixcdf.num_tuples; j++) {
-            if(prefixcdf.tuples[j].payload == count){
-                partkeys[i] = prefixcdf.tuples[j].key;
-                // fprintf(stderr, "TASK-%d partition-key = %d\n",
-                //         i, partkeys[i]);
-                break;
-            }
-            else if(prefixcdf.tuples[j].payload > count){
-                int cnt2 = prefixcdf.tuples[j].payload;
-                int key2 = prefixcdf.tuples[j].key;
-                int cnt1 = 0;
-                int key1 = 0;
-
-                if( j > 0 ) {
-                    cnt1 = prefixcdf.tuples[j-1].payload;
-                    key1 = prefixcdf.tuples[j-1].key;
-                }
-
-                double factor = (count - cnt1) / (double)(cnt2 - cnt1);
-                /* find the partitioning key with interpolation */
-                intkey_t partkey = (key2 - key1) * factor + key1;
-                partkeys[i] = partkey;
-                // fprintf(stderr, "TASK-%d partition-key = %d\n",
-                //         i, partkey);
-                break;
-            }
+//            if(prefixcdf.tuples[j].payload == count){
+//                partkeys[i] = prefixcdf.tuples[j].key;
+//                // fprintf(stderr, "TASK-%d partition-key = %d\n",
+//                //         i, partkeys[i]);
+//                break;
+//            }
+//            else if(prefixcdf.tuples[j].payload > count){
+//                int cnt2 = prefixcdf.tuples[j].payload;
+//                int key2 = prefixcdf.tuples[j].key;
+//                int cnt1 = 0;
+//                int key1 = 0;
+//
+//                if( j > 0 ) {
+//                    cnt1 = prefixcdf.tuples[j-1].payload;
+//                    key1 = prefixcdf.tuples[j-1].key;
+//                }
+//
+//                double factor = (count - cnt1) / (double)(cnt2 - cnt1);
+//                /* find the partitioning key with interpolation */
+//                float_key_t partkey = (key2 - key1) * factor + key1;
+//                partkeys[i] = partkey;
+//                // fprintf(stderr, "TASK-%d partition-key = %d\n",
+//                //         i, partkey);
+//                break;
+//            }
 #if 0
             else if(j == (prefixcdf.num_tuples-1)) {
                 /* We can find a possible value with interpolation. */
@@ -836,7 +836,7 @@ balanced_sorted_partition(relation_t ** rels, int nrels, int eqhistsamples,
 
 void create_and_add_merge_tasks(taskqueue_t * mergequeue,
                                 mergetask_t ** largest_ret,
-                                intkey_t * merge_splitters,
+                                float_key_t * merge_splitters,
                                 relation_t ** relSparts,
                                 tuple_t * outputptr,
                                 const int ntasks,
@@ -851,7 +851,7 @@ void create_and_add_merge_tasks(taskqueue_t * mergequeue,
     {
         largest = create_mergetask(PARTFANOUT);
         /* t = 0 --> first task is directly assigned */
-        intkey_t tk0 = merge_splitters[0];
+        float_key_t tk0 = merge_splitters[0];
         for(int p = 0; p < PARTFANOUT; p++){
             if ( relSparts[p]->num_tuples > 0 )
             {
@@ -879,7 +879,7 @@ void create_and_add_merge_tasks(taskqueue_t * mergequeue,
     }
     // printf("[INFO ] TID=%d merge-task-0 total = %d\n", my_tid, task0tot);
     for(int t = 1; t < ntasks-1; t++) {
-        intkey_t tk = merge_splitters[t];
+        float_key_t tk = merge_splitters[t];
         mergetask_t * mwtask = create_mergetask(PARTFANOUT);
         uint64_t tasktot = 0;
         for(int p = 0; p < PARTFANOUT; p++){
@@ -1160,7 +1160,7 @@ detect_heavy_hitters_and_add_tasks(relation_t * heavyhits,
  * Find the first offset in sortedrun which is >= skey.
  */
 int64_t
-binsearch_lower_bound(tuple_t * sortedrun, int64_t ntups, intkey_t skey)
+binsearch_lower_bound(tuple_t * sortedrun, int64_t ntups, float_key_t skey)
 {
     const tuple_t * tups = sortedrun;
     int64_t lo, hi, mid;
@@ -1188,7 +1188,7 @@ binsearch_lower_bound(tuple_t * sortedrun, int64_t ntups, intkey_t skey)
  * Find the maximum offset in sortedrun which is < skey.
  */
 int64_t
-binsearch_upper_bound(tuple_t * sortedrun, int64_t ntup,  intkey_t skey)
+binsearch_upper_bound(tuple_t * sortedrun, int64_t ntup, float_key_t skey)
 {
     const tuple_t * tups = sortedrun;
     int64_t lo, hi, mid;
@@ -1263,10 +1263,10 @@ find_heavy_hitters(relation_t * equidepthhist, double thrpercent,
     /* number of threshold buckets that a value must occur to be a HH */
     int64_t threshold = equidepthhist->num_tuples * thrpercent;
     int64_t count = 0;
-    intkey_t lastkey = -1;
+    float_key_t lastkey = -1;
 
     for(unsigned int i = 0; i < equidepthhist->num_tuples; i++){
-        intkey_t key = equidepthhist->tuples[i].key;
+        float_key_t key = equidepthhist->tuples[i].key;
 
         if(key == lastkey){
             count++;

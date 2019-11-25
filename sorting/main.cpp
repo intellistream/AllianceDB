@@ -354,6 +354,7 @@ $ cat cpu-mapping.txt
 #include "test/testutil.h"
 #include "joins/avxsort.h"
 #include "joins/scalarsort.h"
+#include "joins/avxintrin_emu.h"
 
 #define DEBUG
 /** Debug msg logging method */
@@ -460,22 +461,42 @@ int check_avx() {
 #define MAXTESTSIZE (1<<22)
 
 
+struct temp_tuple {
+    float_t value;
+    float key;
+};
+
 void
 check_avx_sort() {
-    int64_t sz = 255;//rand() % MAXTESTSIZE;
+    int64_t sz = 256;//rand() % MAXTESTSIZE;
     tuple_t *in = generate_rand_tuples(sz);
     DEBUGMSG(1, "Original relation: %s",
              print_relation(in, sz).c_str())
+
+
+    temp_tuple *items = (temp_tuple *) malloc(sizeof(temp_tuple) * 10);
+    items[0].key = 22;
+    items[0].value = 11110;
+
+    items[1].key = 107;
+    items[1].value = 4;
+
+    double_t *ditems = (double_t *) in;
+
+    __m256d ra = _mm256_load_pd((double const *) (ditems));
+    __m256d rb = _mm256_loadu_pd ((double const *)(ditems + 4));
+    __m256d rc = _mm256_loadu_pd ((double const *)(ditems + 8));
+    __m256d rd = _mm256_loadu_pd ((double const *)(ditems + 12));
 
 //    tuple_t *out2 = (tuple_t *) malloc(sz * sizeof(tuple_t));
 //    scalarsort_tuples(&in, &out2, sz);
 //    DEBUGMSG(1, "scalar sorted relation: %s",
 //             print_relation(out2, sz).c_str())
 
-    tuple_t *out = (tuple_t *) malloc(sz * sizeof(tuple_t));
+    tuple_t *out = (tuple_t *) malloc_aligned(sz * sizeof(tuple_t));
     for (int i = 0; i < sz; i++) {
         out[i].key = 0;
-        out[i].payload = 0;
+//        out[i].payload = 0;
     }
     avxsort_tuples(&in, &out, sz);
     DEBUGMSG(1, "Sorted relation: %s",
@@ -488,8 +509,8 @@ check_avx_sort() {
 
 int
 main(int argc, char *argv[]) {
-    check_avx_sort();
-    fflush(stdout);
+//    check_avx_sort();
+//    fflush(stdout);
 //    exit(0);
     struct timeval start, end;
     relation_t relR;
@@ -513,8 +534,8 @@ main(int argc, char *argv[]) {
     cmd_params.algo = &algos[1]; /* m-pass: sort-merge join with multi-pass merge */
     cmd_params.nthreads = 1;
     /* default dataset is Workload B (described in paper) */
-    cmd_params.r_size = 64*12;
-    cmd_params.s_size = 64*12;
+    cmd_params.r_size = 64 * 12;
+    cmd_params.s_size = 64 * 12;
     cmd_params.r_seed = 12345;
     cmd_params.s_seed = 54321;
     cmd_params.skew = 0.0;

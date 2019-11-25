@@ -1,12 +1,11 @@
 /* @version $Id $ */
 #include <string.h> /* memcpy(), TODO: replace with simd_memcpy() */
-#include "avxcommon.h"
-#include "avx_multiwaymerge.h"
 
+#include "avx_multiwaymerge.h"
+#include "avxcommon.h"
 
 /* just make the code compile without AVX support */
 #ifndef HAVE_AVX
-
 #include "avxintrin_emu.h"
 #endif
 

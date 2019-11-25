@@ -146,7 +146,7 @@ item_t * gen_zipf (unsigned int stream_size,
 
         /* uint32_t * dst = (uint32_t *)&ret[i]; */
         tuple_t * dst = (tuple_t *) &ret[i];
-        dst->key = (intkey_t)alphabet[pos];
+        dst->key = (float_key_t)alphabet[pos];
         /* ret[i] = alphabet[pos]; */
     }
 

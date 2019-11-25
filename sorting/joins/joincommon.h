@@ -20,6 +20,7 @@
 #define ALLIANCEDB_JOINCOMMON_H
 
 #define DEBUG
+
 #include <stdint.h>
 #include <stdlib.h>             /* posix_memalign, EXIT_FAILURE */
 #include <sys/time.h>           /* gettimeofday */
@@ -42,6 +43,7 @@
 #define SKEW_HEAVY_HITTER_THR 0.5 /* heavy hitter threshold freq. */
 
 #ifdef SKEW_HANDLING
+
 #include "../util/generic_task_queue.h" /* taskqueue_t */
 
 
@@ -63,6 +65,7 @@ typedef struct relationpair_t relationpair_t;
     if(COND) {                                                          \
         fprintf(stdout,                                                 \
                 "[DEBUG @ %s:%d] " MSG, __FILE__, __LINE__, ## __VA_ARGS__); \
+                fflush(stdout); \
     }
 #else
 #define DEBUGMSG(COND, MSG, ...)
@@ -77,12 +80,12 @@ std::string print_relation(tuple_t *tuple, int length);
 
 /** Initialize and run the given join algorithm with given number of threads */
 result_t *
-sortmergejoin_initrun(relation_t * relR, relation_t * relS, joinconfig_t * joincfg,
-                      void * (*jointhread)(void *));
+sortmergejoin_initrun(relation_t *relR, relation_t *relS, joinconfig_t *joincfg,
+                      void *(*jointhread)(void *));
 
 /** Print out timing stats for the given start and end timestamps */
-void print_timing(uint64_t numtuples, struct timeval * start, struct timeval * end,
-             FILE * out);
+void print_timing(uint64_t numtuples, struct timeval *start, struct timeval *end,
+                  FILE *out);
 
 /**
  * Does merge join on two sorted relations. Just a naive scalar
@@ -95,8 +98,8 @@ void print_timing(uint64_t numtuples, struct timeval * start, struct timeval * e
  * @param output join results, if JOIN_MATERIALIZE defined.
  */
 uint64_t
-merge_join(tuple_t * rtuples, tuple_t * stuples,
-           const uint64_t numR, const uint64_t numS, void * output);
+merge_join(tuple_t *rtuples, tuple_t *stuples,
+           const uint64_t numR, const uint64_t numS, void *output);
 
 /**
  * Does merge join on two sorted relations with interpolation
@@ -110,54 +113,55 @@ merge_join(tuple_t * rtuples, tuple_t * stuples,
  * @param output join results, if JOIN_MATERIALIZE defined.
  */
 uint64_t
-merge_join_interpolation(tuple_t * rtuples, tuple_t * stuples,
+merge_join_interpolation(tuple_t *rtuples, tuple_t *stuples,
                          const uint64_t numR, const uint64_t numS,
-                         void * output);
+                         void *output);
 
 
 int
-is_sorted_helper(int64_t * items, uint64_t nitems);
+is_sorted_helper(int64_t *items, uint64_t nitems);
+
 /** utility method to check whether arrays are sorted */
 void
-check_sorted(int64_t * R, int64_t * S, uint64_t nR, uint64_t nS, int my_tid);
+check_sorted(int64_t *R, int64_t *S, uint64_t nR, uint64_t nS, int my_tid);
 
 /** holds the arguments passed to each thread */
 struct arg_t {
-    tuple_t *  relR;
-    tuple_t *  relS;
+    tuple_t *relR;
+    tuple_t *relS;
 
     /* temporary relations for partitioning output */
-    tuple_t *  tmp_partR;
-    tuple_t *  tmp_partS;
+    tuple_t *tmp_partR;
+    tuple_t *tmp_partS;
 
     /* temporary relations for sorting output */
-    tuple_t *  tmp_sortR;
-    tuple_t *  tmp_sortS;
+    tuple_t *tmp_sortR;
+    tuple_t *tmp_sortS;
 
     int32_t numR;
     int32_t numS;
 
     int32_t my_tid;
-    int     nthreads;
+    int nthreads;
     /* join configuration parameters: */
-    joinconfig_t * joincfg;
+    joinconfig_t *joincfg;
 
-    pthread_barrier_t * barrier;
+    pthread_barrier_t *barrier;
     int64_t result;
 
-    relationpair_t ** threadrelchunks;
+    relationpair_t **threadrelchunks;
 
     /** used for multi-way merging, shared by active threads in each NUMA. */
-    tuple_t ** sharedmergebuffer;
+    tuple_t **sharedmergebuffer;
 
     /** arguments specific to mpsm-join: */
-    uint32_t ** histR;
-    tuple_t * tmpRglobal;
+    uint32_t **histR;
+    tuple_t *tmpRglobal;
     uint64_t totalR;
 
 #ifdef SKEW_HANDLING
     /** skew handling task queues (1 per NUMA region). */
-    taskqueue_t ** numa_taskqueues;
+    taskqueue_t **numa_taskqueues;
 #endif
 
 #ifdef JOIN_MATERIALIZE
@@ -177,7 +181,6 @@ struct relationpair_t {
     relation_t R;
     relation_t S;
 };
-
 
 
 #endif //ALLIANCEDB_JOINCOMMON_H

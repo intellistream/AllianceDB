@@ -44,7 +44,7 @@ knuth_shuffle(relation_t *relation) {
     int i;
     for (i = relation->num_tuples - 1; i > 0; i--) {
         int64_t j = RAND_RANGE(i);
-        intkey_t tmp = relation->tuples[i].key;
+        float_key_t tmp = relation->tuples[i].key;
         relation->tuples[i].key = relation->tuples[j].key;
         relation->tuples[j].key = tmp;
     }
@@ -55,7 +55,7 @@ knuth_shuffle48(relation_t *relation, unsigned short *state) {
     int i;
     for (i = relation->num_tuples - 1; i > 0; i--) {
         int64_t j = RAND_RANGE48(i, state);
-        intkey_t tmp = relation->tuples[i].key;
+        float_key_t tmp = relation->tuples[i].key;
         relation->tuples[i].key = relation->tuples[j].key;
         relation->tuples[j].key = tmp;
     }
@@ -123,7 +123,7 @@ random_unique_gen_thread(void *args) {
 
     for (i = 0; i < rel->num_tuples; i++) {
         rel->tuples[i].key = firstkey;
-        rel->tuples[i].payload = randstart + i;
+//        rel->tuples[i].payload = randstart + i;
 
         if (firstkey == maxid)
             firstkey = 0;
@@ -149,7 +149,7 @@ random_unique_gen_thread(void *args) {
         lock(locks + k);  /* lock this rel-idx=i, fullrel-idx=k */
         lock(locks + j);  /* lock full rel-idx=j */
 
-        intkey_t tmp = fullrel->tuples[k].key;
+        float_key_t tmp = fullrel->tuples[k].key;
         fullrel->tuples[k].key = fullrel->tuples[j].key;
         fullrel->tuples[j].key = tmp;
 
@@ -187,7 +187,7 @@ write_relation(relation_t *rel, char *filename) {
     fprintf(fp, "#KEY, VAL\n");
 
     for (i = 0; i < rel->num_tuples; i++) {
-        fprintf(fp, "%d %d\n", rel->tuples[i].key, rel->tuples[i].payload);
+//        fprintf(fp, "%d %d\n", rel->tuples[i].key, rel->tuples[i].payload);
     }
 
     fclose(fp);
@@ -203,7 +203,7 @@ random_gen(relation_t *rel, const int64_t maxid) {
 
     for (i = 0; i < rel->num_tuples; i++) {
         rel->tuples[i].key = RAND_RANGE(maxid);
-        rel->tuples[i].payload = rel->num_tuples - i;
+//        rel->tuples[i].payload = rel->num_tuples - i;
 
         /* avoid NaN in values */
         avoid_NaN((int64_t *) &(rel->tuples[i]));

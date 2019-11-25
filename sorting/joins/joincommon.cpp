@@ -481,7 +481,7 @@ is_sorted_helper(int64_t *items, uint64_t nitems) {
 
     /* return 1; */
 
-    intkey_t curr = 0;
+    float_key_t curr = 0;
     uint64_t i;
     int warned = 0;
     tuple_t *tuples = (tuple_t *) items;
