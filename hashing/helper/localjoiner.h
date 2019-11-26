@@ -20,6 +20,8 @@ public:
     virtual long join(int32_t tid, tuple_t *tuple,
                       bool tuple_R, hashtable_t *htR, hashtable_t *htS, int64_t *matches, void *pVoid,
                       T_TIMER *timer) = 0;
+
+    virtual void clean(int32_t tid, tuple_t *tuple, hashtable_t *htR, hashtable_t *htS, bool cleanR) = 0;
 };
 
 
@@ -37,6 +39,8 @@ public:
          T_TIMER *timer) override;
 
     RippleJoiner(relation_t *relR, relation_t *relS, int nthreads);
+
+    void clean(int32_t tid, tuple_t *tuple, hashtable_t *htR, hashtable_t *htS, bool cleanR) override;
 };
 
 
@@ -46,6 +50,8 @@ public:
     long
     join(int32_t tid, tuple_t *tuple, bool tuple_R, hashtable_t *htR, hashtable_t *htS, int64_t *matches, void *pVoid,
          T_TIMER *timer) override;
+
+    void clean(int32_t tid, tuple_t *tuple, hashtable_t *htR, hashtable_t *htS, bool cleanR) override;
 };
 
 class SHJJoiner : public localJoiner {
@@ -54,6 +60,8 @@ public:
     long
     join(int32_t tid, tuple_t *tuple, bool tuple_R, hashtable_t *htR, hashtable_t *htS, int64_t *matches, void *pVoid,
          T_TIMER *timer) override;
+
+    void clean(int32_t tid, tuple_t *tuple, hashtable_t *htR, hashtable_t *htS, bool cleanR) override;
 };
 
 long

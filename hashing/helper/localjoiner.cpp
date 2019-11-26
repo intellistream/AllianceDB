@@ -134,6 +134,45 @@ long SHJJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R,
 }
 
 /**
+ * Clean state stored in local thread, basically used in HS mode
+ * @param tid
+ * @param tuple
+ * @param htR
+ * @param htS
+ * @param cleanR
+ */
+void SHJJoiner::clean(int32_t tid, tuple_t *tuple, hashtable_t *htR, hashtable_t *htS, bool cleanR) {
+    if (cleanR) {
+        //if SHJ is used, we need to clean up hashtable of R.
+        debuild_hashtable_single(htR, tuple, htR->hash_mask, htR->skip_bits);
+
+//        printf( "tid: %d remove tuple r %d from R-window. \n", arg->tid, fetch->tuple->key);
+
+        if (tid == 0) {
+            window0.R_Window.remove(tuple->key);
+//            print_window(window0.R_Window, 0);
+        } else {
+            window1.R_Window.remove(tuple->key);
+//            print_window(window1.R_Window, 1);
+        }
+    } else {
+        debuild_hashtable_single(htS, tuple, htS->hash_mask, htS->skip_bits);
+
+//        printf("tid: %d remove tuple s %d from S-window. \n", arg->tid, fetch->tuple->key);
+
+        if (tid == 0) {
+            window0.S_Window.remove(tuple->key);
+//            print_window(window0.S_Window, 0);
+        } else {
+            window1.S_Window.remove(tuple->key);
+//            print_window(window1.S_Window, 1);
+        }
+//        std::cout << boost::stacktrace::stacktrace() << std::endl;
+
+    }
+}
+
+/**
  *  The main idea of PMJ is to read as much data as can fit in memory.
  *  Then, in-memory data is sorted and is joined together, and then is flushed into disk.
  *  When all data is received, PMJ joins the disk-resident data using a refinement version
@@ -214,10 +253,21 @@ pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid, T_TIMER *tim
  * @param timer
  * @return
  */
-
 long PMJJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R, hashtable_t *htR, hashtable_t *htS, int64_t *matches,
                      void *pVoid, T_TIMER *timer) {
     return 0;
+}
+
+/**
+ * HS cleaner
+ * @param tid
+ * @param tuple
+ * @param htR
+ * @param htS
+ * @param cleanR
+ */
+void PMJJoiner::clean(int32_t tid, tuple_t *tuple, hashtable_t *htR, hashtable_t *htS, bool cleanR) {
+    return;
 }
 
 
@@ -366,10 +416,33 @@ long RippleJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R, hashtable_t *
 
 }
 
+/**
+ *
+ * @param relR
+ * @param relS
+ * @param nthreads
+ */
 RippleJoiner::RippleJoiner(relation_t *relR, relation_t *relS, int nthreads) : relR(
         relR), relS(relS) {
     samList.num_threads = nthreads;
     samList.t_windows = new t_window[nthreads];
+}
+
+
+/**
+ *
+ * @param tid
+ * @param tuple
+ * @param htR
+ * @param htS
+ * @param cleanR
+ */
+void RippleJoiner::clean(int32_t tid, tuple_t *tuple, hashtable_t *htR, hashtable_t *htS, bool cleanR) {
+    if (cleanR) {
+        samList.t_windows[tid].R_Window.remove(tuple->key);
+    } else {
+        samList.t_windows[tid].S_Window.remove(tuple->key);
+    }
 }
 
 

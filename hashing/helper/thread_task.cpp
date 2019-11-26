@@ -271,8 +271,8 @@ void
 processLeft(baseShuffler *shuffler, arg_t *args, fetch_t *fetch, int64_t *matches, void *chainedbuf) {
     if (fetch->ack) {/* msg is an acknowledgment message */
         //remove oldest tuple from S-window
-        clean(args, fetch, RIGHT);
-
+//        clean(args, fetch, RIGHT);
+        args->joiner->clean(args->tid, fetch->tuple, args->htR, args->htS, RIGHT);
     } else if (fetch->tuple) { //if msg contains a new tuple then
 #ifdef DEBUG
         if (!fetch->flag)//right must be tuple R.
@@ -363,7 +363,8 @@ void forward_tuples(baseShuffler *shuffler, arg_t *args, fetch_t *fetchR, fetch_
 #endif
             shuffler->push(args->tid + 1, fetchR, LEFT);//push R towards right.
             //remove ri from R-window.
-            clean(args, fetchR, LEFT);
+//            clean(args, fetchR, LEFT);
+            args->joiner->clean(args->tid, fetchR->tuple, args->htR, args->htS, LEFT);
         }
     }
 }
