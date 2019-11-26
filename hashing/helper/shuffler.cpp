@@ -113,15 +113,92 @@ HashShuffler::HashShuffler(int nthreads, relation_t *relR, relation_t *relS)
 ContRandShuffler::ContRandShuffler(int nthreads, relation_t *relR,
                                    relation_t *relS)
         : baseShuffler(nthreads, relR, relS) {
+    numGrps = ceil(nthreads/group_size);
     queues = new T_CQueue[nthreads];
+    grpToTh = new std::vector<int32_t>[numGrps];
+//    thToGrp = new int32_t[nthreads];
+    // assign each thread to a group
+    uint32_t curGrpId = 0;
+    uint32_t count = 0;
+    for (int i = 0; i < nthreads; i++) {
+        if (count < group_size) {
+            grpToTh[curGrpId].push_back(i);
+//            thToGrp[i] = curGrpId;
+        } else {
+            count = 0;
+            curGrpId++;
+        }
+        count++;
+    }
 }
 
 void ContRandShuffler::push(intkey_t key, fetch_t *fetch, bool b) {
+    // replicate R, partition S in each Group
+    int32_t idx = KEY_TO_IDX(key, numGrps);
 
+    std::vector<int32_t> curGrp = grpToTh[idx];
+    // replicate R
+    if (fetch->flag) {
+        DEBUGMSG("PUSH: %d, tuple: %d, R?%d\n", idx, fetch->tuple->key, fetch->flag)
+        for (auto it=curGrp.begin(); it!=curGrp.end(); it++) {
+            moodycamel::ConcurrentQueue<fetch_t *> *queue = queues[*it].queue;
+            queue->enqueue(new fetch_t(fetch));
+            DEBUGMSG("PUSH: %d, tuple: %d, queue size:%d\n", idx,
+                    fetch->tuple->key,
+                    queue->size_approx())
+        }
+    } else { // partition S
+        DEBUGMSG("PUSH: %d, tuple: %d, R?%d\n", idx, fetch->tuple->key, fetch->flag)
+        int32_t idx_s = rand() % curGrp.size(); // randomly distribute to threads in the groups
+        moodycamel::ConcurrentQueue<fetch_t *> *queue = queues[curGrp[idx_s]].queue;
+        queue->enqueue(new fetch_t(fetch));
+        DEBUGMSG("PUSH: %d, tuple: %d, queue size:%d\n", idx,
+                 fetch->tuple->key,
+                 queue->size_approx())
+    }
 }
 
 fetch_t *ContRandShuffler::pull(int32_t tid, bool b) {
-    return nullptr;
+
+    int32_t idx = TID_To_IDX(tid);
+    moodycamel::ConcurrentQueue<fetch_t *> *queue = queues[idx].queue;
+    fetch_t *tuple;
+    bool rt = queue->try_dequeue(tuple);
+
+    if (!rt)
+        return nullptr;
+//    bool rt =  .try_dequeue(tuple);
+    DEBUGMSG("PULL: %d, tuple: %d, queue size:%d\n", idx,
+             tuple->tuple->key,
+             queue->size_approx());
+    return tuple;
+
+//    int32_t idx = TID_To_IDX(numGrps);
+//    bool isLocal = false;
+//    int32_t selected_index = -1;
+//    for (int i=0; i<nthreads; i++) {
+//        if (thToGrp[i] == idx) {
+//            if (i == tid) {
+//                isLocal == true;
+//                selected_index = i;
+//            } else if (i==tid && isLocal == false) {
+//                selected_index = i;
+//            }
+//        }
+//    }
+//    if (selected_index == -1) {
+//        DEBUGMSG("error in CR... %d\n", idx);
+//    }
+//    moodycamel::ConcurrentQueue<fetch_t *> *queue = queues[selected_index].queue;
+//    fetch_t *tuple;
+//    bool rt = queue->try_dequeue(tuple);
+//    if (!rt)
+//        return nullptr;
+////          bool rt =  .try_dequeue(tuple);
+//    DEBUGMSG("PULL: %d, tuple: %d, queue size:%d\n", idx,
+//             tuple->tuple->key,
+//             queue->size_approx());
+//    return tuple;
 }
 
 

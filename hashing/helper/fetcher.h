@@ -181,7 +181,7 @@ public:
                && state[tid].start_index_S == state[tid].end_index_S;
     }
 
-    JB_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS)
+     JB_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS)
             : baseFetcher(relR, relS) {
         state = new t_state[nthreads];
         int numRthr = relR->num_tuples / nthreads;// partition R,

@@ -230,37 +230,37 @@ void
 #define LEFT true
 #define RIGHT false
 
-void clean(arg_t *arg, fetch_t *fetch, bool cleanR) {
-
-    if (cleanR) {
-        //if SHJ is used, we need to clean up hashtable of R.
-        debuild_hashtable_single(arg->htR, fetch->tuple, arg->htR->hash_mask, arg->htR->skip_bits);
-
-//        printf( "tid: %d remove tuple r %d from R-window. \n", arg->tid, fetch->tuple->key);
-
-        if (arg->tid == 0) {
-            window0.R_Window.remove(fetch->tuple->key);
-//            print_window(window0.R_Window, 0);
-        } else {
-            window1.R_Window.remove(fetch->tuple->key);
-//            print_window(window1.R_Window, 1);
-        }
-    } else {
-        debuild_hashtable_single(arg->htS, fetch->tuple, arg->htS->hash_mask, arg->htS->skip_bits);
-
-//        printf("tid: %d remove tuple s %d from S-window. \n", arg->tid, fetch->tuple->key);
-
-        if (arg->tid == 0) {
-            window0.S_Window.remove(fetch->tuple->key);
-//            print_window(window0.S_Window, 0);
-        } else {
-            window1.S_Window.remove(fetch->tuple->key);
-//            print_window(window1.S_Window, 1);
-        }
-//        std::cout << boost::stacktrace::stacktrace() << std::endl;
-
-    }
-}
+//void clean(arg_t *arg, fetch_t *fetch, bool cleanR) {
+//
+//    if (cleanR) {
+//        //if SHJ is used, we need to clean up hashtable of R.
+//        debuild_hashtable_single(arg->htR, fetch->tuple, arg->htR->hash_mask, arg->htR->skip_bits);
+//
+////        printf( "tid: %d remove tuple r %d from R-window. \n", arg->tid, fetch->tuple->key);
+//
+//        if (arg->tid == 0) {
+//            window0.R_Window.remove(fetch->tuple->key);
+////            print_window(window0.R_Window, 0);
+//        } else {
+//            window1.R_Window.remove(fetch->tuple->key);
+////            print_window(window1.R_Window, 1);
+//        }
+//    } else {
+//        debuild_hashtable_single(arg->htS, fetch->tuple, arg->htS->hash_mask, arg->htS->skip_bits);
+//
+////        printf("tid: %d remove tuple s %d from S-window. \n", arg->tid, fetch->tuple->key);
+//
+//        if (arg->tid == 0) {
+//            window0.S_Window.remove(fetch->tuple->key);
+////            print_window(window0.S_Window, 0);
+//        } else {
+//            window1.S_Window.remove(fetch->tuple->key);
+////            print_window(window1.S_Window, 1);
+//        }
+////        std::cout << boost::stacktrace::stacktrace() << std::endl;
+//
+//    }
+//}
 
 /**
  *

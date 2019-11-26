@@ -9,7 +9,7 @@
 #include "concurrentqueue.h"
 #include "maps/robin_map.h"
 #include "readerwriterqueue.h"
-
+#include <list>
 
 class baseShuffler {
 public:
@@ -63,6 +63,10 @@ public:
     //in a extreme case, hash-partition the queue.
     //moodycamel::ConcurrentQueue<fetch_t> queues[];//simple hashing first.
     T_CQueue *queues;//simple hashing first.
+    int32_t group_size = 2;
+    int32_t numGrps;
+    std::vector<int32_t > *grpToTh;
+//    int32_t *thToGrp;
 
     ContRandShuffler(int nthreads, relation_t *relR, relation_t *relS);
 
