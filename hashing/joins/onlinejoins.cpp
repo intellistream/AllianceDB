@@ -246,7 +246,7 @@ result_t *PMJ_st(relation_t *relR, relation_t *relS, int nthreads) {
 #endif
 
     // No distribution nor partition
-    // Directly call the local SHJ joiner.
+    // Directly call the local pmj joiner.
     tParam.result = pmj(0, relR, relS, chainedbuf, &timer);//build and probe at the same time.
 
 #ifdef JOIN_RESULT_MATERIALIZE

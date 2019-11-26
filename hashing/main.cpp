@@ -421,7 +421,6 @@ main(int argc, char **argv) {
     DEBUGMSG("relR [aligned:%d]: %s", is_aligned(relR.tuples, CACHE_LINE_SIZE),
              print_relation(relR.tuples, cmd_params.r_size).c_str())
 
-
     /* create relation S */
     createRelation(&relS, cmd_params, cmd_params.loadfileS, cmd_params.s_size, cmd_params.s_seed);
 
@@ -491,8 +490,8 @@ param_t defaultParam() {/* Command line parameters */
     cmd_params.nthreads = 2;//TODO: in HS mode, thread must be larger than 1. Fix it when nthread=1.
 
     /* default dataset is Workload B (described in paper) */
-    cmd_params.r_size = 2560;
-    cmd_params.s_size = 2560;
+    cmd_params.r_size = 128500;
+    cmd_params.s_size = 128500;
 //    cmd_params.r_size = 12800000;
 //    cmd_params.s_size = 12800000;
     cmd_params.r_seed = 12345;

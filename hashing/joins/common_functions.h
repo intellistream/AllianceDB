@@ -40,6 +40,7 @@
     {                                                               \
         fprintf(stdout, "\n[DEBUG] @ %s:%d " MSG, __FILE__, __LINE__, ## __VA_ARGS__);    \
           fprintf(stdout, "\n");                                                        \
+           fflush(stdout);                                                              \
     }
 #else
 #define DEBUGMSG(MSG, ...)

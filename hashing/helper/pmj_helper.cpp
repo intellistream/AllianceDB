@@ -119,63 +119,51 @@ void insert(std::vector<run> *Q, int startR, int lengthR, int startS, int length
     Q->emplace_back(v, u);
 }
 
-void merging_phase(const struct relation_t *rel_R, const struct relation_t *rel_S, int *matches, std::vector<run> *Q)
-        {
+void merging_phase(tuple_t *rel_R, tuple_t *rel_S, int *matches, std::vector<run> *Q) {
     do {
         //Let them be two empty runs.
         std::vector<int> sortedR;//only records the position.
         std::vector<int> sortedS;//only records the position.
-        earlyJoinMergedRuns(rel_R->tuples, rel_S->tuples, Q, matches, &sortedR, &sortedS);
+        earlyJoinMergedRuns(rel_R, rel_S, Q, matches, &sortedR, &sortedS);
         Q->emplace_back(sortedR, sortedS);
     } while (Q->size() > 1);
 }
 
-void sorting_phase(int32_t tid, const struct relation_t *rel_R, const struct relation_t *rel_S, int sizeR, int sizeS,
-                   int progressive_stepR, int progressive_stepS, int *i, int *j, int *matches, std::vector<run> *Q) {
+void sorting_phase(int32_t tid, const relation_t *rel_R, const relation_t *rel_S, int sizeR, int sizeS,
+                   int progressive_stepR, int progressive_stepS, int *i, int *j, int *matches, std::vector<run> *Q,
+                   tuple_t *outptrR, tuple_t *outptrS) {
+
     tuple_t *inptrR = nullptr;
     tuple_t *inptrS = nullptr;
 
-    /**** allocate temporary space for sorting ****/
-    size_t relRsz;
-    tuple_t *outptrR;//args->tmp_sortR + my_tid * CACHELINEPADDING(PARTFANOUT);
-    tuple_t *outptrS;
-
-    relRsz = progressive_stepR * sizeof(tuple_t)
-             + RELATION_PADDING(1, CACHELINEPADDING(1));
-
-    outptrR = (tuple_t *) malloc_aligned(relRsz);
-
-    relRsz = progressive_stepS * sizeof(tuple_t)
-             + RELATION_PADDING(1, CACHELINEPADDING(1));
-
-    outptrS = (tuple_t *) malloc_aligned(relRsz);
-
+    tuple_t *tmpR = outptrR + *i;
+    tuple_t *tmpS = outptrS + *j;
     //take subset of R and S to sort and join.
     if (*i < sizeR) {
         inptrR = rel_R->tuples + *i;
         DEBUGMSG("Initial R [aligned:%d]: %s", is_aligned(inptrR, CACHE_LINE_SIZE),
                  print_relation(rel_R->tuples + *i, progressive_stepR).c_str())
-        avxsort_tuples(&inptrR, &outptrR, progressive_stepR);// the method will swap input and output pointers.
+        avxsort_tuples(&inptrR, &tmpR, progressive_stepR);// the method will swap input and output pointers.
         DEBUGMSG("Sorted R: %s",
-                 print_relation(rel_R->tuples + (*i), progressive_stepR).c_str())
+                 print_relation(tmpR, progressive_stepR).c_str())
 #ifdef DEBUG
-        if (!is_sorted_helper((int64_t *) outptrR, progressive_stepR)) {
-            DEBUGMSG("===> %d-thread -> R is NOT sorted, size = %f\n", tid, progressive_step)
+        if (!is_sorted_helper((int64_t *) tmpR, progressive_stepR)) {
+            DEBUGMSG("===> %d-thread -> R is NOT sorted, size = %d\n", tid, progressive_stepR)
         }
 #endif
     }
     if (*j < sizeS) {
         inptrS = (rel_S->tuples) + *j;
-        avxsort_tuples(&inptrS, &outptrS, progressive_stepS);
+        avxsort_tuples(&inptrS, &tmpS, progressive_stepS);
         DEBUGMSG("Sorted S: %s",
-                 print_relation(rel_S->tuples + (*i), progressive_stepS).c_str())
+                 print_relation(tmpS, progressive_stepS).c_str())
 #ifdef DEBUG
-        if (!is_sorted_helper((int64_t *) outptrS, progressive_stepS)) {
-            DEBUGMSG("===> %d-thread -> S is NOT sorted, size = %f\n", tid, progressive_step)
+        if (!is_sorted_helper((int64_t *) tmpS, progressive_stepS)) {
+            DEBUGMSG("===> %d-thread -> S is NOT sorted, size = %d\n", tid, progressive_stepS)
         }
 #endif
     }
-    earlyJoinInitialRuns(outptrR, outptrS, progressive_stepR, progressive_stepS, matches);
+    earlyJoinInitialRuns(tmpR, tmpS, progressive_stepR, progressive_stepS, matches);
     insert(Q, *i, progressive_stepR, *j, progressive_stepS);
     *i += progressive_stepR;
     *j += progressive_stepS;

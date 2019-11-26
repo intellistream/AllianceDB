@@ -105,9 +105,10 @@ struct sweepArea {
 };
 
 
-void sorting_phase(int32_t tid, const struct relation_t *rel_R, const struct relation_t *rel_S, int sizeR, int sizeS,
-                   int progressive_stepR, int progressive_stepS, int *i, int *j, int *matches, std::vector<run> *Q);
-void merging_phase(const struct relation_t *rel_R, const struct relation_t *rel_S, int *matches, std::vector<run> *Q);
+void sorting_phase(int32_t tid, const relation_t *rel_R, const relation_t *rel_S, int sizeR, int sizeS,
+                   int progressive_stepR, int progressive_stepS, int *i, int *j, int *matches, std::vector<run> *Q,
+                   tuple_t *pTuple, tuple_t *pTuple1);
+void merging_phase(tuple_t *rel_R, tuple_t *rel_S, int *matches, std::vector<run> *Q);
 
 
 #endif //ALLIANCEDB_PMJ_HELPER_H

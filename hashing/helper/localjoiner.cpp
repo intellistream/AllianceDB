@@ -158,28 +158,45 @@ pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid, T_TIMER *tim
     int i = 0;
     int j = 0;
     int matches = 0;
-    int progressive_stepR = progressive_step * sizeR;
-    int progressive_stepS = progressive_step * sizeS;
+    int progressive_stepR = ALIGN_NUMTUPLES((int) (progressive_step * sizeR));//cacheline aligned.
+    int progressive_stepS = ALIGN_NUMTUPLES((int) (progressive_step * sizeS));
 
     assert(progressive_stepR > 0 && progressive_stepS > 0);
 
     std::vector<run> Q;//let Q be an empty set;
 
+    /***Initialize***/
+    /**** allocate temporary space for sorting ****/
+    size_t relRsz;
+    tuple_t *outptrR;
+    tuple_t *outptrS;
+
+    relRsz = sizeR * sizeof(tuple_t)
+             + RELATION_PADDING(1, CACHELINEPADDING(1));//TODO: think why we need to patch this.
+
+    outptrR = (tuple_t *) malloc_aligned(relRsz);
+
+    relRsz = sizeS * sizeof(tuple_t)
+             + RELATION_PADDING(1, CACHELINEPADDING(1));//TODO: think why we need to patch this.
+
+    outptrS = (tuple_t *) malloc_aligned(relRsz);
+
+
     /***Sorting***/
     do {
-        sorting_phase(tid, rel_R, rel_S, sizeR, sizeS, progressive_stepR, progressive_stepS, &i, &j, &matches, &Q);
+        sorting_phase(tid, rel_R, rel_S, sizeR, sizeS, progressive_stepR, progressive_stepS, &i, &j, &matches, &Q,
+                      outptrR, outptrS);
     } while (i < sizeR - progressive_stepR || j < sizeS - progressive_stepS);//while R!=null, S!=null.
 
     /***Handling Left-Over***/
     progressive_stepR = sizeR - i;
     progressive_stepS = sizeS - j;
-    sorting_phase(tid, rel_R, rel_S, sizeR, sizeS, progressive_stepR, progressive_stepS, &i, &j, &matches, &Q);
-
+    sorting_phase(tid, rel_R, rel_S, sizeR, sizeS, progressive_stepR, progressive_stepS, &i, &j, &matches, &Q, outptrR,
+                  outptrS);
 
     DEBUGMSG("Join during run creation:%d", matches)
-    fflush(stdout);
 
-    merging_phase(rel_R, rel_S, &matches, &Q);
+    merging_phase(outptrR, outptrS, &matches, &Q);
 
     DEBUGMSG("Join during run merge matches:%d", matches)
     return matches;

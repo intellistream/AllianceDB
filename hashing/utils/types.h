@@ -41,7 +41,7 @@ typedef struct joinconfig_t joinconfig_t;
  */
 struct tuple_t {
     value_t payload;
-    intkey_t key;
+    intkey_t key;//little end, lowest is the most significant bit.
 };
 
 /**
