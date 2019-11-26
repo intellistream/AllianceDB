@@ -389,11 +389,13 @@ long RippleJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R, hashtable_t *
                         void *pVoid, T_TIMER *timer) {
     fprintf(stdout, "tid: %d, tuple: %d, R?%d\n", tid, tuple->key, tuple_R);
     if (tuple_R) {
-        samList.t_windows[tid].R_Window.push_back(tuple->key);
-        match_single_tuple(samList.t_windows[tid].S_Window, tuple, matches);
+//        samList.t_windows[tid].R_Window.push_back(tuple->key);
+        samList.t_windows[tid].R_Window.push_back(find_index(relR, tuple));
+        match_single_tuple(samList.t_windows[tid].S_Window, relS, tuple, matches);
     } else {
-        samList.t_windows[tid].S_Window.push_back(tuple->key);
-        match_single_tuple(samList.t_windows[tid].R_Window, tuple, matches);
+//        samList.t_windows[tid].S_Window.push_back(tuple->key);
+        samList.t_windows[tid].S_Window.push_back(find_index(relS, tuple));
+        match_single_tuple(samList.t_windows[tid].R_Window, relR, tuple, matches);
     }
 
     // Compute estimation result
@@ -439,9 +441,9 @@ RippleJoiner::RippleJoiner(relation_t *relR, relation_t *relS, int nthreads) : r
  */
 void RippleJoiner::clean(int32_t tid, tuple_t *tuple, hashtable_t *htR, hashtable_t *htS, bool cleanR) {
     if (cleanR) {
-        samList.t_windows[tid].R_Window.remove(tuple->key);
+        samList.t_windows[tid].R_Window.remove(find_index(relR, tuple));
     } else {
-        samList.t_windows[tid].S_Window.remove(tuple->key);
+        samList.t_windows[tid].S_Window.remove(find_index(relS, tuple));
     }
 }
 

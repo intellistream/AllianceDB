@@ -138,7 +138,9 @@ int64_t proble_hashtable_single(const hashtable_t *ht, const relation_t *rel, ui
                                 const uint32_t hashmask, const uint32_t skipbits, int64_t *matches);
 
 
-void match_single_tuple(const std::list<intkey_t> list, const tuple_t *tuple, int64_t *matches);
+void match_single_tuple(const std::list<intkey_t> list, const relation_t *rel, const tuple_t *tuple, int64_t *matches);
+
+uint32_t find_index(const relation_t *rel, const tuple_t *tuple);
 
 /**
  * Multi-thread hashtable build method, ht is pre-allocated.

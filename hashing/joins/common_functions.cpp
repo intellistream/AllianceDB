@@ -290,13 +290,30 @@ int64_t proble_hashtable_single(const hashtable_t *ht, const relation_t *rel, ui
     return proble_hashtable_single(ht, &rel->tuples[index_rel], hashmask, skipbits, matches);
 }
 
-void match_single_tuple(const std::list<intkey_t> list, const tuple_t *tuple, int64_t *matches) {
+/**
+ * match function typically for RPJ
+ * @param list
+ * @param tuple
+ * @param matches
+ */
+void match_single_tuple(const std::list<intkey_t> list, const relation_t *rel, const tuple_t *tuple, int64_t *matches) {
+    // TODO: refactor RPJ related methods to RPJ helper
     for (auto it=list.begin(); it!=list.end(); it++) {
-        if (tuple->key == *it) {
+        if (tuple->key == rel->tuples[*it].key) {
             (*matches)++;
         }
     }
     fprintf(stdout, "JOINING: matches: %d, tuple: %d\n", *matches, tuple->key);
+}
+
+
+uint32_t find_index(const relation_t *rel, const tuple_t *tuple) {
+    // TODO: refactor RPJ related methods to RPJ helper
+    for (int i=0; i<rel->num_tuples; i++) {
+        if (rel->tuples[i].key == tuple->key) {
+            return i;
+        }
+    }
 }
 
 /**
