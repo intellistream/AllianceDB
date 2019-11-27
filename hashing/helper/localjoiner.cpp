@@ -220,18 +220,27 @@ pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid, T_TIMER *tim
 
     outptrS = (tuple_t *) malloc_aligned(relRsz);
 
-
     /***Sorting***/
     do {
         sorting_phase(tid, rel_R, rel_S, sizeR, sizeS, progressive_stepR, progressive_stepS, &i, &j, &matches, &Q,
                       outptrR+i, outptrS+j);
+
+#ifdef DEBUG
+        if (!is_sorted_helper((int64_t *) rel_R->tuples, i)) {
+            DEBUGMSG("===> %d-thread -> R is NOT sorted, size = %d\n", tid, i)
+        }
+        if (!is_sorted_helper((int64_t *) rel_S->tuples, j)) {
+            DEBUGMSG("===> %d-thread -> S is NOT sorted, size = %d\n", tid, j)
+        }
+#endif
+
     } while (i < sizeR - progressive_stepR || j < sizeS - progressive_stepS);//while R!=null, S!=null.
 
     /***Handling Left-Over***/
     progressive_stepR = sizeR - i;
     progressive_stepS = sizeS - j;
-    sorting_phase(tid, rel_R, rel_S, sizeR, sizeS, progressive_stepR, progressive_stepS, &i, &j, &matches, &Q, outptrR+i,
-                  outptrS+j);
+    sorting_phase(tid, rel_R, rel_S, sizeR, sizeS, progressive_stepR, progressive_stepS, &i, &j, &matches, &Q,
+            outptrR+i,outptrS+j);
 
     DEBUGMSG("Join during run creation:%d", matches)
 

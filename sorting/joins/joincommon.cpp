@@ -220,11 +220,11 @@ sortmergejoin_initrun(relation_t *relR, relation_t *relS, joinconfig_t *joincfg,
     free(threadrelchunks);
     free(ptrs_to_sharedmergebufs);
     /* clean-up the temporary space */
-    if (args[0].tmp_partR != 0) {
-        free(tmpRelpartR);
-        free(tmpRelpartS);
-        free(tmpRelsortR);
-        free(tmpRelsortS);
+    if (args[0].tmp_partR) {
+//        free(tmpRelpartR);
+//        free(tmpRelpartS);
+//        free(tmpRelsortR);
+//        free(tmpRelsortS);
     }
     free(histR);
     pthread_barrier_destroy(&barrier);

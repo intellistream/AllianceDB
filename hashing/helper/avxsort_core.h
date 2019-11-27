@@ -8,9 +8,6 @@
  *
  */
 
-#ifndef ALLIANCEDB_AVXSORT_CORE_H
-#define ALLIANCEDB_AVXSORT_CORE_H
-
 #include <stdio.h>
 #include <stdlib.h>             /* qsort() */
 #include <math.h>               /* log2()  */
@@ -23,14 +20,12 @@
 
 #include "avxcommon.h"
 
-#include "../utils/params.h"
+//#include "params.h"
 /* #include "iacaMarks.h" */
 
 /* just make the code compile without AVX support */
 #ifndef HAVE_AVX
-
 #include "avxintrin_emu.h"
-
 #endif
 
 /*******************************************************************************
@@ -2159,7 +2154,7 @@ avxsort_block_aligned(int64_t **inputptr, int64_t **outputptr, int BLOCK_SIZE) {
     int ptridx = j & 1;
 
     inp = ptrs[ptridx];
-    out = ptrs[ptridx ^ 1];
+    out = ptrs[ptridx ^ 1];//should not swap
 
     merge16_eqlen_aligned(inp, inp + inlen, out, inlen);
     merge16_eqlen_aligned(inp + 2 * inlen, inp + 3 * inlen, out + 2 * inlen, inlen);
@@ -2174,9 +2169,11 @@ avxsort_block_aligned(int64_t **inputptr, int64_t **outputptr, int BLOCK_SIZE) {
     /* now we know that input is out from the last pass */
     merge16_eqlen_aligned(out, out + inlen, inp, inlen);
 
-    /* finally swap input/output ptrs, output is the sorted list */
-    *outputptr = inp;
-    *inputptr = out;
+    if (!ptridx) {//BUG FIX.
+        /* finally swap input/output ptrs, output is the sorted list */
+        *outputptr = inp;
+        *inputptr = out;
+    }
 }
 
 /**
@@ -2210,10 +2207,10 @@ avxsort_rem_aligned(int64_t **inputptr, int64_t **outputptr, uint32_t nitems) {
         ptrs[i][1] = out + pos;
         sizes[i] = nxtpow;
 
-        avxsort_block_aligned(&ptrs[i][0], &ptrs[i][1], nxtpow);
+        avxsort_block_aligned(&ptrs[i][0], &ptrs[i][1], nxtpow);//swap reverse
         pos += nxtpow;
         n -= nxtpow;
-        swap(&ptrs[i][0], &ptrs[i][1]);
+        swap(&ptrs[i][0], &ptrs[i][1]);//swap in-order
         i++;
 
         while (n < nxtpow) {
@@ -2285,5 +2282,3 @@ avxsort_rem_aligned(int64_t **inputptr, int64_t **outputptr, uint32_t nitems) {
 
 #endif
 }
-
-#endif //ALLIANCEDB_AVXSORT_CORE_H
