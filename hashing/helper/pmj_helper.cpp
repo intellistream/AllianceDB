@@ -136,34 +136,33 @@ void sorting_phase(int32_t tid, const relation_t *rel_R, const relation_t *rel_S
     tuple_t *inptrR = nullptr;
     tuple_t *inptrS = nullptr;
 
-    tuple_t *tmpR = outptrR + *i;
-    tuple_t *tmpS = outptrS + *j;
+
     //take subset of R and S to sort and join.
     if (*i < sizeR) {
         inptrR = rel_R->tuples + *i;
         DEBUGMSG("Initial R [aligned:%d]: %s", is_aligned(inptrR, CACHE_LINE_SIZE),
                  print_relation(rel_R->tuples + *i, progressive_stepR).c_str())
-        avxsort_tuples(&inptrR, &tmpR, progressive_stepR);// the method will swap input and output pointers.
+        avxsort_tuples(&inptrR, &outptrR, progressive_stepR);// the method will swap input and output pointers.
         DEBUGMSG("Sorted R: %s",
-                 print_relation(tmpR, progressive_stepR).c_str())
+                 print_relation(outptrR, progressive_stepR).c_str())
 #ifdef DEBUG
-        if (!is_sorted_helper((int64_t *) tmpR, progressive_stepR)) {
+        if (!is_sorted_helper((int64_t *) outptrR, progressive_stepR)) {
             DEBUGMSG("===> %d-thread -> R is NOT sorted, size = %d\n", tid, progressive_stepR)
         }
 #endif
     }
     if (*j < sizeS) {
         inptrS = (rel_S->tuples) + *j;
-        avxsort_tuples(&inptrS, &tmpS, progressive_stepS);
+        avxsort_tuples(&inptrS, &outptrS, progressive_stepS);
         DEBUGMSG("Sorted S: %s",
-                 print_relation(tmpS, progressive_stepS).c_str())
+                 print_relation(outptrS, progressive_stepS).c_str())
 #ifdef DEBUG
-        if (!is_sorted_helper((int64_t *) tmpS, progressive_stepS)) {
+        if (!is_sorted_helper((int64_t *) outptrS, progressive_stepS)) {
             DEBUGMSG("===> %d-thread -> S is NOT sorted, size = %d\n", tid, progressive_stepS)
         }
 #endif
     }
-    earlyJoinInitialRuns(tmpR, tmpS, progressive_stepR, progressive_stepS, matches);
+    earlyJoinInitialRuns(outptrR, outptrS, progressive_stepR, progressive_stepS, matches);
     insert(Q, *i, progressive_stepR, *j, progressive_stepS);
     *i += progressive_stepR;
     *j += progressive_stepS;
