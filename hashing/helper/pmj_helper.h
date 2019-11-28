@@ -43,12 +43,37 @@ inline bool LessEqualPredicate(const tuple_t *u, const tuple_t *v) {
     return u->key <= v->key;
 }
 
-struct run {//a pair of subsequence (mask position only)
-    std::vector<int> posR;//readable position of R. By default should be 0 to size of R/S.
-    std::vector<int> posS;//readable position of S.
-    run(std::vector<int> posR, std::vector<int> posS) {
-        this->posR = std::move(posR);
-        this->posS = std::move(posS);
+
+struct run {//a pair of runs
+
+    //used during sorting phase and initial merging phase..
+    tuple_t *R = nullptr;
+    tuple_t *S = nullptr;
+    int posR;//readable position of R. By default should be 0 and up to size of R.
+    int posS;//readable position of S.
+    int lengthR;
+    int lengthS;
+
+    bool merged = false;
+
+    run(tuple_t *run_R, tuple_t *run_S, int lengthR, int lengthS) {
+        R = run_R;//only one pair initially.
+        S = run_S;//only one pair initially.
+        posR = 0;
+        posS = 0;
+        this->lengthR = lengthR;
+        this->lengthS = lengthS;
+    }
+
+    //used during later merging phase..
+    std::vector<tuple_t *> mergedR;
+    std::vector<tuple_t *> mergedS;
+
+    run() {
+        posR = 0;
+        posS = 0;
+        lengthR = 0;
+        lengthS = 0;
     }
 
 };
@@ -108,7 +133,8 @@ struct sweepArea {
 void sorting_phase(int32_t tid, const relation_t *rel_R, const relation_t *rel_S, int sizeR, int sizeS,
                    int progressive_stepR, int progressive_stepS, int *i, int *j, int *matches, std::vector<run> *Q,
                    tuple_t *pTuple, tuple_t *pTuple1);
-void merging_phase(tuple_t *rel_R, tuple_t *rel_S, int *matches, std::vector<run> *Q);
+
+void merging_phase(int *matches, std::vector<run> *Q);
 
 
 #endif //ALLIANCEDB_PMJ_HELPER_H

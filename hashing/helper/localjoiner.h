@@ -13,6 +13,14 @@
 #include "../joins/common_functions.h"
 #include <list>
 
+///** To keep track of the input relation pairs fitting into L2 cache */
+//typedef struct tuplepair_t tuplepair_t;
+//
+///** To keep track of the input relation pairs fitting into L2 cache */
+//struct tuplepair_t {
+//    tuple_t *R;
+//    tuple_t *S;
+//};
 
 class localJoiner {
 

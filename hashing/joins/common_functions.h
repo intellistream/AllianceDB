@@ -55,6 +55,15 @@
 #define MEASURE
 #define expected_results 1280000.0
 
+///** To keep track of the input relation pairs fitting into L2 cache */
+//typedef struct tuplepair_t tuplepair_t;
+//
+///** To keep track of the input relation pairs fitting into L2 cache */
+//struct tuplepair_t {
+//    tuple_t *R;
+//    tuple_t *S;
+//};
+
 struct t_window {
     std::list<intkey_t> R_Window;
     std::list<intkey_t> S_Window;
