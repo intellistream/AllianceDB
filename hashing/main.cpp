@@ -244,6 +244,7 @@ cpu-mapping.txt
 #include <limits.h>             /* INT_MAX */
 #include <sched.h>
 #include <cpuid.h>
+#include <assert.h>
 #include "joins/common_functions.h"
 
 #include "joins/no_partitioning_join.h" /* no partitioning joins: NPO, NPO_st */
@@ -490,12 +491,15 @@ param_t defaultParam() {/* Command line parameters */
     cmd_params.nthreads = 2;//TODO: in HS mode, thread must be larger than 1. Fix it when nthread=1.
 
     /* default dataset is Workload B (described in paper) */
-    cmd_params.r_size = 12;
-    cmd_params.s_size = 12;
+    cmd_params.r_size = 200000;
+    cmd_params.s_size = 200000;
 //    cmd_params.r_size = 120000;
 //    cmd_params.s_size = 120000;
 //    cmd_params.r_size = 12800000;
 //    cmd_params.s_size = 12800000;
+
+    assert(cmd_params.r_size <= cmd_params.s_size);
+
     cmd_params.r_seed = 12345;
     cmd_params.s_seed = 54321;
     cmd_params.skew = 0.0;

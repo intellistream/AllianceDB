@@ -94,9 +94,9 @@ void earlyJoinMergedRuns(std::vector<run> *Q, int *matches, run *newRun) {
             tuple_t *readS = nullptr;
             if (run_itr.operator*().merged) {
                 auto runS = (run_itr).operator*().mergedS;//get Rs in each run.
-                if (posS < lengthR) {
+                if (posS < lengthS) {
                     //the left most of each subsequence is the smallest item of the subsequence.
-                    readS = runS.at(posR);
+                    readS = runS.at(posS);
                 }
             } else {
                 tuple_t *runS = (run_itr).operator*().S;//get Rs in each run.
@@ -192,7 +192,7 @@ void sorting_phase(int32_t tid, const relation_t *rel_R, const relation_t *rel_S
         DEBUGMSG("Sorted R: %s",
                  print_relation(outptrR, progressive_stepR).c_str())
 #ifdef DEBUG
-        DEBUGMSG("Address of rel_R: %p, outptrR:%p ", rel_R->tuples, outptrR)
+//        DEBUGMSG("Address of rel_R: %p, outptrR:%p ", rel_R->tuples, outptrR)
         if (!is_sorted_helper((int64_t *) outptrR, progressive_stepR)) {
             DEBUGMSG("===> %d-thread -> R is NOT sorted, size = %d\n", tid, progressive_stepR)
         }
