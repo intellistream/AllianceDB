@@ -66,7 +66,7 @@ target_link_libraries(runUnitTests ${CMAKE_DL_LIBS}) ##used by boost
 target_link_libraries(runUnitTests numa)
 
 
-add_executable(hashing  main.cpp $<TARGET_OBJECTS:common>)
+add_executable(hashing  main.cpp $<TARGET_OBJECTS:common> benchmark.cpp benchmark.h)
 
 target_link_libraries(hashing ${CMAKE_DL_LIBS}) ##used by boost
 target_link_libraries(hashing numa)

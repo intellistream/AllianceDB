@@ -327,6 +327,8 @@ parse_args(int argc, char **argv, param_t *cmd_params);
 
 param_t defaultParam();
 
+void benchmark(const param_t &cmd_params, relation_t &relR, relation_t &relS, result_t *&results);
+
 void createRelation(relation_t *rel, const param_t &cmd_params,
                     char *loadfile, uint64_t rel_size, uint32_t seed) {
     fprintf(stdout,
@@ -415,25 +417,7 @@ main(int argc, char **argv) {
     PCM_CONFIG = cmd_params.perfconf;
     PCM_OUT    = cmd_params.perfout;
 #endif
-
-    /* create relation R */
-    createRelation(&relR, cmd_params, cmd_params.loadfileR, cmd_params.r_size, cmd_params.r_seed);
-
-    DEBUGMSG("relR [aligned:%d]: %s", is_aligned(relR.tuples, CACHE_LINE_SIZE),
-             print_relation(relR.tuples, cmd_params.r_size).c_str())
-
-    /* create relation S */
-    createRelation(&relS, cmd_params, cmd_params.loadfileS, cmd_params.s_size, cmd_params.s_seed);
-
-    DEBUGMSG("relS [aligned:%d]: %s", is_aligned(relS.tuples, CACHE_LINE_SIZE),
-             print_relation(relS.tuples, cmd_params.s_size).c_str())
-
-    /* Run the selected join algorithm */
-    printf("[INFO ] Running join algorithm %s ...\n", cmd_params.algo->name);
-
-    results = cmd_params.algo->joinAlgo(&relR, &relS, cmd_params.nthreads);
-
-    printf("[INFO ] Results = %ld. DONE.\n", results->totalresults);
+    benchmark(cmd_params, relR, relS, results);
 
 #if (defined(PERSIST_RELATIONS) && defined(JOIN_RESULT_MATERIALIZE))
     printf("[INFO ] Persisting the join result to \"Out.tbl\" ...\n");
@@ -449,6 +433,33 @@ main(int argc, char **argv) {
 #endif
 
     return 0;
+}
+
+void
+benchmark(const param_t &cmd_params, relation_t &relR, relation_t &relS, result_t *&results) {/* create relation R */
+    createRelation(&relR, cmd_params, cmd_params.loadfileR, cmd_params.r_size, cmd_params.r_seed);
+
+    // TODO: generate dataset
+
+    DEBUGMSG("relR [aligned:%d]: %s", is_aligned(relR.tuples, CACHE_LINE_SIZE),
+             print_relation(relR.tuples, cmd_params.r_size).c_str())
+
+    /* create relation S */
+    createRelation(&relS, cmd_params, cmd_params.loadfileS, cmd_params.s_size, cmd_params.s_seed);
+
+    DEBUGMSG("relS [aligned:%d]: %s", is_aligned(relS.tuples, CACHE_LINE_SIZE),
+             print_relation(relS.tuples, cmd_params.s_size).c_str())
+
+     // TODO: generate query
+
+     // TODO: Execute query with dataset
+
+    /* Run the selected join algorithm */
+    printf("[INFO ] Running join algorithm %s ...\n", cmd_params.algo->name);
+
+    results = cmd_params.algo->joinAlgo(&relR, &relS, cmd_params.nthreads);
+
+    printf("[INFO ] Results = %ld. DONE.\n", results->totalresults);
 }
 
 
