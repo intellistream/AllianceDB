@@ -12,6 +12,9 @@
 #define TYPES_H
 
 #include <stdint.h>
+#include <vector>
+#include <iostream>
+#include <sstream>
 
 /**
  * @defgroup Types Common Types
@@ -19,9 +22,34 @@
  * @{
  */
 
-#ifdef KEY_8B /* 64-bit key/value, 16B tuples */
-typedef int64_t intkey_t;
-typedef int64_t value_t;
+
+//#ifdef KEY_8B /* 64-bit key/value, 16B tuples */
+//typedef int64_t intkey_t;
+//typedef int64_t value_t;
+//#else /* 32-bit key/value, 8B tuples */
+//typedef int32_t intkey_t;
+////typedef struct value_t value_t;
+//typedef int32_t value_t;
+//#endif
+
+struct table_t {
+//    int32_t value;
+    char value[256];
+
+//    table_t(int32_t v) {
+//        value = v;
+//    }
+//
+//    table_t() {
+//        value = 0;
+//    }
+};
+
+//#define AUX_TYPE
+
+#ifdef AUX_TYPE /* 64-bit key/value, 16B tuples */
+typedef int32_t intkey_t;
+typedef table_t value_t;
 #else /* 32-bit key/value, 8B tuples */
 typedef int32_t intkey_t;
 typedef int32_t value_t;
@@ -29,6 +57,7 @@ typedef int32_t value_t;
 
 typedef struct tuple_t tuple_t;
 typedef struct relation_t relation_t;
+typedef struct relation_payload_t relation_payload_t;
 
 typedef struct result_t result_t;
 typedef struct threadresult_t threadresult_t;
@@ -40,6 +69,7 @@ typedef struct joinconfig_t joinconfig_t;
  * @note this layout is chosen as a work-around for AVX double operations.
  */
 struct tuple_t {
+//    value_t *payload;
     value_t payload;
     intkey_t key;//little end, lowest is the most significant bit.
 };
@@ -50,6 +80,12 @@ struct tuple_t {
  */
 struct relation_t {
     tuple_t *tuples;
+    uint64_t num_tuples;
+};
+
+// add a new structure to save real payload, let original payload be index of this struct
+struct relation_payload_t {
+    table_t *rows;
     uint64_t num_tuples;
 };
 
