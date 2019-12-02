@@ -589,6 +589,12 @@ delete_relation(relation_t *rel) {
     FREE(rel->tuples, rel->num_tuples * sizeof(tuple_t));
 }
 
+void
+delete_relation_payload(relation_payload_t *relPl) {
+    /* clean up */
+    FREE(relPl->rows, relPl->num_tuples * sizeof(table_t));
+}
+
 // for string delimiter
 vector<string> split (string s, string delimiter) {
     size_t pos_start = 0, pos_end, delim_len = delimiter.length();

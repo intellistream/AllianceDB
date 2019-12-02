@@ -400,14 +400,6 @@ int check_avx() {
 int
 main(int argc, char **argv) {
 
-    relation_t relR;
-    relation_t relS;
-
-    relation_payload_t relPlR;
-    relation_payload_t relPlS;
-
-    result_t *results;
-
     /* start initially on CPU-0 */
     cpu_set_t set;
     CPU_ZERO(&set);
@@ -431,17 +423,13 @@ main(int argc, char **argv) {
     PCM_CONFIG = cmd_params.perfconf;
     PCM_OUT    = cmd_params.perfout;
 #endif
-    benchmark(cmd_params, &relR, &relS, &relPlR, &relPlS, results);
+    benchmark(cmd_params);
 
 #if (defined(PERSIST_RELATIONS) && defined(JOIN_RESULT_MATERIALIZE))
     printf("[INFO ] Persisting the join result to \"Out.tbl\" ...\n");
     write_result_relation(results, "Out.tbl");
 #endif
 
-    /* clean-up */
-    delete_relation(&relR);
-    delete_relation(&relS);
-    free(results);
 #ifdef JOIN_RESULT_MATERIALIZE
     free(results->resultlist);
 #endif

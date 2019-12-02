@@ -90,6 +90,8 @@ parallel_create_relation_fk(relation_t *reln, int64_t ntuples,
 void
 delete_relation(relation_t *reln);
 
+void
+delete_relation_payload(relation_payload_t *relPl);
 /**
  * This is just to make sure that chunks of the temporary memory
  * will be numa local to threads. Just initialize memory to 0 for

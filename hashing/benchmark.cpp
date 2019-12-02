@@ -55,25 +55,82 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, con
 }
 
 void
-benchmark(const param_t cmd_params, relation_t *relR, relation_t *relS,
-          relation_payload_t *relPlR, relation_payload_t *relPlS, result_t *results) {/* create relation R */
+//benchmark(const param_t cmd_params, relation_t *relR, relation_t *relS,
+//          relation_payload_t *relPlR, relation_payload_t *relPlS, result_t *results) {/* create relation R */
+benchmark(const param_t cmd_params) {
+    relation_t relR;
+    relation_t relS;
+
+    relation_payload_t relPlR;
+    relation_payload_t relPlS;
+
+    result_t *results;
+
     // TODO: generate dataset
     /* create relation R */
-    createRelation(relR, relPlR, cmd_params.rkey, cmd_params, cmd_params.loadfileR, cmd_params.r_size, cmd_params.r_seed);
-    DEBUGMSG("relR [aligned:%d]: %s", is_aligned(relR->tuples, CACHE_LINE_SIZE),
-             print_relation(relR->tuples, cmd_params.r_size).c_str())
+    createRelation(&relR, &relPlR, cmd_params.rkey, cmd_params, cmd_params.loadfileR, cmd_params.r_size, cmd_params.r_seed);
+    DEBUGMSG("relR [aligned:%d]: %s", is_aligned(relR.tuples, CACHE_LINE_SIZE),
+             print_relation(relR.tuples, cmd_params.r_size).c_str())
 
     /* create relation S */
-    createRelation(relS, relPlS, cmd_params.skey, cmd_params, cmd_params.loadfileS, cmd_params.s_size, cmd_params.s_seed);
-    DEBUGMSG("relS [aligned:%d]: %s", is_aligned(relS->tuples, CACHE_LINE_SIZE),
-             print_relation(relS->tuples, cmd_params.s_size).c_str())
+    createRelation(&relS, &relPlS, cmd_params.skey, cmd_params, cmd_params.loadfileS, cmd_params.s_size, cmd_params.s_seed);
+    DEBUGMSG("relS [aligned:%d]: %s", is_aligned(relS.tuples, CACHE_LINE_SIZE),
+             print_relation(relS.tuples, cmd_params.s_size).c_str())
 
-    // TODO: Execute query with dataset
+    // TODO: Execute query with dataset, need to submit a join function
 
     /* Run the selected join algorithm */
     printf("[INFO ] Running join algorithm %s ...\n", cmd_params.algo->name);
 
-    results = cmd_params.algo->joinAlgo(relR, relS, cmd_params.nthreads);
+    results = cmd_params.algo->joinAlgo(&relR, &relS, cmd_params.nthreads);
 
     printf("[INFO ] Results = %ld. DONE.\n", results->totalresults);
+
+    /* clean-up */
+    delete_relation(&relR);
+    delete_relation(&relS);
+    delete_relation_payload(&relPlR);
+    delete_relation_payload(&relPlS);
+    free(results);
+}
+
+void
+query5(const param_t cmd_params) {
+    //TODO: add multiple relations loader, currently only support two relation
+    //TODO: update structure of results, intermediate results should be a new relation or two new relations
+
+    relation_t relR;
+    relation_t relS;
+
+    relation_payload_t relPlR;
+    relation_payload_t relPlS;
+
+    result_t *results;
+
+    // TODO: generate dataset
+    /* create relation R */
+    createRelation(&relR, &relPlR, cmd_params.rkey, cmd_params, cmd_params.loadfileR, cmd_params.r_size, cmd_params.r_seed);
+    DEBUGMSG("relR [aligned:%d]: %s", is_aligned(relR.tuples, CACHE_LINE_SIZE),
+             print_relation(relR.tuples, cmd_params.r_size).c_str())
+
+    /* create relation S */
+    createRelation(&relS, &relPlS, cmd_params.skey, cmd_params, cmd_params.loadfileS, cmd_params.s_size, cmd_params.s_seed);
+    DEBUGMSG("relS [aligned:%d]: %s", is_aligned(relS.tuples, CACHE_LINE_SIZE),
+             print_relation(relS.tuples, cmd_params.s_size).c_str())
+
+    // TODO: Execute query with dataset, need to submit a join function
+
+    /* Run the selected join algorithm */
+    printf("[INFO ] Running join algorithm %s ...\n", cmd_params.algo->name);
+
+    results = cmd_params.algo->joinAlgo(&relR, &relS, cmd_params.nthreads);
+
+    printf("[INFO ] Results = %ld. DONE.\n", results->totalresults);
+
+    /* clean-up */
+    delete_relation(&relR);
+    delete_relation(&relS);
+    delete_relation_payload(&relPlR);
+    delete_relation_payload(&relPlS);
+    free(results);
 }

@@ -87,8 +87,9 @@ extern int optind, opterr, optopt;
 extern int numalocalize;  /* defined in generator.c */
 extern int nthreads;      /* defined in generator.c */
 
-void benchmark(const param_t cmd_params, relation_t *relR, relation_t *relS,
-        relation_payload_t *relPlR, relation_payload_t *relPlS, result_t *results);
+//void benchmark(const param_t cmd_params, relation_t *relR, relation_t *relS,
+//        relation_payload_t *relPlR, relation_payload_t *relPlS, result_t *results);
+void benchmark(const param_t cmd_params);
 
 
 #endif //ALLIANCEDB_BENCHMARK_H
