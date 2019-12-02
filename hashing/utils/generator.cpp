@@ -27,6 +27,11 @@
 #define MALLOC(SZ) alloc_aligned(SZ+RELATION_PADDING) /*malloc(SZ+RELATION_PADDING)*/
 #define FREE(X, SZ) free(X)
 
+#include <iostream>
+#include <sstream>
+#include <vector>
+using namespace std;
+
 #ifndef BARRIER_ARRIVE
 /** barrier wait macro */
 #define BARRIER_ARRIVE(B, RV)                           \
@@ -38,7 +43,7 @@
 #endif
 
 /* Uncomment the following to persist input relations to disk. */
-/* #define PERSIST_RELATIONS 1 */
+//#define PERSIST_RELATIONS 1
 
 /** An experimental feature to allocate input relations numa-local */
 int numalocalize;
@@ -222,7 +227,7 @@ numa_localize_thread(void *args) {
  * NUMA-aware).
  */
 void
-read_relation(relation_t *rel, char *filename);
+read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, char *filename);
 
 /**
  * Write relation to a file.
@@ -366,6 +371,7 @@ parallel_create_relation(relation_t *relation, uint64_t num_tuples,
     pthread_barrier_destroy(&barrier);
 
 #ifdef PERSIST_RELATIONS
+    fprintf(stdout, "writing out relations\n");
     char * const tables[] = {"R.tbl", "S.tbl"};
     static int rs = 0;
     write_relation(relation, tables[(rs++)%2]);
@@ -375,19 +381,22 @@ parallel_create_relation(relation_t *relation, uint64_t num_tuples,
 }
 
 int
-load_relation(relation_t *relation, char *filename, uint64_t num_tuples) {
+load_relation(relation_t *relation, relation_payload_t *relation_payload, int32_t keyby, char *filename, uint64_t num_tuples) {
     relation->num_tuples = num_tuples;
 
     /* we need aligned allocation of items */
     relation->tuples = (tuple_t *) MALLOC(num_tuples * sizeof(tuple_t));
 
-    if (!relation->tuples) {
+    relation_payload->num_tuples = num_tuples;
+    relation_payload->rows = (table_t *) MALLOC(num_tuples * sizeof(table_t));
+
+    if (!relation->tuples || !relation_payload->rows) {
         perror("out of memory");
         return -1;
     }
 
     /* load from the given input file */
-    read_relation(relation, filename);
+    read_relation(relation, relation_payload, keyby, filename);
 
     return 0;
 }
@@ -580,8 +589,26 @@ delete_relation(relation_t *rel) {
     FREE(rel->tuples, rel->num_tuples * sizeof(tuple_t));
 }
 
+// for string delimiter
+vector<string> split (string s, string delimiter) {
+    size_t pos_start = 0, pos_end, delim_len = delimiter.length();
+    string token;
+    vector<string> res;
+
+    while ((pos_end = s.find (delimiter, pos_start)) != string::npos) {
+        token = s.substr (pos_start, pos_end - pos_start);
+        pos_start = pos_end + delim_len;
+        res.push_back (token);
+    }
+
+    res.push_back (s.substr (pos_start));
+    return res;
+}
+
 void
-read_relation(relation_t *rel, char *filename) {
+read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, char *filename) {
+
+    // TODO: load tuples with different types of key-value
 
     FILE *fp = fopen(filename, "r");
 
@@ -594,6 +621,7 @@ read_relation(relation_t *rel, char *filename) {
     /* search for a whitespace for "key payload" format */
     int fmtspace = 0;
     int fmtcomma = 0;
+    int fmtbar = 0;
     do {
         c = fgetc(fp);
         if (c == ' ') {
@@ -602,6 +630,10 @@ read_relation(relation_t *rel, char *filename) {
         }
         if (c == ',') {
             fmtcomma = 1;
+            break;
+        }
+        if (c == '|') {
+            fmtbar = 1;
             break;
         }
     } while (c != '\n');
@@ -615,13 +647,26 @@ read_relation(relation_t *rel, char *filename) {
 
     uint64_t ntuples = rel->num_tuples;
     intkey_t key;
-    value_t payload = 0;
+    table_t row;
+
+    // add a index field, here payload is index field, row is real payload
+    int32_t payload = 0;
+
     int warn = 1;
     for (uint64_t i = 0; i < ntuples; i++) {
         if (fmtspace) {
-            fscanf(fp, "%d %d", &key, &payload);
+
+            fscanf(fp, "%d %d", &key, &row.value);
+            payload = i;
         } else if (fmtcomma) {
-            fscanf(fp, "%d,%d", &key, &payload);
+            fscanf(fp, "%d,%d", &key, &row.value);
+            payload = i;
+        } else if (fmtbar) {
+            fscanf(fp,"%[^\n]%*c",row.value);
+            fprintf(stdout, "lines: %s\n", row.value);
+//            row.value = split(line, "|");
+            key = stoi(split(row.value, "|")[keyby]);
+            payload = i;
         } else {
             fscanf(fp, "%d", &key);
         }
@@ -632,6 +677,7 @@ read_relation(relation_t *rel, char *filename) {
         }
         rel->tuples[i].key = key;
         rel->tuples[i].payload = payload;
+        relPl->rows[i] = row;
     }
 
     fclose(fp);

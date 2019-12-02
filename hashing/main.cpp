@@ -236,84 +236,94 @@ cpu-mapping.txt
 #define _GNU_SOURCE
 #endif
 
-#include <stdio.h>              /* printf */
-#include <sys/time.h>           /* gettimeofday */
-#include <getopt.h>             /* getopt */
-#include <stdlib.h>             /* exit */
-#include <string.h>             /* strcmp */
-#include <limits.h>             /* INT_MAX */
-#include <sched.h>
-#include <cpuid.h>
-#include <assert.h>
-#include "joins/common_functions.h"
+//#include <stdio.h>              /* printf */
+//#include <sys/time.h>           /* gettimeofday */
+//#include <getopt.h>             /* getopt */
+//#include <stdlib.h>             /* exit */
+//#include <string.h>             /* strcmp */
+//#include <limits.h>             /* INT_MAX */
+//#include <sched.h>
+//#include <cpuid.h>
+//#include <assert.h>
+//#include "joins/common_functions.h"
+//
+//#include "joins/no_partitioning_join.h" /* no partitioning joins: NPO, NPO_st */
+//#include "joins/parallel_radix_join.h"  /* parallel radix joins: RJ_st, PRO, PRH, PRHO */
+//#include "joins/onlinejoins.h"  /* single_thread onlinejoins: SHJ_st*/
+//#include "utils/generator.h"            /* create_relation_xk */
+//
+//#include "utils/perf_counters.h" /* PCM_x */
+////#include "utils/affinity.h"      /* pthread_attr_setaffinity_np & sched_setaffinity */ only for MAC
+//#include "utils/config.h"     /* autoconf header */
+//#include "utils/params.h"
+//
+//#ifdef JOIN_RESULT_MATERIALIZE
+//#include "tuple_buffer.h"       /* for materialization */
+//#endif
+//
+//#if !defined(__cplusplus)
+//int getopt(int argc, char * const argv[],
+//           const char *optstring);
+//#endif
+//
+//#ifndef INT_MAX
+//#define INT_MAX 2147483647
+//#endif
+//
+//typedef struct algo_t algo_t;
+//typedef struct param_t param_t;
+//
+//
+//struct algo_t {
+//    char name[128];
+//
+//    result_t *(*joinAlgo)(relation_t *, relation_t *, int);
+//};
+//
+//struct param_t {
+//    algo_t *algo;
+//    uint32_t nthreads;
+//    uint64_t r_size;
+//    uint64_t s_size;
+//    uint32_t r_seed;
+//    uint32_t s_seed;
+//    double skew;
+//    int nonunique_keys;  /* non-unique keys allowed? */
+//    int verbose;
+//    int fullrange_keys;  /* keys covers full int range? */
+//    int basic_numa;/* alloc input chunks thread local? */
+//    char *perfconf;
+//    char *perfout;
+//
+//    int scalar_sort;
+//    int scalar_merge;
+//    /* partitioning fanout, e.g., 2^rdxbits */
+//    int part_fanout;
+//    /* multi-way merge buffer size in bytes, corresponds to L3 size */
+//    int mwaymerge_bufsize;
+//    /* NUMA data shuffling strategy */
+//    enum numa_strategy_t numastrategy;
+//
+//    /** if the relations are load from file */
+//    char *loadfileR;
+//    char *loadfileS;
+//};
+//
+//extern char *optarg;
+//extern int optind, opterr, optopt;
+//
+///** An experimental feature to allocate input relations numa-local */
+//extern int numalocalize;  /* defined in generator.c */
+//extern int nthreads;      /* defined in generator.c */
+//
+///* command line handling functions */
+//void
+//print_help();
+//
+//void
+//print_version();
 
-#include "joins/no_partitioning_join.h" /* no partitioning joins: NPO, NPO_st */
-#include "joins/parallel_radix_join.h"  /* parallel radix joins: RJ_st, PRO, PRH, PRHO */
-#include "joins/onlinejoins.h"  /* single_thread onlinejoins: SHJ_st*/
-#include "utils/generator.h"            /* create_relation_xk */
-
-#include "utils/perf_counters.h" /* PCM_x */
-//#include "utils/affinity.h"      /* pthread_attr_setaffinity_np & sched_setaffinity */ only for MAC
-#include "utils/config.h"     /* autoconf header */
-#include "utils/params.h"
-
-#ifdef JOIN_RESULT_MATERIALIZE
-#include "tuple_buffer.h"       /* for materialization */
-#endif
-
-#if !defined(__cplusplus)
-int getopt(int argc, char * const argv[],
-           const char *optstring);
-#endif
-
-#ifndef INT_MAX
-#define INT_MAX 2147483647
-#endif
-
-typedef struct algo_t algo_t;
-typedef struct param_t param_t;
-
-struct algo_t {
-    char name[128];
-
-    result_t *(*joinAlgo)(relation_t *, relation_t *, int);
-};
-
-struct param_t {
-    algo_t *algo;
-    uint32_t nthreads;
-    uint64_t r_size;
-    uint64_t s_size;
-    uint32_t r_seed;
-    uint32_t s_seed;
-    double skew;
-    int nonunique_keys;  /* non-unique keys allowed? */
-    int verbose;
-    int fullrange_keys;  /* keys covers full int range? */
-    int basic_numa;/* alloc input chunks thread local? */
-    char *perfconf;
-    char *perfout;
-
-    int scalar_sort;
-    int scalar_merge;
-    /* partitioning fanout, e.g., 2^rdxbits */
-    int part_fanout;
-    /* multi-way merge buffer size in bytes, corresponds to L3 size */
-    int mwaymerge_bufsize;
-    /* NUMA data shuffling strategy */
-    enum numa_strategy_t numastrategy;
-
-    /** if the relations are load from file */
-    char *loadfileR;
-    char *loadfileS;
-};
-
-extern char *optarg;
-extern int optind, opterr, optopt;
-
-/** An experimental feature to allocate input relations numa-local */
-extern int numalocalize;  /* defined in generator.c */
-extern int nthreads;      /* defined in generator.c */
+#include "benchmark.h"
 
 /* command line handling functions */
 void
@@ -327,49 +337,51 @@ parse_args(int argc, char **argv, param_t *cmd_params);
 
 param_t defaultParam();
 
-void createRelation(relation_t *rel, const param_t &cmd_params,
-                    char *loadfile, uint64_t rel_size, uint32_t seed) {
-    fprintf(stdout,
-            "[INFO ] %s relation with size = %.3lf MiB, #tuples = %llu : ",
-            (loadfile != NULL) ? ("Loading") : ("Creating"),
-            (double) sizeof(tuple_t) * rel_size / 1024.0 / 1024.0, rel_size);
-    fflush(stdout);
+//void benchmark(const param_t cmd_params, relation_t *relR, relation_t *relS, result_t *results);
 
-    seed_generator(seed);
-
-    /* to pass information to the create_relation methods */
-    numalocalize = cmd_params.basic_numa;
-    nthreads = cmd_params.nthreads;
-
-
-    /** first allocate the memory for relations (+ padding based on numthreads) : */
-    rel->num_tuples = cmd_params.r_size;
-    size_t relRsz = rel->num_tuples * sizeof(tuple_t)
-                    + RELATION_PADDING(cmd_params.nthreads, cmd_params.part_fanout);
-
-    rel->tuples = (tuple_t *) malloc_aligned(relRsz);
-
-
-    //    /* NUMA-localize the input: */
-    //    if(!nonumalocalize){
-    //        numa_localize(relS.tuples, relS.num_tuples, cmd_params.nthreads);
-    //    }
-
-    if (loadfile != NULL) {
-        /* load relation from file */
-        load_relation(rel, loadfile, rel_size);
-    } else if (cmd_params.fullrange_keys) {
-        create_relation_nonunique(rel, rel_size, INT_MAX);
-    } else if (cmd_params.nonunique_keys) {
-        create_relation_nonunique(rel, rel_size, rel_size);
-    } else {
-        //create_relation_pk(&rel, rel_size);
-        parallel_create_relation(rel, rel_size,
-                                 nthreads,
-                                 rel_size);
-    }
-    printf("OK \n");
-}
+//void createRelation(relation_t *rel, const param_t &cmd_params,
+//                    char *loadfile, uint64_t rel_size, uint32_t seed) {
+//    fprintf(stdout,
+//            "[INFO ] %s relation with size = %.3lf MiB, #tuples = %llu : ",
+//            (loadfile != NULL) ? ("Loading") : ("Creating"),
+//            (double) sizeof(tuple_t) * rel_size / 1024.0 / 1024.0, rel_size);
+//    fflush(stdout);
+//
+//    seed_generator(seed);
+//
+//    /* to pass information to the create_relation methods */
+//    numalocalize = cmd_params.basic_numa;
+//    nthreads = cmd_params.nthreads;
+//
+//
+//    /** first allocate the memory for relations (+ padding based on numthreads) : */
+//    rel->num_tuples = cmd_params.r_size;
+//    size_t relRsz = rel->num_tuples * sizeof(tuple_t)
+//                    + RELATION_PADDING(cmd_params.nthreads, cmd_params.part_fanout);
+//
+//    rel->tuples = (tuple_t *) malloc_aligned(relRsz);
+//
+//
+//    //    /* NUMA-localize the input: */
+//    //    if(!nonumalocalize){
+//    //        numa_localize(relS.tuples, relS.num_tuples, cmd_params.nthreads);
+//    //    }
+//
+//    if (loadfile != NULL) {
+//        /* load relation from file */
+//        load_relation(rel, loadfile, rel_size);
+//    } else if (cmd_params.fullrange_keys) {
+//        create_relation_nonunique(rel, rel_size, INT_MAX);
+//    } else if (cmd_params.nonunique_keys) {
+//        create_relation_nonunique(rel, rel_size, rel_size);
+//    } else {
+//        //create_relation_pk(&rel, rel_size);
+//        parallel_create_relation(rel, rel_size,
+//                                 nthreads,
+//                                 rel_size);
+//    }
+//    printf("OK \n");
+//}
 
 #define AVXFlag     ((1UL<<28)|(1UL<<27))
 
@@ -390,6 +402,10 @@ main(int argc, char **argv) {
 
     relation_t relR;
     relation_t relS;
+
+    relation_payload_t relPlR;
+    relation_payload_t relPlS;
+
     result_t *results;
 
     /* start initially on CPU-0 */
@@ -415,25 +431,7 @@ main(int argc, char **argv) {
     PCM_CONFIG = cmd_params.perfconf;
     PCM_OUT    = cmd_params.perfout;
 #endif
-
-    /* create relation R */
-    createRelation(&relR, cmd_params, cmd_params.loadfileR, cmd_params.r_size, cmd_params.r_seed);
-
-    DEBUGMSG("relR [aligned:%d]: %s", is_aligned(relR.tuples, CACHE_LINE_SIZE),
-             print_relation(relR.tuples, cmd_params.r_size).c_str())
-
-    /* create relation S */
-    createRelation(&relS, cmd_params, cmd_params.loadfileS, cmd_params.s_size, cmd_params.s_seed);
-
-    DEBUGMSG("relS [aligned:%d]: %s", is_aligned(relS.tuples, CACHE_LINE_SIZE),
-             print_relation(relS.tuples, cmd_params.s_size).c_str())
-
-    /* Run the selected join algorithm */
-    printf("[INFO ] Running join algorithm %s ...\n", cmd_params.algo->name);
-
-    results = cmd_params.algo->joinAlgo(&relR, &relS, cmd_params.nthreads);
-
-    printf("[INFO ] Results = %ld. DONE.\n", results->totalresults);
+    benchmark(cmd_params, &relR, &relS, &relPlR, &relPlS, results);
 
 #if (defined(PERSIST_RELATIONS) && defined(JOIN_RESULT_MATERIALIZE))
     printf("[INFO ] Persisting the join result to \"Out.tbl\" ...\n");
@@ -450,6 +448,27 @@ main(int argc, char **argv) {
 
     return 0;
 }
+
+//void
+//benchmark(const param_t cmd_params, relation_t *relR, relation_t *relS, result_t *results) {/* create relation R */
+//    createRelation(relR, cmd_params, cmd_params.loadfileR, cmd_params.r_size, cmd_params.r_seed);
+//
+//    DEBUGMSG("relR [aligned:%d]: %s", is_aligned(relR->tuples, CACHE_LINE_SIZE),
+//             print_relation(relR->tuples, cmd_params.r_size).c_str())
+//
+//    /* create relation S */
+//    createRelation(relS, cmd_params, cmd_params.loadfileS, cmd_params.s_size, cmd_params.s_seed);
+//
+//    DEBUGMSG("relS [aligned:%d]: %s", is_aligned(relS->tuples, CACHE_LINE_SIZE),
+//             print_relation(relS->tuples, cmd_params.s_size).c_str())
+//
+//    /* Run the selected join algorithm */
+//    printf("[INFO ] Running join algorithm %s ...\n", cmd_params.algo->name);
+//
+//    results = cmd_params.algo->joinAlgo(relR, relS, cmd_params.nthreads);
+//
+//    printf("[INFO ] Results = %ld. DONE.\n", results->totalresults);
+//}
 
 
 /** all available algorithms */
@@ -491,8 +510,8 @@ param_t defaultParam() {/* Command line parameters */
     cmd_params.nthreads = 2;//TODO: in HS mode, thread must be larger than 1. Fix it when nthread=1.
 
     /* default dataset is Workload B (described in paper) */
-    cmd_params.r_size = 200000;
-    cmd_params.s_size = 200000;
+    cmd_params.r_size = 200;
+    cmd_params.s_size = 200;
 //    cmd_params.r_size = 120000;
 //    cmd_params.s_size = 120000;
 //    cmd_params.r_size = 12800000;
@@ -516,6 +535,8 @@ param_t defaultParam() {/* Command line parameters */
 
     cmd_params.loadfileR = NULL;
     cmd_params.loadfileS = NULL;
+    cmd_params.rkey = 0;
+    cmd_params.skey = 0;
     return cmd_params;
 }
 
@@ -607,6 +628,8 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
                         {"skew",         required_argument, 0,               'z'},
                         {"r-file",       required_argument, 0,               'R'},
                         {"s-file",       required_argument, 0,               'S'},
+                        {"r-key",       required_argument, 0,               'J'},
+                        {"s-key",       required_argument, 0,               'K'},
                         /* partitioning fanout, e.g., 2^rdxbits */
                         {"partfanout",   required_argument, 0,               'f'},
                         {"numastrategy", required_argument, 0,               'N'},
@@ -616,7 +639,7 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
         /* getopt_long stores the option index here. */
         int option_index = 0;
 
-        c = getopt_long(argc, argv, "a:n:p:r:s:o:x:y:z:R:S:hv",
+        c = getopt_long(argc, argv, "J:K:a:n:p:r:s:o:x:y:z:R:S:hv",
                         long_options, &option_index);
 
         /* Detect the end of the options. */
@@ -732,6 +755,12 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
             case 'S':
                 cmd_params->loadfileS = mystrdup(optarg);
                 break;
+
+            case 'J':
+                cmd_params->rkey = atoi(mystrdup(optarg));
+
+            case 'K':
+                cmd_params->skey = atoi(mystrdup(optarg));
 
             default:
                 break;
