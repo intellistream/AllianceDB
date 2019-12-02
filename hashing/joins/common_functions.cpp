@@ -304,9 +304,12 @@ int64_t proble_hashtable_single(const hashtable_t *ht, const relation_t *rel, ui
  * @param tuple
  * @param matches
  */
-void match_single_tuple(const std::list<intkey_t> list, const relation_t *rel, const tuple_t *tuple, int64_t *matches) {
+void match_single_tuple(const std::list<intkey_t> list, const relation_t *rel, const tuple_t *tuple, int64_t *matches, void *(*thread_fun)(const tuple_t*, const tuple_t*, int64_t*)) {
     // TODO: refactor RPJ related methods to RPJ helper
     for (auto it=list.begin(); it!=list.end(); it++) {
+        if (thread_fun) {
+            thread_fun(tuple, &rel->tuples[*it], matches);
+        }
         if (tuple->key == rel->tuples[*it].key) {
             (*matches)++;
         }

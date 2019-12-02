@@ -391,11 +391,11 @@ long RippleJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R, hashtable_t *
     if (tuple_R) {
 //        samList.t_windows[tid].R_Window.push_back(tuple->key);
         samList.t_windows[tid].R_Window.push_back(find_index(relR, tuple));
-        match_single_tuple(samList.t_windows[tid].S_Window, relS, tuple, matches);
+        match_single_tuple(samList.t_windows[tid].S_Window, relS, tuple, matches, thread_fun);
     } else {
 //        samList.t_windows[tid].S_Window.push_back(tuple->key);
         samList.t_windows[tid].S_Window.push_back(find_index(relS, tuple));
-        match_single_tuple(samList.t_windows[tid].R_Window, relR, tuple, matches);
+        match_single_tuple(samList.t_windows[tid].R_Window, relR, tuple, matches, thread_fun);
     }
 
     // Compute estimation result
