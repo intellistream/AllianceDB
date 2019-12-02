@@ -628,8 +628,8 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
                         {"skew",         required_argument, 0,               'z'},
                         {"r-file",       required_argument, 0,               'R'},
                         {"s-file",       required_argument, 0,               'S'},
-                        {"r-key",       required_argument, 0,               'J'},
-                        {"s-key",       required_argument, 0,               'K'},
+                        {"r-key",       required_argument, 0,                'J'},
+                        {"s-key",       required_argument, 0,                'K'},
                         /* partitioning fanout, e.g., 2^rdxbits */
                         {"partfanout",   required_argument, 0,               'f'},
                         {"numastrategy", required_argument, 0,               'N'},

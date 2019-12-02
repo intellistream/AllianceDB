@@ -52,11 +52,11 @@ shj(int32_t tid, relation_t *rel_R,
 
     do {
         if (index_R < rel_R->num_tuples) {
-            joiner.join(tid, &rel_R->tuples[index_R], true, htR, htS, &matches, pVoid, timer);
+            joiner.join(tid, &rel_R->tuples[index_R], true, htR, htS, &matches, NULL, pVoid, timer);
             index_R++;
         }
         if (index_S < rel_S->num_tuples) {
-            joiner.join(tid, &rel_S->tuples[index_S], false, htR, htS, &matches, pVoid, timer);
+            joiner.join(tid, &rel_S->tuples[index_S], false, htR, htS, &matches, NULL, pVoid, timer);
             index_S++;
         }
     } while (index_R < rel_R->num_tuples || index_S < rel_S->num_tuples);
@@ -81,7 +81,7 @@ shj(int32_t tid, relation_t *rel_R,
  */
 long SHJJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R,
                      hashtable_t *htR, hashtable_t *htS, int64_t *matches,
-                     void *pVoid, T_TIMER *timer) {
+                     void *(*thread_fun)(const tuple_t*, const tuple_t*, int64_t*), void *pVoid, T_TIMER *timer) {
 
     const uint32_t hashmask_R = htR->hash_mask;
     const uint32_t skipbits_R = htR->skip_bits;
@@ -99,11 +99,11 @@ long SHJJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R,
         }
         if (tid == 0) {
             proble_hashtable_single_measure(htS, tuple, hashmask_S, skipbits_S, matches,
-                                            timer->progressivetimer);//(2)
+                                            thread_fun, timer->progressivetimer);//(2)
 //            DEBUGMSG("matches:%ld, T0: Join R %d with %s", *matches, tuple->key,
 //                     print_window(window0.S_Window).c_str());
         } else {
-            proble_hashtable_single(htS, tuple, hashmask_S, skipbits_S, matches);//(4)
+            proble_hashtable_single(htS, tuple, hashmask_S, skipbits_S, matches, thread_fun);//(4)
 //            DEBUGMSG("matches:%ld, T1: Join R %d with %s", *matches, tuple->key,
 //                     print_window(window1.S_Window).c_str());
 
@@ -120,11 +120,11 @@ long SHJJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R,
 
         if (tid == 0) {
             proble_hashtable_single_measure(htR, tuple, hashmask_R, skipbits_R, matches,
-                                            timer->progressivetimer);//(4)
+                                            thread_fun, timer->progressivetimer);//(4)
 //                DEBUGMSG("matches:%ld, T0: Join S %d with %s", *matches, tuple->key,
 //                         print_window(window0.R_Window).c_str());
         } else {
-            proble_hashtable_single(htR, tuple, hashmask_R, skipbits_R, matches);//(4)
+            proble_hashtable_single(htR, tuple, hashmask_R, skipbits_R, matches, thread_fun);//(4)
 //                DEBUGMSG("matches:%ld, T1: Join S %d with %s", *matches, tuple->key,
 //                         print_window(window1.R_Window).c_str());
         }
@@ -254,7 +254,7 @@ pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid, T_TIMER *tim
  * @return
  */
 long PMJJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R, hashtable_t *htR, hashtable_t *htS, int64_t *matches,
-                     void *pVoid, T_TIMER *timer) {
+                     void *(*thread_fun)(const tuple_t*, const tuple_t*, int64_t*), void *pVoid, T_TIMER *timer) {
     return 0;
 }
 
@@ -360,8 +360,8 @@ hrpj(int32_t tid, relation_t *rel_R,
 
     // indexed ripple join, assuming R and S have the same input rate.
     do {
-        joiner.join(tid, &rel_S->tuples[cur_step], false, htR, htS, &matches, pVoid, timer);
-        joiner.join(tid, &rel_R->tuples[cur_step], true, htR, htS, &matches, pVoid, timer);
+        joiner.join(tid, &rel_S->tuples[cur_step], false, htR, htS, &matches, NULL, pVoid, timer);
+        joiner.join(tid, &rel_R->tuples[cur_step], true, htR, htS, &matches, NULL, pVoid, timer);
         cur_step++;
 //        DEBUGMSG(1, "JOINING: tid: %d, cur step: %d, matches: %d\n", tid, cur_step, matches)
     } while (cur_step < rel_R->num_tuples || cur_step < rel_S->num_tuples);
@@ -386,7 +386,7 @@ hrpj(int32_t tid, relation_t *rel_R,
  */
 
 long RippleJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R, hashtable_t *htR, hashtable_t *htS, int64_t *matches,
-                        void *pVoid, T_TIMER *timer) {
+                        void *(*thread_fun)(const tuple_t*, const tuple_t*, int64_t*), void *pVoid, T_TIMER *timer) {
     fprintf(stdout, "tid: %d, tuple: %d, R?%d\n", tid, tuple->key, tuple_R);
     if (tuple_R) {
 //        samList.t_windows[tid].R_Window.push_back(tuple->key);
@@ -413,7 +413,6 @@ long RippleJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R, hashtable_t *
     }
 
 //    fprintf(stdout, "estimation result: %d \n", estimation_result);
-
     return *matches;
 
 }

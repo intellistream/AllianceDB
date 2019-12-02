@@ -194,7 +194,7 @@ int64_t probe_hashtable(hashtable_t *ht, relation_t *rel, void *output, uint64_t
 #endif
     for (i = 0; i < rel->num_tuples; i++) {
         proble_hashtable_single_measure
-                (ht, rel, i, hashmask, skipbits, &matches, progressivetimer);
+                (ht, rel, i, hashmask, skipbits, &matches, NULL, progressivetimer);
     }
     return matches;
 }
@@ -203,7 +203,7 @@ bool check1 = false, check2 = false, check3 = false;
 
 int64_t proble_hashtable_single_measure(const hashtable_t *ht, const tuple_t *tuple,
                                         const uint32_t hashmask, const uint32_t skipbits, int64_t *matches,
-                                        uint64_t progressivetimer[]) {
+                                        void *(*thread_fun)(const tuple_t*, const tuple_t*, int64_t*), uint64_t progressivetimer[]) {
     uint32_t index_ht;
 #ifdef PREFETCH_NPJ
     if (prefetch_index < rel->num_tuples) {
@@ -218,6 +218,9 @@ int64_t proble_hashtable_single_measure(const hashtable_t *ht, const tuple_t *tu
 
     do {
         for (index_ht = 0; index_ht < b->count; index_ht++) {
+            if (thread_fun) {
+                thread_fun(tuple, &b->tuples[index_ht], matches);
+            }
             if (tuple->key == b->tuples[index_ht].key) {
                 (*matches)++;
 #ifdef JOIN_RESULT_MATERIALIZE
@@ -248,13 +251,14 @@ int64_t proble_hashtable_single_measure(const hashtable_t *ht, const tuple_t *tu
 
 int64_t proble_hashtable_single_measure(const hashtable_t *ht, const relation_t *rel, uint32_t index_rel,
                                         const uint32_t hashmask, const uint32_t skipbits, int64_t *matches,
-                                        uint64_t progressivetimer[]) {
+                                        void *(*thread_fun)(const tuple_t*, const tuple_t*, int64_t*), uint64_t progressivetimer[]) {
     return proble_hashtable_single_measure(ht, &rel->tuples[index_rel], hashmask, skipbits, matches,
-                                           progressivetimer);
+                                           thread_fun, progressivetimer);
 }
 
 int64_t proble_hashtable_single(const hashtable_t *ht, const tuple_t *tuple,
-                                const uint32_t hashmask, const uint32_t skipbits, int64_t *matches) {
+                                const uint32_t hashmask, const uint32_t skipbits, int64_t *matches,
+                                void *(*thread_fun)(const tuple_t*, const tuple_t*, int64_t*)) {
 
     uint32_t index_ht;
 #ifdef PREFETCH_NPJ
@@ -270,6 +274,9 @@ int64_t proble_hashtable_single(const hashtable_t *ht, const tuple_t *tuple,
 
     do {
         for (index_ht = 0; index_ht < b->count; index_ht++) {
+            if (thread_fun) {
+                thread_fun(tuple, &b->tuples[index_ht], matches);
+            }
             if (tuple->key == b->tuples[index_ht].key) {
                 (*matches)++;
 #ifdef JOIN_RESULT_MATERIALIZE
@@ -286,8 +293,9 @@ int64_t proble_hashtable_single(const hashtable_t *ht, const tuple_t *tuple,
 }
 
 int64_t proble_hashtable_single(const hashtable_t *ht, const relation_t *rel, uint32_t index_rel,
-                                const uint32_t hashmask, const uint32_t skipbits, int64_t *matches) {
-    return proble_hashtable_single(ht, &rel->tuples[index_rel], hashmask, skipbits, matches);
+                                const uint32_t hashmask, const uint32_t skipbits, int64_t *matches,
+                                void *(*thread_fun)(const tuple_t*, const tuple_t*, int64_t*)) {
+    return proble_hashtable_single(ht, &rel->tuples[index_rel], hashmask, skipbits, matches, thread_fun);
 }
 
 /**
