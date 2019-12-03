@@ -11,7 +11,20 @@
 #include "../utils/perf_counters.h"
 #include "boost/stacktrace.hpp"
 
-
+/**
+ * a JOIN function that a joiner should apply
+ * @param r_tuple
+ * @param s_tuple
+ * @param matches
+ * @return
+ */
+//void* JOINFUNCTION(tuple_t *r_tuple, tuple_t *s_tuple, int64_t *matches) {
+void* JOINFUNCTION(const tuple_t *r_tuple, const tuple_t *s_tuple, int64_t *matches) {
+    if (r_tuple->key == s_tuple->key) {
+//        (*matches)++;
+        DEBUGMSG("matches: %d", *matches);
+    }
+}
 
 /**
  * Just a wrapper to call the _shj_st
@@ -77,6 +90,7 @@ THREAD_TASK_NOSHUFFLE(void *param) {
                     args->htR,
                     args->htS,
                     &matches,
+                    JOINFUNCTION,
                     chainedbuf, args->timer);//build and probe at the same time.
         }
     } while (!fetcher->finish(args->tid));
@@ -177,6 +191,7 @@ void
                     args->htR,
                     args->htS,
                     &matches,
+                    JOINFUNCTION,
                     chainedbuf, args->timer);//build and probe at the same time.
         }
 #endif
@@ -195,6 +210,7 @@ void
                     args->htR,
                     args->htS,
                     &matches,
+                    JOINFUNCTION,
                     chainedbuf, args->timer);//build and probe at the same time.
         } else break;
     } while (true);
@@ -292,6 +308,7 @@ processLeft(baseShuffler *shuffler, arg_t *args, fetch_t *fetch, int64_t *matche
                 args->htR,
                 args->htS,
                 matches,
+                JOINFUNCTION,
                 chainedbuf,
                 args->timer);//build and probe at the same time.
     }
@@ -322,6 +339,7 @@ processRight(baseShuffler *shuffler, arg_t *args, fetch_t *fetch, int64_t *match
                 args->htR,
                 args->htS,
                 matches,
+                JOINFUNCTION,
                 chainedbuf,
                 args->timer);//build and probe at the same time.
     }

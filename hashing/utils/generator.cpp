@@ -589,6 +589,12 @@ delete_relation(relation_t *rel) {
     FREE(rel->tuples, rel->num_tuples * sizeof(tuple_t));
 }
 
+void
+delete_relation_payload(relation_payload_t *relPl) {
+    /* clean up */
+    FREE(relPl->rows, relPl->num_tuples * sizeof(table_t));
+}
+
 // for string delimiter
 vector<string> split (string s, string delimiter) {
     size_t pos_start = 0, pos_end, delim_len = delimiter.length();
@@ -607,9 +613,6 @@ vector<string> split (string s, string delimiter) {
 
 void
 read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, char *filename) {
-
-    // TODO: load tuples with different types of key-value
-
     FILE *fp = fopen(filename, "r");
 
     /* skip the header line */
@@ -641,9 +644,9 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, char *f
     /* rewind back to the beginning and start parsing again */
     rewind(fp);
     /* skip the header line */
-    do {
-        c = fgetc(fp);
-    } while (c != '\n');
+//    do {
+//        c = fgetc(fp);
+//    } while (c != '\n');
 
     uint64_t ntuples = rel->num_tuples;
     intkey_t key;
@@ -663,7 +666,7 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, char *f
             payload = i;
         } else if (fmtbar) {
             fscanf(fp,"%[^\n]%*c",row.value);
-            fprintf(stdout, "lines: %s\n", row.value);
+//            fprintf(stdout, "lines: %s\n", row.value);
 //            row.value = split(line, "|");
             key = stoi(split(row.value, "|")[keyby]);
             payload = i;

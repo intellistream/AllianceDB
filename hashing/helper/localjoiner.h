@@ -26,8 +26,8 @@ class localJoiner {
 
 public:
     virtual long join(int32_t tid, tuple_t *tuple,
-                      bool tuple_R, hashtable_t *htR, hashtable_t *htS, int64_t *matches, void *pVoid,
-                      T_TIMER *timer) = 0;
+                      bool tuple_R, hashtable_t *htR, hashtable_t *htS, int64_t *matches,
+                      void *(*thread_fun)(const tuple_t*, const tuple_t*, int64_t*), void *pVoid, T_TIMER *timer) = 0;
 
     virtual void clean(int32_t tid, tuple_t *tuple, hashtable_t *htR, hashtable_t *htS, bool cleanR) = 0;
 };
@@ -43,7 +43,8 @@ class RippleJoiner : public localJoiner {
 
 public:
     long
-    join(int32_t tid, tuple_t *tuple, bool tuple_R, hashtable_t *htR, hashtable_t *htS, int64_t *matches, void *pVoid,
+    join(int32_t tid, tuple_t *tuple, bool tuple_R, hashtable_t *htR, hashtable_t *htS, int64_t *matches,
+         void *(*thread_fun)(const tuple_t*, const tuple_t*, int64_t*), void *pVoid,
          T_TIMER *timer) override;
 
     RippleJoiner(relation_t *relR, relation_t *relS, int nthreads);
@@ -56,7 +57,8 @@ class PMJJoiner : public localJoiner {
 
 public:
     long
-    join(int32_t tid, tuple_t *tuple, bool tuple_R, hashtable_t *htR, hashtable_t *htS, int64_t *matches, void *pVoid,
+    join(int32_t tid, tuple_t *tuple, bool tuple_R, hashtable_t *htR, hashtable_t *htS, int64_t *matches,
+         void *(*thread_fun)(const tuple_t*, const tuple_t*, int64_t*), void *pVoid,
          T_TIMER *timer) override;
 
     void clean(int32_t tid, tuple_t *tuple, hashtable_t *htR, hashtable_t *htS, bool cleanR) override;
@@ -66,7 +68,8 @@ class SHJJoiner : public localJoiner {
 
 public:
     long
-    join(int32_t tid, tuple_t *tuple, bool tuple_R, hashtable_t *htR, hashtable_t *htS, int64_t *matches, void *pVoid,
+    join(int32_t tid, tuple_t *tuple, bool tuple_R, hashtable_t *htR, hashtable_t *htS, int64_t *matches,
+         void *(*thread_fun)(const tuple_t*, const tuple_t*, int64_t*), void *pVoid,
          T_TIMER *timer) override;
 
     void clean(int32_t tid, tuple_t *tuple, hashtable_t *htR, hashtable_t *htS, bool cleanR) override;

@@ -134,20 +134,22 @@ build_hashtable_single(const hashtable_t *ht, const relation_t *rel, uint32_t i,
 
 int64_t proble_hashtable_single_measure(const hashtable_t *ht, const tuple_t *,
                                         const uint32_t hashmask, const uint32_t skipbits, int64_t *matches,
-                                        uint64_t progressivetimer[]);
+                                        void *(*thread_fun)(const tuple_t*, const tuple_t*, int64_t*), uint64_t progressivetimer[]);
 
 int64_t proble_hashtable_single_measure(const hashtable_t *ht, const relation_t *rel, uint32_t index_rel,
                                         const uint32_t hashmask, const uint32_t skipbits, int64_t *matches,
-                                        uint64_t progressivetimer[]);
+                                        void *(*thread_fun)(const tuple_t*, const tuple_t*, int64_t*), uint64_t progressivetimer[]);
 
 int64_t proble_hashtable_single(const hashtable_t *ht, const tuple_t *,
-                                const uint32_t hashmask, const uint32_t skipbits, int64_t *matches);
+                                const uint32_t hashmask, const uint32_t skipbits, int64_t *matches,
+                                void *(*thread_fun)(const tuple_t*, const tuple_t*, int64_t*));
 
 int64_t proble_hashtable_single(const hashtable_t *ht, const relation_t *rel, uint32_t index_rel,
-                                const uint32_t hashmask, const uint32_t skipbits, int64_t *matches);
+                                const uint32_t hashmask, const uint32_t skipbits, int64_t *matches,
+                                void *(*thread_fun)(const tuple_t*, const tuple_t*, int64_t*));
 
 
-void match_single_tuple(const std::list<intkey_t> list, const relation_t *rel, const tuple_t *tuple, int64_t *matches);
+void match_single_tuple(const std::list<intkey_t> list, const relation_t *rel, const tuple_t *tuple, int64_t *matches, void *(*thread_fun)(const tuple_t*, const tuple_t*, int64_t*));
 
 uint32_t find_index(const relation_t *rel, const tuple_t *tuple);
 
