@@ -11,12 +11,19 @@
 #include "../utils/perf_counters.h"
 #include "boost/stacktrace.hpp"
 
+/**
+ * a JOIN function that a joiner should apply
+ * @param r_tuple
+ * @param s_tuple
+ * @param matches
+ * @return
+ */
 //void* JOINFUNCTION(tuple_t *r_tuple, tuple_t *s_tuple, int64_t *matches) {
 void* JOINFUNCTION(const tuple_t *r_tuple, const tuple_t *s_tuple, int64_t *matches) {
     if (r_tuple->key == s_tuple->key) {
-        (*matches)++;
+//        (*matches)++;
+        DEBUGMSG("matches: %d", *matches);
     }
-    DEBUGMSG("matches: %d", *matches);
 }
 
 /**
