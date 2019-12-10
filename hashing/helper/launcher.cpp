@@ -5,7 +5,8 @@
 #include "launcher.h"
 
 
-void launch(int nthreads, t_param param, T_TIMER *timer, void *(*thread_fun)(void *)) {
+void
+launch(int nthreads, relation_t *relR, relation_t *relS, t_param param, T_TIMER *timer, void *(*thread_fun)(void *)) {
 
     int i;
     int rv;
@@ -26,9 +27,32 @@ void launch(int nthreads, t_param param, T_TIMER *timer, void *(*thread_fun)(voi
         /**
          * Three key components
          */
-        param.args[i].fetcher = param.fetcher;
-        param.args[i].shuffler = param.shuffler;
-        param.args[i].joiner = param.joiner;
+
+        param.args[i].shuffler = param.shuffler;//shared shuffler.
+
+        switch (param.fetcher) {
+            case type_HS_NP_Fetcher:
+                param.args[i].fetcher = new HS_NP_Fetcher(nthreads, relR, relS);
+                break;
+            case type_JM_NP_Fetcher:
+                param.args[i].fetcher = new JM_NP_Fetcher(nthreads, relR, relS);
+                break;
+            case type_JB_NP_Fetcher:
+                param.args[i].fetcher = new JB_NP_Fetcher(nthreads, relR, relS);
+                break;
+        }
+        switch (param.joiner) {
+
+            case type_SHJJoiner:
+                param.args[i].joiner = new SHJJoiner();
+                break;
+            case type_PMJJoiner:
+                param.args[i].joiner = new PMJJoiner(relR->num_tuples, relS->num_tuples / nthreads, nthreads);
+                break;
+            case type_RippleJoiner:
+                param.args[i].joiner = new RippleJoiner(relR, relS, nthreads);
+                break;
+        }
 
         rv = pthread_create(&param.tid[i], param.attr, thread_fun, (void *) &param.args[i]);
         if (rv) {

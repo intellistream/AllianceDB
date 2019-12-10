@@ -25,11 +25,12 @@
 #include <sched.h>              /* CPU_ZERO, CPU_SET */
 #include "../joins/shj_struct.h"
 
-void launch(int nthreads, t_param param, T_TIMER *timer, void *(*thread_fun)(void *));
+void
+launch(int nthreads, relation_t *relR, relation_t *relS, t_param param, T_TIMER *timer, void *(*thread_fun)(void *));
 
 #ifndef LAUNCH
-#define LAUNCH(nthreads, param, timer, thread_fun) \
-        launch(nthreads, param, &timer,thread_fun);
+#define LAUNCH(nthreads, relR, relS, param, timer, thread_fun) \
+        launch(nthreads, relR, relS, param,  &timer,thread_fun);
 #endif
 
 #endif //ALLIANCEDB_LAUNCHER_H

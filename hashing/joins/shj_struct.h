@@ -56,9 +56,9 @@ struct t_param {
     arg_t *args;
     pthread_t *tid;
 
-    baseFetcher *fetcher;
+    enum fetcher fetcher;
     baseShuffler *shuffler;
-    localJoiner *joiner;
+    enum joiner joiner;
 
     t_param(int nthreads) {
         result = 0;

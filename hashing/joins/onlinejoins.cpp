@@ -70,10 +70,10 @@ SHJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads) {
                                                        * nthreads);
 #endif
     initialize(nthreads, param);
-    param.fetcher = new JB_NP_Fetcher(nthreads, relR, relS);
+    param.fetcher = type_JB_NP_Fetcher;//new JB_NP_Fetcher(nthreads, relR, relS);
     param.shuffler = new HashShuffler(nthreads, relR, relS);
-    param.joiner = new SHJJoiner();
-    LAUNCH(nthreads, param, timer, THREAD_TASK_SHUFFLE)
+    param.joiner = type_SHJJoiner;//new SHJJoiner();
+    LAUNCH(nthreads, relR, relS, param, timer, THREAD_TASK_SHUFFLE)
     param = finishing(nthreads, param);
 #ifndef NO_TIMING
     /* now print the timing results: */
@@ -93,10 +93,10 @@ SHJ_JBCR_NP(relation_t *relR, relation_t *relS, int nthreads) {
                                                        * nthreads);
 #endif
     initialize(nthreads, param);
-    param.fetcher = new JB_NP_Fetcher(nthreads, relR, relS);
+    param.fetcher = type_JB_NP_Fetcher;//new JB_NP_Fetcher(nthreads, relR, relS);
     param.shuffler = new ContRandShuffler(nthreads, relR, relS);
-    param.joiner = new SHJJoiner();
-    LAUNCH(nthreads, param, timer, THREAD_TASK_SHUFFLE)
+    param.joiner = type_SHJJoiner;//new SHJJoiner();
+    LAUNCH(nthreads,relR, relS, param, timer, THREAD_TASK_SHUFFLE)
     param = finishing(nthreads, param);
 #ifndef NO_TIMING
     /* now print the timing results: */
@@ -118,10 +118,10 @@ SHJ_JM_P(relation_t *relR, relation_t *relS, int nthreads) {
                                                        * nthreads);
 #endif
     initialize(nthreads, param);
-    param.fetcher = new JM_NP_Fetcher(nthreads, relR, relS);
+    param.fetcher = type_JM_NP_Fetcher; //new JM_NP_Fetcher(nthreads, relR, relS);
     //no shuffler is required for JM mode.
-    param.joiner = new SHJJoiner();
-    LAUNCH(nthreads, param, timer, THREAD_TASK_NOSHUFFLE)
+    param.joiner = type_SHJJoiner;//new SHJJoiner();
+    LAUNCH(nthreads,relR, relS, param, timer, THREAD_TASK_NOSHUFFLE)
     param = finishing(nthreads, param);
 #ifndef NO_TIMING
     /* now print the timing results: */
@@ -142,10 +142,10 @@ SHJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads) {
                                                        * nthreads);
 #endif
     initialize(nthreads, param);
-    param.fetcher = new JM_NP_Fetcher(nthreads, relR, relS);
+    param.fetcher = type_JM_NP_Fetcher;//new JM_NP_Fetcher(nthreads, relR, relS);
     //no shuffler is required for JM mode.
-    param.joiner = new SHJJoiner();
-    LAUNCH(nthreads, param, timer, THREAD_TASK_NOSHUFFLE)
+    param.joiner = type_SHJJoiner;//new SHJJoiner();
+    LAUNCH(nthreads, relR, relS,param, timer, THREAD_TASK_NOSHUFFLE)
     param = finishing(nthreads, param);
 #ifndef NO_TIMING
     /* now print the timing results: */
@@ -215,10 +215,10 @@ SHJ_HS_NP(relation_t *relR, relation_t *relS, int nthreads) {
                                                        * nthreads);
 #endif
     initialize(nthreads, param);
-    param.fetcher = new HS_NP_Fetcher(nthreads, relR, relS);
+    param.fetcher = type_HS_NP_Fetcher;//new HS_NP_Fetcher(nthreads, relR, relS);
     param.shuffler = new HSShuffler(nthreads, relR, relS);
-    param.joiner = new SHJJoiner();
-    LAUNCH(nthreads, param, timer, THREAD_TASK_SHUFFLE_HS)
+    param.joiner = type_SHJJoiner;//new SHJJoiner();
+    LAUNCH(nthreads, relR, relS,param, timer, THREAD_TASK_SHUFFLE_HS)
     param = finishing(nthreads, param);
 #ifndef NO_TIMING
     /* now print the timing results: */
@@ -290,10 +290,10 @@ result_t *PMJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads) {
 #endif
 
     initialize(nthreads, param);
-    param.fetcher = new JM_NP_Fetcher(nthreads, relR, relS);
+    param.fetcher = type_JM_NP_Fetcher;//new JM_NP_Fetcher(nthreads, relR, relS);
     //no shuffler is required for JM mode.
-    param.joiner = new PMJJoiner(relR->num_tuples, relS->num_tuples / nthreads, nthreads);
-    LAUNCH(nthreads, param, timer, THREAD_TASK_NOSHUFFLE)
+    param.joiner = type_PMJJoiner;//new PMJJoiner(relR->num_tuples, relS->num_tuples / nthreads, nthreads);
+    LAUNCH(nthreads, relR, relS,param, timer, THREAD_TASK_NOSHUFFLE)
     param = finishing(nthreads, param);
 
 #ifdef JOIN_RESULT_MATERIALIZE
@@ -365,10 +365,10 @@ RPJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads) {
                                                        * nthreads);
 #endif
     initialize(nthreads, param);
-    param.fetcher = new JM_NP_Fetcher(nthreads, relR, relS);
+    param.fetcher = type_JM_NP_Fetcher;//new JM_NP_Fetcher(nthreads, relR, relS);
     //no shuffler is required for JM mode.
-    param.joiner = new RippleJoiner(relR, relS, nthreads);
-    LAUNCH(nthreads, param, timer, THREAD_TASK_NOSHUFFLE)
+    param.joiner = type_RippleJoiner;//new RippleJoiner(relR, relS, nthreads);
+    LAUNCH(nthreads, relR, relS,param, timer, THREAD_TASK_NOSHUFFLE)
     param = finishing(nthreads, param);
 #ifndef NO_TIMING
     /* now print the timing results: */
@@ -388,10 +388,10 @@ RPJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads) {
                                                        * nthreads);
 #endif
     initialize(nthreads, param);
-    param.fetcher = new JB_NP_Fetcher(nthreads, relR, relS);
+    param.fetcher = type_JB_NP_Fetcher;//new JB_NP_Fetcher(nthreads, relR, relS);
     param.shuffler = new HashShuffler(nthreads, relR, relS);
-    param.joiner = new RippleJoiner(relR, relS, nthreads);
-    LAUNCH(nthreads, param, timer, THREAD_TASK_SHUFFLE)
+    param.joiner = type_RippleJoiner;// new RippleJoiner(relR, relS, nthreads);
+    LAUNCH(nthreads,relR, relS, param, timer, THREAD_TASK_SHUFFLE)
     param = finishing(nthreads, param);
 #ifndef NO_TIMING
     /* now print the timing results: */
@@ -411,10 +411,10 @@ result_t *RPJ_HS_NP(relation_t *relR, relation_t *relS, int nthreads) {
                                                        * nthreads);
 #endif
     initialize(nthreads, param);
-    param.fetcher = new HS_NP_Fetcher(nthreads, relR, relS);
+    param.fetcher = type_HS_NP_Fetcher;//new HS_NP_Fetcher(nthreads, relR, relS);
     param.shuffler = new HSShuffler(nthreads, relR, relS);
-    param.joiner = new RippleJoiner(relR, relS, nthreads);
-    LAUNCH(nthreads, param, timer, THREAD_TASK_SHUFFLE_HS)
+    param.joiner = type_RippleJoiner;//new RippleJoiner(relR, relS, nthreads);
+    LAUNCH(nthreads, relR, relS,param, timer, THREAD_TASK_SHUFFLE_HS)
     param = finishing(nthreads, param);
 #ifndef NO_TIMING
     /* now print the timing results: */

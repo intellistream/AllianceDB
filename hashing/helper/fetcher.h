@@ -8,6 +8,11 @@
 #include "../utils/types.h"
 #include <stdio.h>
 
+enum fetcher {
+    type_HS_NP_Fetcher, type_JM_NP_Fetcher, type_JB_NP_Fetcher
+};
+
+
 struct fetch_t {
     fetch_t(fetch_t *fetch);
 

@@ -23,6 +23,10 @@
 //    tuple_t *S;
 //};
 
+enum joiner {
+    type_SHJJoiner, type_PMJJoiner, type_RippleJoiner
+};
+
 class localJoiner {
 
 public:
