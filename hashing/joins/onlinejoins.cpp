@@ -129,6 +129,7 @@ SHJ_JM_P(relation_t *relR, relation_t *relS, int nthreads) {
 #endif
     return param.joinresult;
 }
+
 result_t *
 SHJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads) {
     t_param param(nthreads);
@@ -266,6 +267,47 @@ result_t *PMJ_st(relation_t *relR, relation_t *relS, int nthreads) {
     tParam.joinresult->nthreads = 1;
 
     return tParam.joinresult;
+}
+
+
+result_t *PMJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads) {
+
+    t_param param(nthreads);
+
+#ifdef JOIN_RESULT_MATERIALIZE
+    joinresult->resultlist = (threadresult_t *) malloc(sizeof(threadresult_t));
+#endif
+
+#ifndef NO_TIMING
+    T_TIMER timer;
+    START_MEASURE(timer)
+#endif
+
+#ifdef JOIN_RESULT_MATERIALIZE
+    chainedtuplebuffer_t * chainedbuf = chainedtuplebuffer_init();
+#else
+    void *chainedbuf = NULL;
+#endif
+
+    initialize(nthreads, param);
+    param.fetcher = new JM_NP_Fetcher(nthreads, relR, relS);
+    //no shuffler is required for JM mode.
+    param.joiner = new PMJJoiner(relR->num_tuples, relS->num_tuples / nthreads, nthreads);
+    LAUNCH(nthreads, param, timer, THREAD_TASK_NOSHUFFLE)
+    param = finishing(nthreads, param);
+
+#ifdef JOIN_RESULT_MATERIALIZE
+    threadresult_t * thrres = &(joinresult->resultlist[0]);/* single-thread */
+    thrres->nresults = result;
+    thrres->threadid = 0;
+    thrres->results  = (void *) chainedbuf;
+#endif
+
+#ifndef NO_TIMING
+    /* now print the timing results: */
+    print_timing(relS->num_tuples, param.result, &timer);
+#endif
+    return param.joinresult;
 }
 
 result_t *RPJ_st(relation_t *relR, relation_t *relS, int nthreads) {

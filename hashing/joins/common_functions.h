@@ -80,7 +80,7 @@ extern t_window window0;
 extern t_window window1;
 
 std::string
-print_window(const std::list<intkey_t> &list);
+print_window(const std::vector<intkey_t> &list);
 
 /**
  * Allocates a hashtable of NUM_BUCKETS and inits everything to 0.

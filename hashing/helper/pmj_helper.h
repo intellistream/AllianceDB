@@ -18,7 +18,9 @@
 #include "avxsort.h"
 
 
-#define progressive_step 0.2 //percentile, 0.01 ~ 0.2.
+#define progressive_step 0.05 //percentile, 0.01 ~ 0.2.
+#define progressive_step_tupleR ALIGN_NUMTUPLES(10) //progressive #tuples.
+#define progressive_step_tupleS ALIGN_NUMTUPLES(10) //progressive #tuples.
 #define merge_step 2 // number of ``runs" to merge in each round.
 
 
@@ -113,7 +115,7 @@ struct sweepArea {
         }
     }
 */
-    void query(const tuple_t *tuple, int *matches) {
+    void query(const tuple_t *tuple, int64_t *matches) {
 
         //clean elements that are less than the current element.
         for (auto it = sx.begin(); it != sx.end();) {
@@ -130,11 +132,14 @@ struct sweepArea {
 };
 
 
+void sorting_phase(int32_t tid, tuple_t *listR, tuple_t *listS, int sizeR,
+                   int sizeS, int64_t *matches, std::vector<run> *Q, tuple_t *outputR, tuple_t *outputS);
+
 void sorting_phase(int32_t tid, const relation_t *rel_R, const relation_t *rel_S, int sizeR, int sizeS,
-                   int progressive_stepR, int progressive_stepS, int *i, int *j, int *matches, std::vector<run> *Q,
+                   int progressive_stepR, int progressive_stepS, int *i, int *j, int64_t *matches, std::vector<run> *Q,
                    tuple_t *pTuple, tuple_t *pTuple1);
 
-void merging_phase(int *matches, std::vector<run> *Q);
+void merging_phase(int64_t *matches, std::vector<run> *Q);
 
 
 #endif //ALLIANCEDB_PMJ_HELPER_H

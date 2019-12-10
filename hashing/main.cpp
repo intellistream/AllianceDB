@@ -383,20 +383,6 @@ param_t defaultParam();
 //    printf("OK \n");
 //}
 
-#define AVXFlag     ((1UL<<28)|(1UL<<27))
-
-int check_avx() {
-    unsigned int eax, ebx, ecx, edx;
-    if (!__get_cpuid(1, &eax, &ebx, &ecx, &edx))
-        return 1;
-
-    /* Run AVX test only if host has AVX runtime support.  */
-    if ((ecx & AVXFlag) != AVXFlag)
-        return 0; /* missing feature */
-
-    return 1; /* has AVX support! */
-}
-
 int
 main(int argc, char **argv) {
 
@@ -409,7 +395,6 @@ main(int argc, char **argv) {
     }
 
     param_t cmd_params = defaultParam();
-
     parse_args(argc, argv, &cmd_params);
 
     if (check_avx() == 0) {
@@ -423,7 +408,7 @@ main(int argc, char **argv) {
     PCM_CONFIG = cmd_params.perfconf;
     PCM_OUT    = cmd_params.perfout;
 #endif
-    query5(cmd_params);
+    benchmark(cmd_params);
 
 #if (defined(PERSIST_RELATIONS) && defined(JOIN_RESULT_MATERIALIZE))
     printf("[INFO ] Persisting the join result to \"Out.tbl\" ...\n");
@@ -478,6 +463,7 @@ static struct algo_t algos[] =
                 {"SHJ_HS_NP",   SHJ_HS_NP}, /* Symmetric hash join HS Model, No-Partition*/
 /*** Progressive Merge Join ***/
                 {"PMJ_st",      PMJ_st}, /* Progressive Merge Join Single_thread*/
+                {"PMJ_JM_NP",      PMJ_JM_NP}, /* Progressive Merge Join JM_NP*/
 /*** Ripple Join ***/
                 {"RPJ_st",      RPJ_st}, /* Ripple Join Single_thread*/
                 {"RPJ_JM_NP",   RPJ_JM_NP}, /* Ripple Join JM*/
@@ -494,7 +480,7 @@ param_t defaultParam() {/* Command line parameters */
      * ONLINE HAHSING: SHJ_st(6), SHJ_JM_P, SHJ_JM_NP, SHJ_JB_NP, SHJ_JBCR_NP, SHJ_HS_NP (11)
      * ONLINE SORTING: PMJ_st (12), RPJ_st, RPJ_JM_NP,  RPJ_JB_NP, RPJ_HS_NP
      * */
-    cmd_params.algo = &algos[12];
+    cmd_params.algo = &algos[13];
     cmd_params.nthreads = 2;//TODO: in HS mode, thread must be larger than 1. Fix it when nthread=1.
 
     /* default dataset is Workload B (described in paper) */
@@ -566,7 +552,7 @@ print_version() {
     printf("\n%s\n", PACKAGE_STRING);
     printf("Copyright (c) 2012, 2013, ETH Zurich, Systems Group.\n");
     printf("http://www.systems.ethz.ch/projects/paralleljoins\n\n");
-    printf("Modified 2019, Shuhao Zhang (Tony). NUS, Xtra-Computing Group. \n");
+    printf("Modified 2019, Shuhao Zhang (Tony) and Yancan Mao, NUS, Singapore. \n");
 }
 
 static char *

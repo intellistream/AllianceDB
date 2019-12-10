@@ -4,6 +4,18 @@
 
 #include "benchmark.h"
 
+int check_avx() {
+    unsigned int eax, ebx, ecx, edx;
+    if (!__get_cpuid(1, &eax, &ebx, &ecx, &edx))
+        return 1;
+
+    /* Run AVX test only if host has AVX runtime support.  */
+    if ((ecx & AVXFlag) != AVXFlag)
+        return 0; /* missing feature */
+
+    return 1; /* has AVX support! */
+}
+
 void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, const param_t &cmd_params,
                     char *loadfile, uint64_t rel_size, uint32_t seed) {
     fprintf(stdout,
@@ -168,8 +180,9 @@ benchmark(const param_t cmd_params) {
             cmd_params.rkey, cmd_params.skey, cmd_params.r_size, cmd_params.s_size);
 }
 
-void
-query5(const param_t cmd_params) {
+
+
+void query5(const param_t cmd_params) {
     result_t *results;
 
     // TODO: refactor

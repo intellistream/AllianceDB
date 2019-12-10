@@ -39,6 +39,8 @@ int getopt(int argc, char * const argv[],
 #define INT_MAX 2147483647
 #endif
 
+#define AVXFlag     ((1UL<<28)|(1UL<<27))
+
 typedef struct algo_t algo_t;
 typedef struct param_t param_t;
 
@@ -80,6 +82,7 @@ struct param_t {
     int32_t skey;
 };
 
+
 extern char *optarg;
 extern int optind, opterr, optopt;
 
@@ -89,7 +92,13 @@ extern int nthreads;      /* defined in generator.c */
 
 //void benchmark(const param_t cmd_params, relation_t *relR, relation_t *relS,
 //        relation_payload_t *relPlR, relation_payload_t *relPlS, result_t *results);
+
+/***HELPER function***/
+int check_avx();
+
+/***Queries***/
 void benchmark(const param_t cmd_params);
+
 void query5(const param_t cmd_params);
 
 #endif //ALLIANCEDB_BENCHMARK_H

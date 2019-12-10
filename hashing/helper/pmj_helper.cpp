@@ -6,7 +6,7 @@
 #include "localjoiner.h"
 
 
-void earlyJoinInitialRuns(tuple_t *tupleR, tuple_t *tupleS, int lengthR, int lengthS, int *matches) {
+void earlyJoinInitialRuns(tuple_t *tupleR, tuple_t *tupleS, int lengthR, int lengthS, int64_t *matches) {
 //    //in early join
 //    printf("Tuple R: %s\n", print_relation(tupleR, lengthR).c_str());
 //    printf("Tuple S: %s\n", print_relation(tupleS, lengthS).c_str());
@@ -38,7 +38,7 @@ void earlyJoinInitialRuns(tuple_t *tupleR, tuple_t *tupleS, int lengthR, int len
  * @param tupleS
  * @param matches
  */
-void earlyJoinMergedRuns(std::vector<run> *Q, int *matches, run *newRun) {
+void earlyJoinMergedRuns(std::vector<run> *Q, int64_t *matches, run *newRun) {
     bool findI;
     bool findJ;
     //following PMJ vldb'02 implementation.
@@ -164,22 +164,50 @@ void insert(std::vector<run> *Q, tuple_t *run_R, int lengthR, tuple_t *run_S, in
     Q->push_back(run(run_R, run_S, lengthR, lengthS));
 }
 
-void merging_phase(int *matches, std::vector<run> *Q) {
+void merging_phase(int64_t *matches, std::vector<run> *Q) {
     do {
         run *newRun = new run();//empty run
         earlyJoinMergedRuns(Q, matches, newRun);
         Q->push_back(*newRun);
-
     } while (Q->size() > 1);
 }
 
+
+void sorting_phase(int32_t tid, tuple_t *inptrR, tuple_t *inptrS, int sizeR,
+                   int sizeS, int64_t *matches, std::vector<run> *Q, tuple_t *outputR, tuple_t *outputS) {
+
+    DEBUGMSG("Initial R [aligned:%d]: %s", is_aligned(inptrR, CACHE_LINE_SIZE),
+             print_relation(inptrR, sizeR).c_str())
+    avxsort_tuples(&inptrR, &outputR, sizeR);// the method will swap input and output pointers.
+    DEBUGMSG("Sorted R: %s", print_relation(outputR, sizeR).c_str())
+#ifdef DEBUG
+    if (!is_sorted_helper((int64_t *) outputR, sizeR)) {
+        DEBUGMSG("===> %d-thread -> R is NOT sorted, size = %d\n", tid, sizeR)
+    }
+#endif
+
+    DEBUGMSG("Initial S [aligned:%d]: %s", is_aligned(inptrS, CACHE_LINE_SIZE),
+             print_relation(inptrS, sizeS).c_str())
+    avxsort_tuples(&inptrS, &outputS, sizeS);// the method will swap input and output pointers.
+    DEBUGMSG("Sorted S: %s", print_relation(outputS, sizeS).c_str())
+#ifdef DEBUG
+    if (!is_sorted_helper((int64_t *) outputS, sizeS)) {
+        DEBUGMSG("===> %d-thread -> S is NOT sorted, size = %d\n", tid, sizeS)
+    }
+#endif
+
+    earlyJoinInitialRuns(outputR, outputS, sizeR, sizeS, matches);
+    insert(Q, outputR, sizeR, outputS, sizeS);
+
+
+}
+
 void sorting_phase(int32_t tid, const relation_t *rel_R, const relation_t *rel_S, int sizeR, int sizeS,
-                   int progressive_stepR, int progressive_stepS, int *i, int *j, int *matches, std::vector<run> *Q,
+                   int progressive_stepR, int progressive_stepS, int *i, int *j, int64_t *matches, std::vector<run> *Q,
                    tuple_t *outptrR, tuple_t *outptrS) {
 
     tuple_t *inptrR = nullptr;
     tuple_t *inptrS = nullptr;
-
 
     //take subset of R and S to sort and join.
     if (*i < sizeR) {

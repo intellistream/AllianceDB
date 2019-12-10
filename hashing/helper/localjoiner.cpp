@@ -81,7 +81,7 @@ shj(int32_t tid, relation_t *rel_R,
  */
 long SHJJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R,
                      hashtable_t *htR, hashtable_t *htS, int64_t *matches,
-                     void *(*thread_fun)(const tuple_t*, const tuple_t*, int64_t*), void *pVoid, T_TIMER *timer) {
+                     void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid, T_TIMER *timer) {
 
     const uint32_t hashmask_R = htR->hash_mask;
     const uint32_t skipbits_R = htR->skip_bits;
@@ -196,7 +196,7 @@ pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid, T_TIMER *tim
     int sizeS = rel_S->num_tuples;
     int i = 0;
     int j = 0;
-    int matches = 0;
+    int64_t matches = 0;
     int progressive_stepR = ALIGN_NUMTUPLES((int) (progressive_step * sizeR));//cacheline aligned.
     int progressive_stepS = ALIGN_NUMTUPLES((int) (progressive_step * sizeS));
 
@@ -225,7 +225,7 @@ pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid, T_TIMER *tim
         sorting_phase(tid, rel_R, rel_S, sizeR, sizeS, progressive_stepR, progressive_stepS, &i, &j, &matches, &Q,
                       outptrR + i, outptrS + j);
 
-    } while (i < sizeR - progressive_stepR || j < sizeS - progressive_stepS);//while R!=null, S!=null.
+    } while (i < sizeR - progressive_stepR && j < sizeS - progressive_stepS);//while R!=null, S!=null.
 
     /***Handling Left-Over***/
     progressive_stepR = sizeR - i;
@@ -243,9 +243,10 @@ pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid, T_TIMER *tim
 
 /**
  * PMJ algorithm to be used in each thread.
+ * First store enough tuples from R and S, then call PMJ algorithm.
  * @param tid
  * @param tuple
- * @param tuple_R
+ * @param IStuple_R
  * @param htR
  * @param htS
  * @param matches
@@ -253,10 +254,53 @@ pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid, T_TIMER *tim
  * @param timer
  * @return
  */
-long PMJJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R, hashtable_t *htR, hashtable_t *htS, int64_t *matches,
-                     void *(*thread_fun)(const tuple_t*, const tuple_t*, int64_t*), void *pVoid, T_TIMER *timer) {
-    return 0;
+long PMJJoiner::join(int32_t tid, tuple_t *tuple, bool IStuple_R, hashtable_t *htR, hashtable_t *htS, int64_t *matches,
+                     void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid, T_TIMER *timer) {
+    auto *arg = (t_pmjjoiner *) t_arg + tid;
+
+    //store tuples.
+    if (IStuple_R) {
+        arg->tmp_relR[arg->outerPtrR + arg->innerPtrR] = *tuple;
+        arg->innerPtrR++;
+    } else {
+        arg->tmp_relS[arg->outerPtrS + arg->innerPtrS] = *tuple;
+        arg->innerPtrS++;
+    }
+    int stepR = progressive_step_tupleR;
+    int stepS = progressive_step_tupleS;
+
+    if (arg->outerPtrR < arg->sizeR - stepR && arg->outerPtrS < arg->sizeS - stepS) {//normal process
+        //check if it is ready to start process.
+        if (arg->innerPtrR >= stepR
+            && arg->innerPtrS >= stepS) {//start process and reset inner pointer.
+
+            /***Sorting***/
+            sorting_phase(tid, arg->tmp_relR + arg->outerPtrR, arg->tmp_relS + arg->outerPtrS, stepR, stepS,
+                          matches, &arg->Q, arg->outptrR + arg->outerPtrR, arg->outptrS + arg->outerPtrS);
+            arg->outerPtrR += stepR;
+            arg->outerPtrS += stepS;
+            DEBUGMSG("Join during run creation:%d", *matches)
+
+            /***Reset Inner Pointer***/
+            arg->innerPtrR -= stepR;
+            arg->innerPtrS -= stepS;
+        }
+    } else if (arg->outerPtrR + arg->innerPtrR == arg->sizeR &&
+               arg->outerPtrS + arg->innerPtrS == arg->sizeS) {//received everything
+
+        /***Handling Left-Over***/
+        stepR = arg->sizeR - arg->outerPtrR;
+        stepS = arg->sizeS - arg->outerPtrS;
+        sorting_phase(tid, arg->tmp_relR + arg->outerPtrR, arg->tmp_relS + arg->outerPtrS, stepR, stepS,
+                      matches, &arg->Q, arg->outptrR + arg->outerPtrR, arg->outptrS + arg->outerPtrS);
+        DEBUGMSG("Join during run creation:%d", *matches)
+        merging_phase(matches, &arg->Q);
+        DEBUGMSG("Join during run merge matches:%d", *matches)
+    }
+
+    return *matches;
 }
+
 
 /**
  * HS cleaner
@@ -268,6 +312,14 @@ long PMJJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R, hashtable_t *htR
  */
 void PMJJoiner::clean(int32_t tid, tuple_t *tuple, hashtable_t *htR, hashtable_t *htS, bool cleanR) {
     return;
+}
+
+PMJJoiner::PMJJoiner(int sizeR, int sizeS, int nthreads) {
+
+    t_arg = new t_pmjjoiner[nthreads];
+    for (auto i = 0; i < nthreads; i++) {
+        t_arg[i].initialize(sizeR, sizeS);
+    }
 }
 
 
@@ -386,7 +438,7 @@ hrpj(int32_t tid, relation_t *rel_R,
  */
 
 long RippleJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R, hashtable_t *htR, hashtable_t *htS, int64_t *matches,
-                        void *(*thread_fun)(const tuple_t*, const tuple_t*, int64_t*), void *pVoid, T_TIMER *timer) {
+                        void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid, T_TIMER *timer) {
     fprintf(stdout, "tid: %d, tuple: %d, R?%d\n", tid, tuple->key, tuple_R);
     if (tuple_R) {
 //        samList.t_windows[tid].R_Window.push_back(tuple->key);
