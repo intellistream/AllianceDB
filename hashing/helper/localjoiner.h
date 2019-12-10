@@ -30,12 +30,11 @@ enum joiner {
 class localJoiner {
 
 public:
-    virtual long join(int32_t tid, tuple_t *tuple,
-                      bool tuple_R, hashtable_t *htR, hashtable_t *htS, int64_t *matches,
+    virtual long join(int32_t tid, tuple_t *tuple, bool tuple_R, int64_t *matches,
                       void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid,
                       T_TIMER *timer) = 0;
 
-    virtual void clean(int32_t tid, tuple_t *tuple, hashtable_t *htR, hashtable_t *htS, bool cleanR) = 0;
+    virtual void clean(int32_t tid, tuple_t *tuple, bool cleanR) = 0;
 };
 
 
@@ -43,24 +42,21 @@ class RippleJoiner : public localJoiner {
 
 private:
     relation_t *relR;
-private:
     relation_t *relS;
-
     t_window_list samList;
 
 
 public:
     long
-    join(int32_t tid, tuple_t *tuple, bool tuple_R, hashtable_t *htR, hashtable_t *htS, int64_t *matches,
-         void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid,
-         T_TIMER *timer) override;
+    join(int32_t tid, tuple_t *tuple, bool tuple_R, int64_t *matches,
+         void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid, T_TIMER *timer) override;
 
     RippleJoiner(relation_t *relR, relation_t *relS, int nthreads);
 
-    void clean(int32_t tid, tuple_t *tuple, hashtable_t *htR, hashtable_t *htS, bool cleanR) override;
+    void clean(int32_t tid, tuple_t *tuple, bool cleanR) override;
 };
 
-struct t_pmjjoiner {
+struct t_pmj {
 
     tuple_t *tmp_relR;
     int innerPtrR;
@@ -76,7 +72,7 @@ struct t_pmjjoiner {
     tuple_t *outptrR;
     tuple_t *outptrS;
 
-    void initialize(int sizeR, int sizeS) {
+    t_pmj(int sizeR, int sizeS) {
         /***Initialize***/
         /**** allocate temporary space for sorting ****/
         this->sizeR = sizeR;
@@ -100,29 +96,35 @@ struct t_pmjjoiner {
 };
 
 class PMJJoiner : public localJoiner {
-
+private:
+    t_pmj *t_arg;
 public:
-    t_pmjjoiner *t_arg;
 
     PMJJoiner(int sizeR, int sizeS, int nthreads);
 
     long
-    join(int32_t tid, tuple_t *tuple, bool IStuple_R, hashtable_t *htR, hashtable_t *htS, int64_t *matches,
-         void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid,
-         T_TIMER *timer) override;
+    join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *matches,
+         void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid, T_TIMER *timer) override;
 
-    void clean(int32_t tid, tuple_t *tuple, hashtable_t *htR, hashtable_t *htS, bool cleanR) override;
+    void clean(int32_t tid, tuple_t *tuple, bool cleanR) override;
 };
 
 class SHJJoiner : public localJoiner {
 
-public:
-    long
-    join(int32_t tid, tuple_t *tuple, bool tuple_R, hashtable_t *htR, hashtable_t *htS, int64_t *matches,
-         void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid,
-         T_TIMER *timer) override;
+private:
+    hashtable_t *htR;
+    hashtable_t *htS;
 
-    void clean(int32_t tid, tuple_t *tuple, hashtable_t *htR, hashtable_t *htS, bool cleanR) override;
+public:
+    virtual ~SHJJoiner();
+
+    SHJJoiner(int sizeR, int sizeS);
+
+    long
+    join(int32_t tid, tuple_t *tuple, bool tuple_R, int64_t *matches,
+         void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid, T_TIMER *timer) override;
+
+    void clean(int32_t tid, tuple_t *tuple, bool cleanR) override;
 };
 
 long

@@ -463,7 +463,7 @@ static struct algo_t algos[] =
                 {"SHJ_HS_NP",   SHJ_HS_NP}, /* Symmetric hash join HS Model, No-Partition*/
 /*** Progressive Merge Join ***/
                 {"PMJ_st",      PMJ_st}, /* Progressive Merge Join Single_thread*/
-                {"PMJ_JM_NP",      PMJ_JM_NP}, /* Progressive Merge Join JM_NP*/
+                {"PMJ_JM_NP",   PMJ_JM_NP}, /* Progressive Merge Join JM_NP*/
 /*** Ripple Join ***/
                 {"RPJ_st",      RPJ_st}, /* Ripple Join Single_thread*/
                 {"RPJ_JM_NP",   RPJ_JM_NP}, /* Ripple Join JM*/
@@ -478,9 +478,10 @@ param_t defaultParam() {/* Command line parameters */
     /* Default values if not specified on command line */
     /* BLOCKING HASHING: PRO (0), RJ_st, PRH, PRHO, NPO, NPO_st (5),
      * ONLINE HAHSING: SHJ_st(6), SHJ_JM_P, SHJ_JM_NP, SHJ_JB_NP, SHJ_JBCR_NP, SHJ_HS_NP (11)
-     * ONLINE SORTING: PMJ_st (12), RPJ_st, RPJ_JM_NP,  RPJ_JB_NP, RPJ_HS_NP
+     * ONLINE SORTING: PMJ_st (12), PMJ_JM_NP,
+     * RIPPLE JOIN: RPJ_st (14), RPJ_JM_NP,  RPJ_JB_NP, RPJ_HS_NP
      * */
-    cmd_params.algo = &algos[13];
+    cmd_params.algo = &algos[9];
     cmd_params.nthreads = 2;//TODO: in HS mode, thread must be larger than 1. Fix it when nthread=1.
 
     /* default dataset is Workload B (described in paper) */
@@ -602,8 +603,8 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
                         {"skew",         required_argument, 0,               'z'},
                         {"r-file",       required_argument, 0,               'R'},
                         {"s-file",       required_argument, 0,               'S'},
-                        {"r-key",       required_argument, 0,                'J'},
-                        {"s-key",       required_argument, 0,                'K'},
+                        {"r-key",        required_argument, 0,               'J'},
+                        {"s-key",        required_argument, 0,               'K'},
                         /* partitioning fanout, e.g., 2^rdxbits */
                         {"partfanout",   required_argument, 0,               'f'},
                         {"numastrategy", required_argument, 0,               'N'},

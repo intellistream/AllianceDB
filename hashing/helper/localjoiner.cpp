@@ -33,36 +33,23 @@ shj(int32_t tid, relation_t *rel_R,
     relation_t *rel_S, void *pVoid,
     T_TIMER *timer) {
 
-    //allocate two hashtables.
-    hashtable_t *htR;
-    hashtable_t *htS;
-
-    uint32_t nbucketsR = (rel_R->num_tuples / BUCKET_SIZE);
-    allocate_hashtable(&htR, nbucketsR);
-
-    uint32_t nbucketsS = (rel_S->num_tuples / BUCKET_SIZE);
-    allocate_hashtable(&htS, nbucketsS);
+    int64_t matches = 0;//number of matches.
+    SHJJoiner joiner(rel_R->num_tuples, rel_S->num_tuples);
 
     uint32_t index_R = 0;//index of rel_R
     uint32_t index_S = 0;//index of rel_S
 
-    int64_t matches = 0;//number of matches.
-
-    SHJJoiner joiner;
-
     do {
         if (index_R < rel_R->num_tuples) {
-            joiner.join(tid, &rel_R->tuples[index_R], true, htR, htS, &matches, NULL, pVoid, timer);
+            joiner.join(tid, &rel_R->tuples[index_R], true, &matches, NULL, pVoid, timer);
             index_R++;
         }
         if (index_S < rel_S->num_tuples) {
-            joiner.join(tid, &rel_S->tuples[index_S], false, htR, htS, &matches, NULL, pVoid, timer);
+            joiner.join(tid, &rel_S->tuples[index_S], false, &matches, NULL, pVoid, timer);
             index_S++;
         }
     } while (index_R < rel_R->num_tuples || index_S < rel_S->num_tuples);
 
-    destroy_hashtable(htR);
-    destroy_hashtable(htS);
     return matches;
 }
 
@@ -79,8 +66,7 @@ shj(int32_t tid, relation_t *rel_R,
  * @param timer
  * @return
  */
-long SHJJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R,
-                     hashtable_t *htR, hashtable_t *htS, int64_t *matches,
+long SHJJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R, int64_t *matches,
                      void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid, T_TIMER *timer) {
 
     const uint32_t hashmask_R = htR->hash_mask;
@@ -141,7 +127,7 @@ long SHJJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R,
  * @param htS
  * @param cleanR
  */
-void SHJJoiner::clean(int32_t tid, tuple_t *tuple, hashtable_t *htR, hashtable_t *htS, bool cleanR) {
+void SHJJoiner::clean(int32_t tid, tuple_t *tuple, bool cleanR) {
     if (cleanR) {
         //if SHJ is used, we need to clean up hashtable of R.
         debuild_hashtable_single(htR, tuple, htR->hash_mask, htR->skip_bits);
@@ -170,6 +156,23 @@ void SHJJoiner::clean(int32_t tid, tuple_t *tuple, hashtable_t *htR, hashtable_t
 //        std::cout << boost::stacktrace::stacktrace() << std::endl;
 
     }
+}
+
+SHJJoiner::SHJJoiner(int sizeR, int sizeS) {
+    //allocate two hashtables.
+
+    uint32_t nbucketsR = (sizeR / BUCKET_SIZE);
+    allocate_hashtable(&htR, nbucketsR);
+
+    uint32_t nbucketsS = (sizeS / BUCKET_SIZE);
+    allocate_hashtable(&htS, nbucketsS);
+
+
+}
+
+SHJJoiner::~SHJJoiner() {
+    destroy_hashtable(htR);
+    destroy_hashtable(htS);
 }
 
 /**
@@ -254,9 +257,9 @@ pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid, T_TIMER *tim
  * @param timer
  * @return
  */
-long PMJJoiner::join(int32_t tid, tuple_t *tuple, bool IStuple_R, hashtable_t *htR, hashtable_t *htS, int64_t *matches,
+long PMJJoiner::join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *matches,
                      void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid, T_TIMER *timer) {
-    auto *arg = (t_pmjjoiner *) t_arg + tid;
+    auto *arg = (t_pmj *) t_arg;
 
     //store tuples.
     if (IStuple_R) {
@@ -310,16 +313,12 @@ long PMJJoiner::join(int32_t tid, tuple_t *tuple, bool IStuple_R, hashtable_t *h
  * @param htS
  * @param cleanR
  */
-void PMJJoiner::clean(int32_t tid, tuple_t *tuple, hashtable_t *htR, hashtable_t *htS, bool cleanR) {
+void PMJJoiner::clean(int32_t tid, tuple_t *tuple, bool cleanR) {
     return;
 }
 
 PMJJoiner::PMJJoiner(int sizeR, int sizeS, int nthreads) {
-
-    t_arg = new t_pmjjoiner[nthreads];
-    for (auto i = 0; i < nthreads; i++) {
-        t_arg[i].initialize(sizeR, sizeS);
-    }
+    t_arg = new t_pmj(sizeR, sizeS);
 }
 
 
@@ -412,8 +411,8 @@ hrpj(int32_t tid, relation_t *rel_R,
 
     // indexed ripple join, assuming R and S have the same input rate.
     do {
-        joiner.join(tid, &rel_S->tuples[cur_step], false, htR, htS, &matches, NULL, pVoid, timer);
-        joiner.join(tid, &rel_R->tuples[cur_step], true, htR, htS, &matches, NULL, pVoid, timer);
+        joiner.join(tid, &rel_S->tuples[cur_step], false, &matches, NULL, pVoid, timer);
+        joiner.join(tid, &rel_R->tuples[cur_step], true, &matches, NULL, pVoid, timer);
         cur_step++;
 //        DEBUGMSG(1, "JOINING: tid: %d, cur step: %d, matches: %d\n", tid, cur_step, matches)
     } while (cur_step < rel_R->num_tuples || cur_step < rel_S->num_tuples);
@@ -437,7 +436,7 @@ hrpj(int32_t tid, relation_t *rel_R,
  * @return
  */
 
-long RippleJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R, hashtable_t *htR, hashtable_t *htS, int64_t *matches,
+long RippleJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R, int64_t *matches,
                         void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid, T_TIMER *timer) {
     fprintf(stdout, "tid: %d, tuple: %d, R?%d\n", tid, tuple->key, tuple_R);
     if (tuple_R) {
@@ -490,7 +489,7 @@ RippleJoiner::RippleJoiner(relation_t *relR, relation_t *relS, int nthreads) : r
  * @param htS
  * @param cleanR
  */
-void RippleJoiner::clean(int32_t tid, tuple_t *tuple, hashtable_t *htR, hashtable_t *htS, bool cleanR) {
+void RippleJoiner::clean(int32_t tid, tuple_t *tuple, bool cleanR) {
     if (cleanR) {
         samList.t_windows[tid].R_Window.remove(find_index(relR, tuple));
     } else {

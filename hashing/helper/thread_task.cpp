@@ -72,12 +72,12 @@ THREAD_TASK_NOSHUFFLE(void *param) {
     baseFetcher *fetcher = args->fetcher;
     int64_t matches = 0;//number of matches.
 
-    //allocate two hashtables on each thread assuming input stream statistics are known.
-    uint32_t nbucketsR = (args->fetcher->relR->num_tuples / BUCKET_SIZE);
-    allocate_hashtable(&args->htR, nbucketsR);
-
-    uint32_t nbucketsS = (args->fetcher->relS->num_tuples / BUCKET_SIZE);
-    allocate_hashtable(&args->htS, nbucketsS);
+//    //allocate two hashtables on each thread assuming input stream statistics are known.
+//    uint32_t nbucketsR = (args->fetcher->relR->num_tuples / BUCKET_SIZE);
+//    allocate_hashtable(&args->htR, nbucketsR);
+//
+//    uint32_t nbucketsS = (args->fetcher->relS->num_tuples / BUCKET_SIZE);
+//    allocate_hashtable(&args->htS, nbucketsS);
 
     do {
         fetch_t *fetch = fetcher->next_tuple(args->tid);
@@ -87,13 +87,11 @@ THREAD_TASK_NOSHUFFLE(void *param) {
                     args->tid,
                     fetch->tuple,
                     fetch->flag,
-                    args->htR,
-                    args->htS,
                     &matches,
                     JOINFUNCTION,
                     chainedbuf, args->timer);//build and probe at the same time.
         }
-    } while (!fetcher->finish(args->tid));
+    } while (!fetcher->finish());
     printf("args->num_results (%d): %ld\n", args->tid, args->results);
 
 #ifdef JOIN_RESULT_MATERIALIZE
@@ -162,12 +160,12 @@ void
     baseFetcher *fetcher = args->fetcher;
     int64_t matches = 0;//number of matches.
 
-    //allocate two hashtables on each thread assuming input stream statistics are known.
-    uint32_t nbucketsR = (args->fetcher->relR->num_tuples / BUCKET_SIZE);
-    allocate_hashtable(&args->htR, nbucketsR);
-
-    uint32_t nbucketsS = (args->fetcher->relS->num_tuples / BUCKET_SIZE);
-    allocate_hashtable(&args->htS, nbucketsS);
+//    //allocate two hashtables on each thread assuming input stream statistics are known.
+//    uint32_t nbucketsR = (args->fetcher->relR->num_tuples / BUCKET_SIZE);
+//    allocate_hashtable(&args->htR, nbucketsR);
+//
+//    uint32_t nbucketsS = (args->fetcher->relS->num_tuples / BUCKET_SIZE);
+//    allocate_hashtable(&args->htS, nbucketsS);
 
 
     baseShuffler *shuffler = args->shuffler;
@@ -188,14 +186,12 @@ void
                     args->tid,
                     fetch->tuple,
                     fetch->flag,
-                    args->htR,
-                    args->htS,
                     &matches,
                     JOINFUNCTION,
                     chainedbuf, args->timer);//build and probe at the same time.
         }
 #endif
-    } while (!fetcher->finish(args->tid));
+    } while (!fetcher->finish());
 
     /* wait at a barrier until each thread finishes fetch*/
     BARRIER_ARRIVE(args->barrier, rv)
@@ -207,8 +203,6 @@ void
                     args->tid,
                     fetch->tuple,
                     fetch->flag,
-                    args->htR,
-                    args->htS,
                     &matches,
                     JOINFUNCTION,
                     chainedbuf, args->timer);//build and probe at the same time.
@@ -288,7 +282,7 @@ processLeft(baseShuffler *shuffler, arg_t *args, fetch_t *fetch, int64_t *matche
     if (fetch->ack) {/* msg is an acknowledgment message */
         //remove oldest tuple from S-window
 //        clean(args, fetch, RIGHT);
-        args->joiner->clean(args->tid, fetch->tuple, args->htR, args->htS, RIGHT);
+        args->joiner->clean(args->tid, fetch->tuple, RIGHT);
     } else if (fetch->tuple) { //if msg contains a new tuple then
 #ifdef DEBUG
         if (!fetch->flag)//right must be tuple R.
@@ -305,8 +299,6 @@ processLeft(baseShuffler *shuffler, arg_t *args, fetch_t *fetch, int64_t *matche
                 args->tid,
                 fetch->tuple,
                 fetch->flag,
-                args->htR,
-                args->htS,
                 matches,
                 JOINFUNCTION,
                 chainedbuf,
@@ -336,8 +328,6 @@ processRight(baseShuffler *shuffler, arg_t *args, fetch_t *fetch, int64_t *match
                 args->tid,
                 fetch->tuple,
                 fetch->flag,
-                args->htR,
-                args->htS,
                 matches,
                 JOINFUNCTION,
                 chainedbuf,
@@ -382,7 +372,7 @@ void forward_tuples(baseShuffler *shuffler, arg_t *args, fetch_t *fetchR, fetch_
             shuffler->push(args->tid + 1, fetchR, LEFT);//push R towards right.
             //remove ri from R-window.
 //            clean(args, fetchR, LEFT);
-            args->joiner->clean(args->tid, fetchR->tuple, args->htR, args->htS, LEFT);
+            args->joiner->clean(args->tid, fetchR->tuple, LEFT);
         }
     }
 }
@@ -423,12 +413,12 @@ void
 #endif
     int64_t matches = 0;//number of matches.
 
-    //allocate two hashtables on each thread assuming input stream statistics are known.
-    uint32_t nbucketsR = (args->fetcher->relR->num_tuples / BUCKET_SIZE);
-    allocate_hashtable(&args->htR, nbucketsR);
-
-    uint32_t nbucketsS = (args->fetcher->relS->num_tuples / BUCKET_SIZE);
-    allocate_hashtable(&args->htS, nbucketsS);
+//    //allocate two hashtables on each thread assuming input stream statistics are known.
+//    uint32_t nbucketsR = (args->fetcher->relR->num_tuples / BUCKET_SIZE);
+//    allocate_hashtable(&args->htR, nbucketsR);
+//
+//    uint32_t nbucketsS = (args->fetcher->relS->num_tuples / BUCKET_SIZE);
+//    allocate_hashtable(&args->htS, nbucketsS);
 
     //call different data fetcher.
     baseFetcher *fetcher = args->fetcher;

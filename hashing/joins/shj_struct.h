@@ -28,9 +28,6 @@ struct arg_t {
     int64_t nthreads;
     int64_t results = 0;
 
-    hashtable_t *htR;
-    hashtable_t *htS;
-
     pthread_barrier_t *barrier;
 
     baseFetcher *fetcher;

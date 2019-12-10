@@ -81,36 +81,37 @@ fetch_t *_next_tuple_CP(t_state *state, relation_t *relR, relation_t *relS) {
 }
 
 fetch_t *JM_NP_Fetcher::next_tuple(int tid) {
-    return _next_tuple(&state[tid], relR, relS);
+    return _next_tuple(state, relR, relS);
 }
 
 fetch_t *JM_P_Fetcher::next_tuple(int tid) {
-    return _next_tuple_CP(&state[tid], relR, relS);
+    return _next_tuple_CP(state, relR, relS);
 }
 
 fetch_t *JB_NP_Fetcher::next_tuple(int tid) {
-    return _next_tuple(&state[tid], relR, relS);
+    return _next_tuple(state, relR, relS);
 }
 
 
 fetch_t *HS_NP_Fetcher::next_tuple(int tid) {
     if (tid == 0) {//thread 0 fetches R.
-        if (state[tid].start_index_R < state[tid].end_index_R) {
-            state[tid].fetch.tuple = &relR->tuples[state[tid].start_index_R++];
-            state[tid].fetch.flag = true;
-            return &(state[tid].fetch);
+        if (state->start_index_R < state->end_index_R) {
+            state->fetch.tuple = &relR->tuples[state->start_index_R++];
+            state->fetch.flag = true;
+            return &(state->fetch);
         } else {
             return nullptr;
         }
     } else {//thread n-1 fetches S.
-        if (state[tid].start_index_S < state[tid].end_index_S) {
-            state[tid].fetch.tuple = &relS->tuples[state[tid].start_index_S++];
-            state[tid].fetch.flag = false;
-            return &(state[tid].fetch);
+        if (state->start_index_S < state->end_index_S) {
+            state->fetch.tuple = &relS->tuples[state->start_index_S++];
+            state->fetch.flag = false;
+            return &(state->fetch);
         } else {
             return nullptr;
         }
     }
 }
+
 
 
