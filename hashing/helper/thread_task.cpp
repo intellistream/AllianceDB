@@ -278,7 +278,7 @@ void
  * @param fetch
  */
 void
-processLeft(baseShuffler *shuffler, arg_t *args, fetch_t *fetch, int64_t *matches, void *chainedbuf) {
+processLeft(arg_t *args, fetch_t *fetch, int64_t *matches, void *chainedbuf) {
     if (fetch->ack) {/* msg is an acknowledgment message */
         //remove oldest tuple from S-window
 //        clean(args, fetch, RIGHT);
@@ -450,7 +450,7 @@ void
             printf("tid:%d, fetch R:%d, cntR:%d\n", args->tid, fetchR->tuple->key, cntR);
             fflush(stdout); // Will now print everything in the stdout buffer
 #endif
-            processLeft(shuffler, args, fetchR, &matches, chainedbuf);
+            processLeft(args, fetchR, &matches, chainedbuf);
         }
 
         //pull right queue.
