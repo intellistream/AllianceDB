@@ -481,7 +481,7 @@ param_t defaultParam() {/* Command line parameters */
      * ONLINE SORTING: PMJ_st (12), PMJ_JM_NP,
      * RIPPLE JOIN: RPJ_st (14), RPJ_JM_NP,  RPJ_JB_NP, RPJ_HS_NP
      * */
-    cmd_params.algo = &algos[9];
+    cmd_params.algo = &algos[17];
     cmd_params.nthreads = 2;//TODO: in HS mode, thread must be larger than 1. Fix it when nthread=1.
 
     /* default dataset is Workload B (described in paper) */

@@ -440,23 +440,23 @@ long RippleJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R, int64_t *matc
                         void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid, T_TIMER *timer) {
     fprintf(stdout, "tid: %d, tuple: %d, R?%d\n", tid, tuple->key, tuple_R);
     if (tuple_R) {
-//        samList.t_windows[tid].R_Window.push_back(tuple->key);
-        samList.t_windows[tid].R_Window.push_back(find_index(relR, tuple));
-        match_single_tuple(samList.t_windows[tid].S_Window, relS, tuple, matches, thread_fun);
+//        samList.t_windows->R_Window.push_back(tuple->key);
+        samList.t_windows->R_Window.push_back(find_index(relR, tuple));
+        match_single_tuple(samList.t_windows->S_Window, relS, tuple, matches, thread_fun);
     } else {
-//        samList.t_windows[tid].S_Window.push_back(tuple->key);
-        samList.t_windows[tid].S_Window.push_back(find_index(relS, tuple));
-        match_single_tuple(samList.t_windows[tid].R_Window, relR, tuple, matches, thread_fun);
+//        samList.t_windows->S_Window.push_back(tuple->key);
+        samList.t_windows->S_Window.push_back(find_index(relS, tuple));
+        match_single_tuple(samList.t_windows->R_Window, relR, tuple, matches, thread_fun);
     }
 
     // Compute estimation result
 
     long estimation_result = 0;
-    if (samList.t_windows[tid].R_Window.size() > 0 && samList.t_windows[tid].S_Window.size() > 0) {
+    if (samList.t_windows->R_Window.size() > 0 && samList.t_windows->S_Window.size() > 0) {
         estimation_result =
                 ((int) relR->num_tuples * (int) relS->num_tuples)
                 /
-                ((int) samList.t_windows[tid].R_Window.size() * (int) samList.t_windows[tid].S_Window.size())
+                ((int) samList.t_windows->R_Window.size() * (int) samList.t_windows->S_Window.size())
                 *
                 (int) (*matches);
     } else {
@@ -477,7 +477,7 @@ long RippleJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R, int64_t *matc
 RippleJoiner::RippleJoiner(relation_t *relR, relation_t *relS, int nthreads) : relR(
         relR), relS(relS) {
     samList.num_threads = nthreads;
-    samList.t_windows = new t_window[nthreads];
+    samList.t_windows = new t_window();
 }
 
 
@@ -491,9 +491,9 @@ RippleJoiner::RippleJoiner(relation_t *relR, relation_t *relS, int nthreads) : r
  */
 void RippleJoiner::clean(int32_t tid, tuple_t *tuple, bool cleanR) {
     if (cleanR) {
-        samList.t_windows[tid].R_Window.remove(find_index(relR, tuple));
+        samList.t_windows->R_Window.remove(find_index(relR, tuple));
     } else {
-        samList.t_windows[tid].S_Window.remove(find_index(relS, tuple));
+        samList.t_windows->S_Window.remove(find_index(relS, tuple));
     }
 }
 
