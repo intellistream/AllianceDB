@@ -34,6 +34,11 @@ public:
                       void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid,
                       T_TIMER *timer) = 0;
 
+    virtual long join(int32_t tid, tuple_t **fat_tuple, bool IStuple_R, int64_t *matches,
+                      void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid, T_TIMER *timer) {
+        //only supported by PMJ.
+    }
+
     virtual long cleanup(int32_t tid, int64_t *matches,
                          void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid,
                          T_TIMER *timer) {
@@ -41,6 +46,10 @@ public:
     }
 
     virtual void clean(int32_t tid, tuple_t *tuple, bool cleanR) = 0;
+
+    virtual void clean(int32_t tid, tuple_t **tuple, bool cleanR) {
+        //only used in PMJ.
+    }
 };
 
 
@@ -110,13 +119,23 @@ public:
 
     long
     join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *matches,
-         void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid, T_TIMER *timer) override;
+         void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid, T_TIMER *timer) {
+        //not implemented.
+    }
+
+    long join(int32_t tid, tuple_t **fat_tuple, bool IStuple_R, int64_t *matches,
+              void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid, T_TIMER *timer);
 
     long
     cleanup(int32_t tid, int64_t *matches, void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),
             void *pVoid, T_TIMER *timer) override;
 
-    void clean(int32_t tid, tuple_t *tuple, bool cleanR) override;
+    void clean(int32_t tid, tuple_t *tuple, bool cleanR) override {
+        //not implemented.
+    }
+
+
+    void clean(int32_t tid, tuple_t **tuple, bool cleanR);
 };
 
 class SHJJoiner : public localJoiner {

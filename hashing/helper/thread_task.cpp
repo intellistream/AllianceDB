@@ -70,37 +70,29 @@ THREAD_TASK_NOSHUFFLE(void *param) {
 
     //call different data BaseFetcher.
     baseFetcher *fetcher = args->fetcher;
-    int64_t matches = 0;//number of matches.
-
-//    //allocate two hashtables on each thread assuming input stream statistics are known.
-//    uint32_t nbucketsR = (args->fetcher->relR->num_tuples / BUCKET_SIZE);
-//    allocate_hashtable(&args->htR, nbucketsR);
-//
-//    uint32_t nbucketsS = (args->fetcher->relS->num_tuples / BUCKET_SIZE);
-//    allocate_hashtable(&args->htS, nbucketsS);
 
     do {
         fetch_t *fetch = fetcher->next_tuple(args->tid);
 
         if (fetch != nullptr) {
-            args->results = args->joiner->join(
+            args->joiner->join(
                     args->tid,
                     fetch->tuple,
                     fetch->flag,
-                    &matches,
+                    &args->matches,
                     JOINFUNCTION,
                     chainedbuf, args->timer);//build and probe at the same time.
         }
     } while (!fetcher->finish());
 
 
-    args->results = args->joiner->cleanup(
+    args->joiner->cleanup(
             args->tid,
-            &matches,
+            &args->matches,
             JOINFUNCTION,
             chainedbuf, args->timer);
 
-    printf("args->num_results (%d): %ld\n", args->tid, args->results);
+    printf("args->num_results (%d): %ld\n", args->tid, args->matches);
 
 #ifdef JOIN_RESULT_MATERIALIZE
     args->threadresult->nresults = args->num_results;
@@ -166,7 +158,7 @@ void
 
     //call different data BaseFetcher.
     baseFetcher *fetcher = args->fetcher;
-    int64_t matches = 0;//number of matches.
+
 
 //    //allocate two hashtables on each thread assuming input stream statistics are known.
 //    uint32_t nbucketsR = (args->fetcher->relR->num_tuples / BUCKET_SIZE);
@@ -175,9 +167,7 @@ void
 //    uint32_t nbucketsS = (args->fetcher->relS->num_tuples / BUCKET_SIZE);
 //    allocate_hashtable(&args->htS, nbucketsS);
 
-
     baseShuffler *shuffler = args->shuffler;
-
 
     //fetch: pointer points to state.fetch (*fetch = &(state->fetch))
     fetch_t *fetch;
@@ -190,11 +180,11 @@ void
 #ifdef EAGER
         fetch = shuffler->pull(args->tid, false);//re-fetch from its shuffler.
         if (fetch != nullptr) {
-            args->results = args->joiner->join(
+            args->joiner->join(
                     args->tid,
                     fetch->tuple,
                     fetch->flag,
-                    &matches,
+                    &args->matches,
                     JOINFUNCTION,
                     chainedbuf, args->timer);//build and probe at the same time.
         }
@@ -207,17 +197,17 @@ void
     do {
         fetch = shuffler->pull(args->tid, false);//re-fetch from its shuffler.
         if (fetch != nullptr) {
-            args->results = args->joiner->join(
+            args->joiner->join(
                     args->tid,
                     fetch->tuple,
                     fetch->flag,
-                    &matches,
+                    &args->matches,
                     JOINFUNCTION,
                     chainedbuf, args->timer);
         } else {
-            args->results = args->joiner->cleanup(
+            args->joiner->cleanup(
                     args->tid,
-                    &matches,
+                    &args->matches,
                     JOINFUNCTION,
                     chainedbuf, args->timer);
             break;
@@ -247,7 +237,7 @@ void
     /* Just to make sure we get consistent performance numbers */
     BARRIER_ARRIVE(args->barrier, rv);
 #endif
-    printf("args->num_results (%d): %ld\n", args->tid, args->results);
+    printf("args->num_results (%d): %ld\n", args->tid, args->matches);
     fflush(stdout);
 }
 
@@ -293,13 +283,13 @@ void
  * @param fetch
  */
 void
-processLeft(arg_t *args, fetch_t *fetch, int64_t *matches, void *chainedbuf) {
+processLeft(arg_t *args, fetch_t *fetch, int64_t *matches, void *chainedbuf, int *cntR) {
     if (fetch->ack) {/* msg is an acknowledgment message */
         //remove oldest tuple from S-window
-        DEBUGMSG("remove s %d from S-window.", fetch->tuple->key)
+        DEBUGMSG("remove s %d from S-window.", fetch->fat_tuple[0]->key)
 //        clean(args, fetch, RIGHT);
         args->joiner->clean(args->tid, fetch->tuple, RIGHT);
-    } else if (fetch->tuple) { //if msg contains a new tuple then
+    } else if (fetch->fat_tuple[0]) { //if msg contains a new tuple then
 #ifdef DEBUG
         if (!fetch->flag)//right must be tuple R.
         {
@@ -311,9 +301,9 @@ processLeft(arg_t *args, fetch_t *fetch, int64_t *matches, void *chainedbuf) {
 #endif
         //scan S-window to find tuples that match ri ;
         //insert ri into R-window ;
-        args->results = args->joiner->join(
+        *cntR += args->joiner->join(
                 args->tid,
-                fetch->tuple,
+                fetch->fat_tuple,
                 fetch->flag,
                 matches,
                 JOINFUNCTION,
@@ -324,10 +314,10 @@ processLeft(arg_t *args, fetch_t *fetch, int64_t *matches, void *chainedbuf) {
 
 
 void
-processRight(baseShuffler *shuffler, arg_t *args, fetch_t *fetch, int64_t *matches, void *chainedbuf) {
+processRight(baseShuffler *shuffler, arg_t *args, fetch_t *fetch, int64_t *matches, void *chainedbuf, int *cntS) {
 
     //if msg contains a new tuple then
-    if (fetch->tuple) {
+    if (fetch->fat_tuple[0]) {
 #ifdef DEBUG
         if (fetch->flag)//right must be tuple S.
         {
@@ -340,9 +330,9 @@ processRight(baseShuffler *shuffler, arg_t *args, fetch_t *fetch, int64_t *match
 
 //      scan R-window to find tuples that match si ;
 //      insert si into S-window ;
-        args->results = args->joiner->join(
+        *cntS += args->joiner->join(
                 args->tid,
-                fetch->tuple,
+                fetch->fat_tuple,
                 fetch->flag,
                 matches,
                 JOINFUNCTION,
@@ -354,10 +344,7 @@ processRight(baseShuffler *shuffler, arg_t *args, fetch_t *fetch, int64_t *match
     if (args->tid != args->nthreads - 1) {
         auto *ack = new fetch_t(fetch);
         ack->ack = true;
-#ifdef DEBUG
-        printf("tid:%d pushes an acknowledgement of %d towards right\n", args->tid, fetch->tuple->key);
-        fflush(stdout); // Will now print everything in the stdout buffer
-#endif
+        DEBUGMSG("tid:%d pushes an acknowledgement of %d towards right\n", args->tid, fetch->fat_tuple[0]->key);
         shuffler->push(args->tid + 1, ack, LEFT);
     }
 
@@ -367,11 +354,8 @@ void forward_tuples(baseShuffler *shuffler, arg_t *args, fetch_t *fetchR, fetch_
     //place oldest non-forwarded si into leftSendQueue ;
 
     if (args->tid != 0) {
-        if (fetchS && !fetchS->ack) {
-#ifdef DEBUG
-            printf("tid:%d pushes S? %d towards left\n", args->tid, fetchS->tuple->key);
-            fflush(stdout); // Will now print everything in the stdout buffer
-#endif
+        if (fetchS && fetchS->fat_tuple[0] != NULL && !fetchS->ack) {
+            DEBUGMSG("tid:%d pushes S? %d towards left\n", args->tid, fetchS->fat_tuple[0]->key);
             shuffler->push(args->tid - 1, fetchS, RIGHT);//push S towards left.
         }
     }
@@ -380,15 +364,12 @@ void forward_tuples(baseShuffler *shuffler, arg_t *args, fetch_t *fetchR, fetch_
 
     //place oldest ri into rightSendQueue ;
     if (args->tid != args->nthreads - 1) {
-        if (fetchR) {
-#ifdef DEBUG
-            printf("tid:%d pushes R? %d towards right\n", args->tid, fetchR->tuple->key);
-            fflush(stdout); // Will now print everything in the stdout buffer
-#endif
+        if (fetchR && fetchR->fat_tuple[0] != NULL) {
+            DEBUGMSG("tid:%d pushes R? %d towards right\n", args->tid, fetchR->fat_tuple[0]->key);
             shuffler->push(args->tid + 1, fetchR, LEFT);//push R towards right.
-            DEBUGMSG("remove r %d from R-window.", fetchR->tuple->key)
+            DEBUGMSG("remove r %d from R-window.", fetchR->fat_tuple[0]->key)
 //            clean(args, fetchR, LEFT);
-            args->joiner->clean(args->tid, fetchR->tuple, LEFT);
+            args->joiner->clean(args->tid, fetchR->fat_tuple, LEFT);
         }
     }
 }
@@ -427,19 +408,10 @@ void
 #else
     void *chainedbuf = NULL;
 #endif
-    int64_t matches = 0;//number of matches.
-
-//    //allocate two hashtables on each thread assuming input stream statistics are known.
-//    uint32_t nbucketsR = (args->fetcher->relR->num_tuples / BUCKET_SIZE);
-//    allocate_hashtable(&args->htR, nbucketsR);
-//
-//    uint32_t nbucketsS = (args->fetcher->relS->num_tuples / BUCKET_SIZE);
-//    allocate_hashtable(&args->htS, nbucketsS);
 
     //call different data fetcher.
     baseFetcher *fetcher = args->fetcher;
     baseShuffler *shuffler = args->shuffler;
-
 
     fetch_t *fetchR;
     fetch_t *fetchS;
@@ -450,23 +422,20 @@ void
     int cntS = 0;
 
     do {
-
+//        if (args->tid == 0) {
+//            sleep(100000000);
+//        }
         //pull left queue.
         if (args->tid == 0) {
             fetchR = fetcher->next_tuple(args->tid);//
         } else {
             fetchR = shuffler->pull(args->tid, LEFT);//pull itself.
         }
-        if (fetchR) {
-            cntR++;
-            if (fetchR->ack) {/* msg is an acknowledgment message */
-                cntR--;
-            }
-#ifdef DEBUG
-            printf("tid:%d, fetch R:%d, cntR:%d\n", args->tid, fetchR->tuple->key, cntR);
-            fflush(stdout); // Will now print everything in the stdout buffer
-#endif
-            processLeft(args, fetchR, &matches, chainedbuf);
+        if (fetchR && fetchR->fat_tuple[0] != NULL) {
+            processLeft(args, fetchR, &args->matches, chainedbuf, &cntR);
+
+            DEBUGMSG("tid:%d, fetch R:%d, cntR:%d\n", args->tid, fetchR->fat_tuple[0]->key, cntR);
+
         }
 
         //pull right queue.
@@ -475,24 +444,23 @@ void
         } else {
             fetchS = shuffler->pull(args->tid, RIGHT);//pull itself.
         }
-        if (fetchS) {
-            cntS++;
-#ifdef DEBUG
-            printf("tid:%d, fetch S:%d, ack:%d, cntS:%d\n", args->tid, fetchS->tuple->key, fetchS->ack, cntS);
-            fflush(stdout); // Will now print everything in the stdout buffer
-#endif
-            processRight(shuffler, args, fetchS, &matches, chainedbuf);
+        if (fetchS && fetchS->fat_tuple[0] != NULL) {
+            processRight(shuffler, args, fetchS, &args->matches, chainedbuf, &cntS);
+
+            DEBUGMSG("tid:%d, fetch S:%d, ack:%d, cntS:%d\n", args->tid, fetchS->fat_tuple[0]->key, fetchS->ack, cntS);
+
+
         }
 
-        if (fetchR)
-            if (!fetchR->flag && !fetchR->ack) {
-                printf("something is wrong.\n");
-            }
-
-        if (fetchS)
-            if (fetchS->flag) {
-                printf("something is wrong.\n");
-            }
+//        if (fetchR)
+//            if (!fetchR->flag && !fetchR->ack) {
+//                printf("something is wrong.\n");
+//            }
+//
+//        if (fetchS)
+//            if (fetchS->flag) {
+//                printf("something is wrong.\n");
+//            }
 
         //forward tuple twice!
         forward_tuples(shuffler, args, fetchR, fetchS);
@@ -502,9 +470,9 @@ void
     } while (cntR < sizeR || cntS < sizeS);
 
 
-    args->results = args->joiner->cleanup(
+    args->joiner->cleanup(
             args->tid,
-            &matches,
+            &args->matches,
             JOINFUNCTION,
             chainedbuf, args->timer);
 
@@ -531,7 +499,7 @@ void
     /* Just to make sure we get consistent performance numbers */
     BARRIER_ARRIVE(args->barrier, rv);
 #endif
-    printf("args (%d)->num_results: %ld, cntR: %d, cntS:%d\n", args->tid, args->results, cntR, cntS);
+    printf("args (%d)->num_results: %ld, cntR: %d, cntS:%d\n", args->tid, args->matches, cntR, cntS);
     fflush(stdout);
 }
 

@@ -275,40 +275,52 @@ pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid, T_TIMER *tim
  * @param timer
  * @return
  */
-long PMJJoiner::
-join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *matches,
+long PMJJoiner:: //0x7fff08000c70
+join(int32_t tid, tuple_t **tuple, bool IStuple_R, int64_t *matches,
      void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid, T_TIMER *timer) {
     auto *arg = (t_pmj *) t_arg;
 
+    int valid_member = 0;
     //store tuples.
     if (IStuple_R) {
-        arg->tmp_relR[arg->outerPtrR + arg->innerPtrR] = *tuple;
-        arg->innerPtrR++;
+        for (auto i = 0; i < progressive_step_tupleR; i++) {
+            if (tuple[i] != nullptr) {
+                arg->tmp_relR[arg->outerPtrR + arg->innerPtrR] = *tuple[i];
+                arg->innerPtrR++;
 #ifdef DEBUG
-        if (tid == 0) {
-            window0.R_Window.push_back(tuple->key);
-            DEBUGMSG("T0 after push R (expected): %s, (actual): %s", print_window(window0.R_Window).c_str(),
-                     print_tuples(arg->tmp_relR, arg->outerPtrR + arg->innerPtrR).c_str())
-        } else {
-            window1.R_Window.push_back(tuple->key);
-            DEBUGMSG("T1 after push R (expected): %s, (actual): %s", print_window(window1.R_Window).c_str(),
-                     print_tuples(arg->tmp_relR, arg->outerPtrR + arg->innerPtrR).c_str())
-        }
+                if (tid == 0) {
+                    window0.R_Window.push_back(tuple[i]->key);
+                    DEBUGMSG("T0 after receive R (expected): %s, (actual): %s", print_window(window0.R_Window).c_str(),
+                             print_tuples(arg->tmp_relR, arg->outerPtrR + arg->innerPtrR).c_str())
+                } else {
+                    window1.R_Window.push_back(tuple[i]->key);
+                    DEBUGMSG("T1 after receive R (expected): %s, (actual): %s", print_window(window1.R_Window).c_str(),
+                             print_tuples(arg->tmp_relR, arg->outerPtrR + arg->innerPtrR).c_str())
+                }
 #endif
+                valid_member++;
+            }
+        }
+
     } else {
-        arg->tmp_relS[arg->outerPtrS + arg->innerPtrS] = *tuple;
-        arg->innerPtrS++;
+        for (auto i = 0; i < progressive_step_tupleS; i++) {
+            if (tuple[i] != nullptr) {
+                arg->tmp_relS[arg->outerPtrS + arg->innerPtrS] = *tuple[i];
+                arg->innerPtrS++;
 #ifdef DEBUG
-        if (tid == 0) {
-            window0.S_Window.push_back(tuple->key);
-            DEBUGMSG("T0 after push S (expected): %s, actual: %s", print_window(window0.S_Window).c_str(),
-                     print_tuples(arg->tmp_relS, arg->outerPtrS + arg->innerPtrS).c_str())
-        } else {
-            window1.S_Window.push_back(tuple->key);
-            DEBUGMSG("T1 after push S (expected): %s, actual: %s", print_window(window1.S_Window).c_str(),
-                     print_tuples(arg->tmp_relS, arg->outerPtrS + arg->innerPtrS).c_str())
-        }
+                if (tid == 0) {
+                    window0.S_Window.push_back(tuple[i]->key);
+                    DEBUGMSG("T0 after receive S (expected): %s, actual: %s", print_window(window0.S_Window).c_str(),
+                             print_tuples(arg->tmp_relS, arg->outerPtrS + arg->innerPtrS).c_str())
+                } else {
+                    window1.S_Window.push_back(tuple[i]->key);
+                    DEBUGMSG("T1 after receive S (expected): %s, actual: %s", print_window(window1.S_Window).c_str(),
+                             print_tuples(arg->tmp_relS, arg->outerPtrS + arg->innerPtrS).c_str())
+                }
 #endif
+                valid_member++;
+            }
+        }
     }
     int stepR = progressive_step_tupleR;
     int stepS = progressive_step_tupleS;
@@ -332,7 +344,7 @@ join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *matches,
         arg->innerPtrR = 0;
         arg->innerPtrS = 0;
     }
-    return *matches;
+    return valid_member;
 }
 
 
@@ -345,49 +357,61 @@ join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *matches,
  * @param cleanR
  */
 void PMJJoiner::
-clean(int32_t tid, tuple_t *tuple, bool cleanR) {
+clean(int32_t tid, tuple_t **tuple, bool cleanR) {
 
     if (cleanR) {
-        auto idx = find_index(this->t_arg->tmp_relR, this->t_arg->outerPtrR + this->t_arg->innerPtrR, tuple);
-        this->t_arg->tmp_relR[idx] = this->t_arg->tmp_relR[this->t_arg->outerPtrR + this->t_arg->innerPtrR - 1];
-        this->t_arg->innerPtrR--;
-        if (this->t_arg->innerPtrR < 0) {
-            this->t_arg->outerPtrR -= progressive_step_tupleR;
-            this->t_arg->innerPtrR = progressive_step_tupleR - 1;
-        }
-
+        for (auto i = 0; i < progressive_step_tupleR; i++) {
+            if (tuple[i] != nullptr) {
+                auto idx = find_index(this->t_arg->tmp_relR, this->t_arg->outerPtrR + this->t_arg->innerPtrR,
+                                      tuple[i]);
+                this->t_arg->tmp_relR[idx] = this->t_arg->tmp_relR[this->t_arg->outerPtrR + this->t_arg->innerPtrR - 1];
+                this->t_arg->innerPtrR--;
+                if (this->t_arg->innerPtrR < 0) {
+                    this->t_arg->outerPtrR -= progressive_step_tupleR;
+                    this->t_arg->innerPtrR = progressive_step_tupleR - 1;
+                }
 #ifdef DEBUG
-        if (tid == 0) {
-            window0.R_Window.remove(tuple->key);
-            DEBUGMSG("T0 after remove R (expected): %s, actual: %s", print_window(window0.R_Window).c_str(),
-                     print_tuples(this->t_arg->tmp_relR, this->t_arg->outerPtrR + this->t_arg->innerPtrR).c_str())
-        } else {
-            window1.R_Window.remove(tuple->key);
-            DEBUGMSG("T1 after remove R (expected): %s, actual: %s", print_window(window1.R_Window).c_str(),
-                     print_tuples(this->t_arg->tmp_relR, this->t_arg->outerPtrR + this->t_arg->innerPtrR).c_str())
-        }
+                if (tid == 0) {
+                    window0.R_Window.remove(tuple[i]->key);
+                    DEBUGMSG("T0 after remove R (expected): %s, actual: %s", print_window(window0.R_Window).c_str(),
+                             print_tuples(this->t_arg->tmp_relR,
+                                          this->t_arg->outerPtrR + this->t_arg->innerPtrR).c_str())
+                } else {
+                    window1.R_Window.remove(tuple[i]->key);
+                    DEBUGMSG("T1 after remove R (expected): %s, actual: %s", print_window(window1.R_Window).c_str(),
+                             print_tuples(this->t_arg->tmp_relR,
+                                          this->t_arg->outerPtrR + this->t_arg->innerPtrR).c_str())
+                }
 #endif
-
+            }
+        }
     } else {
-        auto idx = find_index(this->t_arg->tmp_relS, this->t_arg->outerPtrS + this->t_arg->innerPtrS, tuple);
-        this->t_arg->tmp_relS[idx] = this->t_arg->tmp_relS[this->t_arg->outerPtrS + this->t_arg->innerPtrS - 1];
-        this->t_arg->innerPtrS--;
-        if (this->t_arg->innerPtrS < 0) {
-            this->t_arg->outerPtrS -= progressive_step_tupleS;
-            this->t_arg->innerPtrS = progressive_step_tupleS - 1;
-        }
+        for (auto i = 0; i < progressive_step_tupleS; i++) {
+            if (tuple[i] != nullptr) {
+                auto idx = find_index(this->t_arg->tmp_relS, this->t_arg->outerPtrS + this->t_arg->innerPtrS,
+                                      tuple[i]);
+                this->t_arg->tmp_relS[idx] = this->t_arg->tmp_relS[this->t_arg->outerPtrS + this->t_arg->innerPtrS - 1];
+                this->t_arg->innerPtrS--;
+                if (this->t_arg->innerPtrS < 0) {
+                    this->t_arg->outerPtrS -= progressive_step_tupleS;
+                    this->t_arg->innerPtrS = progressive_step_tupleS - 1;
+                }
 
 #ifdef DEBUG
-        if (tid == 0) {
-            window0.S_Window.remove(tuple->key);
-            DEBUGMSG("T0 after remove S (expected): %s,(actual): %s", print_window(window0.S_Window).c_str(),
-                     print_tuples(this->t_arg->tmp_relS, this->t_arg->outerPtrS + this->t_arg->innerPtrS).c_str())
-        } else {
-            window1.S_Window.remove(tuple->key);
-            DEBUGMSG("T1 after remove S (expected): %s,(actual): %s", print_window(window1.S_Window).c_str(),
-                     print_tuples(this->t_arg->tmp_relS, this->t_arg->outerPtrS + this->t_arg->innerPtrS).c_str())
-        }
+                if (tid == 0) {
+                    window0.S_Window.remove(tuple[i]->key);
+                    DEBUGMSG("T0 after remove S (expected): %s,(actual): %s", print_window(window0.S_Window).c_str(),
+                             print_tuples(this->t_arg->tmp_relS,
+                                          this->t_arg->outerPtrS + this->t_arg->innerPtrS).c_str())
+                } else {
+                    window1.S_Window.remove(tuple[i]->key);
+                    DEBUGMSG("T1 after remove S (expected): %s,(actual): %s", print_window(window1.S_Window).c_str(),
+                             print_tuples(this->t_arg->tmp_relS,
+                                          this->t_arg->outerPtrS + this->t_arg->innerPtrS).c_str())
+                }
 #endif
+            }
+        }
     }
 }
 

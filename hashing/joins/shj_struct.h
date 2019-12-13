@@ -26,8 +26,8 @@
 struct arg_t {
     int32_t tid;
     int64_t nthreads;
-    int64_t results = 0;
-
+//    int64_t results = 0;
+    int64_t matches=0;
     pthread_barrier_t *barrier;
 
     baseFetcher *fetcher;

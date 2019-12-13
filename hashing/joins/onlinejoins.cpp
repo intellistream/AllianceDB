@@ -51,7 +51,7 @@ t_param &finishing(int nthreads, t_param &param) {
         pthread_join(param.tid[i], NULL);
 
         /* sum up results */
-        param.result += param.args[i].results;
+         param.result += param.args[i].matches;
     }
     param.joinresult->totalresults = param.result;
     param.joinresult->nthreads = nthreads;
@@ -370,7 +370,7 @@ result_t *PMJ_HS_NP(relation_t *relR, relation_t *relS, int nthreads) {
 #endif
 
     initialize(nthreads, param);
-    param.fetcher = type_HS_NP_Fetcher;//new JM_NP_Fetcher(nthreads, relR, relS);
+    param.fetcher = type_PMJ_HS_NP_Fetcher;//new JM_NP_Fetcher(nthreads, relR, relS);
     param.shuffler = new HSShuffler(nthreads, relR, relS);
     param.joiner = type_PMJJoiner;//new PMJJoiner(relR->num_tuples, relS->num_tuples / nthreads, nthreads);
     LAUNCH(nthreads, relR, relS,param, timer, THREAD_TASK_SHUFFLE_HS)

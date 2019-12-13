@@ -10,7 +10,7 @@
 #include <stdio.h>
 
 enum fetcher {
-    type_HS_NP_Fetcher, type_JM_NP_Fetcher, type_JB_NP_Fetcher
+    type_HS_NP_Fetcher, type_JM_NP_Fetcher, type_JB_NP_Fetcher, type_PMJ_HS_NP_Fetcher
 };
 
 
@@ -19,7 +19,9 @@ struct fetch_t {
 
     fetch_t();
 
-    tuple_t *tuple;
+    tuple_t *tuple;//normal tuples.
+
+    tuple_t **fat_tuple;//used for PMJ only.
 
     bool flag;//whether this tuple from input R (true) or S (false).
 
@@ -59,6 +61,42 @@ public:
 inline bool last_thread(int i, int nthreads) {
     return i == (nthreads - 1);
 }
+
+class PMJ_HS_NP_Fetcher : public baseFetcher {
+public:
+    fetch_t *next_tuple(int tid);
+
+    bool finish() {
+        return false;//should not be called.
+    }
+
+    /**
+     * Initialization
+     * @param nthreads
+     * @param relR
+     * @param relS
+     */
+    PMJ_HS_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS, int i)
+            : baseFetcher(relR, relS) {
+        state = new t_state();
+
+        //let first and last thread to read two streams.
+        if (i == 0) {
+            state->flag = true;
+            /* replicate relR to thread 0 */
+            state->start_index_R = 0;
+            state->end_index_R = relR->num_tuples;
+        }
+        if (i == nthreads - 1) {
+            /* replicate relS to thread [nthread-1] */
+            state->start_index_S = 0;
+            state->end_index_S = relS->num_tuples;
+        }
+
+        DEBUGMSG("TID:%d, R: start_index:%d, end_index:%d\n", i, state->start_index_R, state->end_index_R);
+        DEBUGMSG("TID:%d, S: start_index:%d, end_index:%d\n", i, state->start_index_S, state->end_index_S);
+    }
+};
 
 class HS_NP_Fetcher : public baseFetcher {
 public:
