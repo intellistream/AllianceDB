@@ -79,7 +79,15 @@ long SHJJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R, int64_t *matches
     if (tuple_R) {
         build_hashtable_single(htR, tuple, hashmask_R, skipbits_R);//(1)
 //        DEBUGMSG(1, "tid %d add tuple r %d to R-window. \n", tid, tuple->key)
-
+#ifdef DEBUG
+        if (tid == 0) {
+            window0.R_Window.push_back(tuple->key);
+            print_window(window0.R_Window);
+        } else {
+            window1.R_Window.push_back(tuple->key);
+            print_window(window1.R_Window);
+        }
+#endif
         if (tid == 0) {
             END_MEASURE_BUILD_ACC((*timer))
         }
@@ -97,7 +105,15 @@ long SHJJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R, int64_t *matches
     } else {
         build_hashtable_single(htS, tuple, hashmask_S, skipbits_S);//(3)
 //        DEBUGMSG(1, "tid %d add tuple s %d to S-window. \n", tid, tuple->key)
-
+#ifdef DEBUG
+        if (tid == 0) {
+            window0.S_Window.push_back(tuple->key);
+            print_window(window0.S_Window);
+        } else {
+            window1.S_Window.push_back(tuple->key);
+            print_window(window1.S_Window);
+        }
+#endif
         if (tid == 0) {
             END_MEASURE_BUILD_ACC((*timer))
         }
@@ -133,28 +149,30 @@ void SHJJoiner::clean(int32_t tid, tuple_t *tuple, bool cleanR) {
         debuild_hashtable_single(htR, tuple, htR->hash_mask, htR->skip_bits);
 
 //        printf( "tid: %d remove tuple r %d from R-window. \n", arg->tid, fetch->tuple->key);
-
+#ifdef DEBUG
         if (tid == 0) {
             window0.R_Window.remove(tuple->key);
-//            print_window(window0.R_Window, 0);
+            print_window(window0.R_Window);
         } else {
             window1.R_Window.remove(tuple->key);
-//            print_window(window1.R_Window, 1);
+            print_window(window1.R_Window);
         }
+#endif
+
     } else {
         debuild_hashtable_single(htS, tuple, htS->hash_mask, htS->skip_bits);
 
 //        printf("tid: %d remove tuple s %d from S-window. \n", arg->tid, fetch->tuple->key);
-
+#ifdef DEBUG
         if (tid == 0) {
             window0.S_Window.remove(tuple->key);
-//            print_window(window0.S_Window, 0);
+            print_window(window0.S_Window);
         } else {
             window1.S_Window.remove(tuple->key);
-//            print_window(window1.S_Window, 1);
+            print_window(window1.S_Window);
         }
+#endif
 //        std::cout << boost::stacktrace::stacktrace() << std::endl;
-
     }
 }
 
@@ -257,50 +275,63 @@ pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid, T_TIMER *tim
  * @param timer
  * @return
  */
-long PMJJoiner::join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *matches,
-                     void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid, T_TIMER *timer) {
+long PMJJoiner::
+join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *matches,
+     void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid, T_TIMER *timer) {
     auto *arg = (t_pmj *) t_arg;
 
     //store tuples.
     if (IStuple_R) {
         arg->tmp_relR[arg->outerPtrR + arg->innerPtrR] = *tuple;
         arg->innerPtrR++;
+#ifdef DEBUG
+        if (tid == 0) {
+            window0.R_Window.push_back(tuple->key);
+            DEBUGMSG("T0 after push R (expected): %s, (actual): %s", print_window(window0.R_Window).c_str(),
+                     print_tuples(arg->tmp_relR, arg->outerPtrR + arg->innerPtrR).c_str())
+        } else {
+            window1.R_Window.push_back(tuple->key);
+            DEBUGMSG("T1 after push R (expected): %s, (actual): %s", print_window(window1.R_Window).c_str(),
+                     print_tuples(arg->tmp_relR, arg->outerPtrR + arg->innerPtrR).c_str())
+        }
+#endif
     } else {
         arg->tmp_relS[arg->outerPtrS + arg->innerPtrS] = *tuple;
         arg->innerPtrS++;
+#ifdef DEBUG
+        if (tid == 0) {
+            window0.S_Window.push_back(tuple->key);
+            DEBUGMSG("T0 after push S (expected): %s, actual: %s", print_window(window0.S_Window).c_str(),
+                     print_tuples(arg->tmp_relS, arg->outerPtrS + arg->innerPtrS).c_str())
+        } else {
+            window1.S_Window.push_back(tuple->key);
+            DEBUGMSG("T1 after push S (expected): %s, actual: %s", print_window(window1.S_Window).c_str(),
+                     print_tuples(arg->tmp_relS, arg->outerPtrS + arg->innerPtrS).c_str())
+        }
+#endif
     }
     int stepR = progressive_step_tupleR;
     int stepS = progressive_step_tupleS;
 
-    if (arg->outerPtrR < arg->sizeR - stepR && arg->outerPtrS < arg->sizeS - stepS) {//normal process
-        //check if it is ready to start process.
-        if (arg->innerPtrR >= stepR
-            && arg->innerPtrS >= stepS) {//start process and reset inner pointer.
+    DEBUGMSG("[TID:%d, arg->outerPtrR:%d, arg->innerPtrR:%d"
+             " arg->outerPtrS:%d, arg->innerPtrS:%d]", tid, arg->outerPtrR, arg->innerPtrR, arg->outerPtrS,
+             arg->innerPtrS)
+//    if (arg->outerPtrR < arg->sizeR - stepR && arg->outerPtrS < arg->sizeS - stepS) {//normal process
+    //check if it is ready to start process.
+    if (arg->innerPtrR >= stepR
+        && arg->innerPtrS >= stepS) {//start process and reset inner pointer.
 
-            /***Sorting***/
-            sorting_phase(tid, arg->tmp_relR + arg->outerPtrR, arg->tmp_relS + arg->outerPtrS, stepR, stepS,
-                          matches, &arg->Q, arg->outptrR + arg->outerPtrR, arg->outptrS + arg->outerPtrS);
-            arg->outerPtrR += stepR;
-            arg->outerPtrS += stepS;
-            DEBUGMSG("Join during run creation:%d", *matches)
-
-            /***Reset Inner Pointer***/
-            arg->innerPtrR -= stepR;
-            arg->innerPtrS -= stepS;
-        }
-    } else if (arg->outerPtrR + arg->innerPtrR == arg->sizeR &&
-               arg->outerPtrS + arg->innerPtrS == arg->sizeS) {//received everything
-
-        /***Handling Left-Over***/
-        stepR = arg->sizeR - arg->outerPtrR;
-        stepS = arg->sizeS - arg->outerPtrS;
+        DEBUGMSG("Sorting in normal stage")
         sorting_phase(tid, arg->tmp_relR + arg->outerPtrR, arg->tmp_relS + arg->outerPtrS, stepR, stepS,
                       matches, &arg->Q, arg->outptrR + arg->outerPtrR, arg->outptrS + arg->outerPtrS);
+        arg->outerPtrR += stepR;
+        arg->outerPtrS += stepS;
         DEBUGMSG("Join during run creation:%d", *matches)
-        merging_phase(matches, &arg->Q);
-        DEBUGMSG("Join during run merge matches:%d", *matches)
-    }
 
+        /***Reset Inner Pointer***/
+        arg->innerPtrR = 0;
+        arg->innerPtrS = 0;
+    }
     return *matches;
 }
 
@@ -313,9 +344,71 @@ long PMJJoiner::join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *match
  * @param htS
  * @param cleanR
  */
-void PMJJoiner::clean(int32_t tid, tuple_t *tuple, bool cleanR) {
-    return;
+void PMJJoiner::
+clean(int32_t tid, tuple_t *tuple, bool cleanR) {
+
+    if (cleanR) {
+        auto idx = find_index(this->t_arg->tmp_relR, this->t_arg->outerPtrR + this->t_arg->innerPtrR, tuple);
+        this->t_arg->tmp_relR[idx] = this->t_arg->tmp_relR[this->t_arg->outerPtrR + this->t_arg->innerPtrR - 1];
+        this->t_arg->innerPtrR--;
+        if (this->t_arg->innerPtrR < 0) {
+            this->t_arg->outerPtrR -= progressive_step_tupleR;
+            this->t_arg->innerPtrR = progressive_step_tupleR - 1;
+        }
+
+#ifdef DEBUG
+        if (tid == 0) {
+            window0.R_Window.remove(tuple->key);
+            DEBUGMSG("T0 after remove R (expected): %s, actual: %s", print_window(window0.R_Window).c_str(),
+                     print_tuples(this->t_arg->tmp_relR, this->t_arg->outerPtrR + this->t_arg->innerPtrR).c_str())
+        } else {
+            window1.R_Window.remove(tuple->key);
+            DEBUGMSG("T1 after remove R (expected): %s, actual: %s", print_window(window1.R_Window).c_str(),
+                     print_tuples(this->t_arg->tmp_relR, this->t_arg->outerPtrR + this->t_arg->innerPtrR).c_str())
+        }
+#endif
+
+    } else {
+        auto idx = find_index(this->t_arg->tmp_relS, this->t_arg->outerPtrS + this->t_arg->innerPtrS, tuple);
+        this->t_arg->tmp_relS[idx] = this->t_arg->tmp_relS[this->t_arg->outerPtrS + this->t_arg->innerPtrS - 1];
+        this->t_arg->innerPtrS--;
+        if (this->t_arg->innerPtrS < 0) {
+            this->t_arg->outerPtrS -= progressive_step_tupleS;
+            this->t_arg->innerPtrS = progressive_step_tupleS - 1;
+        }
+
+#ifdef DEBUG
+        if (tid == 0) {
+            window0.S_Window.remove(tuple->key);
+            DEBUGMSG("T0 after remove S (expected): %s,(actual): %s", print_window(window0.S_Window).c_str(),
+                     print_tuples(this->t_arg->tmp_relS, this->t_arg->outerPtrS + this->t_arg->innerPtrS).c_str())
+        } else {
+            window1.S_Window.remove(tuple->key);
+            DEBUGMSG("T1 after remove S (expected): %s,(actual): %s", print_window(window1.S_Window).c_str(),
+                     print_tuples(this->t_arg->tmp_relS, this->t_arg->outerPtrS + this->t_arg->innerPtrS).c_str())
+        }
+#endif
+    }
 }
+
+long PMJJoiner::
+cleanup(int32_t tid, int64_t *matches, void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),
+        void *pVoid, T_TIMER *timer) {
+    auto *arg = (t_pmj *) t_arg;
+    int stepR;
+    int stepS;
+    /***Handling Left-Over***/
+    DEBUGMSG("TID:%d in Clean up stage: sorting", tid)
+    stepR = arg->innerPtrR;
+    stepS = arg->innerPtrS;
+    sorting_phase(tid, arg->tmp_relR + arg->outerPtrR, arg->tmp_relS + arg->outerPtrS, stepR, stepS,
+                  matches, &arg->Q, arg->outptrR + arg->outerPtrR, arg->outptrS + arg->outerPtrS);
+    DEBUGMSG("TID:%d Clean up stage: Join during run creation:%d, arg->Q %d", tid, *matches, arg->Q.size())
+    merging_phase(matches, &arg->Q);
+    DEBUGMSG("TID:%d Clean up stage: Join during run merge matches:%d", tid, *matches)
+    return *matches;
+}
+
 
 PMJJoiner::PMJJoiner(int sizeR, int sizeS, int nthreads) {
     t_arg = new t_pmj(sizeR, sizeS);

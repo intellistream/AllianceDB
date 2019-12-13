@@ -30,31 +30,27 @@ launch(int nthreads, relation_t *relR, relation_t *relS, t_param param, T_TIMER 
 
         param.args[i].shuffler = param.shuffler;//shared shuffler.
 
-        uint64_t maxthreadSizeR = 0;
-        uint64_t maxthreadSizeS = 0;
         switch (param.fetcher) {
-            case type_HS_NP_Fetcher:
-                param.args[i].fetcher = new HS_NP_Fetcher(nthreads, relR, relS, i);
-                maxthreadSizeR = relR->num_tuples;
-                maxthreadSizeS = relS->num_tuples;
-                break;
             case type_JM_NP_Fetcher:
                 param.args[i].fetcher = new JM_NP_Fetcher(nthreads, relR, relS, i);
-                maxthreadSizeR = relR->num_tuples;
-                maxthreadSizeS = relS->num_tuples / nthreads;
                 break;
             case type_JB_NP_Fetcher:
                 param.args[i].fetcher = new JB_NP_Fetcher(nthreads, relR, relS, i);
-                maxthreadSizeR = relR->num_tuples;
-                maxthreadSizeS = relS->num_tuples;
                 break;
+            case type_HS_NP_Fetcher:
+                param.args[i].fetcher = new HS_NP_Fetcher(nthreads, relR, relS, i);
+                break;
+
         }
         switch (param.joiner) {
             case type_SHJJoiner:
-                param.args[i].joiner = new SHJJoiner(maxthreadSizeR, maxthreadSizeS);
+                param.args[i].joiner = new SHJJoiner(relR->num_tuples,
+                                                     relS->num_tuples);//have to allocate max size of hash table in each joiner.
                 break;
             case type_PMJJoiner:
-                param.args[i].joiner = new PMJJoiner(maxthreadSizeR, maxthreadSizeS, nthreads);
+                param.args[i].joiner = new PMJJoiner(relR->num_tuples,
+                                                     relS->num_tuples,
+                                                     nthreads);//have to allocate max size of tmp window in each joiner.
                 break;
             case type_RippleJoiner:
                 param.args[i].joiner = new RippleJoiner(relR, relS, nthreads);

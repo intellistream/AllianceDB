@@ -310,6 +310,86 @@ result_t *PMJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads) {
     return param.joinresult;
 }
 
+result_t *PMJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads) {
+
+    t_param param(nthreads);
+
+#ifdef JOIN_RESULT_MATERIALIZE
+    joinresult->resultlist = (threadresult_t *) malloc(sizeof(threadresult_t));
+#endif
+
+#ifndef NO_TIMING
+    T_TIMER timer;
+    START_MEASURE(timer)
+#endif
+
+#ifdef JOIN_RESULT_MATERIALIZE
+    chainedtuplebuffer_t * chainedbuf = chainedtuplebuffer_init();
+#else
+    void *chainedbuf = NULL;
+#endif
+
+    initialize(nthreads, param);
+    param.fetcher = type_JB_NP_Fetcher;//new JM_NP_Fetcher(nthreads, relR, relS);
+    param.shuffler = new HashShuffler(nthreads, relR, relS);
+    param.joiner = type_PMJJoiner;//new PMJJoiner(relR->num_tuples, relS->num_tuples / nthreads, nthreads);
+    LAUNCH(nthreads, relR, relS,param, timer, THREAD_TASK_SHUFFLE)
+    param = finishing(nthreads, param);
+
+#ifdef JOIN_RESULT_MATERIALIZE
+    threadresult_t * thrres = &(joinresult->resultlist[0]);/* single-thread */
+    thrres->nresults = result;
+    thrres->threadid = 0;
+    thrres->results  = (void *) chainedbuf;
+#endif
+
+#ifndef NO_TIMING
+    /* now print the timing results: */
+    print_timing(relS->num_tuples, param.result, &timer);
+#endif
+    return param.joinresult;
+}
+
+result_t *PMJ_HS_NP(relation_t *relR, relation_t *relS, int nthreads) {
+
+    t_param param(nthreads);
+
+#ifdef JOIN_RESULT_MATERIALIZE
+    joinresult->resultlist = (threadresult_t *) malloc(sizeof(threadresult_t));
+#endif
+
+#ifndef NO_TIMING
+    T_TIMER timer;
+    START_MEASURE(timer)
+#endif
+
+#ifdef JOIN_RESULT_MATERIALIZE
+    chainedtuplebuffer_t * chainedbuf = chainedtuplebuffer_init();
+#else
+    void *chainedbuf = NULL;
+#endif
+
+    initialize(nthreads, param);
+    param.fetcher = type_HS_NP_Fetcher;//new JM_NP_Fetcher(nthreads, relR, relS);
+    param.shuffler = new HSShuffler(nthreads, relR, relS);
+    param.joiner = type_PMJJoiner;//new PMJJoiner(relR->num_tuples, relS->num_tuples / nthreads, nthreads);
+    LAUNCH(nthreads, relR, relS,param, timer, THREAD_TASK_SHUFFLE_HS)
+    param = finishing(nthreads, param);
+
+#ifdef JOIN_RESULT_MATERIALIZE
+    threadresult_t * thrres = &(joinresult->resultlist[0]);/* single-thread */
+    thrres->nresults = result;
+    thrres->threadid = 0;
+    thrres->results  = (void *) chainedbuf;
+#endif
+
+#ifndef NO_TIMING
+    /* now print the timing results: */
+    print_timing(relS->num_tuples, param.result, &timer);
+#endif
+    return param.joinresult;
+}
+
 result_t *RPJ_st(relation_t *relR, relation_t *relS, int nthreads) {
 
     t_param tParam(1);

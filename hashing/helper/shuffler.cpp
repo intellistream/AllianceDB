@@ -15,7 +15,7 @@ int32_t KEY_TO_IDX(intkey_t key, int nthreads) {
     return key % nthreads;
 }
 
-//pass-in pointer points to state.fetch
+//pass-in pointer points to fetch
 void HashShuffler::push(intkey_t key, fetch_t *fetch, bool b) {
     int32_t idx = KEY_TO_IDX(key, nthreads);
     moodycamel::ConcurrentQueue<fetch_t *> *queue = queues[idx].queue;
@@ -113,7 +113,8 @@ HashShuffler::HashShuffler(int nthreads, relation_t *relR, relation_t *relS)
 ContRandShuffler::ContRandShuffler(int nthreads, relation_t *relR,
                                    relation_t *relS)
         : baseShuffler(nthreads, relR, relS) {
-    numGrps = ceil(nthreads/group_size);
+    isCR = true;
+    numGrps = ceil(nthreads / group_size);
     queues = new T_CQueue[nthreads];
     grpToTh = new std::vector<int32_t>[numGrps];
 //    thToGrp = new int32_t[nthreads];
@@ -140,12 +141,12 @@ void ContRandShuffler::push(intkey_t key, fetch_t *fetch, bool b) {
     // replicate R
     if (fetch->flag) {
         DEBUGMSG("PUSH: %d, tuple: %d, R?%d\n", idx, fetch->tuple->key, fetch->flag)
-        for (auto it=curGrp.begin(); it!=curGrp.end(); it++) {
+        for (auto it = curGrp.begin(); it != curGrp.end(); it++) {
             moodycamel::ConcurrentQueue<fetch_t *> *queue = queues[*it].queue;
             queue->enqueue(new fetch_t(fetch));
             DEBUGMSG("PUSH: %d, tuple: %d, queue size:%d\n", idx,
-                    fetch->tuple->key,
-                    queue->size_approx())
+                     fetch->tuple->key,
+                     queue->size_approx())
         }
     } else { // partition S
         DEBUGMSG("PUSH: %d, tuple: %d, R?%d\n", idx, fetch->tuple->key, fetch->flag)

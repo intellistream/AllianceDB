@@ -34,6 +34,12 @@ public:
                       void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid,
                       T_TIMER *timer) = 0;
 
+    virtual long cleanup(int32_t tid, int64_t *matches,
+                         void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid,
+                         T_TIMER *timer) {
+        //do nothing.
+    }
+
     virtual void clean(int32_t tid, tuple_t *tuple, bool cleanR) = 0;
 };
 
@@ -72,8 +78,8 @@ struct t_pmj {
     tuple_t *outptrR;
     tuple_t *outptrS;
 
+    /***Initialize***/
     t_pmj(int sizeR, int sizeS) {
-        /***Initialize***/
         /**** allocate temporary space for sorting ****/
         this->sizeR = sizeR;
         this->sizeS = sizeS;
@@ -105,6 +111,10 @@ public:
     long
     join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *matches,
          void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid, T_TIMER *timer) override;
+
+    long
+    cleanup(int32_t tid, int64_t *matches, void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),
+            void *pVoid, T_TIMER *timer) override;
 
     void clean(int32_t tid, tuple_t *tuple, bool cleanR) override;
 };

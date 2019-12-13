@@ -464,6 +464,8 @@ static struct algo_t algos[] =
 /*** Progressive Merge Join ***/
                 {"PMJ_st",      PMJ_st}, /* Progressive Merge Join Single_thread*/
                 {"PMJ_JM_NP",   PMJ_JM_NP}, /* Progressive Merge Join JM_NP*/
+                {"PMJ_JB_NP",   PMJ_JB_NP}, /* Progressive Merge Join JB_NP*/
+                {"PMJ_HS_NP",   PMJ_HS_NP}, /* Progressive Merge Join HS_NP*/
 /*** Ripple Join ***/
                 {"RPJ_st",      RPJ_st}, /* Ripple Join Single_thread*/
                 {"RPJ_JM_NP",   RPJ_JM_NP}, /* Ripple Join JM*/
@@ -478,15 +480,15 @@ param_t defaultParam() {/* Command line parameters */
     /* Default values if not specified on command line */
     /* BLOCKING HASHING: PRO (0), RJ_st, PRH, PRHO, NPO, NPO_st (5),
      * ONLINE HAHSING: SHJ_st(6), SHJ_JM_P, SHJ_JM_NP, SHJ_JB_NP, SHJ_JBCR_NP, SHJ_HS_NP (11)
-     * ONLINE SORTING: PMJ_st (12), PMJ_JM_NP,
-     * RIPPLE JOIN: RPJ_st (14), RPJ_JM_NP,  RPJ_JB_NP, RPJ_HS_NP
+     * ONLINE SORTING: PMJ_st(12), PMJ_JM_NP, PMJ_JB_NP, PMJ_HS_NP
+     * RIPPLE JOIN: RPJ_st(16), RPJ_JM_NP,  RPJ_JB_NP, RPJ_HS_NP
      * */
-    cmd_params.algo = &algos[17];
+    cmd_params.algo = &algos[15];
     cmd_params.nthreads = 2;//TODO: in HS mode, thread must be larger than 1. Fix it when nthread=1.
 
     /* default dataset is Workload B (described in paper) */
-    cmd_params.r_size = 200;
-    cmd_params.s_size = 200;
+    cmd_params.r_size = 20;
+    cmd_params.s_size = 20;
 //    cmd_params.r_size = 120000;
 //    cmd_params.s_size = 120000;
 //    cmd_params.r_size = 12800000;

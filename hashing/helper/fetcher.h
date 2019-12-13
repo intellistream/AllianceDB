@@ -6,6 +6,7 @@
 #define ALLIANCEDB_FETCHER_H
 
 #include "../utils/types.h"
+#include "../joins/common_functions.h"
 #include <stdio.h>
 
 enum fetcher {
@@ -89,11 +90,9 @@ public:
             state->start_index_S = 0;
             state->end_index_S = relS->num_tuples;
         }
-#ifdef DEBUG
-        printf("TID:%d, R: start_index:%d, end_index:%d\n", i, state->start_index_R, state->end_index_R);
-        printf("TID:%d, S: start_index:%d, end_index:%d\n", i, state->start_index_S, state->end_index_S);
-#endif
 
+        DEBUGMSG("TID:%d, R: start_index:%d, end_index:%d\n", i, state->start_index_R, state->end_index_R);
+        DEBUGMSG("TID:%d, S: start_index:%d, end_index:%d\n", i, state->start_index_S, state->end_index_S);
     }
 };
 
@@ -127,10 +126,10 @@ public:
         /* assign part of the relS for next thread */
         state->start_index_S = numSthr * i;
         state->end_index_S = (last_thread(i, nthreads)) ? relS->num_tuples : numSthr * (i + 1);
-#ifdef DEBUG
-        printf("TID:%d, R: start_index:%d, end_index:%d\n", i, state->start_index_R, state->end_index_R);
-        printf("TID:%d, S: start_index:%d, end_index:%d\n", i, state->start_index_S, state->end_index_S);
-#endif
+
+        DEBUGMSG("TID:%d, R: start_index:%d, end_index:%d\n", i, state->start_index_R, state->end_index_R);
+        DEBUGMSG("TID:%d, S: start_index:%d, end_index:%d\n", i, state->start_index_S, state->end_index_S);
+
 
     }
 };
@@ -164,10 +163,10 @@ public:
         /* assign part of the relS for next thread */
         state->start_index_S = numSthr * i;
         state->end_index_S = (last_thread(i, nthreads)) ? relS->num_tuples : numSthr * (i + 1);
-#ifdef DEBUG
-        printf("TID:%d, R: start_index:%d, end_index:%d\n", i, state->start_index_R, state->end_index_R);
-        printf("TID:%d, S: start_index:%d, end_index:%d\n", i, state->start_index_S, state->end_index_S);
-#endif
+
+        DEBUGMSG("TID:%d, R: start_index:%d, end_index:%d\n", i, state->start_index_R, state->end_index_R);
+        DEBUGMSG("TID:%d, S: start_index:%d, end_index:%d\n", i, state->start_index_S, state->end_index_S);
+
 
     }
 };
@@ -196,10 +195,8 @@ public:
         state->start_index_S = numSthr * i;
         state->end_index_S = (last_thread(i, nthreads)) ? relS->num_tuples : numSthr * (i + 1);
 
-#ifdef DEBUG
-        printf("TID:%d, R: start_index:%d, end_index:%d\n", i, state[i].start_index_R, state[i].end_index_R);
-        printf("TID:%d, S: start_index:%d, end_index:%d\n", i, state[i].start_index_S, state[i].end_index_S);
-#endif
+        DEBUGMSG("TID:%d, R: start_index:%d, end_index:%d\n", i, state->start_index_R, state->end_index_R);
+        DEBUGMSG("TID:%d, S: start_index:%d, end_index:%d\n", i, state->start_index_S, state->end_index_S);
 
     }
 };

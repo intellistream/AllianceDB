@@ -79,8 +79,8 @@ malloc_aligned(size_t size);
 extern t_window window0;
 extern t_window window1;
 
-std::string
-print_window(const std::vector<intkey_t> &list);
+std::string print_window(const std::list<intkey_t> &list);
+std::string print_tuples(const tuple_t *tuples, int size);
 
 /**
  * Allocates a hashtable of NUM_BUCKETS and inits everything to 0.
@@ -152,7 +152,7 @@ int64_t proble_hashtable_single(const hashtable_t *ht, const relation_t *rel, ui
 void match_single_tuple(const std::list<intkey_t> list, const relation_t *rel, const tuple_t *tuple, int64_t *matches, void *(*thread_fun)(const tuple_t*, const tuple_t*, int64_t*));
 
 uint32_t find_index(const relation_t *rel, const tuple_t *tuple);
-
+uint32_t find_index(const tuple_t* rel, const  int length, const tuple_t *tuple);
 /**
  * Multi-thread hashtable build method, ht is pre-allocated.
  * Writes to buckets are synchronized via latches.

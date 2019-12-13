@@ -128,7 +128,6 @@ debuild_hashtable_single(const hashtable_t *ht, const tuple_t *tuple, const uint
                          const uint32_t skipbits) {
 
     uint32_t index_ht;
-
     intkey_t idx = HASH(tuple->key, hashmask, skipbits);
     bucket_t *b = ht->buckets + idx;
     for (index_ht = 0; index_ht < b->count; index_ht++) {
@@ -317,7 +316,14 @@ void match_single_tuple(const std::list<intkey_t> list, const relation_t *rel, c
     fprintf(stdout, "JOINING: matches: %d, tuple: %d\n", *matches, tuple->key);
 }
 
-
+uint32_t find_index(const tuple_t* rel, const  int length, const tuple_t *tuple) {
+    // TODO: refactor RPJ related methods to RPJ helper
+    for (int i=0; i<length; i++) {
+        if (rel[i].key == tuple->key) {
+            return i;
+        }
+    }
+}
 uint32_t find_index(const relation_t *rel, const tuple_t *tuple) {
     // TODO: refactor RPJ related methods to RPJ helper
     for (int i=0; i<rel->num_tuples; i++) {
@@ -405,6 +411,16 @@ void build_hashtable_mt(hashtable_t *ht, relation_t *rel, bucket_buffer_t **over
 
 const std::string red("\033[0;31m");
 const std::string reset("\033[0m");
+std::string print_tuples(const tuple_t *tuples, int size) {
+
+    std::string tmp = "";
+    tmp.append("[");
+
+    for (auto i=0;i<size;i++)
+        tmp.append(std::to_string(tuples[i].key)).append(",");
+    tmp.append("]\n");
+    return tmp;
+}
 
 std::string print_window(const std::list<intkey_t> &list) {
 

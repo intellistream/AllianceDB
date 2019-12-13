@@ -212,7 +212,6 @@ avxsort_aligned(int64_t ** inputptr, int64_t ** outputptr, uint64_t nitems)
 
 }
 
-
 void
 avxsort_tuples(tuple_t ** inputptr, tuple_t ** outputptr, uint64_t nitems)
 {

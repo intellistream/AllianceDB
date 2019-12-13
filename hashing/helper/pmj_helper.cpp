@@ -61,8 +61,10 @@ void earlyJoinMergedRuns(std::vector<run> *Q, int64_t *matches, run *newRun) {
         int run_j = 0;
         int m = 0;
         for (auto run_itr = Q->begin();
-             run_itr < Q->begin() + merge_step; ++run_itr) {//iterate through several runs.
+             run_itr < Q->begin() + merge_step;
+             ++run_itr) {//iterate through several runs.
 
+            if (Q->size() < 2) { break; }
 
             /***HANDLING R.***/
             auto posR = (run_itr).operator*().posR;
@@ -116,6 +118,7 @@ void earlyJoinMergedRuns(std::vector<run> *Q, int64_t *matches, run *newRun) {
         }
 
         if (!findI && !findJ) {
+            if (Q->size() < 2) { return; }
             Q->erase(Q->begin(), Q->begin() + merge_step);//clean Q.
             newRun->merged = true;
             return;
@@ -176,10 +179,10 @@ void merging_phase(int64_t *matches, std::vector<run> *Q) {
 void sorting_phase(int32_t tid, tuple_t *inptrR, tuple_t *inptrS, int sizeR,
                    int sizeS, int64_t *matches, std::vector<run> *Q, tuple_t *outputR, tuple_t *outputS) {
 
-    DEBUGMSG("Initial R [aligned:%d]: %s", is_aligned(inptrR, CACHE_LINE_SIZE),
+    DEBUGMSG("TID:%d, Initial R [aligned:%d]: %s", tid, is_aligned(inptrR, CACHE_LINE_SIZE),
              print_relation(inptrR, sizeR).c_str())
     avxsort_tuples(&inptrR, &outputR, sizeR);// the method will swap input and output pointers.
-    DEBUGMSG("Sorted R: %s", print_relation(outputR, sizeR).c_str())
+    DEBUGMSG("TID:%d, Sorted R: %s", tid, print_relation(outputR, sizeR).c_str())
 #ifdef DEBUG
     if (!is_sorted_helper((int64_t *) outputR, sizeR)) {
         DEBUGMSG("===> %d-thread -> R is NOT sorted, size = %d\n", tid, sizeR)
@@ -197,9 +200,8 @@ void sorting_phase(int32_t tid, tuple_t *inptrR, tuple_t *inptrS, int sizeR,
 #endif
 
     earlyJoinInitialRuns(outputR, outputS, sizeR, sizeS, matches);
+    DEBUGMSG("Insert Q.")
     insert(Q, outputR, sizeR, outputS, sizeS);
-
-
 }
 
 void sorting_phase(int32_t tid, const relation_t *rel_R, const relation_t *rel_S, int sizeR, int sizeS,
@@ -215,6 +217,7 @@ void sorting_phase(int32_t tid, const relation_t *rel_R, const relation_t *rel_S
 //        DEBUGMSG("[before] Address of inptrR:%p, rel_R: %p, outptrR:%p ", inptrR, rel_R->tuples, outptrR)
         DEBUGMSG("Initial R [aligned:%d]: %s", is_aligned(inptrR, CACHE_LINE_SIZE),
                  print_relation(rel_R->tuples + *i, progressive_stepR).c_str())
+
         avxsort_tuples(&inptrR, &outptrR, progressive_stepR);// the method will swap input and output pointers.
 //        DEBUGMSG("[after] Address of inptrR:%p, rel_R: %p, outptrR:%p ", inptrR, rel_R->tuples, outptrR)
         DEBUGMSG("Sorted R: %s",

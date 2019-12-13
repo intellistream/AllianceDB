@@ -112,6 +112,26 @@ result_t *
 PMJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads);
 
 /**
+ * PMJ JB NP
+ * @param relR
+ * @param relS
+ * @param nthreads
+ * @return
+ */
+result_t *
+PMJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads);
+
+/**
+ * PMJ HS NP
+ * @param relR
+ * @param relS
+ * @param nthreads
+ * @return
+ */
+result_t *
+PMJ_HS_NP(relation_t *relR, relation_t *relS, int nthreads);
+
+/**
  * Single thread Ripple Join
  * @param relR
  * @param relS

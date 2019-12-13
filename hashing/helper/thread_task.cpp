@@ -19,7 +19,7 @@
  * @return
  */
 //void* JOINFUNCTION(tuple_t *r_tuple, tuple_t *s_tuple, int64_t *matches) {
-void* JOINFUNCTION(const tuple_t *r_tuple, const tuple_t *s_tuple, int64_t *matches) {
+void *JOINFUNCTION(const tuple_t *r_tuple, const tuple_t *s_tuple, int64_t *matches) {
     if (r_tuple->key == s_tuple->key) {
 //        (*matches)++;
         DEBUGMSG("matches: %d", *matches);
@@ -92,6 +92,14 @@ THREAD_TASK_NOSHUFFLE(void *param) {
                     chainedbuf, args->timer);//build and probe at the same time.
         }
     } while (!fetcher->finish());
+
+
+    args->results = args->joiner->cleanup(
+            args->tid,
+            &matches,
+            JOINFUNCTION,
+            chainedbuf, args->timer);
+
     printf("args->num_results (%d): %ld\n", args->tid, args->results);
 
 #ifdef JOIN_RESULT_MATERIALIZE
@@ -205,8 +213,15 @@ void
                     fetch->flag,
                     &matches,
                     JOINFUNCTION,
-                    chainedbuf, args->timer);//build and probe at the same time.
-        } else break;
+                    chainedbuf, args->timer);
+        } else {
+            args->results = args->joiner->cleanup(
+                    args->tid,
+                    &matches,
+                    JOINFUNCTION,
+                    chainedbuf, args->timer);
+            break;
+        }
     } while (true);
 
 #ifdef JOIN_RESULT_MATERIALIZE
@@ -281,6 +296,7 @@ void
 processLeft(arg_t *args, fetch_t *fetch, int64_t *matches, void *chainedbuf) {
     if (fetch->ack) {/* msg is an acknowledgment message */
         //remove oldest tuple from S-window
+        DEBUGMSG("remove s %d from S-window.", fetch->tuple->key)
 //        clean(args, fetch, RIGHT);
         args->joiner->clean(args->tid, fetch->tuple, RIGHT);
     } else if (fetch->tuple) { //if msg contains a new tuple then
@@ -302,7 +318,7 @@ processLeft(arg_t *args, fetch_t *fetch, int64_t *matches, void *chainedbuf) {
                 matches,
                 JOINFUNCTION,
                 chainedbuf,
-                args->timer);//build and probe at the same time.
+                args->timer);
     }
 }
 
@@ -370,7 +386,7 @@ void forward_tuples(baseShuffler *shuffler, arg_t *args, fetch_t *fetchR, fetch_
             fflush(stdout); // Will now print everything in the stdout buffer
 #endif
             shuffler->push(args->tid + 1, fetchR, LEFT);//push R towards right.
-            //remove ri from R-window.
+            DEBUGMSG("remove r %d from R-window.", fetchR->tuple->key)
 //            clean(args, fetchR, LEFT);
             args->joiner->clean(args->tid, fetchR->tuple, LEFT);
         }
@@ -480,8 +496,17 @@ void
 
         //forward tuple twice!
         forward_tuples(shuffler, args, fetchR, fetchS);
-
+#ifdef DEBUG
+        usleep(rand() % 100);
+#endif
     } while (cntR < sizeR || cntS < sizeS);
+
+
+    args->results = args->joiner->cleanup(
+            args->tid,
+            &matches,
+            JOINFUNCTION,
+            chainedbuf, args->timer);
 
 #ifdef JOIN_RESULT_MATERIALIZE
     args->threadresult->nresults = args->num_results;

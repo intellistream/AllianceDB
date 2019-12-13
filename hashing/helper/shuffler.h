@@ -16,7 +16,7 @@ public:
     int nthreads;
     relation_t *relR;
     relation_t *relS;
-
+    bool isCR= false;
     baseShuffler(int tid, relation_t *relR,
                  relation_t *relS);
 
