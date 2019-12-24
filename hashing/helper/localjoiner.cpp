@@ -9,7 +9,7 @@
 #include "sort_common.h"
 #include "localjoiner.h"
 #include "pmj_helper.h"
-
+#include "../joins/shj_struct.h"
 
 /**
  * As an example of join execution, consider a join with join predicate T1.attr1 = T2.attr2.
@@ -28,31 +28,30 @@
  * @param nthreads
  * @return
  */
-long
-shj(int32_t tid, relation_t *rel_R,
-    relation_t *rel_S, void *pVoid,
-    T_TIMER *timer) {
+SHJJoiner *
+shj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid) {
 
-    int64_t matches = 0;//number of matches.
     SHJJoiner joiner(rel_R->num_tuples, rel_S->num_tuples);
-
     uint32_t index_R = 0;//index of rel_R
     uint32_t index_S = 0;//index of rel_S
 
+
+#ifndef NO_TIMING
+    START_MEASURE(joiner.timer)
+#endif
     do {
         if (index_R < rel_R->num_tuples) {
-            joiner.join(tid, &rel_R->tuples[index_R], true, &matches, NULL, pVoid, timer);
+            joiner.join(tid, &rel_R->tuples[index_R], true, &joiner.matches, NULL, pVoid);
             index_R++;
         }
         if (index_S < rel_S->num_tuples) {
-            joiner.join(tid, &rel_S->tuples[index_S], false, &matches, NULL, pVoid, timer);
+            joiner.join(tid, &rel_S->tuples[index_S], false, &joiner.matches, NULL, pVoid);
             index_S++;
         }
     } while (index_R < rel_R->num_tuples || index_S < rel_S->num_tuples);
 
-    return matches;
+    return &joiner;
 }
-
 
 /**
  * SHJ algorithm to be used in each thread.
@@ -67,18 +66,19 @@ shj(int32_t tid, relation_t *rel_R,
  * @return
  */
 long SHJJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R, int64_t *matches,
-                     void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid, T_TIMER *timer) {
+                     void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid) {
 
     const uint32_t hashmask_R = htR->hash_mask;
     const uint32_t skipbits_R = htR->skip_bits;
-
     const uint32_t hashmask_S = htS->hash_mask;
     const uint32_t skipbits_S = htS->skip_bits;
 
 //    DEBUGMSG(1, "JOINING: tid: %d, tuple: %d, R?%d\n", tid, tuple->key, tuple_R)
     if (tuple_R) {
+        BEGIN_MEASURE_BUILD_ACC(timer)
         build_hashtable_single(htR, tuple, hashmask_R, skipbits_R);//(1)
-//        DEBUGMSG(1, "tid %d add tuple r %d to R-window. \n", tid, tuple->key)
+        END_MEASURE_BUILD_ACC(timer)//accumulate hash table build time.
+
 #ifdef DEBUG
         if (tid == 0) {
             window0.R_Window.push_back(tuple->key);
@@ -88,23 +88,11 @@ long SHJJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R, int64_t *matches
             print_window(window1.R_Window);
         }
 #endif
-        if (tid == 0) {
-            END_MEASURE_BUILD_ACC((*timer))
-        }
-        if (tid == 0) {
-            proble_hashtable_single_measure(htS, tuple, hashmask_S, skipbits_S, matches,
-                                            thread_fun, timer->progressivetimer);//(2)
-//            DEBUGMSG("matches:%ld, T0: Join R %d with %s", *matches, tuple->key,
-//                     print_window(window0.S_Window).c_str());
-        } else {
-            proble_hashtable_single(htS, tuple, hashmask_S, skipbits_S, matches, thread_fun);//(4)
-//            DEBUGMSG("matches:%ld, T1: Join R %d with %s", *matches, tuple->key,
-//                     print_window(window1.S_Window).c_str());
-
-        }
+        proble_hashtable_single_measure(htS, tuple, hashmask_S, skipbits_S, matches, thread_fun, &timer);//(2)
     } else {
+        BEGIN_MEASURE_BUILD_ACC(timer)
         build_hashtable_single(htS, tuple, hashmask_S, skipbits_S);//(3)
-//        DEBUGMSG(1, "tid %d add tuple s %d to S-window. \n", tid, tuple->key)
+        END_MEASURE_BUILD_ACC(timer)//accumulate hash table build time.
 #ifdef DEBUG
         if (tid == 0) {
             window0.S_Window.push_back(tuple->key);
@@ -114,24 +102,8 @@ long SHJJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R, int64_t *matches
             print_window(window1.S_Window);
         }
 #endif
-        if (tid == 0) {
-            END_MEASURE_BUILD_ACC((*timer))
-        }
-
-//        DEBUGMSG(1, "BUILD TABLE FINISH: tid: %d, tuple: %d, R?%d\n", tid, tuple->key, tuple_R)
-
-        if (tid == 0) {
-            proble_hashtable_single_measure(htR, tuple, hashmask_R, skipbits_R, matches,
-                                            thread_fun, timer->progressivetimer);//(4)
-//                DEBUGMSG("matches:%ld, T0: Join S %d with %s", *matches, tuple->key,
-//                         print_window(window0.R_Window).c_str());
-        } else {
-            proble_hashtable_single(htR, tuple, hashmask_R, skipbits_R, matches, thread_fun);//(4)
-//                DEBUGMSG("matches:%ld, T1: Join S %d with %s", *matches, tuple->key,
-//                         print_window(window1.R_Window).c_str());
-        }
+        proble_hashtable_single_measure(htR, tuple, hashmask_R, skipbits_R, matches, thread_fun, &timer);//(4)
     }
-//    DEBUGMSG(1, "JOINING FINISH: tid: %d, tuple: %d, R?%d\n", tid, tuple->key, tuple_R)
     return *matches;
 }
 
@@ -146,9 +118,9 @@ long SHJJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R, int64_t *matches
 void SHJJoiner::clean(int32_t tid, tuple_t *tuple, bool cleanR) {
     if (cleanR) {
         //if SHJ is used, we need to clean up hashtable of R.
+        BEGIN_MEASURE_DEBUILD_ACC(timer)
         debuild_hashtable_single(htR, tuple, htR->hash_mask, htR->skip_bits);
-
-//        printf( "tid: %d remove tuple r %d from R-window. \n", arg->tid, fetch->tuple->key);
+        END_MEASURE_DEBUILD_ACC(timer)
 #ifdef DEBUG
         if (tid == 0) {
             window0.R_Window.remove(tuple->key);
@@ -160,9 +132,9 @@ void SHJJoiner::clean(int32_t tid, tuple_t *tuple, bool cleanR) {
 #endif
 
     } else {
+        BEGIN_MEASURE_DEBUILD_ACC(timer)
         debuild_hashtable_single(htS, tuple, htS->hash_mask, htS->skip_bits);
-
-//        printf("tid: %d remove tuple s %d from S-window. \n", arg->tid, fetch->tuple->key);
+        END_MEASURE_DEBUILD_ACC(timer)
 #ifdef DEBUG
         if (tid == 0) {
             window0.S_Window.remove(tuple->key);
@@ -172,7 +144,6 @@ void SHJJoiner::clean(int32_t tid, tuple_t *tuple, bool cleanR) {
             print_window(window1.S_Window);
         }
 #endif
-//        std::cout << boost::stacktrace::stacktrace() << std::endl;
     }
 }
 
@@ -184,8 +155,6 @@ SHJJoiner::SHJJoiner(int sizeR, int sizeS) {
 
     uint32_t nbucketsS = (sizeS / BUCKET_SIZE);
     allocate_hashtable(&htS, nbucketsS);
-
-
 }
 
 SHJJoiner::~SHJJoiner() {
@@ -277,7 +246,7 @@ pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid, T_TIMER *tim
  */
 long PMJJoiner:: //0x7fff08000c70
 join(int32_t tid, tuple_t **tuple, bool IStuple_R, int64_t *matches,
-     void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid, T_TIMER *timer) {
+     void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid) {
     auto *arg = (t_pmj *) t_arg;
 
     int valid_member = 0;
@@ -416,8 +385,7 @@ clean(int32_t tid, tuple_t **tuple, bool cleanR) {
 }
 
 long PMJJoiner::
-cleanup(int32_t tid, int64_t *matches, void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),
-        void *pVoid, T_TIMER *timer) {
+cleanup(int32_t tid, int64_t *matches, void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid) {
     auto *arg = (t_pmj *) t_arg;
     int stepR;
     int stepS;
@@ -436,6 +404,53 @@ cleanup(int32_t tid, int64_t *matches, void *(*thread_fun)(const tuple_t *, cons
 
 PMJJoiner::PMJJoiner(int sizeR, int sizeS, int nthreads) {
     t_arg = new t_pmj(sizeR, sizeS);
+}
+
+long PMJJoiner::join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *matches,
+                     void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid) {
+    auto *arg = (t_pmj *) t_arg;
+
+    //store tuples.
+    if (IStuple_R) {
+        arg->tmp_relR[arg->outerPtrR + arg->innerPtrR] = *tuple;
+        arg->innerPtrR++;
+    } else {
+        arg->tmp_relS[arg->outerPtrS + arg->innerPtrS] = *tuple;
+        arg->innerPtrS++;
+    }
+    int stepR = progressive_step_tupleR;
+    int stepS = progressive_step_tupleS;
+
+    if (arg->outerPtrR < arg->sizeR - stepR && arg->outerPtrS < arg->sizeS - stepS) {//normal process
+        //check if it is ready to start process.
+        if (arg->innerPtrR >= stepR
+            && arg->innerPtrS >= stepS) {//start process and reset inner pointer.
+
+            /***Sorting***/
+            sorting_phase(tid, arg->tmp_relR + arg->outerPtrR, arg->tmp_relS + arg->outerPtrS, stepR, stepS,
+                          matches, &arg->Q, arg->outptrR + arg->outerPtrR, arg->outptrS + arg->outerPtrS);
+            arg->outerPtrR += stepR;
+            arg->outerPtrS += stepS;
+            DEBUGMSG("Join during run creation:%d", *matches)
+
+            /***Reset Inner Pointer***/
+            arg->innerPtrR -= stepR;
+            arg->innerPtrS -= stepS;
+        }
+    } else if (arg->outerPtrR + arg->innerPtrR == arg->sizeR &&
+               arg->outerPtrS + arg->innerPtrS == arg->sizeS) {//received everything
+
+        /***Handling Left-Over***/
+        stepR = arg->sizeR - arg->outerPtrR;
+        stepS = arg->sizeS - arg->outerPtrS;
+        sorting_phase(tid, arg->tmp_relR + arg->outerPtrR, arg->tmp_relS + arg->outerPtrS, stepR, stepS,
+                      matches, &arg->Q, arg->outptrR + arg->outerPtrR, arg->outptrS + arg->outerPtrS);
+        DEBUGMSG("Join during run creation:%d", *matches)
+        merging_phase(matches, &arg->Q);
+        DEBUGMSG("Join during run merge matches:%d", *matches)
+    }
+
+    return *matches;
 }
 
 
@@ -528,8 +543,8 @@ hrpj(int32_t tid, relation_t *rel_R,
 
     // indexed ripple join, assuming R and S have the same input rate.
     do {
-        joiner.join(tid, &rel_S->tuples[cur_step], false, &matches, NULL, pVoid, timer);
-        joiner.join(tid, &rel_R->tuples[cur_step], true, &matches, NULL, pVoid, timer);
+        joiner.join(tid, &rel_S->tuples[cur_step], false, &matches, NULL, pVoid);
+        joiner.join(tid, &rel_R->tuples[cur_step], true, &matches, NULL, pVoid);
         cur_step++;
 //        DEBUGMSG(1, "JOINING: tid: %d, cur step: %d, matches: %d\n", tid, cur_step, matches)
     } while (cur_step < rel_R->num_tuples || cur_step < rel_S->num_tuples);
@@ -554,7 +569,7 @@ hrpj(int32_t tid, relation_t *rel_R,
  */
 
 long RippleJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R, int64_t *matches,
-                        void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid, T_TIMER *timer) {
+                        void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid) {
     fprintf(stdout, "tid: %d, tuple: %d, R?%d\n", tid, tuple->key, tuple_R);
     if (tuple_R) {
 //        samList.t_windows->R_Window.push_back(tuple->key);

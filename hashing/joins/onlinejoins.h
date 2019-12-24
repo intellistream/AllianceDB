@@ -121,6 +121,17 @@ PMJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads);
 result_t *
 PMJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads);
 
+
+/**
+ * PMJ JB NP
+ * @param relR
+ * @param relS
+ * @param nthreads
+ * @return
+ */
+result_t *
+PMJ_JBCR_NP(relation_t *relR, relation_t *relS, int nthreads);
+
 /**
  * PMJ HS NP
  * @param relR
@@ -172,6 +183,22 @@ RPJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads);
  */
 result_t *
 RPJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads);
+
+/**
+ * Join-Matrix Model RPJ.
+ *
+ * The "Join-Matrix Model" was originally proposed by Mohammed Elseidy et al. in VLDB 2014.
+ *
+ * The following is a multi-threaded implementation. Just returns the
+ * number of result tuples.
+ *
+ * @param relR input relation R - inner relation
+ * @param relS input relation S - outer relation
+ *
+ * @return number of result tuples
+ */
+result_t *
+RPJ_JBCR_NP(relation_t *relR, relation_t *relS, int nthreads);
 
 result_t *
 RPJ_HS_NP(relation_t *relR, relation_t *relS, int nthreads);

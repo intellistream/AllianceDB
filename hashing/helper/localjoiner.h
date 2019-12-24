@@ -12,6 +12,7 @@
 #include "../joins/npj_params.h"         /* constant parameters */
 #include "../joins/common_functions.h"
 #include "pmj_helper.h"
+#include "../joins/shj_struct.h"
 #include <list>
 
 ///** To keep track of the input relation pairs fitting into L2 cache */
@@ -23,25 +24,25 @@
 //    tuple_t *S;
 //};
 
-enum joiner {
+enum joiner_type {
     type_SHJJoiner, type_PMJJoiner, type_RippleJoiner
 };
 
 class localJoiner {
-
 public:
+
+
     virtual long join(int32_t tid, tuple_t *tuple, bool tuple_R, int64_t *matches,
-                      void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid,
-                      T_TIMER *timer) = 0;
+                      void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid) = 0;
 
     virtual long join(int32_t tid, tuple_t **fat_tuple, bool IStuple_R, int64_t *matches,
-                      void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid, T_TIMER *timer) {
+                      void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid) {
         //only supported by PMJ.
     }
 
-    virtual long cleanup(int32_t tid, int64_t *matches,
-                         void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid,
-                         T_TIMER *timer) {
+    virtual long
+    cleanup(int32_t tid, int64_t *matches, void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),
+            void *pVoid) {
         //do nothing.
     }
 
@@ -50,6 +51,13 @@ public:
     virtual void clean(int32_t tid, tuple_t **tuple, bool cleanR) {
         //only used in PMJ.
     }
+
+//every joiner has its own timer --> this completely avoids interference.
+//dump the measurement into file and analysis the results when program exit.
+    int64_t matches = 0;
+#ifndef NO_TIMING
+    T_TIMER timer;
+#endif
 };
 
 
@@ -64,7 +72,7 @@ private:
 public:
     long
     join(int32_t tid, tuple_t *tuple, bool tuple_R, int64_t *matches,
-         void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid, T_TIMER *timer) override;
+         void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid) override;
 
     RippleJoiner(relation_t *relR, relation_t *relS, int nthreads);
 
@@ -119,16 +127,14 @@ public:
 
     long
     join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *matches,
-         void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid, T_TIMER *timer) {
-        //not implemented.
-    }
+         void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid);
 
     long join(int32_t tid, tuple_t **fat_tuple, bool IStuple_R, int64_t *matches,
-              void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid, T_TIMER *timer);
+              void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid);
 
     long
     cleanup(int32_t tid, int64_t *matches, void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),
-            void *pVoid, T_TIMER *timer) override;
+            void *pVoid) override;
 
     void clean(int32_t tid, tuple_t *tuple, bool cleanR) override {
         //not implemented.
@@ -151,13 +157,13 @@ public:
 
     long
     join(int32_t tid, tuple_t *tuple, bool tuple_R, int64_t *matches,
-         void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid, T_TIMER *timer) override;
+         void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid) override;
 
     void clean(int32_t tid, tuple_t *tuple, bool cleanR) override;
 };
 
-long
-shj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid, T_TIMER *timer);
+SHJJoiner *
+shj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid);
 
 long
 pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid, T_TIMER *timer);

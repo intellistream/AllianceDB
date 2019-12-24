@@ -139,7 +139,7 @@ NPO_st(relation_t *relR, relation_t *relS, int nthreads) {
     void *chainedbuf = NULL;
 #endif
 
-    result = probe_hashtable(ht, relS, chainedbuf, timer.progressivetimer);
+    result = probe_hashtable(ht, relS, chainedbuf, &timer);
 
 #ifdef JOIN_RESULT_MATERIALIZE
     threadresult_t * thrres = &(joinresult->resultlist[0]);/* single-thread */
@@ -228,7 +228,7 @@ npo_thread(void *param) {
 #endif
 
     /* probe for matching tuples from the assigned part of relS */
-    args->nthreads = probe_hashtable(args->ht, &args->relS, chainedbuf, args->timer->progressivetimer);
+    args->nthreads = probe_hashtable(args->ht, &args->relS, chainedbuf, args->timer);
 
 #ifdef JOIN_RESULT_MATERIALIZE
     args->threadresult->nresults = args->num_results;

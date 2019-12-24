@@ -27,7 +27,7 @@ struct arg_t {
     int32_t tid;
     int64_t nthreads;
 //    int64_t results = 0;
-    int64_t matches=0;
+    int64_t *matches;
     pthread_barrier_t *barrier;
 
     baseFetcher *fetcher;
@@ -36,7 +36,6 @@ struct arg_t {
 
     /* results of the thread */
     threadresult_t *threadresult;
-
 
 #ifndef NO_TIMING
     T_TIMER *timer;
@@ -55,7 +54,7 @@ struct t_param {
 
     enum fetcher fetcher;
     baseShuffler *shuffler;
-    enum joiner joiner;
+    enum joiner_type joiner;
 
     t_param(int nthreads) {
         result = 0;

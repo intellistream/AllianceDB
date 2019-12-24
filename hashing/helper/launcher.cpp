@@ -6,7 +6,7 @@
 
 
 void
-launch(int nthreads, relation_t *relR, relation_t *relS, t_param param, T_TIMER *timer, void *(*thread_fun)(void *)) {
+launch(int nthreads, relation_t *relR, relation_t *relS, t_param param, void *(*thread_fun)(void *)) {
 
     int i;
     int rv;
@@ -18,18 +18,9 @@ launch(int nthreads, relation_t *relR, relation_t *relS, t_param param, T_TIMER 
         CPU_ZERO(&set);
         CPU_SET(cpu_idx, &set);
         pthread_attr_setaffinity_np(param.attr, sizeof(cpu_set_t), &set);
-        param.args[i].nthreads = nthreads;
-        param.args[i].tid = i;
-        param.args[i].timer = timer;
-        param.args[i].barrier = param.barrier;
-        param.args[i].threadresult = &(param.joinresult->resultlist[i]);
-
         /**
          * Three key components
          */
-
-        param.args[i].shuffler = param.shuffler;//shared shuffler.
-
         switch (param.fetcher) {
             case type_JM_NP_Fetcher:
                 param.args[i].fetcher = new JM_NP_Fetcher(nthreads, relR, relS, i);
@@ -58,6 +49,15 @@ launch(int nthreads, relation_t *relR, relation_t *relS, t_param param, T_TIMER 
                 param.args[i].joiner = new RippleJoiner(relR, relS, nthreads);
                 break;
         }
+
+
+        param.args[i].nthreads = nthreads;
+        param.args[i].tid = i;
+        param.args[i].barrier = param.barrier;
+        param.args[i].timer = &param.args[i].joiner->timer;
+        param.args[i].matches = &param.args[i].joiner->matches;
+        param.args[i].threadresult = &(param.joinresult->resultlist[i]);
+        param.args[i].shuffler = param.shuffler;//shared shuffler.
 
         rv = pthread_create(&param.tid[i], param.attr, thread_fun, (void *) &param.args[i]);
         if (rv) {

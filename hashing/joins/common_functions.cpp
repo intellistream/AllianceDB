@@ -178,7 +178,7 @@ void build_hashtable_single(const hashtable_t *ht, const relation_t *rel, uint32
 }
 
 
-int64_t probe_hashtable(hashtable_t *ht, relation_t *rel, void *output, uint64_t progressivetimer[]) {
+int64_t probe_hashtable(hashtable_t *ht, relation_t *rel, void *output, T_TIMER *timer) {
     uint32_t i;
     int64_t matches;
 
@@ -193,16 +193,15 @@ int64_t probe_hashtable(hashtable_t *ht, relation_t *rel, void *output, uint64_t
 #endif
     for (i = 0; i < rel->num_tuples; i++) {
         proble_hashtable_single_measure
-                (ht, rel, i, hashmask, skipbits, &matches, NULL, progressivetimer);
+                (ht, rel, i, hashmask, skipbits, &matches, NULL, timer);
     }
     return matches;
 }
 
-bool check1 = false, check2 = false, check3 = false;
-
 int64_t proble_hashtable_single_measure(const hashtable_t *ht, const tuple_t *tuple,
                                         const uint32_t hashmask, const uint32_t skipbits, int64_t *matches,
-                                        void *(*thread_fun)(const tuple_t*, const tuple_t*, int64_t*), uint64_t progressivetimer[]) {
+                                        void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),
+                                        T_TIMER *timer) {
     uint32_t index_ht;
 #ifdef PREFETCH_NPJ
     if (prefetch_index < rel->num_tuples) {
@@ -229,16 +228,7 @@ int64_t proble_hashtable_single_measure(const hashtable_t *ht, const tuple_t *tu
                 joinres->payload  = rel->tuples[i].payload; /* S-rid */
 #endif
 #ifdef MEASURE
-                if (!check1 && *matches == 0.25 * expected_results / nthreads) {
-                    stopTimer(&progressivetimer[0]);
-                    check1 = true;
-                } else if (!check2 && *matches == 0.5 * expected_results / nthreads) {
-                    stopTimer(&progressivetimer[1]);
-                    check2 = true;
-                } else if (!check3 && *matches == 0.75 * expected_results / nthreads) {
-                    stopTimer(&progressivetimer[2]);
-                    check3 = true;
-                }
+                END_PROGRESSIVE_MEASURE((*timer))
 #endif
             }
         }
@@ -250,51 +240,10 @@ int64_t proble_hashtable_single_measure(const hashtable_t *ht, const tuple_t *tu
 
 int64_t proble_hashtable_single_measure(const hashtable_t *ht, const relation_t *rel, uint32_t index_rel,
                                         const uint32_t hashmask, const uint32_t skipbits, int64_t *matches,
-                                        void *(*thread_fun)(const tuple_t*, const tuple_t*, int64_t*), uint64_t progressivetimer[]) {
+                                        void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),
+                                        T_TIMER *timer) {
     return proble_hashtable_single_measure(ht, &rel->tuples[index_rel], hashmask, skipbits, matches,
-                                           thread_fun, progressivetimer);
-}
-
-int64_t proble_hashtable_single(const hashtable_t *ht, const tuple_t *tuple,
-                                const uint32_t hashmask, const uint32_t skipbits, int64_t *matches,
-                                void *(*thread_fun)(const tuple_t*, const tuple_t*, int64_t*)) {
-
-    uint32_t index_ht;
-#ifdef PREFETCH_NPJ
-    if (prefetch_index < rel->num_tuples) {
-            intkey_t idx_prefetch = HASH(rel->tuples[prefetch_index++].key,
-                                         hashmask, skipbits);
-            __builtin_prefetch(ht->buckets + idx_prefetch, 0, 1);
-        }
-#endif
-
-    intkey_t idx = HASH(tuple->key, hashmask, skipbits);
-    bucket_t *b = ht->buckets + idx;
-
-    do {
-        for (index_ht = 0; index_ht < b->count; index_ht++) {
-            if (thread_fun) {
-                thread_fun(tuple, &b->tuples[index_ht], matches);
-            }
-            if (tuple->key == b->tuples[index_ht].key) {
-                (*matches)++;
-#ifdef JOIN_RESULT_MATERIALIZE
-                /* copy to the result buffer */
-                tuple_t * joinres = cb_next_writepos(chainedbuf);
-                joinres->key      = b->tuples[j].payload;   /* R-rid */
-                joinres->payload  = rel->tuples[i].payload; /* S-rid */
-#endif
-            }
-        }
-        b = b->next;/* follow overflow pointer */
-    } while (b);
-    return *matches;
-}
-
-int64_t proble_hashtable_single(const hashtable_t *ht, const relation_t *rel, uint32_t index_rel,
-                                const uint32_t hashmask, const uint32_t skipbits, int64_t *matches,
-                                void *(*thread_fun)(const tuple_t*, const tuple_t*, int64_t*)) {
-    return proble_hashtable_single(ht, &rel->tuples[index_rel], hashmask, skipbits, matches, thread_fun);
+                                           thread_fun, timer);
 }
 
 /**
@@ -303,9 +252,10 @@ int64_t proble_hashtable_single(const hashtable_t *ht, const relation_t *rel, ui
  * @param tuple
  * @param matches
  */
-void match_single_tuple(const std::list<intkey_t> list, const relation_t *rel, const tuple_t *tuple, int64_t *matches, void *(*thread_fun)(const tuple_t*, const tuple_t*, int64_t*)) {
+void match_single_tuple(const std::list<intkey_t> list, const relation_t *rel, const tuple_t *tuple, int64_t *matches,
+                        void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *)) {
     // TODO: refactor RPJ related methods to RPJ helper
-    for (auto it=list.begin(); it!=list.end(); it++) {
+    for (auto it = list.begin(); it != list.end(); it++) {
         if (thread_fun) {
             thread_fun(tuple, &rel->tuples[*it], matches);
         }
@@ -316,17 +266,18 @@ void match_single_tuple(const std::list<intkey_t> list, const relation_t *rel, c
     fprintf(stdout, "JOINING: matches: %d, tuple: %d\n", *matches, tuple->key);
 }
 
-uint32_t find_index(const tuple_t* rel, const  int length, const tuple_t *tuple) {
+uint32_t find_index(const tuple_t *rel, const int length, const tuple_t *tuple) {
     // TODO: refactor RPJ related methods to RPJ helper
-    for (int i=0; i<length; i++) {
+    for (int i = 0; i < length; i++) {
         if (rel[i].key == tuple->key) {
             return i;
         }
     }
 }
+
 uint32_t find_index(const relation_t *rel, const tuple_t *tuple) {
     // TODO: refactor RPJ related methods to RPJ helper
-    for (int i=0; i<rel->num_tuples; i++) {
+    for (int i = 0; i < rel->num_tuples; i++) {
         if (rel->tuples[i].key == tuple->key) {
             return i;
         }
@@ -411,12 +362,13 @@ void build_hashtable_mt(hashtable_t *ht, relation_t *rel, bucket_buffer_t **over
 
 const std::string red("\033[0;31m");
 const std::string reset("\033[0m");
+
 std::string print_tuples(const tuple_t *tuples, int size) {
 
     std::string tmp = "";
     tmp.append("[");
 
-    for (auto i=0;i<size;i++)
+    for (auto i = 0; i < size; i++)
         tmp.append(std::to_string(tuples[i].key)).append(",");
     tmp.append("]\n");
     return tmp;

@@ -3,6 +3,19 @@
 //
 
 #include "t_timer.h"
+#include <iostream>
+#include <fstream>
+
+using namespace std;
+
+void print_timing(std::vector<uint64_t> vector) {
+    std::string homepath = getenv("HOME");
+    ofstream outputFile(homepath + "ClionProjects/AllianceDB/hashing/progressive_results.txt");
+    for (auto &element : vector) {
+        outputFile << element << endl;
+    }
+    outputFile.close();
+}
 
 void print_timing(uint64_t numtuples, int64_t result, T_TIMER *timer) {
     double diff_usec = (((timer->end).tv_sec * 1000000L + (timer->end).tv_usec)
@@ -16,12 +29,6 @@ void print_timing(uint64_t numtuples, int64_t result, T_TIMER *timer) {
     fprintf(stdout, "TOTAL-TIME-USECS, TOTAL-TUPLES, CYCLES-PER-TUPLE: \n");
     fprintf(stdout, "%.4lf \t %ld \t %.4lf", diff_usec, result, cyclestuple);
     fprintf(stdout, "\n");
-    fprintf(stdout, "Time to obtain 25%%, 50%%, 75%% of results: \n");
-    fprintf(stdout, "(%.2f%%) \t (%.2f%%) \t (%.2f%%)",
-            (100 * timer->progressivetimer[0] / (double) timer->overall_timer),
-            (100 * timer->progressivetimer[1] / (double) timer->overall_timer),
-            (100 * timer->progressivetimer[2] / (double) timer->overall_timer));
     fprintf(stdout, "\n");
     fflush(stdout);
-
 }

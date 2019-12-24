@@ -79,18 +79,18 @@ THREAD_TASK_NOSHUFFLE(void *param) {
                     args->tid,
                     fetch->tuple,
                     fetch->flag,
-                    &args->matches,
+                    args->matches,
                     JOINFUNCTION,
-                    chainedbuf, args->timer);//build and probe at the same time.
+                    chainedbuf);//build and probe at the same time.
         }
     } while (!fetcher->finish());
 
 
     args->joiner->cleanup(
             args->tid,
-            &args->matches,
+            args->matches,
             JOINFUNCTION,
-            chainedbuf, args->timer);
+            chainedbuf);
 
     printf("args->num_results (%d): %ld\n", args->tid, args->matches);
 
@@ -184,16 +184,15 @@ void
                     args->tid,
                     fetch->tuple,
                     fetch->flag,
-                    &args->matches,
+                    args->matches,
                     JOINFUNCTION,
-                    chainedbuf, args->timer);//build and probe at the same time.
+                    chainedbuf);//build and probe at the same time.
         }
 #endif
     } while (!fetcher->finish());
 
     /* wait at a barrier until each thread finishes fetch*/
     BARRIER_ARRIVE(args->barrier, rv)
-
     do {
         fetch = shuffler->pull(args->tid, false);//re-fetch from its shuffler.
         if (fetch != nullptr) {
@@ -201,15 +200,15 @@ void
                     args->tid,
                     fetch->tuple,
                     fetch->flag,
-                    &args->matches,
+                    args->matches,
                     JOINFUNCTION,
-                    chainedbuf, args->timer);
+                    chainedbuf);
         } else {
             args->joiner->cleanup(
                     args->tid,
                     &args->matches,
                     JOINFUNCTION,
-                    chainedbuf, args->timer);
+                    chainedbuf);
             break;
         }
     } while (true);
@@ -307,8 +306,7 @@ processLeft(arg_t *args, fetch_t *fetch, int64_t *matches, void *chainedbuf, int
                 fetch->flag,
                 matches,
                 JOINFUNCTION,
-                chainedbuf,
-                args->timer);
+                chainedbuf);
     }
 }
 
@@ -336,8 +334,7 @@ processRight(baseShuffler *shuffler, arg_t *args, fetch_t *fetch, int64_t *match
                 fetch->flag,
                 matches,
                 JOINFUNCTION,
-                chainedbuf,
-                args->timer);//build and probe at the same time.
+                chainedbuf);//build and probe at the same time.
     }
 
     //place acknowledgment for si in rightSendQueue ;
@@ -474,7 +471,7 @@ void
             args->tid,
             &args->matches,
             JOINFUNCTION,
-            chainedbuf, args->timer);
+            chainedbuf);
 
 #ifdef JOIN_RESULT_MATERIALIZE
     args->threadresult->nresults = args->num_results;
