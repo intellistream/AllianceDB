@@ -12,7 +12,6 @@
 #include "../joins/npj_params.h"         /* constant parameters */
 #include "../joins/common_functions.h"
 #include "pmj_helper.h"
-#include "../joins/shj_struct.h"
 #include <list>
 
 ///** To keep track of the input relation pairs fitting into L2 cache */
@@ -28,11 +27,10 @@ enum joiner_type {
     type_SHJJoiner, type_PMJJoiner, type_RippleJoiner
 };
 
-class localJoiner {
+class baseJoiner {
 public:
 
-
-    virtual long join(int32_t tid, tuple_t *tuple, bool tuple_R, int64_t *matches,
+    virtual void join(int32_t tid, tuple_t *tuple, bool tuple_R, int64_t *matches,
                       void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid) = 0;
 
     virtual long join(int32_t tid, tuple_t **fat_tuple, bool IStuple_R, int64_t *matches,
@@ -61,7 +59,7 @@ public:
 };
 
 
-class RippleJoiner : public localJoiner {
+class RippleJoiner : public baseJoiner {
 
 private:
     relation_t *relR;
@@ -70,7 +68,7 @@ private:
 
 
 public:
-    long
+    void
     join(int32_t tid, tuple_t *tuple, bool tuple_R, int64_t *matches,
          void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid) override;
 
@@ -118,14 +116,14 @@ struct t_pmj {
     }
 };
 
-class PMJJoiner : public localJoiner {
+class PMJJoiner : public baseJoiner {
 private:
     t_pmj *t_arg;
 public:
 
     PMJJoiner(int sizeR, int sizeS, int nthreads);
 
-    long
+    void
     join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *matches,
          void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid);
 
@@ -144,7 +142,7 @@ public:
     void clean(int32_t tid, tuple_t **tuple, bool cleanR);
 };
 
-class SHJJoiner : public localJoiner {
+class SHJJoiner : public baseJoiner {
 
 private:
     hashtable_t *htR;
@@ -155,14 +153,14 @@ public:
 
     SHJJoiner(int sizeR, int sizeS);
 
-    long
+    void
     join(int32_t tid, tuple_t *tuple, bool tuple_R, int64_t *matches,
          void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid) override;
 
     void clean(int32_t tid, tuple_t *tuple, bool cleanR) override;
 };
 
-SHJJoiner *
+SHJJoiner
 shj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid);
 
 long

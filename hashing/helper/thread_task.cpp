@@ -10,6 +10,7 @@
 #include "shuffler.h"
 #include "../utils/perf_counters.h"
 #include "boost/stacktrace.hpp"
+#include "../joins/shj_struct.h"
 
 /**
  * a JOIN function that a joiner should apply
@@ -44,10 +45,7 @@ THREAD_TASK_NOSHUFFLE(void *param) {
 #endif
 
 #ifndef NO_TIMING
-    /* the first thread checkpoints the start time */
-    if (args->tid == 0) {
-        START_MEASURE((*(args->timer)))
-    }
+    START_MEASURE((*(args->timer)))
 #endif
 
     int rv;
@@ -85,14 +83,13 @@ THREAD_TASK_NOSHUFFLE(void *param) {
         }
     } while (!fetcher->finish());
 
-
     args->joiner->cleanup(
             args->tid,
             args->matches,
             JOINFUNCTION,
             chainedbuf);
 
-    printf("args->num_results (%d): %ld\n", args->tid, args->matches);
+    DEBUGMSG("args->num_results (%d): %ld\n", args->tid, *args->matches);
 
 #ifdef JOIN_RESULT_MATERIALIZE
     args->threadresult->nresults = args->num_results;
@@ -101,9 +98,7 @@ THREAD_TASK_NOSHUFFLE(void *param) {
 #endif
 
 #ifndef NO_TIMING
-    if (args->tid == 0) {
-        END_MEASURE((*(args->timer)))
-    }
+    END_MEASURE((*(args->timer)))
 #endif
 
 #ifdef PERF_COUNTERS
@@ -206,7 +201,7 @@ void
         } else {
             args->joiner->cleanup(
                     args->tid,
-                    &args->matches,
+                    args->matches,
                     JOINFUNCTION,
                     chainedbuf);
             break;
@@ -236,7 +231,7 @@ void
     /* Just to make sure we get consistent performance numbers */
     BARRIER_ARRIVE(args->barrier, rv);
 #endif
-    printf("args->num_results (%d): %ld\n", args->tid, args->matches);
+    DEBUGMSG("args->num_results (%d): %ld\n", args->tid, *args->matches);
     fflush(stdout);
 }
 
@@ -429,7 +424,7 @@ void
             fetchR = shuffler->pull(args->tid, LEFT);//pull itself.
         }
         if (fetchR && fetchR->fat_tuple[0] != NULL) {
-            processLeft(args, fetchR, &args->matches, chainedbuf, &cntR);
+            processLeft(args, fetchR, args->matches, chainedbuf, &cntR);
 
             DEBUGMSG("tid:%d, fetch R:%d, cntR:%d\n", args->tid, fetchR->fat_tuple[0]->key, cntR);
 
@@ -442,7 +437,7 @@ void
             fetchS = shuffler->pull(args->tid, RIGHT);//pull itself.
         }
         if (fetchS && fetchS->fat_tuple[0] != NULL) {
-            processRight(shuffler, args, fetchS, &args->matches, chainedbuf, &cntS);
+            processRight(shuffler, args, fetchS, args->matches, chainedbuf, &cntS);
 
             DEBUGMSG("tid:%d, fetch S:%d, ack:%d, cntS:%d\n", args->tid, fetchS->fat_tuple[0]->key, fetchS->ack, cntS);
 
@@ -469,7 +464,7 @@ void
 
     args->joiner->cleanup(
             args->tid,
-            &args->matches,
+            args->matches,
             JOINFUNCTION,
             chainedbuf);
 

@@ -22,8 +22,6 @@
 #include "../utils/t_timer.h"  /* startTimer, stopTimer */
 #include "../utils/barrier.h"
 #include "../helper/launcher.h"
-#include "shj_struct.h"
-#include "../helper/localjoiner.h"
 #include "../helper/thread_task.h"
 
 void merge(T_TIMER *timer);
@@ -59,7 +57,7 @@ void merge(T_TIMER *timer) {
     }
 }
 
-t_param &finishing(int nthreads, t_param &param, uint64_t numS) {
+t_param &finishing(int nthreads, t_param &param) {
     int i;
     for (i = 0; i < nthreads; i++) {
         pthread_join(param.tid[i], NULL);
@@ -73,10 +71,11 @@ t_param &finishing(int nthreads, t_param &param, uint64_t numS) {
     param.joinresult->nthreads = nthreads;
 #ifndef NO_TIMING
     //sort the global record to get to know the actual time when each match success.
+    global_record.push_back(actual_start_timestamp);
     sort(global_record.begin(), global_record.end());
     /* now print the timing results: */
     for (i = 0; i < nthreads; i++) {
-        print_timing(numS, param.result, param.args[i].timer);
+        print_timing(*param.args[i].matches, param.args[i].timer);
     }
 
     /* now print the progressive results: */
@@ -110,7 +109,7 @@ SHJ_st(relation_t *relR, relation_t *relS, int nthreads) {
 
     // No distribution nor partition
     // Directly call the local SHJ joiner.
-    SHJJoiner *joiner = shj(0, relR, relS, chainedbuf);//build and probe at the same time.
+    SHJJoiner joiner = shj(0, relR, relS, chainedbuf);//build and probe at the same time.
 
 #ifdef JOIN_RESULT_MATERIALIZE
     threadresult_t * thrres = &(joinresult->resultlist[0]);/* single-thread */
@@ -118,9 +117,9 @@ SHJ_st(relation_t *relR, relation_t *relS, int nthreads) {
     thrres->threadid = 0;
     thrres->results  = (void *) chainedbuf;
 #endif
-    param.args[0].timer = &joiner->timer;
-    param.args[0].matches = &joiner->matches;
-    finishing(1, param, relS->num_tuples);
+    param.args[0].timer = &joiner.timer;
+    param.args[0].matches = &joiner.matches;
+    finishing(1, param);
     param.joinresult->totalresults = param.result;
     param.joinresult->nthreads = 1;
     return param.joinresult;
@@ -135,7 +134,7 @@ SHJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads) {
     //no shuffler is required for JM mode.
     param.joiner = type_SHJJoiner;//new SHJJoiner();
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_NOSHUFFLE)
-    param = finishing(nthreads, param, relS->num_tuples);
+    param = finishing(nthreads, param);
     return param.joinresult;
 }
 
@@ -148,7 +147,7 @@ SHJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads) {
     param.shuffler = new HashShuffler(nthreads, relR, relS);
     param.joiner = type_SHJJoiner;//new SHJJoiner();
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE)
-    param = finishing(nthreads, param, relS->num_tuples);
+    param = finishing(nthreads, param);
     return param.joinresult;
 }
 
@@ -161,7 +160,7 @@ SHJ_JBCR_NP(relation_t *relR, relation_t *relS, int nthreads) {
     param.shuffler = new ContRandShuffler(nthreads, relR, relS);
     param.joiner = type_SHJJoiner;//new SHJJoiner();
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE)
-    param = finishing(nthreads, param, relS->num_tuples);
+    param = finishing(nthreads, param);
     return param.joinresult;
 }
 
@@ -174,7 +173,7 @@ SHJ_HS_NP(relation_t *relR, relation_t *relS, int nthreads) {
     param.shuffler = new HSShuffler(nthreads, relR, relS);
     param.joiner = type_SHJJoiner;//new SHJJoiner();
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE_HS)
-    param = finishing(nthreads, param, relS->num_tuples);
+    param = finishing(nthreads, param);
     return param.joinresult;
 }
 
@@ -210,7 +209,7 @@ result_t *PMJ_st(relation_t *relR, relation_t *relS, int nthreads) {
 #ifndef NO_TIMING
     END_MEASURE(timer)
     /* now print the timing results: */
-    print_timing(relS->num_tuples, tParam.result, &timer);
+    print_timing(tParam.result, &timer);
 #endif
 
     tParam.joinresult->totalresults = tParam.result;
@@ -227,7 +226,7 @@ result_t *PMJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads) {
     //no shuffler is required for JM mode.
     param.joiner = type_PMJJoiner;//new PMJJoiner(relR->num_tuples, relS->num_tuples / nthreads, nthreads);
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_NOSHUFFLE)
-    param = finishing(nthreads, param, relS->num_tuples);
+    param = finishing(nthreads, param);
     return param.joinresult;
 }
 
@@ -239,7 +238,7 @@ result_t *PMJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads) {
     param.shuffler = new HashShuffler(nthreads, relR, relS);
     param.joiner = type_PMJJoiner;//new PMJJoiner(relR->num_tuples, relS->num_tuples / nthreads, nthreads);
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE)
-    param = finishing(nthreads, param, relS->num_tuples);
+    param = finishing(nthreads, param);
     return param.joinresult;
 }
 
@@ -251,7 +250,7 @@ result_t *PMJ_JBCR_NP(relation_t *relR, relation_t *relS, int nthreads) {
     param.shuffler = new ContRandShuffler(nthreads, relR, relS);
     param.joiner = type_PMJJoiner;//new PMJJoiner(relR->num_tuples, relS->num_tuples / nthreads, nthreads);
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE)
-    param = finishing(nthreads, param, relS->num_tuples);
+    param = finishing(nthreads, param);
     return param.joinresult;
 }
 
@@ -263,7 +262,7 @@ result_t *PMJ_HS_NP(relation_t *relR, relation_t *relS, int nthreads) {
     param.shuffler = new HSShuffler(nthreads, relR, relS);
     param.joiner = type_PMJJoiner;//new PMJJoiner(relR->num_tuples, relS->num_tuples / nthreads, nthreads);
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE_HS)
-    param = finishing(nthreads, param, relS->num_tuples);
+    param = finishing(nthreads, param);
     return param.joinresult;
 }
 
@@ -299,7 +298,7 @@ result_t *RPJ_st(relation_t *relR, relation_t *relS, int nthreads) {
 #ifndef NO_TIMING
     END_MEASURE(timer)
     /* now print the timing results: */
-    print_timing(relS->num_tuples, tParam.result, &timer);
+    print_timing(tParam.result, &timer);
 #endif
 
     tParam.joinresult->totalresults = tParam.result;
@@ -317,7 +316,7 @@ RPJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads) {
     //no shuffler is required for JM mode.
     param.joiner = type_RippleJoiner;//new RippleJoiner(relR, relS, nthreads);
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_NOSHUFFLE)
-    param = finishing(nthreads, param, relS->num_tuples);
+    param = finishing(nthreads, param);
     return param.joinresult;
 }
 
@@ -330,7 +329,7 @@ RPJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads) {
     param.shuffler = new HashShuffler(nthreads, relR, relS);
     param.joiner = type_RippleJoiner;// new RippleJoiner(relR, relS, nthreads);
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE)
-    param = finishing(nthreads, param, relS->num_tuples);
+    param = finishing(nthreads, param);
     return param.joinresult;
 }
 
@@ -343,7 +342,7 @@ RPJ_JBCR_NP(relation_t *relR, relation_t *relS, int nthreads) {
     param.shuffler = new ContRandShuffler(nthreads, relR, relS);
     param.joiner = type_RippleJoiner;// new RippleJoiner(relR, relS, nthreads);
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE)
-    param = finishing(nthreads, param, relS->num_tuples);
+    param = finishing(nthreads, param);
     return param.joinresult;
 }
 
@@ -355,7 +354,7 @@ result_t *RPJ_HS_NP(relation_t *relR, relation_t *relS, int nthreads) {
     param.shuffler = new HSShuffler(nthreads, relR, relS);
     param.joiner = type_RippleJoiner;//new RippleJoiner(relR, relS, nthreads);
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE_HS)
-    param = finishing(nthreads, param, relS->num_tuples);
+    param = finishing(nthreads, param);
     return param.joinresult;
 }
 

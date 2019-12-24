@@ -28,7 +28,7 @@
  * @param nthreads
  * @return
  */
-SHJJoiner *
+SHJJoiner
 shj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid) {
 
     SHJJoiner joiner(rel_R->num_tuples, rel_S->num_tuples);
@@ -50,7 +50,11 @@ shj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid) {
         }
     } while (index_R < rel_R->num_tuples || index_S < rel_S->num_tuples);
 
-    return &joiner;
+#ifndef NO_TIMING
+    END_MEASURE(joiner.timer)
+#endif
+
+    return joiner;
 }
 
 /**
@@ -65,7 +69,7 @@ shj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid) {
  * @param timer
  * @return
  */
-long SHJJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R, int64_t *matches,
+void SHJJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R, int64_t *matches,
                      void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid) {
 
     const uint32_t hashmask_R = htR->hash_mask;
@@ -104,7 +108,7 @@ long SHJJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R, int64_t *matches
 #endif
         proble_hashtable_single_measure(htR, tuple, hashmask_R, skipbits_R, matches, thread_fun, &timer);//(4)
     }
-    return *matches;
+    timer.numS++;//one process.
 }
 
 /**
@@ -406,7 +410,7 @@ PMJJoiner::PMJJoiner(int sizeR, int sizeS, int nthreads) {
     t_arg = new t_pmj(sizeR, sizeS);
 }
 
-long PMJJoiner::join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *matches,
+void PMJJoiner::join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *matches,
                      void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid) {
     auto *arg = (t_pmj *) t_arg;
 
@@ -449,8 +453,6 @@ long PMJJoiner::join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *match
         merging_phase(matches, &arg->Q);
         DEBUGMSG("Join during run merge matches:%d", *matches)
     }
-
-    return *matches;
 }
 
 
@@ -568,7 +570,7 @@ hrpj(int32_t tid, relation_t *rel_R,
  * @return
  */
 
-long RippleJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R, int64_t *matches,
+void RippleJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R, int64_t *matches,
                         void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid) {
     fprintf(stdout, "tid: %d, tuple: %d, R?%d\n", tid, tuple->key, tuple_R);
     if (tuple_R) {
@@ -596,7 +598,6 @@ long RippleJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R, int64_t *matc
     }
 
 //    fprintf(stdout, "estimation result: %d \n", estimation_result);
-    return *matches;
 
 }
 

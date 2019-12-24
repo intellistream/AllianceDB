@@ -1588,7 +1588,7 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads)
 
 #ifndef NO_TIMING
     /* now print the timing results: */
-    print_timing(relS->num_tuples, result, args[0].timer);
+    print_timing(result, args[0].timer);
 #endif
 
     /* clean up */
@@ -1766,7 +1766,7 @@ RJ_st(relation_t *relR, relation_t *relS, int nthreads) {
     END_MEASURE_BUILD(timer)
     END_MEASURE(timer)
     /* now print the timing results: */
-    print_timing(relS->num_tuples, result, &timer);
+    print_timing(result, &timer);
 #endif
 
     /* clean-up temporary buffers */

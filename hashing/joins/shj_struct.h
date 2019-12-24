@@ -32,7 +32,7 @@ struct arg_t {
 
     baseFetcher *fetcher;
     baseShuffler *shuffler;
-    localJoiner *joiner;
+    baseJoiner *joiner;
 
     /* results of the thread */
     threadresult_t *threadresult;

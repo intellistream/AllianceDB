@@ -16,10 +16,10 @@ struct T_TIMER {
 #ifndef NO_TIMING
     struct timeval start, end;
     uint64_t overall_timer, partition_timer;
-    uint64_t progressivetimer = 0;
+//    uint64_t progressivetimer = 0;
     uint64_t buildtimer_pre = 0, buildtimer = 0, debuildtimer_pre = 0, debuildtimer = 0;//buildtimer is accumulated.
     std::vector<uint64_t> record;
-
+    uint64_t numS=0;
 #endif
 };
 
@@ -65,7 +65,6 @@ struct T_TIMER {
 #define START_MEASURE(timer) \
     gettimeofday(&timer.start, NULL); \
     startTimer(&timer.overall_timer); \
-    startTimer(&timer.progressivetimer); \
     timer.partition_timer = 0; /* no partitioning */ \
     timer.record.push_back(curtick());//beginning timestamp.
 #endif
@@ -88,6 +87,6 @@ struct T_TIMER {
 void print_timing(std::vector<uint64_t> vector);
 
 /** print out the execution time statistics of the join */
-void print_timing(uint64_t numtuples, int64_t result, T_TIMER *timer);
+void print_timing(int64_t result, T_TIMER *timer);
 
 #endif //ALLIANCEDB_T_TIMER_H

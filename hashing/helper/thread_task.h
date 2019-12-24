@@ -23,7 +23,6 @@
 #include <string.h>             /* memset */
 #include <pthread.h>            /* pthread_* */
 #include <sched.h>              /* CPU_ZERO, CPU_SET */
-#include "../joins/shj_struct.h"
 
 
 /**

@@ -151,7 +151,7 @@ NPO_st(relation_t *relR, relation_t *relS, int nthreads) {
 #ifndef NO_TIMING
     END_MEASURE(timer)
     /* now print the timing results: */
-    print_timing(relS->num_tuples, result, &timer);
+    print_timing( result, &timer);
 #endif
 
     destroy_hashtable(ht);
@@ -376,7 +376,7 @@ NPO(relation_t *relR, relation_t *relS, int nthreads) {
 
 #ifndef NO_TIMING
     /* now print the timing results: */
-    print_timing(relS->num_tuples, result, &timer);
+    print_timing(result, &timer);
 #endif
     destroy_hashtable(ht);
     return joinresult;
