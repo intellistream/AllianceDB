@@ -115,7 +115,7 @@ struct sweepArea {
         }
     }
 */
-    void query(const tuple_t *tuple, int64_t *matches) {
+    void query(const tuple_t *tuple, int64_t *matches, T_TIMER *timer) {
 
         //clean elements that are less than the current element.
         for (auto it = sx.begin(); it != sx.end();) {
@@ -124,6 +124,9 @@ struct sweepArea {
             } else {  //perform join.
                 if (EqualPredicate(it.operator*(), tuple)) {
                     (*matches)++;
+#ifdef MEASURE
+                    END_PROGRESSIVE_MEASURE((*timer))
+#endif
                 }
                 ++it;
             }
@@ -133,13 +136,15 @@ struct sweepArea {
 
 
 void sorting_phase(int32_t tid, tuple_t *listR, tuple_t *listS, int sizeR,
-                   int sizeS, int64_t *matches, std::vector<run> *Q, tuple_t *outputR, tuple_t *outputS);
+                   int sizeS, int64_t *matches, std::vector<run> *Q, tuple_t *outputR, tuple_t *outputS,
+                   T_TIMER *timer);
 
 void sorting_phase(int32_t tid, const relation_t *rel_R, const relation_t *rel_S, int sizeR, int sizeS,
                    int progressive_stepR, int progressive_stepS, int *i, int *j, int64_t *matches, std::vector<run> *Q,
-                   tuple_t *pTuple, tuple_t *pTuple1);
+                   tuple_t *outptrR, tuple_t *outptrS,
+                   T_TIMER *timer);
 
-void merging_phase(int64_t *matches, std::vector<run> *Q);
+void merging_phase(int64_t *matches, std::vector<run> *Q, T_TIMER *pTimer);
 
 
 #endif //ALLIANCEDB_PMJ_HELPER_H

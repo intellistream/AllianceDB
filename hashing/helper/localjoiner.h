@@ -93,6 +93,9 @@ struct t_pmj {
     tuple_t *outptrR;
     tuple_t *outptrS;
 
+    T_TIMER *timer;
+
+
     /***Initialize***/
     t_pmj(int sizeR, int sizeS) {
         /**** allocate temporary space for sorting ****/
@@ -163,8 +166,8 @@ public:
 SHJJoiner
 shj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid);
 
-long
-pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid, T_TIMER *timer);
+PMJJoiner
+pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid);
 
 long
 rpj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid, T_TIMER *timer);

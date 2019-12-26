@@ -179,16 +179,12 @@ SHJ_HS_NP(relation_t *relR, relation_t *relS, int nthreads) {
 
 result_t *PMJ_st(relation_t *relR, relation_t *relS, int nthreads) {
 
-    t_param tParam(1);
+    t_param param(1);
 
 #ifdef JOIN_RESULT_MATERIALIZE
     joinresult->resultlist = (threadresult_t *) malloc(sizeof(threadresult_t));
 #endif
 
-#ifndef NO_TIMING
-    T_TIMER timer;
-    START_MEASURE(timer)
-#endif
 
 #ifdef JOIN_RESULT_MATERIALIZE
     chainedtuplebuffer_t * chainedbuf = chainedtuplebuffer_init();
@@ -197,7 +193,7 @@ result_t *PMJ_st(relation_t *relR, relation_t *relS, int nthreads) {
 #endif
     // No distribution nor partition
     // Directly call the local pmj joiner.
-    tParam.result = pmj(0, relR, relS, chainedbuf, &timer);//build and probe at the same time.
+    PMJJoiner joiner = pmj(0, relR, relS, chainedbuf);//build and probe at the same time.
 
 #ifdef JOIN_RESULT_MATERIALIZE
     threadresult_t * thrres = &(joinresult->resultlist[0]);/* single-thread */
@@ -205,17 +201,13 @@ result_t *PMJ_st(relation_t *relR, relation_t *relS, int nthreads) {
     thrres->threadid = 0;
     thrres->results  = (void *) chainedbuf;
 #endif
+    param.args[0].timer = &joiner.timer;
+    param.args[0].matches = &joiner.matches;
+    finishing(1, param);
+    param.joinresult->totalresults = param.result;
+    param.joinresult->nthreads = 1;
 
-#ifndef NO_TIMING
-    END_MEASURE(timer)
-    /* now print the timing results: */
-    print_timing(tParam.result, &timer);
-#endif
-
-    tParam.joinresult->totalresults = tParam.result;
-    tParam.joinresult->nthreads = 1;
-
-    return tParam.joinresult;
+    return param.joinresult;
 }
 
 //5th

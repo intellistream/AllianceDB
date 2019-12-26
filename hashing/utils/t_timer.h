@@ -16,10 +16,11 @@ struct T_TIMER {
 #ifndef NO_TIMING
     struct timeval start, end;
     uint64_t overall_timer, partition_timer;
-//    uint64_t progressivetimer = 0;
-    uint64_t buildtimer_pre = 0, buildtimer = 0, debuildtimer_pre = 0, debuildtimer = 0;//buildtimer is accumulated.
+    uint64_t buildtimer_pre = 0, buildtimer = 0;
+    uint64_t debuildtimer_pre = 0, debuildtimer = 0;//buildtimer is accumulated.
+    uint64_t sorttimer_pre = 0, sorttimer = 0;//accumulate.
     std::vector<uint64_t> record;
-    uint64_t numS=0;
+//    uint64_t numS=0;
 #endif
 };
 
@@ -42,6 +43,17 @@ struct T_TIMER {
 #define END_MEASURE_BUILD_ACC(timer) \
      accTimer(&timer.buildtimer_pre, &timer.buildtimer); /* build time */
 #endif
+
+#ifndef BEGIN_MEASURE_SORT_ACC
+#define BEGIN_MEASURE_SORT_ACC(timer) \
+    startTimer(&timer.sorttimer_pre);
+#endif
+
+#ifndef END_MEASURE_SORT_ACC
+#define END_MEASURE_SORT_ACC(timer) \
+     accTimer(&timer.sorttimer_pre, &timer.sorttimer); /* sort time */
+#endif
+
 #ifndef BEGIN_MEASURE_DEBUILD_ACC
 #define BEGIN_MEASURE_DEBUILD_ACC(timer) \
      startTimer(&timer.debuildtimer_pre); /* clean time */
