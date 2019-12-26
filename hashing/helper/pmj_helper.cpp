@@ -1,6 +1,7 @@
 //
 // Created by Shuhao Zhang on 22/11/19.
 //
+#include <zconf.h>
 #include "pmj_helper.h"
 #include "sort_common.h"
 #include "localjoiner.h"
@@ -180,7 +181,9 @@ void sorting_phase(int32_t tid, tuple_t *inptrR, tuple_t *inptrS, int sizeR,
 
     DEBUGMSG("TID:%d, Initial R [aligned:%d]: %s", tid, is_aligned(inptrR, CACHE_LINE_SIZE),
              print_relation(inptrR, sizeR).c_str())
+    BEGIN_MEASURE_SORT_ACC((*timer))
     avxsort_tuples(&inptrR, &outputR, sizeR);// the method will swap input and output pointers.
+    END_MEASURE_SORT_ACC((*timer))
     DEBUGMSG("TID:%d, Sorted R: %s", tid, print_relation(outputR, sizeR).c_str())
 #ifdef DEBUG
     if (!is_sorted_helper((int64_t *) outputR, sizeR)) {
@@ -190,7 +193,9 @@ void sorting_phase(int32_t tid, tuple_t *inptrR, tuple_t *inptrS, int sizeR,
 
     DEBUGMSG("Initial S [aligned:%d]: %s", is_aligned(inptrS, CACHE_LINE_SIZE),
              print_relation(inptrS, sizeS).c_str())
+    BEGIN_MEASURE_SORT_ACC((*timer))
     avxsort_tuples(&inptrS, &outputS, sizeS);// the method will swap input and output pointers.
+    END_MEASURE_SORT_ACC((*timer))
     DEBUGMSG("Sorted S: %s", print_relation(outputS, sizeS).c_str())
 #ifdef DEBUG
     if (!is_sorted_helper((int64_t *) outputS, sizeS)) {
@@ -223,9 +228,9 @@ void sorting_phase(int32_t tid, const relation_t *rel_R, const relation_t *rel_S
                  print_relation(outptrR, progressive_stepR).c_str())
 #ifdef DEBUG
         //        DEBUGMSG("Address of rel_R: %p, outptrR:%p ", rel_R->tuples, outptrR)
-                if (!is_sorted_helper((int64_t *) outptrR, progressive_stepR)) {
-                    DEBUGMSG("===> %d-thread -> R is NOT sorted, size = %d\n", tid, progressive_stepR)
-                }
+        if (!is_sorted_helper((int64_t *) outptrR, progressive_stepR)) {
+            DEBUGMSG("===> %d-thread -> R is NOT sorted, size = %d\n", tid, progressive_stepR)
+        }
 #endif
     }
     if (*j < sizeS) {
@@ -237,9 +242,9 @@ void sorting_phase(int32_t tid, const relation_t *rel_R, const relation_t *rel_S
                  print_relation(outptrS, progressive_stepS).c_str())
 #ifdef DEBUG
         //        DEBUGMSG("Address of rel_S: %p, outptrS:%p ", rel_S->tuples, outptrS)
-                if (!is_sorted_helper((int64_t *) outptrS, progressive_stepS)) {
-                    DEBUGMSG("===> %d-thread -> S is NOT sorted, size = %d\n", tid, progressive_stepS)
-                }
+        if (!is_sorted_helper((int64_t *) outptrS, progressive_stepS)) {
+            DEBUGMSG("===> %d-thread -> S is NOT sorted, size = %d\n", tid, progressive_stepS)
+        }
 #endif
     }
     earlyJoinInitialRuns(outptrR, outptrS, progressive_stepR, progressive_stepS, matches, timer);

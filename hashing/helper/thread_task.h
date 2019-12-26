@@ -56,6 +56,15 @@ THREAD_TASK_SHUFFLE(void *param);
 void
 *THREAD_TASK_SHUFFLE_HS(void *param);
 
+
+/**
+ * Special HS designed for PMJ.
+ * @param param
+ * @return
+ */
+void
+*THREAD_TASK_SHUFFLE_PMJHS(void *param);
+
 /**
  * Just a wrapper to call the _shj_st
  *

@@ -106,6 +106,7 @@ struct t_pmj {
 
         relRsz = sizeS * sizeof(tuple_t)
                  + RELATION_PADDING(1, CACHELINEPADDING(1));//TODO: think why we need to patch this.
+
         tmp_relS = (tuple_t *) malloc_aligned(relRsz);
         outptrS = (tuple_t *) malloc_aligned(relRsz);
 
@@ -166,7 +167,7 @@ shj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid);
 PMJJoiner
 pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid);
 
-long
-rpj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid, T_TIMER *timer);
+RippleJoiner
+rpj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid);
 
 #endif //ALLIANCEDB_LOCALJOINER_H

@@ -63,6 +63,9 @@ struct t_param {
         barrier = new pthread_barrier_t();
         args = new arg_t[nthreads];
         tid = new pthread_t[nthreads];
+        for (auto i = 0; i < nthreads; i++) {
+            tid[i] = -1;
+        }
     }
 
 };

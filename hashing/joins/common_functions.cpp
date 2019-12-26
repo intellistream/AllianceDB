@@ -253,7 +253,7 @@ int64_t proble_hashtable_single_measure(const hashtable_t *ht, const relation_t 
  * @param matches
  */
 void match_single_tuple(const std::list<intkey_t> list, const relation_t *rel, const tuple_t *tuple, int64_t *matches,
-                        void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *)) {
+                        void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), T_TIMER *timer) {
     // TODO: refactor RPJ related methods to RPJ helper
     for (auto it = list.begin(); it != list.end(); it++) {
         if (thread_fun) {
@@ -261,6 +261,7 @@ void match_single_tuple(const std::list<intkey_t> list, const relation_t *rel, c
         }
         if (tuple->key == rel->tuples[*it].key) {
             (*matches)++;
+            END_PROGRESSIVE_MEASURE((*timer))
         }
     }
     fprintf(stdout, "JOINING: matches: %d, tuple: %d\n", *matches, tuple->key);

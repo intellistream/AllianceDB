@@ -57,10 +57,12 @@ void merge(T_TIMER *timer) {
     }
 }
 
+
 t_param &finishing(int nthreads, t_param &param) {
     int i;
     for (i = 0; i < nthreads; i++) {
-        pthread_join(param.tid[i], NULL);
+        if (param.tid[i] != -1)
+            pthread_join(param.tid[i], NULL);
         /* sum up results */
         param.result += *param.args[i].matches;
 #ifndef NO_TIMING
@@ -77,10 +79,8 @@ t_param &finishing(int nthreads, t_param &param) {
     for (i = 0; i < nthreads; i++) {
         print_timing(*param.args[i].matches, param.args[i].timer);
     }
-
     /* now print the progressive results: */
     print_timing(global_record);
-
 #endif
     return param;
 }
@@ -212,6 +212,39 @@ result_t *PMJ_st(relation_t *relR, relation_t *relS, int nthreads) {
     return param.joinresult;
 }
 
+result_t *RPJ_st(relation_t *relR, relation_t *relS, int nthreads) {
+
+    t_param param(1);
+#ifdef JOIN_RESULT_MATERIALIZE
+    joinresult->resultlist = (threadresult_t *) malloc(sizeof(threadresult_t));
+#endif
+
+
+#ifdef JOIN_RESULT_MATERIALIZE
+    chainedtuplebuffer_t * chainedbuf = chainedtuplebuffer_init();
+#else
+    void *chainedbuf = NULL;
+#endif
+    // No distribution nor partition
+    // Directly call the local joiner.
+    RippleJoiner joiner = rpj(0, relR, relS, chainedbuf);// nested loop version.
+//    tParam.result = hrpj(0, relR, relS, chainedbuf, &timer);// hash version.
+
+#ifdef JOIN_RESULT_MATERIALIZE
+    threadresult_t * thrres = &(joinresult->resultlist[0]);/* single-thread */
+    thrres->nresults = result;
+    thrres->threadid = 0;
+    thrres->results  = (void *) chainedbuf;
+#endif
+    param.args[0].timer = &joiner.timer;
+    param.args[0].matches = &joiner.matches;
+    finishing(1, param);
+    param.joinresult->totalresults = param.result;
+    param.joinresult->nthreads = 1;
+
+    return param.joinresult;
+}
+
 //5th
 result_t *PMJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads) {
     t_param param(nthreads);
@@ -255,51 +288,11 @@ result_t *PMJ_HS_NP(relation_t *relR, relation_t *relS, int nthreads) {
     param.fetcher = type_PMJ_HS_NP_Fetcher;//new JM_NP_Fetcher(nthreads, relR, relS);
     param.shuffler = new HSShuffler(nthreads, relR, relS);
     param.joiner = type_PMJJoiner;//new PMJJoiner(relR->num_tuples, relS->num_tuples / nthreads, nthreads);
-    LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE_HS)
+    LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE_PMJHS)
     param = finishing(nthreads, param);
     return param.joinresult;
 }
 
-
-result_t *RPJ_st(relation_t *relR, relation_t *relS, int nthreads) {
-
-    t_param tParam(1);
-#ifdef JOIN_RESULT_MATERIALIZE
-    joinresult->resultlist = (threadresult_t *) malloc(sizeof(threadresult_t));
-#endif
-#ifndef NO_TIMING
-    T_TIMER timer;
-    START_MEASURE(timer)
-#endif
-
-#ifdef JOIN_RESULT_MATERIALIZE
-    chainedtuplebuffer_t * chainedbuf = chainedtuplebuffer_init();
-#else
-    void *chainedbuf = NULL;
-#endif
-    // No distribution nor partition
-    // Directly call the local joiner.
-    tParam.result = rpj(0, relR, relS, chainedbuf, &timer);// nested loop version.
-//    tParam.result = hrpj(0, relR, relS, chainedbuf, &timer);// hash version.
-
-#ifdef JOIN_RESULT_MATERIALIZE
-    threadresult_t * thrres = &(joinresult->resultlist[0]);/* single-thread */
-    thrres->nresults = result;
-    thrres->threadid = 0;
-    thrres->results  = (void *) chainedbuf;
-#endif
-
-#ifndef NO_TIMING
-    END_MEASURE(timer)
-    /* now print the timing results: */
-    print_timing(tParam.result, &timer);
-#endif
-
-    tParam.joinresult->totalresults = tParam.result;
-    tParam.joinresult->nthreads = 1;
-
-    return tParam.joinresult;
-}
 
 //9th
 result_t *

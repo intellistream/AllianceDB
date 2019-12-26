@@ -32,17 +32,23 @@ void print_timing(std::vector<uint64_t> vector) {
 }
 
 void print_timing(int64_t result, T_TIMER *timer) {
-    double diff_usec = (((timer->end).tv_sec * 1000000L + (timer->end).tv_usec)
-                        - ((timer->start).tv_sec * 1000000L + (timer->start).tv_usec));
-    double cyclestuple = timer->overall_timer / result;
-    fprintf(stdout, "RUNTIME TOTAL, BUILD, PART (cycles): \n");
-    fprintf(stdout, "%llu \t %llu (%.2f%%)  \t %llu (%.2f%%) ",
-            timer->overall_timer, timer->buildtimer, (timer->buildtimer * 100 / (double) timer->overall_timer),
-            timer->partition_timer, (timer->partition_timer * 100 / (double) timer->overall_timer));
-    fprintf(stdout, "\n");
-    fprintf(stdout, "TOTAL-TIME-USECS, NUM-TUPLES, CYCLES-PER-TUPLE: \n");
-    fprintf(stdout, "%.4lf \t %ld \t %.4lf", diff_usec, result, cyclestuple);
-    fprintf(stdout, "\n");
-    fprintf(stdout, "\n");
-    fflush(stdout);
+    if (result != 0) {
+        double diff_usec = (((timer->end).tv_sec * 1000000L + (timer->end).tv_usec)
+                            - ((timer->start).tv_sec * 1000000L + (timer->start).tv_usec));
+        double cyclestuple = timer->overall_timer / result;
+        fprintf(stdout, "RUNTIME TOTAL, BUILD, SORT, PART (cycles): \n");
+        fprintf(stdout, "%llu \t %llu (%.2f%%) \t %llu (%.2f%%)   \t %llu (%.2f%%) ",
+                timer->overall_timer,
+                timer->buildtimer, (timer->buildtimer * 100 / (double) timer->overall_timer),
+                timer->sorttimer, (timer->sorttimer * 100 / (double) timer->overall_timer),
+                timer->partition_timer, (timer->partition_timer * 100 / (double) timer->overall_timer));
+        fprintf(stdout, "\n");
+        fprintf(stdout, "TOTAL-TIME-USECS, NUM-TUPLES, CYCLES-PER-TUPLE: \n");
+        fprintf(stdout, "%.4lf \t %ld \t %.4lf", diff_usec, result, cyclestuple);
+        fprintf(stdout, "\n");
+        fprintf(stdout, "\n");
+        fflush(stdout);
+    } else {
+        fprintf(stdout, "[Warning] This thread does not matches any tuple.\n\n");
+    }
 }

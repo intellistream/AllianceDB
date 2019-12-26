@@ -70,18 +70,17 @@ fetch_t *HSShuffler::pull(int32_t tid, bool fetchR) {
     bool rt;
     if (fetchR) {
         queue = leftRecvQueue[tid].queue;
-         rt = queue->try_dequeue(fetch);
+        rt = queue->try_dequeue(fetch);
         if (!rt)
             return nullptr;
 
     } else {
         queue = rightRecvQueue[tid].queue;
-         rt = queue->try_dequeue(fetch);
+        rt = queue->try_dequeue(fetch);
         if (!rt)
             return nullptr;
     }
-    DEBUGMSG("PULL: %d, tuple: %d, queue size:%d\n", tid,
-             (fetch)->fat_tuple[0]->key, queue->size_approx())
+
     return fetch;
 }
 
