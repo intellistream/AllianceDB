@@ -186,7 +186,9 @@ PMJJoiner
 pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid) {
 
     PMJJoiner joiner(rel_R->num_tuples, rel_S->num_tuples, 1);
-
+#ifndef NO_TIMING
+    START_MEASURE(joiner.timer)
+#endif
     //Phase 1 ('Join during run creation')
     int sizeR = rel_R->num_tuples;
     int sizeS = rel_S->num_tuples;
@@ -234,7 +236,9 @@ pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid) {
     merging_phase(&joiner.matches, &Q, &joiner.timer);
 
     DEBUGMSG("Join during run merge matches:%d", matches)
-
+#ifndef NO_TIMING
+    END_MEASURE(joiner.timer)
+#endif
     return joiner;
 }
 
@@ -311,7 +315,7 @@ join(int32_t tid, tuple_t **tuple, bool IStuple_R, int64_t *matches,
 
         DEBUGMSG("Sorting in normal stage")
         sorting_phase(tid, arg->tmp_relR + arg->outerPtrR, arg->tmp_relS + arg->outerPtrS, stepR, stepS,
-                      matches, &arg->Q, arg->outptrR + arg->outerPtrR, arg->outptrS + arg->outerPtrS, arg->timer);
+                      matches, &arg->Q, arg->outptrR + arg->outerPtrR, arg->outptrS + arg->outerPtrS, &timer);
         arg->outerPtrR += stepR;
         arg->outerPtrS += stepS;
         DEBUGMSG("Join during run creation:%d", *matches)
@@ -401,7 +405,7 @@ cleanup(int32_t tid, int64_t *matches, void *(*thread_fun)(const tuple_t *, cons
     stepR = arg->innerPtrR;
     stepS = arg->innerPtrS;
     sorting_phase(tid, arg->tmp_relR + arg->outerPtrR, arg->tmp_relS + arg->outerPtrS, stepR, stepS,
-                  matches, &arg->Q, arg->outptrR + arg->outerPtrR, arg->outptrS + arg->outerPtrS,arg->timer);
+                  matches, &arg->Q, arg->outptrR + arg->outerPtrR, arg->outptrS + arg->outerPtrS, &timer);
     DEBUGMSG("TID:%d Clean up stage: Join during run creation:%d, arg->Q %d", tid, *matches, arg->Q.size())
     merging_phase(matches, &arg->Q, nullptr);
     DEBUGMSG("TID:%d Clean up stage: Join during run merge matches:%d", tid, *matches)
@@ -435,7 +439,7 @@ void PMJJoiner::join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *match
 
             /***Sorting***/
             sorting_phase(tid, arg->tmp_relR + arg->outerPtrR, arg->tmp_relS + arg->outerPtrS, stepR, stepS,
-                          matches, &arg->Q, arg->outptrR + arg->outerPtrR, arg->outptrS + arg->outerPtrS,arg->timer);
+                          matches, &arg->Q, arg->outptrR + arg->outerPtrR, arg->outptrS + arg->outerPtrS, &timer);
             arg->outerPtrR += stepR;
             arg->outerPtrS += stepS;
             DEBUGMSG("Join during run creation:%d", *matches)
@@ -451,7 +455,7 @@ void PMJJoiner::join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *match
         stepR = arg->sizeR - arg->outerPtrR;
         stepS = arg->sizeS - arg->outerPtrS;
         sorting_phase(tid, arg->tmp_relR + arg->outerPtrR, arg->tmp_relS + arg->outerPtrS, stepR, stepS,
-                      matches, &arg->Q, arg->outptrR + arg->outerPtrR, arg->outptrS + arg->outerPtrS,arg->timer);
+                      matches, &arg->Q, arg->outptrR + arg->outerPtrR, arg->outptrS + arg->outerPtrS, &timer);
         DEBUGMSG("Join during run creation:%d", *matches)
         merging_phase(matches, &arg->Q, nullptr);
         DEBUGMSG("Join during run merge matches:%d", *matches)

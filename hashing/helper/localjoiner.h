@@ -93,9 +93,6 @@ struct t_pmj {
     tuple_t *outptrR;
     tuple_t *outptrS;
 
-    T_TIMER *timer;
-
-
     /***Initialize***/
     t_pmj(int sizeR, int sizeS) {
         /**** allocate temporary space for sorting ****/

@@ -191,6 +191,8 @@ result_t *PMJ_st(relation_t *relR, relation_t *relS, int nthreads) {
 #else
     void *chainedbuf = NULL;
 #endif
+
+
     // No distribution nor partition
     // Directly call the local pmj joiner.
     PMJJoiner joiner = pmj(0, relR, relS, chainedbuf);//build and probe at the same time.
