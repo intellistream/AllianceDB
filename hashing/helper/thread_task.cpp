@@ -307,8 +307,8 @@ void
 processLeft_PMJ(arg_t *args, fetch_t *fetch, int64_t *matches, void *chainedbuf) {
     if (fetch->ack) {/* msg is an acknowledgment message */
         //remove oldest tuple from S-window
-        DEBUGMSG("remove s %d from S-window.", fetch->fat_tuple[0].key)
-//        clean(args, fetch, RIGHT);
+        DEBUGMSG("TID %d:remove S %s from S-window.", args->tid,
+                 print_tuples(fetch->fat_tuple, fetch->fat_tuple_size).c_str())
         args->joiner->clean(args->tid, fetch->fat_tuple, fetch->fat_tuple_size, RIGHT);
     } else if (fetch->fat_tuple) { //if msg contains a new tuple then
 #ifdef DEBUG
@@ -425,7 +425,7 @@ void forward_tuples(baseShuffler *shuffler, arg_t *args, fetch_t *fetchR, fetch_
             DEBUGMSG("remove r %d from R-window.", fetchR->tuple->key)
 //            clean(args, fetchR, LEFT);
             if (!fetchR->ack)
-                args->joiner->clean(args->tid, fetchR->tuple,  LEFT);
+                args->joiner->clean(args->tid, fetchR->tuple, LEFT);
         }
     }
 }
@@ -434,7 +434,7 @@ void forward_tuples_PMJ(baseShuffler *shuffler, arg_t *args, fetch_t *fetchR, fe
     //place oldest non-forwarded si into leftSendQueue ;
 
     if (args->tid != 0) {
-        if (fetchS  && !fetchS->ack) {
+        if (fetchS && !fetchS->ack) {
             DEBUGMSG("tid:%d pushes S? %d towards left\n", args->tid, fetchS->fat_tuple[0].key);
             shuffler->push(args->tid - 1, fetchS, RIGHT);//push S towards left.
         }
@@ -444,7 +444,7 @@ void forward_tuples_PMJ(baseShuffler *shuffler, arg_t *args, fetch_t *fetchR, fe
 
     //place oldest ri into rightSendQueue ;
     if (args->tid != args->nthreads - 1) {
-        if (fetchR ) {
+        if (fetchR) {
             DEBUGMSG("tid:%d pushes R? %d towards right\n", args->tid, fetchR->fat_tuple[0].key);
             shuffler->push(args->tid + 1, fetchR, LEFT);//push R towards right.
             DEBUGMSG("tid:%d remove r %d from R-window.", args->tid, fetchR->fat_tuple[0].key)
@@ -637,6 +637,11 @@ void
             cntR += fetchR->fat_tuple_size;
             if (fetchR->ack) {/* msg is an acknowledgment message */
                 cntR -= fetchR->fat_tuple_size;
+                DEBUGMSG("TID%d fetches an ack S[]: %s", args->tid,
+                         print_tuples(fetchR->fat_tuple, fetchR->fat_tuple_size).c_str())
+            } else {
+                DEBUGMSG("TID%d fetches tuple R[]: %s", args->tid,
+                         print_tuples(fetchR->fat_tuple, fetchR->fat_tuple_size).c_str())
             }
             processLeft_PMJ(args, fetchR, args->matches, chainedbuf);
         }

@@ -189,12 +189,15 @@ void sorting_phase(int32_t tid, tuple_t *inptrR, int sizeR, tuple_t *inptrS, int
     }
 #endif
 
-    DEBUGMSG("Initial S [aligned:%d]: %s", is_aligned(inptrS, CACHE_LINE_SIZE),
+    DEBUGMSG("%d-thread Initial S [aligned:%d]: %s", tid, is_aligned(inptrS, CACHE_LINE_SIZE),
              print_relation(inptrS, sizeS).c_str())
     BEGIN_MEASURE_SORT_ACC((*timer))
     avxsort_tuples(&inptrS, &outputS, sizeS);// the method will swap input and output pointers.
     END_MEASURE_SORT_ACC((*timer))
     DEBUGMSG("Sorted S: %s", print_relation(outputS, sizeS).c_str())
+
+    //sorting seems change input..
+
 #ifdef DEBUG
     if (!is_sorted_helper((int64_t *) outputS, sizeS)) {
         DEBUGMSG("===> %d-thread -> S is NOT sorted, size = %d\n", tid, sizeS)

@@ -12,6 +12,7 @@
 #include <string.h>             /* memset */
 #include <list>
 #include "common_functions.h"
+#include "../utils/params.h"
 
 
 /** An experimental feature to allocate input relations numa-local */
@@ -365,6 +366,17 @@ void build_hashtable_mt(hashtable_t *ht, relation_t *rel, bucket_buffer_t **over
 
 const std::string red("\033[0;31m");
 const std::string reset("\033[0m");
+
+
+tuple_t *copy_tuples(const tuple_t *tuples, int size) {
+    auto relRsz = size * sizeof(tuple_t)
+             + RELATION_PADDING(1, CACHELINEPADDING(1));//TODO: think why we need to patch this.
+    tuple_t *copy = (tuple_t *) malloc_aligned(relRsz);
+
+    for (auto i = 0; i < size; i++)
+        copy[i] = tuples[i];
+    return copy;
+}
 
 std::string print_tuples(const tuple_t *tuples, int size) {
 

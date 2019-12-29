@@ -243,10 +243,12 @@ pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid) {
     return joiner;
 }
 
-void PMJJoiner::keep_tuple_single(tuple_t *tmp_rel, int *outerPtr, tuple_t *tuple, int fat_tuple_size) {
+void PMJJoiner::keep_tuple_single(tuple_t *tmp_rel, const int outerPtr,
+                                  tuple_t *tuple, int fat_tuple_size) {
     for (auto i = 0; i < fat_tuple_size; i++) {
-        tmp_rel[*outerPtr] = tuple[i];//store tuples.
-        (*outerPtr)++;
+        tmp_rel[outerPtr + i] = tuple[i];//deep copy tuples.
+//        tmp_rel[outerPtr + i].key = -1;//to check if it's deep copy.
+//        DEBUGMSG("%d, %d", std::addressof( tmp_rel[outerPtr + i]), std::addressof(tuple[i]))
     }
 }
 
@@ -255,8 +257,17 @@ PMJJoiner::join_tuple_single(int32_t tid, tuple_t *tmp_rel, int *outerPtr, tuple
                              int64_t *matches, T_TIMER *timer, t_pmj *pPmj, bool IStuple_R) {
 
     if (*outerPtr > 0 && fat_tuple_size > 0) {
-
+        tuple_t *out_relR;
+        tuple_t *out_relS;
         if (IStuple_R) {
+            auto relRsz = fat_tuple_size * sizeof(tuple_t)
+                          + RELATION_PADDING(1, CACHELINEPADDING(1));//TODO: think why we need to patch this.
+            out_relR= (tuple_t *) malloc_aligned(relRsz);
+
+            relRsz = *outerPtr * sizeof(tuple_t)
+                     + RELATION_PADDING(1, CACHELINEPADDING(1));//TODO: think why we need to patch this.
+            out_relS= (tuple_t *) malloc_aligned(relRsz);
+
             sorting_phase(tid,
                           tuple,
                           fat_tuple_size,
@@ -264,14 +275,22 @@ PMJJoiner::join_tuple_single(int32_t tid, tuple_t *tmp_rel, int *outerPtr, tuple
                           *outerPtr,
                           matches,
                           &pPmj->Q,
-                          pPmj->out_relR + pPmj->extraPtrR,
-                          pPmj->out_relS + pPmj->extraPtrS,
+                          out_relR,
+                          out_relS,
                           timer);
 
             pPmj->extraPtrR += fat_tuple_size;
             pPmj->extraPtrS += *outerPtr;
 
         } else {
+            auto relRsz = fat_tuple_size * sizeof(tuple_t)
+                          + RELATION_PADDING(1, CACHELINEPADDING(1));//TODO: think why we need to patch this.
+            out_relS= (tuple_t *) malloc_aligned(relRsz);
+
+            relRsz = *outerPtr * sizeof(tuple_t)
+                     + RELATION_PADDING(1, CACHELINEPADDING(1));//TODO: think why we need to patch this.
+            out_relR= (tuple_t *) malloc_aligned(relRsz);
+
             sorting_phase(tid,
                           tmp_rel,
                           *outerPtr,
@@ -279,8 +298,8 @@ PMJJoiner::join_tuple_single(int32_t tid, tuple_t *tmp_rel, int *outerPtr, tuple
                           fat_tuple_size,
                           matches,
                           &pPmj->Q,
-                          pPmj->out_relR + pPmj->extraPtrR,
-                          pPmj->out_relS + pPmj->extraPtrS,
+                          out_relR,
+                          out_relS,
                           timer);
             pPmj->extraPtrR += *outerPtr;
             pPmj->extraPtrS += fat_tuple_size;
@@ -308,9 +327,14 @@ join(int32_t tid, tuple_t *tuple, int fat_tuple_size, bool IStuple_R, int64_t *m
 
     //store tuples.
     if (IStuple_R) {
+        DEBUGMSG("TID %d: before store R is %s.", tid,
+                 print_tuples(arg->tmp_relR, arg->outerPtrR).c_str())
         BEGIN_MEASURE_BUILD_ACC(timer)
-        keep_tuple_single(arg->tmp_relR, &arg->outerPtrR, tuple, fat_tuple_size);
+        keep_tuple_single(arg->tmp_relR, arg->outerPtrR, tuple, fat_tuple_size);
+        arg->outerPtrR += fat_tuple_size;
         END_MEASURE_BUILD_ACC(timer)//accumulate hash table build time.
+        DEBUGMSG("TID %d: after store R is %s.", tid,
+                 print_tuples(arg->tmp_relR, arg->outerPtrR).c_str())
 #ifdef DEBUG
         for (auto i = 0; i < fat_tuple_size; i++) {
             if (tid == 0) {
@@ -322,14 +346,23 @@ join(int32_t tid, tuple_t *tuple, int fat_tuple_size, bool IStuple_R, int64_t *m
         }
 #endif
         DEBUGMSG("TID: %d Sorting in normal stage start", tid)
-        join_tuple_single(tid, arg->tmp_relS, &arg->outerPtrS, tuple, fat_tuple_size, matches, &timer, arg,
+
+        auto inputS = copy_tuples(arg->tmp_relS, arg->outerPtrS);
+
+        join_tuple_single(tid, inputS, &arg->outerPtrS,
+                          tuple, fat_tuple_size, matches, &timer, arg,
                           IStuple_R);
         DEBUGMSG("TID: %d Join during run creation:%d", tid, *matches)
 
     } else {
+        DEBUGMSG("TID %d: before store S is %s.", tid,
+                 print_tuples(arg->tmp_relS, arg->outerPtrS).c_str())
         BEGIN_MEASURE_BUILD_ACC(timer)
-        keep_tuple_single(arg->tmp_relS, &arg->outerPtrS, tuple, fat_tuple_size);
+        keep_tuple_single(arg->tmp_relS, arg->outerPtrS, tuple, fat_tuple_size);
+        arg->outerPtrS += fat_tuple_size;
         END_MEASURE_BUILD_ACC(timer)//accumulate hash table build time.
+        DEBUGMSG("TID %d: after store S is %s.", tid,
+                 print_tuples(arg->tmp_relS, arg->outerPtrS).c_str())
 #ifdef DEBUG
         for (auto i = 0; i < fat_tuple_size; i++) {
             if (tid == 0) {
@@ -341,7 +374,8 @@ join(int32_t tid, tuple_t *tuple, int fat_tuple_size, bool IStuple_R, int64_t *m
         }
 #endif
         DEBUGMSG("TID: %d Sorting in normal stage start", tid)
-        join_tuple_single(tid, arg->tmp_relR, &arg->outerPtrR, tuple, fat_tuple_size,
+        auto inputR = copy_tuples(arg->tmp_relR, arg->outerPtrR);
+        join_tuple_single(tid, inputR, &arg->outerPtrR, tuple, fat_tuple_size,
                           matches, &timer, arg, IStuple_R);
         DEBUGMSG("TID: %d Join during run creation:%d", tid, *matches)
 
@@ -469,26 +503,26 @@ clean(int32_t tid, tuple_t *fat_tuple, int fat_tuple_size, bool cleanR) {
 
         for (auto i = 0; i < fat_tuple_size; i++) {
 
-                int idx = find_index(this->t_arg->tmp_relS, this->t_arg->outerPtrS, &fat_tuple[i]);
-                if (idx == -1) {
-                    break;//it must be an ack signal, and does not stored in this thread.
-                }
+            int idx = find_index(this->t_arg->tmp_relS, this->t_arg->outerPtrS, &fat_tuple[i]);
+            if (idx == -1) {
+                break;//it must be an ack signal, and does not stored in this thread.
+            }
 
 
-                this->t_arg->tmp_relS[idx] = this->t_arg->tmp_relS[this->t_arg->outerPtrS - 1];
+            this->t_arg->tmp_relS[idx] = this->t_arg->tmp_relS[this->t_arg->outerPtrS - 1];
 //                remove++;
-                this->t_arg->outerPtrS--;
+            this->t_arg->outerPtrS--;
 
 #ifdef DEBUG
-                if (tid == 0) {
-                    window0.S_Window.remove(fat_tuple[i].key);
-                    DEBUGMSG("T0 removes S %d, left with:%s", fat_tuple[i].key,
-                             print_window(window0.S_Window).c_str());
-                } else if (tid == 1) {
-                    window1.S_Window.remove(fat_tuple[i].key);
-                    DEBUGMSG("T1 removes S %d, left with:%s", fat_tuple[i].key,
-                             print_window(window1.S_Window).c_str())
-                }
+            if (tid == 0) {
+                window0.S_Window.remove(fat_tuple[i].key);
+                DEBUGMSG("T0 removes S %d, left with:%s", fat_tuple[i].key,
+                         print_window(window0.S_Window).c_str());
+            } else if (tid == 1) {
+                window1.S_Window.remove(fat_tuple[i].key);
+                DEBUGMSG("T1 removes S %d, left with:%s", fat_tuple[i].key,
+                         print_window(window1.S_Window).c_str())
+            }
 #endif
 
 
@@ -525,10 +559,27 @@ cleanup(int32_t tid, int64_t *matches,
     stepR = arg->innerPtrR;
     stepS = arg->innerPtrS;
 
+
+    tuple_t *out_relR;
+    tuple_t *out_relS;
+
+    auto relRsz = stepR * sizeof(tuple_t)
+                  + RELATION_PADDING(1, CACHELINEPADDING(1));//TODO: think why we need to patch this.
+    out_relR= (tuple_t *) malloc_aligned(relRsz);
+
+    relRsz = stepS * sizeof(tuple_t)
+             + RELATION_PADDING(1, CACHELINEPADDING(1));//TODO: think why we need to patch this.
+    out_relS= (tuple_t *) malloc_aligned(relRsz);
+
+
     sorting_phase(tid, arg->tmp_relR + arg->outerPtrR, stepR,
                   arg->tmp_relS + arg->outerPtrS, stepS,
-                  matches, &arg->Q, arg->out_relR + arg->outerPtrR,
-                  arg->out_relS + arg->outerPtrS, &timer);
+                  matches, &arg->Q,
+                  out_relR,
+                  out_relS,
+//                  arg->out_relR + arg->outerPtrR,
+//                  arg->out_relS + arg->outerPtrS,
+                  &timer);
     DEBUGMSG("TID:%d Clean up stage: Join during run creation:%d, arg->Q %d", tid, *matches, arg->Q.size())
 
     merging_phase(matches, &arg->Q, &timer);
@@ -564,9 +615,26 @@ void PMJJoiner::join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *match
         if (arg->innerPtrR >= stepR
             && arg->innerPtrS >= stepS) {//start process and reset inner pointer.
 
+            tuple_t *out_relR;
+            tuple_t *out_relS;
+
+            auto relRsz = stepR * sizeof(tuple_t)
+                          + RELATION_PADDING(1, CACHELINEPADDING(1));//TODO: think why we need to patch this.
+            out_relR= (tuple_t *) malloc_aligned(relRsz);
+
+            relRsz = stepS * sizeof(tuple_t)
+                     + RELATION_PADDING(1, CACHELINEPADDING(1));//TODO: think why we need to patch this.
+            out_relS= (tuple_t *) malloc_aligned(relRsz);
+
+
             /***Sorting***/
             sorting_phase(tid, arg->tmp_relR + arg->outerPtrR, stepR, arg->tmp_relS + arg->outerPtrS, stepS,
-                          matches, &arg->Q, arg->out_relR + arg->outerPtrR, arg->out_relS + arg->outerPtrS, &timer);
+                          matches, &arg->Q,
+                          out_relR,
+                          out_relS,
+//                          arg->out_relR + arg->outerPtrR,
+//                          arg->out_relS + arg->outerPtrS,
+                          &timer);
             arg->outerPtrR += stepR;
             arg->outerPtrS += stepS;
             DEBUGMSG("Join during run creation:%d", *matches)
@@ -581,8 +649,28 @@ void PMJJoiner::join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *match
         /***Handling Left-Over***/
         stepR = arg->sizeR - arg->outerPtrR;
         stepS = arg->sizeS - arg->outerPtrS;
+
+
+
+        tuple_t *out_relR;
+        tuple_t *out_relS;
+
+        auto relRsz = stepR * sizeof(tuple_t)
+                      + RELATION_PADDING(1, CACHELINEPADDING(1));//TODO: think why we need to patch this.
+        out_relR= (tuple_t *) malloc_aligned(relRsz);
+
+        relRsz = stepS * sizeof(tuple_t)
+                 + RELATION_PADDING(1, CACHELINEPADDING(1));//TODO: think why we need to patch this.
+        out_relS= (tuple_t *) malloc_aligned(relRsz);
+
+
         sorting_phase(tid, arg->tmp_relR + arg->outerPtrR, stepR, arg->tmp_relS + arg->outerPtrS, stepS,
-                      matches, &arg->Q, arg->out_relR + arg->outerPtrR, arg->out_relS + arg->outerPtrS, &timer);
+                      matches, &arg->Q,
+//                      arg->out_relR + arg->outerPtrR,
+//                      arg->out_relS + arg->outerPtrS,
+                      out_relR,
+                      out_relS,
+                      &timer);
         DEBUGMSG("Join during run creation:%d", *matches)
         merging_phase(matches, &arg->Q, &timer);
         DEBUGMSG("Join during run merge matches:%d", *matches)
