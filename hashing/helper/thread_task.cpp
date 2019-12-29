@@ -76,7 +76,7 @@ THREAD_TASK_NOSHUFFLE(void *param) {
             args->joiner->join(
                     args->tid,
                     fetch->tuple,
-                    fetch->flag,
+                    fetch->ISTuple_R,
                     args->matches,
                     JOINFUNCTION,
                     chainedbuf);//build and probe at the same time.
@@ -174,7 +174,7 @@ void
             args->joiner->join(
                     args->tid,
                     fetch->tuple,
-                    fetch->flag,
+                    fetch->ISTuple_R,
                     args->matches,
                     JOINFUNCTION,
                     chainedbuf);//build and probe at the same time.
@@ -190,7 +190,7 @@ void
             args->joiner->join(
                     args->tid,
                     fetch->tuple,
-                    fetch->flag,
+                    fetch->ISTuple_R,
                     args->matches,
                     JOINFUNCTION,
                     chainedbuf);
@@ -279,10 +279,9 @@ processLeft(arg_t *args, fetch_t *fetch, int64_t *matches, void *chainedbuf) {
         args->joiner->clean(args->tid, fetch->tuple, RIGHT);
     } else if (fetch->tuple) { //if msg contains a new tuple then
 #ifdef DEBUG
-        if (!fetch->flag)//right must be tuple R.
+        if (!fetch->ISTuple_R)//right must be tuple R.
         {
-            printf("something is wrong \n");
-            fflush(stdout);
+            DEBUGMSG("right must be tuple R. something is wrong \n");
         }
 #else
         assert(fetch->flag);//left must be tuple R.
@@ -292,7 +291,7 @@ processLeft(arg_t *args, fetch_t *fetch, int64_t *matches, void *chainedbuf) {
         args->joiner->join(
                 args->tid,
                 fetch->tuple,
-                fetch->flag,
+                fetch->ISTuple_R,
                 matches,
                 JOINFUNCTION,
                 chainedbuf);
@@ -305,28 +304,28 @@ processLeft(arg_t *args, fetch_t *fetch, int64_t *matches, void *chainedbuf) {
  * @param fetch
  */
 void
-processLeft_PMJ(arg_t *args, fetch_t *fetch, int64_t *matches, void *chainedbuf, int *cntR) {
+processLeft_PMJ(arg_t *args, fetch_t *fetch, int64_t *matches, void *chainedbuf) {
     if (fetch->ack) {/* msg is an acknowledgment message */
         //remove oldest tuple from S-window
-        DEBUGMSG("remove s %d from S-window.", fetch->fat_tuple[0]->key)
+        DEBUGMSG("remove s %d from S-window.", fetch->fat_tuple[0].key)
 //        clean(args, fetch, RIGHT);
-        args->joiner->clean(args->tid, fetch->tuple, RIGHT);
-    } else if (fetch->fat_tuple[0]) { //if msg contains a new tuple then
+        args->joiner->clean(args->tid, fetch->fat_tuple, fetch->fat_tuple_size, RIGHT);
+    } else if (fetch->fat_tuple) { //if msg contains a new tuple then
 #ifdef DEBUG
-        if (!fetch->flag)//right must be tuple R.
+        if (!fetch->ISTuple_R)//right must be tuple R.
         {
-            printf("something is wrong \n");
-            fflush(stdout);
+            DEBUGMSG("right must be tuple R, something is wrong \n");
         }
 #else
         assert(fetch->flag);//left must be tuple R.
 #endif
         //scan S-window to find tuples that match ri ;
         //insert ri into R-window ;
-        *cntR += args->joiner->join(
+        args->joiner->join(
                 args->tid,
                 fetch->fat_tuple,
-                fetch->flag,
+                fetch->fat_tuple_size,
+                fetch->ISTuple_R,
                 matches,
                 JOINFUNCTION,
                 chainedbuf);
@@ -339,7 +338,7 @@ processRight(baseShuffler *shuffler, arg_t *args, fetch_t *fetch, int64_t *match
     //if msg contains a new tuple then
     if (fetch->tuple) {
 #ifdef DEBUG
-        if (fetch->flag)//right must be tuple S.
+        if (fetch->ISTuple_R)//right must be tuple S.
         {
             printf("tid:%d processRIGHT: something is wrong, %d \n", args->tid, fetch->tuple->key);
             fflush(stdout);
@@ -353,7 +352,7 @@ processRight(baseShuffler *shuffler, arg_t *args, fetch_t *fetch, int64_t *match
         args->joiner->join(
                 args->tid,
                 fetch->tuple,
-                fetch->flag,
+                fetch->ISTuple_R,
                 matches,
                 JOINFUNCTION,
                 chainedbuf);//build and probe at the same time.
@@ -370,14 +369,14 @@ processRight(baseShuffler *shuffler, arg_t *args, fetch_t *fetch, int64_t *match
 }
 
 void
-processRight_PMJ(baseShuffler *shuffler, arg_t *args, fetch_t *fetch, int64_t *matches, void *chainedbuf, int *cntS) {
+processRight_PMJ(baseShuffler *shuffler, arg_t *args, fetch_t *fetch, int64_t *matches, void *chainedbuf) {
 
     //if msg contains a new tuple then
-    if (fetch->fat_tuple[0]) {
+    if (fetch->fat_tuple) {
 #ifdef DEBUG
-        if (fetch->flag)//right must be tuple S.
+        if (fetch->ISTuple_R)//right must be tuple S.
         {
-            printf("tid:%d processRIGHT: something is wrong, %d \n", args->tid, fetch->fat_tuple[0]->key);
+            printf("tid:%d processRIGHT: something is wrong, %d \n", args->tid, fetch->fat_tuple[0].key);
             fflush(stdout);
         }
 #else
@@ -386,10 +385,11 @@ processRight_PMJ(baseShuffler *shuffler, arg_t *args, fetch_t *fetch, int64_t *m
 
 //      scan R-window to find tuples that match si ;
 //      insert si into S-window ;
-        *cntS += args->joiner->join(
+        args->joiner->join(
                 args->tid,
                 fetch->fat_tuple,
-                fetch->flag,
+                fetch->fat_tuple_size,
+                fetch->ISTuple_R,
                 matches,
                 JOINFUNCTION,
                 chainedbuf);//build and probe at the same time.
@@ -399,7 +399,7 @@ processRight_PMJ(baseShuffler *shuffler, arg_t *args, fetch_t *fetch, int64_t *m
     if (args->tid != args->nthreads - 1) {
         auto *ack = new fetch_t(fetch);
         ack->ack = true;
-        DEBUGMSG("tid:%d pushes an acknowledgement of %d towards right\n", args->tid, fetch->fat_tuple[0]->key);
+        DEBUGMSG("tid:%d pushes an acknowledgement of %d towards right\n", args->tid, fetch->fat_tuple[0].key);
         shuffler->push(args->tid + 1, ack, LEFT);
     }
 
@@ -424,7 +424,8 @@ void forward_tuples(baseShuffler *shuffler, arg_t *args, fetch_t *fetchR, fetch_
             shuffler->push(args->tid + 1, fetchR, LEFT);//push R towards right.
             DEBUGMSG("remove r %d from R-window.", fetchR->tuple->key)
 //            clean(args, fetchR, LEFT);
-            args->joiner->clean(args->tid, fetchR->tuple, LEFT);
+            if (!fetchR->ack)
+                args->joiner->clean(args->tid, fetchR->tuple,  LEFT);
         }
     }
 }
@@ -433,8 +434,8 @@ void forward_tuples_PMJ(baseShuffler *shuffler, arg_t *args, fetch_t *fetchR, fe
     //place oldest non-forwarded si into leftSendQueue ;
 
     if (args->tid != 0) {
-        if (fetchS && fetchS->fat_tuple[0] != NULL && !fetchS->ack) {
-            DEBUGMSG("tid:%d pushes S? %d towards left\n", args->tid, fetchS->fat_tuple[0]->key);
+        if (fetchS  && !fetchS->ack) {
+            DEBUGMSG("tid:%d pushes S? %d towards left\n", args->tid, fetchS->fat_tuple[0].key);
             shuffler->push(args->tid - 1, fetchS, RIGHT);//push S towards left.
         }
     }
@@ -443,16 +444,16 @@ void forward_tuples_PMJ(baseShuffler *shuffler, arg_t *args, fetch_t *fetchR, fe
 
     //place oldest ri into rightSendQueue ;
     if (args->tid != args->nthreads - 1) {
-        if (fetchR && fetchR->fat_tuple[0] != NULL) {
-            DEBUGMSG("tid:%d pushes R? %d towards right\n", args->tid, fetchR->fat_tuple[0]->key);
+        if (fetchR ) {
+            DEBUGMSG("tid:%d pushes R? %d towards right\n", args->tid, fetchR->fat_tuple[0].key);
             shuffler->push(args->tid + 1, fetchR, LEFT);//push R towards right.
-            DEBUGMSG("remove r %d from R-window.", fetchR->fat_tuple[0]->key)
+            DEBUGMSG("tid:%d remove r %d from R-window.", args->tid, fetchR->fat_tuple[0].key)
 //            clean(args, fetchR, LEFT);
-            args->joiner->clean(args->tid, fetchR->fat_tuple, LEFT);
+            if (!fetchR->ack)
+                args->joiner->clean(args->tid, fetchR->fat_tuple, fetchR->fat_tuple_size, LEFT);
         }
     }
 }
-
 
 void
 *THREAD_TASK_SHUFFLE_HS(void *param) {
@@ -534,12 +535,12 @@ void
         }
 
         if (fetchR)
-            if (!fetchR->flag && !fetchR->ack) {
+            if (!fetchR->ISTuple_R && !fetchR->ack) {
                 printf("something is wrong.\n");
             }
 
         if (fetchS)
-            if (fetchS->flag) {
+            if (fetchS->ISTuple_R) {
                 printf("something is wrong.\n");
             }
 
@@ -629,10 +630,15 @@ void
         if (args->tid == 0) {
             fetchR = fetcher->next_tuple(args->tid);//
         } else {
+//            std::cin.get();//expect enter
             fetchR = shuffler->pull(args->tid, LEFT);//pull itself.
         }
-        if (fetchR && fetchR->fat_tuple[0] != NULL) {
-            processLeft_PMJ(args, fetchR, args->matches, chainedbuf, &cntR);
+        if (fetchR) {
+            cntR += fetchR->fat_tuple_size;
+            if (fetchR->ack) {/* msg is an acknowledgment message */
+                cntR -= fetchR->fat_tuple_size;
+            }
+            processLeft_PMJ(args, fetchR, args->matches, chainedbuf);
         }
 
         //pull right queue.
@@ -641,23 +647,22 @@ void
         } else {
             fetchS = shuffler->pull(args->tid, RIGHT);//pull itself.
         }
-        if (fetchS && fetchS->fat_tuple[0] != NULL) {
-            processRight_PMJ(shuffler, args, fetchS, args->matches, chainedbuf, &cntS);
+        if (fetchS) {
+            cntS += fetchS->fat_tuple_size;
+            processRight_PMJ(shuffler, args, fetchS, args->matches, chainedbuf);
         }
 
         //forward tuple twice!
         forward_tuples_PMJ(shuffler, args, fetchR, fetchS);
-#ifdef DEBUG
-        usleep(rand() % 100);
-#endif
+
     } while (cntR < sizeR || cntS < sizeS);
 
 
-    args->joiner->cleanup(
-            args->tid,
-            args->matches,
-            JOINFUNCTION,
-            chainedbuf);
+//    args->joiner->cleanup(
+//            args->tid,
+//            args->matches,
+//            JOINFUNCTION,
+//            chainedbuf);
 
 #ifdef JOIN_RESULT_MATERIALIZE
     args->threadresult->nresults = args->num_results;

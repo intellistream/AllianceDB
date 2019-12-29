@@ -267,22 +267,24 @@ void match_single_tuple(const std::list<intkey_t> list, const relation_t *rel, c
     fprintf(stdout, "JOINING: matches: %d, tuple: %d\n", *matches, tuple->key);
 }
 
-uint32_t find_index(const tuple_t *rel, const int length, const tuple_t *tuple) {
+int find_index(const tuple_t *rel, const int length, const tuple_t *tuple) {
     // TODO: refactor RPJ related methods to RPJ helper
     for (int i = 0; i < length; i++) {
         if (rel[i].key == tuple->key) {
             return i;
         }
     }
+    return -1;
 }
 
-uint32_t find_index(const relation_t *rel, const tuple_t *tuple) {
+int find_index(const relation_t *rel, const tuple_t *tuple) {
     // TODO: refactor RPJ related methods to RPJ helper
     for (int i = 0; i < rel->num_tuples; i++) {
         if (rel->tuples[i].key == tuple->key) {
             return i;
         }
     }
+    return -1;
 }
 
 /**
@@ -371,7 +373,7 @@ std::string print_tuples(const tuple_t *tuples, int size) {
 
     for (auto i = 0; i < size; i++)
         tmp.append(std::to_string(tuples[i].key)).append(",");
-    tmp.append("]\n");
+    tmp.append("]");
     return tmp;
 }
 
@@ -382,7 +384,7 @@ std::string print_window(const std::list<intkey_t> &list) {
 
     for (auto const &v : list)
         tmp.append(std::to_string(v)).append(",");
-    tmp.append("]\n");
+    tmp.append("]");
     return tmp;
 }
 

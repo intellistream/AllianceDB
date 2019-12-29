@@ -19,11 +19,13 @@ struct fetch_t {
 
     fetch_t();
 
-    tuple_t *tuple;//normal tuples.
+    tuple_t *tuple = nullptr;//normal tuples.
 
-    tuple_t **fat_tuple;//used for PMJ only.
+    tuple_t *fat_tuple = nullptr;//used for PMJ only.
 
-    bool flag;//whether this tuple from input R (true) or S (false).
+    int fat_tuple_size = 0;
+
+    bool ISTuple_R;//whether this tuple from input R (true) or S (false).
 
     bool ack = false;//whether this is just a message. Used in HS model.
 };

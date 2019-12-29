@@ -71,6 +71,7 @@ is_sorted_helper(int64_t *items, uint64_t nitems) {
     int warned = 0;
     tuple_t *tuples = (tuple_t *) items;
     for (i = 0; i < nitems; i++) {
+        /*
         if (tuples[i].key == curr) {
             if (!warned) {
                 printf("[WARN ] Equal items, still ok... "\
@@ -78,8 +79,9 @@ is_sorted_helper(int64_t *items, uint64_t nitems) {
                        i, tuples[i].key, i - 1, curr);
                 warned = 1;
             }
-        } else if (tuples[i].key < curr) {
-            printf("[ERROR] item[%d].key=%d is less than item[%d].key=%d\n",
+        } else */
+        if (tuples[i].key <= curr) {
+            printf("[ERROR] item[%d].key=%d is less or equal than item[%d].key=%d\n",
                    i, tuples[i].key, i - 1, curr);
             return 0;
         }

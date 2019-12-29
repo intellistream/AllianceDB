@@ -135,9 +135,8 @@ struct sweepArea {
 };
 
 
-void sorting_phase(int32_t tid, tuple_t *listR, tuple_t *listS, int sizeR,
-                   int sizeS, int64_t *matches, std::vector<run> *Q, tuple_t *outputR, tuple_t *outputS,
-                   T_TIMER *timer);
+void sorting_phase(int32_t tid, tuple_t *inptrR, int sizeR, tuple_t *inptrS, int sizeS, int64_t *matches,
+                   std::vector<run> *Q, tuple_t *outputR, tuple_t *outputS, T_TIMER *timer);
 
 void sorting_phase(int32_t tid, const relation_t *rel_R, const relation_t *rel_S, int sizeR, int sizeS,
                    int progressive_stepR, int progressive_stepS, int *i, int *j, int64_t *matches, std::vector<run> *Q,

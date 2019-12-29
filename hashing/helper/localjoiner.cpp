@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <assert.h>
+#include <zconf.h>
 #include "avxsort.h"
 #include "sort_common.h"
 #include "localjoiner.h"
@@ -61,7 +62,7 @@ shj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid) {
  * SHJ algorithm to be used in each thread.
  * @param tid
  * @param tuple
- * @param tuple_R
+ * @param IStuple_R
  * @param htR
  * @param htS
  * @param matches
@@ -69,7 +70,7 @@ shj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid) {
  * @param timer
  * @return
  */
-void SHJJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R, int64_t *matches,
+void SHJJoiner::join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *matches,
                      void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid) {
 
     const uint32_t hashmask_R = htR->hash_mask;
@@ -78,7 +79,7 @@ void SHJJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R, int64_t *matches
     const uint32_t skipbits_S = htS->skip_bits;
 
 //    DEBUGMSG(1, "JOINING: tid: %d, tuple: %d, R?%d\n", tid, tuple->key, tuple_R)
-    if (tuple_R) {
+    if (IStuple_R) {
         BEGIN_MEASURE_BUILD_ACC(timer)
         build_hashtable_single(htR, tuple, hashmask_R, skipbits_R);//(1)
         END_MEASURE_BUILD_ACC(timer)//accumulate hash table build time.
@@ -242,6 +243,51 @@ pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid) {
     return joiner;
 }
 
+void PMJJoiner::keep_tuple_single(tuple_t *tmp_rel, int *outerPtr, tuple_t *tuple, int fat_tuple_size) {
+    for (auto i = 0; i < fat_tuple_size; i++) {
+        tmp_rel[*outerPtr] = tuple[i];//store tuples.
+        (*outerPtr)++;
+    }
+}
+
+void
+PMJJoiner::join_tuple_single(int32_t tid, tuple_t *tmp_rel, int *outerPtr, tuple_t *tuple, int fat_tuple_size,
+                             int64_t *matches, T_TIMER *timer, t_pmj *pPmj, bool IStuple_R) {
+
+    if (*outerPtr > 0 && fat_tuple_size > 0) {
+
+        if (IStuple_R) {
+            sorting_phase(tid,
+                          tuple,
+                          fat_tuple_size,
+                          tmp_rel,
+                          *outerPtr,
+                          matches,
+                          &pPmj->Q,
+                          pPmj->out_relR + pPmj->extraPtrR,
+                          pPmj->out_relS + pPmj->extraPtrS,
+                          timer);
+
+            pPmj->extraPtrR += fat_tuple_size;
+            pPmj->extraPtrS += *outerPtr;
+
+        } else {
+            sorting_phase(tid,
+                          tmp_rel,
+                          *outerPtr,
+                          tuple,
+                          fat_tuple_size,
+                          matches,
+                          &pPmj->Q,
+                          pPmj->out_relR + pPmj->extraPtrR,
+                          pPmj->out_relS + pPmj->extraPtrS,
+                          timer);
+            pPmj->extraPtrR += *outerPtr;
+            pPmj->extraPtrS += fat_tuple_size;
+        }
+    }
+}
+
 /**
  * PMJ algorithm to be used in each thread.
  * First store enough tuples from R and S, then call PMJ algorithm.
@@ -255,80 +301,99 @@ pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid) {
  * @param timer
  * @return
  */
-long PMJJoiner:: //0x7fff08000c70
-join(int32_t tid, tuple_t **tuple, bool IStuple_R, int64_t *matches,
+void PMJJoiner:: //0x7fff08000c70
+join(int32_t tid, tuple_t *tuple, int fat_tuple_size, bool IStuple_R, int64_t *matches,
      void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid) {
     auto *arg = (t_pmj *) t_arg;
 
-    int valid_member = 0;
     //store tuples.
     if (IStuple_R) {
-        for (auto i = 0; i < progressive_step_tupleR; i++) {
-            if (tuple[i] != nullptr) {
-                arg->tmp_relR[arg->outerPtrR + arg->innerPtrR] = *tuple[i];
-                arg->innerPtrR++;
-//#ifdef DEBUG
-//                if (tid == 0) {
-//                    window0.R_Window.push_back(tuple[i]->key);
-//                    DEBUGMSG("T0 after receive R (expected): %s, (actual): %s", print_window(window0.R_Window).c_str(),
-//                             print_tuples(arg->tmp_relR, arg->outerPtrR + arg->innerPtrR).c_str())
-//                } else {
-//                    window1.R_Window.push_back(tuple[i]->key);
-//                    DEBUGMSG("T1 after receive R (expected): %s, (actual): %s", print_window(window1.R_Window).c_str(),
-//                             print_tuples(arg->tmp_relR, arg->outerPtrR + arg->innerPtrR).c_str())
-//                }
-//#endif
-                valid_member++;
+        BEGIN_MEASURE_BUILD_ACC(timer)
+        keep_tuple_single(arg->tmp_relR, &arg->outerPtrR, tuple, fat_tuple_size);
+        END_MEASURE_BUILD_ACC(timer)//accumulate hash table build time.
+#ifdef DEBUG
+        for (auto i = 0; i < fat_tuple_size; i++) {
+            if (tid == 0) {
+                window0.R_Window.push_back(tuple[i].key);
+            } else if (tid == 1) {
+                window1.R_Window.push_back(tuple[i].key);
             }
+
         }
+#endif
+        DEBUGMSG("TID: %d Sorting in normal stage start", tid)
+        join_tuple_single(tid, arg->tmp_relS, &arg->outerPtrS, tuple, fat_tuple_size, matches, &timer, arg,
+                          IStuple_R);
+        DEBUGMSG("TID: %d Join during run creation:%d", tid, *matches)
 
     } else {
-        for (auto i = 0; i < progressive_step_tupleS; i++) {
-            if (tuple[i] != nullptr) {
-                arg->tmp_relS[arg->outerPtrS + arg->innerPtrS] = *tuple[i];
-                arg->innerPtrS++;
-//#ifdef DEBUG
-//                if (tid == 0) {
-//                    window0.S_Window.push_back(tuple[i]->key);
-//                    DEBUGMSG("T0 after receive S (expected): %s, actual: %s", print_window(window0.S_Window).c_str(),
-//                             print_tuples(arg->tmp_relS, arg->outerPtrS + arg->innerPtrS).c_str())
-//                } else {
-//                    window1.S_Window.push_back(tuple[i]->key);
-//                    DEBUGMSG("T1 after receive S (expected): %s, actual: %s", print_window(window1.S_Window).c_str(),
-//                             print_tuples(arg->tmp_relS, arg->outerPtrS + arg->innerPtrS).c_str())
-//                }
-//#endif
-                valid_member++;
+        BEGIN_MEASURE_BUILD_ACC(timer)
+        keep_tuple_single(arg->tmp_relS, &arg->outerPtrS, tuple, fat_tuple_size);
+        END_MEASURE_BUILD_ACC(timer)//accumulate hash table build time.
+#ifdef DEBUG
+        for (auto i = 0; i < fat_tuple_size; i++) {
+            if (tid == 0) {
+                window0.S_Window.push_back(tuple[i].key);
+            } else if (tid == 1) {
+                window1.S_Window.push_back(tuple[i].key);
             }
+
         }
+#endif
+        DEBUGMSG("TID: %d Sorting in normal stage start", tid)
+        join_tuple_single(tid, arg->tmp_relR, &arg->outerPtrR, tuple, fat_tuple_size,
+                          matches, &timer, arg, IStuple_R);
+        DEBUGMSG("TID: %d Join during run creation:%d", tid, *matches)
+
     }
-    int stepR = progressive_step_tupleR;
-    int stepS = progressive_step_tupleS;
 
-    DEBUGMSG("[TID:%d, arg->outerPtrR:%d, arg->innerPtrR:%d"
-             " arg->outerPtrS:%d, arg->innerPtrS:%d]", tid, arg->outerPtrR, arg->innerPtrR, arg->outerPtrS,
-             arg->innerPtrS)
-//    if (arg->outerPtrR < arg->sizeR - stepR && arg->outerPtrS < arg->sizeS - stepS) {//normal process
-    //check if it is ready to start process.
-    if (arg->innerPtrR >= stepR
-        && arg->innerPtrS >= stepS) {//start process and reset inner pointer.
-
-        DEBUGMSG("Sorting in normal stage")
-        sorting_phase(tid, arg->tmp_relR + arg->outerPtrR,
-                      arg->tmp_relS + arg->outerPtrS, stepR, stepS, matches, &arg->Q,
-                      arg->outptrR + arg->outerPtrR, arg->outptrS + arg->outerPtrS,
-                      &timer);
-        arg->outerPtrR += stepR;
-        arg->outerPtrS += stepS;
-        DEBUGMSG("Join during run creation:%d", *matches)
-
-        /***Reset Inner Pointer***/
-        arg->innerPtrR = 0;
-        arg->innerPtrS = 0;
-    }
-    return valid_member;
 }
 
+void PMJJoiner::clean(int32_t tid, tuple_t *tuple, bool cleanR) {
+    std::cout << "this method should not be called" << std::endl;
+//    if (cleanR) {
+//        auto idx = find_index(this->t_arg->tmp_relR, this->t_arg->outerPtrR + this->t_arg->innerPtrR, tuple);
+//        this->t_arg->tmp_relR[idx] = this->t_arg->tmp_relR[this->t_arg->outerPtrR + this->t_arg->innerPtrR - 1];
+//        this->t_arg->innerPtrR--;
+//        if (this->t_arg->innerPtrR < 0) {
+//            this->t_arg->outerPtrR -= progressive_step_tupleR;
+//            this->t_arg->innerPtrR = progressive_step_tupleR - 1;
+//        }
+//
+//#ifdef DEBUG
+//        if (tid == 0) {
+//            window0.R_Window.remove(tuple->key);
+//            DEBUGMSG("T0 after remove R (expected): %s, actual: %s", print_window(window0.R_Window).c_str(),
+//                     print_tuples(this->t_arg->tmp_relR, this->t_arg->outerPtrR + this->t_arg->innerPtrR).c_str())
+//        } else {
+//            window1.R_Window.remove(tuple->key);
+//            DEBUGMSG("T1 after remove R (expected): %s, actual: %s", print_window(window1.R_Window).c_str(),
+//                     print_tuples(this->t_arg->tmp_relR, this->t_arg->outerPtrR + this->t_arg->innerPtrR).c_str())
+//        }
+//#endif
+//
+//    } else {
+//        auto idx = find_index(this->t_arg->tmp_relS, this->t_arg->outerPtrS + this->t_arg->innerPtrS, tuple);
+//        this->t_arg->tmp_relS[idx] = this->t_arg->tmp_relS[this->t_arg->outerPtrS + this->t_arg->innerPtrS - 1];
+//        this->t_arg->innerPtrS--;
+//        if (this->t_arg->innerPtrS < 0) {
+//            this->t_arg->outerPtrS -= progressive_step_tupleS;
+//            this->t_arg->innerPtrS = progressive_step_tupleS - 1;
+//        }
+//
+//#ifdef DEBUG
+//        if (tid == 0) {
+//            window0.S_Window.remove(tuple->key);
+//            DEBUGMSG("T0 after remove S (expected): %s,(actual): %s", print_window(window0.S_Window).c_str(),
+//                     print_tuples(this->t_arg->tmp_relS, this->t_arg->outerPtrS + this->t_arg->innerPtrS).c_str())
+//        } else {
+//            window1.S_Window.remove(tuple->key);
+//            DEBUGMSG("T1 after remove S (expected): %s,(actual): %s", print_window(window1.S_Window).c_str(),
+//                     print_tuples(this->t_arg->tmp_relS, this->t_arg->outerPtrS + this->t_arg->innerPtrS).c_str())
+//        }
+//#endif
+//    }
+}
 
 /**
  * HS cleaner
@@ -339,83 +404,143 @@ join(int32_t tid, tuple_t **tuple, bool IStuple_R, int64_t *matches,
  * @param cleanR
  */
 void PMJJoiner::
-clean(int32_t tid, tuple_t **tuple, bool cleanR) {
+clean(int32_t tid, tuple_t *fat_tuple, int fat_tuple_size, bool cleanR) {
 
     if (cleanR) {
-        for (auto i = 0; i < progressive_step_tupleR; i++) {
-            if (tuple[i] != nullptr) {
-                auto idx = find_index(this->t_arg->tmp_relR, this->t_arg->outerPtrR + this->t_arg->innerPtrR,
-                                      tuple[i]);
-                this->t_arg->tmp_relR[idx] = this->t_arg->tmp_relR[this->t_arg->outerPtrR + this->t_arg->innerPtrR - 1];
-                this->t_arg->innerPtrR--;
-                if (this->t_arg->innerPtrR < 0) {
-                    this->t_arg->outerPtrR -= progressive_step_tupleR;
-                    this->t_arg->innerPtrR = progressive_step_tupleR - 1;
-                }
-//#ifdef DEBUG
-//                if (tid == 0) {
-//                    window0.R_Window.remove(tuple[i]->key);
-//                    DEBUGMSG("T0 after remove R (expected): %s, actual: %s", print_window(window0.R_Window).c_str(),
-//                             print_tuples(this->t_arg->tmp_relR,
-//                                          this->t_arg->outerPtrR + this->t_arg->innerPtrR).c_str())
-//                } else {
-//                    window1.R_Window.remove(tuple[i]->key);
-//                    DEBUGMSG("T1 after remove R (expected): %s, actual: %s", print_window(window1.R_Window).c_str(),
-//                             print_tuples(this->t_arg->tmp_relR,
-//                                          this->t_arg->outerPtrR + this->t_arg->innerPtrR).c_str())
-//                }
-//#endif
-            }
-        }
-    } else {
-        for (auto i = 0; i < progressive_step_tupleS; i++) {
-            if (tuple[i] != nullptr) {
-                auto idx = find_index(this->t_arg->tmp_relS, this->t_arg->outerPtrS + this->t_arg->innerPtrS,
-                                      tuple[i]);
-                this->t_arg->tmp_relS[idx] = this->t_arg->tmp_relS[this->t_arg->outerPtrS + this->t_arg->innerPtrS - 1];
-                this->t_arg->innerPtrS--;
-                if (this->t_arg->innerPtrS < 0) {
-                    this->t_arg->outerPtrS -= progressive_step_tupleS;
-                    this->t_arg->innerPtrS = progressive_step_tupleS - 1;
+
+        DEBUGMSG("Start clean %d; TID:%d, Initial R: %s", fat_tuple[0].key, tid,
+                 print_relation(this->t_arg->tmp_relR, this->t_arg->outerPtrR).c_str())
+
+        for (auto i = 0; i < fat_tuple_size; i++) {
+/*
+                int idx = find_index(this->t_arg->tmp_relR,
+                                     this->t_arg->outerPtrR,
+                                     tuple[i]);
+                if (idx == -1) {
+                     DEBUGMSG(
+                            "Clean %d not find correct position. something is wrong. TID:%d, Initial R: %s",
+                            tuple[i]->key, tid, print_relation(this->t_arg->tmp_relR, this->t_arg->outerPtrR).c_str())
+                    break;//something is wrong.
                 }
 
-//#ifdef DEBUG
-//                if (tid == 0) {
-//                    window0.S_Window.remove(tuple[i]->key);
-//                    DEBUGMSG("T0 after remove S (expected): %s,(actual): %s", print_window(window0.S_Window).c_str(),
-//                             print_tuples(this->t_arg->tmp_relS,
-//                                          this->t_arg->outerPtrS + this->t_arg->innerPtrS).c_str())
-//                } else {
-//                    window1.S_Window.remove(tuple[i]->key);
-//                    DEBUGMSG("T1 after remove S (expected): %s,(actual): %s", print_window(window1.S_Window).c_str(),
-//                             print_tuples(this->t_arg->tmp_relS,
-//                                          this->t_arg->outerPtrS + this->t_arg->innerPtrS).c_str())
-//                }
-//#endif
+                this->t_arg->tmp_relR[idx] = this->t_arg->tmp_relR[
+                        this->t_arg->outerPtrR - 1];
+//                remove++;
+                this->t_arg->outerPtrR--;
+*/
+#ifdef DEBUG
+            if (tid == 0) {
+                window0.R_Window.remove(fat_tuple[i].key);
+                DEBUGMSG("T0 removes R %d, left with:%s", fat_tuple[i].key,
+                         print_window(window0.R_Window).c_str())
+            } else if (tid == 1) {
+                window1.R_Window.remove(fat_tuple[i].key);
+                DEBUGMSG("T1 removes R %d, left with:%s", fat_tuple[i].key,
+                         print_window(window1.R_Window).c_str())
             }
+#endif
+
         }
+        this->t_arg->tmp_relR = &this->t_arg->tmp_relR[fat_tuple_size];
+        this->t_arg->outerPtrR -= fat_tuple_size;
+        DEBUGMSG("Stop clean %d; T%d left with:%s", fat_tuple[0].key, tid,
+                 print_relation(this->t_arg->tmp_relR, this->t_arg->outerPtrR).c_str())
+//        this->t_arg->outerPtrR -= remove;
+//        if (this->t_arg->innerPtrR < 0) {
+//            this->t_arg->outerPtrR += this->t_arg->innerPtrR;
+//            this->t_arg->innerPtrR = 0;
+//        }
+
+
+#ifdef DEBUG
+        if (tid == 0) {
+            DEBUGMSG("T0 after remove R (expected): %s, actual: %s", print_window(window0.R_Window).c_str(),
+                     print_tuples(this->t_arg->tmp_relR,
+                                  this->t_arg->outerPtrR + this->t_arg->innerPtrR).c_str())
+        } else if (tid == 1) {
+            DEBUGMSG("T1 after remove R (expected): %s, actual: %s, size: %d", print_window(window1.R_Window).c_str(),
+                     print_tuples(this->t_arg->tmp_relR,
+                                  this->t_arg->outerPtrR + this->t_arg->innerPtrR).c_str(), this->t_arg->outerPtrR)
+        }
+#endif
+
+
+    } else {
+
+        for (auto i = 0; i < fat_tuple_size; i++) {
+
+                int idx = find_index(this->t_arg->tmp_relS, this->t_arg->outerPtrS, &fat_tuple[i]);
+                if (idx == -1) {
+                    break;//it must be an ack signal, and does not stored in this thread.
+                }
+
+
+                this->t_arg->tmp_relS[idx] = this->t_arg->tmp_relS[this->t_arg->outerPtrS - 1];
+//                remove++;
+                this->t_arg->outerPtrS--;
+
+#ifdef DEBUG
+                if (tid == 0) {
+                    window0.S_Window.remove(fat_tuple[i].key);
+                    DEBUGMSG("T0 removes S %d, left with:%s", fat_tuple[i].key,
+                             print_window(window0.S_Window).c_str());
+                } else if (tid == 1) {
+                    window1.S_Window.remove(fat_tuple[i].key);
+                    DEBUGMSG("T1 removes S %d, left with:%s", fat_tuple[i].key,
+                             print_window(window1.S_Window).c_str())
+                }
+#endif
+
+
+        }
+
+//        this->t_arg->tmp_relS = &this->t_arg->tmp_relS[remove];
+//        this->t_arg->outerPtrS -= remove;
+        DEBUGMSG("Stop clean %d; T%d left with:%s", fat_tuple[0].key, tid,
+                 print_relation(this->t_arg->tmp_relS, this->t_arg->outerPtrS).c_str())
+
+#ifdef DEBUG
+        if (tid == 0) {
+            DEBUGMSG("T0 after remove S (expected): %s,(actual): %s", print_window(window0.S_Window).c_str(),
+                     print_tuples(this->t_arg->tmp_relS,
+                                  this->t_arg->outerPtrS).c_str())
+        } else if (tid == 1) {
+            DEBUGMSG("T1 after remove S (expected): %s,(actual): %s, size: %d", print_window(window1.S_Window).c_str(),
+                     print_tuples(this->t_arg->tmp_relS,
+                                  this->t_arg->outerPtrS).c_str(), this->t_arg->outerPtrS)
+        }
+#endif
     }
 }
 
+
 long PMJJoiner::
-cleanup(int32_t tid, int64_t *matches, void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid) {
+cleanup(int32_t tid, int64_t *matches,
+        void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid) {
     auto *arg = (t_pmj *) t_arg;
     int stepR;
     int stepS;
     /***Handling Left-Over***/
-    DEBUGMSG("TID:%d in Clean up stage: sorting", tid)
+    DEBUGMSG("TID:%d in Clean up stage, current matches:", tid, *matches)
     stepR = arg->innerPtrR;
     stepS = arg->innerPtrS;
-    sorting_phase(tid, arg->tmp_relR + arg->outerPtrR, arg->tmp_relS + arg->outerPtrS, stepR, stepS,
-                  matches, &arg->Q, arg->outptrR + arg->outerPtrR, arg->outptrS + arg->outerPtrS, &timer);
+
+    sorting_phase(tid, arg->tmp_relR + arg->outerPtrR, stepR,
+                  arg->tmp_relS + arg->outerPtrS, stepS,
+                  matches, &arg->Q, arg->out_relR + arg->outerPtrR,
+                  arg->out_relS + arg->outerPtrS, &timer);
     DEBUGMSG("TID:%d Clean up stage: Join during run creation:%d, arg->Q %d", tid, *matches, arg->Q.size())
+
     merging_phase(matches, &arg->Q, &timer);
     DEBUGMSG("TID:%d Clean up stage: Join during run merge matches:%d", tid, *matches)
     return *matches;
 }
 
 
-PMJJoiner::PMJJoiner(int sizeR, int sizeS, int nthreads) {
+PMJJoiner::PMJJoiner(int
+                     sizeR, int
+                     sizeS, int
+                     nthreads) {
     t_arg = new t_pmj(sizeR, sizeS);
 }
 
@@ -440,8 +565,8 @@ void PMJJoiner::join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *match
             && arg->innerPtrS >= stepS) {//start process and reset inner pointer.
 
             /***Sorting***/
-            sorting_phase(tid, arg->tmp_relR + arg->outerPtrR, arg->tmp_relS + arg->outerPtrS, stepR, stepS,
-                          matches, &arg->Q, arg->outptrR + arg->outerPtrR, arg->outptrS + arg->outerPtrS, &timer);
+            sorting_phase(tid, arg->tmp_relR + arg->outerPtrR, stepR, arg->tmp_relS + arg->outerPtrS, stepS,
+                          matches, &arg->Q, arg->out_relR + arg->outerPtrR, arg->out_relS + arg->outerPtrS, &timer);
             arg->outerPtrR += stepR;
             arg->outerPtrS += stepS;
             DEBUGMSG("Join during run creation:%d", *matches)
@@ -456,8 +581,8 @@ void PMJJoiner::join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *match
         /***Handling Left-Over***/
         stepR = arg->sizeR - arg->outerPtrR;
         stepS = arg->sizeS - arg->outerPtrS;
-        sorting_phase(tid, arg->tmp_relR + arg->outerPtrR, arg->tmp_relS + arg->outerPtrS, stepR, stepS,
-                      matches, &arg->Q, arg->outptrR + arg->outerPtrR, arg->outptrS + arg->outerPtrS, &timer);
+        sorting_phase(tid, arg->tmp_relR + arg->outerPtrR, stepR, arg->tmp_relS + arg->outerPtrS, stepS,
+                      matches, &arg->Q, arg->out_relR + arg->outerPtrR, arg->out_relS + arg->outerPtrS, &timer);
         DEBUGMSG("Join during run creation:%d", *matches)
         merging_phase(matches, &arg->Q, &timer);
         DEBUGMSG("Join during run merge matches:%d", *matches)
@@ -603,7 +728,8 @@ void RippleJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R, int64_t *matc
  * @param relS
  * @param nthreads
  */
-RippleJoiner::RippleJoiner(relation_t *relR, relation_t *relS, int nthreads) : relR(
+RippleJoiner::RippleJoiner(relation_t *relR, relation_t *relS, int
+nthreads) : relR(
         relR), relS(relS) {
     samList.num_threads = nthreads;
     samList.t_windows = new t_window();

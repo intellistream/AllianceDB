@@ -485,11 +485,11 @@ param_t defaultParam() {/* Command line parameters */
      * RIPPLE JOIN: RPJ_st(16), RPJ_JM_NP,  RPJ_JB_NP, RPJ_JBCR_NP, RPJ_HS_NP
      * */
     cmd_params.algo = &algos[15];
-    cmd_params.nthreads = 4;//TODO: in HS mode, thread must be larger than 1. Fix it when nthread=1.
+    cmd_params.nthreads = 8;//TODO: in HS mode, thread must be larger than 1. Fix it when nthread=1.
 
     /* default dataset is Workload B (described in paper) */
-    cmd_params.r_size = 20;
-    cmd_params.s_size = 20;
+    cmd_params.r_size = 200;
+    cmd_params.s_size = 200;
 //    cmd_params.r_size = 120000;
 //    cmd_params.s_size = 120000;
 //    cmd_params.r_size = 12800000;

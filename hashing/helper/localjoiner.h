@@ -33,7 +33,7 @@ public:
     virtual void join(int32_t tid, tuple_t *tuple, bool tuple_R, int64_t *matches,
                       void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid) = 0;
 
-    virtual long join(int32_t tid, tuple_t **fat_tuple, bool IStuple_R, int64_t *matches,
+    virtual void join(int32_t tid, tuple_t *fat_tuple, int fat_tuple_size, bool IStuple_R, int64_t *matches,
                       void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid) {
         //only supported by PMJ.
     }
@@ -46,7 +46,7 @@ public:
 
     virtual void clean(int32_t tid, tuple_t *tuple, bool cleanR) = 0;
 
-    virtual void clean(int32_t tid, tuple_t **tuple, bool cleanR) {
+    virtual void clean(int32_t tid, tuple_t * fat_tuple, int fat_tuple_size, bool cleanR) {
         //only used in PMJ.
     }
 
@@ -82,16 +82,18 @@ struct t_pmj {
     tuple_t *tmp_relR;
     int innerPtrR;
     int outerPtrR;
+    int extraPtrR;
     int sizeR;
     tuple_t *tmp_relS;
     int innerPtrS;
     int outerPtrS;
+    int extraPtrS;
     int sizeS;
     std::vector<run> Q;//let Q be an empty set;
 
     size_t relRsz;
-    tuple_t *outptrR;
-    tuple_t *outptrS;
+    tuple_t *out_relR;
+    tuple_t *out_relS;
 
     /***Initialize***/
     t_pmj(int sizeR, int sizeS) {
@@ -100,20 +102,22 @@ struct t_pmj {
         this->sizeS = sizeS;
         relRsz = sizeR * sizeof(tuple_t)
                  + RELATION_PADDING(1, CACHELINEPADDING(1));//TODO: think why we need to patch this.
-        tmp_relR = (tuple_t *) malloc_aligned(relRsz);
 
-        outptrR = (tuple_t *) malloc_aligned(relRsz);
+        tmp_relR = (tuple_t *) malloc_aligned(relRsz);
+        out_relR = (tuple_t *) malloc_aligned(relRsz * 100);
 
         relRsz = sizeS * sizeof(tuple_t)
                  + RELATION_PADDING(1, CACHELINEPADDING(1));//TODO: think why we need to patch this.
 
         tmp_relS = (tuple_t *) malloc_aligned(relRsz);
-        outptrS = (tuple_t *) malloc_aligned(relRsz);
+        out_relS = (tuple_t *) malloc_aligned(relRsz * 100);
 
         innerPtrR = 0;
         outerPtrR = 0;
         innerPtrS = 0;
         outerPtrS = 0;
+        extraPtrR = 0;
+        extraPtrS = 0;
     }
 };
 
@@ -128,19 +132,21 @@ public:
     join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *matches,
          void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid);
 
-    long join(int32_t tid, tuple_t **fat_tuple, bool IStuple_R, int64_t *matches,
+    void join(int32_t tid, tuple_t *fat_tuple, int fat_tuple_size, bool IStuple_R, int64_t *matches,
               void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid);
 
     long
     cleanup(int32_t tid, int64_t *matches, void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),
             void *pVoid) override;
 
-    void clean(int32_t tid, tuple_t *tuple, bool cleanR) override {
-        //not implemented.
-    }
+    void clean(int32_t tid, tuple_t *tuple, bool cleanR);
 
+    void clean(int32_t tid, tuple_t *fat_tuple, int  fat_tuple_size, bool cleanR);
 
-    void clean(int32_t tid, tuple_t **tuple, bool cleanR);
+    void keep_tuple_single(tuple_t *tmp_rel, int *outerPtr, tuple_t *tuple, int fat_tuple_size);
+
+    void join_tuple_single(int32_t tid, tuple_t *tmp_rel, int *outerPtr, tuple_t *tuple, int fat_tuple_size,
+                           int64_t *matches, T_TIMER *timer, t_pmj *pPmj, bool IStuple_R);
 };
 
 class SHJJoiner : public baseJoiner {
@@ -155,7 +161,7 @@ public:
     SHJJoiner(int sizeR, int sizeS);
 
     void
-    join(int32_t tid, tuple_t *tuple, bool tuple_R, int64_t *matches,
+    join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *matches,
          void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid) override;
 
     void clean(int32_t tid, tuple_t *tuple, bool cleanR) override;

@@ -129,8 +129,8 @@ void ContRandShuffler::push(intkey_t key, fetch_t *fetch, bool b) {
 
     std::vector<int32_t> curGrp = grpToTh[idx];
     // replicate R
-    if (fetch->flag) {
-        DEBUGMSG("PUSH: %d, tuple: %d, R?%d\n", idx, fetch->tuple->key, fetch->flag)
+    if (fetch->ISTuple_R) {
+        DEBUGMSG("PUSH: %d, tuple: %d, R?%d\n", idx, fetch->tuple->key, fetch->ISTuple_R)
         for (auto it = curGrp.begin(); it != curGrp.end(); it++) {
             moodycamel::ConcurrentQueue<fetch_t *> *queue = queues[*it].queue;
             queue->enqueue(new fetch_t(fetch));
@@ -139,7 +139,7 @@ void ContRandShuffler::push(intkey_t key, fetch_t *fetch, bool b) {
                      queue->size_approx())
         }
     } else { // partition S
-        DEBUGMSG("PUSH: %d, tuple: %d, R?%d\n", idx, fetch->tuple->key, fetch->flag)
+        DEBUGMSG("PUSH: %d, tuple: %d, R?%d\n", idx, fetch->tuple->key, fetch->ISTuple_R)
         int32_t idx_s = rand() % curGrp.size(); // randomly distribute to threads in the groups
         moodycamel::ConcurrentQueue<fetch_t *> *queue = queues[curGrp[idx_s]].queue;
         queue->enqueue(new fetch_t(fetch));

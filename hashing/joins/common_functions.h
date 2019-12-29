@@ -144,8 +144,8 @@ int64_t proble_hashtable_single_measure(const hashtable_t *ht, const relation_t 
 void match_single_tuple(const std::list<intkey_t> list, const relation_t *rel, const tuple_t *tuple, int64_t *matches,
                         void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), T_TIMER *timer);
 
-uint32_t find_index(const relation_t *rel, const tuple_t *tuple);
-uint32_t find_index(const tuple_t* rel, const  int length, const tuple_t *tuple);
+int find_index(const relation_t *rel, const tuple_t *tuple);
+int find_index(const tuple_t* rel, const  int length, const tuple_t *tuple);
 /**
  * Multi-thread hashtable build method, ht is pre-allocated.
  * Writes to buckets are synchronized via latches.

@@ -174,10 +174,8 @@ void merging_phase(int64_t *matches, std::vector<run> *Q, T_TIMER *timer) {
     } while (Q->size() > 1);
 }
 
-
-void sorting_phase(int32_t tid, tuple_t *inptrR, tuple_t *inptrS, int sizeR,
-                   int sizeS, int64_t *matches, std::vector<run> *Q, tuple_t *outputR, tuple_t *outputS,
-                   T_TIMER *timer) {
+void sorting_phase(int32_t tid, tuple_t *inptrR, int sizeR, tuple_t *inptrS, int sizeS, int64_t *matches,
+                   std::vector<run> *Q, tuple_t *outputR, tuple_t *outputS, T_TIMER *timer) {
 
     DEBUGMSG("TID:%d, Initial R [aligned:%d]: %s", tid, is_aligned(inptrR, CACHE_LINE_SIZE),
              print_relation(inptrR, sizeR).c_str())
