@@ -662,13 +662,6 @@ void
 
     } while (cntR < sizeR || cntS < sizeS);
 
-
-//    args->joiner->cleanup(
-//            args->tid,
-//            args->matches,
-//            JOINFUNCTION,
-//            chainedbuf);
-
 #ifdef JOIN_RESULT_MATERIALIZE
     args->threadresult->nresults = args->num_results;
     args->threadresult->threadid = args->tid;
