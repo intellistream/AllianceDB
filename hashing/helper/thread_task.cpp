@@ -20,7 +20,7 @@
  * @return
  */
 //void* JOINFUNCTION(tuple_t *r_tuple, tuple_t *s_tuple, int64_t *matches) {
-void *JOINFUNCTION(const tuple_t *r_tuple, const tuple_t *s_tuple, int64_t *matches) {
+void *AGGFUNCTION(const tuple_t *r_tuple, const tuple_t *s_tuple, int64_t *matches) {
     if (r_tuple->key == s_tuple->key) {
 //        (*matches)++;
         DEBUGMSG("matches: %d", *matches);
@@ -78,7 +78,7 @@ THREAD_TASK_NOSHUFFLE(void *param) {
                     fetch->tuple,
                     fetch->ISTuple_R,
                     args->matches,
-                    JOINFUNCTION,
+                    AGGFUNCTION,
                     chainedbuf);//build and probe at the same time.
         }
     } while (!fetcher->finish());
@@ -86,7 +86,7 @@ THREAD_TASK_NOSHUFFLE(void *param) {
     args->joiner->cleanup(
             args->tid,
             args->matches,
-            JOINFUNCTION,
+            AGGFUNCTION,
             chainedbuf);
 
     DEBUGMSG("args->num_results (%d): %ld\n", args->tid, *args->matches);
@@ -176,7 +176,7 @@ void
                     fetch->tuple,
                     fetch->ISTuple_R,
                     args->matches,
-                    JOINFUNCTION,
+                    AGGFUNCTION,
                     chainedbuf);//build and probe at the same time.
         }
 #endif
@@ -192,13 +192,13 @@ void
                     fetch->tuple,
                     fetch->ISTuple_R,
                     args->matches,
-                    JOINFUNCTION,
+                    AGGFUNCTION,
                     chainedbuf);
         } else {
             args->joiner->cleanup(
                     args->tid,
                     args->matches,
-                    JOINFUNCTION,
+                    AGGFUNCTION,
                     chainedbuf);
             break;
         }
@@ -293,7 +293,7 @@ processLeft(arg_t *args, fetch_t *fetch, int64_t *matches, void *chainedbuf) {
                 fetch->tuple,
                 fetch->ISTuple_R,
                 matches,
-                JOINFUNCTION,
+                AGGFUNCTION,
                 chainedbuf);
     }
 }
@@ -327,7 +327,7 @@ processLeft_PMJ(arg_t *args, fetch_t *fetch, int64_t *matches, void *chainedbuf)
                 fetch->fat_tuple_size,
                 fetch->ISTuple_R,
                 matches,
-                JOINFUNCTION,
+                AGGFUNCTION,
                 chainedbuf);
     }
 }
@@ -354,7 +354,7 @@ processRight(baseShuffler *shuffler, arg_t *args, fetch_t *fetch, int64_t *match
                 fetch->tuple,
                 fetch->ISTuple_R,
                 matches,
-                JOINFUNCTION,
+                AGGFUNCTION,
                 chainedbuf);//build and probe at the same time.
     }
 
@@ -391,7 +391,7 @@ processRight_PMJ(baseShuffler *shuffler, arg_t *args, fetch_t *fetch, int64_t *m
                 fetch->fat_tuple_size,
                 fetch->ISTuple_R,
                 matches,
-                JOINFUNCTION,
+                AGGFUNCTION,
                 chainedbuf);//build and probe at the same time.
     }
 
@@ -554,7 +554,7 @@ void
     args->joiner->cleanup(
             args->tid,
             args->matches,
-            JOINFUNCTION,
+            AGGFUNCTION,
             chainedbuf);
 
 #ifdef JOIN_RESULT_MATERIALIZE
