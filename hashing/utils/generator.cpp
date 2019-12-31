@@ -391,6 +391,7 @@ load_relation(relation_t *relation, relation_payload_t *relation_payload, int32_
     relation_payload->rows = (table_t *) MALLOC(num_tuples * sizeof(table_t));
 
     if (!relation->tuples || !relation_payload->rows) {
+//    if (!relation->tuples) {
         perror("out of memory");
         return -1;
     }
@@ -627,10 +628,10 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, char *f
     int fmtbar = 0;
     do {
         c = fgetc(fp);
-        if (c == ' ') {
-            fmtspace = 1;
-            break;
-        }
+//        if (c == ' ') {
+//            fmtspace = 1;
+//            break;
+//        }
         if (c == ',') {
             fmtcomma = 1;
             break;
@@ -641,12 +642,16 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, char *f
         }
     } while (c != '\n');
 
+    char* line;
+    size_t len;
+    ssize_t read;
+
     /* rewind back to the beginning and start parsing again */
     rewind(fp);
     /* skip the header line */
-//    do {
-//        c = fgetc(fp);
-//    } while (c != '\n');
+    do {
+        c = fgetc(fp);
+    } while (c != '\n');
 
     uint64_t ntuples = rel->num_tuples;
     intkey_t key;
@@ -656,32 +661,61 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, char *f
     int32_t payload = 0;
 
     int warn = 1;
-    for (uint64_t i = 0; i < ntuples; i++) {
+
+    int i = 0;
+
+    while ((read = getline(&line, &len, fp)) != -1 && i < rel->num_tuples) {
+        printf("Retrieved line of length %zu:\n", read);
+        printf("%s", line);
         if (fmtspace) {
 
-            fscanf(fp, "%d %d", &key, &row.value);
-            payload = i;
         } else if (fmtcomma) {
-            fscanf(fp, "%d,%d", &key, &row.value);
+            key = stoi(split(line, ",")[keyby]);
+            strcpy(row.value, line);
+            printf(row.value);
             payload = i;
         } else if (fmtbar) {
-            fscanf(fp,"%[^\n]%*c",row.value);
-//            fprintf(stdout, "lines: %s\n", row.value);
-//            row.value = split(line, "|");
-            key = stoi(split(row.value, "|")[keyby]);
+            key = stoi(split(line, "|")[keyby]);
+            strcpy(row.value, line);
+            printf(row.value);
             payload = i;
         } else {
-            fscanf(fp, "%d", &key);
+            printf("error!!\n");
+            return;
         }
 
-        if (warn && key < 0) {
-            warn = 0;
-            printf("[WARN ] key=%d, payload=%d\n", key, payload);
-        }
         rel->tuples[i].key = key;
         rel->tuples[i].payload = payload;
         relPl->rows[i] = row;
+        i++;
     }
+
+//    for (uint64_t i = 0; i < ntuples; i++) {
+//        if (fmtspace) {
+//            fscanf(fp, "%d %d", &key, &row.value);
+//            payload = i;
+//        } else if (fmtcomma) {
+//            fscanf(fp,"%[^\n]%*c",row.value);
+////            row.value = split(line, "|");
+//            key = stoi(split(row.value, ",")[keyby]);
+//            payload = i;
+//        } else if (fmtbar) {
+//            fscanf(fp,"%[^\n]%*c",row.value);
+////            row.value = split(line, "|");
+//            key = stoi(split(row.value, "|")[keyby]);
+//            payload = i;
+//        } else {
+//            fscanf(fp, "%d", &key);
+//        }
+//
+//        if (warn && key < 0) {
+//            warn = 0;
+//            printf("[WARN ] key=%d, payload=%d\n", key, payload);
+//        }
+//        rel->tuples[i].key = key;
+//        rel->tuples[i].payload = payload;
+//        relPl->rows[i] = row;
+//    }
 
     fclose(fp);
 }

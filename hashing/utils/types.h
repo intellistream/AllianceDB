@@ -15,6 +15,7 @@
 #include <vector>
 #include <iostream>
 #include <sstream>
+using namespace std;
 
 /**
  * @defgroup Types Common Types
@@ -34,15 +35,8 @@
 
 struct table_t {
 //    int32_t value;
-    char value[256];
-
-//    table_t(int32_t v) {
-//        value = v;
-//    }
-//
-//    table_t() {
-//        value = 0;
-//    }
+//    char value[256];
+    char value[10240];
 };
 
 //#define AUX_TYPE
@@ -86,6 +80,7 @@ struct relation_t {
 // add a new structure to save real payload, let original payload be index of this struct
 struct relation_payload_t {
     table_t *rows;
+//    vector<string> *rows;
     uint64_t num_tuples;
 };
 
