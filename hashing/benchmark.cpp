@@ -16,7 +16,7 @@ int check_avx() {
     return 1; /* has AVX support! */
 }
 
-void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, const param_t &cmd_params,
+void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int32_t tsKey, const param_t &cmd_params,
                     char *loadfile, uint64_t rel_size, uint32_t seed) {
     fprintf(stdout,
             "[INFO ] %s relation with size = %.3lf MiB, #tuples = %llu : ",
@@ -45,7 +45,9 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, con
                     + RELATION_PADDING(cmd_params.nthreads, cmd_params.part_fanout);
     relPl->rows = (table_t *) malloc_aligned(relPlRsz);
 
-    relPl->ts =??? // TODO.
+    size_t relTssz = relPl->num_tuples * sizeof(time_t)
+                     + RELATION_PADDING(cmd_params.nthreads, cmd_params.part_fanout);
+    relPl->ts = (time_t *) malloc_aligned(relTssz);
 
     //    /* NUMA-localize the input: */
     //    if(!nonumalocalize){
@@ -54,7 +56,7 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, con
 
     if (loadfile != NULL) {
         /* load relation from file */
-        load_relation(rel, relPl, key, loadfile, rel_size);
+        load_relation(rel, relPl, key, tsKey, loadfile, rel_size);
     } else if (cmd_params.fullrange_keys) {
         create_relation_nonunique(rel, rel_size, INT_MAX);
     } else if (cmd_params.nonunique_keys) {
@@ -83,13 +85,13 @@ benchmark(const param_t cmd_params) {
     result_t *results;
     // TODO: generate dataset
     /* create relation R */
-    createRelation(&relR, relR.payload, cmd_params.rkey, cmd_params, cmd_params.loadfileR, cmd_params.r_size,
+    createRelation(&relR, relR.payload, cmd_params.rkey, cmd_params.rts, cmd_params, cmd_params.loadfileR, cmd_params.r_size,
                    cmd_params.r_seed);
     DEBUGMSG("relR [aligned:%d]: %s", is_aligned(relR.tuples, CACHE_LINE_SIZE),
              print_relation(relR.tuples, cmd_params.r_size).c_str())
 
     /* create relation S */
-    createRelation(&relS, relS.payload, cmd_params.skey, cmd_params, cmd_params.loadfileS, cmd_params.s_size,
+    createRelation(&relS, relS.payload, cmd_params.skey, cmd_params.sts, cmd_params, cmd_params.loadfileS, cmd_params.s_size,
                    cmd_params.s_seed);
     DEBUGMSG("relS [aligned:%d]: %s", is_aligned(relS.tuples, CACHE_LINE_SIZE),
              print_relation(relS.tuples, cmd_params.s_size).c_str())

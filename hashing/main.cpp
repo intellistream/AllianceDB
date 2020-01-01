@@ -521,6 +521,8 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
                         {"s-file",       required_argument, 0,               'S'},
                         {"r-key",        required_argument, 0,               'J'},
                         {"s-key",        required_argument, 0,               'K'},
+                        {"r-ts",        required_argument,  0,               'L'},
+                        {"s-ts",        required_argument,  0,               'M'},
                         /* partitioning fanout, e.g., 2^rdxbits */
                         {"partfanout",   required_argument, 0,               'f'},
                         {"numastrategy", required_argument, 0,               'N'},
@@ -530,7 +532,7 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
         /* getopt_long stores the option index here. */
         int option_index = 0;
 
-        c = getopt_long(argc, argv, "J:K:a:n:p:r:s:o:x:y:z:R:S:hv",
+        c = getopt_long(argc, argv, "J:K:L:M:a:n:p:r:s:o:x:y:z:R:S:hv",
                         long_options, &option_index);
 
         /* Detect the end of the options. */
@@ -652,6 +654,12 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
 
             case 'K':
                 cmd_params->skey = atoi(mystrdup(optarg));
+
+            case 'L':
+                cmd_params->rts = atoi(mystrdup(optarg));
+
+            case 'M':
+                cmd_params->sts = atoi(mystrdup(optarg));
 
             default:
                 break;

@@ -80,6 +80,9 @@ struct param_t {
 
     int32_t rkey;
     int32_t skey;
+
+    int32_t rts;
+    int32_t sts;
 };
 
 
@@ -98,7 +101,5 @@ int check_avx();
 
 /***Queries***/
 void benchmark(const param_t cmd_params);
-
-void query5(const param_t cmd_params);
 
 #endif //ALLIANCEDB_BENCHMARK_H

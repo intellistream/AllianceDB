@@ -228,7 +228,7 @@ numa_localize_thread(void *args) {
  * NUMA-aware).
  */
 void
-read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, char *filename);
+read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t tsKey, char *filename);
 
 /**
  * Write relation to a file.
@@ -382,7 +382,7 @@ parallel_create_relation(relation_t *relation, uint64_t num_tuples,
 }
 
 int
-load_relation(relation_t *relation, relation_payload_t *relation_payload, int32_t keyby, char *filename,
+load_relation(relation_t *relation, relation_payload_t *relation_payload, int32_t keyby, int32_t tsKey, char *filename,
               uint64_t num_tuples) {
     relation->num_tuples = num_tuples;
 
@@ -399,7 +399,7 @@ load_relation(relation_t *relation, relation_payload_t *relation_payload, int32_
     }
 
     /* load from the given input file */
-    read_relation(relation, relation_payload, keyby, filename);
+    read_relation(relation, relation_payload, keyby, tsKey, filename);
 
     return 0;
 }
@@ -615,7 +615,7 @@ vector<string> split(string s, string delimiter) {
 }
 
 void
-read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, char *filename) {
+read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t tsKey, char *filename) {
     FILE *fp = fopen(filename, "r");
 
     /* skip the header line */
@@ -657,7 +657,8 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, char *f
 
     uint64_t ntuples = rel->num_tuples;
     intkey_t key;
-    table_t row;
+    table_t row = table_t();
+    time_t timestamp = 0;
 
     // add a index field, here payload is index field, row is real payload
     int32_t payload = 0;
@@ -666,21 +667,25 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, char *f
 
     int i = 0;
 
-    while ((read = getline(&line, &len, fp)) != -1 && i < rel->num_tuples) {
-        printf("Retrieved line of length %zu:\n", read);
-        printf("%s", line);
-        if (fmtspace) {
-
-        } else if (fmtcomma) {
+    while ((read = getline(&line, &len, fp)) != -1 && i < ntuples) {
+//        printf("Retrieved line of length %zu:\n", read);
+//        printf("%s", line);
+        if (fmtcomma) {
             key = stoi(split(line, ",")[keyby]);
             strcpy(row.value, line);
-            printf(row.value);
             payload = i;
+            if (tsKey != 0) {
+                timestamp = (time_t) stol(split(line, ",")[tsKey]);
+                printf("%d \n", timestamp);
+            }
         } else if (fmtbar) {
             key = stoi(split(line, "|")[keyby]);
             strcpy(row.value, line);
-            printf(row.value);
             payload = i;
+            if (tsKey != 0) {
+                timestamp = (time_t) stol(split(line, ",")[tsKey]);
+                printf("%d \n", timestamp);
+            }
         } else {
             printf("error!!\n");
             return;
@@ -689,6 +694,7 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, char *f
         rel->tuples[i].key = key;
         rel->tuples[i].payloadID = payload;
         relPl->rows[i] = row;
+        relPl->ts[i] = timestamp;
         i++;
     }
 
