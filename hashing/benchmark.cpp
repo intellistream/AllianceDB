@@ -45,6 +45,8 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, con
                     + RELATION_PADDING(cmd_params.nthreads, cmd_params.part_fanout);
     relPl->rows = (table_t *) malloc_aligned(relPlRsz);
 
+    relPl->ts =??? // TODO.
+
     //    /* NUMA-localize the input: */
     //    if(!nonumalocalize){
     //        numa_localize(relS.tuples, relS.num_tuples, cmd_params.nthreads);
