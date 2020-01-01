@@ -66,6 +66,7 @@ THREAD_TASK_NOSHUFFLE(void *param) {
     void *chainedbuf = NULL;
 #endif
 
+
     //call different data BaseFetcher.
     baseFetcher *fetcher = args->fetcher;
 

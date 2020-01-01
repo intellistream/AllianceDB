@@ -133,6 +133,8 @@ SHJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads) {
     param.fetcher = type_JM_NP_Fetcher;//new JM_NP_Fetcher(nthreads, relR, relS);
     //no shuffler is required for JM mode.
     param.joiner = type_SHJJoiner;//new SHJJoiner();
+
+
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_NOSHUFFLE)
     param = finishing(nthreads, param);
     return param.joinresult;
@@ -146,6 +148,8 @@ SHJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads) {
     param.fetcher = type_JB_NP_Fetcher;//new JB_NP_Fetcher(nthreads, relR, relS);
     param.shuffler = new HashShuffler(nthreads, relR, relS);
     param.joiner = type_SHJJoiner;//new SHJJoiner();
+
+
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE)
     param = finishing(nthreads, param);
     return param.joinresult;
@@ -159,6 +163,8 @@ SHJ_JBCR_NP(relation_t *relR, relation_t *relS, int nthreads) {
     param.fetcher = type_JB_NP_Fetcher;//new JB_NP_Fetcher(nthreads, relR, relS);
     param.shuffler = new ContRandShuffler(nthreads, relR, relS);
     param.joiner = type_SHJJoiner;//new SHJJoiner();
+
+
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE)
     param = finishing(nthreads, param);
     return param.joinresult;
@@ -172,6 +178,8 @@ SHJ_HS_NP(relation_t *relR, relation_t *relS, int nthreads) {
     param.fetcher = type_HS_NP_Fetcher;//new HS_NP_Fetcher(nthreads, relR, relS);
     param.shuffler = new HSShuffler(nthreads, relR, relS);
     param.joiner = type_SHJJoiner;//new SHJJoiner();
+
+
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE_HS)
     param = finishing(nthreads, param);
     return param.joinresult;
@@ -252,6 +260,7 @@ result_t *PMJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads) {
     param.fetcher = type_JM_NP_Fetcher;//new JM_NP_Fetcher(nthreads, relR, relS);
     //no shuffler is required for JM mode.
     param.joiner = type_PMJJoiner;//new PMJJoiner(relR->num_tuples, relS->num_tuples / nthreads, nthreads);
+
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_NOSHUFFLE)
     param = finishing(nthreads, param);
     return param.joinresult;
@@ -264,6 +273,8 @@ result_t *PMJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads) {
     param.fetcher = type_JB_NP_Fetcher;//new JM_NP_Fetcher(nthreads, relR, relS);
     param.shuffler = new HashShuffler(nthreads, relR, relS);
     param.joiner = type_PMJJoiner;//new PMJJoiner(relR->num_tuples, relS->num_tuples / nthreads, nthreads);
+
+
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE)
     param = finishing(nthreads, param);
     return param.joinresult;
@@ -288,6 +299,8 @@ result_t *PMJ_HS_NP(relation_t *relR, relation_t *relS, int nthreads) {
     param.fetcher = type_PMJ_HS_NP_Fetcher;//new JM_NP_Fetcher(nthreads, relR, relS);
     param.shuffler = new HSShuffler(nthreads, relR, relS);
     param.joiner = type_PMJJoiner;//new PMJJoiner(relR->num_tuples, relS->num_tuples / nthreads, nthreads);
+
+
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE_PMJHS)
     param = finishing(nthreads, param);
     return param.joinresult;
@@ -302,6 +315,9 @@ RPJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads) {
     param.fetcher = type_JM_NP_Fetcher;//new JM_NP_Fetcher(nthreads, relR, relS);
     //no shuffler is required for JM mode.
     param.joiner = type_RippleJoiner;//new RippleJoiner(relR, relS, nthreads);
+
+
+
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_NOSHUFFLE)
     param = finishing(nthreads, param);
     return param.joinresult;
@@ -315,6 +331,7 @@ RPJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads) {
     param.fetcher = type_JB_NP_Fetcher;//new JB_NP_Fetcher(nthreads, relR, relS);
     param.shuffler = new HashShuffler(nthreads, relR, relS);
     param.joiner = type_RippleJoiner;// new RippleJoiner(relR, relS, nthreads);
+
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE)
     param = finishing(nthreads, param);
     return param.joinresult;
@@ -328,6 +345,9 @@ RPJ_JBCR_NP(relation_t *relR, relation_t *relS, int nthreads) {
     param.fetcher = type_JB_NP_Fetcher;//new JB_NP_Fetcher(nthreads, relR, relS);
     param.shuffler = new ContRandShuffler(nthreads, relR, relS);
     param.joiner = type_RippleJoiner;// new RippleJoiner(relR, relS, nthreads);
+
+
+
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE)
     param = finishing(nthreads, param);
     return param.joinresult;
@@ -340,6 +360,8 @@ result_t *RPJ_HS_NP(relation_t *relR, relation_t *relS, int nthreads) {
     param.fetcher = type_HS_NP_Fetcher;//new HS_NP_Fetcher(nthreads, relR, relS);
     param.shuffler = new HSShuffler(nthreads, relR, relS);
     param.joiner = type_RippleJoiner;//new RippleJoiner(relR, relS, nthreads);
+
+
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE_HS)
     param = finishing(nthreads, param);
     return param.joinresult;

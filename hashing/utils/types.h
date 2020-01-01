@@ -15,6 +15,7 @@
 #include <vector>
 #include <iostream>
 #include <sstream>
+
 using namespace std;
 
 /**
@@ -64,7 +65,7 @@ typedef struct joinconfig_t joinconfig_t;
  */
 struct tuple_t {
 //    value_t *payload;
-    value_t payload;
+    value_t payloadID;//TODO: make sure payload is simply the id of the tuple.
     intkey_t key;//little end, lowest is the most significant bit.
 };
 
@@ -74,13 +75,14 @@ struct tuple_t {
  */
 struct relation_t {
     tuple_t *tuples;
+    relation_payload_t *payload;
     uint64_t num_tuples;
 };
 
 // add a new structure to save real payload, let original payload be index of this struct
 struct relation_payload_t {
+    time_t *ts;//add timestamp for each tuple in the relation.
     table_t *rows;
-//    vector<string> *rows;
     uint64_t num_tuples;
 };
 

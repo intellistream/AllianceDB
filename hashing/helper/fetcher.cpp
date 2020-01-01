@@ -25,24 +25,24 @@ fetch_t::fetch_t() {}
  * @return
  */
 fetch_t *_next_tuple(t_state *state, relation_t *relR, relation_t *relS) {
-    if (state->flag) {
+    if (state->IsTupleR) {
         if (state->start_index_R < state->end_index_R) {
             state->fetch.tuple = &relR->tuples[state->start_index_R++];
-            state->fetch.ISTuple_R = state->flag;
-            (state->flag) ^= true;//flip flag
+            state->fetch.ISTuple_R = state->IsTupleR;
+            (state->IsTupleR) ^= true;//flip flag
             return &(state->fetch);
         } else {
-            (state->flag) ^= true;//flip flag
+            (state->IsTupleR) ^= true;//flip flag
             return nullptr;
         }
     } else {
         if (state->start_index_S < state->end_index_S) {
             state->fetch.tuple = &relS->tuples[state->start_index_S++];
-            state->fetch.ISTuple_R = state->flag;
-            (state->flag) ^= true;//flip flag
+            state->fetch.ISTuple_R = state->IsTupleR;
+            (state->IsTupleR) ^= true;//flip flag
             return &(state->fetch);
         } else {
-            state->flag ^= true;//flip flag
+            state->IsTupleR ^= true;//flip flag
             return nullptr;
         }
     }
@@ -56,46 +56,86 @@ fetch_t *_next_tuple(t_state *state, relation_t *relR, relation_t *relS) {
  * @return
  */
 fetch_t *_next_tuple_CP(t_state *state, relation_t *relR, relation_t *relS) {
-    if (state->flag) {
+    if (state->IsTupleR) {
         if (state->start_index_R < state->end_index_R) {
             state->fetch.tuple = new tuple_t();
-            state->fetch.tuple->payload = relR->tuples[state->start_index_R].payload;
+            state->fetch.tuple->payloadID = relR->tuples[state->start_index_R].payloadID;
             state->fetch.tuple->key = relR->tuples[state->start_index_R++].key;
-            state->fetch.ISTuple_R = state->flag;
-            (state->flag) ^= true;//flip flag
+            state->fetch.ISTuple_R = state->IsTupleR;
+            (state->IsTupleR) ^= true;//flip flag
             return &(state->fetch);
         } else {
-            (state->flag) ^= true;//flip flag
+            (state->IsTupleR) ^= true;//flip flag
             return nullptr;
         }
     } else {
         if (state->start_index_S < state->end_index_S) {
             state->fetch.tuple = new tuple_t();
-            state->fetch.tuple->payload = relS->tuples[state->start_index_S].payload;
+            state->fetch.tuple->payloadID = relS->tuples[state->start_index_S].payloadID;
             state->fetch.tuple->key = relS->tuples[state->start_index_S++].key;
-            state->fetch.ISTuple_R = state->flag;
-            (state->flag) ^= true;//flip flag
+            state->fetch.ISTuple_R = state->IsTupleR;
+            (state->IsTupleR) ^= true;//flip flag
             return &(state->fetch);
         } else {
-            state->flag ^= true;//flip flag
+            state->IsTupleR ^= true;//flip flag
             return nullptr;
         }
     }
 }
 
 fetch_t *JM_NP_Fetcher::next_tuple(int tid) {
-    return _next_tuple(state, relR, relS);
+
+    fetch_t *rt = _next_tuple(state, relR, relS);
+
+    if (rt != nullptr) {
+        if (rt->ISTuple_R) {
+            auto timestamp = relR->payload[rt->tuple->payloadID].ts;
+            this->Rproceed(timestamp);
+        } else {
+            auto timestamp = relS->payload[rt->tuple->payloadID].ts;
+            this->Sproceed(timestamp);
+        }
+        return rt;
+    }
+
+    return nullptr;
 }
 
 fetch_t *JM_P_Fetcher::next_tuple(int tid) {
-    return _next_tuple_CP(state, relR, relS);
+    fetch_t *rt = _next_tuple_CP(state, relR, relS);
+
+    if (rt != nullptr) {
+        if (rt->ISTuple_R) {
+            auto timestamp = relR->payload[rt->tuple->payloadID].ts;
+            this->Rproceed(timestamp);
+        } else {
+            auto timestamp = relS->payload[rt->tuple->payloadID].ts;
+            this->Sproceed(timestamp);
+        }
+        return rt;
+    }
+
+    return nullptr;
 }
 
 fetch_t *JB_NP_Fetcher::next_tuple(int tid) {
-    return _next_tuple(state, relR, relS);
+    fetch_t *rt = _next_tuple(state, relR, relS);
+
+    if (rt != nullptr) {
+        if (rt->ISTuple_R) {
+            auto timestamp = relR->payload[rt->tuple->payloadID].ts;
+            this->Rproceed(timestamp);
+        } else {
+            auto timestamp = relS->payload[rt->tuple->payloadID].ts;
+            this->Sproceed(timestamp);
+        }
+        return rt;
+    }
+
+    return nullptr;
 }
 
-fetch_t *PMJ_HS_NP_Fetcher::next_tuple(int tid) {
+fetch_t *_next_tuple_PMJ_HS(int tid, t_state *state, relation_t *relR, relation_t *relS) {
     if (tid == 0) {//thread 0 fetches R.
         if (state->start_index_R + progressive_step_tupleR < state->end_index_R) {
             state->fetch.fat_tuple_size = progressive_step_tupleR;
@@ -124,21 +164,32 @@ fetch_t *PMJ_HS_NP_Fetcher::next_tuple(int tid) {
             return nullptr;
         }
         state->start_index_S += state->fetch.fat_tuple_size;
-//
-//        state->fetch.fat_tuple = new tuple_t *[progressive_step_tupleR];
-//        for (auto i = 0; i < progressive_step_tupleS; i++) {
-//            if (state->start_index_S < state->end_index_S) {
-//                state->fetch.fat_tuple[i] = &relS->tuples[state->start_index_S++];
-//            } else {
-//                state->fetch.fat_tuple[i] = nullptr;
-//            }
-//        }
+
         state->fetch.ISTuple_R = false;
         return &(state->fetch);
     }
 }
 
-fetch_t *HS_NP_Fetcher::next_tuple(int tid) {
+
+fetch_t *PMJ_HS_NP_Fetcher::next_tuple(int tid) {
+    fetch_t *rt = _next_tuple_PMJ_HS(tid, state, relR, relS);
+
+    if (rt != nullptr) {
+        if (rt->ISTuple_R) {
+            auto timestamp = relR->payload[rt->tuple->payloadID].ts;
+            this->Rproceed(timestamp);
+        } else {
+            auto timestamp = relS->payload[rt->tuple->payloadID].ts;
+            this->Sproceed(timestamp);
+        }
+        return rt;
+    }
+
+    return nullptr;
+
+}
+
+fetch_t *_next_tuple_HS(int tid, t_state *state, relation_t *relR, relation_t *relS) {
     if (tid == 0) {//thread 0 fetches R.
         if (state->start_index_R < state->end_index_R) {
             state->fetch.tuple = &relR->tuples[state->start_index_R++];
@@ -156,6 +207,24 @@ fetch_t *HS_NP_Fetcher::next_tuple(int tid) {
             return nullptr;
         }
     }
+}
+
+
+fetch_t *HS_NP_Fetcher::next_tuple(int tid) {
+    fetch_t *rt = _next_tuple_HS(tid, state, relR, relS);
+
+    if (rt != nullptr) {
+        if (rt->ISTuple_R) {
+            auto timestamp = relR->payload[rt->tuple->payloadID].ts;
+            this->Rproceed(timestamp);
+        } else {
+            auto timestamp = relS->payload[rt->tuple->payloadID].ts;
+            this->Sproceed(timestamp);
+        }
+        return rt;
+    }
+
+    return nullptr;
 }
 
 

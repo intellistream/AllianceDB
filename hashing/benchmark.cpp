@@ -75,19 +75,20 @@ benchmark(const param_t cmd_params) {
     relation_t relR;
     relation_t relS;
 
-    relation_payload_t relPlR;
-    relation_payload_t relPlS;
+    relR.payload = new relation_payload_t();
+    relS.payload = new relation_payload_t();
 
     result_t *results;
-
     // TODO: generate dataset
     /* create relation R */
-    createRelation(&relR, &relPlR, cmd_params.rkey, cmd_params, cmd_params.loadfileR, cmd_params.r_size, cmd_params.r_seed);
+    createRelation(&relR, relR.payload, cmd_params.rkey, cmd_params, cmd_params.loadfileR, cmd_params.r_size,
+                   cmd_params.r_seed);
     DEBUGMSG("relR [aligned:%d]: %s", is_aligned(relR.tuples, CACHE_LINE_SIZE),
              print_relation(relR.tuples, cmd_params.r_size).c_str())
 
     /* create relation S */
-    createRelation(&relS, &relPlS, cmd_params.skey, cmd_params, cmd_params.loadfileS, cmd_params.s_size, cmd_params.s_seed);
+    createRelation(&relS, relS.payload, cmd_params.skey, cmd_params, cmd_params.loadfileS, cmd_params.s_size,
+                   cmd_params.s_seed);
     DEBUGMSG("relS [aligned:%d]: %s", is_aligned(relS.tuples, CACHE_LINE_SIZE),
              print_relation(relS.tuples, cmd_params.s_size).c_str())
 
@@ -103,8 +104,8 @@ benchmark(const param_t cmd_params) {
     /* clean-up */
     delete_relation(&relR);
     delete_relation(&relS);
-    delete_relation_payload(&relPlR);
-    delete_relation_payload(&relPlS);
+    delete_relation_payload(relR.payload);
+    delete_relation_payload(relS.payload);
     free(results);
 
 //    results = join_from_file(cmd_params, cmd_params.loadfileR, cmd_params.loadfileS,

@@ -8,6 +8,7 @@
 #include "../utils/types.h"
 #include "../joins/common_functions.h"
 #include <stdio.h>
+#include <unistd.h>
 
 enum fetcher {
     type_HS_NP_Fetcher, type_JM_NP_Fetcher, type_JB_NP_Fetcher, type_PMJ_HS_NP_Fetcher
@@ -37,7 +38,7 @@ struct t_state {
     int start_index_S = 0;//configure pointer of start reading point.
     int end_index_S = 0;//configure pointer of end reading point.
     //read R/S alternatively.
-    bool flag;
+    bool IsTupleR;
     fetch_t fetch;
 };
 
@@ -48,16 +49,37 @@ public:
     relation_t *relR;//input relation
     relation_t *relS;//input relation
 
+    time_t *RdataTime;
+    time_t *SdataTime;
+    time_t fetchStartTime = -1;
+
     t_state *state;
+
+
+    void Rproceed(time_t *time) {
+        if (fetchStartTime == -1) {
+            fetchStartTime = curtick();
+        } else {
+            sleep((curtick() - fetchStartTime) - (*time - *RdataTime));
+        }
+    }
+
+    void Sproceed(time_t *time) {
+        if (fetchStartTime == -1) {
+            fetchStartTime = curtick();
+        } else {
+            sleep((curtick() - fetchStartTime) - (*time - *SdataTime));
+        }
+    }
 
     virtual bool finish() = 0;
 
     baseFetcher(relation_t *relR, relation_t *relS) {
         this->relR = relR;
         this->relS = relS;
+        RdataTime = relR->payload->ts;
+        SdataTime = relS->payload->ts;
     }
-
-
 };
 
 inline bool last_thread(int i, int nthreads) {
@@ -84,7 +106,7 @@ public:
 
         //let first and last thread to read two streams.
         if (i == 0) {
-            state->flag = true;
+            state->IsTupleR = true;
             /* replicate relR to thread 0 */
             state->start_index_R = 0;
             state->end_index_R = relR->num_tuples;
@@ -120,7 +142,7 @@ public:
 
         //let first and last thread to read two streams.
         if (i == 0) {
-            state->flag = true;
+            state->IsTupleR = true;
             /* replicate relR to thread 0 */
             state->start_index_R = 0;
             state->end_index_R = relR->num_tuples;
@@ -158,7 +180,7 @@ public:
         int numSthr = relS->num_tuples / nthreads;//replicate R, partition S.
 
 
-        state->flag = true;
+        state->IsTupleR = true;
         /* replicate relR for next thread */
         state->start_index_R = 0;
         state->end_index_R = relR->num_tuples;
@@ -195,7 +217,7 @@ public:
 
         int numSthr = relS->num_tuples / nthreads;//replicate R, partition S.
 
-        state->flag = true;
+        state->IsTupleR = true;
         /* replicate relR for next thread */
         state->start_index_R = 0;
         state->end_index_R = relR->num_tuples;
@@ -206,8 +228,6 @@ public:
 
         DEBUGMSG("TID:%d, R: start_index:%d, end_index:%d\n", i, state->start_index_R, state->end_index_R);
         DEBUGMSG("TID:%d, S: start_index:%d, end_index:%d\n", i, state->start_index_S, state->end_index_S);
-
-
     }
 };
 
@@ -226,7 +246,7 @@ public:
         int numRthr = relR->num_tuples / nthreads;// partition R,
         int numSthr = relS->num_tuples / nthreads;// partition S.
 
-        state->flag = true;
+        state->IsTupleR = true;
         /* assign part of the relR for next thread */
         state->start_index_R = numRthr * i;
         state->end_index_R = (last_thread(i, nthreads)) ? relR->num_tuples : numRthr * (i + 1);

@@ -40,11 +40,13 @@ struct arg_t {
 #ifndef NO_TIMING
     T_TIMER *timer;
 #endif
+
 };
 
 struct t_param {
     int64_t result;
     result_t *joinresult;
+
 
     pthread_attr_t *attr;
     pthread_barrier_t *barrier;
@@ -67,6 +69,7 @@ struct t_param {
             tid[i] = -1;
         }
     }
+
 
 };
 

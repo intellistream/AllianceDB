@@ -25,7 +25,7 @@ generate_rand_tuples(int num) {
 
     for (i = 0; i < num; i++) {
         rel.tuples[i].key = (i + 1);
-        rel.tuples[i].payload = i;
+        rel.tuples[i].payloadID = i;
     }
 
     /* randomly shuffle elements */

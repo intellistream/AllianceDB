@@ -30,6 +30,7 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+
 using namespace std;
 
 #ifndef BARRIER_ARRIVE
@@ -129,7 +130,7 @@ random_unique_gen(relation_t *rel) {
 
     for (i = 0; i < rel->num_tuples; i++) {
         rel->tuples[i].key = (i + 1);
-        rel->tuples[i].payload = i;
+        rel->tuples[i].payloadID = i;
     }
 
     /* randomly shuffle elements */
@@ -168,7 +169,7 @@ random_unique_gen_thread(void *args) {
 
     for (i = 0; i < rel->num_tuples; i++) {
         rel->tuples[i].key = firstkey;
-        rel->tuples[i].payload = randstart + i;
+        rel->tuples[i].payloadID = randstart + i;
 
         if (firstkey == maxid)
             firstkey = 0;
@@ -240,7 +241,7 @@ write_relation(relation_t *rel, char *filename) {
     fprintf(fp, "#KEY, VAL\n");
 
     for (i = 0; i < rel->num_tuples; i++) {
-        fprintf(fp, "%d %d\n", rel->tuples[i].key, rel->tuples[i].payload);
+        fprintf(fp, "%d %d\n", rel->tuples[i].key, rel->tuples[i].payloadID);
     }
 
     fclose(fp);
@@ -256,7 +257,7 @@ random_gen(relation_t *rel, const int64_t maxid) {
 
     for (i = 0; i < rel->num_tuples; i++) {
         rel->tuples[i].key = RAND_RANGE(maxid);
-        rel->tuples[i].payload = i;
+        rel->tuples[i].payloadID = i;//payload is simply the id of the tuple.
     }
 }
 
@@ -381,7 +382,8 @@ parallel_create_relation(relation_t *relation, uint64_t num_tuples,
 }
 
 int
-load_relation(relation_t *relation, relation_payload_t *relation_payload, int32_t keyby, char *filename, uint64_t num_tuples) {
+load_relation(relation_t *relation, relation_payload_t *relation_payload, int32_t keyby, char *filename,
+              uint64_t num_tuples) {
     relation->num_tuples = num_tuples;
 
     /* we need aligned allocation of items */
@@ -597,18 +599,18 @@ delete_relation_payload(relation_payload_t *relPl) {
 }
 
 // for string delimiter
-vector<string> split (string s, string delimiter) {
+vector<string> split(string s, string delimiter) {
     size_t pos_start = 0, pos_end, delim_len = delimiter.length();
     string token;
     vector<string> res;
 
-    while ((pos_end = s.find (delimiter, pos_start)) != string::npos) {
-        token = s.substr (pos_start, pos_end - pos_start);
+    while ((pos_end = s.find(delimiter, pos_start)) != string::npos) {
+        token = s.substr(pos_start, pos_end - pos_start);
         pos_start = pos_end + delim_len;
-        res.push_back (token);
+        res.push_back(token);
     }
 
-    res.push_back (s.substr (pos_start));
+    res.push_back(s.substr(pos_start));
     return res;
 }
 
@@ -642,7 +644,7 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, char *f
         }
     } while (c != '\n');
 
-    char* line;
+    char *line;
     size_t len;
     ssize_t read;
 
@@ -685,7 +687,7 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, char *f
         }
 
         rel->tuples[i].key = key;
-        rel->tuples[i].payload = payload;
+        rel->tuples[i].payloadID = payload;
         relPl->rows[i] = row;
         i++;
     }
