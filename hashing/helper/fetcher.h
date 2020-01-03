@@ -55,7 +55,23 @@ public:
 
     t_state *state;
 
+    time_t RtimeGap(time_t *time) {
+        if (fetchStartTime == -1) {
+            fetchStartTime = curtick();
+            return 0;
+        } else {
+            return (*time - *RdataTime) - (curtick() - fetchStartTime);//if it's positive, the tuple is not ready yet.
+        }
+    }
 
+    time_t StimeGap(time_t *time) {
+        if (fetchStartTime == -1) {
+            fetchStartTime = curtick();
+            return 0;
+        } else {
+            return (*time - *SdataTime) - (curtick() - fetchStartTime);//if it's positive, the tuple is not ready yet.
+        }
+    }
     void Rproceed(time_t *time) {
         if (fetchStartTime == -1) {
             fetchStartTime = curtick();

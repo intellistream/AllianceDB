@@ -20,8 +20,6 @@ struct T_TIMER {
     uint64_t debuildtimer_pre = 0, debuildtimer = 0;//buildtimer is accumulated.
     uint64_t sorttimer_pre = 0, sorttimer = 0;//accumulate.
     std::vector<uint64_t> record;
-    time_t *RdataTime;
-    time_t *SdataTime;
 #endif
 };
 

@@ -84,38 +84,74 @@ fetch_t *_next_tuple_CP(t_state *state, relation_t *relR, relation_t *relS) {
 }
 
 fetch_t *JM_NP_Fetcher::next_tuple(int tid) {
+    time_t min_gap = INT32_MAX;
+    tuple_t *readR = nullptr;
+    tuple_t *readS;
 
-    fetch_t *rt = _next_tuple(state, relR, relS);
-
-    if (rt != nullptr) {
-        if (rt->ISTuple_R) {
-            auto timestamp = relR->payload[rt->tuple->payloadID].ts;
-            this->Rproceed(timestamp);
+    //try to read R first.
+    if (state->start_index_R < state->end_index_R) {
+        readR = &relR->tuples[state->start_index_R];
+        //check the timestamp whether the tuple is ``ready" to be fetched.
+        auto timestamp = relR->payload[state->fetch.tuple->payloadID].ts;
+        auto timegap = RtimeGap(timestamp);
+        if (timegap <= 0) {//if it's negative means our fetch is too slow.
+            state->fetch.tuple = readR;
+            state->fetch.ISTuple_R = true;
+            state->start_index_R++;
+            return &(state->fetch);
         } else {
-            auto timestamp = relS->payload[rt->tuple->payloadID].ts;
-            this->Sproceed(timestamp);
+            min_gap = timegap;
         }
-        return rt;
     }
 
+    //try to read S then.
+    if (state->start_index_S < state->end_index_S) {
+        readS = &relS->tuples[state->start_index_S];
+        //check the timestamp whether the tuple is ``ready" to be fetched.
+        auto timestamp = relS->payload[state->fetch.tuple->payloadID].ts;
+        auto timegap = StimeGap(timestamp);
+        if (timegap <= 0) {//if it's negative means our fetch is too slow.
+            state->fetch.tuple = readS;
+            state->fetch.ISTuple_R = false;
+            state->start_index_S++;
+            return &(state->fetch);
+        } else {  //return the nearest tuple.
+            if (min_gap > timegap) {//S is nearest.
+                min_gap = timegap;
+                sleep(min_gap);
+                state->fetch.tuple = readS;
+                state->fetch.ISTuple_R = false;
+                state->start_index_S++;
+                return &(state->fetch);
+            } else if (readR != nullptr) {//R is nearest.
+                sleep(min_gap);
+                state->fetch.tuple = readR;
+                state->fetch.ISTuple_R = true;
+                state->start_index_R++;
+                return &(state->fetch);
+            }
+        }
+    }
     return nullptr;
+//
+//    fetch_t *rt = _next_tuple(state, relR, relS);
+//
+//    if (rt != nullptr) {
+//        if (rt->ISTuple_R) {
+//            auto timestamp = relR->payload[rt->tuple->payloadID].ts;
+//            this->Rproceed(timestamp);
+//        } else {
+//            auto timestamp = relS->payload[rt->tuple->payloadID].ts;
+//            this->Sproceed(timestamp);
+//        }
+//        return rt;
+//    }
+//
+//    return nullptr;
 }
 
 fetch_t *JM_P_Fetcher::next_tuple(int tid) {
-    fetch_t *rt = _next_tuple_CP(state, relR, relS);
-
-    if (rt != nullptr) {
-        if (rt->ISTuple_R) {
-            auto timestamp = relR->payload[rt->tuple->payloadID].ts;
-            this->Rproceed(timestamp);
-        } else {
-            auto timestamp = relS->payload[rt->tuple->payloadID].ts;
-            this->Sproceed(timestamp);
-        }
-        return rt;
-    }
-
-    return nullptr;
+//not implemented.
 }
 
 fetch_t *JB_NP_Fetcher::next_tuple(int tid) {
@@ -189,6 +225,14 @@ fetch_t *PMJ_HS_NP_Fetcher::next_tuple(int tid) {
 
 }
 
+/**
+ *
+ * @param tid
+ * @param state
+ * @param relR
+ * @param relS
+ * @return
+ */
 fetch_t *_next_tuple_HS(int tid, t_state *state, relation_t *relR, relation_t *relS) {
     if (tid == 0) {//thread 0 fetches R.
         if (state->start_index_R < state->end_index_R) {
@@ -209,7 +253,11 @@ fetch_t *_next_tuple_HS(int tid, t_state *state, relation_t *relR, relation_t *r
     }
 }
 
-
+/**
+ * actually this tid is not needed. We put it here for program convenience only.
+ * @param tid
+ * @return
+ */
 fetch_t *HS_NP_Fetcher::next_tuple(int tid) {
     fetch_t *rt = _next_tuple_HS(tid, state, relR, relS);
 
