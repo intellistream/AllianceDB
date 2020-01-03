@@ -33,23 +33,20 @@ public:
     virtual void join(int32_t tid, tuple_t *tuple, bool tuple_R, int64_t *matches,
                       void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid) = 0;
 
-    virtual void join(int32_t tid, tuple_t *fat_tuple, int fat_tuple_size, bool IStuple_R, int64_t *matches,
-                      void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid) {
-        //only supported by PMJ.
-    }
-
     virtual void clean(int32_t tid, tuple_t *tuple, bool cleanR) = 0;
-
-    virtual void clean(int32_t tid, tuple_t *fat_tuple, int fat_tuple_size, bool cleanR) {
-        //only used in PMJ.
-    }
 
     virtual long
     merge(int32_t tid, int64_t *matches, void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),
           void *pVoid) {
         //do nothing.
     }
-
+    virtual void clean(int32_t tid, tuple_t *fat_tuple, int fat_tuple_size, bool cleanR) {
+        //only used in PMJ.
+    }
+    virtual void join(int32_t tid, tuple_t *fat_tuple, int fat_tuple_size, bool IStuple_R, int64_t *matches,
+                      void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid) {
+        //only supported by PMJ.
+    }
 
 //every joiner has its own timer --> this completely avoids interference.
 //dump the measurement into file and analysis the results when program exit.
