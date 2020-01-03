@@ -236,6 +236,7 @@ cpu-mapping.txt
 #define _GNU_SOURCE
 #endif
 
+#include <zconf.h>
 #include "benchmark.h"
 
 /* command line handling functions */

@@ -20,11 +20,13 @@
 #include "joins/parallel_radix_join.h"  /* parallel radix joins: RJ_st, PRO, PRH, PRHO */
 #include "joins/onlinejoins.h"  /* single_thread onlinejoins: SHJ_st*/
 #include "utils/generator.h"            /* create_relation_xk */
-
 #include "utils/perf_counters.h" /* PCM_x */
 //#include "utils/affinity.h"      /* pthread_attr_setaffinity_np & sched_setaffinity */ only for MAC
 #include "utils/config.h"     /* autoconf header */
 #include "utils/params.h"
+
+#include <chrono>
+using namespace std::chrono;
 
 #ifdef JOIN_RESULT_MATERIALIZE
 #include "tuple_buffer.h"       /* for materialization */

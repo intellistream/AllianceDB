@@ -84,7 +84,7 @@ fetch_t *_next_tuple_CP(t_state *state, relation_t *relR, relation_t *relS) {
 }
 
 fetch_t *JM_NP_Fetcher::next_tuple(int tid) {
-    time_t min_gap = INT32_MAX;
+    milliseconds min_gap = (milliseconds) INT32_MAX;
     tuple_t *readR = nullptr;
     tuple_t *readS;
 
@@ -94,7 +94,7 @@ fetch_t *JM_NP_Fetcher::next_tuple(int tid) {
         //check the timestamp whether the tuple is ``ready" to be fetched.
         auto timestamp = relR->payload[state->fetch.tuple->payloadID].ts;
         auto timegap = RtimeGap(timestamp);
-        if (timegap <= 0) {//if it's negative means our fetch is too slow.
+        if (timegap.count() <= 0) {//if it's negative means our fetch is too slow.
             state->fetch.tuple = readR;
             state->fetch.ISTuple_R = true;
             state->start_index_R++;
@@ -110,7 +110,7 @@ fetch_t *JM_NP_Fetcher::next_tuple(int tid) {
         //check the timestamp whether the tuple is ``ready" to be fetched.
         auto timestamp = relS->payload[state->fetch.tuple->payloadID].ts;
         auto timegap = StimeGap(timestamp);
-        if (timegap <= 0) {//if it's negative means our fetch is too slow.
+        if (timegap.count() <= 0) {//if it's negative means our fetch is too slow.
             state->fetch.tuple = readS;
             state->fetch.ISTuple_R = false;
             state->start_index_S++;
@@ -118,13 +118,15 @@ fetch_t *JM_NP_Fetcher::next_tuple(int tid) {
         } else {  //return the nearest tuple.
             if (min_gap > timegap) {//S is nearest.
                 min_gap = timegap;
-                sleep(min_gap);
+//                sleep(min_gap.count());
+                this_thread::sleep_for(min_gap);
                 state->fetch.tuple = readS;
                 state->fetch.ISTuple_R = false;
                 state->start_index_S++;
                 return &(state->fetch);
             } else if (readR != nullptr) {//R is nearest.
-                sleep(min_gap);
+//                sleep(min_gap.count());
+                this_thread::sleep_for(min_gap);
                 state->fetch.tuple = readR;
                 state->fetch.ISTuple_R = true;
                 state->start_index_R++;

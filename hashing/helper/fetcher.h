@@ -9,6 +9,10 @@
 #include "../joins/common_functions.h"
 #include <stdio.h>
 #include <unistd.h>
+#include <chrono>
+#include <thread>
+
+using namespace std::chrono;
 
 enum fetcher {
     type_HS_NP_Fetcher, type_JM_NP_Fetcher, type_JB_NP_Fetcher, type_PMJ_HS_NP_Fetcher
@@ -49,42 +53,42 @@ public:
     relation_t *relR;//input relation
     relation_t *relS;//input relation
 
-    time_t *RdataTime;
-    time_t *SdataTime;
-    time_t fetchStartTime = -1;
+    milliseconds *RdataTime;
+    milliseconds *SdataTime;
+    milliseconds fetchStartTime = (milliseconds)-1;
 
     t_state *state;
 
-    time_t RtimeGap(time_t *time) {
-        if (fetchStartTime == -1) {
-            fetchStartTime = curtick();
-            return 0;
+    milliseconds RtimeGap(milliseconds *time) {
+        if (fetchStartTime == (milliseconds) -1) {
+            fetchStartTime = (milliseconds) curtick();
+            return (milliseconds)0;
         } else {
-            return (*time - *RdataTime) - (curtick() - fetchStartTime);//if it's positive, the tuple is not ready yet.
+            return (*time - *RdataTime) - ((milliseconds) curtick() - fetchStartTime);//if it's positive, the tuple is not ready yet.
         }
     }
 
-    time_t StimeGap(time_t *time) {
-        if (fetchStartTime == -1) {
-            fetchStartTime = curtick();
-            return 0;
+    milliseconds StimeGap(milliseconds *time) {
+        if (fetchStartTime == (milliseconds) -1) {
+            fetchStartTime = (milliseconds) curtick();
+            return (milliseconds) 0;
         } else {
-            return (*time - *SdataTime) - (curtick() - fetchStartTime);//if it's positive, the tuple is not ready yet.
+            return (*time - *SdataTime) - ((milliseconds) curtick() - fetchStartTime);//if it's positive, the tuple is not ready yet.
         }
     }
-    void Rproceed(time_t *time) {
-        if (fetchStartTime == -1) {
-            fetchStartTime = curtick();
+    void Rproceed(milliseconds *time) {
+        if (fetchStartTime == (milliseconds) -1) {
+            fetchStartTime = (milliseconds) curtick();
         } else {
-            sleep((curtick() - fetchStartTime) - (*time - *RdataTime));
+            sleep((((milliseconds) curtick() - fetchStartTime) - (*time - *RdataTime)).count());
         }
     }
 
-    void Sproceed(time_t *time) {
-        if (fetchStartTime == -1) {
-            fetchStartTime = curtick();
+    void Sproceed(milliseconds *time) {
+        if (fetchStartTime == (milliseconds) -1) {
+            fetchStartTime = (milliseconds) curtick();
         } else {
-            sleep((curtick() - fetchStartTime) - (*time - *SdataTime));
+            sleep((((milliseconds) curtick() - fetchStartTime) - (*time - *SdataTime)).count());
         }
     }
 

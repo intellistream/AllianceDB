@@ -15,6 +15,7 @@
 #include <vector>
 #include <iostream>
 #include <sstream>
+#include <chrono>
 
 using namespace std;
 
@@ -81,7 +82,8 @@ struct relation_t {
 
 // add a new structure to save real payload, let original payload be index of this struct
 struct relation_payload_t {
-    time_t *ts;//add timestamp for each tuple in the relation.
+//    time_t *ts;//add timestamp for each tuple in the relation.
+    std::chrono::milliseconds *ts;//add timestamp for each tuple in the relation.
     table_t *rows;
     uint64_t num_tuples;
 };

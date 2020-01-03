@@ -30,8 +30,10 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <chrono>
 
 using namespace std;
+using namespace std::chrono;
 
 #ifndef BARRIER_ARRIVE
 /** barrier wait macro */
@@ -658,7 +660,7 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t
     uint64_t ntuples = rel->num_tuples;
     intkey_t key;
     table_t row = table_t();
-    time_t timestamp = 0;
+    milliseconds timestamp = (milliseconds) 0;
 
     // add a index field, here payload is index field, row is real payload
     int32_t payload = 0;
@@ -668,23 +670,23 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t
     int i = 0;
 
     while ((read = getline(&line, &len, fp)) != -1 && i < ntuples) {
-//        printf("Retrieved line of length %zu:\n", read);
-//        printf("%s", line);
+        printf("Retrieved line of length %zu:\n", read);
+        printf("%s", line);
         if (fmtcomma) {
             key = stoi(split(line, ",")[keyby]);
             strcpy(row.value, line);
             payload = i;
             if (tsKey != 0) {
-                timestamp = (time_t) stol(split(line, ",")[tsKey]);
-                printf("%d \n", timestamp);
+                timestamp = (milliseconds) stol(split(line, ",")[tsKey]);
+                printf("%lld \n", timestamp);
             }
         } else if (fmtbar) {
             key = stoi(split(line, "|")[keyby]);
             strcpy(row.value, line);
             payload = i;
             if (tsKey != 0) {
-                timestamp = (time_t) stol(split(line, ",")[tsKey]);
-                printf("%d \n", timestamp);
+                timestamp = (milliseconds) stol(split(line, "|")[tsKey]);
+                printf("%lld \n", timestamp);
             }
         } else {
             printf("error!!\n");
