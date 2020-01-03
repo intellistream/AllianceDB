@@ -38,17 +38,18 @@ public:
         //only supported by PMJ.
     }
 
+    virtual void clean(int32_t tid, tuple_t *tuple, bool cleanR) = 0;
+
+    virtual void clean(int32_t tid, tuple_t *fat_tuple, int fat_tuple_size, bool cleanR) {
+        //only used in PMJ.
+    }
+
     virtual long
-    cleanup(int32_t tid, int64_t *matches, void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),
-            void *pVoid) {
+    merge(int32_t tid, int64_t *matches, void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),
+          void *pVoid) {
         //do nothing.
     }
 
-    virtual void clean(int32_t tid, tuple_t *tuple, bool cleanR) = 0;
-
-    virtual void clean(int32_t tid, tuple_t * fat_tuple, int fat_tuple_size, bool cleanR) {
-        //only used in PMJ.
-    }
 
 //every joiner has its own timer --> this completely avoids interference.
 //dump the measurement into file and analysis the results when program exit.
@@ -136,14 +137,14 @@ public:
               void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid);
 
     long
-    cleanup(int32_t tid, int64_t *matches, void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),
-            void *pVoid) override;
+    merge(int32_t tid, int64_t *matches, void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),
+          void *pVoid) override;
 
     void clean(int32_t tid, tuple_t *tuple, bool cleanR);
 
-    void clean(int32_t tid, tuple_t *fat_tuple, int  fat_tuple_size, bool cleanR);
+    void clean(int32_t tid, tuple_t *fat_tuple, int fat_tuple_size, bool cleanR);
 
-    void keep_tuple_single(tuple_t *tmp_rel, const int  outerPtr, tuple_t *tuple, int fat_tuple_size);
+    void keep_tuple_single(tuple_t *tmp_rel, const int outerPtr, tuple_t *tuple, int fat_tuple_size);
 
     void join_tuple_single(int32_t tid, tuple_t *tmp_rel, int *outerPtr, tuple_t *tuple, int fat_tuple_size,
                            int64_t *matches, T_TIMER *timer, t_pmj *pPmj, bool IStuple_R);

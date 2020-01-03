@@ -549,8 +549,8 @@ clean(int32_t tid, tuple_t *fat_tuple, int fat_tuple_size, bool cleanR) {
 
 
 long PMJJoiner::
-cleanup(int32_t tid, int64_t *matches,
-        void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid) {
+merge(int32_t tid, int64_t *matches,
+      void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid) {
     auto *arg = (t_pmj *) t_arg;
     int stepR;
     int stepS;

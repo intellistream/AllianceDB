@@ -84,7 +84,7 @@ THREAD_TASK_NOSHUFFLE(void *param) {
         }
     } while (!fetcher->finish());
 
-    args->joiner->cleanup(
+    args->joiner->merge(
             args->tid,
             args->matches,
             AGGFUNCTION,
@@ -196,7 +196,7 @@ void
                     AGGFUNCTION,
                     chainedbuf);
         } else {
-            args->joiner->cleanup(
+            args->joiner->merge(
                     args->tid,
                     args->matches,
                     AGGFUNCTION,
@@ -552,7 +552,7 @@ void
 #endif
     } while (cntR < sizeR || cntS < sizeS);
 
-    args->joiner->cleanup(
+    args->joiner->merge(
             args->tid,
             args->matches,
             AGGFUNCTION,
