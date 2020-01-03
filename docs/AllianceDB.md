@@ -1,4 +1,4 @@
-### TPCH
+### Test with TPCH
 
 ```
 -a
@@ -17,7 +17,7 @@ SHJ_JM_NP
 0
 ```
 
-
+### 1. Stream - Stream
 
 ### Stock
 
@@ -25,37 +25,22 @@ SHJ_JM_NP
 -a
 SHJ_JM_NP
 -r
-10
+15010279
 -s
-10
+15280728
 -R
-/home/xtra/data/datasets/stock/sort_CJ.txt
+/home/xtra/data/datasets/stock/cj_key32_partitioned.csv
 -S
-/home/xtra/data/datasets/stock/sort_SB.txt
+/home/xtra/data/datasets/stock/sb_key32_partitioned.csv
 -J
+0
+-K
+0
+-L
 1
--K
-2
+-M
+1
 ````
-
-### Amazon
-
-```
--a
-SHJ_JM_NP
--r
-10
--s
-10
--R
-/home/xtra/data/datasets/amazon/alliance_answer.csv
--S
-/home/xtra/data/datasets/amazon/alliance_question.csv
--J
-0
--K
-0
-```
 
 ### Rovio
 
@@ -63,20 +48,93 @@ SHJ_JM_NP
 -a
 SHJ_JM_NP
 -r
-10
+999997
 -s
-10
+999997
 -R
-/home/xtra/data/datasets/rovio/rovio_key32.txt
+/home/xtra/data/datasets/rovio/rovio_key32_partitioned.txt
 -S
-/home/xtra/data/datasets/rovio/rovio_key32.txt
+/home/xtra/data/datasets/rovio/rovio_key32_partitioned.txt
 -J
 0
 -K
 0
+-L
+3
+-M
+3
 ```
 
-### Yahoo Streaming Benchmark
+#### DEBS
+
+```
+-a
+SHJ_JM_NP
+-r
+2052169
+-s
+1003605
+-R
+/home/xtra/data/datasets/DEBS/comments_key32_partitioned.csv
+-S
+/home/xtra/data/datasets/DEBS/posts_key32_partitioned.csv
+-J
+0
+-K
+0
+-L
+2
+-M
+2
+```
+
+### 2. Batch - Stream
+
+#### Yahoo Streaming Benchmark
+
+```
+-a
+SHJ_JM_NP
+-r
+749900
+-s
+1001
+-R
+/home/xtra/data/datasets/YSB/ad_events_key32_partitioned.txt
+-S
+/home/xtra/data/datasets/YSB/campaigns_key32_partitioned.txt
+-J
+0
+-K
+0
+-L
+1
+-M
+0
+```
+
+### 3. Batch - Batch
+
+#### Google
+
+```
+-a
+SHJ_JM_NP
+-r
+11931801
+-s
+3747939
+-R
+/home/xtra/data/datasets/google/reviews_key32_partitioned.csv
+-S
+/home/xtra/data/datasets/google/users_key32_partitioned.csv
+-J
+1
+-K
+1
+```
+
+#### Amazon
 
 ```
 -a
@@ -84,11 +142,11 @@ SHJ_JM_NP
 -r
 10
 -s
-1000
+10
 -R
-/home/xtra/data/datasets/YSB/ad_events_key32.csv
+/home/xtra/data/datasets/amazon/amazon_answer_partitioned.csv
 -S
-/home/xtra/data/datasets/YSB/campaigns_key32.txt
+/home/xtra/data/datasets/amazon/amazon_question_partitioned.csv
 -J
 0
 -K
@@ -96,23 +154,4 @@ SHJ_JM_NP
 ```
 
 
-
-### Google
-
-```
--a
-SHJ_JM_NP
--r
-10
--s
-10
--R
-/home/xtra/data/datasets/google/reviews_key32.csv
--S
-/home/xtra/data/datasets/google/users_key32.csv
--J
-1
--K
-1
-```
 

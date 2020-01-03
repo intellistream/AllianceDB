@@ -670,8 +670,8 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t
     int i = 0;
 
     while ((read = getline(&line, &len, fp)) != -1 && i < ntuples) {
-        printf("Retrieved line of length %zu:\n", read);
-        printf("%s", line);
+//        printf("Retrieved line of length %zu:\n", read);
+//        printf("%s", line);
         if (fmtcomma) {
             key = stoi(split(line, ",")[keyby]);
             strcpy(row.value, line);
