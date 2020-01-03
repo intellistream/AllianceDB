@@ -92,7 +92,7 @@ fetch_t *JM_NP_Fetcher::next_tuple(int tid) {
     if (state->start_index_R < state->end_index_R) {
         readR = &relR->tuples[state->start_index_R];
         //check the timestamp whether the tuple is ``ready" to be fetched.
-        auto timestamp = relR->payload[state->fetch.tuple->payloadID].ts;
+        auto timestamp = relR->payload[readR->payloadID].ts;
         auto timegap = RtimeGap(timestamp);
         if (timegap.count() <= 0) {//if it's negative means our fetch is too slow.
             state->fetch.tuple = readR;
@@ -108,7 +108,7 @@ fetch_t *JM_NP_Fetcher::next_tuple(int tid) {
     if (state->start_index_S < state->end_index_S) {
         readS = &relS->tuples[state->start_index_S];
         //check the timestamp whether the tuple is ``ready" to be fetched.
-        auto timestamp = relS->payload[state->fetch.tuple->payloadID].ts;
+        auto timestamp = relS->payload[readS->payloadID].ts;
         auto timegap = StimeGap(timestamp);
         if (timegap.count() <= 0) {//if it's negative means our fetch is too slow.
             state->fetch.tuple = readS;
