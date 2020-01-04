@@ -534,7 +534,7 @@ void
 #endif
             processRight(shuffler, args, fetchS, args->matches, chainedbuf);
         }
-
+#ifdef DEBUG
         if (fetchR)
             if (!fetchR->ISTuple_R && !fetchR->ack) {
                 printf("something is wrong.\n");
@@ -544,7 +544,7 @@ void
             if (fetchS->ISTuple_R) {
                 printf("something is wrong.\n");
             }
-
+#endif
         //forward tuple twice!
         forward_tuples(shuffler, args, fetchR, fetchS);
 #ifdef DEBUG
