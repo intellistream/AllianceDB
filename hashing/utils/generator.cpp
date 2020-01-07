@@ -546,7 +546,8 @@ create_relation_fk_from_pk(relation_t *fkrel, relation_t *pkrel,
     return 0;
 }
 
-int create_relation_nonunique(relation_t *relation, int64_t num_tuples,
+int
+create_relation_nonunique(relation_t *relation, int64_t num_tuples,
                               const int64_t maxid) {
     check_seed();
 

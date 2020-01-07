@@ -7,13 +7,13 @@ make -j4
 function benchmarkRun {
 		#####native execution
 		echo "==benchmark:$benchmark -a $algo -n $Threads=="
-    ./hashing -a $algo -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads >> output.txt
+    ./hashing -a $algo -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads >> $output
 }
 
 # Configurable variables
 # Generate a timestamp
 timestamp=$(date +%Y%m%d-%H%M)
-output=test$timestamp.csv
+output=test$timestamp.txt
 algo=""
 RSIZE=1
 SSIZE=1
@@ -26,32 +26,9 @@ STS=0
 Threads=40
 for algo in SHJ_JM_NP PMJ_JM_NP RPJ_JM_NP #SHJ_JBCR_NP PMJ_JBCR_NP RPJ_JBCR_NP SHJ_HS_NP PMJ_HS_NP RPJ_HS_NP
 do
-  for benchmark in "Stock" "Rovio" "DEBS" "YSB" "Google" "Amazon"
+  for benchmark in "Stock" "Rovio" "DEBS" "YSB" #"Google" "Amazon"
   do
     case "$benchmark" in
-      # Stream
-      "Stock")
-        RSIZE=15010279
-        SSIZE=15280728
-        RPATH=/data1/xtra/datasets/stock/cj_key32_partitioned_preprocessed.csv
-        SPATH=/data1/xtra/datasets/stock/sb_key32_partitioned_preprocessed.csv
-        RKEY=0
-        SKEY=0
-        RTS=1
-        STS=1
-        benchmarkRun
-    ;;
-      "Rovio")
-        RSIZE=999997
-        SSIZE=999997
-        RPATH=/data1/xtra/datasets/rovio/rovio_key32_partitioned.txt
-        SPATH=/data1/xtra/datasets/rovio/rovio_key32_partitioned.txt
-        RKEY=0
-        SKEY=0
-        RTS=3
-        STS=3
-        benchmarkRun
-    ;;
       # Batch-Stream
       "YSB")
         RSIZE=1001
@@ -74,7 +51,31 @@ do
         SKEY=0
         benchmarkRun
     ;;
-        "Google")
+
+      # Stream
+      "Rovio")
+        RSIZE=999997
+        SSIZE=999997
+        RPATH=/data1/xtra/datasets/rovio/rovio_key32_partitioned.txt
+        SPATH=/data1/xtra/datasets/rovio/rovio_key32_partitioned.txt
+        RKEY=0
+        SKEY=0
+        RTS=3
+        STS=3
+        benchmarkRun
+    ;;
+      "Stock") #Error yet.
+        RSIZE=15010279
+        SSIZE=15280728
+        RPATH=/data1/xtra/datasets/stock/cj_key32_partitioned_preprocessed.csv
+        SPATH=/data1/xtra/datasets/stock/sb_key32_partitioned_preprocessed.csv
+        RKEY=0
+        SKEY=0
+        RTS=1
+        STS=1
+        benchmarkRun
+    ;;
+        "Google")#Error yet.
         RSIZE=3747939
         SSIZE=11931801
         RPATH=/data1/xtra/datasets/google/users_key32_partitioned.csv
@@ -83,7 +84,7 @@ do
         SKEY=1
         benchmarkRun
     ;;
-        "Amazon")
+        "Amazon")#Error yet.
         RSIZE=10
         SSIZE=10
         RPATH=/data1/xtra/datasets/amazon/amazon_question_partitioned.csv
