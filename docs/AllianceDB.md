@@ -65,29 +65,6 @@ SHJ_JM_NP
 3
 ```
 
-#### DEBS
-
-```
--a
-SHJ_JM_NP
--r
-2052169
--s
-1003605
--R
-/home/xtra/data/datasets/DEBS/comments_key32_partitioned.csv
--S
-/home/xtra/data/datasets/DEBS/posts_key32_partitioned.csv
--J
-0
--K
-0
--L
-2
--M
-2
-```
-
 ### 2. Batch - Stream
 
 #### Yahoo Streaming Benchmark
@@ -96,24 +73,43 @@ SHJ_JM_NP
 -a
 SHJ_JM_NP
 -r
-749900
--s
 1001
+-s
+749900
 -R
-/home/xtra/data/datasets/YSB/ad_events_key32_partitioned.txt
--S
 /home/xtra/data/datasets/YSB/campaigns_key32_partitioned.txt
+-S
+/home/xtra/data/datasets/YSB/ad_events_key32_partitioned.txt
 -J
 0
 -K
 0
 -L
-1
--M
 0
+-M
+1
 ```
 
 ### 3. Batch - Batch
+
+#### DEBS
+
+```
+-a
+SHJ_JM_NP
+-r
+1003605
+-s
+2052169
+-R
+/home/xtra/data/datasets/DEBS/comments_key32_partitioned.csv
+-S
+/home/xtra/data/datasets/DEBS/posts_key32_partitioned.csv
+-J
+0
+-K
+0
+```
 
 #### Google
 
@@ -121,13 +117,13 @@ SHJ_JM_NP
 -a
 SHJ_JM_NP
 -r
-11931801
--s
 3747939
+-s
+11931801
 -R
-/home/xtra/data/datasets/google/reviews_key32_partitioned.csv
--S
 /home/xtra/data/datasets/google/users_key32_partitioned.csv
+-S
+/home/xtra/data/datasets/google/reviews_key32_partitioned.csv
 -J
 1
 -K
