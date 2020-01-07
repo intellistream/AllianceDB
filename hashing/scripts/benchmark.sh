@@ -29,11 +29,12 @@ do
   for benchmark in "Rovio" "DEBS" "YSB" "Google" "Amazon"
   do
     case "$benchmark" in
+      # Stream
       "Stock")
         RSIZE=15010279
         SSIZE=15280728
-        RPATH=/data1/xtra/datasets/stock/cj_key32_partitioned.csv
-        SPATH=/data1/xtra/datasets/stock/sb_key32_partitioned.csv
+        RPATH=/data1/xtra/datasets/stock/cj_key32_partitioned_preprocessed.csv
+        SPATH=/data1/xtra/datasets/stock/sb_key32_partitioned_preprocessed.csv
         RKEY=0
         SKEY=0
         RTS=1
@@ -51,6 +52,19 @@ do
         STS=3
         benchmarkRun
     ;;
+      # Batch-Stream
+      "YSB")
+        RSIZE=1001
+        SSIZE=749900
+        RPATH=/data1/xtra/datasets/YSB/campaigns_key32_partitioned.txt
+        SPATH=/data1/xtra/datasets/YSB/ad_events_key32_partitioned.txt
+        RKEY=0
+        SKEY=0
+        RTS=0
+        STS=1
+        benchmarkRun
+    ;;
+      # Batch
       "DEBS")
         RSIZE=1003605
         SSIZE=2052169
@@ -58,19 +72,6 @@ do
         SPATH=/data1/xtra/datasets/DEBS/comments_key32_partitioned.csv
         RKEY=0
         SKEY=0
-        RTS=2
-        STS=2
-        benchmarkRun
-    ;;
-      "YSB")
-        RSIZE=1001
-        SSIZE=749900
-        RPATH=/data1/xtra/datasets/DEBS/posts_key32_partitioned.csv
-        SPATH=/data1/xtra/datasets/DEBS/comments_key32_partitioned.csv
-        RKEY=0
-        SKEY=0
-        RTS=0
-        STS=1
         benchmarkRun
     ;;
         "Google")
