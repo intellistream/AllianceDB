@@ -9,9 +9,11 @@
 
 using namespace std;
 
+extern string arg_name;
+
 void print_timing(std::vector<uint64_t> vector) {
     std::string homepath = getenv("HOME");
-    ofstream outputFile(homepath + "/results/progressive_results.txt");
+    ofstream outputFile(homepath + "/results" + arg_name + "/progressive_results.txt");
     for (auto &element : vector) {
         outputFile << element << endl;
     }

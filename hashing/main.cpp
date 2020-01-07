@@ -247,6 +247,8 @@ parse_args(int argc, char **argv, param_t *cmd_params);
 
 param_t defaultParam();
 
+string arg_name;
+
 int
 main(int argc, char **argv) {
 
@@ -267,7 +269,7 @@ main(int argc, char **argv) {
         cmd_params.scalar_sort = 1;
         cmd_params.scalar_merge = 1;
     }
-
+    arg_name = cmd_params.algo->name;
 #ifdef PERF_COUNTERS
     PCM_CONFIG = cmd_params.perfconf;
     PCM_OUT    = cmd_params.perfout;
@@ -446,8 +448,8 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
                         {"s-file",       required_argument, 0,               'S'},
                         {"r-key",        required_argument, 0,               'J'},
                         {"s-key",        required_argument, 0,               'K'},
-                        {"r-ts",        required_argument,  0,               'L'},
-                        {"s-ts",        required_argument,  0,               'M'},
+                        {"r-ts",         required_argument, 0,               'L'},
+                        {"s-ts",         required_argument, 0,               'M'},
                         /* partitioning fanout, e.g., 2^rdxbits */
                         {"partfanout",   required_argument, 0,               'f'},
                         {"numastrategy", required_argument, 0,               'N'},

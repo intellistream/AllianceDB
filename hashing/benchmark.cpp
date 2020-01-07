@@ -55,7 +55,7 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int
     //        numa_localize(relS.tuples, relS.num_tuples, cmd_params.nthreads);
     //    }
 
-    if (loadfile != NULL) {
+    if (loadfile != NULL && loadfile != "") {
         /* load relation from file */
         load_relation(rel, relPl, key, tsKey, loadfile, rel_size);
     } else if (cmd_params.fullrange_keys) {

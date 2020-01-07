@@ -10,6 +10,12 @@ function benchmarkRun {
     ./hashing -a $algo -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads >> $output
 }
 
+function Run {
+		#####native execution
+		echo "==benchmark:$benchmark -a $algo -n $Threads=="
+    ./hashing -a $algo -r $RSIZE -s $SSIZE -n $Threads >> $output
+}
+
 # Configurable variables
 # Generate a timestamp
 timestamp=$(date +%Y%m%d-%H%M)
@@ -33,7 +39,7 @@ do
       "Kim")
         RSIZE=1000000
         SSIZE=1000000
-        benchmarkRun
+        Run
     ;;
       "DEBS")
         RSIZE=1003605
