@@ -239,10 +239,6 @@ cpu-mapping.txt
 #include <zconf.h>
 #include "benchmark.h"
 
-/* command line handling functions */
-void
-print_help();
-
 void
 print_version();
 
@@ -250,52 +246,6 @@ void
 parse_args(int argc, char **argv, param_t *cmd_params);
 
 param_t defaultParam();
-
-//void benchmark(const param_t cmd_params, relation_t *relR, relation_t *relS, result_t *results);
-
-//void createRelation(relation_t *rel, const param_t &cmd_params,
-//                    char *loadfile, uint64_t rel_size, uint32_t seed) {
-//    fprintf(stdout,
-//            "[INFO ] %s relation with size = %.3lf MiB, #tuples = %llu : ",
-//            (loadfile != NULL) ? ("Loading") : ("Creating"),
-//            (double) sizeof(tuple_t) * rel_size / 1024.0 / 1024.0, rel_size);
-//    fflush(stdout);
-//
-//    seed_generator(seed);
-//
-//    /* to pass information to the create_relation methods */
-//    numalocalize = cmd_params.basic_numa;
-//    nthreads = cmd_params.nthreads;
-//
-//
-//    /** first allocate the memory for relations (+ padding based on numthreads) : */
-//    rel->num_tuples = cmd_params.r_size;
-//    size_t relRsz = rel->num_tuples * sizeof(tuple_t)
-//                    + RELATION_PADDING(cmd_params.nthreads, cmd_params.part_fanout);
-//
-//    rel->tuples = (tuple_t *) malloc_aligned(relRsz);
-//
-//
-//    //    /* NUMA-localize the input: */
-//    //    if(!nonumalocalize){
-//    //        numa_localize(relS.tuples, relS.num_tuples, cmd_params.nthreads);
-//    //    }
-//
-//    if (loadfile != NULL) {
-//        /* load relation from file */
-//        load_relation(rel, loadfile, rel_size);
-//    } else if (cmd_params.fullrange_keys) {
-//        create_relation_nonunique(rel, rel_size, INT_MAX);
-//    } else if (cmd_params.nonunique_keys) {
-//        create_relation_nonunique(rel, rel_size, rel_size);
-//    } else {
-//        //create_relation_pk(&rel, rel_size);
-//        parallel_create_relation(rel, rel_size,
-//                                 nthreads,
-//                                 rel_size);
-//    }
-//    printf("OK \n");
-//}
 
 int
 main(int argc, char **argv) {
@@ -335,28 +285,6 @@ main(int argc, char **argv) {
 
     return 0;
 }
-
-//void
-//benchmark(const param_t cmd_params, relation_t *relR, relation_t *relS, result_t *results) {/* create relation R */
-//    createRelation(relR, cmd_params, cmd_params.loadfileR, cmd_params.r_size, cmd_params.r_seed);
-//
-//    DEBUGMSG("relR [aligned:%d]: %s", is_aligned(relR->tuples, CACHE_LINE_SIZE),
-//             print_relation(relR->tuples, cmd_params.r_size).c_str())
-//
-//    /* create relation S */
-//    createRelation(relS, cmd_params, cmd_params.loadfileS, cmd_params.s_size, cmd_params.s_seed);
-//
-//    DEBUGMSG("relS [aligned:%d]: %s", is_aligned(relS->tuples, CACHE_LINE_SIZE),
-//             print_relation(relS->tuples, cmd_params.s_size).c_str())
-//
-//    /* Run the selected join algorithm */
-//    printf("[INFO ] Running join algorithm %s ...\n", cmd_params.algo->name);
-//
-//    results = cmd_params.algo->joinAlgo(relR, relS, cmd_params.nthreads);
-//
-//    printf("[INFO ] Results = %ld. DONE.\n", results->totalresults);
-//}
-
 
 /** all available algorithms */
 static struct algo_t algos[] =
@@ -398,16 +326,12 @@ param_t defaultParam() {/* Command line parameters */
      * ONLINE SORTING: PMJ_st(11), PMJ_JM_NP, PMJ_JB_NP, PMJ_JBCR_NP, PMJ_HS_NP (15)
      * RIPPLE JOIN: RPJ_st(16), RPJ_JM_NP,  RPJ_JB_NP, RPJ_JBCR_NP, RPJ_HS_NP
      * */
-    cmd_params.algo = &algos[8];
-    cmd_params.nthreads = 5;//TODO: in HS mode, thread must be larger than 1. Fix it when nthread=1.
+    cmd_params.algo = &algos[12];
+    cmd_params.nthreads = 6;//TODO: in HS mode, thread must be larger than 1. Fix it when nthread=1.
 
     /* default dataset is Workload B (described in paper) */
     cmd_params.r_size = 5000;
     cmd_params.s_size = 5000;
-//    cmd_params.r_size = 120000;
-//    cmd_params.s_size = 120000;
-//    cmd_params.r_size = 12800000;
-//    cmd_params.s_size = 12800000;
 
     assert(cmd_params.r_size <= cmd_params.s_size);
 

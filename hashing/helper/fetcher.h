@@ -90,22 +90,6 @@ public:
                (now() - fetchStartTime);//if it's positive, the tuple is not ready yet.
     }
 
-    void Rproceed(milliseconds *time) {
-        if (fetchStartTime == (milliseconds) -1) {
-            fetchStartTime = now();
-        } else {
-            sleep(((now() - fetchStartTime) - (*time - *RdataTime)).count());
-        }
-    }
-
-    void Sproceed(milliseconds *time) {
-        if (fetchStartTime == (milliseconds) -1) {
-            fetchStartTime = now();
-        } else {
-            sleep(((now() - fetchStartTime) - (*time - *SdataTime)).count());
-        }
-    }
-
     virtual bool finish() = 0;
 
     baseFetcher(relation_t *relR, relation_t *relS, int tid) {
