@@ -21,10 +21,10 @@
  */
 //void* JOINFUNCTION(tuple_t *r_tuple, tuple_t *s_tuple, int64_t *matches) {
 void *AGGFUNCTION(const tuple_t *r_tuple, const tuple_t *s_tuple, int64_t *matches) {
-    if (r_tuple->key == s_tuple->key) {
+//    if (r_tuple->key == s_tuple->key) {
 //        (*matches)++;
         DEBUGMSG("matches: %d", *matches);
-    }
+//    }
 }
 
 /**
@@ -113,7 +113,7 @@ THREAD_TASK_NOSHUFFLE(void *param) {
     /* Just to make sure we get consistent performance numbers */
     BARRIER_ARRIVE(args->barrier, rv);
 #endif
-    return 0;
+    pthread_exit(NULL);
 }
 
 
@@ -221,6 +221,7 @@ void
 #endif
     DEBUGMSG("args->num_results (%d): %ld\n", args->tid, *args->matches);
     fflush(stdout);
+    pthread_exit(NULL);
 }
 
 
@@ -540,7 +541,7 @@ void
     /* Just to make sure we get consistent performance numbers */
     BARRIER_ARRIVE(args->barrier, rv);
 #endif
-
+    pthread_exit(NULL);
 }
 
 void
@@ -640,7 +641,7 @@ void
     /* Just to make sure we get consistent performance numbers */
     BARRIER_ARRIVE(args->barrier, rv);
 #endif
-
+    pthread_exit(NULL);
 }
 
 

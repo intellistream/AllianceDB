@@ -324,7 +324,6 @@ parallel_create_relation(relation_t *relation, uint64_t num_tuples,
         ntuples_perthr = num_tuples / nthreads;
 
     ntuples_lastthr = num_tuples - ntuples_perthr * (nthreads - 1);
-
     pthread_attr_init(&attr);
 
     rv = pthread_barrier_init(&barrier, NULL, nthreads);
@@ -338,11 +337,13 @@ parallel_create_relation(relation_t *relation, uint64_t num_tuples,
 
     for (i = 0; i < nthreads; i++) {
         int cpu_idx = get_cpu_id(i);
-
         CPU_ZERO(&set);
         CPU_SET(cpu_idx, &set);
-        pthread_attr_setaffinity_np(&attr, sizeof(int), &set);
-
+        rv = pthread_attr_setaffinity_np(&attr, sizeof(cpu_set_t), &set);
+        if (rv) {
+            fprintf(stderr, "[ERROR] set affinity error return code is %d\n", rv);
+            exit(-1);
+        }
         args[i].firstkey = (offset + 1) % maxid;
         args[i].maxid = maxid;
         args[i].rel.tuples = relation->tuples + offset;
@@ -355,7 +356,7 @@ parallel_create_relation(relation_t *relation, uint64_t num_tuples,
 
         offset += ntuples_perthr;
 
-        rv = pthread_create(&tid[i], &attr, random_unique_gen_thread,
+        rv |= pthread_create(&tid[i], &attr, random_unique_gen_thread,
                             (void *) &args[i]);
         if (rv) {
             fprintf(stderr, "[ERROR] pthread_create() return code is %d\n", rv);

@@ -4,6 +4,7 @@
 #include <stdlib.h> /* exit, perror */
 #include <unistd.h> /* sysconf */
 #include <numaif.h> /* get_mempolicy() */
+#include <iostream>
 
 #include "cpu_mapping.h"
 
@@ -25,7 +26,6 @@ static int
 init_mappings_from_file() {
     FILE *cfg;
     int i;
-
     cfg = fopen(CUSTOM_CPU_MAPPING, "r");
     if (cfg != NULL) {
         if (fscanf(cfg, "%d", &max_cpus) <= 0) {
@@ -43,7 +43,7 @@ init_mappings_from_file() {
     }
 
 
-    /* perror("Custom cpu mapping file not found!\n"); */
+    perror("\nCustom cpu mapping file not found!\n");
     return 0;
 }
 
@@ -56,7 +56,7 @@ init_mappings() {
     if (init_mappings_from_file() == 0) {
         int i;
 
-        max_cpus = sysconf(_SC_NPROCESSORS_ONLN);
+        max_cpus = sysconf(_SC_NPROCESSORS_ONLN) / 2;//remove HT.
         for (i = 0; i < max_cpus; i++) {
             node_mapping[i] = i;
         }
