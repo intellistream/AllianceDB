@@ -148,7 +148,6 @@ SHJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads) {
     param.shuffler = new HashShuffler(nthreads, relR, relS);
     param.joiner = type_SHJJoiner;//new SHJJoiner();
 
-
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE)
     param = finishing(nthreads, param);
     return param.joinresult;

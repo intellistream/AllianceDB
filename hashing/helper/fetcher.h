@@ -56,7 +56,7 @@ inline milliseconds now() {
 
 class baseFetcher {
 public:
-    virtual fetch_t *next_tuple(int tid) = 0;
+    virtual fetch_t *next_tuple();
 
     relation_t *relR;//input relation
     relation_t *relS;//input relation
@@ -123,7 +123,7 @@ inline bool last_thread(int i, int nthreads) {
 
 class PMJ_HS_NP_Fetcher : public baseFetcher {
 public:
-    fetch_t *next_tuple(int tid);
+
 
     bool finish() {
 
@@ -160,8 +160,6 @@ public:
 
 class HS_NP_Fetcher : public baseFetcher {
 public:
-    fetch_t *next_tuple(int tid);
-
 
     bool finish() {
         return cntR == relR->num_tuples && cntS == relS->num_tuples;
@@ -193,11 +191,13 @@ public:
         DEBUGMSG("TID:%d, R: start_index:%d, end_index:%d\n", tid, state->start_index_R, state->end_index_R);
         DEBUGMSG("TID:%d, S: start_index:%d, end_index:%d\n", tid, state->start_index_S, state->end_index_S);
     }
+
+
 };
 
 class JM_NP_Fetcher : public baseFetcher {
 public:
-    fetch_t *next_tuple(int tid);
+
 
     bool finish() {
 /*
@@ -250,7 +250,7 @@ public:
 
 class JB_NP_Fetcher : public baseFetcher {
 public:
-    fetch_t *next_tuple(int tid);
+
 
     bool finish() {
         return state->start_index_R == state->end_index_R

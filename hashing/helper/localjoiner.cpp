@@ -109,7 +109,6 @@ void SHJJoiner::join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *match
 #endif
         proble_hashtable_single_measure(htR, tuple, hashmask_R, skipbits_R, matches, thread_fun, &timer);//(4)
     }
-//    timer.numS++;//one process.
 }
 
 /**

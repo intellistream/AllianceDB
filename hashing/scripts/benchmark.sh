@@ -26,9 +26,24 @@ STS=0
 Threads=40
 for algo in SHJ_JM_NP PMJ_JM_NP RPJ_JM_NP #SHJ_JBCR_NP PMJ_JBCR_NP RPJ_JBCR_NP SHJ_HS_NP PMJ_HS_NP RPJ_HS_NP
 do
-  for benchmark in "Stock" "Rovio" "DEBS" "YSB" #"Google" "Amazon"
+  for benchmark in "Kim" #"Stock" "Rovio" "DEBS" "YSB" #"Google" "Amazon"
   do
     case "$benchmark" in
+      # Batch
+      "Kim")
+        RSIZE=1000000
+        SSIZE=1000000
+        benchmarkRun
+    ;;
+      "DEBS")
+        RSIZE=1003605
+        SSIZE=2052169
+        RPATH=/data1/xtra/datasets/DEBS/posts_key32_partitioned.csv
+        SPATH=/data1/xtra/datasets/DEBS/comments_key32_partitioned.csv
+        RKEY=0
+        SKEY=0
+        benchmarkRun
+    ;;
       # Batch-Stream
       "YSB")
         RSIZE=1001
@@ -41,17 +56,6 @@ do
         STS=1
         benchmarkRun
     ;;
-      # Batch
-      "DEBS")
-        RSIZE=1003605
-        SSIZE=2052169
-        RPATH=/data1/xtra/datasets/DEBS/posts_key32_partitioned.csv
-        SPATH=/data1/xtra/datasets/DEBS/comments_key32_partitioned.csv
-        RKEY=0
-        SKEY=0
-        benchmarkRun
-    ;;
-
       # Stream
       "Rovio")
         RSIZE=999997

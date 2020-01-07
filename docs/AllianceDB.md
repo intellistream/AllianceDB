@@ -44,6 +44,11 @@ SHJ_JM_NP
 
 ### Rovio
 
+Data source:
+https://github.com/streamline-eu/StreamBenchmarks/tree/master/data-generator
+Notes: It is generated following uniform distribution.
+It has also a one-to-one mapping.
+
 ```
 -a
 SHJ_JM_NP

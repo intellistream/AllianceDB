@@ -71,7 +71,7 @@ THREAD_TASK_NOSHUFFLE(void *param) {
     baseFetcher *fetcher = args->fetcher;
 
     do {
-        fetch_t *fetch = fetcher->next_tuple(args->tid);
+        fetch_t *fetch = fetcher->next_tuple();
 
         if (fetch != nullptr) {
             args->joiner->join(
@@ -152,19 +152,12 @@ void
     //call different data BaseFetcher.
     baseFetcher *fetcher = args->fetcher;
 
-//    //allocate two hashtables on each thread assuming input stream statistics are known.
-//    uint32_t nbucketsR = (args->fetcher->relR->num_tuples / BUCKET_SIZE);
-//    allocate_hashtable(&args->htR, nbucketsR);
-//
-//    uint32_t nbucketsS = (args->fetcher->relS->num_tuples / BUCKET_SIZE);
-//    allocate_hashtable(&args->htS, nbucketsS);
-
     baseShuffler *shuffler = args->shuffler;
 
     //fetch: pointer points to state.fetch (*fetch = &(state->fetch))
     fetch_t *fetch;
     do {
-        fetch = fetcher->next_tuple(args->tid);
+        fetch = fetcher->next_tuple();
         if (fetch != nullptr) {
             shuffler->push(fetch->tuple->key, fetch, false);//pass-in pointer points to state.fetch
         }
@@ -471,7 +464,7 @@ void
 
         //pull left queue.
         if (args->tid == 0) {
-            fetchR = fetcher->next_tuple(args->tid);//
+            fetchR = fetcher->next_tuple();//
         } else {
             fetchR = shuffler->pull(args->tid, LEFT);//pull itself.
         }
@@ -489,7 +482,7 @@ void
 
         //pull right queue.
         if (args->tid == args->nthreads - 1) {
-            fetchS = fetcher->next_tuple(args->tid);//
+            fetchS = fetcher->next_tuple();//
         } else {
             fetchS = shuffler->pull(args->tid, RIGHT);//pull itself.
         }
@@ -592,7 +585,7 @@ void
     do {
         //pull left queue.
         if (args->tid == 0) {
-            fetchR = fetcher->next_tuple(args->tid);//
+            fetchR = fetcher->next_tuple();//
         } else {
 //            std::cin.get();//expect enter
             fetchR = shuffler->pull(args->tid, LEFT);//pull itself.
@@ -612,7 +605,7 @@ void
 
         //pull right queue.
         if (args->tid == args->nthreads - 1) {
-            fetchS = fetcher->next_tuple(args->tid);//
+            fetchS = fetcher->next_tuple();//
         } else {
             fetchS = shuffler->pull(args->tid, RIGHT);//pull itself.
         }
