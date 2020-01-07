@@ -137,10 +137,6 @@ fetch_t *JM_NP_Fetcher::next_tuple(int tid) {
     return nullptr;
 }
 
-fetch_t *JM_P_Fetcher::next_tuple(int tid) {
-//not implemented.
-}
-
 fetch_t *JB_NP_Fetcher::next_tuple(int tid) {
     fetch_t *rt = _next_tuple(state, relR, relS);
 
