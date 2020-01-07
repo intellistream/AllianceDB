@@ -42,7 +42,7 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int
     // TODO: not sure whether is correct
     relPl->num_tuples = cmd_params.r_size;
     size_t relPlRsz = relPl->num_tuples * sizeof(table_t)
-                    + RELATION_PADDING(cmd_params.nthreads, cmd_params.part_fanout);
+                      + RELATION_PADDING(cmd_params.nthreads, cmd_params.part_fanout);
     relPl->rows = (table_t *) malloc_aligned(relPlRsz);
 
     size_t relTssz = relPl->num_tuples * sizeof(time_t)
@@ -86,16 +86,18 @@ benchmark(const param_t cmd_params) {
     result_t *results;
     // TODO: generate dataset
     /* create relation R */
-    createRelation(&relR, relR.payload, cmd_params.rkey, cmd_params.rts, cmd_params, cmd_params.loadfileR, cmd_params.r_size,
+    createRelation(&relR, relR.payload, cmd_params.rkey, cmd_params.rts, cmd_params, cmd_params.loadfileR,
+                   cmd_params.r_size,
                    cmd_params.r_seed);
     DEBUGMSG("relR [aligned:%d]: %s", is_aligned(relR.tuples, CACHE_LINE_SIZE),
-             print_relation(relR.tuples, cmd_params.r_size).c_str())
+             print_relation(relR.tuples, max((uint64_t) 1000, cmd_params.r_size)).c_str())
 
     /* create relation S */
-    createRelation(&relS, relS.payload, cmd_params.skey, cmd_params.sts, cmd_params, cmd_params.loadfileS, cmd_params.s_size,
+    createRelation(&relS, relS.payload, cmd_params.skey, cmd_params.sts, cmd_params, cmd_params.loadfileS,
+                   cmd_params.s_size,
                    cmd_params.s_seed);
     DEBUGMSG("relS [aligned:%d]: %s", is_aligned(relS.tuples, CACHE_LINE_SIZE),
-             print_relation(relS.tuples, cmd_params.s_size).c_str())
+             print_relation(relS.tuples, max((uint64_t) 1000, cmd_params.s_size)).c_str())
 
     // TODO: Execute query with dataset, need to submit a join function
 

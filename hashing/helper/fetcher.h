@@ -46,6 +46,14 @@ struct t_state {
     fetch_t fetch;
 };
 
+
+inline milliseconds now() {
+    milliseconds ms = duration_cast<milliseconds>(
+            system_clock::now().time_since_epoch()
+    );
+    return ms;
+}
+
 class baseFetcher {
 public:
     virtual fetch_t *next_tuple(int tid) = 0;
@@ -55,40 +63,42 @@ public:
 
     milliseconds *RdataTime;
     milliseconds *SdataTime;
-    milliseconds fetchStartTime = (milliseconds)-1;
-
+    milliseconds fetchStartTime;//initialize
     t_state *state;
 
+    bool start = true;
+
     milliseconds RtimeGap(milliseconds *time) {
-        if (fetchStartTime == (milliseconds) -1) {
-            fetchStartTime = (milliseconds) curtick();
-            return (milliseconds)0;
-        } else {
-            return (*time - *RdataTime) - ((milliseconds) curtick() - fetchStartTime);//if it's positive, the tuple is not ready yet.
+        if (start) {
+            fetchStartTime = now();
+            start = false;
         }
+        return (*time - *RdataTime) -
+               (now() - fetchStartTime);//if it's positive, the tuple is not ready yet.
     }
 
     milliseconds StimeGap(milliseconds *time) {
-        if (fetchStartTime == (milliseconds) -1) {
-            fetchStartTime = (milliseconds) curtick();
-            return (milliseconds) 0;
-        } else {
-            return (*time - *SdataTime) - ((milliseconds) curtick() - fetchStartTime);//if it's positive, the tuple is not ready yet.
+        if (start) {
+            fetchStartTime = now();
+            start = false;
         }
+        return (*time - *SdataTime) -
+               (now() - fetchStartTime);//if it's positive, the tuple is not ready yet.
     }
+
     void Rproceed(milliseconds *time) {
         if (fetchStartTime == (milliseconds) -1) {
-            fetchStartTime = (milliseconds) curtick();
+            fetchStartTime = now();
         } else {
-            sleep((((milliseconds) curtick() - fetchStartTime) - (*time - *RdataTime)).count());
+            sleep(((now() - fetchStartTime) - (*time - *RdataTime)).count());
         }
     }
 
     void Sproceed(milliseconds *time) {
         if (fetchStartTime == (milliseconds) -1) {
-            fetchStartTime = (milliseconds) curtick();
+            fetchStartTime = now();
         } else {
-            sleep((((milliseconds) curtick() - fetchStartTime) - (*time - *SdataTime)).count());
+            sleep(((now() - fetchStartTime) - (*time - *SdataTime)).count());
         }
     }
 

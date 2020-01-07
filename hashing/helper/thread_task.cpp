@@ -285,7 +285,7 @@ processLeft(arg_t *args, fetch_t *fetch, int64_t *matches, void *chainedbuf) {
             DEBUGMSG("right must be tuple R. something is wrong \n");
         }
 #else
-        assert(fetch->flag);//left must be tuple R.
+        assert(fetch->ISTuple_R);//left must be tuple R.
 #endif
         //scan S-window to find tuples that match ri ;
         //insert ri into R-window ;
@@ -318,7 +318,7 @@ processLeft_PMJ(arg_t *args, fetch_t *fetch, int64_t *matches, void *chainedbuf)
             DEBUGMSG("right must be tuple R, something is wrong \n");
         }
 #else
-        assert(fetch->flag);//left must be tuple R.
+        assert(fetch->ISTuple_R);//left must be tuple R.
 #endif
         //scan S-window to find tuples that match ri ;
         //insert ri into R-window ;
@@ -345,7 +345,7 @@ processRight(baseShuffler *shuffler, arg_t *args, fetch_t *fetch, int64_t *match
             fflush(stdout);
         }
 #else
-        assert(!fetch->flag);
+        assert(!fetch->ISTuple_R);
 #endif
 
 //      scan R-window to find tuples that match si ;
@@ -381,7 +381,7 @@ processRight_PMJ(baseShuffler *shuffler, arg_t *args, fetch_t *fetch, int64_t *m
             fflush(stdout);
         }
 #else
-        assert(!fetch->flag);
+        assert(!fetch->ISTuple_R);
 #endif
 
 //      scan R-window to find tuples that match si ;

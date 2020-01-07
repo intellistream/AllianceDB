@@ -20,6 +20,7 @@
 #include "lock.h"
 #include "../joins/prj_params.h"         /* RELATION_PADDING for Parallel Radix */
 #include "barrier.h"
+#include "../joins/common_functions.h"
 
 /* return a random number in range [0,N] */
 #define RAND_RANGE(N) ((double)rand() / ((double)RAND_MAX + 1) * (N))
@@ -678,7 +679,7 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t
             payload = i;
             if (tsKey != 0) {
                 timestamp = (milliseconds) stol(split(line, ",")[tsKey]);
-                printf("%lld \n", timestamp);
+//                printf("%lld \n", timestamp);
             }
         } else if (fmtbar) {
             key = stoi(split(line, "|")[keyby]);
@@ -686,7 +687,7 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t
             payload = i;
             if (tsKey != 0) {
                 timestamp = (milliseconds) stol(split(line, "|")[tsKey]);
-                printf("%lld \n", timestamp);
+//                printf("%lld \n", timestamp);
             }
         } else {
             printf("error!!\n");
@@ -698,6 +699,12 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t
         relPl->rows[i] = row;
         relPl->ts[i] = timestamp;
         i++;
+
+#ifdef DEBUG
+        if(i%1000==0){
+            printf("I have read %d tuples \n", i);
+        }
+#endif
     }
 
 //    for (uint64_t i = 0; i < ntuples; i++) {

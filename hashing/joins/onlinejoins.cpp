@@ -134,7 +134,6 @@ SHJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads) {
     //no shuffler is required for JM mode.
     param.joiner = type_SHJJoiner;//new SHJJoiner();
 
-
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_NOSHUFFLE)
     param = finishing(nthreads, param);
     return param.joinresult;

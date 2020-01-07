@@ -118,14 +118,14 @@ fetch_t *JM_NP_Fetcher::next_tuple(int tid) {
         } else {  //return the nearest tuple.
             if (min_gap > timegap) {//S is nearest.
                 min_gap = timegap;
-//                sleep(min_gap.count());
+                DEBUGMSG("Thread %d is going to sleep for %d before get S", tid, min_gap)
                 this_thread::sleep_for(min_gap);
                 state->fetch.tuple = readS;
                 state->fetch.ISTuple_R = false;
                 state->start_index_S++;
                 return &(state->fetch);
             } else if (readR != nullptr) {//R is nearest.
-//                sleep(min_gap.count());
+                DEBUGMSG("Thread %d is going to sleep for %d before get R", tid, min_gap)
                 this_thread::sleep_for(min_gap);
                 state->fetch.tuple = readR;
                 state->fetch.ISTuple_R = true;
@@ -135,21 +135,6 @@ fetch_t *JM_NP_Fetcher::next_tuple(int tid) {
         }
     }
     return nullptr;
-//
-//    fetch_t *rt = _next_tuple(state, relR, relS);
-//
-//    if (rt != nullptr) {
-//        if (rt->ISTuple_R) {
-//            auto timestamp = relR->payload[rt->tuple->payloadID].ts;
-//            this->Rproceed(timestamp);
-//        } else {
-//            auto timestamp = relS->payload[rt->tuple->payloadID].ts;
-//            this->Sproceed(timestamp);
-//        }
-//        return rt;
-//    }
-//
-//    return nullptr;
 }
 
 fetch_t *JM_P_Fetcher::next_tuple(int tid) {
