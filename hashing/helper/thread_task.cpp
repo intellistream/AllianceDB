@@ -234,38 +234,6 @@ void
 #define LEFT true
 #define RIGHT false
 
-//void clean(arg_t *arg, fetch_t *fetch, bool cleanR) {
-//
-//    if (cleanR) {
-//        //if SHJ is used, we need to clean up hashtable of R.
-//        debuild_hashtable_single(arg->htR, fetch->tuple, arg->htR->hash_mask, arg->htR->skip_bits);
-//
-////        printf( "tid: %d remove tuple r %d from R-window. \n", arg->tid, fetch->tuple->key);
-//
-//        if (arg->tid == 0) {
-//            window0.R_Window.remove(fetch->tuple->key);
-////            print_window(window0.R_Window, 0);
-//        } else {
-//            window1.R_Window.remove(fetch->tuple->key);
-////            print_window(window1.R_Window, 1);
-//        }
-//    } else {
-//        debuild_hashtable_single(arg->htS, fetch->tuple, arg->htS->hash_mask, arg->htS->skip_bits);
-//
-////        printf("tid: %d remove tuple s %d from S-window. \n", arg->tid, fetch->tuple->key);
-//
-//        if (arg->tid == 0) {
-//            window0.S_Window.remove(fetch->tuple->key);
-////            print_window(window0.S_Window, 0);
-//        } else {
-//            window1.S_Window.remove(fetch->tuple->key);
-////            print_window(window1.S_Window, 1);
-//        }
-////        std::cout << boost::stacktrace::stacktrace() << std::endl;
-//
-//    }
-//}
-
 /**
  *
  * @param args
@@ -550,6 +518,25 @@ void
 #ifdef DEBUG
         usleep(rand() % 100);
 #endif
+
+
+        if (cntR = sizeR * 0.25) {
+            printf("Thread %d has finished process input  0.25 R", args->tid);
+        } else if (cntR = sizeR * 0.5) {
+            printf("Thread %d has finished process input  0.5 R", args->tid);
+        } else if (cntR = sizeR * 0.75) {
+            printf("Thread %d has finished process input  0.75 R", args->tid);
+        }
+
+        if (cntS = sizeS * 0.25) {
+            printf("Thread %d has finished process input  0.25 S", args->tid);
+        } else if (cntS = sizeS * 0.5) {
+            printf("Thread %d has finished process input  0.5 S", args->tid);
+        } else if (cntS = sizeS * 0.75) {
+            printf("Thread %d has finished process input  0.75 S", args->tid);
+        }
+
+
     } while (cntR < sizeR || cntS < sizeS);
 
     args->joiner->merge(
@@ -661,6 +648,21 @@ void
         //forward tuple twice!
         forward_tuples_PMJ(shuffler, args, fetchR, fetchS);
 
+        if (cntR = sizeR * 0.25) {
+            printf("Thread %d has finished process input  0.25 R", args->tid);
+        } else if (cntR = sizeR * 0.5) {
+            printf("Thread %d has finished process input  0.5 R", args->tid);
+        } else if (cntR = sizeR * 0.75) {
+            printf("Thread %d has finished process input  0.75 R", args->tid);
+        }
+
+        if (cntS = sizeS * 0.25) {
+            printf("Thread %d has finished process input  0.25 S", args->tid);
+        } else if (cntS = sizeS * 0.5) {
+            printf("Thread %d has finished process input  0.5 S", args->tid);
+        } else if (cntS = sizeS * 0.75) {
+            printf("Thread %d has finished process input  0.75 S", args->tid);
+        }
     } while (cntR < sizeR || cntS < sizeS);
 
 #ifdef JOIN_RESULT_MATERIALIZE

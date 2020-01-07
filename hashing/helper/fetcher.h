@@ -196,9 +196,20 @@ public:
 
     bool finish() {
         if (state->start_index_R = state->end_index_R * 0.25) {
-            printf("Thread %d has finished process input R 0.25 ", tid);
+            printf("Thread %d has finished process input  0.25 R", tid);
+        } else if (state->start_index_R = state->end_index_R * 0.5) {
+            printf("Thread %d has finished process input  0.5 R", tid);
+        } else if (state->start_index_R = state->end_index_R * 0.75) {
+            printf("Thread %d has finished process input  0.75 R", tid);
         }
 
+        if (state->start_index_S = state->end_index_S * 0.25) {
+            printf("Thread %d has finished process input  0.25 S", tid);
+        } else if (state->start_index_S = state->end_index_S * 0.5) {
+            printf("Thread %d has finished process input  0.5 S", tid);
+        } else if (state->start_index_S = state->end_index_S * 0.75) {
+            printf("Thread %d has finished process input  0.75 S", tid);
+        }
 
         return state->start_index_R == state->end_index_R
                && state->start_index_S == state->end_index_S;
@@ -236,6 +247,22 @@ public:
     fetch_t *next_tuple(int tid);
 
     bool finish() {
+        if (state->start_index_R = state->end_index_R * 0.25) {
+            printf("Thread %d has finished process input  0.25 R", tid);
+        } else if (state->start_index_R = state->end_index_R * 0.5) {
+            printf("Thread %d has finished process input  0.5 R", tid);
+        } else if (state->start_index_R = state->end_index_R * 0.75) {
+            printf("Thread %d has finished process input  0.75 R", tid);
+        }
+
+        if (state->start_index_S = state->end_index_S * 0.25) {
+            printf("Thread %d has finished process input  0.25 S", tid);
+        } else if (state->start_index_S = state->end_index_S * 0.5) {
+            printf("Thread %d has finished process input  0.5 S", tid);
+        } else if (state->start_index_S = state->end_index_S * 0.75) {
+            printf("Thread %d has finished process input  0.75 S", tid);
+        }
+
         return state->start_index_R == state->end_index_R
                && state->start_index_S == state->end_index_S;
     }
