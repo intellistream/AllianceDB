@@ -11,9 +11,9 @@ function benchmarkRun {
 }
 
 # Configurable variables
-output=test.csv
 # Generate a timestamp
 timestamp=$(date +%Y%m%d-%H%M)
+output=test$timestamp.csv
 algo=""
 RSIZE=1
 SSIZE=1
@@ -26,7 +26,7 @@ STS=0
 Threads=40
 for algo in SHJ_JM_NP PMJ_JM_NP RPJ_JM_NP #SHJ_JBCR_NP PMJ_JBCR_NP RPJ_JBCR_NP SHJ_HS_NP PMJ_HS_NP RPJ_HS_NP
 do
-  for benchmark in "Rovio" "DEBS" "YSB" "Google" "Amazon"
+  for benchmark in "Stock" "Rovio" "DEBS" "YSB" "Google" "Amazon"
   do
     case "$benchmark" in
       # Stream

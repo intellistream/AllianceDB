@@ -465,8 +465,7 @@ void
 
     int sizeR = args->fetcher->relR->num_tuples;
     int sizeS = args->fetcher->relS->num_tuples;
-    int cntR = 0;
-    int cntS = 0;
+
 
     do {
 
@@ -477,9 +476,9 @@ void
             fetchR = shuffler->pull(args->tid, LEFT);//pull itself.
         }
         if (fetchR) {
-            cntR++;
+            fetcher->cntR++;
             if (fetchR->ack) {/* msg is an acknowledgment message */
-                cntR--;
+                fetcher->cntR--;
             }
 #ifdef DEBUG
             printf("tid:%d, fetch R:%d, cntR:%d\n", args->tid, fetchR->tuple->key, cntR);
@@ -495,7 +494,7 @@ void
             fetchS = shuffler->pull(args->tid, RIGHT);//pull itself.
         }
         if (fetchS) {
-            cntS++;
+            fetcher->cntS++;
 #ifdef DEBUG
             printf("tid:%d, fetch S:%d, ack:%d, cntS:%d\n", args->tid, fetchS->tuple->key, fetchS->ack, cntS);
             fflush(stdout); // Will now print everything in the stdout buffer
@@ -519,25 +518,7 @@ void
         usleep(rand() % 100);
 #endif
 
-
-        if (cntR = sizeR * 0.25) {
-            printf("Thread %d has finished process input  0.25 R", args->tid);
-        } else if (cntR = sizeR * 0.5) {
-            printf("Thread %d has finished process input  0.5 R", args->tid);
-        } else if (cntR = sizeR * 0.75) {
-            printf("Thread %d has finished process input  0.75 R", args->tid);
-        }
-
-        if (cntS = sizeS * 0.25) {
-            printf("Thread %d has finished process input  0.25 S", args->tid);
-        } else if (cntS = sizeS * 0.5) {
-            printf("Thread %d has finished process input  0.5 S", args->tid);
-        } else if (cntS = sizeS * 0.75) {
-            printf("Thread %d has finished process input  0.75 S", args->tid);
-        }
-
-
-    } while (cntR < sizeR || cntS < sizeS);
+    } while (!fetcher->finish());
 
     args->joiner->merge(
             args->tid,
@@ -608,11 +589,6 @@ void
     fetch_t *fetchR;
     fetch_t *fetchS;
 
-    int sizeR = args->fetcher->relR->num_tuples;
-    int sizeS = args->fetcher->relS->num_tuples;
-    int cntR = 0;
-    int cntS = 0;
-
     do {
         //pull left queue.
         if (args->tid == 0) {
@@ -622,9 +598,9 @@ void
             fetchR = shuffler->pull(args->tid, LEFT);//pull itself.
         }
         if (fetchR) {
-            cntR += fetchR->fat_tuple_size;
+            fetcher->cntR += fetchR->fat_tuple_size;
             if (fetchR->ack) {/* msg is an acknowledgment message */
-                cntR -= fetchR->fat_tuple_size;
+                fetcher->cntR -= fetchR->fat_tuple_size;
                 DEBUGMSG("TID%d fetches an ack S[]: %s", args->tid,
                          print_tuples(fetchR->fat_tuple, fetchR->fat_tuple_size).c_str())
             } else {
@@ -641,29 +617,14 @@ void
             fetchS = shuffler->pull(args->tid, RIGHT);//pull itself.
         }
         if (fetchS) {
-            cntS += fetchS->fat_tuple_size;
+            fetcher->cntS += fetchS->fat_tuple_size;
             processRight_PMJ(shuffler, args, fetchS, args->matches, chainedbuf);
         }
 
         //forward tuple twice!
         forward_tuples_PMJ(shuffler, args, fetchR, fetchS);
 
-        if (cntR = sizeR * 0.25) {
-            printf("Thread %d has finished process input  0.25 R", args->tid);
-        } else if (cntR = sizeR * 0.5) {
-            printf("Thread %d has finished process input  0.5 R", args->tid);
-        } else if (cntR = sizeR * 0.75) {
-            printf("Thread %d has finished process input  0.75 R", args->tid);
-        }
-
-        if (cntS = sizeS * 0.25) {
-            printf("Thread %d has finished process input  0.25 S", args->tid);
-        } else if (cntS = sizeS * 0.5) {
-            printf("Thread %d has finished process input  0.5 S", args->tid);
-        } else if (cntS = sizeS * 0.75) {
-            printf("Thread %d has finished process input  0.75 S", args->tid);
-        }
-    } while (cntR < sizeR || cntS < sizeS);
+    } while (!fetcher->finish());
 
 #ifdef JOIN_RESULT_MATERIALIZE
     args->threadresult->nresults = args->num_results;

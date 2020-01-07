@@ -48,41 +48,6 @@ fetch_t *_next_tuple(t_state *state, relation_t *relR, relation_t *relS) {
     }
 }
 
-/**
- * CORE Common Function. Alternatively fetch R or S with copying
- * @param state
- * @param relR
- * @param relS
- * @return
- */
-fetch_t *_next_tuple_CP(t_state *state, relation_t *relR, relation_t *relS) {
-    if (state->IsTupleR) {
-        if (state->start_index_R < state->end_index_R) {
-            state->fetch.tuple = new tuple_t();
-            state->fetch.tuple->payloadID = relR->tuples[state->start_index_R].payloadID;
-            state->fetch.tuple->key = relR->tuples[state->start_index_R++].key;
-            state->fetch.ISTuple_R = state->IsTupleR;
-            (state->IsTupleR) ^= true;//flip flag
-            return &(state->fetch);
-        } else {
-            (state->IsTupleR) ^= true;//flip flag
-            return nullptr;
-        }
-    } else {
-        if (state->start_index_S < state->end_index_S) {
-            state->fetch.tuple = new tuple_t();
-            state->fetch.tuple->payloadID = relS->tuples[state->start_index_S].payloadID;
-            state->fetch.tuple->key = relS->tuples[state->start_index_S++].key;
-            state->fetch.ISTuple_R = state->IsTupleR;
-            (state->IsTupleR) ^= true;//flip flag
-            return &(state->fetch);
-        } else {
-            state->IsTupleR ^= true;//flip flag
-            return nullptr;
-        }
-    }
-}
-
 fetch_t *JM_NP_Fetcher::next_tuple(int tid) {
     milliseconds min_gap = (milliseconds) INT32_MAX;
     tuple_t *readR = nullptr;

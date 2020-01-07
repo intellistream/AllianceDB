@@ -66,8 +66,11 @@ public:
     milliseconds fetchStartTime;//initialize
     t_state *state;
     int tid;
-
     bool start = true;
+
+    //used by HS.
+    uint64_t cntR = 0;
+    uint64_t cntS = 0;
 
     milliseconds RtimeGap(milliseconds *time) {
         if (start) {
@@ -123,7 +126,8 @@ public:
     fetch_t *next_tuple(int tid);
 
     bool finish() {
-        return false;//should not be called.
+
+        return cntR == relR->num_tuples && cntS == relS->num_tuples;
     }
 
     /**
@@ -158,8 +162,9 @@ class HS_NP_Fetcher : public baseFetcher {
 public:
     fetch_t *next_tuple(int tid);
 
+
     bool finish() {
-        return false;//should not be called.
+        return cntR == relR->num_tuples && cntS == relS->num_tuples;
     }
 
     /**
@@ -195,22 +200,23 @@ public:
     fetch_t *next_tuple(int tid);
 
     bool finish() {
-        if (state->start_index_R = state->end_index_R * 0.25) {
+/*
+ *      if (cntR == relR->num_tuples / 4) {
             printf("Thread %d has finished process input  0.25 R", tid);
-        } else if (state->start_index_R = state->end_index_R * 0.5) {
+        } else if (cntR == relR->num_tuples / 2) {
             printf("Thread %d has finished process input  0.5 R", tid);
-        } else if (state->start_index_R = state->end_index_R * 0.75) {
+        } else if (cntR == relR->num_tuples / 4 * 3) {
             printf("Thread %d has finished process input  0.75 R", tid);
         }
 
-        if (state->start_index_S = state->end_index_S * 0.25) {
+        if (cntS == relS->num_tuples / 4) {
             printf("Thread %d has finished process input  0.25 S", tid);
-        } else if (state->start_index_S = state->end_index_S * 0.5) {
+        } else if (cntS == relS->num_tuples / 2) {
             printf("Thread %d has finished process input  0.5 S", tid);
-        } else if (state->start_index_S = state->end_index_S * 0.75) {
+        } else if (cntS == relS->num_tuples / 4 * 3) {
             printf("Thread %d has finished process input  0.75 S", tid);
         }
-
+ * */
         return state->start_index_R == state->end_index_R
                && state->start_index_S == state->end_index_S;
     }
@@ -247,22 +253,6 @@ public:
     fetch_t *next_tuple(int tid);
 
     bool finish() {
-        if (state->start_index_R = state->end_index_R * 0.25) {
-            printf("Thread %d has finished process input  0.25 R", tid);
-        } else if (state->start_index_R = state->end_index_R * 0.5) {
-            printf("Thread %d has finished process input  0.5 R", tid);
-        } else if (state->start_index_R = state->end_index_R * 0.75) {
-            printf("Thread %d has finished process input  0.75 R", tid);
-        }
-
-        if (state->start_index_S = state->end_index_S * 0.25) {
-            printf("Thread %d has finished process input  0.25 S", tid);
-        } else if (state->start_index_S = state->end_index_S * 0.5) {
-            printf("Thread %d has finished process input  0.5 S", tid);
-        } else if (state->start_index_S = state->end_index_S * 0.75) {
-            printf("Thread %d has finished process input  0.75 S", tid);
-        }
-
         return state->start_index_R == state->end_index_R
                && state->start_index_S == state->end_index_S;
     }
