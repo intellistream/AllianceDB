@@ -622,9 +622,7 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
 
                     exit(0);
                 }
-
                 break;
-
             case 'm':
                 cmd_params->mwaymerge_bufsize = atoi(optarg);
                 break;
