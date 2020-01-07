@@ -29,9 +29,9 @@ SHJ_JM_NP
 -s
 15280728
 -R
-/home/xtra/data/datasets/stock/cj_key32_partitioned.csv
+/data1/xtra/datasets/stock/cj_key32_partitioned_preprocessed.csv
 -S
-/home/xtra/data/datasets/stock/sb_key32_partitioned.csv
+/data1/xtra/datasets/stock/sb_key32_partitioned_preprocessed.csv
 -J
 0
 -K
@@ -52,9 +52,9 @@ SHJ_JM_NP
 -s
 999997
 -R
-/home/xtra/data/datasets/rovio/rovio_key32_partitioned.txt
+/data1/xtra/datasets/rovio/rovio_key32_partitioned.txt
 -S
-/home/xtra/data/datasets/rovio/rovio_key32_partitioned.txt
+/data1/xtra/datasets/rovio/rovio_key32_partitioned.txt
 -J
 0
 -K
@@ -63,29 +63,6 @@ SHJ_JM_NP
 3
 -M
 3
-```
-
-#### DEBS
-
-```
--a
-SHJ_JM_NP
--r
-2052169
--s
-1003605
--R
-/home/xtra/data/datasets/DEBS/comments_key32_partitioned.csv
--S
-/home/xtra/data/datasets/DEBS/posts_key32_partitioned.csv
--J
-0
--K
-0
--L
-2
--M
-2
 ```
 
 ### 2. Batch - Stream
@@ -96,24 +73,43 @@ SHJ_JM_NP
 -a
 SHJ_JM_NP
 -r
-749900
--s
 1001
+-s
+749900
 -R
-/home/xtra/data/datasets/YSB/ad_events_key32_partitioned.txt
+/data1/xtra/datasets/YSB/campaigns_key32_partitioned.txt
 -S
-/home/xtra/data/datasets/YSB/campaigns_key32_partitioned.txt
+/data1/xtra/datasets/YSB/ad_events_key32_partitioned.txt
 -J
 0
 -K
 0
 -L
-1
--M
 0
+-M
+1
 ```
 
 ### 3. Batch - Batch
+
+#### DEBS
+
+```
+-a
+SHJ_JM_NP
+-r
+1003605
+-s
+2052169
+-R
+/data1/xtra/datasets/DEBS/posts_key32_partitioned.csv
+-S
+/data1/xtra/datasets/DEBS/comments_key32_partitioned.csv
+-J
+0
+-K
+0
+```
 
 #### Google
 
@@ -121,13 +117,13 @@ SHJ_JM_NP
 -a
 SHJ_JM_NP
 -r
-11931801
--s
 3747939
+-s
+11931801
 -R
-/home/xtra/data/datasets/google/reviews_key32_partitioned.csv
+/data1/xtra/datasets/google/users_key32_partitioned.csv
 -S
-/home/xtra/data/datasets/google/users_key32_partitioned.csv
+/data1/xtra/datasets/google/reviews_key32_partitioned.csv
 -J
 1
 -K
@@ -144,9 +140,9 @@ SHJ_JM_NP
 -s
 10
 -R
-/home/xtra/data/datasets/amazon/amazon_answer_partitioned.csv
+/data1/xtra/datasets/amazon/amazon_question_partitioned.csv
 -S
-/home/xtra/data/datasets/amazon/amazon_question_partitioned.csv
+/data1/xtra/datasets/amazon/amazon_answer_partitioned.csv
 -J
 0
 -K
