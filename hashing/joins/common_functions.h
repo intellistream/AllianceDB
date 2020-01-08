@@ -66,8 +66,8 @@
 //};
 
 struct t_window {
-    std::list<intkey_t> R_Window;
-    std::list<intkey_t> S_Window;
+    std::list<tuple_t *> R_Window;
+    std::list<tuple_t *> S_Window;
     std::mutex mutex;
 };
 #define is_aligned(POINTER, BYTE_COUNT) \
@@ -81,8 +81,11 @@ extern t_window window0;
 extern t_window window1;
 
 std::string print_window(const std::list<intkey_t> &list);
+
 std::string print_tuples(const tuple_t *tuples, int size);
+
 tuple_t *copy_tuples(const tuple_t *tuples, int size);
+
 /**
  * Allocates a hashtable of NUM_BUCKETS and inits everything to 0.
  *
@@ -135,17 +138,19 @@ build_hashtable_single(const hashtable_t *ht, const relation_t *rel, uint32_t i,
 
 int64_t proble_hashtable_single_measure(const hashtable_t *ht, const tuple_t *,
                                         const uint32_t hashmask, const uint32_t skipbits, int64_t *matches,
-                                        void *(*thread_fun)(const tuple_t*, const tuple_t*, int64_t*), T_TIMER *timer);
+                                        void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),
+                                        T_TIMER *timer);
 
 int64_t proble_hashtable_single_measure(const hashtable_t *ht, const relation_t *rel, uint32_t index_rel,
                                         const uint32_t hashmask, const uint32_t skipbits, int64_t *matches,
-                                        void *(*thread_fun)(const tuple_t*, const tuple_t*, int64_t*), T_TIMER *timer);
+                                        void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),
+                                        T_TIMER *timer);
 
-void match_single_tuple(const std::list<intkey_t> list, const relation_t *rel, const tuple_t *tuple, int64_t *matches,
+void match_single_tuple(const std::list<tuple_t *> list, const tuple_t *tuple, int64_t *matches,
                         void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), T_TIMER *timer);
 
-int find_index(const relation_t *rel, const tuple_t *tuple);
-int find_index(const tuple_t* rel, const  int length, const tuple_t *tuple);
+int find_index(const tuple_t *rel, const int length, const tuple_t *tuple);
+
 /**
  * Multi-thread hashtable build method, ht is pre-allocated.
  * Writes to buckets are synchronized via latches.

@@ -2,16 +2,22 @@
 // Created by Shuhao Zhang on 17/10/19.
 //
 
+#include <sstream>
+#include <zconf.h>
 #include "t_timer.h"
-
 
 
 using namespace std;
 
+std::string GetCurrentWorkingDir(void) {
+    char buff[FILENAME_MAX];
+    getcwd(buff, FILENAME_MAX);
+    std::string current_working_dir(buff);
+    return current_working_dir;
+}
 
 void print_timing(std::vector<uint64_t> vector, std::string arg_name) {
-    std::string homepath = getenv("HOME");
-    ofstream outputFile(homepath + "/results" + arg_name + "/progressive_results.txt");
+    ofstream outputFile(GetCurrentWorkingDir().append("results/").append(arg_name).append("_timestamps.txt"));
     for (auto &element : vector) {
         outputFile << element << endl;
     }

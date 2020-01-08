@@ -7,13 +7,13 @@ make -j4
 function benchmarkRun {
 		#####native execution
 		echo "==benchmark:$benchmark -a $algo -n $Threads=="
-    ./hashing -a $algo -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads >> $output
+    ./hashing -a $algo -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads >> results/$output
 }
 
 function Run {
 		#####native execution
 		echo "==benchmark:$benchmark -a $algo -n $Threads=="
-    ./hashing -a $algo -r $RSIZE -s $SSIZE -n $Threads >> $output
+    ./hashing -a $algo -r $RSIZE -s $SSIZE -n $Threads >> results/$output
 }
 
 # Configurable variables
@@ -30,7 +30,8 @@ SKEY=0
 RTS=0
 STS=0
 Threads=40
-for algo in PMJ_JM_NP #RPJ_JM_NP SHJ_JBCR_NP PMJ_JBCR_NP RPJ_JBCR_NP SHJ_HS_NP PMJ_HS_NP RPJ_HS_NP #SHJ_JM_NP
+mkdir results
+for algo in SHJ_JM_NP SHJ_JBCR_NP SHJ_HS_NP PMJ_JM_NP PMJ_JBCR_NP PMJ_HS_NP #RPJ_JM_NP RPJ_JBCR_NP RPJ_HS_NP
 do
   for benchmark in "Kim" #"Stock" "Rovio" "DEBS" "YSB" #"Google" "Amazon"
   do

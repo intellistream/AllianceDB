@@ -253,35 +253,25 @@ int64_t proble_hashtable_single_measure(const hashtable_t *ht, const relation_t 
  * @param tuple
  * @param matches
  */
-void match_single_tuple(const std::list<intkey_t> list, const relation_t *rel, const tuple_t *tuple, int64_t *matches,
+void match_single_tuple(const std::list<tuple_t *> list, const tuple_t *tuple, int64_t *matches,
                         void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), T_TIMER *timer) {
     // TODO: refactor RPJ related methods to RPJ helper
     for (auto it = list.begin(); it != list.end(); it++) {
         if (thread_fun) {
-            thread_fun(tuple, &rel->tuples[*it], matches);
+            thread_fun(tuple, it.operator*(), matches);
         }
-        if (tuple->key == rel->tuples[*it].key) {
+        if (tuple->key == it.operator*()->key) {
             (*matches)++;
             END_PROGRESSIVE_MEASURE((*timer))
         }
     }
-    fprintf(stdout, "JOINING: matches: %d, tuple: %d\n", *matches, tuple->key);
+    DEBUGMSG("JOINING: matches: %d, tuple: %d\n", *matches, tuple->key);
 }
 
 int find_index(const tuple_t *rel, const int length, const tuple_t *tuple) {
     // TODO: refactor RPJ related methods to RPJ helper
     for (int i = 0; i < length; i++) {
         if (rel[i].key == tuple->key) {
-            return i;
-        }
-    }
-    return -1;
-}
-
-int find_index(const relation_t *rel, const tuple_t *tuple) {
-    // TODO: refactor RPJ related methods to RPJ helper
-    for (int i = 0; i < rel->num_tuples; i++) {
-        if (rel->tuples[i].key == tuple->key) {
             return i;
         }
     }
@@ -370,7 +360,7 @@ const std::string reset("\033[0m");
 
 tuple_t *copy_tuples(const tuple_t *tuples, int size) {
     auto relRsz = size * sizeof(tuple_t)
-             + RELATION_PADDING(1, CACHELINEPADDING(1));//TODO: think why we need to patch this.
+                  + RELATION_PADDING(1, CACHELINEPADDING(1));//TODO: think why we need to patch this.
     tuple_t *copy = (tuple_t *) malloc_aligned(relRsz);
 
     for (auto i = 0; i < size; i++)

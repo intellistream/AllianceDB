@@ -723,52 +723,9 @@ rpj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid) {
 
 /**
  *
+ * TODO:一个是升级成wanderjoin（就是加索引）一个是要用estimation结果来指导fetch.
  *
- * @param relR
- * @param relS
- * @param nthreads
- * @return
- */
-long
-hrpj(int32_t tid, relation_t *rel_R,
-     relation_t *rel_S, void *pVoid,
-     T_TIMER *timer) {
-
-    //allocate two hashtables.
-    hashtable_t *htR;
-    hashtable_t *htS;
-
-    uint32_t nbucketsR = (rel_R->num_tuples / BUCKET_SIZE);
-    allocate_hashtable(&htR, nbucketsR);
-
-    uint32_t nbucketsS = (rel_S->num_tuples / BUCKET_SIZE);
-    allocate_hashtable(&htS, nbucketsS);
-
-    uint32_t index_R = 0;//index of rel_R
-    uint32_t index_S = 0;//index of rel_S
-
-    uint32_t cur_step = 0;
-
-    int64_t matches = 0;//number of matches.
-
-    RippleJoiner joiner(rel_R, rel_S, 0);
-
-    // indexed ripple join, assuming R and S have the same input rate.
-    do {
-        joiner.join(tid, &rel_S->tuples[cur_step], false, &matches, NULL, pVoid);
-        joiner.join(tid, &rel_R->tuples[cur_step], true, &matches, NULL, pVoid);
-        cur_step++;
-//        DEBUGMSG(1, "JOINING: tid: %d, cur step: %d, matches: %d\n", tid, cur_step, matches)
-    } while (cur_step < rel_R->num_tuples || cur_step < rel_S->num_tuples);
-
-    destroy_hashtable(htR);
-    destroy_hashtable(htS);
-    return matches;
-}
-
-
-/**
- * PMJ algorithm to be used in each thread.
+ * RIPPLE JOIN algorithm to be used in each thread.
  * @param tid
  * @param tuple
  * @param tuple_R
@@ -782,21 +739,20 @@ hrpj(int32_t tid, relation_t *rel_R,
 
 void RippleJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R, int64_t *matches,
                         void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid) {
-    fprintf(stdout, "tid: %d, tuple: %d, R?%d\n", tid, tuple->key, tuple_R);
+    DEBUGMSG("tid: %d, tuple: %d, R?%d\n", tid, tuple->key, tuple_R);
     if (tuple_R) {
-//        samList.t_windows->R_Window.push_back(tuple->key);
         BEGIN_MEASURE_BUILD_ACC(timer)
-        samList.t_windows->R_Window.push_back(find_index(relR, tuple));
+        samList.t_windows->R_Window.push_back(tuple);
         END_MEASURE_BUILD_ACC(timer)//accumulate hash table build time.
 
-        match_single_tuple(samList.t_windows->S_Window, relS, tuple, matches, thread_fun, &timer);
+        match_single_tuple(samList.t_windows->S_Window, tuple, matches, thread_fun, &timer);
     } else {
 //        samList.t_windows->S_Window.push_back(tuple->key);
         BEGIN_MEASURE_BUILD_ACC(timer)
-        samList.t_windows->S_Window.push_back(find_index(relS, tuple));
+        samList.t_windows->S_Window.push_back(tuple);
         END_MEASURE_BUILD_ACC(timer)//accumulate hash table build time.
 
-        match_single_tuple(samList.t_windows->R_Window, relR, tuple, matches, thread_fun, &timer);
+        match_single_tuple(samList.t_windows->R_Window, tuple, matches, thread_fun, &timer);
     }
     // Compute estimation result
     long estimation_result = 0;
@@ -837,9 +793,9 @@ nthreads) : relR(
  */
 void RippleJoiner::clean(int32_t tid, tuple_t *tuple, bool cleanR) {
     if (cleanR) {
-        samList.t_windows->R_Window.remove(find_index(relR, tuple));
+        samList.t_windows->R_Window.remove(tuple);
     } else {
-        samList.t_windows->S_Window.remove(find_index(relS, tuple));
+        samList.t_windows->S_Window.remove(tuple);
     }
 }
 
