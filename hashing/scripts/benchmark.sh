@@ -30,7 +30,7 @@ SKEY=0
 RTS=0
 STS=0
 Threads=40
-for algo in SHJ_JM_NP PMJ_JM_NP RPJ_JM_NP SHJ_JBCR_NP PMJ_JBCR_NP RPJ_JBCR_NP SHJ_HS_NP PMJ_HS_NP RPJ_HS_NP
+for algo in PMJ_JM_NP #RPJ_JM_NP SHJ_JBCR_NP PMJ_JBCR_NP RPJ_JBCR_NP SHJ_HS_NP PMJ_HS_NP RPJ_HS_NP #SHJ_JM_NP
 do
   for benchmark in "Kim" #"Stock" "Rovio" "DEBS" "YSB" #"Google" "Amazon"
   do

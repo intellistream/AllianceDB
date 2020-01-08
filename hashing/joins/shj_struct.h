@@ -44,6 +44,8 @@ struct arg_t {
 };
 
 struct t_param {
+    string algo_name;
+
     int64_t result;
     result_t *joinresult;
 
@@ -57,6 +59,7 @@ struct t_param {
     enum fetcher fetcher;
     baseShuffler *shuffler;
     enum joiner_type joiner;
+
 
     t_param(int nthreads) {
         result = 0;

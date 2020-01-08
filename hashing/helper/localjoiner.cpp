@@ -261,11 +261,11 @@ PMJJoiner::join_tuple_single(int32_t tid, tuple_t *tmp_rel, int *outerPtr, tuple
         if (IStuple_R) {
             auto relRsz = fat_tuple_size * sizeof(tuple_t)
                           + RELATION_PADDING(1, CACHELINEPADDING(1));//TODO: think why we need to patch this.
-            out_relR= (tuple_t *) malloc_aligned(relRsz);
+            out_relR = (tuple_t *) malloc_aligned(relRsz);
 
             relRsz = *outerPtr * sizeof(tuple_t)
                      + RELATION_PADDING(1, CACHELINEPADDING(1));//TODO: think why we need to patch this.
-            out_relS= (tuple_t *) malloc_aligned(relRsz);
+            out_relS = (tuple_t *) malloc_aligned(relRsz);
 
             sorting_phase(tid,
                           tuple,
@@ -284,11 +284,11 @@ PMJJoiner::join_tuple_single(int32_t tid, tuple_t *tmp_rel, int *outerPtr, tuple
         } else {
             auto relRsz = fat_tuple_size * sizeof(tuple_t)
                           + RELATION_PADDING(1, CACHELINEPADDING(1));//TODO: think why we need to patch this.
-            out_relS= (tuple_t *) malloc_aligned(relRsz);
+            out_relS = (tuple_t *) malloc_aligned(relRsz);
 
             relRsz = *outerPtr * sizeof(tuple_t)
                      + RELATION_PADDING(1, CACHELINEPADDING(1));//TODO: think why we need to patch this.
-            out_relR= (tuple_t *) malloc_aligned(relRsz);
+            out_relR = (tuple_t *) malloc_aligned(relRsz);
 
             sorting_phase(tid,
                           tmp_rel,
@@ -564,11 +564,11 @@ merge(int32_t tid, int64_t *matches,
 
     auto relRsz = stepR * sizeof(tuple_t)
                   + RELATION_PADDING(1, CACHELINEPADDING(1));//TODO: think why we need to patch this.
-    out_relR= (tuple_t *) malloc_aligned(relRsz);
+    out_relR = (tuple_t *) malloc_aligned(relRsz);
 
     relRsz = stepS * sizeof(tuple_t)
              + RELATION_PADDING(1, CACHELINEPADDING(1));//TODO: think why we need to patch this.
-    out_relS= (tuple_t *) malloc_aligned(relRsz);
+    out_relS = (tuple_t *) malloc_aligned(relRsz);
 
 
     sorting_phase(tid, arg->tmp_relR + arg->outerPtrR, stepR,
@@ -609,21 +609,20 @@ void PMJJoiner::join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *match
     int stepR = progressive_step_tupleR;
     int stepS = progressive_step_tupleS;
 
+    tuple_t *out_relR;
+    tuple_t *out_relS;
+
     if (arg->outerPtrR < arg->sizeR - stepR && arg->outerPtrS < arg->sizeS - stepS) {//normal process
         //check if it is ready to start process.
         if (arg->innerPtrR >= stepR
             && arg->innerPtrS >= stepS) {//start process and reset inner pointer.
-
-            tuple_t *out_relR;
-            tuple_t *out_relS;
-
             auto relRsz = stepR * sizeof(tuple_t)
                           + RELATION_PADDING(1, CACHELINEPADDING(1));//TODO: think why we need to patch this.
-            out_relR= (tuple_t *) malloc_aligned(relRsz);
+            out_relR = (tuple_t *) malloc_aligned(relRsz);
 
             relRsz = stepS * sizeof(tuple_t)
                      + RELATION_PADDING(1, CACHELINEPADDING(1));//TODO: think why we need to patch this.
-            out_relS= (tuple_t *) malloc_aligned(relRsz);
+            out_relS = (tuple_t *) malloc_aligned(relRsz);
 
 
             /***Sorting***/
@@ -641,6 +640,9 @@ void PMJJoiner::join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *match
             /***Reset Inner Pointer***/
             arg->innerPtrR -= stepR;
             arg->innerPtrS -= stepS;
+
+            delete out_relR;
+            delete out_relS;
         }
     } else if (arg->outerPtrR + arg->innerPtrR == arg->sizeR &&
                arg->outerPtrS + arg->innerPtrS == arg->sizeS) {//received everything
@@ -649,18 +651,13 @@ void PMJJoiner::join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *match
         stepR = arg->sizeR - arg->outerPtrR;
         stepS = arg->sizeS - arg->outerPtrS;
 
-
-
-        tuple_t *out_relR;
-        tuple_t *out_relS;
-
         auto relRsz = stepR * sizeof(tuple_t)
                       + RELATION_PADDING(1, CACHELINEPADDING(1));//TODO: think why we need to patch this.
-        out_relR= (tuple_t *) malloc_aligned(relRsz);
+        out_relR = (tuple_t *) malloc_aligned(relRsz);
 
         relRsz = stepS * sizeof(tuple_t)
                  + RELATION_PADDING(1, CACHELINEPADDING(1));//TODO: think why we need to patch this.
-        out_relS= (tuple_t *) malloc_aligned(relRsz);
+        out_relS = (tuple_t *) malloc_aligned(relRsz);
 
 
         sorting_phase(tid, arg->tmp_relR + arg->outerPtrR, stepR, arg->tmp_relS + arg->outerPtrS, stepS,
@@ -673,7 +670,14 @@ void PMJJoiner::join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *match
         DEBUGMSG("Join during run creation:%d", *matches)
         merging_phase(matches, &arg->Q, &timer);
         DEBUGMSG("Join during run merge matches:%d", *matches)
+
+        delete out_relR;
+        delete out_relS;
     }
+
+
+
+
 }
 
 

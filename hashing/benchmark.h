@@ -43,6 +43,8 @@ int getopt(int argc, char * const argv[],
 
 #define AVXFlag     ((1UL<<28)|(1UL<<27))
 
+
+
 typedef struct algo_t algo_t;
 typedef struct param_t param_t;
 

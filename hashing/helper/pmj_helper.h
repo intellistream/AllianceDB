@@ -19,9 +19,9 @@
 
 
 #define progressive_step 0.05 //percentile, 0.01 ~ 0.2.
-#define progressive_step_tupleR ALIGN_NUMTUPLES(10) //progressive #tuples.
-#define progressive_step_tupleS ALIGN_NUMTUPLES(10) //progressive #tuples.
-#define merge_step 2 // number of ``runs" to merge in each round.
+#define progressive_step_tupleR ALIGN_NUMTUPLES(100) //progressive #tuples.
+#define progressive_step_tupleS ALIGN_NUMTUPLES(100) //progressive #tuples.
+#define merge_step 200 // number of ``runs" to merge in each round.
 
 
 inline struct tuple_t *read(tuple_t *tuple, int length, int idx) {
@@ -51,6 +51,7 @@ struct run {//a pair of runs
     //used during sorting phase and initial merging phase..
     tuple_t *R = nullptr;
     tuple_t *S = nullptr;
+
     int posR;//readable position of R. By default should be 0 and up to size of R.
     int posS;//readable position of S.
     int lengthR;
@@ -82,44 +83,29 @@ struct run {//a pair of runs
 
 struct sweepArea {
 
-    std::set<const tuple_t *> sx;
+    std::list<const tuple_t *> sx;
 
     void insert(const tuple_t *tuple) {
-        sx.insert(tuple);
+        sx.push_back(tuple);
     }
 
-/*
-    bool within(tuple_t *const &x, tuple_t *List, std::vector<int> pos) {
-        for (auto it = pos.begin(); it != pos.end(); it++) {
-            auto tmpt = read(List, it.operator*());
-            if (x == tmpt) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    void query(tuple_t *tuple, int *matches, std::vector<int> pos, tuple_t *tupleList) {
-
-        //clean elements that are less than the current element.
-        for (auto it = sx.begin(); it != sx.end();) {
-            if (LessPredicate(it.operator*(), tuple)) {
-                it = sx.erase(it);
-            } else {  //perform join.
-                if (EqualPredicate(it.operator*(), tuple)) {
-                    if (!within(it.operator*(), tupleList, pos))//otherwise, they must have already matched before.
-                        (*matches)++;
-                }
-                ++it;
-            }
-        }
-    }
-*/
     void query(const tuple_t *tuple, int64_t *matches, T_TIMER *timer) {
 
-        //clean elements that are less than the current element.
+//        iterator<const tuple_t *>  marker = NULL;
+//        for (auto it = sx.begin(); it != sx.end(); ++it) {
+//            //perform join.
+//            if (EqualPredicate(it.operator*(), tuple)) {
+//                (*matches)++;
+//#ifdef MEASURE
+//                END_PROGRESSIVE_MEASURE((*timer))
+//#endif
+//                if (marker == NULL)
+//                    marker = it;
+//            }
+//        }
+//        sx.erase(sx.begin(), ++marker);
         for (auto it = sx.begin(); it != sx.end();) {
-            if (LessPredicate(it.operator*(), tuple)) {
+            if (LessPredicate(it.operator*(), tuple)) {  //clean elements that are less than the current element.
                 it = sx.erase(it);
             } else {  //perform join.
                 if (EqualPredicate(it.operator*(), tuple)) {

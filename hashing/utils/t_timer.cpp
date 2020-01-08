@@ -3,15 +3,13 @@
 //
 
 #include "t_timer.h"
-#include <iostream>
-#include <fstream>
-#include <cmath>
+
+
 
 using namespace std;
 
-extern string arg_name;
 
-void print_timing(std::vector<uint64_t> vector) {
+void print_timing(std::vector<uint64_t> vector, std::string arg_name) {
     std::string homepath = getenv("HOME");
     ofstream outputFile(homepath + "/results" + arg_name + "/progressive_results.txt");
     for (auto &element : vector) {

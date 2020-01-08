@@ -59,9 +59,10 @@ void earlyJoinMergedRuns(std::vector<run> *Q, int64_t *matches, run *newRun, T_T
         int run_i = 0;
         int run_j = 0;
         int m = 0;
-        for (auto run_itr = Q->begin();
-             run_itr < Q->begin() + merge_step;
-             ++run_itr) {//iterate through several runs.
+
+        int actual_merge_step = std::min((int) Q->size(), merge_step);
+
+        for (auto run_itr = Q->begin(); run_itr < Q->begin() + actual_merge_step; ++run_itr) {//iterate through several runs.
 
             if (Q->size() < 2) { break; }
 
@@ -118,18 +119,20 @@ void earlyJoinMergedRuns(std::vector<run> *Q, int64_t *matches, run *newRun, T_T
 
         if (!findI && !findJ) {
             if (Q->size() < 2) { return; }
-            Q->erase(Q->begin(), Q->begin() + merge_step);//clean Q.
+//            printf("Q SIZE: %d, actual_merge_step %d\n", Q->size(), actual_merge_step);
+            Q->erase(Q->begin(), Q->begin() + actual_merge_step);//clean Q.
             newRun->merged = true;
+            delete[](RM);
+            delete[](SM);
             return;
         }
         if (!findJ || (findI && LessEqualPredicate(minR, minS))) {
             RM[run_i].insert(minR);
-            for (auto run_itr = 0; run_itr < merge_step; run_itr++) {
+            for (auto run_itr = 0; run_itr < actual_merge_step; run_itr++) {
                 if (run_itr != run_i) {// except (r,x)| x belong to Si.
                     SM[run_itr].query(minR, matches, timer);
                 }
             }
-
             if (i.operator*().merged) {
                 newRun->mergedR.push_back(
                         i.operator*().mergedR.at(mark_pi));//merge multiple subsequences into a longer sorted one.
@@ -142,7 +145,7 @@ void earlyJoinMergedRuns(std::vector<run> *Q, int64_t *matches, run *newRun, T_T
             // remove the smallest element from subsequence.
         } else {
             SM[run_j].insert(minS);
-            for (auto run_itr = 0; run_itr < merge_step; run_itr++) {
+            for (auto run_itr = 0; run_itr < actual_merge_step; run_itr++) {
                 if (run_itr != run_j) {// except (x,r)| x belong to Rj.
                     RM[run_itr].query(minS, matches, timer);
                 }
@@ -156,8 +159,6 @@ void earlyJoinMergedRuns(std::vector<run> *Q, int64_t *matches, run *newRun, T_T
             }
             newRun->lengthS++;
             j.operator*().posS++;
-//            sortedS->push_back(j->posS.begin().operator*());//merge multiple subsequences into a longer sorted one.
-//            j->posS.erase(j->posS.begin());//remove the smallest element from subsequence.
         }
     } while (true);//must have merged all subsequences.
 }

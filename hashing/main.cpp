@@ -239,6 +239,7 @@ cpu-mapping.txt
 #include <zconf.h>
 #include "benchmark.h"
 
+
 void
 print_version();
 
@@ -247,7 +248,6 @@ parse_args(int argc, char **argv, param_t *cmd_params);
 
 param_t defaultParam();
 
-string arg_name;
 
 int
 main(int argc, char **argv) {
@@ -269,7 +269,6 @@ main(int argc, char **argv) {
         cmd_params.scalar_sort = 1;
         cmd_params.scalar_merge = 1;
     }
-    arg_name = cmd_params.algo->name;
 #ifdef PERF_COUNTERS
     PCM_CONFIG = cmd_params.perfconf;
     PCM_OUT    = cmd_params.perfout;
@@ -329,7 +328,7 @@ param_t defaultParam() {/* Command line parameters */
      * RIPPLE JOIN: RPJ_st(16), RPJ_JM_NP,  RPJ_JB_NP, RPJ_JBCR_NP, RPJ_HS_NP
      * */
     cmd_params.algo = &algos[12];
-    cmd_params.nthreads = 6;//TODO: in HS mode, thread must be larger than 1. Fix it when nthread=1.
+    cmd_params.nthreads = 2;//TODO: in HS mode, thread must be larger than 1. Fix it when nthread=1.
 
     /* default dataset is Workload B (described in paper) */
     cmd_params.r_size = 5000;

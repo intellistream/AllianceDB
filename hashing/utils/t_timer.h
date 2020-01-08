@@ -10,6 +10,9 @@
 #include <sys/time.h>           /* gettimeofday */
 #include <stdio.h>              /* printf */
 #include <vector>
+#include <iostream>
+#include <fstream>
+#include <cmath>
 
 //thread_local structure.
 struct T_TIMER {
@@ -96,7 +99,7 @@ struct T_TIMER {
  * print progressive results.
  * @param vector
  */
-void print_timing(std::vector<uint64_t> vector);
+void print_timing(std::vector<uint64_t> vector, std::string algo_name);
 
 /** print out the execution time statistics of the join */
 void print_timing(int64_t result, T_TIMER *timer);
