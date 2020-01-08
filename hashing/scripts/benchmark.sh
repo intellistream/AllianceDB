@@ -12,14 +12,13 @@ function benchmarkRun {
 
 function Run {
 		#####native execution
+		mkdir results/$algo
 		echo "==benchmark:$benchmark -a $algo -n $Threads=="
-    ./hashing -a $algo -r $RSIZE -s $SSIZE -n $Threads >> results/$output
+    ./hashing -a $algo -r $RSIZE -s $SSIZE -n $Threads >> results/$algo/$output
 }
 
 # Configurable variables
 # Generate a timestamp
-timestamp=$(date +%Y%m%d-%H%M)
-output=test$timestamp.txt
 algo=""
 RSIZE=1
 SSIZE=1
@@ -30,7 +29,8 @@ SKEY=0
 RTS=0
 STS=0
 Threads=40
-mkdir results
+timestamp=$(date +%Y%m%d-%H%M)
+output=test$timestamp.txt
 for algo in SHJ_JM_NP SHJ_JBCR_NP SHJ_HS_NP PMJ_JM_NP PMJ_JBCR_NP PMJ_HS_NP #RPJ_JM_NP RPJ_JBCR_NP RPJ_HS_NP
 do
   for benchmark in "Kim" #"Stock" "Rovio" "DEBS" "YSB" #"Google" "Amazon"
