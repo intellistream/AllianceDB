@@ -114,6 +114,8 @@ public:
         return cntR == relR->num_tuples && cntS == relS->num_tuples;
     }
 
+    fetch_t *next_tuple() override;
+
     /**
      * Initialization
      * @param nthreads
@@ -148,6 +150,7 @@ public:
     bool finish() {
         return cntR == relR->num_tuples && cntS == relS->num_tuples;
     }
+
 
     /**
      * Initialization

@@ -17,7 +17,8 @@ std::string GetCurrentWorkingDir(void) {
 }
 
 void print_timing(std::vector<uint64_t> vector, std::string arg_name) {
-//    ofstream outputFile(GetCurrentWorkingDir().append("results/").append(arg_name).append("_timestamps.txt"));
+    string path = "/data1/xtra/results/" + arg_name.append("_timestamps.txt");
+    ofstream outputFile(path, std::ios::trunc);
     int n = vector.size() - 1;
     int check25 = ceil(n * 0.25);
     int check50 = ceil(n * 0.5);
@@ -29,11 +30,12 @@ void print_timing(std::vector<uint64_t> vector, std::string arg_name) {
     fprintf(stdout, "\n");
     fflush(stdout);
 
-    string s = "\n==Detailed Timestamps==\n";
+//    outputFile << "\n==Detailed Timestamps==\n";
+    auto begin = vector.at(0);
     for (auto &element : vector) {
-        s.append(std::to_string(element) + "\n");
+        outputFile << (std::to_string(element - begin) + "\n");
     }
-    printf(s.c_str());
+    outputFile.close();
 }
 
 void print_timing(int64_t result, T_TIMER *timer) {

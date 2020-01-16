@@ -618,6 +618,8 @@ void
         //forward tuple twice!
         forward_tuples_PMJ(shuffler, args, fetchR, fetchS);
 
+        usleep(rand() % 100);
+
     } while (!fetcher->finish());
 
 #ifdef JOIN_RESULT_MATERIALIZE
