@@ -36,6 +36,7 @@
 #include "../utils/generator.h"          /* numa_localize() */
 #include "../utils/t_timer.h" /* startTimer, stopTimer */
 #include <immintrin.h>
+#include <algorithm>
 
 #ifdef JOIN_RESULT_MATERIALIZE
 #include "tuple_buffer.h"       /* for materialization */
@@ -137,7 +138,9 @@ typedef struct synctimer_t synctimer_t;
 typedef int64_t (*JoinFunction)(const relation_t *const,
                                 const relation_t *const,
                                 relation_t *const,
-                                void *output);
+                                void *output,
+                                T_TIMER *timer
+);
 
 /** holds the arguments passed to each thread */
 struct arg_t {
@@ -291,11 +294,14 @@ int64_t
 bucket_chaining_join(const relation_t *const R,
                      const relation_t *const S,
                      relation_t *const tmpR,
-                     void *output) {
+                     void *output,
+                     T_TIMER *timer
+) {
     int *next, *bucket;
     const uint32_t numR = R->num_tuples;
     uint32_t N = numR;
     int64_t matches = 0;
+
 
     NEXT_POW_2(N);
     /* N <<= 1; */
@@ -341,6 +347,9 @@ bucket_chaining_join(const relation_t *const R,
 #endif
 
                 matches++;
+#ifdef MEASURE
+                END_PROGRESSIVE_MEASURE((*timer))
+#endif
             }
         }
     }
@@ -377,7 +386,9 @@ int64_t
 histogram_join(const relation_t *const R,
                const relation_t *const S,
                relation_t *const tmpR,
-               void *output) {
+               void *output,
+               T_TIMER *timer
+) {
     int32_t *restrict hist;
     const tuple_t *restrict const Rtuples = R->tuples;
     const uint32_t numR = R->num_tuples;
@@ -463,7 +474,9 @@ int64_t
 histogram_optimized_join(const relation_t *const R,
                          const relation_t *const S,
                          relation_t *const tmpR,
-                         void *output) {
+                         void *output,
+                         T_TIMER *timer
+) {
 #ifdef KEY_8B
 #warning SIMD comparison for 64-bit keys are not implemented!
     return 0;
@@ -787,11 +800,11 @@ parallel_radix_partition(part_t *const part) {
         my_hist[i] = sum;
     }
 
-    SYNC_TIMER_STOP(&part->thrargs->localtimer.sync1[part->relidx]);
+//    SYNC_TIMER_STOP(&part->thrargs->localtimer.sync1[part->relidx]);
     /* wait at a barrier until each thread complete histograms */
     BARRIER_ARRIVE(part->thrargs->barrier, rv);
     /* barrier global sync point-1 */
-    SYNC_GLOBAL_STOP(&part->thrargs->globaltimer->sync1[part->relidx], my_tid);
+//    SYNC_GLOBAL_STOP(&part->thrargs->globaltimer->sync1[part->relidx], my_tid);
 
     /* determine the start and end of each cluster */
     for (i = 0; i < my_tid; i++) {
@@ -848,10 +861,10 @@ typedef union {
 static inline void
 store_nontemp_64B(void *dst, void *src) {
 #ifdef __AVX__
-    register __m256i * d1 = (__m256i*) dst;
-    register __m256i s1 = *((__m256i*) src);
-    register __m256i * d2 = d1+1;
-    register __m256i s2 = *(((__m256i*) src)+1);
+    register __m256i *d1 = (__m256i *) dst;
+    register __m256i s1 = *((__m256i *) src);
+    register __m256i *d2 = d1 + 1;
+    register __m256i s2 = *(((__m256i *) src) + 1);
 
     _mm256_stream_si256(d1, s1);
     _mm256_stream_si256(d2, s2);
@@ -998,6 +1011,7 @@ parallel_radix_partition_optimized(part_t *const part) {
  */
 void *
 prj_thread(void *param) {
+
     arg_t *args = (arg_t *) param;
     int32_t my_tid = args->my_tid;
 
@@ -1043,17 +1057,14 @@ prj_thread(void *param) {
     }
 #endif
 
-    /* wait at a barrier until each thread starts and then start the T_TIMER */
-    BARRIER_ARRIVE(args->barrier, rv);
-
+//    /* wait at a barrier until each thread starts and then start the T_TIMER */
+//    BARRIER_ARRIVE(args->barrier, rv);
     /* if monitoring synchronization stats */
-    SYNC_TIMERS_START(args, my_tid);
+//    SYNC_TIMERS_START(args, my_tid);
 
 #ifndef NO_TIMING
-    if (my_tid == 0) {
-        /* thread-0 checkpoints the time */
-        START_MEASURE((*(args->timer)))
-    }
+    START_MEASURE((*(args->timer)))
+    BEGIN_MEASURE_PARTITION((*(args->timer)))/* partitioning start */
 #endif
 
     /********** 1st pass of multi-pass partitioning ************/
@@ -1348,10 +1359,9 @@ prj_thread(void *param) {
     SYNC_GLOBAL_STOP(&args->globaltimer->sync4, my_tid);
 
 #ifndef NO_TIMING
-    if (my_tid == 0) END_MEASURE_PARTITION((*(args->timer)));/* partitioning finished */
+    END_MEASURE_PARTITION((*(args->timer)));/* partitioning finished */
+    BEGIN_MEASURE_BUILD((*(args->timer)))
 #endif
-
-    DEBUGMSG((my_tid == 0), "Number of join tasks = %d\n", join_queue->count);
 
 #ifdef PERF_COUNTERS
     if(my_tid == 0){
@@ -1374,7 +1384,7 @@ prj_thread(void *param) {
         /* do the actual join. join method differs for different algorithms,
            i.e. bucket chaining, histogram-based, histogram-based with simd &
            prefetching  */
-        results += args->join_function(&task->relR, &task->relS, &task->tmpR, chainedbuf);
+        results += args->join_function(&task->relR, &task->relS, &task->tmpR, chainedbuf, args->timer);
 
         args->parts_processed++;
     }
@@ -1387,21 +1397,25 @@ prj_thread(void *param) {
     args->threadresult->results  = (void *) chainedbuf;
 #endif
 
-    /* this thread is finished */
-    SYNC_TIMER_STOP(&args->localtimer.finish_time);
 
-#ifndef NO_TIMING
-    /* this is for just reliable timing of finish time */
-    BARRIER_ARRIVE(args->barrier, rv);
-    if (my_tid == 0) {
-        /* Actually with this setup we're not timing build */
-        END_MEASURE_BUILD((*(args->timer)))
-        END_MEASURE((*(args->timer)))
-    }
-#endif
+//#ifndef NO_TIMING
+//    /* this is for just reliable timing of finish time */
+//    BARRIER_ARRIVE(args->barrier, rv);
+//    if (my_tid == 0) {
+//        /* Actually with this setup we're not timing build */
+//        END_MEASURE_BUILD((*(args->timer)))
+//        END_MEASURE((*(args->timer)))
+//    }
+//#endif
 
     /* global finish time */
-    SYNC_GLOBAL_STOP(&args->globaltimer->finish_time, my_tid);
+//    SYNC_GLOBAL_STOP(&args->globaltimer->finish_time, my_tid);
+
+#ifndef NO_TIMING
+    /* Actually with this setup we're not timing build */
+    END_MEASURE_BUILD((*(args->timer)))
+    END_MEASURE((*(args->timer)))
+#endif
 
 #ifdef PERF_COUNTERS
     if(my_tid == 0) {
@@ -1414,7 +1428,7 @@ prj_thread(void *param) {
     /* Just to make sure we get consistent performance numbers */
     BARRIER_ARRIVE(args->barrier, rv);
 #endif
-
+    DEBUGMSG("Thread %d exit, I have finished processing %ld\n", args->my_tid, args->result);
     return 0;
 }
 
@@ -1461,9 +1475,8 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads)
 
     result_t *joinresult = 0;
     joinresult = (result_t *) malloc(sizeof(result_t));
-#ifndef NO_TIMING
-    T_TIMER timer;
-#endif
+
+
 #ifdef JOIN_RESULT_MATERIALIZE
     joinresult->resultlist = (threadresult_t *) malloc(sizeof(threadresult_t)
                                                        * nthreads);
@@ -1507,7 +1520,7 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads)
     /* thread-0 keeps track of synchronization stats */
     args[0].globaltimer = (synctimer_t*) malloc(sizeof(synctimer_t));
 #endif
-
+    T_TIMER timer[nthreads];//every thread has its own timer.
     /* first assign chunks of relR & relS for each thread */
     numperthr[0] = relR->num_tuples / nthreads;
     numperthr[1] = relS->num_tuples / nthreads;
@@ -1520,7 +1533,7 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads)
         CPU_SET(cpu_idx, &set);
         pthread_attr_setaffinity_np(&attr, sizeof(cpu_set_t), &set);
 
-        args[i].timer = &timer;
+        args[i].timer = &timer[i];
         args[i].relR = relR->tuples + i * numperthr[0];
         args[i].tmpR = tmpRelR;
         args[i].histR = histR;
@@ -1554,14 +1567,24 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads)
             exit(-1);
         }
     }
-
     /* wait for threads to finish */
     for (i = 0; i < nthreads; i++) {
         pthread_join(tid[i], NULL);
         result += args[i].result;
+#ifndef NO_TIMING
+        merge(args[i].timer);
+#endif
     }
     joinresult->totalresults = result;
     joinresult->nthreads = nthreads;
+
+#ifndef NO_TIMING
+    /* now print the timing results: */
+    for (i = 0; i < nthreads; i++) {
+        print_timing(args[i].result, args[i].timer);
+    }
+#endif
+
 
 #ifdef SYNCSTATS
     /* #define ABSDIFF(X,Y) (((X) > (Y)) ? ((X)-(Y)) : ((Y)-(X))) */
@@ -1587,10 +1610,8 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads)
 #endif
 
 #ifndef NO_TIMING
-    /* now print the timing results: */
-    print_timing(result, args[0].timer);
+    sort("NPO");
 #endif
-
     /* clean up */
     for (i = 0; i < nthreads; i++) {
         free(histR[i]);
@@ -1747,7 +1768,7 @@ RJ_st(relation_t *relR, relation_t *relS, int nthreads) {
             tmpS.tuples = relS->tuples + s;
             s += S_count_per_cluster[i];
 
-            result += bucket_chaining_join(&tmpR, &tmpS, NULL, chainedbuf);
+            result += bucket_chaining_join(&tmpR, &tmpS, NULL, chainedbuf, &timer);
         } else {
             r += R_count_per_cluster[i];
             s += S_count_per_cluster[i];

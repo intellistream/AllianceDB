@@ -93,7 +93,8 @@ void SHJJoiner::join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *match
             print_window(window1.R_Window);
         }
 #endif
-        proble_hashtable_single_measure(htS, tuple, hashmask_S, skipbits_S, matches, thread_fun, &timer);//(2)
+        proble_hashtable_single_measure(htS,
+                tuple, hashmask_S, skipbits_S, matches, thread_fun, &timer);//(2)
     } else {
         BEGIN_MEASURE_BUILD_ACC(timer)
         build_hashtable_single(htS, tuple, hashmask_S, skipbits_S);//(3)

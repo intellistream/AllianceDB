@@ -53,7 +53,6 @@
     }
 
 #define EAGER
-#define MEASURE
 #define expected_results 1280000.0
 
 ///** To keep track of the input relation pairs fitting into L2 cache */

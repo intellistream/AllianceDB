@@ -14,6 +14,7 @@
 #include <fstream>
 #include <cmath>
 
+#define MEASURE
 //thread_local structure.
 struct T_TIMER {
 #ifndef NO_TIMING
@@ -103,5 +104,9 @@ void print_timing(std::vector<uint64_t> vector, std::string algo_name);
 
 /** print out the execution time statistics of the join */
 void print_timing(int64_t result, T_TIMER *timer);
+
+void merge(T_TIMER *timer);
+
+void sort(std::string algo_name);
 
 #endif //ALLIANCEDB_T_TIMER_H

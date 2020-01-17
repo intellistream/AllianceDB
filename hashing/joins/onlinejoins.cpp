@@ -24,8 +24,6 @@
 #include "../helper/launcher.h"
 #include "../helper/thread_task.h"
 
-void merge(T_TIMER *timer);
-
 
 #ifdef PERF_COUNTERS
 #include "perf_counters.h"      /* PCM_x */
@@ -43,21 +41,6 @@ void initialize(int nthreads, const t_param &param) {
     pthread_attr_init(param.attr);
 }
 
-uint64_t actual_start_timestamp = UINTMAX_MAX;
-
-std::vector<uint64_t> global_record;
-
-void merge(T_TIMER *timer) {
-    uint64_t start = timer->record.at(0);
-    if (actual_start_timestamp > start) {
-        actual_start_timestamp = start;
-    }
-    for (auto i = 1; i < timer->record.size(); i++) {
-        global_record.push_back(timer->record.at(i));
-    }
-}
-
-
 t_param &finishing(int nthreads, t_param &param) {
     int i;
     for (i = 0; i < nthreads; i++) {
@@ -72,15 +55,11 @@ t_param &finishing(int nthreads, t_param &param) {
     param.joinresult->totalresults = param.result;
     param.joinresult->nthreads = nthreads;
 #ifndef NO_TIMING
-    //sort the global record to get to know the actual time when each match success.
-    global_record.push_back(actual_start_timestamp);
-    sort(global_record.begin(), global_record.end());
+    sort(param.algo_name);
     /* now print the timing results: */
     for (i = 0; i < nthreads; i++) {
         print_timing(*param.args[i].matches, param.args[i].timer);
     }
-    /* now print the progressive results: */
-    print_timing(global_record, param.algo_name);
 #endif
     return param;
 }

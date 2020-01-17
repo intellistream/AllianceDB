@@ -2,6 +2,15 @@
 // Created by Shuhao Zhang on 17/10/19.
 //
 
+#include "../helper/thread_task.h"
+#include "../helper/launcher.h"
+#include "../utils/barrier.h"
+#include "../utils/t_timer.h"  /* startTimer, stopTimer */
+#include <sys/time.h>           /* gettimeofday */
+#include <stdlib.h>             /* memalign */
+#include <stdio.h>              /* printf */
+#include <string.h>             /* memset */
+#include <pthread.h>            /* pthread_* */
 #include <sstream>
 #include <zconf.h>
 #include "t_timer.h"
@@ -44,7 +53,7 @@ void print_timing(int64_t result, T_TIMER *timer) {
         double diff_usec = (((timer->end).tv_sec * 1000000L + (timer->end).tv_usec)
                             - ((timer->start).tv_sec * 1000000L + (timer->start).tv_usec));
         double cyclestuple = timer->overall_timer / result;
-        fprintf(stdout, "RUNTIME TOTAL, BUILD, SORT, PART (cycles): \n");
+        fprintf(stdout, "[Info] RUNTIME TOTAL, BUILD, SORT, PART (cycles): \n");
         fprintf(stdout, "%llu \t %llu (%.2f%%) \t %llu (%.2f%%)   \t %llu (%.2f%%) ",
                 timer->overall_timer,
                 timer->buildtimer, (timer->buildtimer * 100 / (double) timer->overall_timer),
@@ -59,4 +68,25 @@ void print_timing(int64_t result, T_TIMER *timer) {
     } else {
         fprintf(stdout, "[Warning] This thread does not matches any tuple.\n\n");
     }
+}
+
+uint64_t actual_start_timestamp = UINTMAX_MAX;
+std::vector<uint64_t> global_record;
+
+void merge(T_TIMER *timer) {
+    uint64_t start = timer->record.at(0);
+    if (actual_start_timestamp > start) {
+        actual_start_timestamp = start;
+    }
+    for (auto i = 1; i < timer->record.size(); i++) {
+        global_record.push_back(timer->record.at(i));
+    }
+    //sort the global record to get to know the actual time when each match success.
+    global_record.push_back(actual_start_timestamp);
+}
+
+void sort(string algo_name) {
+    sort(global_record.begin(), global_record.end());
+    /* now print the progressive results: */
+    print_timing(global_record, algo_name);
 }
