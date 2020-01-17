@@ -7,7 +7,7 @@ make -j4
 function benchmarkRun {
 		#####native execution
 		echo "==benchmark:$benchmark -a $algo -n $Threads=="
-    ./hashing -a $algo -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads >> results
+    ./hashing -a $algo -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads
 }
 
 function Run {

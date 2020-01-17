@@ -217,7 +217,7 @@ if __name__ == "__main__":
             print('Gap of sampling ', opt_value)
             S = (int)(opt_value)
 
-    legend_labels = ['Hash_JM', 'Hash_JB', 'Hash_HS', 'Sort_JM', 'Sort_JB', 'Sort_HS']
+    legend_labels = ['Hash_JM', 'Hash_JB', 'Hash_HS', 'Sort_JM', 'Sort_JB', 'Sort_HS', 'PRO']
 
     col0 = []
     for x in range(1, N + 1):
