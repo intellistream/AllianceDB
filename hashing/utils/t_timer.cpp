@@ -31,7 +31,8 @@ void print_timing(std::vector<uint64_t> vector, std::string arg_name) {
     fflush(stdout);
 
 //    outputFile << "\n==Detailed Timestamps==\n";
-    auto begin = vector.at(0);
+    auto begin = vector.begin().operator*();
+    vector.erase(vector.begin());
     for (auto &element : vector) {
         outputFile << (std::to_string(element - begin) + "\n");
     }

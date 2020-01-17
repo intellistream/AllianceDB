@@ -7,14 +7,13 @@ make -j4
 function benchmarkRun {
 		#####native execution
 		echo "==benchmark:$benchmark -a $algo -n $Threads=="
-    ./hashing -a $algo -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads >> results/$output
+    ./hashing -a $algo -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads >> results
 }
 
 function Run {
 		#####native execution
-		mkdir results/$algo
 		echo "==benchmark:$benchmark -a $algo -n $Threads=="
-    ./hashing -a $algo -r $RSIZE -s $SSIZE -n $Threads >> results/$algo/$output
+    ./hashing -a $algo -r $RSIZE -s $SSIZE -n $Threads
 }
 
 # Configurable variables
@@ -31,15 +30,17 @@ STS=0
 Threads=40
 timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
-for algo in SHJ_JM_NP SHJ_JBCR_NP SHJ_HS_NP PMJ_JM_NP PMJ_JBCR_NP PMJ_HS_NP #RPJ_JM_NP RPJ_JBCR_NP RPJ_HS_NP
+for algo in SHJ_HS_NP PMJ_HS_NP #SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP  #RPJ_JM_NP RPJ_JBCR_NP RPJ_HS_NP
 do
   for benchmark in "Kim" #"Stock" "Rovio" "DEBS" "YSB" #"Google" "Amazon"
   do
     case "$benchmark" in
       # Batch
       "Kim")
-        RSIZE=1000000
-        SSIZE=1000000
+#        RSIZE=1000000
+#        SSIZE=1000000
+        RSIZE=10000
+        SSIZE=10000
         Run
     ;;
       "DEBS")

@@ -2,11 +2,17 @@ import getopt
 import os
 import sys
 
-import matplotlib
+import numpy as np
+
+import matplotlib as mpl
+
+mpl.use('Agg')
+
 import matplotlib.pyplot as plt
 import pylab
 from matplotlib.font_manager import FontProperties
 from matplotlib.ticker import LinearLocator
+from pathlib import Path
 
 OPT_FONT_NAME = 'Helvetica'
 TICK_FONT_SIZE = 20
@@ -27,13 +33,13 @@ LINE_WIDTH = 3.0
 MARKER_SIZE = 13.0
 MARKER_FREQUENCY = 1000
 
-matplotlib.rcParams['ps.useafm'] = True
-matplotlib.rcParams['pdf.use14corefonts'] = True
-matplotlib.rcParams['xtick.labelsize'] = TICK_FONT_SIZE
-matplotlib.rcParams['ytick.labelsize'] = TICK_FONT_SIZE
-matplotlib.rcParams['font.family'] = OPT_FONT_NAME
+mpl.rcParams['ps.useafm'] = True
+mpl.rcParams['pdf.use14corefonts'] = True
+mpl.rcParams['xtick.labelsize'] = TICK_FONT_SIZE
+mpl.rcParams['ytick.labelsize'] = TICK_FONT_SIZE
+mpl.rcParams['font.family'] = OPT_FONT_NAME
 
-FIGURE_FOLDER = '/data1/xtra/figure/'
+FIGURE_FOLDER = str(Path.home())+'/figure'
 
 
 # there are some embedding problems if directly exporting the pdf figure using matplotlib.
@@ -45,41 +51,46 @@ def ConvertEpsToPdf(dir_filename):
 
 # example for reading csv file
 def ReadFile():
-    f = open("/data1/results/SHJ_JM_NP_timestamps.txt", "r")
+    f = open("/data1/xtra/results/SHJ_JM_NP_timestamps.txt", "r")
     col1 = []
-    read = f.readlines()
-    for x in read:
-        col1.append(x)
-
-    f = open("/data1/results/SHJ_JBCR_NP_timestamps.txt", "r")
     col2 = []
-    read = f.readlines()
-    for x in read:
-        col2.append(x)
-
-    f = open("/data1/results/SHJ_HS_NP_timestamps.txt", "r")
     col3 = []
-    read = f.readlines()
-    for x in read:
-        col3.append(x)
-
-    f = open("/data1/results/PMJ_JM_NP_timestamps.txt", "r")
     col4 = []
-    read = f.readlines()
-    for x in read:
-        col4.append(x)
-
-    f = open("/data1/results/PMJ_JBCR_NP_timestamps.txt", "r")
     col5 = []
-    read = f.readlines()
-    for x in read:
-        col5.append(x)
-
-    f = open("/data1/results/PMJ_HS_NP_timestamps.txt", "r")
     col6 = []
+
     read = f.readlines()
     for x in read:
-        col6.append(x)
+        col1.append(int(x.strip("\n")))
+
+    f = open("/data1/xtra/results/SHJ_JBCR_NP_timestamps.txt", "r")
+
+    read = f.readlines()
+    for x in read:
+        col2.append(int(x.strip("\n")))
+
+    f = open("/data1/xtra/results/SHJ_HS_NP_timestamps.txt", "r")
+
+    read = f.readlines()
+    for x in read:
+        col3.append(int(x.strip("\n")))
+
+    f = open("/data1/xtra/results/PMJ_JM_NP_timestamps.txt", "r")
+
+    read = f.readlines()
+    for x in read:
+        col4.append(int(x.strip("\n")))
+
+    f = open("/data1/xtra/results/PMJ_JBCR_NP_timestamps.txt", "r")
+
+    read = f.readlines()
+    for x in read:
+        col5.append(int(x.strip("\n")))
+
+    f = open("/data1/xtra/results/PMJ_HS_NP_timestamps.txt", "r")
+    read = f.readlines()
+    for x in read:
+        col6.append(int(x.strip("\n")))
     return col1, col2, col3, col4, col5, col6
 
 
@@ -139,7 +150,9 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
 
     # sometimes you may not want to draw legends.
     if allow_legend == True:
-        plt.legend(lines, FIGURE_LABEL, prop=LEGEND_FP,
+        plt.legend(lines,
+                   FIGURE_LABEL,
+                   prop=LEGEND_FP,
                    loc='upper center', ncol=3,
                    #                     mode='expand',
                    bbox_to_anchor=(0.45, 1.3), shadow=False,
@@ -171,9 +184,9 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
 
 
 if __name__ == "__main__":
-    N = 0
+    N = 10000
     try:
-        opts, args = getopt.getopt(sys.argv, '-n:-h', ['number=', 'help'])
+        opts, args = getopt.getopt(sys.argv[1:], '-h-n:', ['number=', 'help'])
     except getopt.GetoptError:
         print('test.py -n number of join results')
         sys.exit(2)
@@ -187,10 +200,14 @@ if __name__ == "__main__":
 
     legend_labels = ['SHJ_JM', 'SHJ_JB', 'SHJ_HS', 'PMJ_JM', 'PMJ_JB', 'PMJ_HS']
 
-    col1, col2, col3, col4, col5, col6 = ReadFile()
-    lines = [col1, col2, col3, col4, col5, col6]
+    col0 = []
+    for x in range(1, N+1):
+        col0.append(x)
 
-    DrawFigure(list(range(1, N)), lines, legend_labels, 'Number of results', 'time (usec)', 0, N,
-               0, 1800,
-               'progressive_results', False)
+    col1, col2, col3, col4, col5, col6 = ReadFile()
+    # print(col1)
+    lines = [col1, col2, col3, col4, col5, col6]
+    DrawFigure(col0, lines, legend_labels, 'Number of results', 'time (usec)', 0, N,
+               0, 815918787,
+               'progressive_results', True)
     # DrawLegend(legend_labels, 'interval_legend')
