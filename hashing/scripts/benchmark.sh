@@ -77,8 +77,8 @@ do
       "Stock") #Error yet.
         RSIZE=1000000
         SSIZE=1000000
-        RPATH=/data1/xtra/datasets/stock/cj_key32_partitioned_preprocessed.csv
-        SPATH=/data1/xtra/datasets/stock/sb_key32_partitioned_preprocessed.csv
+        RPATH=/data1/xtra/datasets/stock/cj_key32_sampled_partitioned.csv
+        SPATH=/data1/xtra/datasets/stock/sb_key32_sampled_partitioned.csv
         RKEY=0
         SKEY=0
         RTS=1
