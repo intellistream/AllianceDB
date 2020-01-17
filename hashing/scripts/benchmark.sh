@@ -32,7 +32,7 @@ timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
 for algo in PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP SHJ_HS_NP PMJ_HS_NP  #RPJ_JM_NP RPJ_JBCR_NP RPJ_HS_NP
 do
-  for benchmark in "Kim" #"Stock" "Rovio" "DEBS" "YSB" #"Google" "Amazon"
+  for benchmark in "Kim" "Stock" "Rovio" "DEBS" "YSB" #"Google" "Amazon"
   do
     case "$benchmark" in
       # Batch
@@ -42,8 +42,8 @@ do
         Run
     ;;
       "DEBS")
-        RSIZE=1003605
-        SSIZE=2052169
+        RSIZE=1000000
+        SSIZE=1000000
         RPATH=/data1/xtra/datasets/DEBS/posts_key32_partitioned.csv
         SPATH=/data1/xtra/datasets/DEBS/comments_key32_partitioned.csv
         RKEY=0
@@ -52,8 +52,8 @@ do
     ;;
       # Batch-Stream
       "YSB")
-        RSIZE=1001
-        SSIZE=749900
+        RSIZE=1000
+        SSIZE=1000000
         RPATH=/data1/xtra/datasets/YSB/campaigns_key32_partitioned.txt
         SPATH=/data1/xtra/datasets/YSB/ad_events_key32_partitioned.txt
         RKEY=0
@@ -64,8 +64,8 @@ do
     ;;
       # Stream
       "Rovio")
-        RSIZE=999997
-        SSIZE=999997
+        RSIZE=1000000
+        SSIZE=1000000
         RPATH=/data1/xtra/datasets/rovio/rovio_key32_partitioned.txt
         SPATH=/data1/xtra/datasets/rovio/rovio_key32_partitioned.txt
         RKEY=0
@@ -75,8 +75,8 @@ do
         benchmarkRun
     ;;
       "Stock") #Error yet.
-        RSIZE=15010279
-        SSIZE=15280728
+        RSIZE=1000000
+        SSIZE=1000000
         RPATH=/data1/xtra/datasets/stock/cj_key32_partitioned_preprocessed.csv
         SPATH=/data1/xtra/datasets/stock/sb_key32_partitioned_preprocessed.csv
         RKEY=0
