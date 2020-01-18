@@ -63,7 +63,7 @@ do
         benchmarkRun
     ;;
       # Stream
-      "Rovio")
+      "Rovio") #matches:
         RSIZE=1000000
         SSIZE=1000000
         RPATH=/data1/xtra/datasets/rovio/rovio_key32_partitioned.txt

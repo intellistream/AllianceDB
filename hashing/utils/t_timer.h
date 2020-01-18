@@ -92,7 +92,7 @@ struct T_TIMER {
 
 #ifndef END_PROGRESSIVE_MEASURE
 #define END_PROGRESSIVE_MEASURE(timer) \
-    timer.record.push_back(curtick());
+        timer.record.push_back(curtick());
 #endif
 
 

@@ -287,6 +287,13 @@ main(int argc, char **argv) {
     return 0;
 }
 
+//*  - NPO:    No Partitioning Join Optimized (Hardware-oblivious algo. in paper)
+//*  - PRO:    Parallel Radix Join Optimized (Hardware-conscious algo. in paper)
+//*  - PRH:    Parallel Radix Join Histogram-based
+//*  - PRHO:   Parallel Radix Join Histogram-based Optimized
+//*  - RJ:     Radix Join (single-threaded)
+//*  - NPO_st: No Partitioning Join Optimized (single-threaded)
+
 /** all available algorithms */
 static struct algo_t algos[] =
         {
@@ -328,7 +335,7 @@ param_t defaultParam() {/* Command line parameters */
      * RIPPLE JOIN: RPJ_st(16), RPJ_JM_NP,  RPJ_JB_NP, RPJ_JBCR_NP, RPJ_HS_NP
      * */
     cmd_params.algo = &algos[0];
-    cmd_params.nthreads = 20;//TODO: in HS mode, thread must be larger than 1. Fix it when nthread=1.
+    cmd_params.nthreads = 1;//TODO: in HS mode, thread must be larger than 1. Fix it when nthread=1.
 
     /* default dataset is Workload B (described in paper) */
     cmd_params.r_size = 5000;

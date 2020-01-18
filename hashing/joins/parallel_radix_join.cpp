@@ -345,7 +345,6 @@ bucket_chaining_join(const relation_t *const R,
                 joinres->key      = Rtuples[hit-1].payload; /* R-rid */
                 joinres->payload  = Stuples[i].payload;     /* S-rid */
 #endif
-
                 matches++;
 #ifdef MEASURE
                 END_PROGRESSIVE_MEASURE((*timer))
@@ -1058,7 +1057,7 @@ prj_thread(void *param) {
 #endif
 
 //    /* wait at a barrier until each thread starts and then start the T_TIMER */
-//    BARRIER_ARRIVE(args->barrier, rv);
+    BARRIER_ARRIVE(args->barrier, rv);
     /* if monitoring synchronization stats */
 //    SYNC_TIMERS_START(args, my_tid);
 
