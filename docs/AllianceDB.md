@@ -25,13 +25,13 @@ SHJ_JM_NP
 -a
 SHJ_JM_NP
 -r
-15010279
+1000000
 -s
-15280728
+1000000
 -R
-/data1/xtra/datasets/stock/cj_key32_partitioned_preprocessed.csv
+/data1/xtra/datasets/stock/cj_key32_sampled_partitioned.csv
 -S
-/data1/xtra/datasets/stock/sb_key32_partitioned_preprocessed.csv
+/data1/xtra/datasets/stock/sb_key32_sampled_partitioned.csv
 -J
 0
 -K
@@ -44,18 +44,13 @@ SHJ_JM_NP
 
 ### Rovio
 
-Data source:
-https://github.com/streamline-eu/StreamBenchmarks/tree/master/data-generator
-Notes: It is generated following uniform distribution.
-It has also a one-to-one mapping.
-
 ```
 -a
 SHJ_JM_NP
 -r
-999997
+1000000
 -s
-999997
+1000000
 -R
 /data1/xtra/datasets/rovio/rovio_key32_partitioned.txt
 -S
@@ -78,9 +73,9 @@ SHJ_JM_NP
 -a
 SHJ_JM_NP
 -r
-1001
+1000
 -s
-749900
+1000000
 -R
 /data1/xtra/datasets/YSB/campaigns_key32_partitioned.txt
 -S
@@ -103,9 +98,9 @@ SHJ_JM_NP
 -a
 SHJ_JM_NP
 -r
-1003605
+1000000
 -s
-2052169
+1000000
 -R
 /data1/xtra/datasets/DEBS/posts_key32_partitioned.csv
 -S
