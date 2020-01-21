@@ -24,6 +24,8 @@ struct T_TIMER {
     uint64_t debuildtimer_pre = 0, debuildtimer = 0;//buildtimer is accumulated.
     uint64_t sorttimer_pre = 0, sorttimer = 0;//accumulate.
     std::vector<uint64_t> record;
+    int record_cnt = 0;
+    const int record_gap = 100;
 #endif
 };
 
@@ -92,7 +94,9 @@ struct T_TIMER {
 
 #ifndef END_PROGRESSIVE_MEASURE
 #define END_PROGRESSIVE_MEASURE(timer) \
-        timer.record.push_back(curtick());
+        if(timer.record_cnt % timer.record_gap==0) \
+            timer.record.push_back(curtick()); \
+        timer.record_cnt++;
 #endif
 
 
