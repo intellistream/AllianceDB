@@ -215,7 +215,7 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
 
 if __name__ == "__main__":
     N = 10000
-    S = 500
+    S = 100
     try:
         opts, args = getopt.getopt(sys.argv[1:], '-h-n:', ['number=', 'help'])
     except getopt.GetoptError:
@@ -237,8 +237,7 @@ if __name__ == "__main__":
 
     col0 = []
     for x in range(1, N + 1):
-        if x % S == 0:
-            col0.append(x)
+        col0.append(x * S)
 
     col1, col2, col3, col4, col5, col6 = ReadFile(S)
     # print(col1)
