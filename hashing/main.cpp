@@ -329,13 +329,13 @@ param_t defaultParam() {/* Command line parameters */
     param_t cmd_params;
 
     /* Default values if not specified on command line */
-    /* BLOCKING HASHING: PRO (0), RJ_st, PRH, PRHO, NPO, NPO_st (5),
+    /* BLOCKING HASHING: PRO (0), RJ_st, PRH, PRHO, NPO (4), NPO_st (5),
      * ONLINE HAHSING: SHJ_st(6), SHJ_JM_NP, SHJ_JB_NP, SHJ_JBCR_NP, SHJ_HS_NP (10)
      * ONLINE SORTING: PMJ_st(11), PMJ_JM_NP, PMJ_JB_NP, PMJ_JBCR_NP, PMJ_HS_NP (15)
      * RIPPLE JOIN: RPJ_st(16), RPJ_JM_NP,  RPJ_JB_NP, RPJ_JBCR_NP, RPJ_HS_NP
      * */
-    cmd_params.algo = &algos[0];
-    cmd_params.nthreads = 1;//TODO: in HS mode, thread must be larger than 1. Fix it when nthread=1.
+    cmd_params.algo = &algos[4];
+    cmd_params.nthreads = 10;//TODO: in HS mode, thread must be larger than 1. Fix it when nthread=1.
 
     /* default dataset is Workload B (described in paper) */
     cmd_params.r_size = 5000;

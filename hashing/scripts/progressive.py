@@ -73,7 +73,7 @@ def ReadFile(S):
             col2.append(int(x.strip("\n")))
         cnt += 1
 
-    f = open("/data1/xtra/results/SHJ_HS_NP_timestamps.txt", "r")
+    f = open("/data1/xtra/results/PMJ_JM_NP_timestamps.txt", "r")
     cnt = 1
     read = f.readlines()
     for x in read:
@@ -81,7 +81,7 @@ def ReadFile(S):
             col3.append(int(x.strip("\n")))
         cnt += 1
 
-    f = open("/data1/xtra/results/PMJ_JM_NP_timestamps.txt", "r")
+    f = open("/data1/xtra/results/PMJ_JBCR_NP_timestamps.txt", "r")
     cnt = 1
     read = f.readlines()
     for x in read:
@@ -89,7 +89,7 @@ def ReadFile(S):
             col4.append(int(x.strip("\n")))
         cnt += 1
 
-    f = open("/data1/xtra/results/PMJ_JBCR_NP_timestamps.txt", "r")
+    f = open("/data1/xtra/results/PRO_timestamps.txt", "r")
     cnt = 1
     read = f.readlines()
     for x in read:
@@ -97,13 +97,28 @@ def ReadFile(S):
             col5.append(int(x.strip("\n")))
         cnt += 1
 
-    f = open("/data1/xtra/results/PMJ_HS_NP_timestamps.txt", "r")
+    f = open("/data1/xtra/results/NPO_timestamps.txt", "r")
     cnt = 1
     read = f.readlines()
     for x in read:
         if cnt % S == 0:
             col6.append(int(x.strip("\n")))
         cnt += 1
+    # f = open("/data1/xtra/results/SHJ_HS_NP_timestamps.txt", "r")
+    # cnt = 1
+    # read = f.readlines()
+    # for x in read:
+    #     if cnt % S == 0:
+    #         col3.append(int(x.strip("\n")))
+    #     cnt += 1
+    #
+    # f = open("/data1/xtra/results/PMJ_HS_NP_timestamps.txt", "r")
+    # cnt = 1
+    # read = f.readlines()
+    # for x in read:
+    #     if cnt % S == 0:
+    #         col6.append(int(x.strip("\n")))
+    #     cnt += 1
 
     return col1, col2, col3, col4, col5, col6
 
@@ -217,7 +232,8 @@ if __name__ == "__main__":
             print('Gap of sampling ', opt_value)
             S = (int)(opt_value)
 
-    legend_labels = ['Hash_JM', 'Hash_JB', 'Hash_HS', 'Sort_JM', 'Sort_JB', 'Sort_HS', 'PRO']
+    # 'Hash_JM', 'Hash_JB', 'Hash_HS', 'Sort_JM', 'Sort_JB', 'Sort_HS', 'PRJ'
+    legend_labels = ['Hash_JM', 'Hash_JB', 'Sort_JM', 'Sort_JB', 'PRJ', 'NPJ']
 
     col0 = []
     for x in range(1, N + 1):

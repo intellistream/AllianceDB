@@ -72,6 +72,7 @@ struct arg_t {
 #ifndef NO_TIMING
     T_TIMER *timer;
 #endif
+    int64_t result;
 };
 
 /** @} */
@@ -151,7 +152,7 @@ NPO_st(relation_t *relR, relation_t *relS, int nthreads) {
 #ifndef NO_TIMING
     END_MEASURE(timer)
     /* now print the timing results: */
-    print_timing( result, &timer);
+    print_timing(result, &timer);
 #endif
 
     destroy_hashtable(ht);
@@ -188,14 +189,17 @@ npo_thread(void *param) {
     /* wait at a barrier until each thread starts and start T_TIMER */
     BARRIER_ARRIVE(args->barrier, rv);
 
+//#ifndef NO_TIMING
+//    /* the first thread checkpoints the start time */
+//    if (args->tid == 0) {
+//        START_MEASURE((*(args->timer)))
+//        BEGIN_MEASURE_BUILD((*(args->timer)))
+//    }
+//#endif
 #ifndef NO_TIMING
-    /* the first thread checkpoints the start time */
-    if (args->tid == 0) {
-        START_MEASURE((*(args->timer)))
-        BEGIN_MEASURE_BUILD((*(args->timer)))
-    }
+    START_MEASURE((*(args->timer)))
+    BEGIN_MEASURE_BUILD((*(args->timer)))/* build start */
 #endif
-
     /* insert tuples from the assigned part of relR to the ht */
     build_hashtable_mt(args->ht, &args->relR, &overflowbuf);
 
@@ -214,11 +218,15 @@ npo_thread(void *param) {
 #endif
 
 
+//#ifndef NO_TIMING
+//    /* build phase finished, thread-0 checkpoints the time */
+//    if (args->tid == 0) {
+//        END_MEASURE_BUILD((*(args->timer)))
+//    }
+//#endif
+
 #ifndef NO_TIMING
-    /* build phase finished, thread-0 checkpoints the time */
-    if (args->tid == 0) {
-        END_MEASURE_BUILD((*(args->timer)))
-    }
+    END_MEASURE_BUILD((*(args->timer)))
 #endif
 
 #ifdef JOIN_RESULT_MATERIALIZE
@@ -228,7 +236,7 @@ npo_thread(void *param) {
 #endif
 
     /* probe for matching tuples from the assigned part of relS */
-    args->nthreads = probe_hashtable(args->ht, &args->relS, chainedbuf, args->timer);
+    args->result = probe_hashtable(args->ht, &args->relS, chainedbuf, args->timer);
 
 #ifdef JOIN_RESULT_MATERIALIZE
     args->threadresult->nresults = args->num_results;
@@ -236,14 +244,18 @@ npo_thread(void *param) {
     args->threadresult->results  = (void *) chainedbuf;
 #endif
 
-#ifndef NO_TIMING
-    /* for a reliable timing we have to wait until all finishes */
-    BARRIER_ARRIVE(args->barrier, rv);
+//#ifndef NO_TIMING
+//    /* for a reliable timing we have to wait until all finishes */
+//    BARRIER_ARRIVE(args->barrier, rv);
+//
+//    /* probe phase finished, thread-0 checkpoints the time */
+//    if (args->tid == 0) {
+//        END_MEASURE((*(args->timer)))
+//    }
+//#endif
 
-    /* probe phase finished, thread-0 checkpoints the time */
-    if (args->tid == 0) {
-        END_MEASURE((*(args->timer)))
-    }
+#ifndef NO_TIMING
+    END_MEASURE((*(args->timer)))
 #endif
 
 #ifdef PERF_COUNTERS
@@ -296,7 +308,7 @@ np_distribute(const relation_t *relR, const relation_t *relS, int nthreads, hash
         pthread_attr_setaffinity_np(&attr, sizeof(cpu_set_t), &set);
 
         args[i].tid = i;
-        args[i].timer = timer;
+        args[i].timer = &timer[i];
         args[i].ht = ht;
         args[i].barrier = &barrier;
 
@@ -343,7 +355,7 @@ NPO(relation_t *relR, relation_t *relS, int nthreads) {
 #endif
 
 #ifndef NO_TIMING
-    T_TIMER timer;
+    T_TIMER timer[nthreads];//every thread has its own timer.
 #endif
 
     uint32_t nbuckets = (relR->num_tuples / BUCKET_SIZE);
@@ -363,21 +375,37 @@ NPO(relation_t *relR, relation_t *relS, int nthreads) {
     pthread_attr_init(&attr);
     np_distribute(relR, relS, nthreads, ht, numR, numS, numRthr, numSthr,
                   i, rv, set, args, tid, attr, barrier,
-                  joinresult, &timer);
-
+                  joinresult, timer);
+    /* wait for threads to finish */
     for (i = 0; i < nthreads; i++) {
         pthread_join(tid[i], NULL);
-        /* sum up results */
-        result += args[i].nthreads;
+        result += args[i].result;
+#ifndef NO_TIMING
+        merge(args[i].timer);
+#endif
     }
     joinresult->totalresults = result;
     joinresult->nthreads = nthreads;
 
-
 #ifndef NO_TIMING
     /* now print the timing results: */
-    print_timing(result, &timer);
+    for (i = 0; i < nthreads; i++) {
+        print_timing(args[i].result, args[i].timer);
+    }
 #endif
+//    for (i = 0; i < nthreads; i++) {
+//        pthread_join(tid[i], NULL);
+//        /* sum up results */
+//        result += args[i].nthreads;
+//    }
+//    joinresult->totalresults = result;
+//    joinresult->nthreads = nthreads;
+//
+//
+//#ifndef NO_TIMING
+//    /* now print the timing results: */
+//    print_timing(result, &timer);
+//#endif
     destroy_hashtable(ht);
     return joinresult;
 }

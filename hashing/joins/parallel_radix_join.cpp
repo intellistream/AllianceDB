@@ -1519,7 +1519,9 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads)
     /* thread-0 keeps track of synchronization stats */
     args[0].globaltimer = (synctimer_t*) malloc(sizeof(synctimer_t));
 #endif
+#ifndef NO_TIMING
     T_TIMER timer[nthreads];//every thread has its own timer.
+#endif
     /* first assign chunks of relR & relS for each thread */
     numperthr[0] = relR->num_tuples / nthreads;
     numperthr[1] = relS->num_tuples / nthreads;

@@ -30,7 +30,7 @@ STS=0
 Threads=40
 timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
-for algo in PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP SHJ_HS_NP PMJ_HS_NP  #RPJ_JM_NP RPJ_JBCR_NP RPJ_HS_NP
+for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP #SHJ_HS_NP PMJ_HS_NP  #RPJ_JM_NP RPJ_JBCR_NP RPJ_HS_NP
 do
   for benchmark in "Kim" "Stock" "Rovio" "DEBS" "YSB" #"Google" "Amazon"
   do
