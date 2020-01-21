@@ -361,6 +361,12 @@ param_t defaultParam() {/* Command line parameters */
     cmd_params.loadfileS = NULL;
     cmd_params.rkey = 0;
     cmd_params.skey = 0;
+
+    cmd_params.gen_with_ts = 0;
+    cmd_params.window_size = 10000;
+    cmd_params.step_size = 10;
+    cmd_params.interval = 1000;
+
     return cmd_params;
 }
 
@@ -460,12 +466,17 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
                         {"partfanout",   required_argument, 0,               'f'},
                         {"numastrategy", required_argument, 0,               'N'},
                         {"mwaybufsize",  required_argument, 0,               'm'},
+
+                        {"gen-with-ts",  required_argument, 0,               't'},
+                        {"window-size",  required_argument, 0,               'w'},
+                        {"step-size",    required_argument, 0,               'e'},
+                        {"interval",     required_argument, 0,               'l'},
                         {0, 0,                              0,               0}
                 };
         /* getopt_long stores the option index here. */
         int option_index = 0;
 
-        c = getopt_long(argc, argv, "J:K:L:M:a:n:p:r:s:o:x:y:z:R:S:hv",
+        c = getopt_long(argc, argv, "J:K:L:M:t:w:e:l:a:n:p:r:s:o:x:y:z:R:S:hv",
                         long_options, &option_index);
 
         /* Detect the end of the options. */
@@ -591,6 +602,18 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
 
             case 'M':
                 cmd_params->sts = atoi(mystrdup(optarg));
+
+            case 't':
+                cmd_params->gen_with_ts = atoi(mystrdup(optarg));
+
+            case 'w':
+                cmd_params->window_size = atoi(mystrdup(optarg));
+
+            case 'e':
+                cmd_params->step_size = atoi(mystrdup(optarg));
+
+            case 'l':
+                cmd_params->interval = atoi(mystrdup(optarg));
 
             default:
                 break;

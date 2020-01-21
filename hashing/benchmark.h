@@ -87,6 +87,12 @@ struct param_t {
 
     int32_t rts;
     int32_t sts;
+
+    int gen_with_ts; /* timestamps as payload */
+
+    int window_size;
+    int step_size;
+    int interval;
 };
 
 

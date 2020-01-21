@@ -30,9 +30,18 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int
     numalocalize = cmd_params.basic_numa;
     nthreads = cmd_params.nthreads;
 
-
-    /** first allocate the memory for relations (+ padding based on numthreads) : */
-    rel->num_tuples = cmd_params.r_size;
+    if (cmd_params.gen_with_ts) {
+        // calculate num of tuples by params
+        if (cmd_params.step_size < nthreads) {
+            perror("step size should be bigger than the number of threads!");
+            return;
+        }
+        rel->num_tuples = cmd_params.window_size / cmd_params.interval * cmd_params.step_size;
+        rel_size = rel->num_tuples;
+    } else {
+        /** first allocate the memory for relations (+ padding based on numthreads) : */
+        rel->num_tuples = cmd_params.r_size;
+    }
     size_t relRsz = rel->num_tuples * sizeof(tuple_t)
                     + RELATION_PADDING(cmd_params.nthreads, cmd_params.part_fanout);
 
@@ -62,6 +71,8 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int
         create_relation_nonunique(rel, rel_size, INT_MAX);
     } else if (cmd_params.nonunique_keys) {
         create_relation_nonunique(rel, rel_size, rel_size);
+    } else if (cmd_params.gen_with_ts) {
+        parallel_create_relation_with_ts(rel, relPl, rel->num_tuples, nthreads, rel->num_tuples, cmd_params.step_size, cmd_params.interval);
     } else {
         //create_relation_pk(&rel, rel_size);
         parallel_create_relation(rel, rel_size,
