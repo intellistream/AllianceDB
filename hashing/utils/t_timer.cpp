@@ -78,7 +78,7 @@ void merge(T_TIMER *timer) {
     if (actual_start_timestamp > start) {
         actual_start_timestamp = start;
     }
-    for (auto i = 1; i < timer->record.size(); i+=100) {
+    for (auto i = 1; i < timer->record.size(); i++) {
         global_record.push_back(timer->record.at(i));
     }
     //sort the global record to get to know the actual time when each match success.

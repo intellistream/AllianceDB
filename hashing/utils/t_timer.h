@@ -25,7 +25,7 @@ struct T_TIMER {
     uint64_t sorttimer_pre = 0, sorttimer = 0;//accumulate.
     std::vector<uint64_t> record;
     int record_cnt = 0;
-    const int record_gap = 100;
+    const int record_gap = 10;
 #endif
 };
 
