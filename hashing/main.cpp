@@ -364,7 +364,7 @@ param_t defaultParam() {/* Command line parameters */
 
     cmd_params.gen_with_ts = 0;
     cmd_params.window_size = 10000;
-    cmd_params.step_size = 10;
+    cmd_params.step_size = 40;
     cmd_params.interval = 1000;
 
     return cmd_params;
@@ -593,28 +593,28 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
 
             case 'J':
                 cmd_params->rkey = atoi(mystrdup(optarg));
-
+                break;
             case 'K':
                 cmd_params->skey = atoi(mystrdup(optarg));
-
+                break;
             case 'L':
                 cmd_params->rts = atoi(mystrdup(optarg));
-
+                break;
             case 'M':
                 cmd_params->sts = atoi(mystrdup(optarg));
-
+                break;
             case 't':
                 cmd_params->gen_with_ts = atoi(mystrdup(optarg));
-
+                break;
             case 'w':
                 cmd_params->window_size = atoi(mystrdup(optarg));
-
+                break;
             case 'e':
                 cmd_params->step_size = atoi(mystrdup(optarg));
-
+                break;
             case 'l':
                 cmd_params->interval = atoi(mystrdup(optarg));
-
+                break;
             default:
                 break;
         }
