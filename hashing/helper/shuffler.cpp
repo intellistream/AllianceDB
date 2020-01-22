@@ -118,6 +118,7 @@ ContRandShuffler::ContRandShuffler(int nthreads, relation_t *relR,
         } else {
             count = 0;
             curGrpId++;
+            grpToTh[curGrpId].push_back(i);
         }
         count++;
     }
