@@ -13,6 +13,11 @@
 #include <iostream>
 #include <fstream>
 #include <cmath>
+#include "types.h"
+
+
+#include <chrono>
+using namespace std::chrono;
 
 #define MEASURE
 //thread_local structure.
@@ -23,11 +28,27 @@ struct T_TIMER {
     uint64_t buildtimer_pre = 0, buildtimer = 0;
     uint64_t debuildtimer_pre = 0, debuildtimer = 0;//buildtimer is accumulated.
     uint64_t sorttimer_pre = 0, sorttimer = 0;//accumulate.
-    std::vector<uint64_t> record;
+    std::vector<std::chrono::milliseconds> record;
+    std::vector<uint64_t > recordRID;
+    std::vector<uint64_t> recordSID;
     int record_cnt = 0;
     const int record_gap = 1;
 #endif
 };
+
+milliseconds now();
+/**
+ * print progressive results.
+ * @param vector
+ */
+void print_timing(std::vector<uint64_t> vector, std::vector<uint64_t> vector_latency, std::string arg_name);
+
+/** print out the execution time statistics of the join */
+void print_timing(int64_t result, T_TIMER *timer);
+
+void merge(T_TIMER *timer, relation_t *relR, relation_t *relS);
+
+void sort(std::string algo_name);
 
 #ifndef BEGIN_MEASURE_BUILD
 #define BEGIN_MEASURE_BUILD(timer) \
@@ -83,7 +104,7 @@ struct T_TIMER {
     gettimeofday(&timer.start, NULL); \
     startTimer(&timer.overall_timer); \
     timer.partition_timer = 0; /* no partitioning */ \
-    timer.record.push_back(curtick());//beginning timestamp.
+    timer.record.push_back(now());//beginning timestamp.
 #endif
 
 #ifndef END_MEASURE
@@ -93,24 +114,16 @@ struct T_TIMER {
 #endif
 
 #ifndef END_PROGRESSIVE_MEASURE
-#define END_PROGRESSIVE_MEASURE(timer) \
-        if(timer.record_cnt % timer.record_gap==0) \
-            timer.record.push_back(curtick()); \
+#define END_PROGRESSIVE_MEASURE(payloadID, timer, IStupleR)     \
+        if(timer.record_cnt % timer.record_gap==0){             \
+            timer.record.push_back(now());                  \
+            if(IStupleR)                                        \
+                timer.recordRID.push_back(payloadID);           \
+            else                                                \
+                timer.recordSID.push_back(payloadID);           \
+        }                                                       \
         timer.record_cnt++;
 #endif
 
-
-/**
- * print progressive results.
- * @param vector
- */
-void print_timing(std::vector<uint64_t> vector, std::string algo_name);
-
-/** print out the execution time statistics of the join */
-void print_timing(int64_t result, T_TIMER *timer);
-
-void merge(T_TIMER *timer);
-
-void sort(std::string algo_name);
 
 #endif //ALLIANCEDB_T_TIMER_H

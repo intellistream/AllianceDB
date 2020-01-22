@@ -49,7 +49,7 @@ t_param &finishing(int nthreads, t_param &param) {
         /* sum up results */
         param.result += *param.args[i].matches;
 #ifndef NO_TIMING
-        merge(param.args[i].timer);
+        merge(param.args[i].timer, param.args[i].fetcher->relR, param.args[i].fetcher->relS);
 #endif
     }
     param.joinresult->totalresults = param.result;

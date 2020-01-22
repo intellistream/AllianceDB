@@ -123,7 +123,7 @@ ContRandShuffler::ContRandShuffler(int nthreads, relation_t *relR,
     }
 }
 
-void ContRandShuffler::push(intkey_t key, fetch_t *fetch, bool b) {
+void ContRandShuffler::push(intkey_t key, fetch_t *fetch, bool pushR) {
     // replicate R, partition S in each Group
     int32_t idx = KEY_TO_IDX(key, numGrps);
 

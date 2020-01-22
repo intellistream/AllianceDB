@@ -151,7 +151,6 @@ void
 
     //call different data BaseFetcher.
     baseFetcher *fetcher = args->fetcher;
-
     baseShuffler *shuffler = args->shuffler;
 
     //fetch: pointer points to state.fetch (*fetch = &(state->fetch))

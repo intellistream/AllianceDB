@@ -381,7 +381,7 @@ NPO(relation_t *relR, relation_t *relS, int nthreads) {
         pthread_join(tid[i], NULL);
         result += args[i].result;
 #ifndef NO_TIMING
-        merge(args[i].timer);
+        merge(args[i].timer, relR, relS);
 #endif
     }
     joinresult->totalresults = result;

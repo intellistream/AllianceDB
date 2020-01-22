@@ -20,11 +20,11 @@ earlyJoinInitialRuns(tuple_t *tupleR, tuple_t *tupleS, int lengthR, int lengthS,
         tuple_t *ts = read(tupleS, lengthS, s);
         if (s == lengthS || (r < lengthR && tr->key <= ts->key)) {
             RM.insert(tr); //similar to SHJ's build.
-            SM.query(tr, matches, timer); //similar to SHJ's probe.
+            SM.query(tr, matches, timer, true); //similar to SHJ's probe.
             r++;//remove tr from tupleR.
         } else {
             SM.insert(ts);
-            RM.query(ts, matches, timer);
+            RM.query(ts, matches, timer, false);
             s++;//remove ts from tupleS.
         }
     }
@@ -130,7 +130,7 @@ void earlyJoinMergedRuns(std::vector<run> *Q, int64_t *matches, run *newRun, T_T
             RM[run_i].insert(minR);
             for (auto run_itr = 0; run_itr < actual_merge_step; run_itr++) {
                 if (run_itr != run_i) {// except (r,x)| x belong to Si.
-                    SM[run_itr].query(minR, matches, timer);
+                    SM[run_itr].query(minR, matches, timer, false);
                 }
             }
             if (i.operator*().merged) {
@@ -147,7 +147,7 @@ void earlyJoinMergedRuns(std::vector<run> *Q, int64_t *matches, run *newRun, T_T
             SM[run_j].insert(minS);
             for (auto run_itr = 0; run_itr < actual_merge_step; run_itr++) {
                 if (run_itr != run_j) {// except (x,r)| x belong to Rj.
-                    RM[run_itr].query(minS, matches, timer);
+                    RM[run_itr].query(minS, matches, timer, false);
                 }
             }
             if (j.operator*().merged) {
