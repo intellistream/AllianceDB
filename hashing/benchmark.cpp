@@ -38,25 +38,27 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int
         }
         rel->num_tuples = cmd_params.window_size / cmd_params.interval * cmd_params.step_size;
         rel_size = rel->num_tuples;
+        relPl->num_tuples = rel->num_tuples;
     } else {
         /** first allocate the memory for relations (+ padding based on numthreads) : */
         rel->num_tuples = cmd_params.r_size;
+        relPl->num_tuples = rel->num_tuples;
     }
     size_t relRsz = rel->num_tuples * sizeof(tuple_t)
                     + RELATION_PADDING(cmd_params.nthreads, cmd_params.part_fanout);
-
     rel->tuples = (tuple_t *) malloc_aligned(relRsz);
 
+//    size_t relPlsz = relPl->num_tuples * sizeof(relation_payload_t)
+//                     + RELATION_PADDING(cmd_params.nthreads, cmd_params.part_fanout);
+//    rel->payload = (relation_payload_t *) malloc_aligned(relPlsz);
+
     /** second allocate the memory for relation payload **/
-    // TODO: not sure whether is correct
-    relPl->num_tuples = cmd_params.r_size;
     size_t relPlRsz = relPl->num_tuples * sizeof(table_t)
                       + RELATION_PADDING(cmd_params.nthreads, cmd_params.part_fanout);
     relPl->rows = (table_t *) malloc_aligned(relPlRsz);
 
-    size_t relTssz = relPl->num_tuples * sizeof(time_t)
+    size_t relTssz = relPl->num_tuples * sizeof(milliseconds)
                      + RELATION_PADDING(cmd_params.nthreads, cmd_params.part_fanout);
-
     relPl->ts = (milliseconds *) malloc_aligned(relTssz);
 
     //    /* NUMA-localize the input: */
@@ -103,12 +105,18 @@ benchmark(const param_t cmd_params) {
     DEBUGMSG("relR [aligned:%d]: %s", is_aligned(relR.tuples, CACHE_LINE_SIZE),
              print_relation(relR.tuples, max((uint64_t) 1000, cmd_params.r_size)).c_str())
 
+//     printf("relR [aligned:%d]: %s", is_aligned(relR.tuples, CACHE_LINE_SIZE),
+//             print_relation(relR.tuples, max((uint64_t) 5, cmd_params.r_size)).c_str());
+
     /* create relation S */
     createRelation(&relS, relS.payload, cmd_params.skey, cmd_params.sts, cmd_params, cmd_params.loadfileS,
                    cmd_params.s_size,
                    cmd_params.s_seed);
     DEBUGMSG("relS [aligned:%d]: %s", is_aligned(relS.tuples, CACHE_LINE_SIZE),
              print_relation(relS.tuples, max((uint64_t) 1000, cmd_params.s_size)).c_str())
+
+//     printf("relS [aligned:%d]: %s", is_aligned(relS.tuples, CACHE_LINE_SIZE),
+//            print_relation(relS.tuples, max((uint64_t) 5, cmd_params.s_size)).c_str());
 
     // TODO: Execute query with dataset, need to submit a join function
 
