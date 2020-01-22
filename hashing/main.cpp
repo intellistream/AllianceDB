@@ -366,6 +366,9 @@ param_t defaultParam() {/* Command line parameters */
     cmd_params.window_size = 10000;
     cmd_params.step_size = 40;
     cmd_params.interval = 1000;
+    cmd_params.kim = 0;
+    cmd_params.distribution = 0;
+    cmd_params.zipf_param = 0;
 
     return cmd_params;
 }
@@ -471,12 +474,14 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
                         {"window-size",  required_argument, 0,               'w'},
                         {"step-size",    required_argument, 0,               'e'},
                         {"interval",     required_argument, 0,               'l'},
+                        {"distribution", required_argument, 0,               'd'},
+                        {"zipf_param",   required_argument, 0,               'Z'},
                         {0, 0,                              0,               0}
                 };
         /* getopt_long stores the option index here. */
         int option_index = 0;
 
-        c = getopt_long(argc, argv, "J:K:L:M:t:w:e:l:a:n:p:r:s:o:x:y:z:R:S:hv",
+        c = getopt_long(argc, argv, "J:K:L:M:t:w:e:l:d:Z:a:n:p:r:s:o:x:y:z:R:S:hv",
                         long_options, &option_index);
 
         /* Detect the end of the options. */
@@ -604,7 +609,7 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
                 cmd_params->sts = atoi(mystrdup(optarg));
                 break;
             case 't':
-                cmd_params->gen_with_ts = atoi(mystrdup(optarg));
+                cmd_params->kim = atoi(mystrdup(optarg));
                 break;
             case 'w':
                 cmd_params->window_size = atoi(mystrdup(optarg));
@@ -614,6 +619,12 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
                 break;
             case 'l':
                 cmd_params->interval = atoi(mystrdup(optarg));
+                break;
+            case 'd':
+                cmd_params->distribution = atoi(mystrdup(optarg));
+                break;
+            case 'Z':
+                cmd_params->zipf_param = atof(optarg);
                 break;
             default:
                 break;
