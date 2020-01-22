@@ -62,7 +62,7 @@ shj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid) {
  * SHJ algorithm to be used in each thread.
  * @param tid
  * @param tuple
- * @param IStuple_R
+ * @param ISTupleR
  * @param htR
  * @param htS
  * @param matches
@@ -70,7 +70,7 @@ shj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid) {
  * @param timer
  * @return
  */
-void SHJJoiner::join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *matches,
+void SHJJoiner::join(int32_t tid, tuple_t *tuple, bool ISTupleR, int64_t *matches,
                      void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid) {
 
     const uint32_t hashmask_R = htR->hash_mask;
@@ -79,7 +79,7 @@ void SHJJoiner::join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *match
     const uint32_t skipbits_S = htS->skip_bits;
 
 //    DEBUGMSG(1, "JOINING: tid: %d, tuple: %d, R?%d\n", tid, tuple->key, tuple_R)
-    if (IStuple_R) {
+    if (ISTupleR) {
         BEGIN_MEASURE_BUILD_ACC(timer)
         build_hashtable_single(htR, tuple, hashmask_R, skipbits_R);//(1)
         END_MEASURE_BUILD_ACC(timer)//accumulate hash table build time.
@@ -94,7 +94,7 @@ void SHJJoiner::join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *match
         }
 #endif
         proble_hashtable_single_measure(htS,
-                tuple, hashmask_S, skipbits_S, matches, thread_fun, &timer);//(2)
+                                        tuple, hashmask_S, skipbits_S, matches, thread_fun, &timer, ISTupleR);//(2)
     } else {
         BEGIN_MEASURE_BUILD_ACC(timer)
         build_hashtable_single(htS, tuple, hashmask_S, skipbits_S);//(3)
@@ -108,7 +108,7 @@ void SHJJoiner::join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *match
             print_window(window1.S_Window);
         }
 #endif
-        proble_hashtable_single_measure(htR, tuple, hashmask_R, skipbits_R, matches, thread_fun, &timer);//(4)
+        proble_hashtable_single_measure(htR, tuple, hashmask_R, skipbits_R, matches, thread_fun, &timer, ISTupleR);//(4)
     }
 }
 
@@ -677,8 +677,6 @@ void PMJJoiner::join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *match
     }
 
 
-
-
 }
 
 
@@ -729,7 +727,7 @@ rpj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid) {
  * RIPPLE JOIN algorithm to be used in each thread.
  * @param tid
  * @param tuple
- * @param tuple_R
+ * @param ISTupleR
  * @param htR
  * @param htS
  * @param matches
@@ -738,22 +736,22 @@ rpj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid) {
  * @return
  */
 
-void RippleJoiner::join(int32_t tid, tuple_t *tuple, bool tuple_R, int64_t *matches,
+void RippleJoiner::join(int32_t tid, tuple_t *tuple, bool ISTupleR, int64_t *matches,
                         void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid) {
-    DEBUGMSG("tid: %d, tuple: %d, R?%d\n", tid, tuple->key, tuple_R);
-    if (tuple_R) {
+    DEBUGMSG("tid: %d, tuple: %d, R?%d\n", tid, tuple->key, ISTupleR);
+    if (ISTupleR) {
         BEGIN_MEASURE_BUILD_ACC(timer)
         samList.t_windows->R_Window.push_back(tuple);
         END_MEASURE_BUILD_ACC(timer)//accumulate hash table build time.
 
-        match_single_tuple(samList.t_windows->S_Window, tuple, matches, thread_fun, &timer);
+        match_single_tuple(samList.t_windows->S_Window, tuple, matches, thread_fun, &timer, ISTupleR);
     } else {
 //        samList.t_windows->S_Window.push_back(tuple->key);
         BEGIN_MEASURE_BUILD_ACC(timer)
         samList.t_windows->S_Window.push_back(tuple);
         END_MEASURE_BUILD_ACC(timer)//accumulate hash table build time.
 
-        match_single_tuple(samList.t_windows->R_Window, tuple, matches, thread_fun, &timer);
+        match_single_tuple(samList.t_windows->R_Window, tuple, matches, thread_fun, &timer, ISTupleR);
     }
     // Compute estimation result
     long estimation_result = 0;

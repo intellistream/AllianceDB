@@ -16,11 +16,12 @@ public:
     int nthreads;
     relation_t *relR;
     relation_t *relS;
-    bool isCR= false;
+    bool isCR = false;
+
     baseShuffler(int tid, relation_t *relR,
                  relation_t *relS);
 
-    virtual void push(intkey_t key, fetch_t *fetch, bool b) = 0;
+    virtual void push(intkey_t key, fetch_t *fetch, bool pushR) = 0;
 
     /**
      *
@@ -63,14 +64,14 @@ public:
     //in a extreme case, hash-partition the queue.
     //moodycamel::ConcurrentQueue<fetch_t> queues[];//simple hashing first.
     T_CQueue *queues;//simple hashing first.
-    int32_t group_size = 2;
+    int32_t group_size = 1;
     int32_t numGrps;
-    std::vector<int32_t > *grpToTh;
+    std::vector<int32_t> *grpToTh;
 //    int32_t *thToGrp;
 
     ContRandShuffler(int nthreads, relation_t *relR, relation_t *relS);
 
-    void push(intkey_t key, fetch_t *fetch, bool b) override;
+    void push(intkey_t key, fetch_t *fetch, bool pushR) override;
 
     fetch_t *pull(int32_t tid, bool b) override;
 };

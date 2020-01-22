@@ -199,10 +199,10 @@ int64_t probe_hashtable(hashtable_t *ht, relation_t *rel, void *output, T_TIMER 
     return matches;
 }
 
-int64_t proble_hashtable_single_measure(const hashtable_t *ht, const tuple_t *tuple,
-                                        const uint32_t hashmask, const uint32_t skipbits, int64_t *matches,
+int64_t proble_hashtable_single_measure(const hashtable_t *ht, const tuple_t *tuple, const uint32_t hashmask,
+                                        const uint32_t skipbits, int64_t *matches,
                                         void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),
-                                        T_TIMER *timer) {
+                                        T_TIMER *timer, bool ISTupleR) {
     uint32_t index_ht;
 #ifdef PREFETCH_NPJ
     if (prefetch_index < rel->num_tuples) {
@@ -229,7 +229,7 @@ int64_t proble_hashtable_single_measure(const hashtable_t *ht, const tuple_t *tu
                 joinres->payload  = rel->tuples[i].payload; /* S-rid */
 #endif
 #ifdef MEASURE
-                END_PROGRESSIVE_MEASURE((*timer))
+                END_PROGRESSIVE_MEASURE(tuple->payloadID, (*timer),ISTupleR)
 #endif
             }
         }
@@ -244,7 +244,7 @@ int64_t proble_hashtable_single_measure(const hashtable_t *ht, const relation_t 
                                         void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),
                                         T_TIMER *timer) {
     return proble_hashtable_single_measure(ht, &rel->tuples[index_rel], hashmask, skipbits, matches,
-                                           thread_fun, timer);
+                                           thread_fun, timer, false);
 }
 
 /**
@@ -253,8 +253,9 @@ int64_t proble_hashtable_single_measure(const hashtable_t *ht, const relation_t 
  * @param tuple
  * @param matches
  */
-void match_single_tuple(const std::list<tuple_t *> list, const tuple_t *tuple, int64_t *matches,
-                        void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), T_TIMER *timer) {
+void match_single_tuple(const list<tuple_t *> list, const tuple_t *tuple, int64_t *matches,
+                        void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), T_TIMER *timer,
+                        bool ISTupleR) {
     // TODO: refactor RPJ related methods to RPJ helper
     for (auto it = list.begin(); it != list.end(); it++) {
         if (thread_fun) {
@@ -262,7 +263,7 @@ void match_single_tuple(const std::list<tuple_t *> list, const tuple_t *tuple, i
         }
         if (tuple->key == it.operator*()->key) {
             (*matches)++;
-            END_PROGRESSIVE_MEASURE((*timer))
+            END_PROGRESSIVE_MEASURE(tuple->payloadID, (*timer), ISTupleR)
         }
     }
     DEBUGMSG("JOINING: matches: %d, tuple: %d\n", *matches, tuple->key);

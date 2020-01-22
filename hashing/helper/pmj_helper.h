@@ -89,7 +89,7 @@ struct sweepArea {
         sx.push_back(tuple);
     }
 
-    void query(const tuple_t *tuple, int64_t *matches, T_TIMER *timer) {
+    void query(const tuple_t *tuple, int64_t *matches, T_TIMER *timer, bool ISTupleR) {
 
 //        iterator<const tuple_t *>  marker = NULL;
 //        for (auto it = sx.begin(); it != sx.end(); ++it) {
@@ -111,7 +111,7 @@ struct sweepArea {
                 if (EqualPredicate(it.operator*(), tuple)) {
                     (*matches)++;
 #ifdef MEASURE
-                    END_PROGRESSIVE_MEASURE((*timer))
+                    END_PROGRESSIVE_MEASURE(tuple->payloadID, (*timer),ISTupleR)
 #endif
                 }
                 ++it;

@@ -347,7 +347,7 @@ bucket_chaining_join(const relation_t *const R,
 #endif
                 matches++;
 #ifdef MEASURE
-                END_PROGRESSIVE_MEASURE((*timer))
+                END_PROGRESSIVE_MEASURE(Stuples[i].payloadID, (*timer), false)//assume S as the input tuple.
 #endif
             }
         }
@@ -1573,7 +1573,7 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads)
         pthread_join(tid[i], NULL);
         result += args[i].result;
 #ifndef NO_TIMING
-        merge(args[i].timer);
+        merge(args[i].timer, nullptr, nullptr);
 #endif
     }
     joinresult->totalresults = result;

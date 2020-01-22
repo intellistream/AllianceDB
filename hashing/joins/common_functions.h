@@ -135,18 +135,18 @@ void
 build_hashtable_single(const hashtable_t *ht, const relation_t *rel, uint32_t i, const uint32_t hashmask,
                        const uint32_t skipbits);
 
-int64_t proble_hashtable_single_measure(const hashtable_t *ht, const tuple_t *,
-                                        const uint32_t hashmask, const uint32_t skipbits, int64_t *matches,
+int64_t proble_hashtable_single_measure(const hashtable_t *ht, const tuple_t *tuple, const uint32_t hashmask,
+                                        const uint32_t skipbits, int64_t *matches,
                                         void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),
-                                        T_TIMER *timer);
+                                        T_TIMER *timer, bool ISTupleR);
 
 int64_t proble_hashtable_single_measure(const hashtable_t *ht, const relation_t *rel, uint32_t index_rel,
                                         const uint32_t hashmask, const uint32_t skipbits, int64_t *matches,
                                         void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),
                                         T_TIMER *timer);
 
-void match_single_tuple(const std::list<tuple_t *> list, const tuple_t *tuple, int64_t *matches,
-                        void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), T_TIMER *timer);
+void match_single_tuple(const list<tuple_t *> list, const tuple_t *tuple, int64_t *matches,
+                        void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), T_TIMER *timer, bool ISTupleR);
 
 int find_index(const tuple_t *rel, const int length, const tuple_t *tuple);
 

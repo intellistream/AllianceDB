@@ -67,7 +67,7 @@ private:
 
 public:
     void
-    join(int32_t tid, tuple_t *tuple, bool tuple_R, int64_t *matches,
+    join(int32_t tid, tuple_t *tuple, bool ISTupleR, int64_t *matches,
          void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid) override;
 
     RippleJoiner(relation_t *relR, relation_t *relS, int nthreads);
@@ -159,7 +159,7 @@ public:
     SHJJoiner(int sizeR, int sizeS);
 
     void
-    join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *matches,
+    join(int32_t tid, tuple_t *tuple, bool ISTupleR, int64_t *matches,
          void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid) override;
 
     void clean(int32_t tid, tuple_t *tuple, bool cleanR) override;

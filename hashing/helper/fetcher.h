@@ -9,9 +9,9 @@
 #include "../joins/common_functions.h"
 #include <stdio.h>
 #include <unistd.h>
-#include <chrono>
 #include <thread>
 
+#include <chrono>
 using namespace std::chrono;
 
 enum fetcher {
@@ -47,12 +47,7 @@ struct t_state {
 };
 
 
-inline milliseconds now() {
-    milliseconds ms = duration_cast<milliseconds>(
-            system_clock::now().time_since_epoch()
-    );
-    return ms;
-}
+
 
 class baseFetcher {
 public:
