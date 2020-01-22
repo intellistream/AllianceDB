@@ -81,11 +81,11 @@ void merge(T_TIMER *timer) {
     for (auto i = 1; i < timer->record.size(); i++) {
         global_record.push_back(timer->record.at(i));
     }
-    //sort the global record to get to know the actual time when each match success.
-    global_record.push_back(actual_start_timestamp);
 }
 
 void sort(string algo_name) {
+    //sort the global record to get to know the actual time when each match success.
+    global_record.push_back(actual_start_timestamp);
     sort(global_record.begin(), global_record.end());
     /* now print the progressive results: */
     print_timing(global_record, algo_name);
