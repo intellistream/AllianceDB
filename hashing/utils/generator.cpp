@@ -168,13 +168,7 @@ void add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_
  */
 void
 random_gen_with_ts(relation_t *rel, relation_payload_t *relPl, int64_t maxid, int step_size, int interval, int numThr) {
-
-
     uint64_t i;
-    int32_t ts = 0;
-    int tpPerThr = rel->num_tuples / numThr;
-
-    uint64_t index = 0;
 
     for (i = 0; i < rel->num_tuples; i++) {
         rel->tuples[i].key = RAND_RANGE(maxid);
@@ -760,8 +754,8 @@ create_relation_nonunique(relation_t *relation, int64_t num_tuples,
 }
 
 int
-create_relation_nonunique_with_ts(relation_t *relation, relation_payload_t *relationPayload, int64_t num_tuples,
-                          const int64_t maxid, const int step_size, const int interval, const int numThr) {
+create_relation_nonunique_with_ts(relation_t *relation, relation_payload_t *relationPayload, int64_t num_tuples, const int numThr,
+                                  const int64_t maxid, const int step_size, const int interval) {
     check_seed();
 
     relation->num_tuples = num_tuples;

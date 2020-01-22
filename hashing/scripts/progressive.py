@@ -215,9 +215,9 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
 
 if __name__ == "__main__":
     N = 10000
-    S = 100
+    S = 4
     try:
-        opts, args = getopt.getopt(sys.argv[1:], '-h-n:', ['number=', 'help'])
+        opts, args = getopt.getopt(sys.argv[1:], '-h-n:-s:', ['sample=', 'number=', 'help'])
     except getopt.GetoptError:
         print('test.py -n number of join results')
         sys.exit(2)
@@ -240,11 +240,13 @@ if __name__ == "__main__":
         col0.append(x * S)
 
     col1, col2, col3, col4, col5, col6 = ReadFile(S)
-    # print(col1)
-    lines = [col1, col2, col3, col4, col5, col6]
+    # print(len(col1), len(col2), len(col3), len(col4), len(col5))
+    # alignment
+    # lines = [col1, col2, col3, col4, col5, col6]
+    lines = [col1[(N-len(col1)):], col2[(len(col2))-N:], col3[(len(col3))-N:], col4[(len(col4))-N:], col5[(len(col5))-N:], col6[(len(col6))-N:]]
     DrawFigure(col0, lines, legend_labels,
                'Number of results', 'time (usec)', 0, N,
-               10E6, (2 * 10E8),
+               0, 20000,
                'progressive_results',
                True)
     # DrawLegend(legend_labels, 'interval_legend')

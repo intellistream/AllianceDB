@@ -18,12 +18,6 @@ int check_avx() {
 
 void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int32_t tsKey, const param_t &cmd_params,
                     char *loadfile, uint64_t rel_size, uint32_t seed) {
-    fprintf(stdout,
-            "[INFO ] %s relation with size = %.3lf MiB, #tuples = %llu : ",
-            (loadfile != NULL) ? ("Loading") : ("Creating"),
-            (double) sizeof(tuple_t) * rel_size / 1024.0 / 1024.0, rel_size);
-    fflush(stdout);
-
     seed_generator(seed);
 
     /* to pass information to the create_relation methods */
@@ -44,6 +38,13 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int
         rel->num_tuples = cmd_params.r_size;
         relPl->num_tuples = rel->num_tuples;
     }
+
+    fprintf(stdout,
+            "[INFO ] %s relation with size = %.3lf MiB, #tuples = %llu : ",
+            (loadfile != NULL) ? ("Loading") : ("Creating"),
+            (double) sizeof(tuple_t) * rel_size / 1024.0 / 1024.0, rel_size);
+    fflush(stdout);
+
     size_t relRsz = rel->num_tuples * sizeof(tuple_t)
                     + RELATION_PADDING(cmd_params.nthreads, cmd_params.part_fanout);
     rel->tuples = (tuple_t *) malloc_aligned(relRsz);
@@ -121,8 +122,8 @@ benchmark(const param_t cmd_params) {
     DEBUGMSG("relR [aligned:%d]: %s", is_aligned(relR.tuples, CACHE_LINE_SIZE),
              print_relation(relR.tuples, max((uint64_t) 1000, cmd_params.r_size)).c_str())
 
-//     printf("relR [aligned:%d]: %s", is_aligned(relR.tuples, CACHE_LINE_SIZE),
-//             print_relation(relR.tuples, max((uint64_t) 1000, cmd_params.r_size)).c_str());
+     printf("relR [aligned:%d]: %s", is_aligned(relR.tuples, CACHE_LINE_SIZE),
+             print_relation(relR.tuples, max((uint64_t) 1000, cmd_params.r_size)).c_str());
 
     /* create relation S */
     createRelation(&relS, relS.payload, cmd_params.skey, cmd_params.sts, cmd_params, cmd_params.loadfileS,
@@ -131,8 +132,8 @@ benchmark(const param_t cmd_params) {
     DEBUGMSG("relS [aligned:%d]: %s", is_aligned(relS.tuples, CACHE_LINE_SIZE),
              print_relation(relS.tuples, max((uint64_t) 1000, cmd_params.s_size)).c_str())
 
-//     printf("relS [aligned:%d]: %s", is_aligned(relS.tuples, CACHE_LINE_SIZE),
-//            print_relation(relS.tuples, max((uint64_t) 1000, cmd_params.s_size)).c_str());
+     printf("relS [aligned:%d]: %s", is_aligned(relS.tuples, CACHE_LINE_SIZE),
+            print_relation(relS.tuples, max((uint64_t) 1000, cmd_params.s_size)).c_str());
 
     // TODO: Execute query with dataset, need to submit a join function
 

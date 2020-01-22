@@ -36,8 +36,8 @@ int
 create_relation_nonunique(relation_t *reln, int64_t ntuples, const int64_t maxid);
 
 int
-create_relation_nonunique_with_ts(relation_t *relation, relation_payload_t *relationPayload, int64_t num_tuples,
-const int64_t maxid, const int step_size, const int interval, const int numThr);
+create_relation_nonunique_with_ts(relation_t *relation, relation_payload_t *relationPayload, int64_t num_tuples, const int numThr,
+const int64_t maxid, const int step_size, const int interval);
 
 /**
  * Create relation with only primary keys (i.e. keys are unique from 1 to
