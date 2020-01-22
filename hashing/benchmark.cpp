@@ -30,7 +30,7 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int
     numalocalize = cmd_params.basic_numa;
     nthreads = cmd_params.nthreads;
 
-    if (cmd_params.gen_with_ts) {
+    if (cmd_params.kim) {
         // calculate num of tuples by params
         if (cmd_params.step_size < nthreads) {
             perror("step size should be bigger than the number of threads!");
@@ -73,8 +73,24 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int
         create_relation_nonunique(rel, rel_size, INT_MAX);
     } else if (cmd_params.nonunique_keys) {
         create_relation_nonunique(rel, rel_size, rel_size);
-    } else if (cmd_params.gen_with_ts) {
+    } /*else if (cmd_params.gen_with_ts) {
         parallel_create_relation_with_ts(rel, relPl, rel->num_tuples, nthreads, rel->num_tuples, cmd_params.step_size, cmd_params.interval);
+    } */ else if (cmd_params.kim) {
+        // check params 1, window_size, 2. step_size, 3. interval, 4. distribution, 5. zipf factor, 6. nthreads
+        switch (cmd_params.distribution) {
+            case 0: // unique
+                parallel_create_relation_with_ts(rel, relPl, rel->num_tuples, nthreads, rel->num_tuples, cmd_params.step_size, cmd_params.interval);
+                break;
+            case 1: // nonunique
+                create_relation_nonunique_with_ts(rel, relPl, rel->num_tuples, nthreads, rel->num_tuples, cmd_params.step_size, cmd_params.interval);
+                break;
+            case 2: // zipf with zipf factor
+                create_relation_zipf(rel, rel_size, rel_size, cmd_params.zipf_param);
+                add_ts(rel, relPl, cmd_params.step_size, cmd_params.interval, nthreads);
+                break;
+            default:
+                break;
+        }
     } else {
         //create_relation_pk(&rel, rel_size);
         parallel_create_relation(rel, rel_size,
@@ -106,7 +122,7 @@ benchmark(const param_t cmd_params) {
              print_relation(relR.tuples, max((uint64_t) 1000, cmd_params.r_size)).c_str())
 
 //     printf("relR [aligned:%d]: %s", is_aligned(relR.tuples, CACHE_LINE_SIZE),
-//             print_relation(relR.tuples, max((uint64_t) 5, cmd_params.r_size)).c_str());
+//             print_relation(relR.tuples, max((uint64_t) 1000, cmd_params.r_size)).c_str());
 
     /* create relation S */
     createRelation(&relS, relS.payload, cmd_params.skey, cmd_params.sts, cmd_params, cmd_params.loadfileS,
@@ -116,7 +132,7 @@ benchmark(const param_t cmd_params) {
              print_relation(relS.tuples, max((uint64_t) 1000, cmd_params.s_size)).c_str())
 
 //     printf("relS [aligned:%d]: %s", is_aligned(relS.tuples, CACHE_LINE_SIZE),
-//            print_relation(relS.tuples, max((uint64_t) 5, cmd_params.s_size)).c_str());
+//            print_relation(relS.tuples, max((uint64_t) 1000, cmd_params.s_size)).c_str());
 
     // TODO: Execute query with dataset, need to submit a join function
 

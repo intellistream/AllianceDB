@@ -90,6 +90,10 @@ struct param_t {
 
     int gen_with_ts; /* timestamps as payload */
 
+    int kim;
+    int distribution;
+    double zipf_param;
+
     int window_size;
     int step_size;
     int interval;

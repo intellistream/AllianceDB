@@ -136,9 +136,10 @@ gen_zipf(unsigned int stream_size,
             pos = right;
         }
 
-        uint32_t *dst = (uint32_t *) &ret[i];
-        *dst = alphabet[pos];
-        /* ret[i] = alphabet[pos]; */
+//        uint32_t *dst = (uint32_t *) &ret[i];
+//        *dst = alphabet[pos];
+        ret[i].key = alphabet[pos];
+        ret[i].payloadID = alphabet[pos];
     }
 
     free(lut);

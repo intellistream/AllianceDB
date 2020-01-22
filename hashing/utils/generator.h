@@ -26,6 +26,9 @@
 void
 seed_generator(unsigned int seed);
 
+void
+add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_size, int interval, int numThr);
+
 /**
  * Create relation with non-unique keys uniformly distributed between [0, maxid]
  */

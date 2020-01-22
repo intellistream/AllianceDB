@@ -127,6 +127,39 @@ inline bool last_thread(int i, int nthreads) {
     return i == (nthreads - 1);
 }
 
+void add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_size, int interval, int numThr) {
+    uint64_t i;
+    int32_t ts = 0;
+    int tpPerThr = relation->num_tuples / numThr;
+
+    uint64_t index = 0;
+
+    // num_tuples = window_size / interval * step_size
+    // generate timestamps with three parameters
+    for (int i = 0; i < nthreads; i++) {
+        if (last_thread(i, nthreads)) {
+            for (int j = 0; j < (relation->num_tuples - i * tpPerThr); j++) {
+                if (j % (step_size / nthreads) == 0) {
+                    ts += interval;
+                }
+                index = i * tpPerThr + j;
+                relationPayload->ts[index] = (milliseconds) ts;
+            }
+            ts = 0;
+        } else {
+            // generate timestamp for every thread tuples
+            for (int j = 0; j < tpPerThr; j++) {
+                if (j % (step_size / nthreads) == 0) {
+                    ts += interval;
+                }
+                index = i * tpPerThr + j;
+                relationPayload->ts[index] = (milliseconds) ts;
+            }
+            ts = 0;
+        }
+    }
+}
+
 /**
  * @param relation relation
  * @param step_size number of tuples should be generated each interval
@@ -148,30 +181,7 @@ random_gen_with_ts(relation_t *rel, relation_payload_t *relPl, int64_t maxid, in
         rel->tuples[i].payloadID = i;//payload is simply the id of the tuple.
     }
 
-    // num_tuples = window_size / interval * step_size
-    // generate timestamps with three parameters
-    for (int i = 0; i < numThr; i++) {
-        if (last_thread(i, numThr)) {
-            for (int j = 0; j < (rel->num_tuples - i * tpPerThr); j++) {
-                if (j % (step_size / numThr) == 0) {
-                    ts += interval;
-                }
-                index = i * tpPerThr + j;
-
-                relPl->ts[index] = (milliseconds) ts;
-            }
-        } else {
-            // generate timestamp for every thread tuples
-            for (int j = 0; j < tpPerThr; j++) {
-                if (i % (step_size) == 0) {
-                    ts += interval;
-                }
-                index = i * tpPerThr + j;
-
-                relPl->ts[index] = (milliseconds) ts;
-            }
-        }
-    }
+    add_ts(rel, relPl, step_size, interval, numThr);
 }
 
 /**
@@ -535,35 +545,37 @@ parallel_create_relation_with_ts(relation_t *relation, relation_payload_t *relat
     write_relation(relation, tables[(rs++)%2]);
 #endif
 
-    int32_t ts = 0;
-    int tpPerThr = relation->num_tuples / nthreads;
+//    int32_t ts = 0;
+//    int tpPerThr = relation->num_tuples / nthreads;
+//
+//    uint64_t index = 0;
+//
+//    // num_tuples = window_size / interval * step_size
+//    // generate timestamps with three parameters
+//    for (int i = 0; i < nthreads; i++) {
+//        if (last_thread(i, nthreads)) {
+//            for (int j = 0; j < (relation->num_tuples - i * tpPerThr); j++) {
+//                if (j % (step_size / nthreads) == 0) {
+//                    ts += interval;
+//                }
+//                index = i * tpPerThr + j;
+//                relationPayload->ts[index] = (milliseconds) ts;
+//            }
+//            ts = 0;
+//        } else {
+//            // generate timestamp for every thread tuples
+//            for (int j = 0; j < tpPerThr; j++) {
+//                if (j % (step_size / nthreads) == 0) {
+//                    ts += interval;
+//                }
+//                index = i * tpPerThr + j;
+//                relationPayload->ts[index] = (milliseconds) ts;
+//            }
+//            ts = 0;
+//        }
+//    }
 
-    uint64_t index = 0;
-
-    // num_tuples = window_size / interval * step_size
-    // generate timestamps with three parameters
-    for (int i = 0; i < nthreads; i++) {
-        if (last_thread(i, nthreads)) {
-            for (int j = 0; j < (relation->num_tuples - i * tpPerThr); j++) {
-                if (j % (step_size / nthreads) == 0) {
-                    ts += interval;
-                }
-                index = i * tpPerThr + j;
-                relationPayload->ts[index] = (milliseconds) ts;
-            }
-            ts = 0;
-        } else {
-            // generate timestamp for every thread tuples
-            for (int j = 0; j < tpPerThr; j++) {
-                if (j % (step_size / nthreads) == 0) {
-                    ts += interval;
-                }
-                index = i * tpPerThr + j;
-                relationPayload->ts[index] = (milliseconds) ts;
-            }
-            ts = 0;
-        }
-    }
+    add_ts(relation, relationPayload, step_size, interval, nthreads);
 
     return 0;
 }
