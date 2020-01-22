@@ -82,7 +82,7 @@ void print_timing(int64_t result, T_TIMER *timer) {
     }
 }
 
-std::chrono::milliseconds actual_start_timestamp = std::chrono::milliseconds(UINTMAX_MAX);
+std::chrono::milliseconds actual_start_timestamp = std::chrono::milliseconds::max();
 std::vector<std::chrono::milliseconds> global_record;
 std::vector<int64_t > global_record_latency;
 
