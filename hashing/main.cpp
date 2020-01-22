@@ -338,8 +338,8 @@ param_t defaultParam() {/* Command line parameters */
     cmd_params.nthreads = 1;//TODO: in HS mode, thread must be larger than 1. Fix it when nthread=1.
 
     /* default dataset is Workload B (described in paper) */
-    cmd_params.r_size = 500;
-    cmd_params.s_size = 500;
+    cmd_params.r_size = 500000;
+    cmd_params.s_size = 500000;
 
     assert(cmd_params.r_size <= cmd_params.s_size);
 
@@ -362,7 +362,7 @@ param_t defaultParam() {/* Command line parameters */
     cmd_params.rkey = 0;
     cmd_params.skey = 0;
 
-    cmd_params.gen_with_ts = 1;
+    cmd_params.gen_with_ts = 0;
     cmd_params.window_size = 10000;
     cmd_params.step_size = 40;
     cmd_params.interval = 1000;

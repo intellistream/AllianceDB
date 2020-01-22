@@ -36,7 +36,7 @@ void print_timing(std::vector<std::chrono::milliseconds> vector, std::vector<int
     int check50 = ceil(n * 0.5);
     int check75 = ceil(n * 0.75);
     std::chrono::milliseconds start = vector.at(0);
-    fprintf(stdout, "Time to obtain 25%%, 50%%, 75%% of results (USECS): \n");
+    fprintf(stdout, "Time to obtain 25%%, 50%%, 75%% of results (MSECS): \n");
     fprintf(stdout, "(%.2lu) \t (%.2lu) \t (%.2lu)", vector.at(check25) - start, vector.at(check50) - start,
             vector.at(check75) - start);
     fprintf(stdout, "\n");
