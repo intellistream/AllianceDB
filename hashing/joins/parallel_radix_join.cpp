@@ -1573,7 +1573,7 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads)
         pthread_join(tid[i], NULL);
         result += args[i].result;
 #ifndef NO_TIMING
-        merge(args[i].timer, nullptr, nullptr);
+        merge(args[i].timer, relR, relS);
 #endif
     }
     joinresult->totalresults = result;
