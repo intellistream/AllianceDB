@@ -393,6 +393,9 @@ NPO(relation_t *relR, relation_t *relS, int nthreads) {
         print_timing(args[i].result, args[i].timer);
     }
 #endif
+#ifndef NO_TIMING
+    sort("NPJ");
+#endif
 //    for (i = 0; i < nthreads; i++) {
 //        pthread_join(tid[i], NULL);
 //        /* sum up results */

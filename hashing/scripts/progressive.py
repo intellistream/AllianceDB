@@ -89,7 +89,7 @@ def ReadFile(S):
             col4.append(int(x.strip("\n")))
         cnt += 1
 
-    f = open("/data1/xtra/results/PRO_timestamps.txt", "r")
+    f = open("/data1/xtra/results/PRJ_timestamps.txt", "r")
     cnt = 1
     read = f.readlines()
     for x in read:
@@ -97,7 +97,7 @@ def ReadFile(S):
             col5.append(int(x.strip("\n")))
         cnt += 1
 
-    f = open("/data1/xtra/results/NPO_timestamps.txt", "r")
+    f = open("/data1/xtra/results/NPJ_timestamps.txt", "r")
     cnt = 1
     read = f.readlines()
     for x in read:
