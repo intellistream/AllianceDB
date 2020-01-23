@@ -84,7 +84,7 @@ struct relation_t {
 struct relation_payload_t {
 //    time_t *ts;//add timestamp for each tuple in the relation.
     std::chrono::milliseconds *ts;//add timestamp for each tuple in the relation.
-    table_t *rows;
+//    table_t *rows;
     uint64_t num_tuples;
 };
 

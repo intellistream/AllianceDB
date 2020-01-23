@@ -150,6 +150,8 @@ task_queue_add(task_queue_t *tq, task_t *t) {
     t->next = tq->head;
     tq->head = t;
     tq->count++;
+//    auto rt = task_queue_get_atomic(tq);
+//    printf("");
 }
 
 /* sorted add

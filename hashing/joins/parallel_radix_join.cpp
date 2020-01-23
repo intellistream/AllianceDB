@@ -623,14 +623,19 @@ radix_cluster(relation_t *restrict outRel,
         dst[i] = offset + i * SMALL_PADDING_TUPLES;
         offset += hist[i];
     }
-    DEBUGMSG("Thread enters\n")
+
+    DEBUGMSG("Thread exit %d, %d \n", outRel->num_tuples, outRel->tuples[0].key)
+
     /* copy tuples to their corresponding clusters at appropriate offsets */
     for (i = 0; i < inRel->num_tuples; i++) {
+        DEBUGMSG("Thread enters\n")
         uint32_t idx = HASH_BIT_MODULO(inRel->tuples[i].key, M, R);
+        DEBUGMSG("Thread exit %d\n", idx)
+        DEBUGMSG("Thread exit %d\n", dst[idx])
+        DEBUGMSG("Thread exit %d\n", outRel->tuples[0].key)
         outRel->tuples[dst[idx]] = inRel->tuples[i];
         ++dst[idx];
     }
-    DEBUGMSG("Thread exit\n")
 }
 
 /**
@@ -720,7 +725,7 @@ void serial_radix_partition(task_t *const task,
     outputR = (int32_t *) calloc(fanOut + 1, sizeof(int32_t));
     outputS = (int32_t *) calloc(fanOut + 1, sizeof(int32_t));
 
-
+    DEBUGMSG("%d, %d ", task->tmpR.tuples[0], task->relR.tuples[0])
     /* TODO: measure the effect of memset() */
     /* memset(outputR, 0, fanOut * sizeof(int32_t)); */
     radix_cluster(&task->tmpR, &task->relR, outputR, R, D);
@@ -1176,7 +1181,6 @@ prj_thread(void *param) {
                 /* counts[pq_idx] ++; */
 
                 task_queue_t *numalocal_part_queue = args->part_queue[pq_idx];
-
                 task_t *t = task_queue_get_slot(numalocal_part_queue);
 
                 t->relR.num_tuples = t->tmpR.num_tuples = ntupR;
@@ -1186,7 +1190,6 @@ prj_thread(void *param) {
                 t->relS.num_tuples = t->tmpS.num_tuples = ntupS;
                 t->relS.tuples = args->tmpS + outputS[i];
                 t->tmpS.tuples = args->relS + outputS[i];
-
 
                 task_queue_add(numalocal_part_queue, t);
 

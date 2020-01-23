@@ -583,9 +583,9 @@ load_relation(relation_t *relation, relation_payload_t *relation_payload, int32_
     relation->tuples = (tuple_t *) MALLOC(num_tuples * sizeof(tuple_t));
 
     relation_payload->num_tuples = num_tuples;
-    relation_payload->rows = (table_t *) MALLOC(num_tuples * sizeof(table_t));
+//    relation_payload->rows = (table_t *) MALLOC(num_tuples * sizeof(table_t));
 
-    if (!relation->tuples || !relation_payload->rows) {
+    if (!relation->tuples /*|| !relation_payload->rows*/) {
 //    if (!relation->tuples) {
         perror("out of memory");
         return -1;
@@ -806,7 +806,7 @@ delete_relation(relation_t *rel) {
 void
 delete_relation_payload(relation_payload_t *relPl) {
     /* clean up */
-    FREE(relPl->rows, relPl->num_tuples * sizeof(table_t));
+    FREE(relPl->ts, relPl->num_tuples * sizeof(table_t));
 }
 
 // for string delimiter
@@ -904,7 +904,7 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t
 
         rel->tuples[i].key = key;
         rel->tuples[i].payloadID = payload;
-        relPl->rows[i] = row;
+//        relPl->rows[i] = row;
         relPl->ts[i] = timestamp;
         i++;
 

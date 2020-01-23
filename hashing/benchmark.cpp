@@ -54,9 +54,9 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int
 //    rel->payload = (relation_payload_t *) malloc_aligned(relPlsz);
 
     /** second allocate the memory for relation payload **/
-    size_t relPlRsz = relPl->num_tuples * sizeof(table_t)
-                      + RELATION_PADDING(cmd_params.nthreads, cmd_params.part_fanout);
-    relPl->rows = (table_t *) malloc_aligned(relPlRsz);
+//    size_t relPlRsz = relPl->num_tuples * sizeof(table_t)
+//                      + RELATION_PADDING(cmd_params.nthreads, cmd_params.part_fanout);
+//    relPl->rows = (table_t *) malloc_aligned(relPlRsz);
 
     size_t relTssz = relPl->num_tuples * sizeof(milliseconds)
                      + RELATION_PADDING(cmd_params.nthreads, cmd_params.part_fanout);
