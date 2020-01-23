@@ -219,7 +219,7 @@ if __name__ == "__main__":
     try:
         opts, args = getopt.getopt(sys.argv[1:], '-h-n:-s:', ['sample=', 'number=', 'help'])
     except getopt.GetoptError:
-        print('test.py -n number of join results')
+        print('test.py -n number of matches')
         sys.exit(2)
     for opt, opt_value in opts:
         if opt in ('-h', '--help'):
