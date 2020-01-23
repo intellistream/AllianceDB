@@ -234,7 +234,6 @@ if __name__ == "__main__":
 
     # 'Hash_JM', 'Hash_JB', 'Hash_HS', 'Sort_JM', 'Sort_JB', 'Sort_HS', 'PRJ'
     legend_labels = ['Hash_JM', 'Hash_JB', 'Sort_JM', 'Sort_JB', 'PRJ', 'NPJ']
-    N=(int)(N/S)
     col0 = []
     for x in range(1, N + 1):
         col0.append(x * S)
