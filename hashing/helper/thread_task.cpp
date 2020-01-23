@@ -474,7 +474,7 @@ void
                 fetcher->cntR--;
             }
 #ifdef DEBUG
-            printf("tid:%d, fetch R:%d, cntR:%d\n", args->tid, fetchR->tuple->key, cntR);
+            printf("tid:%d, fetch R:%d, cntR:%d\n", args->tid, fetchR->tuple->key, fetcher->cntR);
             fflush(stdout); // Will now print everything in the stdout buffer
 #endif
             processLeft(args, fetchR, args->matches, chainedbuf);
@@ -489,7 +489,7 @@ void
         if (fetchS) {
             fetcher->cntS++;
 #ifdef DEBUG
-            printf("tid:%d, fetch S:%d, ack:%d, cntS:%d\n", args->tid, fetchS->tuple->key, fetchS->ack, cntS);
+            printf("tid:%d, fetch S:%d, ack:%d, cntS:%d\n", args->tid, fetchS->tuple->key, fetchS->ack, fetcher->cntS);
             fflush(stdout); // Will now print everything in the stdout buffer
 #endif
             processRight(shuffler, args, fetchS, args->matches, chainedbuf);

@@ -80,10 +80,12 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int
         // check params 1, window_size, 2. step_size, 3. interval, 4. distribution, 5. zipf factor, 6. nthreads
         switch (cmd_params.distribution) {
             case 0: // unique
-                parallel_create_relation_with_ts(rel, relPl, rel->num_tuples, nthreads, rel->num_tuples, cmd_params.step_size, cmd_params.interval);
+                parallel_create_relation_with_ts(rel, relPl, rel->num_tuples, nthreads, rel->num_tuples,
+                                                 cmd_params.step_size, cmd_params.interval);
                 break;
             case 1: // nonunique
-                create_relation_nonunique_with_ts(rel, relPl, rel->num_tuples, nthreads, rel->num_tuples, cmd_params.step_size, cmd_params.interval);
+                create_relation_nonunique_with_ts(rel, relPl, rel->num_tuples, nthreads, rel->num_tuples,
+                                                  cmd_params.step_size, cmd_params.interval);
                 break;
             case 2: // zipf with zipf factor
                 create_relation_zipf(rel, rel_size, rel_size, cmd_params.zipf_param);
@@ -119,21 +121,16 @@ benchmark(const param_t cmd_params) {
     createRelation(&relR, relR.payload, cmd_params.rkey, cmd_params.rts, cmd_params, cmd_params.loadfileR,
                    cmd_params.r_size,
                    cmd_params.r_seed);
-    DEBUGMSG("relR [aligned:%d]: %s", is_aligned(relR.tuples, CACHE_LINE_SIZE),
-             print_relation(relR.tuples, max((uint64_t) 1000, cmd_params.r_size)).c_str())
+//    DEBUGMSG("relR [aligned:%d]: %s", is_aligned(relR.tuples, CACHE_LINE_SIZE),
+//             print_relation(relR.tuples, max((uint64_t) 1000, cmd_params.r_size)).c_str())
 
-     printf("relR [aligned:%d]: %s", is_aligned(relR.tuples, CACHE_LINE_SIZE),
-             print_relation(relR.tuples, max((uint64_t) 1000, cmd_params.r_size)).c_str());
 
     /* create relation S */
     createRelation(&relS, relS.payload, cmd_params.skey, cmd_params.sts, cmd_params, cmd_params.loadfileS,
                    cmd_params.s_size,
                    cmd_params.s_seed);
-    DEBUGMSG("relS [aligned:%d]: %s", is_aligned(relS.tuples, CACHE_LINE_SIZE),
-             print_relation(relS.tuples, max((uint64_t) 1000, cmd_params.s_size)).c_str())
-
-     printf("relS [aligned:%d]: %s", is_aligned(relS.tuples, CACHE_LINE_SIZE),
-            print_relation(relS.tuples, max((uint64_t) 1000, cmd_params.s_size)).c_str());
+//    DEBUGMSG("relS [aligned:%d]: %s", is_aligned(relS.tuples, CACHE_LINE_SIZE),
+//             print_relation(relS.tuples, max((uint64_t) 1000, cmd_params.s_size)).c_str())
 
     // TODO: Execute query with dataset, need to submit a join function
 

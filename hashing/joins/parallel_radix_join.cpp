@@ -14,6 +14,7 @@
 #define _GNU_SOURCE
 #endif
 
+
 #include <sched.h>              /* CPU_ZERO, CPU_SET */
 #include <pthread.h>            /* pthread_* */
 #include <stdlib.h>             /* malloc, posix_memalign */
@@ -37,6 +38,7 @@
 #include "../utils/t_timer.h" /* startTimer, stopTimer */
 #include <immintrin.h>
 #include <algorithm>
+
 
 #ifdef JOIN_RESULT_MATERIALIZE
 #include "tuple_buffer.h"       /* for materialization */
@@ -112,14 +114,6 @@
 #define SYNC_TIMERS_START(A, TID)
 #define SYNC_TIMER_STOP(T)
 #define SYNC_GLOBAL_STOP(T, TID)
-#endif
-
-/** Debug msg logging method */
-#ifdef DEBUG
-#define DEBUGMSG(COND, MSG, ...)                                    \
-    if(COND) { fprintf(stdout, "[DEBUG] "MSG, ## __VA_ARGS__); }
-#else
-#define DEBUGMSG(COND, MSG, ...)
 #endif
 
 /* just to enable compilation with g++ */
@@ -612,11 +606,14 @@ radix_cluster(relation_t *restrict outRel,
        just in case D differs from call to call. */
     uint32_t dst[fanOut];
 
+
     /* count tuples per cluster */
     for (i = 0; i < inRel->num_tuples; i++) {
         uint32_t idx = HASH_BIT_MODULO(inRel->tuples[i].key, M, R);
         hist[idx]++;
     }
+
+
     offset = 0;
     /* determine the start and end of each cluster depending on the counts. */
     for (i = 0; i < fanOut; i++) {
@@ -626,13 +623,14 @@ radix_cluster(relation_t *restrict outRel,
         dst[i] = offset + i * SMALL_PADDING_TUPLES;
         offset += hist[i];
     }
-
+    DEBUGMSG("Thread enters\n")
     /* copy tuples to their corresponding clusters at appropriate offsets */
     for (i = 0; i < inRel->num_tuples; i++) {
         uint32_t idx = HASH_BIT_MODULO(inRel->tuples[i].key, M, R);
         outRel->tuples[dst[idx]] = inRel->tuples[i];
         ++dst[idx];
     }
+    DEBUGMSG("Thread exit\n")
 }
 
 /**
@@ -711,17 +709,21 @@ radix_cluster_nopadding(relation_t *outRel, relation_t *inRel, int R, int D) {
 void serial_radix_partition(task_t *const task,
                             task_queue_t *join_queue,
                             const int R, const int D) {
+
+
     int i;
     uint32_t offsetR = 0, offsetS = 0;
     const int fanOut = 1 << D;  /*(NUM_RADIX_BITS / NUM_PASSES);*/
     int32_t *outputR, *outputS;
 
+
     outputR = (int32_t *) calloc(fanOut + 1, sizeof(int32_t));
     outputS = (int32_t *) calloc(fanOut + 1, sizeof(int32_t));
+
+
     /* TODO: measure the effect of memset() */
     /* memset(outputR, 0, fanOut * sizeof(int32_t)); */
     radix_cluster(&task->tmpR, &task->relR, outputR, R, D);
-
     /* memset(outputS, 0, fanOut * sizeof(int32_t)); */
     radix_cluster(&task->tmpS, &task->relS, outputS, R, D);
 
@@ -998,6 +1000,12 @@ parallel_radix_partition_optimized(part_t *const part) {
 }
 
 /** @} */
+#define DEBUGMSG(MSG, ...)                                                        \
+    {                                                               \
+        fprintf(stdout, "\n[DEBUG] @ %s:%d " MSG, __FILE__, __LINE__, ## __VA_ARGS__);    \
+          fprintf(stdout, "\n");                                                        \
+           fflush(stdout);                                                              \
+    }
 
 /**
  * The main thread of parallel radix join. It does partitioning in parallel with
@@ -1010,6 +1018,7 @@ parallel_radix_partition_optimized(part_t *const part) {
  */
 void *
 prj_thread(void *param) {
+
 
     arg_t *args = (arg_t *) param;
     int32_t my_tid = args->my_tid;
@@ -1185,7 +1194,7 @@ prj_thread(void *param) {
         }
 
         /* debug partitioning task queue */
-        DEBUGMSG(1, "Pass-2: # partitioning tasks = %d\n", part_queue->count);
+        DEBUGMSG("Pass-2: # partitioning tasks = %d\n", part_queue->count)
 
         /* DEBUG NUMA MAPPINGS */
         /* printf("Correct NUMA-mappings = %d, Wrong = %d\n", */
@@ -1213,9 +1222,7 @@ prj_thread(void *param) {
 #elif NUM_PASSES == 2
 
     while ((task = task_queue_get_atomic(part_queue))) {
-
         serial_radix_partition(task, join_queue, R, D);
-
     }
 
 #else
@@ -1427,7 +1434,7 @@ prj_thread(void *param) {
     /* Just to make sure we get consistent performance numbers */
     BARRIER_ARRIVE(args->barrier, rv);
 #endif
-    DEBUGMSG("Thread %d exit, I have finished processing %ld\n", args->my_tid, args->result);
+    DEBUGMSG("Thread %d exit, I have finished processing %ld\n", args->my_tid, args->result)
     return 0;
 }
 
@@ -1528,7 +1535,7 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads)
     for (i = 0; i < nthreads; i++) {
         int cpu_idx = get_cpu_id(i);
 
-        DEBUGMSG(1, "Assigning thread-%d to CPU-%d\n", i, cpu_idx);
+        DEBUGMSG("Assigning thread-%d to CPU-%d\n", i, cpu_idx);
 
         CPU_ZERO(&set);
         CPU_SET(cpu_idx, &set);

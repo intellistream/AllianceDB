@@ -84,30 +84,12 @@ void SHJJoiner::join(int32_t tid, tuple_t *tuple, bool ISTupleR, int64_t *matche
         build_hashtable_single(htR, tuple, hashmask_R, skipbits_R);//(1)
         END_MEASURE_BUILD_ACC(timer)//accumulate hash table build time.
 
-#ifdef DEBUG
-        if (tid == 0) {
-            window0.R_Window.push_back(tuple->key);
-            print_window(window0.R_Window);
-        } else {
-            window1.R_Window.push_back(tuple->key);
-            print_window(window1.R_Window);
-        }
-#endif
         proble_hashtable_single_measure(htS,
                                         tuple, hashmask_S, skipbits_S, matches, thread_fun, &timer, ISTupleR);//(2)
     } else {
         BEGIN_MEASURE_BUILD_ACC(timer)
         build_hashtable_single(htS, tuple, hashmask_S, skipbits_S);//(3)
         END_MEASURE_BUILD_ACC(timer)//accumulate hash table build time.
-#ifdef DEBUG
-        if (tid == 0) {
-            window0.S_Window.push_back(tuple->key);
-            print_window(window0.S_Window);
-        } else {
-            window1.S_Window.push_back(tuple->key);
-            print_window(window1.S_Window);
-        }
-#endif
         proble_hashtable_single_measure(htR, tuple, hashmask_R, skipbits_R, matches, thread_fun, &timer, ISTupleR);//(4)
     }
 }
@@ -126,29 +108,13 @@ void SHJJoiner::clean(int32_t tid, tuple_t *tuple, bool cleanR) {
         BEGIN_MEASURE_DEBUILD_ACC(timer)
         debuild_hashtable_single(htR, tuple, htR->hash_mask, htR->skip_bits);
         END_MEASURE_DEBUILD_ACC(timer)
-#ifdef DEBUG
-        if (tid == 0) {
-            window0.R_Window.remove(tuple->key);
-            print_window(window0.R_Window);
-        } else {
-            window1.R_Window.remove(tuple->key);
-            print_window(window1.R_Window);
-        }
-#endif
+
 
     } else {
         BEGIN_MEASURE_DEBUILD_ACC(timer)
         debuild_hashtable_single(htS, tuple, htS->hash_mask, htS->skip_bits);
         END_MEASURE_DEBUILD_ACC(timer)
-#ifdef DEBUG
-        if (tid == 0) {
-            window0.S_Window.remove(tuple->key);
-            print_window(window0.S_Window);
-        } else {
-            window1.S_Window.remove(tuple->key);
-            print_window(window1.S_Window);
-        }
-#endif
+
     }
 }
 
@@ -335,16 +301,7 @@ join(int32_t tid, tuple_t *tuple, int fat_tuple_size, bool IStuple_R, int64_t *m
         END_MEASURE_BUILD_ACC(timer)//accumulate hash table build time.
         DEBUGMSG("TID %d: after store R is %s.", tid,
                  print_tuples(arg->tmp_relR, arg->outerPtrR).c_str())
-#ifdef DEBUG
-        for (auto i = 0; i < fat_tuple_size; i++) {
-            if (tid == 0) {
-                window0.R_Window.push_back(tuple[i].key);
-            } else if (tid == 1) {
-                window1.R_Window.push_back(tuple[i].key);
-            }
 
-        }
-#endif
         DEBUGMSG("TID: %d Sorting in normal stage start", tid)
 
         auto inputS = copy_tuples(arg->tmp_relS, arg->outerPtrS);
@@ -363,16 +320,7 @@ join(int32_t tid, tuple_t *tuple, int fat_tuple_size, bool IStuple_R, int64_t *m
         END_MEASURE_BUILD_ACC(timer)//accumulate hash table build time.
         DEBUGMSG("TID %d: after store S is %s.", tid,
                  print_tuples(arg->tmp_relS, arg->outerPtrS).c_str())
-#ifdef DEBUG
-        for (auto i = 0; i < fat_tuple_size; i++) {
-            if (tid == 0) {
-                window0.S_Window.push_back(tuple[i].key);
-            } else if (tid == 1) {
-                window1.S_Window.push_back(tuple[i].key);
-            }
 
-        }
-#endif
         DEBUGMSG("TID: %d Sorting in normal stage start", tid)
         auto inputR = copy_tuples(arg->tmp_relR, arg->outerPtrR);
         join_tuple_single(tid, inputR, &arg->outerPtrR, tuple, fat_tuple_size,
@@ -462,42 +410,12 @@ clean(int32_t tid, tuple_t *fat_tuple, int fat_tuple_size, bool cleanR) {
 //                remove++;
                 this->t_arg->outerPtrR--;
 */
-#ifdef DEBUG
-            if (tid == 0) {
-                window0.R_Window.remove(fat_tuple[i].key);
-                DEBUGMSG("T0 removes R %d, left with:%s", fat_tuple[i].key,
-                         print_window(window0.R_Window).c_str())
-            } else if (tid == 1) {
-                window1.R_Window.remove(fat_tuple[i].key);
-                DEBUGMSG("T1 removes R %d, left with:%s", fat_tuple[i].key,
-                         print_window(window1.R_Window).c_str())
-            }
-#endif
 
         }
         this->t_arg->tmp_relR = &this->t_arg->tmp_relR[fat_tuple_size];
         this->t_arg->outerPtrR -= fat_tuple_size;
         DEBUGMSG("Stop clean %d; T%d left with:%s", fat_tuple[0].key, tid,
                  print_relation(this->t_arg->tmp_relR, this->t_arg->outerPtrR).c_str())
-//        this->t_arg->outerPtrR -= remove;
-//        if (this->t_arg->innerPtrR < 0) {
-//            this->t_arg->outerPtrR += this->t_arg->innerPtrR;
-//            this->t_arg->innerPtrR = 0;
-//        }
-
-
-#ifdef DEBUG
-        if (tid == 0) {
-            DEBUGMSG("T0 after remove R (expected): %s, actual: %s", print_window(window0.R_Window).c_str(),
-                     print_tuples(this->t_arg->tmp_relR,
-                                  this->t_arg->outerPtrR + this->t_arg->innerPtrR).c_str())
-        } else if (tid == 1) {
-            DEBUGMSG("T1 after remove R (expected): %s, actual: %s, size: %d", print_window(window1.R_Window).c_str(),
-                     print_tuples(this->t_arg->tmp_relR,
-                                  this->t_arg->outerPtrR + this->t_arg->innerPtrR).c_str(), this->t_arg->outerPtrR)
-        }
-#endif
-
 
     } else {
 
@@ -513,37 +431,24 @@ clean(int32_t tid, tuple_t *fat_tuple, int fat_tuple_size, bool cleanR) {
 //                remove++;
             this->t_arg->outerPtrS--;
 
-#ifdef DEBUG
-            if (tid == 0) {
-                window0.S_Window.remove(fat_tuple[i].key);
-                DEBUGMSG("T0 removes S %d, left with:%s", fat_tuple[i].key,
-                         print_window(window0.S_Window).c_str());
-            } else if (tid == 1) {
-                window1.S_Window.remove(fat_tuple[i].key);
-                DEBUGMSG("T1 removes S %d, left with:%s", fat_tuple[i].key,
-                         print_window(window1.S_Window).c_str())
-            }
-#endif
-
 
         }
 
-//        this->t_arg->tmp_relS = &this->t_arg->tmp_relS[remove];
-//        this->t_arg->outerPtrS -= remove;
+
         DEBUGMSG("Stop clean %d; T%d left with:%s", fat_tuple[0].key, tid,
                  print_relation(this->t_arg->tmp_relS, this->t_arg->outerPtrS).c_str())
 
-#ifdef DEBUG
-        if (tid == 0) {
-            DEBUGMSG("T0 after remove S (expected): %s,(actual): %s", print_window(window0.S_Window).c_str(),
-                     print_tuples(this->t_arg->tmp_relS,
-                                  this->t_arg->outerPtrS).c_str())
-        } else if (tid == 1) {
-            DEBUGMSG("T1 after remove S (expected): %s,(actual): %s, size: %d", print_window(window1.S_Window).c_str(),
-                     print_tuples(this->t_arg->tmp_relS,
-                                  this->t_arg->outerPtrS).c_str(), this->t_arg->outerPtrS)
-        }
-#endif
+//#ifdef DEBUG
+//        if (tid == 0) {
+//            DEBUGMSG("T0 after remove S (expected): %s,(actual): %s", print_window(window0.S_Window).c_str(),
+//                     print_tuples(this->t_arg->tmp_relS,
+//                                  this->t_arg->outerPtrS).c_str())
+//        } else if (tid == 1) {
+//            DEBUGMSG("T1 after remove S (expected): %s,(actual): %s, size: %d", print_window(window1.S_Window).c_str(),
+//                     print_tuples(this->t_arg->tmp_relS,
+//                                  this->t_arg->outerPtrS).c_str(), this->t_arg->outerPtrS)
+//        }
+//#endif
     }
 }
 
@@ -558,7 +463,6 @@ merge(int32_t tid, int64_t *matches,
     DEBUGMSG("TID:%d in Clean up stage, current matches:", tid, *matches)
     stepR = arg->innerPtrR;
     stepS = arg->innerPtrS;
-
 
     tuple_t *out_relR;
     tuple_t *out_relS;
