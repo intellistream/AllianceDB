@@ -57,7 +57,7 @@ malloc_aligned(size_t size) {
     rv = posix_memalign((void **) &ret, CACHE_LINE_SIZE, size);
 
     if (rv) {
-        perror("[ERROR] malloc_aligned() failed: out of memory");
+        DEBUGMSG("[ERROR] malloc_aligned() failed: out of memory")
         return 0;
     }
 
