@@ -56,27 +56,6 @@ int nthreads;
 static int seeded = 0;
 static unsigned int seedValue;
 
-void *
-alloc_aligned(size_t size) {
-    void *ret;
-    int rv;
-    rv = posix_memalign((void **) &ret, CACHE_LINE_SIZE, size);
-
-    if (rv) {
-        perror("[ERROR] alloc_aligned() failed: out of memory");
-        return 0;
-    }
-
-    /** Not an elegant way of passing whether we will numa-localize, but this
-        feature is experimental anyway. */
-    if (numalocalize) {
-        tuple_t *mem = (tuple_t *) ret;
-        uint64_t ntuples = size / sizeof(tuple_t);
-        numa_localize(mem, ntuples, nthreads);
-    }
-
-    return ret;
-}
 
 void
 seed_generator(unsigned int seed) {
@@ -943,6 +922,27 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t
 //    }
 
     fclose(fp);
+}
+
+void *alloc_aligned(size_t size) {
+    void *ret;
+    int rv;
+    rv = posix_memalign((void **) &ret, CACHE_LINE_SIZE, size);
+
+    if (rv) {
+        perror("[ERROR] alloc_aligned() failed: out of memory");
+        return 0;
+    }
+
+    /** Not an elegant way of passing whether we will numa-localize, but this
+        feature is experimental anyway. */
+    if (numalocalize) {
+        tuple_t *mem = (tuple_t *) ret;
+        uint64_t ntuples = size / sizeof(tuple_t);
+        numa_localize(mem, ntuples, nthreads);
+    }
+
+    return ret;
 }
 
 

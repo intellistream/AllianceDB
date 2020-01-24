@@ -3,6 +3,23 @@
 //
 
 #include "benchmark.h"
+#include "joins/prj_params.h"
+#include "utils/generator.h"
+
+/**
+ * Put an odd number of cache lines between partitions in pass-2:
+ * Here we put 3 cache lines.
+ */
+#define SMALL_PADDING_TUPLES (3 * CACHE_LINE_SIZE/sizeof(tuple_t))
+#define PADDING_TUPLES (SMALL_PADDING_TUPLES*(FANOUT_PASS2+1))
+#define RELATION_PADDING (PADDING_TUPLES*FANOUT_PASS1*sizeof(tuple_t))
+
+/* return a random number in range [0,N] */
+#define RAND_RANGE(N) ((double)rand() / ((double)RAND_MAX + 1) * (N))
+#define RAND_RANGE48(N, STATE) ((double)nrand48(STATE)/((double)RAND_MAX+1)*(N))
+#define MALLOC(SZ) alloc_aligned(SZ+RELATION_PADDING) /*malloc(SZ+RELATION_PADDING)*/
+#define FREE(X, SZ) free(X)
+
 
 int check_avx() {
     unsigned int eax, ebx, ecx, edx;
@@ -19,7 +36,6 @@ int check_avx() {
 void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int32_t tsKey, const param_t &cmd_params,
                     char *loadfile, uint64_t rel_size, uint32_t seed) {
     seed_generator(seed);
-
     /* to pass information to the create_relation methods */
     numalocalize = cmd_params.basic_numa;
     nthreads = cmd_params.nthreads;
@@ -45,9 +61,9 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int
             (double) sizeof(tuple_t) * rel_size / 1024.0 / 1024.0, rel_size);
     fflush(stdout);
 
-    size_t relRsz = rel->num_tuples * sizeof(tuple_t)
-                    + RELATION_PADDING(cmd_params.nthreads, cmd_params.part_fanout);
-    rel->tuples = (tuple_t *) malloc_aligned(relRsz);
+//    size_t relRsz = rel->num_tuples * sizeof(tuple_t)
+//                    + RELATION_PADDING(cmd_params.nthreads, cmd_params.part_fanout);
+    rel->tuples = (tuple_t *) MALLOC(rel->num_tuples * sizeof(tuple_t));
 
 //    size_t relPlsz = relPl->num_tuples * sizeof(relation_payload_t)
 //                     + RELATION_PADDING(cmd_params.nthreads, cmd_params.part_fanout);
@@ -58,9 +74,9 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int
 //                      + RELATION_PADDING(cmd_params.nthreads, cmd_params.part_fanout);
 //    relPl->rows = (table_t *) malloc_aligned(relPlRsz);
 
-    size_t relTssz = relPl->num_tuples * sizeof(milliseconds)
-                     + RELATION_PADDING(cmd_params.nthreads, cmd_params.part_fanout);
-    relPl->ts = (milliseconds *) malloc_aligned(relTssz);
+//    size_t relTssz = relPl->num_tuples * sizeof(milliseconds)
+//                     + RELATION_PADDING(cmd_params.nthreads, cmd_params.part_fanout);
+    relPl->ts = (milliseconds *) MALLOC(relPl->num_tuples * sizeof(tuple_t));
 
     //    /* NUMA-localize the input: */
     //    if(!nonumalocalize){
@@ -112,13 +128,13 @@ benchmark(const param_t cmd_params) {
     relation_t relR;
     relation_t relS;
 
-    relR.payload = new relation_payload_t();
-    relS.payload = new relation_payload_t();
+    auto R_pl = new relation_payload_t();
+    auto S_pl = new relation_payload_t();
 
     result_t *results;
     // TODO: generate dataset
     /* create relation R */
-    createRelation(&relR, relR.payload, cmd_params.rkey, cmd_params.rts, cmd_params, cmd_params.loadfileR,
+    createRelation(&relR, R_pl, cmd_params.rkey, cmd_params.rts, cmd_params, cmd_params.loadfileR,
                    cmd_params.r_size,
                    cmd_params.r_seed);
 //    DEBUGMSG("relR [aligned:%d]: %s", is_aligned(relR.tuples, CACHE_LINE_SIZE),
@@ -126,7 +142,7 @@ benchmark(const param_t cmd_params) {
 
 
     /* create relation S */
-    createRelation(&relS, relS.payload, cmd_params.skey, cmd_params.sts, cmd_params, cmd_params.loadfileS,
+    createRelation(&relS, S_pl, cmd_params.skey, cmd_params.sts, cmd_params, cmd_params.loadfileS,
                    cmd_params.s_size,
                    cmd_params.s_seed);
 //    DEBUGMSG("relS [aligned:%d]: %s", is_aligned(relS.tuples, CACHE_LINE_SIZE),
@@ -144,8 +160,8 @@ benchmark(const param_t cmd_params) {
     /* clean-up */
     delete_relation(&relR);
     delete_relation(&relS);
-    delete_relation_payload(relR.payload);
-    delete_relation_payload(relS.payload);
+    delete_relation_payload(R_pl);
+    delete_relation_payload(S_pl);
     free(results);
 
 //    results = join_from_file(cmd_params, cmd_params.loadfileR, cmd_params.loadfileS,

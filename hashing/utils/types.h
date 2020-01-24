@@ -76,7 +76,6 @@ struct tuple_t {
  */
 struct relation_t {
     tuple_t *tuples;
-    relation_payload_t *payload;
     uint64_t num_tuples;
 };
 

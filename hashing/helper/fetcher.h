@@ -91,8 +91,8 @@ public:
         this->tid = tid;
         this->relR = relR;
         this->relS = relS;
-        RdataTime = relR->payload->ts;
-        SdataTime = relS->payload->ts;
+//        RdataTime = relR->payload->ts;
+//        SdataTime = relS->payload->ts;
     }
 };
 

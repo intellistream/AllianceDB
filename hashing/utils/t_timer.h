@@ -19,7 +19,7 @@
 #include <chrono>
 using namespace std::chrono;
 
-#define MEASURE
+//#define MEASURE
 //thread_local structure.
 struct T_TIMER {
 #ifndef NO_TIMING

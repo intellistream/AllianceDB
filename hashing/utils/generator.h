@@ -17,6 +17,8 @@
  * @defgroup DataGeneration Data Set Generation
  * @{
  */
+void *
+alloc_aligned(size_t size);
 
 /**
  * Seed the random number generator before calling create_relation_xx. If not

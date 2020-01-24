@@ -87,7 +87,7 @@ std::vector<std::chrono::milliseconds> global_record;
 std::vector<int64_t > global_record_latency;
 
 void merge(T_TIMER *timer, relation_t *relR, relation_t *relS) {
-
+#ifdef MEASURE
     //For progressiveness measurement
     auto start = timer->record.at(0);
     if (actual_start_timestamp.count() > start.count()) {
@@ -111,6 +111,7 @@ void merge(T_TIMER *timer, relation_t *relR, relation_t *relS) {
                 relS->payload->ts[timer->recordSID.at(i)].count();//latency of one tuple.
         global_record_latency.push_back(latency);
     }
+#endif
 }
 
 void sort(string algo_name) {

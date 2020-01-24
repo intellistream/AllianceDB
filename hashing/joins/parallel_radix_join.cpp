@@ -250,19 +250,19 @@ struct part_t {
     uint32_t padding;
 } __attribute__((aligned(CACHE_LINE_SIZE)));
 
-static void *
-alloc_aligned(size_t size) {
-    void *ret;
-    int rv;
-    rv = posix_memalign((void **) &ret, CACHE_LINE_SIZE, size);
-
-    if (rv) {
-        perror("alloc_aligned() failed: out of memory");
-        return 0;
-    }
-
-    return ret;
-}
+//void *
+//alloc_aligned(size_t size) {
+//    void *ret;
+//    int rv;
+//    rv = posix_memalign((void **) &ret, CACHE_LINE_SIZE, size);
+//
+//    if (rv) {
+//        perror("alloc_aligned() failed: out of memory");
+//        return 0;
+//    }
+//
+//    return ret;
+//}
 
 /** \endinternal */
 
@@ -624,15 +624,15 @@ radix_cluster(relation_t *restrict outRel,
         offset += hist[i];
     }
 
-    DEBUGMSG("Thread exit %d, %d \n", outRel->num_tuples, outRel->tuples[0].key)
+//    DEBUGMSG("Thread exit %d, %d \n", outRel->num_tuples, outRel->tuples[0].key)
 
     /* copy tuples to their corresponding clusters at appropriate offsets */
     for (i = 0; i < inRel->num_tuples; i++) {
-        DEBUGMSG("Thread enters\n")
+//        DEBUGMSG("Thread enters\n")
         uint32_t idx = HASH_BIT_MODULO(inRel->tuples[i].key, M, R);
-        DEBUGMSG("Thread exit %d\n", idx)
-        DEBUGMSG("Thread exit %d\n", dst[idx])
-        DEBUGMSG("Thread exit %d\n", outRel->tuples[0].key)
+//        DEBUGMSG("Thread exit %d\n", idx)
+//        DEBUGMSG("Thread exit %d\n", dst[idx])
+//        DEBUGMSG("Thread exit %d\n", outRel->tuples[0].key)
         outRel->tuples[dst[idx]] = inRel->tuples[i];
         ++dst[idx];
     }
@@ -725,7 +725,7 @@ void serial_radix_partition(task_t *const task,
     outputR = (int32_t *) calloc(fanOut + 1, sizeof(int32_t));
     outputS = (int32_t *) calloc(fanOut + 1, sizeof(int32_t));
 
-    DEBUGMSG("%d, %d ", task->tmpR.tuples[0], task->relR.tuples[0])
+//    DEBUGMSG("%d, %d ", task->tmpR.tuples[0], task->relR.tuples[0])
     /* TODO: measure the effect of memset() */
     /* memset(outputR, 0, fanOut * sizeof(int32_t)); */
     radix_cluster(&task->tmpR, &task->relR, outputR, R, D);
