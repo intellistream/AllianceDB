@@ -1197,7 +1197,9 @@ prj_thread(void *param) {
         }
 
         /* debug partitioning task queue */
+#ifdef DEBUG
         DEBUGMSG("Pass-2: # partitioning tasks = %d\n", part_queue->count)
+#endif
 
         /* DEBUG NUMA MAPPINGS */
         /* printf("Correct NUMA-mappings = %d, Wrong = %d\n", */
@@ -1437,7 +1439,9 @@ prj_thread(void *param) {
     /* Just to make sure we get consistent performance numbers */
     BARRIER_ARRIVE(args->barrier, rv);
 #endif
+#ifdef DEBUG
     DEBUGMSG("Thread %d exit, I have finished processing %ld\n", args->my_tid, args->result)
+#endif
     return 0;
 }
 
@@ -1537,9 +1541,9 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads)
     numperthr[1] = relS->num_tuples / nthreads;
     for (i = 0; i < nthreads; i++) {
         int cpu_idx = get_cpu_id(i);
-
+#ifdef DEBUG
         DEBUGMSG("Assigning thread-%d to CPU-%d\n", i, cpu_idx);
-
+#endif
         CPU_ZERO(&set);
         CPU_SET(cpu_idx, &set);
         pthread_attr_setaffinity_np(&attr, sizeof(cpu_set_t), &set);
