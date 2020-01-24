@@ -394,7 +394,7 @@ NPO(relation_t *relR, relation_t *relS, int nthreads) {
     }
 #endif
 #ifndef NO_TIMING
-    sort("NPJ");
+    sortRecords("NPJ");
 #endif
 //    for (i = 0; i < nthreads; i++) {
 //        pthread_join(tid[i], NULL);

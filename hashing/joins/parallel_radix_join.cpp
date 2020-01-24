@@ -1621,7 +1621,7 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads)
 #endif
 
 #ifndef NO_TIMING
-    sort("PRJ");
+    sortRecords("PRJ");
 #endif
     /* clean up */
     for (i = 0; i < nthreads; i++) {

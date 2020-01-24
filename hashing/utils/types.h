@@ -77,6 +77,7 @@ struct tuple_t {
 struct relation_t {
     tuple_t *tuples;
     uint64_t num_tuples;
+    relation_payload_t *payload;
 };
 
 // add a new structure to save real payload, let original payload be index of this struct

@@ -17,9 +17,10 @@
 
 
 #include <chrono>
+
 using namespace std::chrono;
 
-//#define MEASURE
+#define MEASURE
 //thread_local structure.
 struct T_TIMER {
 #ifndef NO_TIMING
@@ -29,7 +30,7 @@ struct T_TIMER {
     uint64_t debuildtimer_pre = 0, debuildtimer = 0;//buildtimer is accumulated.
     uint64_t sorttimer_pre = 0, sorttimer = 0;//accumulate.
     std::vector<std::chrono::milliseconds> record;
-    std::vector<uint64_t > recordRID;
+    std::vector<uint64_t> recordRID;
     std::vector<uint64_t> recordSID;
     int record_cnt = 0;
     const int record_gap = 1;
@@ -37,6 +38,7 @@ struct T_TIMER {
 };
 
 milliseconds now();
+
 /**
  * print progressive results.
  * @param vector
@@ -48,7 +50,7 @@ void print_timing(int64_t result, T_TIMER *timer);
 
 void merge(T_TIMER *timer, relation_t *relR, relation_t *relS);
 
-void sort(std::string algo_name);
+void sortRecords(std::string algo_name);
 
 #ifndef BEGIN_MEASURE_BUILD
 #define BEGIN_MEASURE_BUILD(timer) \

@@ -55,7 +55,7 @@ t_param &finishing(int nthreads, t_param &param) {
     param.joinresult->totalresults = param.result;
     param.joinresult->nthreads = nthreads;
 #ifndef NO_TIMING
-    sort(param.algo_name);
+    sortRecords(param.algo_name);
     /* now print the timing results: */
     for (i = 0; i < nthreads; i++) {
         print_timing(*param.args[i].matches, param.args[i].timer);

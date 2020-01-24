@@ -128,13 +128,13 @@ benchmark(const param_t cmd_params) {
     relation_t relR;
     relation_t relS;
 
-    auto R_pl = new relation_payload_t();
-    auto S_pl = new relation_payload_t();
+    relR.payload = new relation_payload_t();
+    relS.payload = new relation_payload_t();
 
     result_t *results;
     // TODO: generate dataset
     /* create relation R */
-    createRelation(&relR, R_pl, cmd_params.rkey, cmd_params.rts, cmd_params, cmd_params.loadfileR,
+    createRelation(&relR, relR.payload, cmd_params.rkey, cmd_params.rts, cmd_params, cmd_params.loadfileR,
                    cmd_params.r_size,
                    cmd_params.r_seed);
 //    DEBUGMSG("relR [aligned:%d]: %s", is_aligned(relR.tuples, CACHE_LINE_SIZE),
@@ -142,7 +142,7 @@ benchmark(const param_t cmd_params) {
 
 
     /* create relation S */
-    createRelation(&relS, S_pl, cmd_params.skey, cmd_params.sts, cmd_params, cmd_params.loadfileS,
+    createRelation(&relS, relS.payload, cmd_params.skey, cmd_params.sts, cmd_params, cmd_params.loadfileS,
                    cmd_params.s_size,
                    cmd_params.s_seed);
 //    DEBUGMSG("relS [aligned:%d]: %s", is_aligned(relS.tuples, CACHE_LINE_SIZE),
@@ -160,8 +160,8 @@ benchmark(const param_t cmd_params) {
     /* clean-up */
     delete_relation(&relR);
     delete_relation(&relS);
-    delete_relation_payload(R_pl);
-    delete_relation_payload(S_pl);
+    delete_relation_payload(relR.payload);
+    delete_relation_payload(relS.payload);
     free(results);
 
 //    results = join_from_file(cmd_params, cmd_params.loadfileR, cmd_params.loadfileS,

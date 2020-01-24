@@ -25,7 +25,8 @@ std::string GetCurrentWorkingDir(void) {
     return current_working_dir;
 }
 
-void print_timing(std::vector<std::chrono::milliseconds> vector, std::vector<int64_t> vector_latency, std::string arg_name) {
+void
+print_timing(std::vector<std::chrono::milliseconds> vector, std::vector<int64_t> vector_latency, std::string arg_name) {
 
     //progressive and throughput.
     std::string name = arg_name;
@@ -84,7 +85,7 @@ void print_timing(int64_t result, T_TIMER *timer) {
 
 std::chrono::milliseconds actual_start_timestamp = std::chrono::milliseconds::max();
 std::vector<std::chrono::milliseconds> global_record;
-std::vector<int64_t > global_record_latency;
+std::vector<int64_t> global_record_latency;
 
 void merge(T_TIMER *timer, relation_t *relR, relation_t *relS) {
 #ifdef MEASURE
@@ -114,13 +115,20 @@ void merge(T_TIMER *timer, relation_t *relR, relation_t *relS) {
 #endif
 }
 
-void sort(string algo_name) {
+/**
+ * TODO: check why the second sort causes many memory errors.
+ * "Conditional jump or move depends on uninitialised value(s)"
+ * @param algo_name
+ */
+void sortRecords(string algo_name) {
+
     //sort the global record to get to know the actual time when each match success.
     global_record.push_back(actual_start_timestamp);
     sort(global_record.begin(), global_record.end());
     sort(global_record_latency.begin(), global_record_latency.end());
     /* now print the progressive results: */
     print_timing(global_record, global_record_latency, algo_name);
+
 }
 
 milliseconds now() {

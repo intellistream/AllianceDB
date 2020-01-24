@@ -30,8 +30,8 @@ fetch_t *PMJ_HS_NP_Fetcher::next_tuple() {
         readR = &relR->tuples[state->start_index_R];
         //check the timestamp whether the tuple is ``ready" to be fetched.
         std::chrono::milliseconds timestamp
-//                = relR->payload->ts[readR[state->fetch.fat_tuple_size - 1].payloadID];
-                = (milliseconds) 0;
+                = relR->payload->ts[readR[state->fetch.fat_tuple_size - 1].payloadID];
+//                = (milliseconds) 0;
         auto timegap = RtimeGap(&timestamp);
         if (timegap.count() <= 0) {//if it's negative means our fetch is too slow.
             state->fetch.fat_tuple = readR;
@@ -90,8 +90,8 @@ fetch_t *baseFetcher::next_tuple() {
         readR = &relR->tuples[state->start_index_R];
         //check the timestamp whether the tuple is ``ready" to be fetched.
         std::chrono::milliseconds timestamp
-//        = relR->payload->ts[readR->payloadID];
-                = (milliseconds) 0;
+        = relR->payload->ts[readR->payloadID];
+//                = (milliseconds) 0;
         auto timegap = RtimeGap(&timestamp);
         if (timegap.count() <= 0) {//if it's negative means our fetch is too slow.
             state->fetch.tuple = readR;
@@ -107,8 +107,8 @@ fetch_t *baseFetcher::next_tuple() {
         readS = &relS->tuples[state->start_index_S];
         //check the timestamp whether the tuple is ``ready" to be fetched.
         std::chrono::milliseconds timestamp
-//                = relS->payload->ts[readS->payloadID];
-                = (milliseconds) 0;
+                = relS->payload->ts[readS->payloadID];
+//                = (milliseconds) 0;
         auto timegap = StimeGap(&timestamp);
         if (timegap.count() <= 0) {//if it's negative means our fetch is too slow.
             state->fetch.tuple = readS;
