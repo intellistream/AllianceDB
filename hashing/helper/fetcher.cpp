@@ -118,8 +118,8 @@ fetch_t *baseFetcher::next_tuple() {
         readS = &relS->tuples[state->start_index_S];
         //check the timestamp whether the tuple is ``ready" to be fetched.
         arrivalTsS
-//                = relS->payload->ts[readS->payloadID];
-                = (milliseconds) 0;
+                = relS->payload->ts[readS->payloadID];
+//                = (milliseconds) 0;
 
         auto timegap = arrivalTsS - fetchTS;
 
