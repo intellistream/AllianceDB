@@ -46,7 +46,7 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int
             perror("step size should be bigger than the number of threads!");
             return;
         }
-        rel->num_tuples = cmd_params.window_size / cmd_params.interval * cmd_params.step_size;
+        rel->num_tuples = (cmd_params.window_size / cmd_params.interval) * cmd_params.step_size;
         rel_size = rel->num_tuples;
         relPl->num_tuples = rel->num_tuples;
     } else {
@@ -115,6 +115,8 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int
         parallel_create_relation(rel, rel_size,
                                  nthreads,
                                  rel_size);
+        parallel_create_relation_with_ts(rel, relPl, rel->num_tuples, nthreads, rel->num_tuples,
+                                         rel->num_tuples, 0);
     }
     printf("OK \n");
 }
