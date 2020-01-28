@@ -57,7 +57,7 @@ def ReadFile(S):
     col5 = []
     col6 = []
 
-    f = open("/data1/xtra/results/SHJ_JM_NP_timestamps.txt", "r")
+    f = open("/home/myc/workspace/results/SHJ_JM_NP_timestamps.txt", "r")
     cnt = 1
     read = f.readlines()
     for x in read:
@@ -65,7 +65,7 @@ def ReadFile(S):
             col1.append(int(x.strip("\n")))
         cnt += 1
 
-    f = open("/data1/xtra/results/SHJ_JBCR_NP_timestamps.txt", "r")
+    f = open("/home/myc/workspace/results/SHJ_JBCR_NP_timestamps.txt", "r")
     cnt = 1
     read = f.readlines()
     for x in read:
@@ -73,7 +73,7 @@ def ReadFile(S):
             col2.append(int(x.strip("\n")))
         cnt += 1
 
-    f = open("/data1/xtra/results/PMJ_JM_NP_timestamps.txt", "r")
+    f = open("/home/myc/workspace/results/PMJ_JM_NP_timestamps.txt", "r")
     cnt = 1
     read = f.readlines()
     for x in read:
@@ -81,7 +81,7 @@ def ReadFile(S):
             col3.append(int(x.strip("\n")))
         cnt += 1
 
-    f = open("/data1/xtra/results/PMJ_JBCR_NP_timestamps.txt", "r")
+    f = open("/home/myc/workspace/results/PMJ_JBCR_NP_timestamps.txt", "r")
     cnt = 1
     read = f.readlines()
     for x in read:
@@ -89,7 +89,7 @@ def ReadFile(S):
             col4.append(int(x.strip("\n")))
         cnt += 1
 
-    f = open("/data1/xtra/results/PRJ_timestamps.txt", "r")
+    f = open("/home/myc/workspace/results/PRJ_timestamps.txt", "r")
     cnt = 1
     read = f.readlines()
     for x in read:
@@ -97,7 +97,7 @@ def ReadFile(S):
             col5.append(int(x.strip("\n")))
         cnt += 1
 
-    f = open("/data1/xtra/results/NPJ_timestamps.txt", "r")
+    f = open("/home/myc/workspace/results/NPJ_timestamps.txt", "r")
     cnt = 1
     read = f.readlines()
     for x in read:
@@ -232,6 +232,7 @@ if __name__ == "__main__":
             print('Gap of sampling ', opt_value)
             S = (int)(opt_value)
 
+    N = int(N/S)
     # 'Hash_JM', 'Hash_JB', 'Hash_HS', 'Sort_JM', 'Sort_JB', 'Sort_HS', 'PRJ'
     legend_labels = ['Hash_JM', 'Hash_JB', 'Sort_JM', 'Sort_JB', 'PRJ', 'NPJ']
     col0 = []
@@ -244,8 +245,8 @@ if __name__ == "__main__":
     # lines = [col1, col2, col3, col4, col5, col6]
     lines = [col1[(len(col1))-N:], col2[(len(col2))-N:], col3[(len(col3))-N:], col4[(len(col4))-N:], col5[(len(col5))-N:], col6[(len(col6))-N:]]
     DrawFigure(col0, lines, legend_labels,
-               'Number of results', 'time (usec)', 0, N,
-               0, 20000,
+               'Number of results', 'time (usec)', 0, N*S,
+               0, 100000,
                'progressive_results',
                True)
     # DrawLegend(legend_labels, 'interval_legend')

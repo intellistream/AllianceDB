@@ -372,7 +372,7 @@ param_t defaultParam() {/* Command line parameters */
     cmd_params.rkey = 0;
     cmd_params.skey = 0;
 
-    cmd_params.gen_with_ts = 0;
+    cmd_params.gen_with_ts = 1;
     cmd_params.window_size = 10000;
     cmd_params.step_size = 40;
     cmd_params.interval = 1000;

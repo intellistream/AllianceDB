@@ -40,7 +40,7 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int
     numalocalize = cmd_params.basic_numa;
     nthreads = cmd_params.nthreads;
 
-    if (cmd_params.kim) {
+    if (cmd_params.gen_with_ts) {
         // calculate num of tuples by params
         if (cmd_params.step_size < nthreads) {
             perror("step size should be bigger than the number of threads!");

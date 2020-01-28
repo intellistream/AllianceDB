@@ -16,6 +16,12 @@ function Run {
     ./hashing -a $algo -r $RSIZE -s $SSIZE -n $Threads
 }
 
+function KimRun {
+		#####native execution
+		echo "==benchmark:$benchmark -a $algo -n $Threads=="
+    ./hashing -a $algo -t $Kim -w $WINDOW_SIZE -e $STEP_SIZE -l $INTERVAL -d $DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads
+}
+
 # Configurable variables
 # Generate a timestamp
 algo=""
@@ -35,11 +41,18 @@ do
   for benchmark in Kim #"Kim" "Stock" "DEBS" "YSB" #"Rovio" #"Google" "Amazon"
   do
     case "$benchmark" in
-      # Batch
+      # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
       "Kim")
-        RSIZE=1000000
-        SSIZE=1000000
-        Run
+#        RSIZE=1000000
+#        SSIZE=1000000
+        Kim=1
+        WINDOW_SIZE=10000
+        STEP_SIZE=1000
+        INTERVAL=10
+        DISTRIBUTION=0
+        ZIPF_FACTOR=0
+        KimRun
+#        Run
     ;;
       "DEBS")
         RSIZE=1000000

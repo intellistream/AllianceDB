@@ -30,7 +30,7 @@ print_timing(std::vector<std::chrono::milliseconds> vector, std::vector<int64_t>
 
     //progressive and throughput.
     std::string name = arg_name;
-    string path = "/data1/xtra/results/" + name.append("_timestamps.txt");
+    string path = "/home/myc/workspace/results/" + name.append("_timestamps.txt");
     ofstream outputFile(path, std::ios::trunc);
     int n = vector.size() - 1;
     int check25 = ceil(n * 0.25);
@@ -53,7 +53,8 @@ print_timing(std::vector<std::chrono::milliseconds> vector, std::vector<int64_t>
 
     //latency
     std::string name_latency = arg_name;
-    string path_latency = "/data1/xtra/results/" + name_latency.append("_latency.txt");
+//    string path_latency = "/data1/xtra/results/" + name_latency.append("_latency.txt");
+    string path_latency = "/home/myc/workspace/results/" + name_latency.append("_latency.txt");
     ofstream outputFile_latency(path_latency, std::ios::trunc);
     for (auto &element : vector_latency) {
         outputFile_latency << (std::to_string(element) + "\n");
