@@ -357,7 +357,7 @@ NPO(relation_t *relR, relation_t *relS, int nthreads) {
 #ifndef NO_TIMING
     T_TIMER timer[nthreads];//every thread has its own timer.
 #endif
-
+    auto startTS = now();
     uint32_t nbuckets = (relR->num_tuples / BUCKET_SIZE);
     allocate_hashtable(&ht, nbuckets);
 
@@ -381,7 +381,7 @@ NPO(relation_t *relR, relation_t *relS, int nthreads) {
         pthread_join(tid[i], NULL);
         result += args[i].result;
 #ifndef NO_TIMING
-        merge(args[i].timer, relR, relS);
+        merge(args[i].timer, relR, relS, &startTS);
 #endif
     }
     joinresult->totalresults = result;

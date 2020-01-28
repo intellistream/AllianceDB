@@ -26,11 +26,11 @@
 #include "../joins/shj_struct.h"
 
 void
-launch(int nthreads, relation_t *relR, relation_t *relS, t_param param, void *(*thread_fun)(void *));
+launch(int nthreads, relation_t *relR, relation_t *relS, t_param param, void *(*thread_fun)(void *), milliseconds *startTS);
 
 #ifndef LAUNCH
-#define LAUNCH(nthreads, relR, relS, param, thread_fun) \
-        launch(nthreads, relR, relS, param, thread_fun);
+#define LAUNCH(nthreads, relR, relS, param, thread_fun, startTS) \
+        launch(nthreads, relR, relS, param, thread_fun, startTS);
 #endif
 
 #endif //ALLIANCEDB_LAUNCHER_H

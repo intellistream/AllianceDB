@@ -1528,6 +1528,8 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads)
 #ifndef NO_TIMING
     T_TIMER timer[nthreads];//every thread has its own timer.
 #endif
+    auto startTS = now();
+
     /* first assign chunks of relR & relS for each thread */
     numperthr[0] = relR->num_tuples / nthreads;
     numperthr[1] = relS->num_tuples / nthreads;
@@ -1579,7 +1581,7 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads)
         pthread_join(tid[i], NULL);
         result += args[i].result;
 #ifndef NO_TIMING
-        merge(args[i].timer, relR, relS);
+        merge(args[i].timer, relR, relS, &startTS);
 #endif
     }
     joinresult->totalresults = result;

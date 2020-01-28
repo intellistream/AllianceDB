@@ -229,7 +229,13 @@ int64_t proble_hashtable_single_measure(const hashtable_t *ht, const tuple_t *tu
                 joinres->payload  = rel->tuples[i].payload; /* S-rid */
 #endif
 #ifdef MEASURE
-                END_PROGRESSIVE_MEASURE(tuple->payloadID, (*timer),ISTupleR)
+
+//                if (!ISTupleR && tuple->payloadID == 2059) {
+//                    printf("Match 2059, R?S=%d, at:%ld, tuple->payloadID:%d\n", ISTupleR, now().count(),
+//                           tuple->payloadID);
+//                    fflush(stdout);
+//                }
+                END_PROGRESSIVE_MEASURE(tuple->payloadID, (*timer), ISTupleR)
 #endif
             }
         }

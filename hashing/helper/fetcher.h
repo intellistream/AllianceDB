@@ -12,6 +12,7 @@
 #include <thread>
 
 #include <chrono>
+
 using namespace std::chrono;
 
 enum fetcher {
@@ -47,8 +48,6 @@ struct t_state {
 };
 
 
-
-
 class baseFetcher {
 public:
     virtual fetch_t *next_tuple();
@@ -56,43 +55,46 @@ public:
     relation_t *relR;//input relation
     relation_t *relS;//input relation
 
-    milliseconds *RdataTime;
-    milliseconds *SdataTime;
+//    milliseconds *RdataTime;
+//    milliseconds *SdataTime;
+//    bool start = true;
+
     milliseconds fetchStartTime;//initialize
     t_state *state;
     int tid;
-    bool start = true;
 
     //used by HS.
     uint64_t cntR = 0;
     uint64_t cntS = 0;
 
-    milliseconds RtimeGap(milliseconds *time) {
-        if (start) {
-            fetchStartTime = now();
-            start = false;
-        }
-        return (*time - *RdataTime) -
-               (now() - fetchStartTime);//if it's positive, the tuple is not ready yet.
+    milliseconds RtimeGap(milliseconds *arrival_ts) {
+//        if (start) {
+//            fetchStartTime = now();
+//            start = false;
+//        }
+//        return (*arrival_ts - *RdataTime) -
+//               (now() - fetchStartTime);//if it's positive, the tuple is not ready yet.
+
+        return *arrival_ts - (now() - fetchStartTime);
     }
 
-    milliseconds StimeGap(milliseconds *time) {
-        if (start) {
-            fetchStartTime = now();
-            start = false;
-        }
-        return (*time - *SdataTime) -
-               (now() - fetchStartTime);//if it's positive, the tuple is not ready yet.
+    milliseconds StimeGap(milliseconds *arrival_ts) {
+//        if (start) {
+//            fetchStartTime = now();
+//            start = false;
+//        }
+//        return (*time - *SdataTime) -
+//               (now() - fetchStartTime);//if it's positive, the tuple is not ready yet.
+        return *arrival_ts - (now() - fetchStartTime);
     }
 
     virtual bool finish() = 0;
 
-    baseFetcher(relation_t *relR, relation_t *relS, int tid) {
+    baseFetcher(relation_t *relR, relation_t *relS, int tid, milliseconds *startTS) {
         this->tid = tid;
         this->relR = relR;
         this->relS = relS;
-        RdataTime = relR->payload->ts;
-        SdataTime = relS->payload->ts;
+        fetchStartTime = *startTS;//copy
     }
 };
 
@@ -117,8 +119,9 @@ public:
      * @param relR
      * @param relS
      */
-    PMJ_HS_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS, int tid)
-            : baseFetcher(relR, relS, tid) {
+    PMJ_HS_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS, int tid,
+                      duration<long, ratio<1, 1000>> *startTS)
+            : baseFetcher(relR, relS, tid, startTS) {
         state = new t_state();
 
         //let first and last thread to read two streams.
@@ -153,8 +156,8 @@ public:
      * @param relR
      * @param relS
      */
-    HS_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS, int tid)
-            : baseFetcher(relR, relS, tid) {
+    HS_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS, int tid, duration<long, ratio<1, 1000>> *startTS)
+            : baseFetcher(relR, relS, tid, startTS) {
         state = new t_state();
 
         //let first and last thread to read two streams.
@@ -209,8 +212,8 @@ public:
      * @param relR
      * @param relS
      */
-    JM_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS, int tid)
-            : baseFetcher(relR, relS, tid) {
+    JM_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS, int tid, duration<long, ratio<1, 1000>> *startTS)
+            : baseFetcher(relR, relS, tid, startTS) {
         state = new t_state();
 
 
@@ -239,8 +242,8 @@ public:
                && state->start_index_S == state->end_index_S;
     }
 
-    JB_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS, int tid)
-            : baseFetcher(relR, relS, tid) {
+    JB_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS, int tid, duration<long, ratio<1, 1000>> *startTS)
+            : baseFetcher(relR, relS, tid, startTS) {
         state = new t_state[nthreads];
         int numRthr = relR->num_tuples / nthreads;// partition R,
         int numSthr = relS->num_tuples / nthreads;// partition S.

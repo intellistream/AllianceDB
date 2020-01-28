@@ -185,6 +185,7 @@ struct create_arg_t {
     relation_t *fullrel;
     volatile void *locks;
     pthread_barrier_t *barrier;
+    uint64_t offset;
 };
 
 typedef struct create_arg_t create_arg_t;
@@ -198,9 +199,11 @@ random_unique_gen_thread(void *args) {
     relation_t *rel = &arg->rel;
     int64_t firstkey = arg->firstkey;
     int64_t maxid = arg->maxid;
+    auto offset = arg->offset;
+
     uint64_t i;
 
-    value_t randstart = 5; /* rand() % 1000; */
+//    value_t randstart = 5; /* rand() % 1000; */
 
     /* for randomly seeding nrand48() */
     unsigned short state[3] = {0, 0, 0};
@@ -209,7 +212,7 @@ random_unique_gen_thread(void *args) {
 
     for (i = 0; i < rel->num_tuples; i++) {
         rel->tuples[i].key = firstkey;
-        rel->tuples[i].payloadID = randstart + i;
+        rel->tuples[i].payloadID = offset + i;
 
         if (firstkey == maxid)
             firstkey = 0;
@@ -394,7 +397,7 @@ parallel_create_relation(relation_t *relation, uint64_t num_tuples,
         offset += ntuples_perthr;
 
         rv |= pthread_create(&tid[i], &attr, random_unique_gen_thread,
-                            (void *) &args[i]);
+                             (void *) &args[i]);
         if (rv) {
             fprintf(stderr, "[ERROR] pthread_create() return code is %d\n", rv);
             exit(-1);
@@ -424,7 +427,7 @@ parallel_create_relation(relation_t *relation, uint64_t num_tuples,
 
 int
 parallel_create_relation_with_ts(relation_t *relation, relation_payload_t *relationPayload, uint64_t num_tuples,
-                         uint32_t nthreads, uint64_t maxid, int step_size, int interval) {
+                                 uint32_t nthreads, uint64_t maxid, int step_size, int interval) {
     int rv;
     uint32_t i;
     uint64_t offset = 0;
@@ -485,7 +488,7 @@ parallel_create_relation_with_ts(relation_t *relation, relation_payload_t *relat
         args[i].rel.tuples = relation->tuples + offset;
         args[i].rel.num_tuples = (i == nthreads - 1) ? ntuples_lastthr
                                                      : ntuples_perthr;
-
+        args[i].offset = offset;
         args[i].fullrel = relation;
         args[i].locks = locks;
         args[i].barrier = &barrier;
@@ -717,7 +720,7 @@ create_relation_fk_from_pk(relation_t *fkrel, relation_t *pkrel,
 
 int
 create_relation_nonunique(relation_t *relation, int64_t num_tuples,
-                              const int64_t maxid) {
+                          const int64_t maxid) {
     check_seed();
 
     relation->num_tuples = num_tuples;
@@ -733,7 +736,8 @@ create_relation_nonunique(relation_t *relation, int64_t num_tuples,
 }
 
 int
-create_relation_nonunique_with_ts(relation_t *relation, relation_payload_t *relationPayload, int64_t num_tuples, const int numThr,
+create_relation_nonunique_with_ts(relation_t *relation, relation_payload_t *relationPayload, int64_t num_tuples,
+                                  const int numThr,
                                   const int64_t maxid, const int step_size, const int interval) {
     check_seed();
 

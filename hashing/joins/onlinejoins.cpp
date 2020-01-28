@@ -41,20 +41,20 @@ void initialize(int nthreads, const t_param &param) {
     pthread_attr_init(param.attr);
 }
 
-t_param &finishing(int nthreads, t_param &param) {
+t_param &finishing(int nthreads, t_param &param, milliseconds *startTS) {
     int i;
     for (i = 0; i < nthreads; i++) {
         if (param.tid[i] != -1)
             pthread_join(param.tid[i], NULL);
         /* sum up results */
         param.result += *param.args[i].matches;
-#ifndef NO_TIMING
-        merge(param.args[i].timer, param.args[i].fetcher->relR, param.args[i].fetcher->relS);
+#ifdef MEASURE
+        merge(param.args[i].timer, param.args[i].fetcher->relR, param.args[i].fetcher->relS,  startTS);
 #endif
     }
     param.joinresult->totalresults = param.result;
     param.joinresult->nthreads = nthreads;
-#ifndef NO_TIMING
+#ifdef MEASURE
     sortRecords(param.algo_name);
     /* now print the timing results: */
     for (i = 0; i < nthreads; i++) {
@@ -98,7 +98,7 @@ SHJ_st(relation_t *relR, relation_t *relS, int nthreads) {
 #endif
     param.args[0].timer = &joiner.timer;
     param.args[0].matches = &joiner.matches;
-    finishing(1, param);
+    finishing(1, param, nullptr);
     param.joinresult->totalresults = param.result;
     param.joinresult->nthreads = 1;
     return param.joinresult;
@@ -113,9 +113,9 @@ SHJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads) {
     //no shuffler is required for JM mode.
     param.joiner = type_SHJJoiner;//new SHJJoiner();
     param.algo_name = "SHJ_JM_NP";
-
-    LAUNCH(nthreads, relR, relS, param, THREAD_TASK_NOSHUFFLE)
-    param = finishing(nthreads, param);
+    auto startTS = now();
+    LAUNCH(nthreads, relR, relS, param, THREAD_TASK_NOSHUFFLE, &startTS)
+    param = finishing(nthreads, param, &startTS);
     return param.joinresult;
 }
 
@@ -128,8 +128,9 @@ SHJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads) {
     param.shuffler = new HashShuffler(nthreads, relR, relS);
     param.joiner = type_SHJJoiner;//new SHJJoiner();
     param.algo_name = "SHJ_JB_NP";
-    LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE)
-    param = finishing(nthreads, param);
+    auto startTS = now();
+    LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE, &startTS)
+    param = finishing(nthreads, param, &startTS);
     return param.joinresult;
 }
 
@@ -142,9 +143,9 @@ SHJ_JBCR_NP(relation_t *relR, relation_t *relS, int nthreads) {
     param.shuffler = new ContRandShuffler(nthreads, relR, relS);
     param.joiner = type_SHJJoiner;//new SHJJoiner();
     param.algo_name = "SHJ_JBCR_NP";
-
-    LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE)
-    param = finishing(nthreads, param);
+    auto startTS = now();
+    LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE, &startTS)
+    param = finishing(nthreads, param, &startTS);
     return param.joinresult;
 }
 
@@ -157,9 +158,9 @@ SHJ_HS_NP(relation_t *relR, relation_t *relS, int nthreads) {
     param.shuffler = new HSShuffler(nthreads, relR, relS);
     param.joiner = type_SHJJoiner;//new SHJJoiner();
     param.algo_name = "SHJ_HS_NP";
-
-    LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE_HS)
-    param = finishing(nthreads, param);
+    auto startTS = now();
+    LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE_HS, &startTS)
+    param = finishing(nthreads, param, &startTS);
     return param.joinresult;
 }
 
@@ -191,7 +192,7 @@ result_t *PMJ_st(relation_t *relR, relation_t *relS, int nthreads) {
 #endif
     param.args[0].timer = &joiner.timer;
     param.args[0].matches = &joiner.matches;
-    finishing(1, param);
+    finishing(1, param, nullptr);
     param.joinresult->totalresults = param.result;
     param.joinresult->nthreads = 1;
 
@@ -224,7 +225,7 @@ result_t *RPJ_st(relation_t *relR, relation_t *relS, int nthreads) {
 #endif
     param.args[0].timer = &joiner.timer;
     param.args[0].matches = &joiner.matches;
-    finishing(1, param);
+    finishing(1, param, nullptr);
     param.joinresult->totalresults = param.result;
     param.joinresult->nthreads = 1;
 
@@ -239,8 +240,9 @@ result_t *PMJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads) {
     //no shuffler is required for JM mode.
     param.joiner = type_PMJJoiner;//new PMJJoiner(relR->num_tuples, relS->num_tuples / nthreads, nthreads);
     param.algo_name = "PMJ_JM_NP";
-    LAUNCH(nthreads, relR, relS, param, THREAD_TASK_NOSHUFFLE)
-    param = finishing(nthreads, param);
+    auto startTS = now();
+    LAUNCH(nthreads, relR, relS, param, THREAD_TASK_NOSHUFFLE, &startTS)
+    param = finishing(nthreads, param, &startTS);
     return param.joinresult;
 }
 
@@ -252,9 +254,9 @@ result_t *PMJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads) {
     param.shuffler = new HashShuffler(nthreads, relR, relS);
     param.joiner = type_PMJJoiner;//new PMJJoiner(relR->num_tuples, relS->num_tuples / nthreads, nthreads);
     param.algo_name = "PMJ_JB_NP";
-
-    LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE)
-    param = finishing(nthreads, param);
+    auto startTS = now();
+    LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE, &startTS)
+    param = finishing(nthreads, param, &startTS);
     return param.joinresult;
 }
 
@@ -266,9 +268,9 @@ result_t *PMJ_JBCR_NP(relation_t *relR, relation_t *relS, int nthreads) {
     param.shuffler = new ContRandShuffler(nthreads, relR, relS);
     param.joiner = type_PMJJoiner;//new PMJJoiner(relR->num_tuples, relS->num_tuples / nthreads, nthreads);
     param.algo_name = "PMJ_JBCR_NP";
-
-    LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE)
-    param = finishing(nthreads, param);
+    auto startTS = now();
+    LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE, &startTS)
+    param = finishing(nthreads, param, &startTS);
     return param.joinresult;
 }
 
@@ -280,9 +282,9 @@ result_t *PMJ_HS_NP(relation_t *relR, relation_t *relS, int nthreads) {
     param.shuffler = new HSShuffler(nthreads, relR, relS);
     param.joiner = type_PMJJoiner;//new PMJJoiner(relR->num_tuples, relS->num_tuples / nthreads, nthreads);
     param.algo_name = "PMJ_HS_NP";
-
-    LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE_PMJHS)
-    param = finishing(nthreads, param);
+    auto startTS = now();
+    LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE_PMJHS, &startTS)
+    param = finishing(nthreads, param, &startTS);
     return param.joinresult;
 }
 
@@ -297,9 +299,9 @@ RPJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads) {
     param.joiner = type_RippleJoiner;//new RippleJoiner(relR, relS, nthreads);
     param.algo_name = "RPJ_JM_NP";
 
-
-    LAUNCH(nthreads, relR, relS, param, THREAD_TASK_NOSHUFFLE)
-    param = finishing(nthreads, param);
+    auto startTS = now();
+    LAUNCH(nthreads, relR, relS, param, THREAD_TASK_NOSHUFFLE, &startTS)
+    param = finishing(nthreads, param, &startTS);
     return param.joinresult;
 }
 
@@ -312,8 +314,9 @@ RPJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads) {
     param.shuffler = new HashShuffler(nthreads, relR, relS);
     param.joiner = type_RippleJoiner;// new RippleJoiner(relR, relS, nthreads);
     param.algo_name = "RPJ_JB_NP";
-    LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE)
-    param = finishing(nthreads, param);
+    auto startTS = now();
+    LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE, &startTS)
+    param = finishing(nthreads, param, &startTS);
     return param.joinresult;
 }
 
@@ -327,9 +330,9 @@ RPJ_JBCR_NP(relation_t *relR, relation_t *relS, int nthreads) {
     param.joiner = type_RippleJoiner;// new RippleJoiner(relR, relS, nthreads);
     param.algo_name = "RPJ_JBCR_NP";
 
-
-    LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE)
-    param = finishing(nthreads, param);
+    auto startTS = now();
+    LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE, &startTS)
+    param = finishing(nthreads, param,  &startTS);
     return param.joinresult;
 }
 
@@ -341,9 +344,9 @@ result_t *RPJ_HS_NP(relation_t *relR, relation_t *relS, int nthreads) {
     param.shuffler = new HSShuffler(nthreads, relR, relS);
     param.joiner = type_RippleJoiner;//new RippleJoiner(relR, relS, nthreads);
     param.algo_name = "RPJ_HS_NP";
-
-    LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE_HS)
-    param = finishing(nthreads, param);
+    auto startTS = now();
+    LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE_HS, &startTS)
+    param = finishing(nthreads, param,  &startTS);
     return param.joinresult;
 }
 

@@ -61,6 +61,7 @@ struct t_param {
     enum joiner_type joiner;
 
 
+
     t_param(int nthreads) {
         result = 0;
         joinresult = new result_t();//(result_t *) malloc(sizeof(result_t));
@@ -72,6 +73,7 @@ struct t_param {
             tid[i] = -1;
         }
     }
+
 
 
 };

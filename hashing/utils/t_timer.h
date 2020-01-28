@@ -23,13 +23,14 @@ using namespace std::chrono;
 #define MEASURE
 //thread_local structure.
 struct T_TIMER {
-#ifndef NO_TIMING
+#ifdef MEASURE
     struct timeval start, end;
     uint64_t overall_timer, partition_timer;
     uint64_t buildtimer_pre = 0, buildtimer = 0;
     uint64_t debuildtimer_pre = 0, debuildtimer = 0;//buildtimer is accumulated.
     uint64_t sorttimer_pre = 0, sorttimer = 0;//accumulate.
-    std::vector<std::chrono::milliseconds> record;
+    std::vector<std::chrono::milliseconds> recordR;
+    std::vector<std::chrono::milliseconds> recordS;
     std::vector<uint64_t> recordRID;
     std::vector<uint64_t> recordSID;
     int record_cnt = 0;
@@ -48,7 +49,7 @@ void print_timing(std::vector<uint64_t> vector, std::vector<uint64_t> vector_lat
 /** print out the execution time statistics of the join */
 void print_timing(int64_t result, T_TIMER *timer);
 
-void merge(T_TIMER *timer, relation_t *relR, relation_t *relS);
+void merge(T_TIMER *timer, relation_t *relR, relation_t *relS, milliseconds *startTS);
 
 void sortRecords(std::string algo_name);
 
@@ -105,8 +106,7 @@ void sortRecords(std::string algo_name);
 #define START_MEASURE(timer) \
     gettimeofday(&timer.start, NULL); \
     startTimer(&timer.overall_timer); \
-    timer.partition_timer = 0; /* no partitioning */ \
-    timer.record.push_back(now());//beginning timestamp.
+    timer.partition_timer = 0; /* no partitioning */
 #endif
 
 #ifndef END_MEASURE
@@ -117,12 +117,15 @@ void sortRecords(std::string algo_name);
 
 #ifndef END_PROGRESSIVE_MEASURE
 #define END_PROGRESSIVE_MEASURE(payloadID, timer, IStupleR)     \
+        auto ts =now();\
         if(timer.record_cnt % timer.record_gap==0){             \
-            timer.record.push_back(now());                  \
-            if(IStupleR)                                        \
+            if(IStupleR){                                        \
                 timer.recordRID.push_back(payloadID);           \
-            else                                                \
+                timer.recordR.push_back(ts);                     \
+            }else{                                                \
                 timer.recordSID.push_back(payloadID);           \
+                timer.recordS.push_back(ts);                    \
+                }                                               \
         }                                                       \
         timer.record_cnt++;
 #endif

@@ -6,7 +6,8 @@
 
 
 void
-launch(int nthreads, relation_t *relR, relation_t *relS, t_param param, void *(*thread_fun)(void *)) {
+launch(int nthreads, relation_t *relR, relation_t *relS, t_param param, void *(*thread_fun)(void *),
+       milliseconds *startTS) {
 
     int i;
     int rv;
@@ -23,16 +24,16 @@ launch(int nthreads, relation_t *relR, relation_t *relS, t_param param, void *(*
          */
         switch (param.fetcher) {
             case type_JM_NP_Fetcher:
-                param.args[i].fetcher = new JM_NP_Fetcher(nthreads, relR, relS, i);
+                param.args[i].fetcher = new JM_NP_Fetcher(nthreads, relR, relS, i, startTS);
                 break;
             case type_JB_NP_Fetcher:
-                param.args[i].fetcher = new JB_NP_Fetcher(nthreads, relR, relS, i);
+                param.args[i].fetcher = new JB_NP_Fetcher(nthreads, relR, relS, i, startTS);
                 break;
             case type_HS_NP_Fetcher:
-                param.args[i].fetcher = new HS_NP_Fetcher(nthreads, relR, relS, i);
+                param.args[i].fetcher = new HS_NP_Fetcher(nthreads, relR, relS, i, startTS);
                 break;
             case type_PMJ_HS_NP_Fetcher:
-                param.args[i].fetcher = new PMJ_HS_NP_Fetcher(nthreads, relR, relS, i);
+                param.args[i].fetcher = new PMJ_HS_NP_Fetcher(nthreads, relR, relS, i, startTS);
                 break;
         }
         switch (param.joiner) {

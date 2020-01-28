@@ -83,33 +83,43 @@ void print_timing(int64_t result, T_TIMER *timer) {
     }
 }
 
-std::chrono::milliseconds actual_start_timestamp = std::chrono::milliseconds::max();
+milliseconds actual_start_timestamp;
 std::vector<std::chrono::milliseconds> global_record;
 std::vector<int64_t> global_record_latency;
 
-void merge(T_TIMER *timer, relation_t *relR, relation_t *relS) {
+void merge(T_TIMER *timer, relation_t *relR, relation_t *relS, milliseconds *startTS) {
 #ifdef MEASURE
     //For progressiveness measurement
-    auto start = timer->record.at(0);
-    if (actual_start_timestamp.count() > start.count()) {
-        actual_start_timestamp = start;
+//    auto start = timer->record.at(0);
+//    if (actual_start_timestamp.count() > start.count()) {
+//        actual_start_timestamp = start;
+//    }
+    actual_start_timestamp = *startTS;
+    for (auto i = 0; i < timer->recordR.size(); i++) {
+        global_record.push_back(timer->recordR.at(i));
     }
-    for (auto i = 1; i < timer->record.size(); i++) {
-        global_record.push_back(timer->record.at(i));
+    for (auto i = 0; i < timer->recordS.size(); i++) {
+        global_record.push_back(timer->recordS.at(i));
     }
-
     //For latency measurement
     int64_t latency = -1;
     for (auto i = 0; i < timer->recordRID.size(); i++) {
         latency =
-                timer->record.at(i + 1).count() - actual_start_timestamp.count() -
-                relR->payload->ts[timer->recordRID.at(i)].count();//latency of one tuple.
+                timer->recordR.at(i).count() - startTS->count()
+                - relR->payload->ts[timer->recordRID.at(i)].count();//latency of one tuple.
+
+//        if (latency < 0) {
+//            printf("Something is wrong, i=%d \n", i);
+//        }
         global_record_latency.push_back(latency);
     }
     for (auto i = 0; i < timer->recordSID.size(); i++) {
         latency =
-                timer->record.at(i + 1).count() - actual_start_timestamp.count() -
+                timer->recordS.at(i).count() - startTS->count() -
                 relS->payload->ts[timer->recordSID.at(i)].count();//latency of one tuple.
+//        if (latency < 0) {
+//            printf("Something is wrong, i=%d \n", i);
+//        }
         global_record_latency.push_back(latency);
     }
 #endif
