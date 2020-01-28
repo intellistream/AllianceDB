@@ -1004,14 +1004,6 @@ parallel_radix_partition_optimized(part_t *const part) {
     }
 }
 
-/** @} */
-#define DEBUGMSG(MSG, ...)                                                        \
-    {                                                               \
-        fprintf(stdout, "\n[DEBUG] @ %s:%d " MSG, __FILE__, __LINE__, ## __VA_ARGS__);    \
-          fprintf(stdout, "\n");                                                        \
-           fflush(stdout);                                                              \
-    }
-
 /**
  * The main thread of parallel radix join. It does partitioning in parallel with
  * other threads and during the join phase, picks up join tasks from the task
