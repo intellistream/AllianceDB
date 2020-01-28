@@ -242,7 +242,7 @@ if __name__ == "__main__":
     # print(len(col1), len(col2), len(col3), len(col4), len(col5))
     # alignment
     # lines = [col1, col2, col3, col4, col5, col6]
-    lines = [col1[(N-len(col1)):], col2[(len(col2))-N:], col3[(len(col3))-N:], col4[(len(col4))-N:], col5[(len(col5))-N:], col6[(len(col6))-N:]]
+    lines = [col1[(len(col1))-N:], col2[(len(col2))-N:], col3[(len(col3))-N:], col4[(len(col4))-N:], col5[(len(col5))-N:], col6[(len(col6))-N:]]
     DrawFigure(col0, lines, legend_labels,
                'Number of results', 'time (usec)', 0, N,
                0, 20000,
