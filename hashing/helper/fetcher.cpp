@@ -94,8 +94,8 @@ fetch_t *baseFetcher::next_tuple() {
         readR = &relR->tuples[state->start_index_R];
         //check the timestamp whether the tuple is ``ready" to be fetched.
         arrivalTsR
-//                = relR->payload->ts[readR->payloadID];
-                = (milliseconds) 0;
+                = relR->payload->ts[readR->payloadID];
+//                = (milliseconds) 0;
 
 //        if (state->start_index_R == 0) {
 //            printf("Fetch first R at:%ld\n", now().count());
