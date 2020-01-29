@@ -46,19 +46,42 @@ do
         id=0
         WINDOW_SIZE=10000
 
-        #no timestamp.
+        #w/o timestamp.
         ts=0
-        KimRun
-        id+=1
+        for ZIPF_FACTOR in 0 0.2 0.4 0.8 1
+        do
+          KimRun
+          id+=1
+        done
 
-        #with timestamp.
+        #w/ timestamp.
         ts=1
+        #study zipf
         for ZIPF_FACTOR in 0 0.2 0.4 0.8 1
         do
           STEP_SIZE=1000
           INTERVAL=10
           DISTRIBUTION=0
           KimRun
+          id+=1
+        done
+        #study distribution of timestamp
+        for DISTRIBUTION in 0 1 2
+        do
+          STEP_SIZE=1000
+          INTERVAL=10
+          ZIPF_FACTOR=0
+          KimRun
+          id+=1
+        done
+        #study distribution of timestamp
+        for DISTRIBUTION in 0 1 2
+        do
+          STEP_SIZE=1000
+          INTERVAL=10
+          ZIPF_FACTOR=0
+          KimRun
+          id+=1
         done
     ;;
       "DEBS")
