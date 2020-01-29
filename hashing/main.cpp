@@ -493,7 +493,7 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
         /* getopt_long stores the option index here. */
         int option_index = 0;
 
-        c = getopt_long(argc, argv, "J:K:L:M:t:w:e:l:I:d:Z:a:n:p:r:s:o:x:y:z:R:S:hv",
+        c = getopt_long(argc, argv, "J:K:L:M:t:w:e:l:I:d:D:Z:a:n:p:r:s:o:x:y:z:R:S:hv",
                         long_options, &option_index);
 
         /* Detect the end of the options. */
