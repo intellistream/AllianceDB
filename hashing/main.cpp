@@ -634,6 +634,9 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
             case 'd':
                 cmd_params->distribution = atoi(mystrdup(optarg));
                 break;
+            case 'D':
+                cmd_params->TSdistribution = atoi(mystrdup(optarg));
+                break;
             case 'Z':
                 cmd_params->zipf_param = atof(optarg);
                 break;

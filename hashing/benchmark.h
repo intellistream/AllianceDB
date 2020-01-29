@@ -60,7 +60,7 @@ struct param_t {
     uint64_t s_size;
     uint32_t r_seed;
     uint32_t s_seed;
-    double skew;
+
     int nonunique_keys;  /* non-unique keys allowed? */
     int verbose;
     int fullrange_keys;  /* keys covers full int range? */
@@ -91,6 +91,9 @@ struct param_t {
 
     int kim;
     int distribution;
+    double skew;
+
+    int TSdistribution;
     double zipf_param;
 
     int window_size;
