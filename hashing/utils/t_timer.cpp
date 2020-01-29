@@ -30,7 +30,7 @@ print_timing(std::vector<std::chrono::milliseconds> vector, std::vector<int64_t>
 
     //progressive and throughput.
     std::string name = arg_name;
-    string path = "/home/myc/workspace/results/" + name.append("_timestamps.txt");
+    string path = "/data1/xtra/results/" + name.append("_timestamps.txt");
     ofstream outputFile(path, std::ios::trunc);
     int n = vector.size() - 1;
     int check25 = ceil(n * 0.25);
@@ -91,10 +91,6 @@ std::vector<int64_t> global_record_latency;
 void merge(T_TIMER *timer, relation_t *relR, relation_t *relS, milliseconds *startTS) {
 #ifdef MEASURE
     //For progressiveness measurement
-//    auto start = timer->record.at(0);
-//    if (actual_start_timestamp.count() > start.count()) {
-//        actual_start_timestamp = start;
-//    }
     actual_start_timestamp = *startTS;
     for (auto i = 0; i < timer->recordR.size(); i++) {
         global_record.push_back(timer->recordR.at(i));
@@ -108,19 +104,12 @@ void merge(T_TIMER *timer, relation_t *relR, relation_t *relS, milliseconds *sta
         latency =
                 timer->recordR.at(i).count() - startTS->count()
                 - relR->payload->ts[timer->recordRID.at(i)].count();//latency of one tuple.
-
-//        if (latency < 0) {
-//            printf("Something is wrong, i=%d \n", i);
-//        }
         global_record_latency.push_back(latency);
     }
     for (auto i = 0; i < timer->recordSID.size(); i++) {
         latency =
                 timer->recordS.at(i).count() - startTS->count() -
                 relS->payload->ts[timer->recordSID.at(i)].count();//latency of one tuple.
-//        if (latency < 0) {
-//            printf("Something is wrong, i=%d \n", i);
-//        }
         global_record_latency.push_back(latency);
     }
 #endif

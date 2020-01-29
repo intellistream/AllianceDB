@@ -87,8 +87,7 @@ fetch_t *baseFetcher::next_tuple() {
     std::chrono::milliseconds arrivalTsR;
     std::chrono::milliseconds arrivalTsS;
     auto fetchTS = now() - fetchStartTime;
-
-
+    
     //try to read R first.
     if (state->start_index_R < state->end_index_R) {
         readR = &relR->tuples[state->start_index_R];

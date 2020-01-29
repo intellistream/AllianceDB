@@ -18,41 +18,48 @@ function Run {
 
 function KimRun {
 		#####native execution
-		echo "==benchmark:$benchmark -a $algo -n $Threads=="
-    ./hashing -a $algo -t $Kim -w $WINDOW_SIZE -e $STEP_SIZE -l $INTERVAL -d $DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads
+		echo "==benchmark:$benchmark -a $algo -n $Threads #TEST:$id=="
+    ./hashing -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -l $INTERVAL -d $DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id
 }
 
 # Configurable variables
 # Generate a timestamp
 algo=""
-RSIZE=1
-SSIZE=1
-RPATH=""
-SPATH=""
-RKEY=0
-SKEY=0
-RTS=0
-STS=0
 Threads=40
 timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
 for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP #SHJ_HS_NP PMJ_HS_NP  #RPJ_JM_NP RPJ_JBCR_NP RPJ_HS_NP
 do
+  RSIZE=1
+  SSIZE=1
+  RPATH=""
+  SPATH=""
+  RKEY=0
+  SKEY=0
+  RTS=0
+  STS=0
   for benchmark in Kim #"Kim" "Stock" "DEBS" "YSB" #"Rovio" #"Google" "Amazon"
   do
     case "$benchmark" in
       # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
       "Kim")
-#        RSIZE=1000000
-#        SSIZE=1000000
-        Kim=1
+        id=0
         WINDOW_SIZE=10000
-        STEP_SIZE=1000
-        INTERVAL=10
-        DISTRIBUTION=0
-        ZIPF_FACTOR=0
+
+        #no timestamp.
+        ts=0
         KimRun
-#        Run
+        id+=1
+
+        #with timestamp.
+        ts=1
+        for ZIPF_FACTOR in 0 0.2 0.4 0.8 1
+        do
+          STEP_SIZE=1000
+          INTERVAL=10
+          DISTRIBUTION=0
+          KimRun
+        done
     ;;
       "DEBS")
         RSIZE=1000000

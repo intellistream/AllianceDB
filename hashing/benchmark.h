@@ -96,6 +96,8 @@ struct param_t {
     int window_size;
     int step_size;
     int interval;
+
+    int exp_id;
 };
 
 

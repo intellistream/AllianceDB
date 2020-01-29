@@ -57,7 +57,7 @@ def ReadFile(S):
     col5 = []
     col6 = []
 
-    f = open("/home/myc/workspace/results/SHJ_JM_NP_timestamps.txt", "r")
+    f = open("/data1/xtra/results/SHJ_JM_NP_timestamps.txt", "r")
     cnt = 1
     read = f.readlines()
     for x in read:
@@ -65,7 +65,7 @@ def ReadFile(S):
             col1.append(int(x.strip("\n")))
         cnt += 1
 
-    f = open("/home/myc/workspace/results/SHJ_JBCR_NP_timestamps.txt", "r")
+    f = open("/data1/xtra/results/SHJ_JBCR_NP_timestamps.txt", "r")
     cnt = 1
     read = f.readlines()
     for x in read:
@@ -73,7 +73,7 @@ def ReadFile(S):
             col2.append(int(x.strip("\n")))
         cnt += 1
 
-    f = open("/home/myc/workspace/results/PMJ_JM_NP_timestamps.txt", "r")
+    f = open("/data1/xtra/results/PMJ_JM_NP_timestamps.txt", "r")
     cnt = 1
     read = f.readlines()
     for x in read:
@@ -81,7 +81,7 @@ def ReadFile(S):
             col3.append(int(x.strip("\n")))
         cnt += 1
 
-    f = open("/home/myc/workspace/results/PMJ_JBCR_NP_timestamps.txt", "r")
+    f = open("/data1/xtra/results/PMJ_JBCR_NP_timestamps.txt", "r")
     cnt = 1
     read = f.readlines()
     for x in read:
@@ -89,7 +89,7 @@ def ReadFile(S):
             col4.append(int(x.strip("\n")))
         cnt += 1
 
-    f = open("/home/myc/workspace/results/PRJ_timestamps.txt", "r")
+    f = open("/data1/xtra/results/PRJ_timestamps.txt", "r")
     cnt = 1
     read = f.readlines()
     for x in read:
@@ -97,28 +97,14 @@ def ReadFile(S):
             col5.append(int(x.strip("\n")))
         cnt += 1
 
-    f = open("/home/myc/workspace/results/NPJ_timestamps.txt", "r")
+    f = open("/data1/xtra/results/NPJ_timestamps.txt", "r")
     cnt = 1
     read = f.readlines()
     for x in read:
         if cnt % S == 0:
             col6.append(int(x.strip("\n")))
         cnt += 1
-    # f = open("/data1/xtra/results/SHJ_HS_NP_timestamps.txt", "r")
-    # cnt = 1
-    # read = f.readlines()
-    # for x in read:
-    #     if cnt % S == 0:
-    #         col3.append(int(x.strip("\n")))
-    #     cnt += 1
-    #
-    # f = open("/data1/xtra/results/PMJ_HS_NP_timestamps.txt", "r")
-    # cnt = 1
-    # read = f.readlines()
-    # for x in read:
-    #     if cnt % S == 0:
-    #         col6.append(int(x.strip("\n")))
-    #     cnt += 1
+
 
     return col1, col2, col3, col4, col5, col6
 

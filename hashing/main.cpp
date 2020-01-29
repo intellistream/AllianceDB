@@ -379,7 +379,7 @@ param_t defaultParam() {/* Command line parameters */
     cmd_params.kim = 0;
     cmd_params.distribution = 0;
     cmd_params.zipf_param = 0;
-
+    cmd_params.exp_id = 0;
     return cmd_params;
 }
 
@@ -636,6 +636,8 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
             case 'Z':
                 cmd_params->zipf_param = atof(optarg);
                 break;
+            case 'I':
+                cmd_params->exp_id = atoi(mystrdup(optarg));
             default:
                 break;
         }
