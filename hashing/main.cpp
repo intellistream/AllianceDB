@@ -377,8 +377,9 @@ param_t defaultParam() {/* Command line parameters */
     cmd_params.step_size = 40;
     cmd_params.interval = 1000;
     cmd_params.kim = 0;
-    cmd_params.distribution = 0;
-    cmd_params.zipf_param = 0;
+    cmd_params.key_distribution = 0;
+    cmd_params.ts_distribution = 0;
+    cmd_params.zipf_param = 0.0;
     cmd_params.exp_id = 0;
     return cmd_params;
 }
@@ -487,12 +488,13 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
                         {"distribution", required_argument, 0,               'd'},
                         {"zipf_param",   required_argument, 0,               'Z'},
                         {"exp_id",       required_argument, 0,               'I'},
+                        {"key_distribution",       required_argument, 0,               'D'},
                         {0, 0,                              0,               0}
                 };
         /* getopt_long stores the option index here. */
         int option_index = 0;
 
-        c = getopt_long(argc, argv, "J:K:L:M:t:w:e:l:I:d:Z:a:n:p:r:s:o:x:y:z:R:S:hv",
+        c = getopt_long(argc, argv, "J:K:L:M:t:w:e:l:I:d:Z:D:a:n:p:r:s:o:x:y:z:R:S:hv",
                         long_options, &option_index);
 
         /* Detect the end of the options. */
@@ -632,7 +634,10 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
                 cmd_params->interval = atoi(mystrdup(optarg));
                 break;
             case 'd':
-                cmd_params->distribution = atoi(mystrdup(optarg));
+                cmd_params->key_distribution = atoi(mystrdup(optarg));
+                break;
+            case 'D':
+                cmd_params->ts_distribution = atoi(mystrdup(optarg));
                 break;
             case 'Z':
                 cmd_params->zipf_param = atof(optarg);
