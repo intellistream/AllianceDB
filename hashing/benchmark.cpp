@@ -112,9 +112,9 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int
         }
     } else {
         //create_relation_pk(&rel, rel_size);
-        parallel_create_relation(rel, rel_size,
-                                 nthreads,
-                                 rel_size);
+//        parallel_create_relation(rel, rel_size,
+//                                 nthreads,
+//                                 rel_size);
         parallel_create_relation_with_ts(rel, relPl, rel->num_tuples, nthreads, rel->num_tuples,
                                          rel->num_tuples, 0);
     }
