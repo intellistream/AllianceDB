@@ -19,7 +19,7 @@ function Run() {
 function KimRun() {
   #####native execution
   echo "==benchmark:$benchmark -a $algo -n $Threads #TEST:$id=="
-  ./hashing -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -l $INTERVAL -d $DISTRIBUTION -z $skew -Z $ZIPF_FACTOR -n $Threads -I $id
+  ./hashing -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id
 }
 
 # Configurable variables
@@ -37,6 +37,8 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #SHJ_HS_NP P
   SKEY=0
   RTS=0
   STS=0
+  TS_DISTRIBUTION=0
+  ZIPF_FACTOR=0
   for benchmark in Kim; do #"Kim" "Stock" "DEBS" "YSB" #"Rovio" #"Google" "Amazon"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
@@ -46,8 +48,8 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #SHJ_HS_NP P
 
       echo test case with no timestamp
       ts=0
-
-      for DISTRIBUTION in 0 2; do #id=1~2
+      echo test case 1: varying key distribution 1 ~ 2
+      for distrbution in 0 2; do
         STEP_SIZE=1000
         INTERVAL=10
         skew=0
@@ -55,73 +57,76 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #SHJ_HS_NP P
         let "id++"
       done
 
-      for skew in 0 0.2 0.4 0.8 1; do #id= 3~7
+      echo test case 2: varying key distribution zipf factor 3 ~ 7
+      for skew in 0 0.2 0.4 0.8 1; do
         STEP_SIZE=1000
         INTERVAL=10
-        DISTRIBUTION=2
+        distrbution=2
         KimRun
         let "id++"
       done
 
-      echo test with timestamp.
+      echo test with uniform timestamp.
       ts=1
-
-      echo test case 1: different key distribution
-      for DISTRIBUTION in 0 1; do #id=5~6
+      TS_DISTRIBUTION=0
+      echo test case 3: varying key distribution zipf factor 8 ~ 9
+      for distrbution in 0 2; do
         STEP_SIZE=1000
         INTERVAL=10
-        ZIPF_FACTOR=0
+        skew=0
         KimRun
         let "id++"
       done
 
-      echo test case 2: for zipf distrbution
-      for ZIPF_FACTOR in 0 0.2 0.4 0.8 1; do #id=7~11
+      echo test case 4: varying key distribution zipf factor 10 ~ 14
+      for skew in 0 0.2 0.4 0.8 1; do
         STEP_SIZE=1000
         INTERVAL=10
-        DISTRIBUTION=2
+        distrbution=2
         KimRun
         let "id++"
       done
 
-      echo test case 3: distribution unique/nonunique
-      # TODO: zipf distribution should be merged into this?
-      for DISTRIBUTION in 0 1; do  #id=12~13
-        STEP_SIZE=1000
+      echo test case 5: varying step size 15 ~ 18 # step size should be bigger than nthreads
+      for STEP_SIZE in 100 500 1000 2000; do
         INTERVAL=10
-        ZIPF_FACTOR=0
+        distrbution=0
+        skew=0
         KimRun
         let "id++"
       done
 
-      echo test case 4: step size # step size should be bigger than nthreads
-      for STEP_SIZE in 100 500 1000 2000; do #id=13~16
-        INTERVAL=10
-        DISTRIBUTION=0
-        ZIPF_FACTOR=0
-        KimRun
-        let "id++"
-      done
-
-      echo test case 5: interval
-      for INTERVAL in 10 100 500 1000; do  #id=17~20
+      echo test case 6: varying interval 19 ~ 22
+      for INTERVAL in 10 100 500 1000; do
         STEP_SIZE=1000
-        DISTRIBUTION=0
-        ZIPF_FACTOR=0
+        distrbution=0
+        skew=0
         KimRun
         let "id++"
       done
 
-      echo test case 6: window size
-      for WINDOW_SIZE in 1000 10000 50000 100000; do   #id=21 ~ 24
+      echo test case 7: varying window size 23 ~ 26
+      for WINDOW_SIZE in 1000 10000 50000 100000; do
         INTERVAL=10
         STEP_SIZE=1000 # TODO: no sure if this should be smaller or narrow down the window size
-        DISTRIBUTION=0
-        ZIPF_FACTOR=0
+        distrbution=0
+        skew=0
+        KimRun
+        let "id++"
+      done
+
+      TS_DISTRIBUTION=2
+      echo test case 8: zipf distribution timestamp 27 ~ 31
+      for ZIPF_FACTOR in 0 0.2 0.4 0.8 1; do
+        INTERVAL=10
+        STEP_SIZE=1000 # TODO: no sure if this should be smaller or narrow down the window size
+        distrbution=0
+        skew=0
         KimRun
         let "id++"
       done
       ;;
+
     "DEBS")
       RSIZE=1000000
       SSIZE=1000000
