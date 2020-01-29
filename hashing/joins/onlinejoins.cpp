@@ -49,17 +49,21 @@ t_param &finishing(int nthreads, t_param &param, milliseconds *startTS) {
         /* sum up results */
         param.result += *param.args[i].matches;
 #ifdef MEASURE
-        merge(param.args[i].timer, param.args[i].fetcher->relR, param.args[i].fetcher->relS,  startTS);
+        merge(param.args[i].timer, param.args[i].fetcher->relR, param.args[i].fetcher->relS, startTS);
 #endif
     }
     param.joinresult->totalresults = param.result;
     param.joinresult->nthreads = nthreads;
 #ifdef MEASURE
-    sortRecords(param.algo_name, param.exp_id);
+    sortRecords(param.algo_name, param.exp_id, 0);
+    std::string name = param.algo_name + "_" + std::to_string(param.exp_id);
+    string path = "/data1/xtra/results/breakdown/" + name.append(".txt");
+    auto fp = fopen(path.c_str(), "w");
     /* now print the timing results: */
     for (i = 0; i < nthreads; i++) {
-        print_timing(*param.args[i].matches, param.args[i].timer);
+        print_breakdown(*param.args[i].matches, param.args[i].timer, 0, fp);
     }
+    fclose(fp);
 #endif
     return param;
 }
@@ -343,7 +347,7 @@ RPJ_JBCR_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id) {
 
     auto startTS = now();
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE, &startTS)
-    param = finishing(nthreads, param,  &startTS);
+    param = finishing(nthreads, param, &startTS);
     return param.joinresult;
 }
 
@@ -358,7 +362,7 @@ result_t *RPJ_HS_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id
     param.exp_id = exp_id;
     auto startTS = now();
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE_HS, &startTS)
-    param = finishing(nthreads, param,  &startTS);
+    param = finishing(nthreads, param, &startTS);
     return param.joinresult;
 }
 

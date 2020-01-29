@@ -25,7 +25,7 @@ function KimRun() {
 # Configurable variables
 # Generate a timestamp
 algo=""
-Threads=40
+Threads=36
 timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
 for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #SHJ_HS_NP PMJ_HS_NP  #RPJ_JM_NP RPJ_JBCR_NP RPJ_HS_NP
@@ -42,73 +42,75 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #SHJ_HS_NP P
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "Kim")
       id=0
-      WINDOW_SIZE=10000
+      WINDOW_SIZE=100000 #MS
 
-      # test case 1: no timestamp
+      echo test case with no timestamp
       ts=0
-      for ZIPF_FACTOR in 0 0.2 0.4 0.8 1; do
+      for ZIPF_FACTOR in 0 0.2 0.4 0.8 1; do #id= 0~4
         STEP_SIZE=1000
         INTERVAL=10
         DISTRIBUTION=2
         KimRun
-        id+=1
+        let "id++"
       done
 
-      # distribution
-      for DISTRIBUTION in 0 1; do
+      echo test with timestamp.
+      ts=1
+
+      echo test case 1: different time distribution
+      for DISTRIBUTION in 0 1; do #id=5~6
         STEP_SIZE=1000
         INTERVAL=10
         ZIPF_FACTOR=0
         KimRun
-        id+=1
+        let "id++"
       done
 
-      # test case1 : with timestamp.
-      # test case 2: for zipf distrbution
-      ts=1
-      for ZIPF_FACTOR in 0 0.2 0.4 0.8 1; do
+      echo test case 2: for zipf distrbution
+      for ZIPF_FACTOR in 0 0.2 0.4 0.8 1; do #id=7~11
         STEP_SIZE=1000
         INTERVAL=10
         DISTRIBUTION=2
         KimRun
-        id+=1
+        let "id++"
       done
 
-      # test case 3: distribution unique/nonunique
+      echo test case 3: distribution unique/nonunique
       # TODO: zipf distribution should be merged into this?
-      ts=1
-      for DISTRIBUTION in 0 1; do
+      for DISTRIBUTION in 0 1; do  #id=12~13
         STEP_SIZE=1000
         INTERVAL=10
         ZIPF_FACTOR=0
         KimRun
-        id+=1
+        let "id++"
       done
 
-      # test case 4: step size
-      for STEP_SIZE in 100 500 1000 2000; do # step size should be bigger than nthreads
+      echo test case 4: step size # step size should be bigger than nthreads
+      for STEP_SIZE in 100 500 1000 2000; do #id=13~16
         INTERVAL=10
         DISTRIBUTION=0
         ZIPF_FACTOR=0
         KimRun
-        id+=1
+        let "id++"
       done
 
-      # test case 5: interval
-      for INTERVAL in 10 100 500 1000; do
+      echo test case 5: interval
+      for INTERVAL in 10 100 500 1000; do  #id=17~20
         STEP_SIZE=1000
         DISTRIBUTION=0
         ZIPF_FACTOR=0
         KimRun
-        id+=1
+        let "id++"
       done
 
-      # test case 6: window size
-      for WINDOW_SIZE in 1000 10000 50000 100000; do
+      echo test case 6: window size
+      for WINDOW_SIZE in 1000 10000 50000 100000; do   #id=21 ~ 24
         INTERVAL=10
         STEP_SIZE=1000 # TODO: no sure if this should be smaller or narrow down the window size
         DISTRIBUTION=0
         ZIPF_FACTOR=0
+        KimRun
+        let "id++"
       done
       ;;
     "DEBS")

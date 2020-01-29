@@ -34,24 +34,19 @@ struct T_TIMER {
     std::vector<uint64_t> recordRID;
     std::vector<uint64_t> recordSID;
     int record_cnt = 0;
-    const int record_gap = 1;
+    const int record_gap = 100;
 #endif
 };
 
 milliseconds now();
 
-/**
- * print progressive results.
- * @param vector
- */
-void print_timing(std::vector<uint64_t> vector, std::vector<uint64_t> vector_latency, std::string arg_name);
 
 /** print out the execution time statistics of the join */
-void print_timing(int64_t result, T_TIMER *timer);
+void print_breakdown(int64_t result, T_TIMER *timer, long lastTS, _IO_FILE *pFile);
 
 void merge(T_TIMER *timer, relation_t *relR, relation_t *relS, milliseconds *startTS);
 
-void sortRecords(std::string algo_name, int exp_id);
+void sortRecords(std::string algo_name, int exp_id, long lastTS);
 
 #ifndef BEGIN_MEASURE_BUILD
 #define BEGIN_MEASURE_BUILD(timer) \
