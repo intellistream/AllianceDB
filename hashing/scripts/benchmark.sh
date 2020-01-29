@@ -119,7 +119,7 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #SHJ_HS_NP P
       echo test case 8: zipf distribution timestamp 27 ~ 31
       for ZIPF_FACTOR in 0 0.2 0.4 0.8 1; do
         INTERVAL=10
-        STEP_SIZE=1000 # TODO: no sure if this should be smaller or narrow down the window size
+        STEP_SIZE=1000
         distrbution=0
         skew=0
         KimRun
