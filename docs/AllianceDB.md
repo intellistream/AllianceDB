@@ -160,6 +160,6 @@ Kim data generator parameter
 4. `e`:  step size,  generate number of tuples at each step, all tuples in the same step have the same timestamp, $e > 0$.
 5. `l`: interval of each step,  [0, window_size], (0 means batch operation).
 6. `d`: distribution of timestamps, [0 - unique, 1 - nonunique, 2 - zipf].
-7. `Z`: if zipf distribution are selected, zipf factor of zipf distribution should be configured, range [0,1]
+7. `Z`: configure key-field distribution.  zipf factor of zipf distribution should be configured, range [0,1]
 
 num_tuples = (window_size / interval) * step_size;
