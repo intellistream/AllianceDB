@@ -104,7 +104,7 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int
                                                   cmd_params.step_size, cmd_params.interval);
                 break;
             case 2: // zipf with zipf factor
-                create_relation_zipf(rel, rel_size, rel_size, cmd_params.zipf_param);
+                create_relation_zipf(rel, rel_size, rel_size, cmd_params.skew);
                 add_ts(rel, relPl, cmd_params.step_size, cmd_params.interval, nthreads);
                 break;
             default:

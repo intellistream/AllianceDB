@@ -19,7 +19,7 @@ function Run() {
 function KimRun() {
   #####native execution
   echo "==benchmark:$benchmark -a $algo -n $Threads #TEST:$id=="
-  ./hashing -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -l $INTERVAL -d $DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id
+  ./hashing -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -l $INTERVAL -d $DISTRIBUTION -z $skew -Z $ZIPF_FACTOR -n $Threads -I $id
 }
 
 # Configurable variables
@@ -46,7 +46,16 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #SHJ_HS_NP P
 
       echo test case with no timestamp
       ts=0
-      for ZIPF_FACTOR in 0 0.2 0.4 0.8 1; do #id= 0~4
+
+      for DISTRIBUTION in 0 2; do #id=1~2
+        STEP_SIZE=1000
+        INTERVAL=10
+        skew=0
+        KimRun
+        let "id++"
+      done
+
+      for skew in 0 0.2 0.4 0.8 1; do #id= 3~7
         STEP_SIZE=1000
         INTERVAL=10
         DISTRIBUTION=2
@@ -57,7 +66,7 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #SHJ_HS_NP P
       echo test with timestamp.
       ts=1
 
-      echo test case 1: different time distribution
+      echo test case 1: different key distribution
       for DISTRIBUTION in 0 1; do #id=5~6
         STEP_SIZE=1000
         INTERVAL=10
