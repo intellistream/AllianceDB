@@ -485,10 +485,10 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
                         {"window-size",  required_argument, 0,               'w'},
                         {"step-size",    required_argument, 0,               'e'},
                         {"interval",     required_argument, 0,               'l'},
-                        {"distribution", required_argument, 0,               'd'},
+                        {"key_distribution", required_argument, 0,           'd'},
                         {"zipf_param",   required_argument, 0,               'Z'},
                         {"exp_id",       required_argument, 0,               'I'},
-                        {"key_distribution",       required_argument, 0,               'D'},
+                        {"ts_distribution",  required_argument, 0,           'D'},
                         {0, 0,                              0,               0}
 
                 };
@@ -609,7 +609,6 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
             case 'S':
                 cmd_params->loadfileS = mystrdup(optarg);
                 break;
-
             case 'J':
                 cmd_params->rkey = atoi(mystrdup(optarg));
                 break;
@@ -639,9 +638,6 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
                 break;
             case 'D':
                 cmd_params->ts_distribution = atoi(mystrdup(optarg));
-                break;
-            case 'D':
-                cmd_params->TSdistribution = atoi(mystrdup(optarg));
                 break;
             case 'Z':
                 cmd_params->zipf_param = atof(optarg);
