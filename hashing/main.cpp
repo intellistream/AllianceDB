@@ -486,12 +486,13 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
                         {"interval",     required_argument, 0,               'l'},
                         {"distribution", required_argument, 0,               'd'},
                         {"zipf_param",   required_argument, 0,               'Z'},
+                        {"exp_id",       required_argument, 0,               'I'},
                         {0, 0,                              0,               0}
                 };
         /* getopt_long stores the option index here. */
         int option_index = 0;
 
-        c = getopt_long(argc, argv, "J:K:L:M:t:w:e:l:d:Z:a:n:p:r:s:o:x:y:z:R:S:hv",
+        c = getopt_long(argc, argv, "J:K:L:M:t:w:e:l:I:d:Z:a:n:p:r:s:o:x:y:z:R:S:hv",
                         long_options, &option_index);
 
         /* Detect the end of the options. */

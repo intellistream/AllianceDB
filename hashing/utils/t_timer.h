@@ -51,7 +51,7 @@ void print_timing(int64_t result, T_TIMER *timer);
 
 void merge(T_TIMER *timer, relation_t *relR, relation_t *relS, milliseconds *startTS);
 
-void sortRecords(std::string algo_name);
+void sortRecords(std::string algo_name, int exp_id);
 
 #ifndef BEGIN_MEASURE_BUILD
 #define BEGIN_MEASURE_BUILD(timer) \

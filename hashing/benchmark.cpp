@@ -155,7 +155,7 @@ benchmark(const param_t cmd_params) {
     /* Run the selected join algorithm */
     printf("[INFO ] Running join algorithm %s ...\n", cmd_params.algo->name);
 
-    results = cmd_params.algo->joinAlgo(&relR, &relS, cmd_params.nthreads);
+    results = cmd_params.algo->joinAlgo(&relR, &relS, cmd_params.nthreads, cmd_params.exp_id);
 
     printf("[INFO ] Results = %ld. DONE.\n", results->totalresults);
 

@@ -109,7 +109,7 @@ init_bucket_buffer(bucket_buffer_t **ppbuf) {
 
 /** \copydoc NPO_st */
 result_t *
-NPO_st(relation_t *relR, relation_t *relS, int nthreads) {
+NPO_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id) {
     hashtable_t *ht;
     int64_t result = 0;
     result_t *joinresult;
@@ -335,7 +335,7 @@ np_distribute(const relation_t *relR, const relation_t *relS, int nthreads, hash
 
 /** \copydoc NPO */
 result_t *
-NPO(relation_t *relR, relation_t *relS, int nthreads) {
+NPO(relation_t *relR, relation_t *relS, int nthreads, int exp_id) {
     hashtable_t *ht;
     int64_t result = 0;
     int32_t numR, numS, numRthr, numSthr; /* total and per thread num */
@@ -394,7 +394,7 @@ NPO(relation_t *relR, relation_t *relS, int nthreads) {
     }
 #endif
 #ifndef NO_TIMING
-    sortRecords("NPJ");
+    sortRecords("NPJ", exp_id);
 #endif
 //    for (i = 0; i < nthreads; i++) {
 //        pthread_join(tid[i], NULL);

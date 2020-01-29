@@ -46,19 +46,64 @@ do
         id=0
         WINDOW_SIZE=10000
 
+        # test case 1: no timestamp
         #no timestamp.
         ts=0
         KimRun
+
         id+=1
 
-        #with timestamp.
+        # with timestamp.
+        # test case 2:  for zipf distrbution
         ts=1
         for ZIPF_FACTOR in 0 0.2 0.4 0.8 1
         do
           STEP_SIZE=1000
           INTERVAL=10
-          DISTRIBUTION=0
+          DISTRIBUTION=2
           KimRun
+          id+=1
+        done
+
+        # test case 3: distribution unique/nonunique
+        # TODO: zipf distribution should be merged into this?
+        ts=1
+        for DISTRIBUTION in 0 1
+        do
+          STEP_SIZE=1000
+          INTERVAL=10
+          ZIPF_FACTOR=0
+          KimRun
+          id+=1
+        done
+
+        # test case 4: step size
+        for STEP_SIZE in 100 500 1000 2000 # step size should be bigger than nthreads
+        do
+          INTERVAL=10
+          DISTRIBUTION=0
+          ZIPF_FACTOR=0
+          KimRun
+          id+=1
+        done
+
+        # test case 5: interval
+        for INTERVAL in 10 100 500 1000
+        do
+          STEP_SIZE=1000
+          DISTRIBUTION=0
+          ZIPF_FACTOR=0
+          KimRun
+          id+=1
+        done
+
+        # test case 6: window size
+        for WINDOW_SIZE in 1000 10000 50000 100000
+        do
+          INTERVAL=10
+          STEP_SIZE=1000 # TODO: no sure if this should be smaller or narrow down the window size
+          DISTRIBUTION=0
+          ZIPF_FACTOR=0
         done
     ;;
       "DEBS")
