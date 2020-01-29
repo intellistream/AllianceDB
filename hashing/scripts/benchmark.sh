@@ -47,14 +47,28 @@ do
         WINDOW_SIZE=10000
 
         # test case 1: no timestamp
-        #no timestamp.
         ts=0
-        KimRun
+        for ZIPF_FACTOR in 0 0.2 0.4 0.8 1
+        do
+          STEP_SIZE=1000
+          INTERVAL=10
+          DISTRIBUTION=2
+          KimRun
+          id+=1
+        done
 
-        id+=1
+        # distribution
+        for DISTRIBUTION in 0 1
+        do
+          STEP_SIZE=1000
+          INTERVAL=10
+          ZIPF_FACTOR=0
+          KimRun
+          id+=1
+        done
 
-        # with timestamp.
-        # test case 2:  for zipf distrbution
+        # test case1 : with timestamp.
+        # test case 2: for zipf distrbution
         ts=1
         for ZIPF_FACTOR in 0 0.2 0.4 0.8 1
         do
