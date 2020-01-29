@@ -452,30 +452,30 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
         static struct option long_options[] =
                 {
                         /* These options set a flag. */
-                        {"verbose",      no_argument,       &verbose_flag,   1},
-                        {"brief",        no_argument,       &verbose_flag,   0},
-                        {"non-unique",   no_argument,       &nonunique_flag, 1},
-                        {"full-range",   no_argument,       &fullrange_flag, 1},
-                        {"basic-numa",   no_argument,       &basic_numa,     1},
-                        {"help",         no_argument,       0,               'h'},
-                        {"version",      no_argument,       0,               'v'},
+                        {"verbose",        no_argument,       &verbose_flag,   1},
+                        {"brief",          no_argument,       &verbose_flag,   0},
+                        {"non-unique",     no_argument,       &nonunique_flag, 1},
+                        {"full-range",     no_argument,       &fullrange_flag, 1},
+                        {"basic-numa",     no_argument,       &basic_numa,     1},
+                        {"help",           no_argument,       0,               'h'},
+                        {"version",        no_argument,       0,               'v'},
                         /* These options don't set a flag.
                            We distinguish them by their indices. */
-                        {"algo",         required_argument, 0,               'a'},
-                        {"nthreads",     required_argument, 0,               'n'},
-                        {"perfconf",     required_argument, 0,               'p'},
-                        {"r-size",       required_argument, 0,               'r'},
-                        {"s-size",       required_argument, 0,               's'},
-                        {"perfout",      required_argument, 0,               'o'},
-                        {"r-seed",       required_argument, 0,               'x'},
-                        {"s-seed",       required_argument, 0,               'y'},
-                        {"skew",         required_argument, 0,               'z'},
-                        {"r-file",       required_argument, 0,               'R'},
-                        {"s-file",       required_argument, 0,               'S'},
-                        {"r-key",        required_argument, 0,               'J'},
-                        {"s-key",        required_argument, 0,               'K'},
-                        {"r-ts",         required_argument, 0,               'L'},
-                        {"s-ts",         required_argument, 0,               'M'},
+                        {"algo",           required_argument, 0,               'a'},
+                        {"nthreads",       required_argument, 0,               'n'},
+                        {"perfconf",       required_argument, 0,               'p'},
+                        {"r-size",         required_argument, 0,               'r'},
+                        {"s-size",         required_argument, 0,               's'},
+                        {"perfout",        required_argument, 0,               'o'},
+                        {"r-seed",         required_argument, 0,               'x'},
+                        {"s-seed",         required_argument, 0,               'y'},
+                        {"skew",           required_argument, 0,               'z'},
+                        {"r-file",         required_argument, 0,               'R'},
+                        {"s-file",         required_argument, 0,               'S'},
+                        {"r-key",          required_argument, 0,               'J'},
+                        {"s-key",          required_argument, 0,               'K'},
+                        {"r-ts",           required_argument, 0,               'L'},
+                        {"s-ts",           required_argument, 0,               'M'},
                         /* partitioning fanout, e.g., 2^rdxbits */
                         {"partfanout",   required_argument, 0,               'f'},
                         {"numastrategy", required_argument, 0,               'N'},
@@ -490,6 +490,7 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
                         {"exp_id",       required_argument, 0,               'I'},
                         {"key_distribution",       required_argument, 0,               'D'},
                         {0, 0,                              0,               0}
+
                 };
         /* getopt_long stores the option index here. */
         int option_index = 0;
@@ -638,6 +639,9 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
                 break;
             case 'D':
                 cmd_params->ts_distribution = atoi(mystrdup(optarg));
+                break;
+            case 'D':
+                cmd_params->TSdistribution = atoi(mystrdup(optarg));
                 break;
             case 'Z':
                 cmd_params->zipf_param = atof(optarg);

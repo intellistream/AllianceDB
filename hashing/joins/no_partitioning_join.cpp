@@ -151,8 +151,13 @@ NPO_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id) {
 
 #ifndef NO_TIMING
     END_MEASURE(timer)
+
+    std::string name = "NPJ_ST_" + std::to_string(exp_id);
+    string path = "/data1/xtra/results/breakdown/" + name.append(".txt");
+    auto fp = fopen(path.c_str(), "w");
     /* now print the timing results: */
-    print_timing(result, &timer);
+    print_breakdown(result, &timer, 0, fp);
+    fclose(fp);
 #endif
 
     destroy_hashtable(ht);
@@ -389,12 +394,17 @@ NPO(relation_t *relR, relation_t *relS, int nthreads, int exp_id) {
 
 #ifndef NO_TIMING
     /* now print the timing results: */
+    auto lastTS = min(relR->payload->ts[relR->num_tuples - 1].count(),
+                      relS->payload->ts[relS->num_tuples - 1].count());
+
+    std::string name = "NPJ_" + std::to_string(exp_id);
+    string path = "/data1/xtra/results/breakdown/" + name.append(".txt");
+    auto fp = fopen(path.c_str(), "w");
     for (i = 0; i < nthreads; i++) {
-        print_timing(args[i].result, args[i].timer);
+        print_breakdown(args[i].result, args[i].timer, lastTS, fp);
     }
-#endif
-#ifndef NO_TIMING
-    sortRecords("NPJ", exp_id);
+    fclose(fp);
+    sortRecords("NPJ", exp_id, lastTS);
 #endif
 //    for (i = 0; i < nthreads; i++) {
 //        pthread_join(tid[i], NULL);

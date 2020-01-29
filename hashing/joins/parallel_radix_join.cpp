@@ -1589,10 +1589,19 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads,
     joinresult->nthreads = nthreads;
 
 #ifndef NO_TIMING
+
+    auto lastRTS = relR->payload->ts[relR->num_tuples - 1].count();
+    auto lastSTS = relS->payload->ts[relS->num_tuples - 1].count();
+    auto lastTS = min(lastRTS, lastSTS);
+
+    std::string name = "PRJ_" + std::to_string(exp_id);
+    string path = "/data1/xtra/results/breakdown/" + name.append(".txt");
+    auto fp = fopen(path.c_str(), "w");
     /* now print the timing results: */
     for (i = 0; i < nthreads; i++) {
-        print_timing(args[i].result, args[i].timer);
+        print_breakdown(args[i].result, args[i].timer, lastTS, fp);
     }
+    fclose(fp);
 #endif
 
 
@@ -1620,7 +1629,7 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads,
 #endif
 
 #ifndef NO_TIMING
-    sortRecords("PRJ", exp_id);
+    sortRecords("PRJ", exp_id, lastTS);
 #endif
     /* clean up */
     for (i = 0; i < nthreads; i++) {
@@ -1797,7 +1806,7 @@ RJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id) {
     END_MEASURE_BUILD(timer)
     END_MEASURE(timer)
     /* now print the timing results: */
-    print_timing(result, &timer);
+    print_breakdown(result, &timer, 0, nullptr);
 #endif
 
     /* clean-up temporary buffers */
