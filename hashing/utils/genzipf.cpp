@@ -13,6 +13,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <math.h>
+#include <algorithm>
 
 #include "genzipf.h"
 
@@ -102,6 +103,11 @@ gen_zipf(unsigned int stream_size,
     assert (alphabet);
 
     double *lut = gen_zipf_lut(zipf_factor, alphabet_size);
+
+//    for (int i=0; i < alphabet_size; i++) {
+//        printf("%d\n", alphabet[i]);
+//    }
+
     assert (lut);
 
     if (*output == NULL)
@@ -149,3 +155,65 @@ gen_zipf(unsigned int stream_size,
 
     return ret;
 }
+
+/**
+ * Generate a sorted timestamp table with Zipf-distributed content.
+ */
+int32_t *
+gen_zipf_ts(unsigned int stream_size,
+         unsigned int alphabet_size,
+         double zipf_factor) {
+    int32_t *ret;
+
+    /* prepare stuff for Zipf generation */
+    uint32_t *alphabet = gen_alphabet(alphabet_size);
+    assert (alphabet);
+
+    double *lut = gen_zipf_lut(zipf_factor, alphabet_size);
+
+    assert (lut);
+
+    ret = (int32_t *) malloc(stream_size * sizeof(*ret));
+
+    assert (ret);
+
+    for (unsigned int i = 0; i < stream_size; i++) {
+        /* take random number */
+        double r = ((double) rand()) / RAND_MAX;
+
+        /* binary search in lookup table to determine item */
+        unsigned int left = 0;
+        unsigned int right = alphabet_size - 1;
+        unsigned int m;       /* middle between left and right */
+        unsigned int pos;     /* position to take */
+
+        if (lut[0] >= r)
+            pos = 0;
+        else {
+            while (right - left > 1) {
+                m = (left + right) / 2;
+
+                if (lut[m] < r)
+                    left = m;
+                else
+                    right = m;
+            }
+
+            pos = right;
+        }
+        ret[i] = (int) alphabet[pos];
+    }
+
+    free(lut);
+    free(alphabet);
+
+    // sort ret
+    std::sort(ret, ret+stream_size);
+
+//    for (int i=0; i < stream_size; i++) {
+//        printf("%d\n", ret[i]);
+//    }
+
+    return ret;
+}
+
