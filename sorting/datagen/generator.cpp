@@ -217,7 +217,7 @@ random_unique_gen_thread(void *args) {
     for (i = 0; i < rel->num_tuples; i++) {
         rel->tuples[i].key = firstkey;
 //        rel->tuples[i].payload = randstart + i;
-        rel->tuples[i].payload = offset + i;
+        rel->tuples[i].payload = firstkey;
 
         if (firstkey == maxid)
             firstkey = 0;

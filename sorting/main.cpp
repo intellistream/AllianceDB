@@ -483,20 +483,20 @@ createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int32_t 
     /* to pass information to the create_relation methods */
     auto nthreads = cmd_params.nthreads;
 
-    if (cmd_params.kim) {
-        // calculate num of tuples by params
-        if (cmd_params.step_size < nthreads) {
-            perror("step size should be bigger than the number of threads!");
-            return;
-        }
-        rel->num_tuples = (cmd_params.window_size / cmd_params.interval) * cmd_params.step_size;
-        rel_size = rel->num_tuples;
-        relPl->num_tuples = rel->num_tuples;
-    } else {
-        /** first allocate the memory for relations (+ padding based on numthreads) : */
-        rel->num_tuples = cmd_params.r_size;
-        relPl->num_tuples = rel->num_tuples;
+//    if (cmd_params.kim) {
+    // calculate num of tuples by params
+    if (cmd_params.step_size < nthreads) {
+        perror("step size should be bigger than the number of threads!");
+        return;
     }
+    rel->num_tuples = (cmd_params.window_size / cmd_params.interval) * cmd_params.step_size;
+    rel_size = rel->num_tuples;
+    relPl->num_tuples = rel->num_tuples;
+//    } else {
+//        /** first allocate the memory for relations (+ padding based on numthreads) : */
+//        rel->num_tuples = cmd_params.r_size;
+//        relPl->num_tuples = rel->num_tuples;
+//    }
 
     fprintf(stdout,
             "[INFO ] %s relation with size = %.3lf MiB, #tuples = %llu : ",

@@ -40,20 +40,20 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int
     numalocalize = cmd_params.basic_numa;
     nthreads = cmd_params.nthreads;
 
-    if (cmd_params.kim) {
-        // calculate num of tuples by params
-        if (cmd_params.step_size < nthreads) {
-            perror("step size should be bigger than the number of threads!");
-            return;
-        }
-        rel->num_tuples = (cmd_params.window_size / cmd_params.interval) * cmd_params.step_size;
-        rel_size = rel->num_tuples;
-        relPl->num_tuples = rel->num_tuples;
-    } else {
-        /** first allocate the memory for relations (+ padding based on numthreads) : */
-        rel->num_tuples = cmd_params.r_size;
-        relPl->num_tuples = rel->num_tuples;
+//    if (cmd_params.kim) {
+    // calculate num of tuples by params
+    if (cmd_params.step_size < nthreads) {
+        perror("step size should be bigger than the number of threads!");
+        return;
     }
+    rel->num_tuples = (cmd_params.window_size / cmd_params.interval) * cmd_params.step_size;
+    rel_size = rel->num_tuples;
+    relPl->num_tuples = rel->num_tuples;
+//    } else {
+//        /** first allocate the memory for relations (+ padding based on numthreads) : */
+//        rel->num_tuples = cmd_params.r_size;
+//        relPl->num_tuples = rel->num_tuples;
+//    }
 
     fprintf(stdout,
             "[INFO ] %s relation with size = %.3lf MiB, #tuples = %llu : ",
@@ -99,7 +99,8 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int
 //                parallel_create_relation(rel, rel_size,
 //                                 nthreads,
 //                                 rel_size);
-                parallel_create_relation_with_ts(rel, relPl, rel->num_tuples, nthreads, rel->num_tuples, cmd_params.step_size, cmd_params.interval);
+                parallel_create_relation_with_ts(rel, relPl, rel->num_tuples, nthreads, rel->num_tuples,
+                                                 cmd_params.step_size, cmd_params.interval);
                 break;
             case 2: // zipf with zipf factor
                 create_relation_zipf(rel, rel_size, cmd_params.window_size, cmd_params.skew);
