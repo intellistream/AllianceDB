@@ -1,10 +1,15 @@
-//
-// Created by Shuhao Zhang on 8/9/19.
-//
-
-#ifndef ALLIANCEDB_TYPES_H
-#define ALLIANCEDB_TYPES_H
-
+/**
+ * @file   types.h
+ * @author Cagri Balkesen <cagri.balkesen@inf.ethz.ch>
+ * @date   Tue May 22 16:43:30 2012
+ *
+ * @brief  Provides general type definitions used by all join algorithms.
+ *
+ * (c) 2014, ETH Zurich, Systems Group
+ *
+ */
+#ifndef TYPES_H
+#define TYPES_H
 
 #include <stdint.h>
 #include <inttypes.h>
@@ -19,8 +24,7 @@
 typedef int64_t intkey_t;
 typedef int64_t value_t;
 #else /* 32-bit key/payload, 8B tuples */
-//AVX only supports floating number!!!
-typedef int32_t float_key_t;
+typedef int32_t intkey_t;
 typedef int32_t value_t;
 #endif
 
@@ -34,7 +38,7 @@ typedef int32_t value_t;
 # define PRIu64 "llu"
 #endif
 
-typedef struct tuple_t tuple_t;
+typedef struct tuple_t    tuple_t;
 typedef struct relation_t relation_t;
 typedef struct result_t result_t;
 typedef struct threadresult_t threadresult_t;
@@ -45,8 +49,8 @@ typedef struct joinconfig_t joinconfig_t;
  * @note this layout is chosen as a work-around for AVX double operations.
  */
 struct tuple_t {
-    value_t payload;
-    float_key_t key;
+    value_t  payload;
+    intkey_t key;
 };
 
 
@@ -55,23 +59,23 @@ struct tuple_t {
  * It consists of an array of tuples and a size of the relation.
  */
 struct relation_t {
-    tuple_t *tuples;
-    uint64_t num_tuples;
+    tuple_t * tuples;
+    uint64_t  num_tuples;
 };
 
 
 /** Holds the join results of a thread */
 struct threadresult_t {
-    int64_t nresults;
-    void *results;
+    int64_t  nresults;
+    void *   results;
     uint32_t threadid;
 };
 
 /** Type definition for join results. */
 struct result_t {
-    int64_t totalresults;
-    threadresult_t *resultlist;
-    int nthreads;
+    int64_t          totalresults;
+    threadresult_t * resultlist;
+    int              nthreads;
 };
 
 
@@ -81,9 +85,7 @@ struct result_t {
  *
  * NUMA_SHUFFLE_RANDOM, NUMA_SHUFFLE_RING, NUMA_SHUFFLE_NEXT
  */
-enum numa_strategy_t {
-    RANDOM, RING, NEXT
-};
+enum numa_strategy_t {RANDOM, RING, NEXT};
 
 /** Join configuration parameters. */
 struct joinconfig_t {
@@ -97,4 +99,4 @@ struct joinconfig_t {
 
 /** @} */
 
-#endif //ALLIANCEDB_TYPES_H
+#endif /* TYPES_H */

@@ -1,11 +1,16 @@
-//
-// Created by Shuhao Zhang on 8/9/19.
-//
+/**
+ * @file   cpu_mapping.h
+ * @author Cagri Balkesen <cagri.balkesen@inf.ethz.ch>
+ * @date   Tue May 22 16:35:12 2012
+ *
+ * @brief  Provides NUMA-aware CPU mapping utility functions.
+ *
+ * (c) 2014, ETH Zurich, Systems Group
+ *
+ */
+#ifndef CPU_MAPPING_H
+#define CPU_MAPPING_H
 
-#ifndef ALLIANCEDB_CPU_MAPPING_H
-#define ALLIANCEDB_CPU_MAPPING_H
-
-#define HAVE_NUMA
 /**
  * @defgroup cpumapping CPU mapping tool
  * @{
@@ -126,5 +131,5 @@ get_logical_thread_at_numa_index(int numaidx);
 
 /** @} */
 
+#endif /* CPU_MAPPING_H */
 
-#endif //ALLIANCEDB_CPU_MAPPING_H

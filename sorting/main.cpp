@@ -321,6 +321,8 @@ $ cat cpu-mapping.txt
 #include <string.h>             /* strlen(), memcpy() */
 #include <getopt.h>             /* getopt */
 #include <cpuid.h>              /* for check_avx() */
+//#include <bits/cpu-set.h>
+#include <sched.h>
 
 /* #include <assert.h> */
 
@@ -329,13 +331,9 @@ $ cat cpu-mapping.txt
 #include "util/types.h"
 #include "datagen/generator.h"
 #include "affinity/memalloc.h"           /* malloc_aligned() */
-#include "util/params.h"             /* macro parameters */
+#include "params.h"             /* macro parameters */
 #include "affinity/numa_shuffle.h"       /* numa_shuffle_init() */
-#include <sched.h>
-//#include <check.h>
-#include <assert.h>
-#include <string>
-#include "joins/joincommon.h"
+
 /**************** include join algorithm thread implementations ***************/
 #include "joins/sortmergejoin_multipass.h"
 #include "joins/sortmergejoin_multiway.h"
@@ -351,25 +349,18 @@ $ cat cpu-mapping.txt
 #endif
 
 #include "config.h"          /* autoconf header */
-#include "test/testutil.h"
-#include "joins/avxsort.h"
-#include "joins/scalarsort.h"
-#include "joins/avxintrin_emu.h"
 
-#define DEBUG
 /** Debug msg logging method */
 #ifdef DEBUG
 #define DEBUGMSG(COND, MSG, ...)                                        \
     if(COND) {                                                          \
         fprintf(stdout,                                                 \
-                "[DEBUG @ %s:%d\] " MSG, __FILE__, __LINE__, ## __VA_ARGS__); \
+                "[DEBUG @ %s:%d\] "MSG, __FILE__, __LINE__, ## __VA_ARGS__); \
     }
 #else
 #define DEBUGMSG(COND, MSG, ...)
 #endif
-#ifndef INT_MAX
-#define INT_MAX 2147483647
-#endif
+
 
 /** Print out timing stats for the given start and end timestamps */
 extern void
@@ -426,7 +417,7 @@ extern int optind, opterr, optopt;
 /** All available algorithms */
 static struct algo_t algos[] =
         {
-                {"m-way",      sortmergejoin_multiway},/* m-pass: sort-merge join with multi-pass merge */
+                {"m-way",      sortmergejoin_multiway},
                 {"m-pass",     sortmergejoin_multipass},
                 {"mpsm",       sortmergejoin_mpsm},
                 {"m-way+skew", sortmergejoin_multiway_skewhandling},
@@ -458,60 +449,8 @@ int check_avx() {
     return 1; /* has AVX support! */
 }
 
-#define MAXTESTSIZE (1<<22)
-
-
-struct temp_tuple {
-    int32_t value;
-    int32_t key;
-};
-
-void
-check_avx_sort() {
-    int64_t sz = 256000;//rand() % MAXTESTSIZE;
-    tuple_t *in = generate_rand_tuples(sz);
-//    DEBUGMSG(1, "Original relation: %s",
-//             print_relation(in, sz).c_str())
-
-
-    temp_tuple *items = (temp_tuple *) malloc(sizeof(temp_tuple) * 10);
-    items[0].key = 22;
-    items[0].value = 11110;
-
-    items[1].key = 107;
-    items[1].value = 4;
-
-    double_t *ditems = (double_t *) items;
-
-    __m256d ra = _mm256_load_pd((double const *) (ditems));
-    __m256d rb = _mm256_loadu_pd((double const *) (ditems + 4));
-    __m256d rc = _mm256_loadu_pd((double const *) (ditems + 8));
-    __m256d rd = _mm256_loadu_pd((double const *) (ditems + 12));
-
-//    tuple_t *out2 = (tuple_t *) malloc(sz * sizeof(tuple_t));
-//    scalarsort_tuples(&in, &out2, sz);
-//    DEBUGMSG(1, "scalar sorted relation: %s",
-//             print_relation(out2, sz).c_str())
-
-    tuple_t *out = (tuple_t *) malloc_aligned(sz * sizeof(tuple_t));
-    for (int i = 0; i < sz; i++) {
-        out[i].key = 0;
-//        out[i].payload = 0;
-    }
-    avxsort_tuples(&in, &out, sz);
-    DEBUGMSG(1, "Sorted relation: %s",
-             print_relation(out, sz).c_str())
-
-    assert(is_sorted_tuples(out, sz) == 0);
-    free(in);
-    free(out);
-}
-
 int
 main(int argc, char *argv[]) {
-//    check_avx_sort();
-//    fflush(stdout);
-//    exit(0);
     struct timeval start, end;
     relation_t relR;
     relation_t relS;
@@ -531,11 +470,11 @@ main(int argc, char *argv[]) {
     cmdparam_t cmd_params;
 
     /* Default values if not specified on command line */
-    cmd_params.algo = &algos[0]; //0:m-way, 1: m-pass
-    cmd_params.nthreads = 1;
+    cmd_params.algo = &algos[0]; /* m-pass: sort-merge join with multi-pass merge */
+    cmd_params.nthreads = 2;
     /* default dataset is Workload B (described in paper) */
-    cmd_params.r_size = 129999;
-    cmd_params.s_size = 129999;
+    cmd_params.r_size = 128;
+    cmd_params.s_size = 128;
     cmd_params.r_seed = 12345;
     cmd_params.s_seed = 54321;
     cmd_params.skew = 0.0;
@@ -551,6 +490,7 @@ main(int argc, char *argv[]) {
     cmd_params.mwaymerge_bufsize = MWAY_MERGE_BUFFER_SIZE_DEFAULT;
 
     parse_args(argc, argv, &cmd_params);
+
     if (check_avx() == 0) {
         /* no AVX support, just use scalar variants. */
         fprintf(stdout, "[WARN ] AVX is not supported, using scalar sort & merge.\n");

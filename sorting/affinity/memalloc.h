@@ -1,15 +1,19 @@
-//
-// Created by Shuhao Zhang on 8/9/19.
-//
-
-#ifndef ALLIANCEDB_MEMALLOC_H
-#define ALLIANCEDB_MEMALLOC_H
-
+/**
+ * @file    memalloc.h
+ * @author  Cagri Balkesen <cagri.balkesen@inf.ethz.ch>
+ * @date    Sat Dec 15 13:39:54 2012
+ * @version $Id $
+ *
+ * @brief   Common memory allocation functions and macros.
+ *
+ * (c) 2012-2014, ETH Zurich, Systems Group
+ *
+ */
+#ifndef MEMALLOC_H_
+#define MEMALLOC_H_
 
 #define MALLOC(X) malloc_aligned(X)
 #define FREE(X,SZ) free(X)
-
-#include <sys/types.h>
 
 /**
  * Cache-line aligned memory allocation with posix_memalign()
@@ -37,4 +41,4 @@ malloc_aligned_threadlocal(size_t size);
 void
 free_threadlocal(void * ptr, size_t size);
 
-#endif //ALLIANCEDB_MEMALLOC_H
+#endif /* MEMALLOC_H_ */

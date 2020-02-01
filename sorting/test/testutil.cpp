@@ -228,7 +228,7 @@ generate_rand_ordered_int32(int num) {
     int j;
     uint32_t INCRMOD = 100;
 
-    float_key_t maxint = ~(1 << 31) - INCRMOD;
+    intkey_t maxint = ~(1 << 31) - INCRMOD;
 
     int32_t *A = (int32_t *) malloc(sizeof(int32_t) * num);
     startA = 1 + rand() % INCRMOD;
@@ -246,11 +246,11 @@ generate_rand_ordered_int32(int num) {
 
 tuple_t *
 generate_rand_ordered_tuples(int num) {
-    float_key_t startA;
+    intkey_t startA;
     int j;
     uint32_t INCRMOD = 100;
 
-    float_key_t maxint = ~(1 << 31) - INCRMOD;
+    intkey_t maxint = ~(1 << 31) - INCRMOD;
 
     tuple_t *A = (tuple_t *) malloc(sizeof(tuple_t) * num);
     startA = 1 + rand() % INCRMOD;
