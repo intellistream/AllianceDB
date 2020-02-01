@@ -14,13 +14,18 @@
 #ifndef GENZIPF_H
 #define GENZIPF_H
 
-#include "../util/types.h" /* tuple_t */
+#include "../util/types.h"
 
 typedef tuple_t item_t;
 
-item_t * gen_zipf (unsigned int stream_size,
-                   unsigned int alphabet_size,
-                   double zipf_factor,
-                   item_t ** output);
+item_t *gen_zipf(unsigned int stream_size,
+                 unsigned int alphabet_size,
+                 double zipf_factor,
+                 item_t **output);
+
+int32_t *
+gen_zipf_ts(unsigned int stream_size,
+            unsigned int alphabet_size,
+            double zipf_factor);
 
 #endif  /* GENZIPF_H */

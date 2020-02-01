@@ -5,6 +5,7 @@
 #include "genzipf.h"            /* gen_zipf() */
 #include "../util/lock.h"
 #include "../util/barrier.h"
+#include "../affinity/memalloc.h"
 
 //typedef signed long long int int64_t;
 
@@ -33,6 +34,82 @@ check_seed() {
     }
 }
 
+inline bool last_thread(int i, int nthreads) {
+    return i == (nthreads - 1);
+}
+
+void add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_size, int interval, int nthreads) {
+    int32_t ts = 0;
+    int tpPerThr = relation->num_tuples / nthreads;
+
+    uint64_t index = 0;
+
+    // num_tuples = window_size / interval * step_size
+    // generate timestamps with three parameters
+    for (int i = 0; i < nthreads; i++) {
+        if (last_thread(i, nthreads)) {
+            for (int j = 0; j < (relation->num_tuples - i * tpPerThr); j++) {
+                if (j % (step_size / nthreads) == 0) {
+                    ts += interval;
+                }
+                index = i * tpPerThr + j;
+                relationPayload->ts[index] = (milliseconds) ts;
+            }
+            ts = 0;
+        } else {
+            // generate timestamp for every thread tuples
+            for (int j = 0; j < tpPerThr; j++) {
+                if (j % (step_size / nthreads) == 0) {
+                    ts += interval;
+                }
+                index = i * tpPerThr + j;
+                relationPayload->ts[index] = (milliseconds) ts;
+            }
+            ts = 0;
+        }
+    }
+}
+
+/**
+ * @param numThr
+ * @param relation
+ * @param relationPayload
+ * @param window_size
+ * @param zipf_param
+ */
+void add_zipf_ts(relation_t *relation, relation_payload_t *relationPayload,
+                 int window_size, int nthreads, const double zipf_param) {
+
+    uint64_t i;
+    int32_t ts = 0;
+    int tpPerThr = relation->num_tuples / nthreads;
+
+    uint64_t index = 0;
+    int thread_num_tuples = 0;
+
+    // num_tuples = window_size / interval * step_size
+    // generate timestamps with three parameters
+    for (int i = 0; i < nthreads; i++) {
+        if (last_thread(i, nthreads)) {
+            thread_num_tuples = relation->num_tuples - i * tpPerThr;
+            int32_t *timestamps = gen_zipf_ts(thread_num_tuples, window_size, zipf_param);
+            for (int j = 0; j < thread_num_tuples; j++) {
+                index = i * tpPerThr + j;
+                relationPayload->ts[index] = (milliseconds) timestamps[j];
+//                printf("%d, %d\n", relation->tuples[index].key, relationPayload->ts[index]);
+            }
+        } else {
+            thread_num_tuples = tpPerThr;
+            int32_t *timestamps = gen_zipf_ts(thread_num_tuples, window_size, zipf_param);
+            // generate timestamp for every thread tuples
+            for (int j = 0; j < tpPerThr; j++) {
+                index = i * tpPerThr + j;
+                relationPayload->ts[index] = (milliseconds) timestamps[j];
+//                printf("%d\n", relationPayload->ts[index]);
+            }
+        }
+    }
+}
 
 /**
  * Shuffle tuples of the relation using Knuth shuffle.
@@ -44,7 +121,7 @@ knuth_shuffle(relation_t *relation) {
     int i;
     for (i = relation->num_tuples - 1; i > 0; i--) {
         int64_t j = RAND_RANGE(i);
-        float_key_t tmp = relation->tuples[i].key;
+        intkey_t tmp = relation->tuples[i].key;
         relation->tuples[i].key = relation->tuples[j].key;
         relation->tuples[j].key = tmp;
     }
@@ -55,7 +132,7 @@ knuth_shuffle48(relation_t *relation, unsigned short *state) {
     int i;
     for (i = relation->num_tuples - 1; i > 0; i--) {
         int64_t j = RAND_RANGE48(i, state);
-        float_key_t tmp = relation->tuples[i].key;
+        intkey_t tmp = relation->tuples[i].key;
         relation->tuples[i].key = relation->tuples[j].key;
         relation->tuples[j].key = tmp;
     }
@@ -81,9 +158,11 @@ struct create_arg_t {
     relation_t rel;
     int64_t firstkey;
     int64_t maxid;
+    uint64_t ridstart;
     relation_t *fullrel;
     volatile void *locks;
     pthread_barrier_t *barrier;
+    uint64_t offset;
 };
 
 typedef struct create_arg_t create_arg_t;
@@ -104,7 +183,7 @@ avoid_NaN(int64_t *data) {
 }
 
 /**
- * Create random unique keys starting from firstkey 
+ * Create random unique keys starting from firstkey
  */
 void *
 random_unique_gen_thread(void *args) {
@@ -112,18 +191,20 @@ random_unique_gen_thread(void *args) {
     relation_t *rel = &arg->rel;
     int64_t firstkey = arg->firstkey;
     int64_t maxid = arg->maxid;
+    auto offset = arg->offset;
+
     uint64_t i;
 
-    value_t randstart = 5; /* rand() % 1000; */
+//    value_t randstart = 5; /* rand() % 1000; */
 
     /* for randomly seeding nrand48() */
     unsigned short state[3] = {0, 0, 0};
-    unsigned int seed = time(NULL) + *(unsigned int *) pthread_self();
+    unsigned int seed = seedValue;//time(NULL) + *(unsigned int *) pthread_self(); //TODO: Not sure why Ca's original implementation use time as the seed.
     memcpy(state, &seed, sizeof(seed));
 
     for (i = 0; i < rel->num_tuples; i++) {
         rel->tuples[i].key = firstkey;
-//        rel->tuples[i].payload = randstart + i;
+        rel->tuples[i].payloadID = offset + i;
 
         if (firstkey == maxid)
             firstkey = 0;
@@ -149,7 +230,7 @@ random_unique_gen_thread(void *args) {
         lock(locks + k);  /* lock this rel-idx=i, fullrel-idx=k */
         lock(locks + j);  /* lock full rel-idx=j */
 
-        float_key_t tmp = fullrel->tuples[k].key;
+        intkey_t tmp = fullrel->tuples[k].key;
         fullrel->tuples[k].key = fullrel->tuples[j].key;
         fullrel->tuples[j].key = tmp;
 
@@ -160,8 +241,8 @@ random_unique_gen_thread(void *args) {
     return 0;
 }
 
-/** 
- * Just initialize mem. to 0 for making sure it will be allocated numa-local 
+/**
+ * Just initialize mem. to 0 for making sure it will be allocated numa-local
  */
 void *
 numa_localize_thread(void *args) {
@@ -419,16 +500,16 @@ create_relation_fk(relation_t *relation, int64_t num_tuples, const int64_t maxid
     return 0;
 }
 
-/** 
+/**
  * Create a foreign-key relation using the given primary-key relation and
  * foreign-key relation size. Keys in pkrel is randomly distributed in the full
  * integer range.
- * 
+ *
  * @param fkrel [output] foreign-key relation
  * @param pkrel [input] primary-key relation
- * @param num_tuples 
- * 
- * @return 
+ * @param num_tuples
+ *
+ * @return
  */
 int
 create_relation_fk_from_pk(relation_t *fkrel, relation_t *pkrel,
@@ -503,4 +584,250 @@ create_relation_zipf(relation_t *relation, int64_t num_tuples,
 
     /* write_relation(relation, "S128M-skew1.tbl"); */
     return 0;
+}
+
+// for string delimiter
+vector<string> split(string s, string delimiter) {
+    size_t pos_start = 0, pos_end, delim_len = delimiter.length();
+    string token;
+    vector<string> res;
+
+    while ((pos_end = s.find(delimiter, pos_start)) != string::npos) {
+        token = s.substr(pos_start, pos_end - pos_start);
+        pos_start = pos_end + delim_len;
+        res.push_back(token);
+    }
+
+    res.push_back(s.substr(pos_start));
+    return res;
+}
+
+void
+read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t tsKey, char *filename) {
+    FILE *fp = fopen(filename, "r");
+
+    /* skip the header line */
+    char c;
+    do {
+        c = fgetc(fp);
+    } while (c != '\n');
+
+    /* search for a whitespace for "key payload" format */
+    int fmtspace = 0;
+    int fmtcomma = 0;
+    int fmtbar = 0;
+    do {
+        c = fgetc(fp);
+//        if (c == ' ') {
+//            fmtspace = 1;
+//            break;
+//        }
+        if (c == ',') {
+            fmtcomma = 1;
+            break;
+        }
+        if (c == '|') {
+            fmtbar = 1;
+            break;
+        }
+    } while (c != '\n');
+
+    char *line;
+    size_t len;
+    ssize_t read;
+
+    /* rewind back to the beginning and start parsing again */
+    rewind(fp);
+    /* skip the header line */
+    do {
+        c = fgetc(fp);
+    } while (c != '\n');
+
+    uint64_t ntuples = rel->num_tuples;
+    intkey_t key;
+    table_t row = table_t();
+    milliseconds timestamp = (milliseconds) 0;
+
+    // add a index field, here payload is index field, row is real payload
+    int32_t payload = 0;
+
+    int warn = 1;
+
+    int i = 0;
+
+    while ((read = getline(&line, &len, fp)) != -1 && i < ntuples) {
+//        printf("Retrieved line of length %zu:\n", read);
+//        printf("%s", line);
+        if (fmtcomma) {
+            key = stoi(split(line, ",")[keyby]);
+            strcpy(row.value, line);
+            payload = i;
+            if (tsKey != 0) {
+                timestamp = (milliseconds) stol(split(line, ",")[tsKey]);
+//                printf("%lld \n", timestamp);
+            }
+        } else if (fmtbar) {
+            key = stoi(split(line, "|")[keyby]);
+            strcpy(row.value, line);
+            payload = i;
+            if (tsKey != 0) {
+                timestamp = (milliseconds) stol(split(line, "|")[tsKey]);
+//                printf("%lld \n", timestamp);
+            }
+        } else {
+            printf("error!!\n");
+            return;
+        }
+
+        rel->tuples[i].key = key;
+        rel->tuples[i].payloadID = payload;
+//        relPl->rows[i] = row;
+        relPl->ts[i] = timestamp;
+        i++;
+
+#ifdef DEBUG
+        if(i%1000==0){
+            printf("I have read %d tuples \n", i);
+        }
+#endif
+    }
+    fclose(fp);
+}
+
+int
+load_relation(relation_t *relation, relation_payload_t *relation_payload, int32_t keyby, int32_t tsKey, char *filename,
+              uint64_t num_tuples) {
+    relation->num_tuples = num_tuples;
+
+    /* we need aligned allocation of items */
+    relation->tuples = (tuple_t *) MALLOC(num_tuples * sizeof(tuple_t));
+
+    relation_payload->num_tuples = num_tuples;
+//    relation_payload->rows = (table_t *) MALLOC(num_tuples * sizeof(table_t));
+
+    if (!relation->tuples /*|| !relation_payload->rows*/) {
+//    if (!relation->tuples) {
+        perror("out of memory");
+        return -1;
+    }
+
+    /* load from the given input file */
+    read_relation(relation, relation_payload, keyby, tsKey, filename);
+
+    return 0;
+}
+
+int
+parallel_create_relation_with_ts(relation_t *relation, relation_payload_t *relationPayload, uint64_t num_tuples,
+                                 uint32_t nthreads, uint64_t maxid, int step_size, int interval) {
+    int rv;
+    uint32_t i;
+    uint64_t offset = 0;
+
+    check_seed();
+
+    relation->num_tuples = num_tuples;
+
+
+    if (!relation->tuples) {
+        perror("memory must be allocated first");
+        return -1;
+    }
+
+    create_arg_t args[nthreads];
+    pthread_t tid[nthreads];
+    cpu_set_t set;
+    pthread_attr_t attr;
+    pthread_barrier_t barrier;
+
+    unsigned int pagesize;
+    unsigned int npages;
+    unsigned int npages_perthr;
+    uint64_t ntuples_perthr;
+    uint64_t ntuples_lastthr;
+
+    pagesize = getpagesize();
+    npages = (num_tuples * sizeof(tuple_t)) / pagesize + 1;
+    npages_perthr = npages / nthreads;
+    ntuples_perthr = npages_perthr * (pagesize / sizeof(tuple_t));
+
+    if (npages_perthr == 0)
+        ntuples_perthr = num_tuples / nthreads;
+
+    ntuples_lastthr = num_tuples - ntuples_perthr * (nthreads - 1);
+    pthread_attr_init(&attr);
+
+    rv = pthread_barrier_init(&barrier, NULL, nthreads);
+    if (rv != 0) {
+        printf("[ERROR] Couldn't create the barrier\n");
+        exit(EXIT_FAILURE);
+    }
+
+
+    volatile void *locks = (volatile void *) calloc(num_tuples, sizeof(char));
+
+    for (i = 0; i < nthreads; i++) {
+        int cpu_idx = get_cpu_id(i);
+        CPU_ZERO(&set);
+        CPU_SET(cpu_idx, &set);
+        rv = pthread_attr_setaffinity_np(&attr, sizeof(cpu_set_t), &set);
+        if (rv) {
+            fprintf(stderr, "[ERROR] set affinity error return code is %d\n", rv);
+            exit(-1);
+        }
+        args[i].firstkey = (offset + 1) % maxid;
+        args[i].maxid = maxid;
+        args[i].rel.tuples = relation->tuples + offset;
+        args[i].rel.num_tuples = (i == nthreads - 1) ? ntuples_lastthr
+                                                     : ntuples_perthr;
+        args[i].offset = offset;
+        args[i].fullrel = relation;
+        args[i].locks = locks;
+        args[i].barrier = &barrier;
+
+        offset += ntuples_perthr;
+
+        rv |= pthread_create(&tid[i], &attr, random_unique_gen_thread,
+                             (void *) &args[i]);
+        if (rv) {
+            fprintf(stderr, "[ERROR] pthread_create() return code is %d\n", rv);
+            exit(-1);
+        }
+    }
+
+    for (i = 0; i < nthreads; i++) {
+        pthread_join(tid[i], NULL);
+    }
+
+    /* randomly shuffle elements */
+    /* knuth_shuffle(relation); */
+
+    /* clean up */
+    free((char *) locks);
+    pthread_barrier_destroy(&barrier);
+
+#ifdef PERSIST_RELATIONS
+    fprintf(stdout, "writing out relations\n");
+    char * const tables[] = {"R.tbl", "S.tbl"};
+    static int rs = 0;
+    write_relation(relation, tables[(rs++)%2]);
+#endif
+
+    add_ts(relation, relationPayload, step_size, interval, nthreads);
+
+//    add_zipf_ts(relation, relationPayload, num_tuples/step_size*interval, nthreads, 1);
+
+    return 0;
+}
+
+void
+delete_relation(relation_t *rel) {
+    /* clean up */
+    FREE(rel->tuples, rel->num_tuples * sizeof(tuple_t));
+}
+
+void
+delete_relation_payload(relation_payload_t *relPl) {
+    /* clean up */
+    FREE(relPl->ts, relPl->num_tuples * sizeof(table_t));
 }

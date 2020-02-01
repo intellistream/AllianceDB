@@ -24,6 +24,8 @@
 #include <unistd.h>             /* getpagesize() */
 #include <string.h>             /* memcpy() */
 #include <stdint.h>
+#include <chrono>
+using namespace std::chrono;
 
 /** 
  * @defgroup DataGeneration Data Set Generation
@@ -119,6 +121,29 @@ write_relation(relation_t * rel, char * filename);
  */
 void
 knuth_shuffle(relation_t * relation);
+
+/** Load a relation from given file name */
+int
+load_relation(relation_t *relation, relation_payload_t* relation_payload, int32_t keyby, int32_t tsKey, char *filename, uint64_t num_tuples);
+
+int
+parallel_create_relation_with_ts(relation_t *relation, relation_payload_t *relationPayload, uint64_t num_tuples,
+                                 uint32_t nthreads, uint64_t maxid, int step_size, int interval);
+
+/**
+ * Free memory allocated for only tuples.
+ */
+void
+delete_relation(relation_t *reln);
+
+void
+delete_relation_payload(relation_payload_t *relPl);
+
+void
+add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_size, int interval, int numThr);
+
+void add_zipf_ts(relation_t *relation, relation_payload_t *relationPayload,
+                 int window_size, int numThr, const double zipf_param);
 
 /** @} */
 

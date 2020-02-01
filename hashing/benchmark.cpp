@@ -40,7 +40,7 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int
     numalocalize = cmd_params.basic_numa;
     nthreads = cmd_params.nthreads;
 
-    if (cmd_params.gen_with_ts) {
+    if (cmd_params.kim) {
         // calculate num of tuples by params
         if (cmd_params.step_size < nthreads) {
             perror("step size should be bigger than the number of threads!");
@@ -153,10 +153,12 @@ benchmark(const param_t cmd_params) {
     createRelation(&relS, relS.payload, cmd_params.skey, cmd_params.sts, cmd_params, cmd_params.loadfileS,
                    cmd_params.s_size,
                    cmd_params.s_seed);
-//    DEBUGMSG("relS [aligned:%d]: %s", is_aligned(relS.tuples, CACHE_LINE_SIZE),
-//             print_relation(relS.tuples, max((uint64_t) 1000, cmd_params.s_size)).c_str())
+    DEBUGMSG("relS [aligned:%d]: %s", is_aligned(relS.tuples, CACHE_LINE_SIZE),
+             print_relation(relS.tuples, max((uint64_t) 1000, cmd_params.s_size)).c_str())
 
     // TODO: Execute query with dataset, need to submit a join function
+
+    string path = "/data1/xtra/datasets/Kim/data_distribution_zipf" + std::to_string(cmd_params.zipf_param) + ".txt";
 
     /* Run the selected join algorithm */
     printf("[INFO ] Running join algorithm %s ...\n", cmd_params.algo->name);
