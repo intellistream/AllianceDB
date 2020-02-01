@@ -349,6 +349,9 @@ $ cat cpu-mapping.txt
 #endif
 
 #include "config.h"          /* autoconf header */
+#include <chrono>
+
+using namespace std::chrono;
 
 /** Debug msg logging method */
 #ifdef DEBUG
@@ -394,7 +397,6 @@ struct cmdparam_t {
     uint32_t nthreads;
     uint32_t r_seed;
     uint32_t s_seed;
-    double skew;
     int nonunique_keys;  /* non-unique keys allowed? */
     int verbose;
     int fullrange_keys;  /* keys covers full int range? */
@@ -409,6 +411,31 @@ struct cmdparam_t {
     int mwaymerge_bufsize;
     /* NUMA data shuffling strategy */
     enum numa_strategy_t numastrategy;
+
+    /** if the relations are load from file */
+    char *loadfileR;
+    char *loadfileS;
+
+    int32_t rkey;
+    int32_t skey;
+
+    int32_t rts;
+    int32_t sts;
+
+    int gen_with_ts; /* timestamps as payload */
+
+    int kim;
+    int key_distribution;
+    int ts_distribution;
+    double skew;
+    double zipf_param;
+
+    int window_size;
+    int step_size;
+    int interval;
+
+    int exp_id;
+
 };
 
 extern char *optarg;
@@ -449,11 +476,87 @@ int check_avx() {
     return 1; /* has AVX support! */
 }
 
+void
+createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int32_t tsKey, const cmdparam_t &cmd_params,
+               char *loadfile, uint64_t rel_size, uint32_t seed) {
+    seed_generator(seed);
+    /* to pass information to the create_relation methods */
+    auto nthreads = cmd_params.nthreads;
+
+    if (cmd_params.kim) {
+        // calculate num of tuples by params
+        if (cmd_params.step_size < nthreads) {
+            perror("step size should be bigger than the number of threads!");
+            return;
+        }
+        rel->num_tuples = (cmd_params.window_size / cmd_params.interval) * cmd_params.step_size;
+        rel_size = rel->num_tuples;
+        relPl->num_tuples = rel->num_tuples;
+    } else {
+        /** first allocate the memory for relations (+ padding based on numthreads) : */
+        rel->num_tuples = cmd_params.r_size;
+        relPl->num_tuples = rel->num_tuples;
+    }
+
+    fprintf(stdout,
+            "[INFO ] %s relation with size = %.3lf MiB, #tuples = %llu : ",
+            (loadfile != NULL) ? ("Loading") : ("Creating"),
+            (double) sizeof(tuple_t) * rel_size / 1024.0 / 1024.0, rel_size);
+    fflush(stdout);
+
+    rel->tuples = (tuple_t *) MALLOC(rel->num_tuples * sizeof(tuple_t));
+
+    relPl->ts = (milliseconds *) MALLOC(relPl->num_tuples * sizeof(tuple_t));
+
+    if (loadfile != NULL && loadfile != "") {
+        /* load relation from file */
+        load_relation(rel, relPl, key, tsKey, loadfile, rel_size);
+    } else if (cmd_params.kim) {
+        // check params 1, window_size, 2. step_size, 3. interval, 4. distribution, 5. zipf factor, 6. nthreads
+        switch (cmd_params.key_distribution) {
+            case 0: // unique
+                parallel_create_relation_with_ts(rel, relPl, rel->num_tuples, nthreads, rel->num_tuples,
+                                                 cmd_params.step_size, cmd_params.interval);
+                break;
+            case 2: // zipf with zipf factor
+                create_relation_zipf(rel, rel_size, cmd_params.window_size, cmd_params.skew);
+                break;
+            default:
+                break;
+        }
+        switch (cmd_params.ts_distribution) {
+            case 0: // uniform
+                add_ts(rel, relPl, cmd_params.step_size, cmd_params.interval, nthreads);
+                break;
+            case 2: // zipf
+                add_zipf_ts(rel, relPl, cmd_params.window_size, nthreads, cmd_params.zipf_param);
+                break;
+            default:
+                break;
+        }
+    } else {
+        //create_relation_pk(&rel, rel_size);
+        parallel_create_relation(rel, rel_size,
+                                 nthreads,
+                                 rel_size);
+        add_ts(rel, relPl, cmd_params.step_size, 0, nthreads);
+    }
+
+//    fprintf(stdout, "relS : %s", print_relation(rel->tuples, max((uint64_t) 1000, cmd_params.s_size)).c_str());
+
+    printf("OK \n");
+}
+
+
 int
 main(int argc, char *argv[]) {
     struct timeval start, end;
     relation_t relR;
     relation_t relS;
+
+    relR.payload = new relation_payload_t();
+    relS.payload = new relation_payload_t();
+
 
     /* start initially on CPU-0 */
     cpu_set_t set;
@@ -486,6 +589,23 @@ main(int argc, char *argv[]) {
     cmd_params.no_numa = 0;
     cmd_params.scalar_sort = 0;
     cmd_params.scalar_merge = 0;
+
+
+    cmd_params.loadfileR = NULL;
+    cmd_params.loadfileS = NULL;
+    cmd_params.rkey = 0;
+    cmd_params.skey = 0;
+
+    cmd_params.gen_with_ts = 0;
+    cmd_params.window_size = 10000;
+    cmd_params.step_size = 40;
+    cmd_params.interval = 1000;
+    cmd_params.kim = 0;
+    cmd_params.key_distribution = 0;
+    cmd_params.ts_distribution = 0;
+    cmd_params.zipf_param = 0.0;
+    cmd_params.exp_id = 0;
+
     /* TODO: get L3 buffer size programmatically. */
     cmd_params.mwaymerge_bufsize = MWAY_MERGE_BUFFER_SIZE_DEFAULT;
 
@@ -503,88 +623,96 @@ main(int argc, char *argv[]) {
     PCM_OUT    = cmd_params.perfout;
 #endif
 
-    /***** create relation R *****/
-    fprintf(stdout,
-            "[INFO ] Creating relation R with size = %.3lf MiB, #tuples = %lld : ",
-            (double) sizeof(tuple_t) * cmd_params.r_size / (1024.0 * 1024.0),
-            cmd_params.r_size);
-    fflush(stdout);
+//    /***** create relation R *****/
+//    fprintf(stdout,
+//            "[INFO ] Creating relation R with size = %.3lf MiB, #tuples = %lld : ",
+//            (double) sizeof(tuple_t) * cmd_params.r_size / (1024.0 * 1024.0),
+//            cmd_params.r_size);
+//    fflush(stdout);
 
     seed_generator(cmd_params.r_seed);
 
-    /* whether to localize input relations in a NUMA-aware manner */
-    int nonumalocalize = cmd_params.no_numa;
+//    /* whether to localize input relations in a NUMA-aware manner */
+//    int nonumalocalize = cmd_params.no_numa;
+//
+//    /** first allocate the memory for relations (+ padding based on numthreads) : */
+//    /******* Relation R ********/
+//    relR.num_tuples = cmd_params.r_size;
+//    size_t relRsz = relR.num_tuples * sizeof(tuple_t)
+//                    + RELATION_PADDING(cmd_params.nthreads, cmd_params.part_fanout);
+//    relR.tuples = (tuple_t *) malloc_aligned(relRsz);
+//    /* if there is a need NUMA-localize the input: */
+//    if (!nonumalocalize) {
+//        numa_localize(relR.tuples, relR.num_tuples, cmd_params.nthreads);
+//    }
+//    /******* Relation S ********/
+//    relS.num_tuples = cmd_params.s_size;
+//    size_t relSsz = relS.num_tuples * sizeof(tuple_t)
+//                    + RELATION_PADDING(cmd_params.nthreads, cmd_params.part_fanout);
+//    relS.tuples = (tuple_t *) malloc_aligned(relSsz);
+//    /* NUMA-localize the input: */
+//    if (!nonumalocalize) {
+//        numa_localize(relS.tuples, relS.num_tuples, cmd_params.nthreads);
+//    }
+//
+//    gettimeofday(&start, NULL);
+//    if (cmd_params.fullrange_keys) {
+//        create_relation_nonunique(&relR, cmd_params.r_size, INT_MAX);
+//    } else if (cmd_params.nonunique_keys) {
+//        create_relation_nonunique(&relR, cmd_params.r_size, cmd_params.r_size);
+//    } else {
+//        parallel_create_relation(&relR, cmd_params.r_size,
+//                                 cmd_params.nthreads, cmd_params.r_size);
+//        /* create_relation_pk(&relR, cmd_params.r_size); */
+//    }
+//    gettimeofday(&end, NULL);
+//    fprintf(stdout, "OK \n");
+//    fprintf(stdout, "[INFO ] Time: ");
+//    print_timing(cmd_params.r_size, &start, &end, stdout);
+//    fprintf(stdout, "\n");
+//
+//    /***** create relation S *****/
+//    fprintf(stdout,
+//            "[INFO ] Creating relation S with size = %.3lf MiB, #tuples = %lld : ",
+//            (double) sizeof(tuple_t) * cmd_params.s_size / 1024.0 / 1024.0,
+//            cmd_params.s_size);
+//    fflush(stdout);
 
-    /** first allocate the memory for relations (+ padding based on numthreads) : */
-    /******* Relation R ********/
-    relR.num_tuples = cmd_params.r_size;
-    size_t relRsz = relR.num_tuples * sizeof(tuple_t)
-                    + RELATION_PADDING(cmd_params.nthreads, cmd_params.part_fanout);
-    relR.tuples = (tuple_t *) malloc_aligned(relRsz);
-    /* if there is a need NUMA-localize the input: */
-    if (!nonumalocalize) {
-        numa_localize(relR.tuples, relR.num_tuples, cmd_params.nthreads);
-    }
-    /******* Relation S ********/
-    relS.num_tuples = cmd_params.s_size;
-    size_t relSsz = relS.num_tuples * sizeof(tuple_t)
-                    + RELATION_PADDING(cmd_params.nthreads, cmd_params.part_fanout);
-    relS.tuples = (tuple_t *) malloc_aligned(relSsz);
-    /* NUMA-localize the input: */
-    if (!nonumalocalize) {
-        numa_localize(relS.tuples, relS.num_tuples, cmd_params.nthreads);
-    }
+    createRelation(&relR, relR.payload, cmd_params.rkey, cmd_params.rts, cmd_params, cmd_params.loadfileR,
+                   cmd_params.r_size,
+                   cmd_params.r_seed);
 
-    gettimeofday(&start, NULL);
-    if (cmd_params.fullrange_keys) {
-        create_relation_nonunique(&relR, cmd_params.r_size, INT_MAX);
-    } else if (cmd_params.nonunique_keys) {
-        create_relation_nonunique(&relR, cmd_params.r_size, cmd_params.r_size);
-    } else {
-        parallel_create_relation(&relR, cmd_params.r_size,
-                                 cmd_params.nthreads, cmd_params.r_size);
-        /* create_relation_pk(&relR, cmd_params.r_size); */
-    }
-    gettimeofday(&end, NULL);
-    fprintf(stdout, "OK \n");
-    fprintf(stdout, "[INFO ] Time: ");
-    print_timing(cmd_params.r_size, &start, &end, stdout);
-    fprintf(stdout, "\n");
+//    seed_generator(cmd_params.s_seed);
+//
+//    gettimeofday(&start, NULL);
+//    if (cmd_params.fullrange_keys) {
+//        create_relation_fk_from_pk(&relS, &relR, cmd_params.s_size);
+//    } else if (cmd_params.nonunique_keys) {
+//        /* use size of R as the maxid */
+//        create_relation_nonunique(&relS, cmd_params.s_size, cmd_params.r_size);
+//    } else {
+//        /* if r_size == s_size then equal-dataset, else non-equal dataset */
+//
+//        if (cmd_params.skew > 0) {
+//            /* S is skewed */
+//            create_relation_zipf(&relS, cmd_params.s_size,
+//                                 cmd_params.r_size, cmd_params.skew);
+//        } else {
+//            /* S is uniform foreign key */
+//            parallel_create_relation(&relS, cmd_params.s_size,
+//                                     cmd_params.nthreads, cmd_params.r_size);
+//            /* create_relation_pk(&relS, cmd_params.s_size); */
+//        }
+//    }
+//    gettimeofday(&end, NULL);
+//    fprintf(stdout, "OK \n");
+//    fprintf(stdout, "[INFO ] Time: ");
+//    print_timing(cmd_params.s_size, &start, &end, stdout);
+//    fprintf(stdout, "\n");
 
-    /***** create relation S *****/
-    fprintf(stdout,
-            "[INFO ] Creating relation S with size = %.3lf MiB, #tuples = %lld : ",
-            (double) sizeof(tuple_t) * cmd_params.s_size / 1024.0 / 1024.0,
-            cmd_params.s_size);
-    fflush(stdout);
-
-    seed_generator(cmd_params.s_seed);
-
-    gettimeofday(&start, NULL);
-    if (cmd_params.fullrange_keys) {
-        create_relation_fk_from_pk(&relS, &relR, cmd_params.s_size);
-    } else if (cmd_params.nonunique_keys) {
-        /* use size of R as the maxid */
-        create_relation_nonunique(&relS, cmd_params.s_size, cmd_params.r_size);
-    } else {
-        /* if r_size == s_size then equal-dataset, else non-equal dataset */
-
-        if (cmd_params.skew > 0) {
-            /* S is skewed */
-            create_relation_zipf(&relS, cmd_params.s_size,
-                                 cmd_params.r_size, cmd_params.skew);
-        } else {
-            /* S is uniform foreign key */
-            parallel_create_relation(&relS, cmd_params.s_size,
-                                     cmd_params.nthreads, cmd_params.r_size);
-            /* create_relation_pk(&relS, cmd_params.s_size); */
-        }
-    }
-    gettimeofday(&end, NULL);
-    fprintf(stdout, "OK \n");
-    fprintf(stdout, "[INFO ] Time: ");
-    print_timing(cmd_params.s_size, &start, &end, stdout);
-    fprintf(stdout, "\n");
+    createRelation(&relS, relS.payload, cmd_params.skey, cmd_params.sts, cmd_params, cmd_params.loadfileS,
+                   cmd_params.s_size,
+                   cmd_params.s_seed);
 
     /* setup join configuration parameters */
     joinconfig_t joincfg;
@@ -613,9 +741,9 @@ main(int argc, char *argv[]) {
 #endif
 
 
-    /* cleanup */
-    free(relR.tuples);
-    free(relS.tuples);
+//    /* cleanup */
+//    free(relR.tuples);
+//    free(relS.tuples);
 
 #ifdef JOIN_MATERIALIZE
     if(result != NULL){
@@ -630,6 +758,12 @@ main(int argc, char *argv[]) {
         free(result);
     }
     cpu_mapping_cleanup();
+
+    delete_relation(&relR);
+    delete_relation(&relS);
+    delete_relation_payload(relR.payload);
+    delete_relation_payload(relS.payload);
+
 
     return 0;
 }
@@ -736,14 +870,29 @@ parse_args(int argc, char **argv, cmdparam_t *cmd_params) {
                         {"skew",             required_argument, 0,               'z'},
                         /* partitioning fanout, e.g., 2^rdxbits */
                         {"partfanout",       required_argument, 0,               'f'},
-                        {"numastrategy",     required_argument, 0,               'S'},
+                        {"numastrategy",     required_argument, 0,               'N'},
                         {"mwaybufsize",      required_argument, 0,               'm'},
+                        {"r-file",           required_argument, 0,               'R'},
+                        {"s-file",           required_argument, 0,               'S'},
+                        {"r-key",            required_argument, 0,               'J'},
+                        {"s-key",            required_argument, 0,               'K'},
+                        {"r-ts",             required_argument, 0,               'L'},
+                        {"s-ts",             required_argument, 0,               'M'},
+                        {"gen-with-ts",      required_argument, 0,               't'},
+                        {"window-size",      required_argument, 0,               'w'},
+                        {"step-size",        required_argument, 0,               'e'},
+                        {"interval",         required_argument, 0,               'l'},
+                        {"key_distribution", required_argument, 0,               'd'},
+                        {"zipf_param",       required_argument, 0,               'Z'},
+                        {"exp_id",           required_argument, 0,               'I'},
+                        {"ts_distribution",  required_argument, 0,               'D'},
                         {0, 0,                                  0,               0}
                 };
         /* getopt_long stores the option index here. */
         int option_index = 0;
 
-        c = getopt_long(argc, argv, "a:n:p:r:s:o:x:y:z:hvf:m:S:",
+//        c = getopt_long(argc, argv, "a:n:p:r:s:o:x:y:z:hvf:m:S:",
+        c = getopt_long(argc, argv, "R:S:J:K:L:M:t:w:e:l:I:d:Z:D:a:n:p:r:s:o:x:y:z:hvf:m:N:",
                         long_options, &option_index);
 
         /* Detect the end of the options. */
@@ -839,7 +988,7 @@ parse_args(int argc, char **argv, cmdparam_t *cmd_params) {
                 cmd_params->mwaymerge_bufsize = atoi(optarg);
                 break;
 
-            case 'S':
+            case 'N':
                 if (strcmp(optarg, "NEXT") == 0)
                     cmd_params->numastrategy = NEXT;
                 else if (strcmp(optarg, "RANDOM") == 0)
@@ -851,7 +1000,48 @@ parse_args(int argc, char **argv, cmdparam_t *cmd_params) {
                     printf("Using RING as default.\n");
                 }
                 break;
+            case 'R':
+                cmd_params->loadfileR = mystrdup(optarg);
+                break;
 
+            case 'S':
+                cmd_params->loadfileS = mystrdup(optarg);
+                break;
+            case 'J':
+                cmd_params->rkey = atoi(mystrdup(optarg));
+                break;
+            case 'K':
+                cmd_params->skey = atoi(mystrdup(optarg));
+                break;
+            case 'L':
+                cmd_params->rts = atoi(mystrdup(optarg));
+                break;
+            case 'M':
+                cmd_params->sts = atoi(mystrdup(optarg));
+                break;
+            case 't':
+                cmd_params->kim = atoi(mystrdup(optarg));
+                break;
+            case 'w':
+                cmd_params->window_size = atoi(mystrdup(optarg));
+                break;
+            case 'e':
+                cmd_params->step_size = atoi(mystrdup(optarg));
+                break;
+            case 'l':
+                cmd_params->interval = atoi(mystrdup(optarg));
+                break;
+            case 'd':
+                cmd_params->key_distribution = atoi(mystrdup(optarg));
+                break;
+            case 'D':
+                cmd_params->ts_distribution = atoi(mystrdup(optarg));
+                break;
+            case 'Z':
+                cmd_params->zipf_param = atof(optarg);
+                break;
+            case 'I':
+                cmd_params->exp_id = atoi(mystrdup(optarg));
             default:
                 break;
         }

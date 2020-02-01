@@ -1,24 +1,35 @@
 /**
- * @file   types.h
- * @author Cagri Balkesen <cagri.balkesen@inf.ethz.ch>
- * @date   Tue May 22 16:43:30 2012
+ * @file    types.h
+ * @author  Cagri Balkesen <cagri.balkesen@inf.ethz.ch>
+ * @date    Tue May 22 16:43:30 2012
+ * @version $Id: types.h 4419 2013-10-21 16:24:35Z bcagri $
  *
  * @brief  Provides general type definitions used by all join algorithms.
  *
- * (c) 2014, ETH Zurich, Systems Group
  *
  */
 #ifndef TYPES_H
 #define TYPES_H
 
 #include <stdint.h>
-#include <inttypes.h>
+#include <vector>
+#include <iostream>
+#include <sstream>
+#include <chrono>
+
+using namespace std;
 
 /**
  * @defgroup Types Common Types
  * Common type definitions used by all join implementations.
  * @{
  */
+
+struct table_t {
+//    int32_t value;
+//    char value[256];
+    char value[10240];
+};
 
 #ifdef KEY_8B /* 64-bit key/payload, 16B tuples */
 typedef int64_t intkey_t;
@@ -40,6 +51,7 @@ typedef int32_t value_t;
 
 typedef struct tuple_t    tuple_t;
 typedef struct relation_t relation_t;
+typedef struct relation_payload_t relation_payload_t;
 typedef struct result_t result_t;
 typedef struct threadresult_t threadresult_t;
 typedef struct joinconfig_t joinconfig_t;
@@ -49,8 +61,10 @@ typedef struct joinconfig_t joinconfig_t;
  * @note this layout is chosen as a work-around for AVX double operations.
  */
 struct tuple_t {
-    value_t  payload;
-    intkey_t key;
+//    value_t  payload;
+//    intkey_t key;
+    value_t payload;//TODO: make sure payload is simply the id of the tuple.
+    intkey_t key;//little end, lowest is the most significant bit.
 };
 
 
@@ -61,8 +75,16 @@ struct tuple_t {
 struct relation_t {
     tuple_t * tuples;
     uint64_t  num_tuples;
+    relation_payload_t *payload;
 };
 
+// add a new structure to save real payload, let original payload be index of this struct
+struct relation_payload_t {
+//    time_t *ts;//add timestamp for each tuple in the relation.
+    std::chrono::milliseconds *ts;//add timestamp for each tuple in the relation.
+//    table_t *rows;
+    uint64_t num_tuples;
+};
 
 /** Holds the join results of a thread */
 struct threadresult_t {

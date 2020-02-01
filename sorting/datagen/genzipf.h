@@ -28,4 +28,5 @@ gen_zipf_ts(unsigned int stream_size,
             unsigned int alphabet_size,
             double zipf_factor);
 
+
 #endif  /* GENZIPF_H */
