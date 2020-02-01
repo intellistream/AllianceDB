@@ -3,6 +3,7 @@
 
 #include "avx_multiwaymerge.h"
 #include "avxcommon.h"
+#include "../affinity/memalloc.h"
 
 /* just make the code compile without AVX support */
 #ifndef HAVE_AVX
@@ -16,7 +17,7 @@
 
 typedef struct merge_node_t merge_node_t;
 struct merge_node_t {
-    tuple_t * buffer;
+    tuple_t *buffer;
     volatile uint32_t count;
     volatile uint32_t head;
     volatile uint32_t tail;
@@ -30,8 +31,7 @@ static int check_merge_node_sorted(merge_node_t * node, uint32_t fifosize);
 #endif
 
 static inline int
-min(int x, int y)
-{
+min(int x, int y) {
     return ((x < y) ? x : y);
 }
 
@@ -146,9 +146,9 @@ is_sorted_helper(int64_t * items, uint64_t nitems)
  * @return
  */
 uint32_t
-readmerge_parallel_decomposed(merge_node_t * node,
-                              tuple_t ** inA,
-                              tuple_t ** inB,
+readmerge_parallel_decomposed(merge_node_t *node,
+                              tuple_t **inA,
+                              tuple_t **inB,
                               uint32_t lenA,
                               uint32_t lenB,
                               uint32_t fifosize);
@@ -163,9 +163,9 @@ readmerge_parallel_decomposed(merge_node_t * node,
  * @param done
  */
 void
-merge_parallel_decomposed(merge_node_t * node,
-                          merge_node_t * right,
-                          merge_node_t * left,
+merge_parallel_decomposed(merge_node_t *node,
+                          merge_node_t *right,
+                          merge_node_t *left,
                           uint32_t fifosize,
                           uint8_t rightdone, uint8_t leftdone);
 
@@ -179,9 +179,9 @@ merge_parallel_decomposed(merge_node_t * node,
  * @param fifosize size of the fifo queue
  */
 uint64_t
-mergestore_parallel_decomposed(merge_node_t * right,
-                               merge_node_t * left,
-                               tuple_t ** output,
+mergestore_parallel_decomposed(merge_node_t *right,
+                               merge_node_t *left,
+                               tuple_t **output,
                                uint32_t fifosize,
                                uint8_t rightdone, uint8_t leftdone);
 
@@ -197,54 +197,53 @@ mergestore_parallel_decomposed(merge_node_t * right,
  *            AVX Multi-Way Merge with Ring-Buffer Decomposition               *
  *******************************************************************************/
 uint64_t
-avx_multiway_merge(tuple_t * output,
-                   relation_t ** parts,
+avx_multiway_merge(tuple_t *output,
+                   relation_t **parts,
                    uint32_t nparts,
-                   tuple_t * fifobuffer,
-                   uint32_t bufntuples)
-{
+                   tuple_t *fifobuffer,
+                   uint32_t bufntuples) {
     uint64_t totalmerged = 0;
-    uint32_t nfifos        = nparts-2;
+    uint32_t nfifos = nparts - 2;
     uint32_t totalfifosize = bufntuples - nparts -
                              (nfifos * sizeof(merge_node_t)
                               + nfifos * sizeof(uint8_t)
                               + nparts * sizeof(relation_t)
                               + sizeof(tuple_t) - 1) / sizeof(tuple_t);
 
-    uint32_t      fifosize   = totalfifosize / nfifos;
+    uint32_t fifosize = totalfifosize / nfifos;
     /* align ring-buffer size to be multiple of 64-Bytes */
     /* fifosize = ALIGNDOWN(fifosize); */
     /* totalfifosize = fifosize * nfifos; */
 
-    merge_node_t * nodes      = (merge_node_t *)(fifobuffer + totalfifosize);
-    uint8_t *     done       = (uint8_t *)(nodes + nfifos);
+    merge_node_t *nodes = (merge_node_t *) (fifobuffer + totalfifosize);
+    uint8_t *done = (uint8_t *) (nodes + nfifos);
 
     /* printf("[INFO ] fifosize = %d, totalfifosize = %d tuples, %.2lf KiB\n", */
     /*        fifosize, totalfifosize, totalfifosize*sizeof(tuple_t)/1024.0); */
 
-    for(uint32_t i = 0; i < nfifos; i++) {
+    for (uint32_t i = 0; i < nfifos; i++) {
         nodes[i].buffer = fifobuffer + fifosize * i;
-        nodes[i].count  = 0;
-        nodes[i].head   = 0;
-        nodes[i].tail   = 0;
-        done[i]         = 0;
+        nodes[i].count = 0;
+        nodes[i].head = 0;
+        nodes[i].tail = 0;
+        done[i] = 0;
     }
 
     uint32_t finished = 0;
-    const uint32_t readthreshold = fifosize/2;
+    const uint32_t readthreshold = fifosize / 2;
 
-    while(!finished) {
+    while (!finished) {
         finished = 1;
         int m = nfifos - 1;
 
         /* first iterate through leafs and read as much data as possible */
-        for(uint32_t c = 0; c < nparts; c += 2, m--) {
-            if(!done[m] && (nodes[m].count < readthreshold)) {
+        for (uint32_t c = 0; c < nparts; c += 2, m--) {
+            if (!done[m] && (nodes[m].count < readthreshold)) {
 
                 uint32_t A = c;
                 uint32_t B = c + 1;
-                tuple_t * inA = parts[A]->tuples;
-                tuple_t * inB = parts[B]->tuples;
+                tuple_t *inA = parts[A]->tuples;
+                tuple_t *inB = parts[B]->tuples;
 
                 uint32_t nread;
 
@@ -280,19 +279,19 @@ avx_multiway_merge(tuple_t * output,
         }
 
         /* now iterate inner nodes and do merge for ready nodes */
-        for(; m >= 0; m--) {
-            if(!done[m]) {
-                int r = 2*m+2;
+        for (; m >= 0; m--) {
+            if (!done[m]) {
+                int r = 2 * m + 2;
                 int l = r + 1;
-                merge_node_t * right = &nodes[r];
-                merge_node_t * left  = &nodes[l];
+                merge_node_t *right = &nodes[r];
+                merge_node_t *left = &nodes[l];
 
                 uint8_t children_done = (done[r] | done[l]);
 
-                if((children_done || nodes[m].count < readthreshold)
-                   && nodes[m].count < fifosize) {
-                    if(children_done || (right->count >= readthreshold
-                                         && left->count >= readthreshold)) {
+                if ((children_done || nodes[m].count < readthreshold)
+                    && nodes[m].count < fifosize) {
+                    if (children_done || (right->count >= readthreshold
+                                          && left->count >= readthreshold)) {
 
                         /* if(!check_node_sorted(right, fifosize)) */
                         /*     printf("Right Node not sorted\n"); */
@@ -340,10 +339,9 @@ avx_multiway_merge(tuple_t * output,
 /** This kernel takes two lists from ring buffers that can be linearly merged
     without a modulo operation on indices */
 inline void __attribute__((always_inline))
-merge16kernel(tuple_t * restrict A, tuple_t * restrict B, tuple_t * restrict Out,
-              uint32_t * ri, uint32_t * li, uint32_t * oi, uint32_t * outnslots,
-              uint32_t rend, uint32_t lend)
-{
+merge16kernel(tuple_t *restrict A, tuple_t *restrict B, tuple_t *restrict Out,
+              uint32_t *ri, uint32_t *li, uint32_t *oi, uint32_t *outnslots,
+              uint32_t rend, uint32_t lend) {
     int32_t lenA = rend - *ri, lenB = lend - *li;
     int32_t nslots = *outnslots;
     int32_t remNslots = nslots & 0xF;
@@ -352,16 +350,16 @@ merge16kernel(tuple_t * restrict A, tuple_t * restrict B, tuple_t * restrict Out
     uint32_t rii = *ri, lii = *li, oii = *oi;
     nslots -= remNslots;
 
-    if(nslots > 0 && lenA16 > 16 && lenB16 > 16) {
+    if (nslots > 0 && lenA16 > 16 && lenB16 > 16) {
 
-        register block16 * inA  = (block16 *) A;
-        register block16 * inB  = (block16 *) B;
-        block16 * const    endA = (block16 *) (A + lenA) - 1;
-        block16 * const    endB = (block16 *) (B + lenB) - 1;
+        register block16 *inA = (block16 *) A;
+        register block16 *inB = (block16 *) B;
+        block16 *const endA = (block16 *) (A + lenA) - 1;
+        block16 *const endB = (block16 *) (B + lenB) - 1;
 
-        block16 * outp = (block16 *) Out;
+        block16 *outp = (block16 *) Out;
 
-        register block16 * next = inB;
+        register block16 *next = inB;
 
         __m256d outreg1l1, outreg1l2, outreg1h1, outreg1h2;
         __m256d outreg2l1, outreg2l2, outreg2h1, outreg2h2;
@@ -370,12 +368,12 @@ merge16kernel(tuple_t * restrict A, tuple_t * restrict B, tuple_t * restrict Out
         __m256d regBl1, regBl2, regBh1, regBh2;
 
         LOAD8U(regAl1, regAl2, inA);
-        LOAD8U(regAh1, regAh2, ((block8 *)(inA) + 1));
-        inA ++;
+        LOAD8U(regAh1, regAh2, ((block8 *) (inA) + 1));
+        inA++;
 
         LOAD8U(regBl1, regBl2, inB);
-        LOAD8U(regBh1, regBh2, ((block8 *)(inB) + 1));
-        inB ++;
+        LOAD8U(regBh1, regBh2, ((block8 *) (inB) + 1));
+        inB++;
 
         BITONIC_MERGE16(outreg1l1, outreg1l2, outreg1h1, outreg1h2,
                         outreg2l1, outreg2l2, outreg2h1, outreg2h2,
@@ -384,11 +382,11 @@ merge16kernel(tuple_t * restrict A, tuple_t * restrict B, tuple_t * restrict Out
 
         /* store outreg1 */
         STORE8U(outp, outreg1l1, outreg1l2);
-        STORE8U(((block8 *)outp + 1), outreg1h1, outreg1h2);
+        STORE8U(((block8 *) outp + 1), outreg1h1, outreg1h2);
         nslots -= 16;
-        outp ++;
+        outp++;
 
-        while( nslots > 0 && inA < endA && inB < endB ) {
+        while (nslots > 0 && inA < endA && inB < endB) {
 
             nslots -= 16;
             /** The inline assembly below does exactly the following code: */
@@ -401,7 +399,7 @@ merge16kernel(tuple_t * restrict A, tuple_t * restrict B, tuple_t * restrict Out
             regAh2 = outreg2h2;
 
             LOAD8U(regBl1, regBl2, next);
-            LOAD8U(regBh1, regBh2, ((block8 *)next + 1));
+            LOAD8U(regBh1, regBh2, ((block8 *) next + 1));
 
             BITONIC_MERGE16(outreg1l1, outreg1l2, outreg1h1, outreg1h2,
                             outreg2l1, outreg2l2, outreg2h1, outreg2h2,
@@ -410,56 +408,55 @@ merge16kernel(tuple_t * restrict A, tuple_t * restrict B, tuple_t * restrict Out
 
             /* store outreg1 */
             STORE8U(outp, outreg1l1, outreg1l2);
-            STORE8U(((block8 *)outp + 1), outreg1h1, outreg1h2);
-            outp ++;
+            STORE8U(((block8 *) outp + 1), outreg1h1, outreg1h2);
+            outp++;
         }
 
         {
             /* flush the register to one of the lists */
             int64_t /*tuple_t*/ hireg[4] __attribute__((aligned(32)));
-            _mm256_store_pd ( (double *)hireg, outreg2h2);
+            _mm256_store_pd((double *) hireg, outreg2h2);
 
             /* if(((tuple_t *)inA)->key >= hireg[3].key){*/
-            if(*((int64_t *)inA) >= hireg[3]){
+            if (*((int64_t *) inA) >= hireg[3]) {
                 /* store the last remaining register values to A */
-                inA --;
+                inA--;
                 STORE8U(inA, outreg2l1, outreg2l2);
-                STORE8U(((block8 *)inA + 1), outreg2h1, outreg2h2);
-            }
-            else {
+                STORE8U(((block8 *) inA + 1), outreg2h1, outreg2h2);
+            } else {
                 /* store the last remaining register values to B */
-                inB --;
+                inB--;
                 STORE8U(inB, outreg2l1, outreg2l2);
-                STORE8U(((block8 *)inB + 1), outreg2h1, outreg2h2);
+                STORE8U(((block8 *) inB + 1), outreg2h1, outreg2h2);
             }
         }
 
-        rii = *ri + ((tuple_t *)inA - A);
-        lii = *li + ((tuple_t *)inB - B);
-        oii = *oi + ((tuple_t *)outp - Out);
+        rii = *ri + ((tuple_t *) inA - A);
+        lii = *li + ((tuple_t *) inB - B);
+        oii = *oi + ((tuple_t *) outp - Out);
 
-        A = (tuple_t *)inA;
-        B = (tuple_t *)inB;
-        Out = (tuple_t *)outp;
+        A = (tuple_t *) inA;
+        B = (tuple_t *) inB;
+        Out = (tuple_t *) outp;
     }
     nslots += remNslots;
 
     /* serial-merge */
-    while((nslots > 0 && rii < rend && lii < lend)){
-        tuple_t * in = B;
-        uint32_t cmp = *((int64_t*)A) < *((int64_t*)B);/*(A->key < B->key);*/
+    while ((nslots > 0 && rii < rend && lii < lend)) {
+        tuple_t *in = B;
+        uint32_t cmp = *((int64_t *) A) < *((int64_t *) B);/*(A->key < B->key);*/
         uint32_t notcmp = !cmp;
 
         rii += cmp;
         lii += notcmp;
 
-        if(cmp)
+        if (cmp)
             in = A;
 
-        nslots --;
-        oii ++;
+        nslots--;
+        oii++;
         *Out = *in;
-        Out ++;
+        Out++;
         A += cmp;
         B += notcmp;
     }
@@ -473,10 +470,9 @@ merge16kernel(tuple_t * restrict A, tuple_t * restrict B, tuple_t * restrict Out
 /** This kernel takes two lists from ring buffers that can be linearly merged
     without a modulo operation on indices */
 inline void __attribute__((always_inline))
-merge8kernel(tuple_t * restrict A, tuple_t * restrict B, tuple_t * restrict Out,
-             uint32_t * ri, uint32_t * li, uint32_t * oi, uint32_t * outnslots,
-             uint32_t rend, uint32_t lend)
-{
+merge8kernel(tuple_t *restrict A, tuple_t *restrict B, tuple_t *restrict Out,
+             uint32_t *ri, uint32_t *li, uint32_t *oi, uint32_t *outnslots,
+             uint32_t rend, uint32_t lend) {
     int32_t lenA = rend - *ri, lenB = lend - *li;
     int32_t nslots = *outnslots;
     int32_t remNslots = nslots & 0x7;
@@ -485,16 +481,16 @@ merge8kernel(tuple_t * restrict A, tuple_t * restrict B, tuple_t * restrict Out,
     uint32_t rii = *ri, lii = *li, oii = *oi;
     nslots -= remNslots;
 
-    if(nslots > 0 && lenA8 > 8 && lenB8 > 8) {
+    if (nslots > 0 && lenA8 > 8 && lenB8 > 8) {
 
-        register block8 * inA  = (block8 *) A;
-        register block8 * inB  = (block8 *) B;
-        block8 * const    endA = (block8 *) (A + lenA) - 1;
-        block8 * const    endB = (block8 *) (B + lenB) - 1;
+        register block8 *inA = (block8 *) A;
+        register block8 *inB = (block8 *) B;
+        block8 *const endA = (block8 *) (A + lenA) - 1;
+        block8 *const endB = (block8 *) (B + lenB) - 1;
 
-        block8 * outp = (block8 *) Out;
+        block8 *outp = (block8 *) Out;
 
-        register block8 * next = inB;
+        register block8 *next = inB;
         register __m256d outreg1l, outreg1h;
         register __m256d outreg2l, outreg2h;
 
@@ -504,18 +500,18 @@ merge8kernel(tuple_t * restrict A, tuple_t * restrict B, tuple_t * restrict Out,
         LOAD8U(regAl, regAh, inA);
         LOAD8U(regBl, regBh, next);
 
-        inA ++;
-        inB ++;
+        inA++;
+        inB++;
 
         BITONIC_MERGE8(outreg1l, outreg1h, outreg2l, outreg2h,
                        regAl, regAh, regBl, regBh);
 
         /* store outreg1 */
         STORE8U(outp, outreg1l, outreg1h);
-        outp ++;
+        outp++;
         nslots -= 8;
 
-        while( nslots > 0 && inA < endA && inB < endB ) {
+        while (nslots > 0 && inA < endA && inB < endB) {
 
             nslots -= 8;
             /** The inline assembly below does exactly the following code: */
@@ -531,53 +527,52 @@ merge8kernel(tuple_t * restrict A, tuple_t * restrict B, tuple_t * restrict Out,
 
             /* store outreg1 */
             STORE8U(outp, outreg1l, outreg1h);
-            outp ++;
+            outp++;
         }
 
         {
             /* flush the register to one of the lists */
             int64_t /*tuple_t*/ hireg[4] __attribute__((aligned(32)));
-            _mm256_store_pd ( (double *)hireg, outreg2h);
+            _mm256_store_pd((double *) hireg, outreg2h);
 
             /* if(((tuple_t *)inA)->key >= hireg[3].key){*/
-            if(*((int64_t *)inA) >= hireg[3]){
+            if (*((int64_t *) inA) >= hireg[3]) {
                 /* store the last remaining register values to A */
-                inA --;
+                inA--;
                 STORE8U(inA, outreg2l, outreg2h);
-            }
-            else {
+            } else {
                 /* store the last remaining register values to B */
-                inB --;
+                inB--;
                 STORE8U(inB, outreg2l, outreg2h);
             }
         }
 
-        rii = *ri + ((tuple_t *)inA - A);
-        lii = *li + ((tuple_t *)inB - B);
-        oii = *oi + ((tuple_t *)outp - Out);
+        rii = *ri + ((tuple_t *) inA - A);
+        lii = *li + ((tuple_t *) inB - B);
+        oii = *oi + ((tuple_t *) outp - Out);
 
-        A = (tuple_t *)inA;
-        B = (tuple_t *)inB;
-        Out = (tuple_t *)outp;
+        A = (tuple_t *) inA;
+        B = (tuple_t *) inB;
+        Out = (tuple_t *) outp;
     }
     nslots += remNslots;
 
     /* serial-merge */
-    while((nslots > 0 && rii < rend && lii < lend)){
-        tuple_t * in = B;
-        uint32_t cmp = *((int64_t*)A) < *((int64_t*)B);/*(A->key < B->key);*/
+    while ((nslots > 0 && rii < rend && lii < lend)) {
+        tuple_t *in = B;
+        uint32_t cmp = *((int64_t *) A) < *((int64_t *) B);/*(A->key < B->key);*/
         uint32_t notcmp = !cmp;
 
         rii += cmp;
         lii += notcmp;
 
-        if(cmp)
+        if (cmp)
             in = A;
 
-        nslots --;
-        oii ++;
+        nslots--;
+        oii++;
         *Out = *in;
-        Out ++;
+        Out++;
         A += cmp;
         B += notcmp;
     }
@@ -589,10 +584,9 @@ merge8kernel(tuple_t * restrict A, tuple_t * restrict B, tuple_t * restrict Out,
 }
 
 inline void __attribute__((always_inline))
-parallel_read(tuple_t ** A, tuple_t ** B, tuple_t ** Out,
-              uint32_t * ri, uint32_t * li, uint32_t * oi, uint32_t * outnslots,
-              uint32_t lenA, uint32_t lenB)
-{
+parallel_read(tuple_t **A, tuple_t **B, tuple_t **Out,
+              uint32_t *ri, uint32_t *li, uint32_t *oi, uint32_t *outnslots,
+              uint32_t lenA, uint32_t lenB) {
     uint32_t _ri = *ri, _li = *li, _oi = *oi;
 
     merge16kernel(*A, *B, *Out, ri, li, oi, outnslots, lenA, lenB);
@@ -603,20 +597,19 @@ parallel_read(tuple_t ** A, tuple_t ** B, tuple_t ** Out,
 }
 
 uint32_t
-readmerge_parallel_decomposed(merge_node_t * node,
-                              tuple_t ** inA,
-                              tuple_t ** inB,
+readmerge_parallel_decomposed(merge_node_t *node,
+                              tuple_t **inA,
+                              tuple_t **inB,
                               uint32_t lenA,
                               uint32_t lenB,
-                              uint32_t fifosize)
-{
+                              uint32_t fifosize) {
     uint32_t nodecount = node->count;
-    uint32_t nodehead  = node->head;
-    uint32_t nodetail  = node->tail;
-    tuple_t * Out = node->buffer;
+    uint32_t nodehead = node->head;
+    uint32_t nodetail = node->tail;
+    tuple_t *Out = node->buffer;
 
-    tuple_t * A = *inA;
-    tuple_t * B = *inB;
+    tuple_t *A = *inA;
+    tuple_t *B = *inB;
 
     /* size related variables */
     uint32_t ri = 0, li = 0, outnslots;
@@ -624,10 +617,9 @@ readmerge_parallel_decomposed(merge_node_t * node,
     uint32_t oi = nodetail, oend;
     uint32_t oi2 = 0, oend2 = 0;
 
-    if(nodehead > nodetail) {
+    if (nodehead > nodetail) {
         oend = nodehead;
-    }
-    else {
+    } else {
         oend = fifosize;
         oi2 = 0;
         oend2 = nodehead;
@@ -644,7 +636,7 @@ readmerge_parallel_decomposed(merge_node_t * node,
     nodecount += (oi - nodetail);
     nodetail = ((oi == fifosize) ? 0 : oi);
 
-    if(outnslots == 0 && oend2 != 0) {
+    if (outnslots == 0 && oend2 != 0) {
         outnslots = oend2 - oi2;
         Out = node->buffer;
 
@@ -657,68 +649,67 @@ readmerge_parallel_decomposed(merge_node_t * node,
         nodetail = ((oi2 == fifosize) ? 0 : oi2);
     }
 
-    if(nodecount < fifosize) {
+    if (nodecount < fifosize) {
         outnslots = fifosize - nodecount;
         oi = nodetail;
         oend = (nodetail + outnslots);
-        if(oend > fifosize)
+        if (oend > fifosize)
             oend = fifosize;
         outnslots = oend - oi;
 
-        if(ri < lenA) {
-            do{
-                while( outnslots > 0 && ri < lenA ) {
-                    outnslots --;
-                    oi ++;
+        if (ri < lenA) {
+            do {
+                while (outnslots > 0 && ri < lenA) {
+                    outnslots--;
+                    oi++;
                     *Out = *A;
-                    ri ++;
+                    ri++;
                     A++;
                     Out++;
-                    nodecount ++;
-                    nodetail ++;
+                    nodecount++;
+                    nodetail++;
                 }
 
-                if(oi == oend) {
+                if (oi == oend) {
                     oi = 0;
                     oend = nodehead;
-                    if(nodetail >= fifosize){
+                    if (nodetail >= fifosize) {
                         nodetail = 0;
                         Out = node->buffer;
                     }
                     outnslots = oend - oi;
                 }
 
-            } while(nodecount < fifosize && ri < lenA);
-        }
-        else if(li < lenB) {
-            do{
-                while( outnslots > 0 && li < lenB ) {
-                    outnslots --;
-                    oi ++;
+            } while (nodecount < fifosize && ri < lenA);
+        } else if (li < lenB) {
+            do {
+                while (outnslots > 0 && li < lenB) {
+                    outnslots--;
+                    oi++;
                     *Out = *B;
-                    li ++;
+                    li++;
                     B++;
                     Out++;
-                    nodecount ++;
-                    nodetail ++;
+                    nodecount++;
+                    nodetail++;
                 }
 
-                if(oi == oend) {
+                if (oi == oend) {
                     oi = 0;
                     oend = nodehead;
-                    if(nodetail >= fifosize){
+                    if (nodetail >= fifosize) {
                         nodetail = 0;
                         Out = node->buffer;
                     }
                     outnslots = oend - oi;
                 }
-            } while(nodecount < fifosize && li < lenB);
+            } while (nodecount < fifosize && li < lenB);
         }
     }
     *inA = A;
     *inB = B;
 
-    node->tail  = nodetail;
+    node->tail = nodetail;
     node->count = nodecount;
 
     /* if(!check_node_sorted(node, fifosize)) */
@@ -734,13 +725,12 @@ readmerge_parallel_decomposed(merge_node_t * node,
  * @param sz
  */
 void
-simd_memcpy(void * dst, void * src, size_t sz)
-{
-    char *src_ptr = (char *)src;
-    char *dst_ptr = (char *)dst;
-    char *src_end = (char *)src + sz - 64;
+simd_memcpy(void *dst, void *src, size_t sz) {
+    char *src_ptr = (char *) src;
+    char *dst_ptr = (char *) dst;
+    char *src_end = (char *) src + sz - 64;
     /* further improvement with aligned load/store */
-    for ( ; src_ptr <= src_end; src_ptr += 64, dst_ptr += 64) {
+    for (; src_ptr <= src_end; src_ptr += 64, dst_ptr += 64) {
         __asm volatile(
         "movdqu 0(%0) , %%xmm0;  "
         "movdqu 16(%0), %%xmm1;  "
@@ -755,7 +745,7 @@ simd_memcpy(void * dst, void * src, size_t sz)
 
     /* copy remainders */
     src_end += 64;
-    if(src_ptr < src_end){
+    if (src_ptr < src_end) {
         memcpy(dst_ptr, src_ptr, (src_end - src_ptr));
     }
 }
@@ -768,8 +758,7 @@ simd_memcpy(void * dst, void * src, size_t sz)
  * @param fifosize
  */
 void
-direct_copy_avx(merge_node_t * dest, merge_node_t * src, uint32_t fifosize)
-{
+direct_copy_avx(merge_node_t *dest, merge_node_t *src, uint32_t fifosize) {
     /* make sure dest has space and src has tuples */
     //assert(dest->count < fifosize);
     //assert(src->count > 0);
@@ -782,15 +771,14 @@ direct_copy_avx(merge_node_t * dest, merge_node_t * src, uint32_t fifosize)
     uint32_t src_block_start[2];
     uint32_t src_block_size[2];
 
-    if(dest->head <= dest->tail){/* Case 1) */
+    if (dest->head <= dest->tail) {/* Case 1) */
         /* dest block-1 */
         dest_block_start[0] = dest->tail;
         dest_block_size[0] = fifosize - dest->tail;
         /* dest block-2 */
         dest_block_start[1] = 0;
         dest_block_size[1] = dest->head;
-    }
-    else {
+    } else {
         /* Case 2) dest-> head > dest->tail */
         /* dest block-1 */
         dest_block_start[0] = dest->tail;
@@ -799,15 +787,14 @@ direct_copy_avx(merge_node_t * dest, merge_node_t * src, uint32_t fifosize)
         dest_block_size[1] = 0;
     }
 
-    if(src->head >= src->tail){/* Case 2) */
+    if (src->head >= src->tail) {/* Case 2) */
         /* src block-1 */
         src_block_start[0] = src->head;
         src_block_size[0] = fifosize - src->head;
         /* src block-2 */
         src_block_start[1] = 0;
         src_block_size[1] = src->tail;
-    }
-    else {
+    } else {
         /* Case 1) src-> head < src->tail */
         /* src block-1 */
         src_block_start[0] = src->head;
@@ -817,10 +804,10 @@ direct_copy_avx(merge_node_t * dest, merge_node_t * src, uint32_t fifosize)
     }
 
     uint32_t copied = 0;
-    for(int i = 0, j = 0; i < 2 && j < 2; ){
+    for (int i = 0, j = 0; i < 2 && j < 2;) {
         uint32_t copysize = min(dest_block_size[i], src_block_size[j]);
 
-        if(copysize > 0) {
+        if (copysize > 0) {
             simd_memcpy(dest->buffer + dest_block_start[i],
                         src->buffer + src_block_start[j],
                         copysize * sizeof(tuple_t));
@@ -832,10 +819,10 @@ direct_copy_avx(merge_node_t * dest, merge_node_t * src, uint32_t fifosize)
             copied += copysize;
         }
 
-        if(dest_block_size[i] == 0)
+        if (dest_block_size[i] == 0)
             i++;
 
-        if(src_block_size[j] == 0)
+        if (src_block_size[j] == 0)
             j++;
     }
 
@@ -856,8 +843,7 @@ direct_copy_avx(merge_node_t * dest, merge_node_t * src, uint32_t fifosize)
  * @return number of copied tuples
  */
 uint32_t
-direct_copy_to_output_avx(tuple_t * dest, merge_node_t * src, uint32_t fifosize)
-{
+direct_copy_to_output_avx(tuple_t *dest, merge_node_t *src, uint32_t fifosize) {
     /* make sure dest has space and src has tuples */
     //assert(src->count > 0);
 
@@ -865,15 +851,14 @@ direct_copy_to_output_avx(tuple_t * dest, merge_node_t * src, uint32_t fifosize)
     uint32_t src_block_start[2];
     uint32_t src_block_size[2];
 
-    if(src->head >= src->tail){/* Case 2) */
+    if (src->head >= src->tail) {/* Case 2) */
         /* src block-1 */
         src_block_start[0] = src->head;
         src_block_size[0] = fifosize - src->head;
         /* src block-2 */
         src_block_start[1] = 0;
         src_block_size[1] = src->tail;
-    }
-    else {
+    } else {
         /* Case 1) src-> head < src->tail */
         /* src block-1 */
         src_block_start[0] = src->head;
@@ -883,11 +868,11 @@ direct_copy_to_output_avx(tuple_t * dest, merge_node_t * src, uint32_t fifosize)
     }
 
     uint32_t copied = 0;
-    for(int j = 0; j < 2; j++){
+    for (int j = 0; j < 2; j++) {
         uint32_t copysize = src_block_size[j];
 
-        if(copysize > 0) {
-            simd_memcpy((void *)(dest + copied),
+        if (copysize > 0) {
+            simd_memcpy((void *) (dest + copied),
                         src->buffer + src_block_start[j],
                         copysize * sizeof(tuple_t));
 
@@ -902,21 +887,19 @@ direct_copy_to_output_avx(tuple_t * dest, merge_node_t * src, uint32_t fifosize)
 }
 
 void
-merge_parallel_decomposed(merge_node_t * node,
-                          merge_node_t * right,
-                          merge_node_t * left,
+merge_parallel_decomposed(merge_node_t *node,
+                          merge_node_t *right,
+                          merge_node_t *left,
                           uint32_t fifosize,
-                          uint8_t rightdone, uint8_t leftdone)
-{
+                          uint8_t rightdone, uint8_t leftdone) {
     /* directly copy tuples from right or left if one of them done but not the other */
-    if(rightdone && right->count == 0){
-        if(!leftdone && left->count > 0){
+    if (rightdone && right->count == 0) {
+        if (!leftdone && left->count > 0) {
             direct_copy_avx(node, left, fifosize);
             return;
         }
-    }
-    else if(leftdone && left->count == 0){
-        if(!rightdone && right->count > 0){
+    } else if (leftdone && left->count == 0) {
+        if (!rightdone && right->count > 0) {
             direct_copy_avx(node, right, fifosize);
             return;
         }
@@ -925,75 +908,71 @@ merge_parallel_decomposed(merge_node_t * node,
     /* both done? */
     uint8_t done = rightdone & leftdone;
 
-    uint32_t righttail  = right->tail;
+    uint32_t righttail = right->tail;
     uint32_t rightcount = right->count;
-    uint32_t righthead  = right->head;
-    uint32_t lefttail   = left->tail;
-    uint32_t leftcount  = left->count;
-    uint32_t lefthead   = left->head;
+    uint32_t righthead = right->head;
+    uint32_t lefttail = left->tail;
+    uint32_t leftcount = left->count;
+    uint32_t lefthead = left->head;
 
     int rcases = 0, lcases = 0;
     uint32_t outnslots;
 
     uint32_t oi = node->tail, oend;
-    if(node->head > node->tail) {
+    if (node->head > node->tail) {
         oend = node->head;
-    }
-    else {
+    } else {
         oend = fifosize;
     }
 
     outnslots = oend - oi;
 
     uint32_t ri = righthead, rend;
-    if(righthead >= righttail) {
+    if (righthead >= righttail) {
         rend = fifosize;
         rcases = 1;
-    }
-    else {
+    } else {
         rend = righttail;
     }
 
     uint32_t li = lefthead, lend;
-    if(lefthead >= lefttail) {
+    if (lefthead >= lefttail) {
         lend = fifosize;
         lcases = 1;
-    }
-    else {
+    } else {
         lend = lefttail;
     }
 
-    while(node->count < fifosize
-          && (rightcount > 0 && leftcount > 0))
-    {
-        register tuple_t * R = right->buffer + ri;
-        register tuple_t * L = left->buffer + li;
-        register tuple_t * Out = node->buffer + oi;
+    while (node->count < fifosize
+           && (rightcount > 0 && leftcount > 0)) {
+        register tuple_t *R = right->buffer + ri;
+        register tuple_t *L = left->buffer + li;
+        register tuple_t *Out = node->buffer + oi;
 
         /* serialmergekernel(R, L, Out, &ri, &li, &oi, &outnslots, rend, lend); */
         merge16kernel(R, L, Out, &ri, &li, &oi, &outnslots, rend, lend);
 
-        node->count  += (oi - node->tail);
+        node->count += (oi - node->tail);
         node->tail = ((oi == fifosize) ? 0 : oi);
         rightcount -= (ri - righthead);
         righthead = ((ri == fifosize) ? 0 : ri);
-        leftcount  -= (li - lefthead);
+        leftcount -= (li - lefthead);
         lefthead = ((li == fifosize) ? 0 : li);
 
 
-        if(oi == oend) {
+        if (oi == oend) {
             oi = 0;
             oend = node->head;
             outnslots = oend - oi;
         }
 
-        if(rcases > 0 && ri == rend) {
+        if (rcases > 0 && ri == rend) {
             ri = 0;
             rend = righttail;
             rcases = 0;
         }
 
-        if(lcases > 0 && li == lend) {
+        if (lcases > 0 && li == lend) {
             li = 0;
             lend = lefttail;
             lcases = 0;
@@ -1002,37 +981,37 @@ merge_parallel_decomposed(merge_node_t * node,
     }
 
     /* not possible until we do not read new tuples anymore */
-    if(done && node->count < fifosize) {
-        tuple_t * Out = node->buffer + node->tail;
+    if (done && node->count < fifosize) {
+        tuple_t *Out = node->buffer + node->tail;
 
         outnslots = fifosize - node->count;
         oi = node->tail;
         oend = (node->tail + outnslots);
-        if(oend > fifosize)
+        if (oend > fifosize)
             oend = fifosize;
 
         outnslots = oend - oi;
 
-        if(rightcount > 0) {
-            tuple_t * R = right->buffer + righthead;
+        if (rightcount > 0) {
+            tuple_t *R = right->buffer + righthead;
 
             ri = righthead;
             rend = righthead + rightcount;
-            if(rend > fifosize)
+            if (rend > fifosize)
                 rend = fifosize;
 
-            do{
-                while( outnslots > 0 && ri < rend) {
-                    outnslots --;
+            do {
+                while (outnslots > 0 && ri < rend) {
+                    outnslots--;
                     oi++;
-                    ri ++;
+                    ri++;
                     *Out = *R;
-                    Out ++;
-                    R ++;
-                    node->count ++;
-                    rightcount --;
-                    node->tail ++;
-                    righthead ++;
+                    Out++;
+                    R++;
+                    node->count++;
+                    rightcount--;
+                    node->tail++;
+                    righthead++;
                 }
 
                 /* node->count  += (oi - node->tail); */
@@ -1040,47 +1019,46 @@ merge_parallel_decomposed(merge_node_t * node,
                 /* rightcount -= (ri - righthead); */
                 /* righthead = ((ri == fifosize) ? 0 : ri); */
 
-                if(oi == oend) {
+                if (oi == oend) {
                     oi = 0;
                     oend = node->head;
-                    if(node->tail >= fifosize){
+                    if (node->tail >= fifosize) {
                         node->tail = 0;
                         Out = node->buffer;
                     }
                 }
 
-                if(rcases > 0 && ri == rend) {
+                if (rcases > 0 && ri == rend) {
                     ri = 0;
                     rend = righttail;
                     rcases = 0;
-                    if(righthead >= fifosize){
+                    if (righthead >= fifosize) {
                         righthead = 0;
                         R = right->buffer;
                     }
                 }
-            } while(outnslots > 0 && rightcount > 0);
+            } while (outnslots > 0 && rightcount > 0);
 
-        }
-        else if(leftcount > 0) {
-            tuple_t * L = left->buffer + lefthead;
+        } else if (leftcount > 0) {
+            tuple_t *L = left->buffer + lefthead;
 
             li = lefthead;
             lend = lefthead + leftcount;
-            if(lend > fifosize)
+            if (lend > fifosize)
                 lend = fifosize;
 
             do {
-                while( outnslots > 0 && li < lend) {
-                    outnslots --;
+                while (outnslots > 0 && li < lend) {
+                    outnslots--;
                     oi++;
-                    li ++;
+                    li++;
                     *Out = *L;
-                    Out ++;
-                    L ++;
-                    node->count ++;
-                    leftcount --;
-                    node->tail ++;
-                    lefthead ++;
+                    Out++;
+                    L++;
+                    node->count++;
+                    leftcount--;
+                    node->tail++;
+                    lefthead++;
                 }
 
                 /* node->count  += (oi - node->tail); */
@@ -1088,27 +1066,27 @@ merge_parallel_decomposed(merge_node_t * node,
                 /* leftcount -= (li - lefthead); */
                 /* lefthead = ((li == fifosize) ? 0 : li); */
 
-                if(oi == oend) {
+                if (oi == oend) {
                     oi = 0;
                     oend = node->head;
-                    if(node->tail >= fifosize) {
+                    if (node->tail >= fifosize) {
                         node->tail = 0;
                         Out = node->buffer;
                     }
                 }
 
 
-                if(lcases > 0 && li == lend) {
+                if (lcases > 0 && li == lend) {
                     li = 0;
                     lend = lefttail;
                     lcases = 0;
-                    if(lefthead >= fifosize) {
+                    if (lefthead >= fifosize) {
                         lefthead = 0;
                         L = left->buffer;
                     }
                 }
 
-            } while(outnslots > 0 && leftcount > 0);
+            } while (outnslots > 0 && leftcount > 0);
         }
     }
 
@@ -1117,9 +1095,9 @@ merge_parallel_decomposed(merge_node_t * node,
 
 
     right->count = rightcount;
-    right->head  = righthead;
-    left->count  = leftcount;
-    left->head   = lefthead;
+    right->head = righthead;
+    left->count = leftcount;
+    left->head = lefthead;
 
 }
 
@@ -1135,17 +1113,16 @@ merge_parallel_decomposed(merge_node_t * node,
  * @param lend left node buffer end index
  */
 inline void __attribute__((always_inline))
-mergestore16kernel(tuple_t * restrict A, tuple_t * restrict B,
-                   tuple_t ** Out,
-                   uint32_t * ri, uint32_t * li,
-                   uint32_t rend, uint32_t lend)
-{
+mergestore16kernel(tuple_t *restrict A, tuple_t *restrict B,
+                   tuple_t **Out,
+                   uint32_t *ri, uint32_t *li,
+                   uint32_t rend, uint32_t lend) {
     int32_t lenA = rend - *ri, lenB = lend - *li;
     int32_t lenA16 = lenA & ~0xF, lenB16 = lenB & ~0xF;
 
     uint32_t rii = *ri, lii = *li;
 
-    tuple_t * out = *Out;
+    tuple_t *out = *Out;
 
     // if((uintptr_t)A % 64 != 0)
     //     printf("**** A not aligned = %d\n", (uintptr_t)A % 64);
@@ -1154,16 +1131,16 @@ mergestore16kernel(tuple_t * restrict A, tuple_t * restrict B,
     // if((uintptr_t)Out % 64 != 0)
     //     printf("**** Out not aligned = %d\n", (uintptr_t)Out % 64);
 
-    if(lenA16 > 16 && lenB16 > 16) {
+    if (lenA16 > 16 && lenB16 > 16) {
 
-        register block16 * inA  = (block16 *) A;
-        register block16 * inB  = (block16 *) B;
-        block16 * const    endA = (block16 *) (A + lenA) - 1;
-        block16 * const    endB = (block16 *) (B + lenB) - 1;
+        register block16 *inA = (block16 *) A;
+        register block16 *inB = (block16 *) B;
+        block16 *const endA = (block16 *) (A + lenA) - 1;
+        block16 *const endB = (block16 *) (B + lenB) - 1;
 
-        block16 * outp = (block16 *) out;
+        block16 *outp = (block16 *) out;
 
-        register block16 * next = inB;
+        register block16 *next = inB;
 
         __m256d outreg1l1, outreg1l2, outreg1h1, outreg1h2;
         __m256d outreg2l1, outreg2l2, outreg2h1, outreg2h2;
@@ -1172,12 +1149,12 @@ mergestore16kernel(tuple_t * restrict A, tuple_t * restrict B,
         __m256d regBl1, regBl2, regBh1, regBh2;
 
         LOAD8U(regAl1, regAl2, inA);
-        LOAD8U(regAh1, regAh2, ((block8 *)(inA) + 1));
-        inA ++;
+        LOAD8U(regAh1, regAh2, ((block8 *) (inA) + 1));
+        inA++;
 
         LOAD8U(regBl1, regBl2, inB);
-        LOAD8U(regBh1, regBh2, ((block8 *)(inB) + 1));
-        inB ++;
+        LOAD8U(regBh1, regBh2, ((block8 *) (inB) + 1));
+        inB++;
 
         BITONIC_MERGE16(outreg1l1, outreg1l2, outreg1h1, outreg1h2,
                         outreg2l1, outreg2l2, outreg2h1, outreg2h2,
@@ -1186,10 +1163,10 @@ mergestore16kernel(tuple_t * restrict A, tuple_t * restrict B,
 
         /* store outreg1 */
         STORE8U(outp, outreg1l1, outreg1l2);
-        STORE8U(((block8 *)outp + 1), outreg1h1, outreg1h2);
-        outp ++;
+        STORE8U(((block8 *) outp + 1), outreg1h1, outreg1h2);
+        outp++;
 
-        while( inA < endA && inB < endB ) {
+        while (inA < endA && inB < endB) {
 
             /** The inline assembly below does exactly the following code: */
             /* if(*((int64_t *)inA) < *((int64_t *)inB)) { */
@@ -1209,7 +1186,7 @@ mergestore16kernel(tuple_t * restrict A, tuple_t * restrict B,
             regAh2 = outreg2h2;
 
             LOAD8U(regBl1, regBl2, next);
-            LOAD8U(regBh1, regBh2, ((block8 *)next + 1));
+            LOAD8U(regBh1, regBh2, ((block8 *) next + 1));
 
             BITONIC_MERGE16(outreg1l1, outreg1l2, outreg1h1, outreg1h2,
                             outreg2l1, outreg2l2, outreg2h1, outreg2h2,
@@ -1218,51 +1195,53 @@ mergestore16kernel(tuple_t * restrict A, tuple_t * restrict B,
 
             /* store outreg1 */
             STORE8U(outp, outreg1l1, outreg1l2);
-            STORE8U(((block8 *)outp + 1), outreg1h1, outreg1h2);
-            outp ++;
+            STORE8U(((block8 *) outp + 1), outreg1h1, outreg1h2);
+            outp++;
         }
 
         {
             /* flush the register to one of the lists */
-            int64_t /*tuple_t*/ hireg[4] __attribute__((aligned(16)));
-            _mm256_store_pd ( (double *)hireg, outreg2h2);
+//            int64_t /*tuple_t*/ hireg[4] __attribute__((aligned(16)));
+
+            auto hireg = (int64_t *) malloc_aligned(4 * sizeof(int64_t));
+
+            _mm256_store_pd((double *) hireg, outreg2h2);
 
             /*if(((tuple_t *)inA)->key >= hireg[3].key){*/
-            if(*((int64_t *)inA) >= hireg[3]){
+            if (*((int64_t *) inA) >= hireg[3]) {
                 /* store the last remaining register values to A */
-                inA --;
+                inA--;
                 STORE8U(inA, outreg2l1, outreg2l2);
-                STORE8U(((block8 *)inA + 1), outreg2h1, outreg2h2);
-            }
-            else {
+                STORE8U(((block8 *) inA + 1), outreg2h1, outreg2h2);
+            } else {
                 /* store the last remaining register values to B */
-                inB --;
+                inB--;
                 STORE8U(inB, outreg2l1, outreg2l2);
-                STORE8U(((block8 *)inB + 1), outreg2h1, outreg2h2);
+                STORE8U(((block8 *) inB + 1), outreg2h1, outreg2h2);
             }
         }
 
-        rii = *ri + ((tuple_t *)inA - A);
-        lii = *li + ((tuple_t *)inB - B);
+        rii = *ri + ((tuple_t *) inA - A);
+        lii = *li + ((tuple_t *) inB - B);
 
-        A = (tuple_t *)inA;
-        B = (tuple_t *)inB;
-        out = (tuple_t *)outp;
+        A = (tuple_t *) inA;
+        B = (tuple_t *) inB;
+        out = (tuple_t *) outp;
     }
 
 
     /* serial-merge */
     {
-        int64_t * in1 = (int64_t *) A;
-        int64_t * in2 = (int64_t *) B;
-        int64_t * pout = (int64_t *) out;
-        while(rii < rend && lii < lend){
-            int64_t * in = in2;
+        int64_t *in1 = (int64_t *) A;
+        int64_t *in2 = (int64_t *) B;
+        int64_t *pout = (int64_t *) out;
+        while (rii < rend && lii < lend) {
+            int64_t *in = in2;
             uint32_t cmp = (*in1 < *in2);
             uint32_t notcmp = !cmp;
             rii += cmp;
             lii += notcmp;
-            if(cmp)
+            if (cmp)
                 in = in1;
             *pout = *in;
             pout++;
@@ -1282,7 +1261,7 @@ mergestore16kernel(tuple_t * restrict A, tuple_t * restrict B,
             pout ++;
             */
         }
-        out = (tuple_t *)pout;
+        out = (tuple_t *) pout;
         /* just for tuples, comparison on keys.
     while(rii < rend && lii < lend){
         tuple_t * in = B;
@@ -1319,15 +1298,14 @@ mergestore16kernel(tuple_t * restrict A, tuple_t * restrict B,
  * @param fifosize size of the fifo queue
  */
 uint64_t
-mergestore_parallel_decomposed(merge_node_t * right,
-                               merge_node_t * left,
-                               tuple_t ** output,
+mergestore_parallel_decomposed(merge_node_t *right,
+                               merge_node_t *left,
+                               tuple_t **output,
                                uint32_t fifosize,
-                               uint8_t rightdone, uint8_t leftdone)
-{
+                               uint8_t rightdone, uint8_t leftdone) {
     /* directly copy tuples from right or left if one of them done but not the other */
-    if(rightdone && right->count == 0){
-        if(!leftdone && left->count > 0){
+    if (rightdone && right->count == 0) {
+        if (!leftdone && left->count > 0) {
             uint64_t numcopied = direct_copy_to_output_avx(*output, left, fifosize);
             /*
             if(is_sorted_helper((int64_t*)(*output), numcopied) == 0){
@@ -1337,9 +1315,8 @@ mergestore_parallel_decomposed(merge_node_t * right,
             *output += numcopied;
             return numcopied;
         }
-    }
-    else if(leftdone && left->count == 0){
-        if(!rightdone && right->count > 0){
+    } else if (leftdone && left->count == 0) {
+        if (!rightdone && right->count > 0) {
             uint64_t numcopied = direct_copy_to_output_avx(*output, right, fifosize);
             /*
             if(is_sorted_helper((int64_t*)(*output), numcopied) == 0){
@@ -1351,47 +1328,45 @@ mergestore_parallel_decomposed(merge_node_t * right,
         }
     }
 
-    tuple_t * Out = * output;
+    tuple_t *Out = *output;
     int rcases = 0, lcases = 0;
 
     uint32_t ri = right->head, rend;
-    if(right->head >= right->tail) {
+    if (right->head >= right->tail) {
         rend = fifosize;
         rcases = 1;
-    }
-    else {
+    } else {
         rend = right->tail;
     }
 
     uint32_t li = left->head, lend;
-    if(left->head >= left->tail) {
+    if (left->head >= left->tail) {
         lend = fifosize;
         lcases = 1;
-    }
-    else {
+    } else {
         lend = left->tail;
     }
 
-    while(right->count > 0 && left->count > 0) {
+    while (right->count > 0 && left->count > 0) {
 
-        register tuple_t * R = right->buffer + ri;
-        register tuple_t * L = left->buffer + li;
+        register tuple_t *R = right->buffer + ri;
+        register tuple_t *L = left->buffer + li;
 
         /* serialmergestorekernel(R, L, &Out, &ri, &li, rend, lend); */
         mergestore16kernel(R, L, &Out, &ri, &li, rend, lend);
 
         right->count -= (ri - right->head);
         right->head = ((ri == fifosize) ? 0 : ri);
-        left->count  -= (li - left->head);
+        left->count -= (li - left->head);
         left->head = ((li == fifosize) ? 0 : li);
 
-        if(rcases > 0 && ri == rend) {
+        if (rcases > 0 && ri == rend) {
             ri = 0;
             rend = right->tail;
             rcases = 0;
         }
 
-        if(lcases > 0 && li == lend) {
+        if (lcases > 0 && li == lend) {
             li = 0;
             lend = left->tail;
             lcases = 0;
@@ -1400,16 +1375,16 @@ mergestore_parallel_decomposed(merge_node_t * right,
 
     /* not possible until we do not read new tuples anymore */
     uint8_t done = rightdone & leftdone;
-    if(done){
-        if(right->count > 0) {
-            tuple_t * R = right->buffer + right->head;
+    if (done) {
+        if (right->count > 0) {
+            tuple_t *R = right->buffer + right->head;
 
             ri = right->head;
             rend = right->head + right->count;
-            if(rend > fifosize)
+            if (rend > fifosize)
                 rend = fifosize;
 
-            do{
+            do {
                 // uint32_t sz = rend-ri;
                 // memcpy((void*)Out, (void*)R, sz*sizeof(tuple_t));
                 // Out += sz;
@@ -1417,33 +1392,32 @@ mergestore_parallel_decomposed(merge_node_t * right,
                 // right->count -= sz;
                 // right->head  += sz;
                 // ri = rend;
-                while( ri < rend ) {
-                    ri ++;
+                while (ri < rend) {
+                    ri++;
                     *Out = *R;
-                    Out ++;
-                    R ++;
-                    right->count --;
-                    right->head ++;
+                    Out++;
+                    R++;
+                    right->count--;
+                    right->head++;
                 }
 
-                if(rcases > 0 && ri == rend) {
+                if (rcases > 0 && ri == rend) {
                     ri = 0;
                     rend = right->tail;
                     rcases = 0;
-                    if(right->head >= fifosize){
+                    if (right->head >= fifosize) {
                         right->head = 0;
                         R = right->buffer;
                     }
                 }
-            } while(right->count > 0);
+            } while (right->count > 0);
 
-        }
-        else if(left->count > 0) {
-            tuple_t * L = left->buffer + left->head;
+        } else if (left->count > 0) {
+            tuple_t *L = left->buffer + left->head;
 
             li = left->head;
             lend = left->head + left->count;
-            if(lend > fifosize)
+            if (lend > fifosize)
                 lend = fifosize;
 
             do {
@@ -1454,26 +1428,26 @@ mergestore_parallel_decomposed(merge_node_t * right,
                 // left->count -= sz;
                 // left->head  += sz;
                 // li = lend;
-                while( li < lend ) {
-                    li ++;
+                while (li < lend) {
+                    li++;
                     *Out = *L;
-                    Out ++;
-                    L ++;
-                    left->count --;
-                    left->head ++;
+                    Out++;
+                    L++;
+                    left->count--;
+                    left->head++;
                 }
 
-                if(lcases > 0 && li == lend) {
+                if (lcases > 0 && li == lend) {
                     li = 0;
                     lend = left->tail;
                     lcases = 0;
-                    if(left->head >= fifosize) {
+                    if (left->head >= fifosize) {
                         left->head = 0;
                         L = left->buffer;
                     }
                 }
 
-            } while(left->count > 0);
+            } while (left->count > 0);
         }
     }
 
