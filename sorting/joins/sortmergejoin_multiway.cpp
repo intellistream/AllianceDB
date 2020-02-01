@@ -46,12 +46,13 @@
  *
  */
 void *
-sortmergejoin_multiway_thread(void *param);
+sortmergejoin_multiway_thread(void * param);
 
 result_t *
-sortmergejoin_multiway(relation_t *relR, relation_t *relS, joinconfig_t *joincfg) {
+sortmergejoin_multiway(relation_t * relR, relation_t * relS, joinconfig_t * joincfg)
+{
     /* check whether nr. of threads is a power of 2 */
-    if ((joincfg->NTHREADS & (joincfg->NTHREADS - 1)) != 0) {
+    if((joincfg->NTHREADS & (joincfg->NTHREADS-1)) != 0){
         fprintf(stdout, "[ERROR] m-way sort-merge join runs with a power of 2 #threads.\n");
         return 0;
     }
@@ -69,10 +70,11 @@ sortmergejoin_multiway(relation_t *relR, relation_t *relS, joinconfig_t *joincfg
  * @param[in] args thread arguments
  */
 void
-partitioning_phase(relation_t ***relRparts, relation_t ***relSparts, arg_t *args);
+partitioning_phase(relation_t *** relRparts, relation_t *** relSparts, arg_t * args);
 
 void
-partitioning_cleanup(relation_t **relRparts, relation_t **relSparts) {
+partitioning_cleanup(relation_t ** relRparts, relation_t ** relSparts)
+{
     free(relRparts[0]);
     free(relRparts);
     free(relSparts);
@@ -89,7 +91,7 @@ partitioning_cleanup(relation_t **relRparts, relation_t **relSparts) {
  * @param[in] args thread arguments
  */
 void
-sorting_phase(relation_t **relRparts, relation_t **relSparts, arg_t *args);
+sorting_phase(relation_t ** relRparts, relation_t ** relSparts, arg_t * args);
 
 
 /**
@@ -104,8 +106,8 @@ sorting_phase(relation_t **relRparts, relation_t **relSparts, arg_t *args);
  */
 void
 multiwaymerge_phase(int numaregionid,
-                    relation_t **relRparts, relation_t **relSparts, arg_t *args,
-                    relation_t *mergedRelR, relation_t *mergedRelS);
+                    relation_t ** relRparts, relation_t ** relSparts, arg_t * args,
+                    relation_t * mergedRelR, relation_t * mergedRelS);
 
 /**
  * Evaluate the merge-join over NUMA-local sorted runs.
@@ -117,8 +119,8 @@ multiwaymerge_phase(int numaregionid,
  * @param[in,out] args return values are stored in args
  */
 void
-mergejoin_phase(relation_t **relRparts, relation_t **relSparts,
-                relation_t *mergedRelR, relation_t *mergedRelS, arg_t *args);
+mergejoin_phase(relation_t ** relRparts, relation_t ** relSparts,
+                relation_t * mergedRelR, relation_t * mergedRelS, arg_t * args);
 
 /**
  * Main execution thread of "m-way" sort-merge join.
@@ -126,8 +128,9 @@ mergejoin_phase(relation_t **relRparts, relation_t **relSparts,
  * @param param
  */
 void *
-sortmergejoin_multiway_thread(void *param) {
-    arg_t *args = (arg_t *) param;
+sortmergejoin_multiway_thread(void * param)
+{
+    arg_t * args   = (arg_t*) param;
     int32_t my_tid = args->my_tid;
     int rv;
 
@@ -141,7 +144,7 @@ sortmergejoin_multiway_thread(void *param) {
 #endif
 
     BARRIER_ARRIVE(args->barrier, rv);
-    if (my_tid == 0) {
+    if(my_tid == 0) {
         gettimeofday(&args->start, NULL);
         startTimer(&args->part);
         startTimer(&args->sort);
@@ -156,8 +159,8 @@ sortmergejoin_multiway_thread(void *param) {
      *   Phase.1) NUMA-local partitioning.
      *
      *************************************************************************/
-    relation_t **partsR = NULL;
-    relation_t **partsS = NULL;
+    relation_t ** partsR = NULL;
+    relation_t ** partsS = NULL;
     partitioning_phase(&partsR, &partsS, args);
 
 
@@ -171,7 +174,7 @@ sortmergejoin_multiway_thread(void *param) {
 #endif
 
     BARRIER_ARRIVE(args->barrier, rv);
-    if (my_tid == 0) {
+    if(my_tid == 0) {
         stopTimer(&args->part);
     }
 
@@ -197,14 +200,14 @@ sortmergejoin_multiway_thread(void *param) {
      * @note the first thread in each NUMA region allocates the shared L3 buffer.
      */
     int numaregionid = get_numa_region_id(my_tid);
-    if (is_first_thread_in_numa_region(my_tid)) {
+    if(is_first_thread_in_numa_region(my_tid)) {
         /* TODO: make buffer size runtime parameter */
-        tuple_t *sharedmergebuffer = (tuple_t *)
+        tuple_t * sharedmergebuffer = (tuple_t *)
                 malloc_aligned(args->joincfg->MWAYMERGEBUFFERSIZE);
         args->sharedmergebuffer[numaregionid] = sharedmergebuffer;
 
         DEBUGMSG(1, "Thread-%d allocated %.3lf KiB merge buffer in NUMA-region-%d to be used by %d active threads.\n",
-                 my_tid, (double) (args->joincfg->MWAYMERGEBUFFERSIZE / 1024.0),
+                 my_tid, (double)(args->joincfg->MWAYMERGEBUFFERSIZE/1024.0),
                  numaregionid, get_num_active_threads_in_numa(numaregionid));
     }
 
@@ -218,7 +221,7 @@ sortmergejoin_multiway_thread(void *param) {
 #endif
 
     BARRIER_ARRIVE(args->barrier, rv);
-    if (my_tid == 0) {
+    if(my_tid == 0) {
         stopTimer(&args->sort);
     }
     /* check whether local relations are sorted? */
@@ -271,12 +274,12 @@ sortmergejoin_multiway_thread(void *param) {
 
 
     BARRIER_ARRIVE(args->barrier, rv);
-    if (my_tid == 0) {
+    if(my_tid == 0) {
         stopTimer(&args->mergedelta);
         args->merge = args->mergedelta; /* since we do merge in single go. */
         DEBUGMSG(1, "Multi-way merge is complete!\n");
         /* the thread that allocated the merge buffer releases it. */
-        if (is_first_thread_in_numa_region(my_tid)) {
+        if(is_first_thread_in_numa_region(my_tid)) {
             free(args->sharedmergebuffer[numaregionid]);
             //free_threadlocal(args->sharedmergebuffer[numaregionid], MWAY_MERGE_BUFFER_SIZE);
         }
@@ -309,7 +312,7 @@ sortmergejoin_multiway_thread(void *param) {
 
     /* for proper timing */
     BARRIER_ARRIVE(args->barrier, rv);
-    if (my_tid == 0) {
+    if(my_tid == 0) {
         stopTimer(&args->join);
         gettimeofday(&args->end, NULL);
     }
@@ -319,7 +322,7 @@ sortmergejoin_multiway_thread(void *param) {
 
     free(args->threadrelchunks[my_tid]);
     /* clean-up temporary relations */
-    if (args->nthreads > 1) {
+    if(args->nthreads > 1){
         free_threadlocal(mergedRelR.tuples, mergedRelR.num_tuples * sizeof(tuple_t));
         free_threadlocal(mergedRelS.tuples, mergedRelS.num_tuples * sizeof(tuple_t));
     }
@@ -330,31 +333,32 @@ sortmergejoin_multiway_thread(void *param) {
 
 
 void
-partitioning_phase(relation_t ***relRparts, relation_t ***relSparts, arg_t *args) {
+partitioning_phase(relation_t *** relRparts, relation_t *** relSparts, arg_t * args)
+{
     const int PARTFANOUT = args->joincfg->PARTFANOUT;
     const int NRADIXBITS = log2(PARTFANOUT);
 
-    relation_t **partsR = (relation_t **)
+    relation_t ** partsR = (relation_t **)
             malloc_aligned(PARTFANOUT * sizeof(relation_t *));
-    relation_t **partsS = (relation_t **)
+    relation_t ** partsS = (relation_t **)
             malloc_aligned(PARTFANOUT * sizeof(relation_t *));
 
     /** note: only free prels[0] when releasing memory */
-    relation_t *prels = (relation_t *) malloc(2 * PARTFANOUT * sizeof(relation_t));
-    for (int i = 0; i < PARTFANOUT; i++) {
+    relation_t * prels = (relation_t *) malloc(2 * PARTFANOUT * sizeof(relation_t));
+    for(int i = 0; i < PARTFANOUT; i++) {
         partsR[i] = prels + i;
         partsS[i] = prels + PARTFANOUT + i;
     }
 
     relation_t relR, relS;
     relation_t tmpR, tmpS;
-    relR.tuples = args->relR;
+    relR.tuples     = args->relR;
     relR.num_tuples = args->numR;
-    relS.tuples = args->relS;
+    relS.tuples     = args->relS;
     relS.num_tuples = args->numS;
-    tmpR.tuples = args->tmp_partR;
+    tmpR.tuples     = args->tmp_partR;
     tmpR.num_tuples = args->numR;
-    tmpS.tuples = args->tmp_partS;
+    tmpS.tuples     = args->tmp_partS;
     tmpS.num_tuples = args->numS;
 
     /* a maximum of one cache-line padding between partitions in the output */
@@ -370,7 +374,7 @@ partitioning_phase(relation_t ***relRparts, relation_t ***relSparts, arg_t *args
     */
     /* after partitioning tmpR, tmpS holds the partitioned data */
     int bitshift = ceil(log2(relR.num_tuples * args->nthreads)) - 1;
-    if (args->nthreads == 1)
+    if(args->nthreads == 1)
         bitshift = bitshift - NRADIXBITS + 1;
     else {
 #if SKEW_HANDLING
@@ -394,8 +398,8 @@ partitioning_phase(relation_t ***relRparts, relation_t ***relSparts, arg_t *args
 }
 
 void
-sorting_phase(relation_t **relRparts, relation_t **relSparts, arg_t *args) {
-    //cache-local hash join on individual partition pairs.
+sorting_phase(relation_t ** relRparts, relation_t ** relSparts, arg_t * args)
+{
     const int PARTFANOUT = args->joincfg->PARTFANOUT;
     const int scalarsortflag = args->joincfg->SCALARSORT;
 
@@ -406,17 +410,17 @@ sorting_phase(relation_t **relRparts, relation_t **relSparts, arg_t *args) {
 
     uint64_t ntuples_per_part;
     uint64_t offset = 0;
-    tuple_t *optr = args->tmp_sortR + my_tid * CACHELINEPADDING(PARTFANOUT);
+    tuple_t * optr = args->tmp_sortR + my_tid * CACHELINEPADDING(PARTFANOUT);
 
-    for (int i = 0; i < PARTFANOUT; i++) {
-        tuple_t *inptr = (relRparts[i]->tuples);
-        tuple_t *outptr = (optr + offset);
-        ntuples_per_part = relRparts[i]->num_tuples;
-        offset += ALIGN_NUMTUPLES(ntuples_per_part);
+    for(int i = 0; i < PARTFANOUT; i++) {
+        tuple_t * inptr  = (relRparts[i]->tuples);
+        tuple_t * outptr = (optr + offset);
+        ntuples_per_part       = relRparts[i]->num_tuples;
+        offset                += ALIGN_NUMTUPLES(ntuples_per_part);
 
-        DEBUGMSG(0, "PART-%d-SIZE: %"PRIu64"\n", i, relRparts[i]->num_tuples);
+        DEBUGMSG(0, "PART-%d-SIZE: %d", PRIu64"\n", i, relRparts[i]->num_tuples);
 
-        if (scalarsortflag)
+        if(scalarsortflag)
             scalarsort_tuples(&inptr, &outptr, ntuples_per_part);
         else
             avxsort_tuples(&inptr, &outptr, ntuples_per_part);
@@ -428,24 +432,24 @@ sorting_phase(relation_t **relRparts, relation_t **relSparts, arg_t *args) {
         }
 #endif
 
-        args->threadrelchunks[my_tid][i].R.tuples = outptr;
+        args->threadrelchunks[my_tid][i].R.tuples     = outptr;
         args->threadrelchunks[my_tid][i].R.num_tuples = ntuples_per_part;
     }
 
 
     offset = 0;
     optr = args->tmp_sortS + my_tid * CACHELINEPADDING(PARTFANOUT);
-    for (int i = 0; i < PARTFANOUT; i++) {
-        tuple_t *inptr = (relSparts[i]->tuples);
-        tuple_t *outptr = (optr + offset);
+    for(int i = 0; i < PARTFANOUT; i++) {
+        tuple_t * inptr  = (relSparts[i]->tuples);
+        tuple_t * outptr = (optr + offset);
 
-        ntuples_per_part = relSparts[i]->num_tuples;
-        offset += ALIGN_NUMTUPLES(ntuples_per_part);
+        ntuples_per_part       = relSparts[i]->num_tuples;
+        offset                += ALIGN_NUMTUPLES(ntuples_per_part);
         /*
         if(my_tid==0)
              fprintf(stdout, "PART-%d-SIZE: %d\n", i, relSparts[i]->num_tuples);
         */
-        if (scalarsortflag)
+        if(scalarsortflag)
             scalarsort_tuples(&inptr, &outptr, ntuples_per_part);
         else
             avxsort_tuples(&inptr, &outptr, ntuples_per_part);
@@ -453,7 +457,7 @@ sorting_phase(relation_t **relRparts, relation_t **relSparts, arg_t *args) {
 #if DEBUG_SORT_CHECK
         if(!is_sorted_helper((int64_t*)outptr, ntuples_per_part)){
             printf("===> %d-thread -> S is NOT sorted, size = %d\n",
-            my_tid, ntuples_per_part);
+                   my_tid, ntuples_per_part);
         }
 #endif
 
@@ -464,25 +468,27 @@ sorting_phase(relation_t **relRparts, relation_t **relSparts, arg_t *args) {
         /*        my_tid, i, outptr, my_tid, i, (outptr+ntuples_per_part)); */
 
     }
+
 }
 
 
 void
 multiwaymerge_phase(int numaregionid,
-                    relation_t **relRparts, relation_t **relSparts, arg_t *args,
-                    relation_t *mergedRelR, relation_t *mergedRelS) {
+                    relation_t ** relRparts, relation_t ** relSparts, arg_t * args,
+                    relation_t * mergedRelR, relation_t * mergedRelS)
+{
     const int PARTFANOUT = args->joincfg->PARTFANOUT;
     const int scalarmergeflag = args->joincfg->SCALARMERGE;
 
     int32_t my_tid = args->my_tid;
     uint64_t mergeRtotal = 0, mergeStotal = 0;
-    tuple_t *tmpoutR = NULL;
-    tuple_t *tmpoutS = NULL;
+    tuple_t * tmpoutR = NULL;
+    tuple_t * tmpoutS = NULL;
 
-    if (args->nthreads == 1) {
+    if(args->nthreads == 1) {
         /* single threaded execution; no multi-way merge. */
-        for (int i = 0; i < PARTFANOUT; i++) {
-            relationpair_t *rels = &args->threadrelchunks[my_tid][i];
+        for(int i = 0; i < PARTFANOUT; i ++) {
+            relationpair_t * rels = & args->threadrelchunks[my_tid][i];
             mergeRtotal += rels->R.num_tuples;
             mergeStotal += rels->S.num_tuples;
 
@@ -492,29 +498,30 @@ multiwaymerge_phase(int numaregionid,
             relSparts[i]->tuples = rels->S.tuples;
             relSparts[i]->num_tuples = rels->S.num_tuples;
         }
-    } else {
-        uint32_t j;
-        const uint32_t perthread = PARTFANOUT / args->nthreads;
+    }
+    else {
+        uint32_t       j;
+        const uint32_t perthread   = PARTFANOUT / args->nthreads;
 
         /* multi-threaded execution */
         /* merge remote relations and bring to local memory */
         const uint32_t start = my_tid * perthread;
         const uint32_t end = start + perthread;
 
-        relation_t *Rparts[PARTFANOUT];
-        relation_t *Sparts[PARTFANOUT];
+        relation_t * Rparts[PARTFANOUT];
+        relation_t * Sparts[PARTFANOUT];
 
         /* compute the size of merged relations to be stored locally */
         uint32_t f = 0;
-        for (j = start; j < end; j++) {
-            for (int i = 0; i < args->nthreads; i++) {
+        for(j = start; j < end; j ++) {
+            for(int i = 0; i < args->nthreads; i ++) {
                 //uint32_t tid = (my_tid + i) % args->nthreads;
                 uint32_t tid = get_numa_shuffle_strategy(my_tid, i, args->nthreads);
                 //printf("SHUF %d %d --> %d\n", i, my_tid, tid);
-                relationpair_t *rels = &args->threadrelchunks[tid][j];
+                relationpair_t * rels = & args->threadrelchunks[tid][j];
                 //fprintf(stdout, "TID=%d Part-%d-size = %d\n", my_tid, f, rels->S.num_tuples);
-                Rparts[f] = &rels->R;
-                Sparts[f] = &rels->S;
+                Rparts[f] = & rels->R;
+                Sparts[f] = & rels->S;
                 f++;
 
                 mergeRtotal += rels->R.num_tuples;
@@ -523,8 +530,8 @@ multiwaymerge_phase(int numaregionid,
         }
 
         /* allocate memory at local node for temporary merge results */
-        tmpoutR = (tuple_t *) malloc_aligned_threadlocal(mergeRtotal * sizeof(tuple_t));
-        tmpoutS = (tuple_t *) malloc_aligned_threadlocal(mergeStotal * sizeof(tuple_t));
+        tmpoutR = (tuple_t *) malloc_aligned_threadlocal(mergeRtotal*sizeof(tuple_t));
+        tmpoutS = (tuple_t *) malloc_aligned_threadlocal(mergeStotal*sizeof(tuple_t));
 
         /* determine the L3 cache-size per thread */
         /* int nnuma = get_num_numa_regions(); */
@@ -536,16 +543,17 @@ multiwaymerge_phase(int numaregionid,
         int numatidx = get_thread_index_in_numa(my_tid);
 
         /* get the exclusive part of the merge buffer for the current thread */
-        int bufsz_thr = (args->joincfg->MWAYMERGEBUFFERSIZE / active_nthreads_in_numa)
+        int bufsz_thr = (args->joincfg->MWAYMERGEBUFFERSIZE/active_nthreads_in_numa)
                         / sizeof(tuple_t);
-        tuple_t *mergebuf = args->sharedmergebuffer[numaregionid]
-                            + (numatidx * bufsz_thr);
+        tuple_t * mergebuf = args->sharedmergebuffer[numaregionid]
+                             + (numatidx * bufsz_thr);
 
         /* now do the multi-way merging */
-        if (scalarmergeflag) {
+        if(scalarmergeflag){
             scalar_multiway_merge(tmpoutR, Rparts, PARTFANOUT, mergebuf, bufsz_thr);
             scalar_multiway_merge(tmpoutS, Sparts, PARTFANOUT, mergebuf, bufsz_thr);
-        } else {
+        }
+        else {
             avx_multiway_merge(tmpoutR, Rparts, PARTFANOUT, mergebuf, bufsz_thr);
             avx_multiway_merge(tmpoutS, Sparts, PARTFANOUT, mergebuf, bufsz_thr);
         }
@@ -561,28 +569,29 @@ multiwaymerge_phase(int numaregionid,
 
 
 void
-mergejoin_phase(relation_t **relRparts, relation_t **relSparts,
-                relation_t *mergedRelR, relation_t *mergedRelS, arg_t *args) {
+mergejoin_phase(relation_t ** relRparts, relation_t ** relSparts,
+                relation_t * mergedRelR, relation_t * mergedRelS, arg_t * args)
+{
 
 #ifdef JOIN_MATERIALIZE
     chainedtuplebuffer_t * chainedbuf = chainedtuplebuffer_init();
 #else
-    void *chainedbuf = NULL;
+    void * chainedbuf = NULL;
 #endif
 
     const int PARTFANOUT = args->joincfg->PARTFANOUT;
     uint64_t nresults = 0;
 
-    if (args->nthreads > 1) {
-        tuple_t *rtuples = (tuple_t *) mergedRelR->tuples;
-        tuple_t *stuples = (tuple_t *) mergedRelS->tuples;
+    if(args->nthreads > 1){
+        tuple_t * rtuples = (tuple_t *) mergedRelR->tuples;
+        tuple_t * stuples = (tuple_t *) mergedRelS->tuples;
 
         nresults = merge_join(rtuples, stuples,
                               mergedRelR->num_tuples, mergedRelS->num_tuples, chainedbuf);
 
     } else {
         /* single-threaded execution: just join sorted partition-pairs */
-        for (int i = 0; i < PARTFANOUT; i++) {
+        for(int i = 0; i < PARTFANOUT; i ++) {
             /* evaluate join between each sorted part */
             nresults += merge_join(relRparts[i]->tuples, relSparts[i]->tuples,
                                    relRparts[i]->num_tuples, relSparts[i]->num_tuples,

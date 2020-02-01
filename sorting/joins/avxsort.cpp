@@ -39,20 +39,20 @@ extern int keycmp(const void * k1, const void * k2);
  * @warning inputptr and outputptr might be swapped internally.
  */
 void
-avxsort_unaligned(double_t **inputptr, double_t **outputptr, uint64_t nitems)
+avxsort_unaligned(int64_t ** inputptr, int64_t ** outputptr, uint64_t nitems)
 {
     if(nitems <= 0)
         return;
 
-    double * input  = * inputptr;
-    double * output = * outputptr;
+    int64_t * input  = * inputptr;
+    int64_t * output = * outputptr;
 
     uint64_t i;
     uint64_t nchunks = (nitems / BLOCKSIZE);
     int rem = (nitems % BLOCKSIZE);
 
     /* each chunk keeps track of its temporary memory offset */
-    double * ptrs[nchunks+1][2];/* [chunk-in, chunk-out-tmp] */
+    int64_t * ptrs[nchunks+1][2];/* [chunk-in, chunk-out-tmp] */
     uint32_t sizes[nchunks+1];
 
     for(i = 0; i <= nchunks; i++) {
@@ -87,9 +87,9 @@ avxsort_unaligned(double_t **inputptr, double_t **outputptr, uint64_t nitems)
 
         uint64_t k = 0;
         for(uint64_t j = 0; j < (nchunks-1); j += 2) {
-            double * inpA  = ptrs[j][0];
-            double * inpB  = ptrs[j+1][0];
-            double * out   = ptrs[j][1];
+            int64_t * inpA  = ptrs[j][0];
+            int64_t * inpB  = ptrs[j+1][0];
+            int64_t * out   = ptrs[j][1];
             uint32_t  sizeA = sizes[j];
             uint32_t  sizeB = sizes[j+1];
 
@@ -125,20 +125,20 @@ avxsort_unaligned(double_t **inputptr, double_t **outputptr, uint64_t nitems)
  *                                                                             *
  *******************************************************************************/
 void
-avxsort_aligned(double_t **inputptr, double_t **outputptr, uint64_t nitems)
+avxsort_aligned(int64_t ** inputptr, int64_t ** outputptr, uint64_t nitems)
 {
     if(nitems <= 0)
         return;
 
-    double_t * input  = * inputptr;
-    double_t * output = * outputptr;
+    int64_t * input  = * inputptr;
+    int64_t * output = * outputptr;
 
     uint64_t i;
     uint64_t nchunks = (nitems / BLOCKSIZE);
     int rem = (nitems % BLOCKSIZE);
     /* printf("nchunks = %d, nitems = %d, rem = %d\n", nchunks, nitems, rem); */
     /* each chunk keeps track of its temporary memory offset */
-    double_t * ptrs[nchunks+1][2];/* [chunk-in, chunk-out-tmp] */
+    int64_t * ptrs[nchunks+1][2];/* [chunk-in, chunk-out-tmp] */
     uint32_t sizes[nchunks+1];
 
     for(i = 0; i <= nchunks; i++) {
@@ -173,9 +173,9 @@ avxsort_aligned(double_t **inputptr, double_t **outputptr, uint64_t nitems)
 
         uint64_t k = 0;
         for(uint64_t j = 0; j < (nchunks-1); j += 2) {
-            double_t * inpA  = ptrs[j][0];
-            double_t * inpB  = ptrs[j+1][0];
-            double_t * out   = ptrs[j][1];
+            int64_t * inpA  = ptrs[j][0];
+            int64_t * inpB  = ptrs[j+1][0];
+            int64_t * out   = ptrs[j][1];
             uint32_t  sizeA = sizes[j];
             uint32_t  sizeB = sizes[j+1];
 
@@ -208,8 +208,8 @@ avxsort_aligned(double_t **inputptr, double_t **outputptr, uint64_t nitems)
 void
 avxsort_tuples(tuple_t ** inputptr, tuple_t ** outputptr, uint64_t nitems)
 {
-    double_t * input  = (double_t *)(*inputptr);
-    double_t * output = (double_t*)(*outputptr);
+    int64_t * input  = (int64_t*)(*inputptr);
+    int64_t * output = (int64_t*)(*outputptr);
 
     /* choose actual implementation depending on the input alignment */
     if(((uintptr_t)input % CACHE_LINE_SIZE) == 0
@@ -226,6 +226,18 @@ void
 avxsort_int64(int64_t ** inputptr, int64_t ** outputptr, uint64_t nitems)
 {
     /* \todo: implement */
+    int64_t * input  = (int64_t*)(*inputptr);
+    int64_t * output = (int64_t*)(*outputptr);
+
+    /* choose actual implementation depending on the input alignment */
+    if(((uintptr_t)input % CACHE_LINE_SIZE) == 0
+       && ((uintptr_t)output % CACHE_LINE_SIZE) == 0)
+        avxsort_aligned(&input, &output, nitems);
+    else
+        avxsort_unaligned(&input, &output, nitems);
+
+    *inputptr = (int64_t *)(input);
+    *outputptr = (int64_t *)(output);
 }
 
 void

@@ -17,7 +17,7 @@ endif()
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${./bin})
 set (CMAKE_STATIC_LINKER_FLAGS -lnuma)
 set (CMAKE_STATIC_LINKER_FLAGS -lrt)
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse4.2 -mavx2")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -msse4.2 -mavx2")
 SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 
 add_executable(sorting

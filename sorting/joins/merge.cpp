@@ -109,9 +109,9 @@ avx_merge_tuples(tuple_t * const inA,
                  const uint64_t lenA,
                  const uint64_t lenB)
 {
-    double * const inpA = (double * const) inA;
-    double * const inpB = (double * const) inB;
-    double * const out = (double * const) outp;
+    int64_t * const inpA = (int64_t * const) inA;
+    int64_t * const inpB = (int64_t * const) inB;
+    int64_t * const out = (int64_t * const) outp;
 
     int isaligned = 0, iseqlen = 0;
 
@@ -172,9 +172,9 @@ avx_merge_tuples(tuple_t * const inA,
 
 
 uint64_t
-avx_merge_int64(double * const inpA,
-                double * const inpB,
-                double * const out,
+avx_merge_int64(int64_t * const inpA,
+                int64_t * const inpB,
+                int64_t * const out,
                 const uint64_t lenA,
                 const uint64_t lenB)
 {

@@ -1,11 +1,3 @@
-//
-// Created by Shuhao Zhang on 8/9/19.
-//
-
-#ifndef ALLIANCEDB_CONFIG_H
-#define ALLIANCEDB_CONFIG_H
-
-
 /* config.h.  Generated from config.h.in by configure.  */
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
@@ -155,5 +147,3 @@
 /* Define to the type of an unsigned integer type of width exactly 8 bits if
    such a type exists and the standard includes do not define it. */
 /* #undef uint8_t */
-
-#endif //ALLIANCEDB_CONFIG_H

@@ -1,9 +1,16 @@
-//
-// Created by tony on 10/09/19.
-//
+/**
+ * @file   partition.h
+ * @author Cagri Balkesen <cagri.balkesen@inf.ethz.ch>
+ * @date   Fri Jun 29 17:35:37 2012
+ *
+ * @brief  Single-threaded Radix Partitioning Implementations
+ *
+ * (c) 2014, ETH Zurich, Systems Group
+ *
+ */
 
-#ifndef ALLIANCEDB_PARTITION_H
-#define ALLIANCEDB_PARTITION_H
+#ifndef PARTITION_H
+#define PARTITION_H
 
 #include "../util/types.h" /* relation_t, tuple_t */
 
@@ -122,4 +129,4 @@ histogram_memcpy_bench(relation_t ** partitions,
 //void
 //parallel_radix_partition(part_t * const part);
 
-#endif //ALLIANCEDB_PARTITION_H
+#endif /* PARTITION_H */

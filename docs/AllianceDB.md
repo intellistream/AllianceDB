@@ -158,7 +158,7 @@ Kim data generator parameter
 2. `w`: window size (msecs) of join operation, $w > 0$.
 3. `n`: number of threads, $n > 0$.
 4. `e`:  step size,  generate number of tuples at each step, all tuples in the same step have the same timestamp, $e > 0$.
-5. `l`: interval of each step,  [0, window_size], (0 means batch operation).
+5. `l`: interval of each step (msecs),  [0, window_size], (0 means batch operation).
 6. `d`: distribution of key-field, [0 - unique, 2 - zipf].
 7. `z` : configure key-filed zipf distribution.
 8. `D`: distribution of ts-field, [0 - unique,  2 - zipf].

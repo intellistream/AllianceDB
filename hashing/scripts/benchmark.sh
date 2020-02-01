@@ -37,93 +37,56 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #SHJ_HS_NP P
   SKEY=0
   RTS=0
   STS=0
-  TS_DISTRIBUTION=0
-  ZIPF_FACTOR=0
+  TS_DISTRIBUTION=0 # uniform time distribution
+  ZIPF_FACTOR=0     # uniform time distribution
+  distrbution=0     # uniform key distribution
+  skew=0            # uniform key distribution
+  INTERVAL=1        # interval of 1.
+  STEP_SIZE=1000    # arrival rate = 1000 / ms
+  WINDOW_SIZE=1000 #MS rel size = window_size / interval * step_size.
   for benchmark in Kim; do #"Kim" "Stock" "DEBS" "YSB" #"Rovio" #"Google" "Amazon"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "Kim")
       id=0
-      WINDOW_SIZE=100000 #MS
+      ## Figure 1
+      echo test varying input arrival rate 0 - 4 # test (1) means infinite arrival rate (batch).
+      ts=0                                       # batch case
+      KimRun
+      let "id++"
 
-      echo test case with no timestamp
-      ts=0
-      echo test case 1: varying key distribution 0 - 1
-      for distrbution in 0 2; do
-        STEP_SIZE=1000
-        INTERVAL=10
-        skew=0
+      ts=1 # stream case
+      # step size should be bigger than nthreads
+      for STEP_SIZE in 1 10 100 1000; do
+        WINDOW_SIZE=$(expr $WINDOW_SIZE /$STEP_SIZE \* 1000) #ensure relation size is the same.
+        echo Figure 1 window size is $WINDOW_SIZE
         KimRun
         let "id++"
       done
 
-      echo test case 2: varying key distribution zipf factor 2 - 5
-      for skew in 0.2 0.4 0.8 1; do
-        STEP_SIZE=1000
-        INTERVAL=10
-        distrbution=2
-        KimRun
-        let "id++"
-      done
-
-      echo test with uniform timestamp.
-      ts=1
-      TS_DISTRIBUTION=0
-      echo test case 3: varying key distribution zipf factor 6 - 7
-      for distrbution in 0 2; do
-        STEP_SIZE=1000
-        INTERVAL=10
-        skew=0
-        KimRun
-        let "id++"
-      done
-
-      echo test case 4: varying key distribution zipf factor 8 - 11
-      for skew in 0.2 0.4 0.8 1; do
-        STEP_SIZE=1000
-        INTERVAL=10
-        distrbution=2
-        KimRun
-        let "id++"
-      done
-
-      echo test case 5: varying step size 12 - 15 # step size should be bigger than nthreads
-      for STEP_SIZE in 100 500 1000 2000; do
-        INTERVAL=10
-        distrbution=0
-        skew=0
-        KimRun
-        let "id++"
-      done
-
-      echo test case 6: varying interval 16 - 19
-      for INTERVAL in 10 100 500 1000; do
-        STEP_SIZE=1000
-        distrbution=0
-        skew=0
-        KimRun
-        let "id++"
-      done
-
-      echo test case 7: varying window size 20 - 23
-      for WINDOW_SIZE in 1000 10000 50000 100000; do
-        INTERVAL=10
-        STEP_SIZE=1000 # TODO: no sure if this should be smaller or narrow down the window size
-        distrbution=0
-        skew=0
-        KimRun
-        let "id++"
-      done
-
+      ## Figure 2
       TS_DISTRIBUTION=2
-      echo test case 8: zipf distribution timestamp 24 - 28
+      WINDOW_SIZE=10000 #MS
+      echo test varying zipf distribution timestamp 5 - 9
       for ZIPF_FACTOR in 0 0.2 0.4 0.8 1; do
-        INTERVAL=10
-        STEP_SIZE=1000
-        distrbution=0
-        skew=0
-#        KimRun
-#        let "id++"
+        KimRun
+        let "id++"
+      done
+
+      ## Figure 3
+      TS_DISTRIBUTION=0
+      echo test varying key distribution 10 - 14
+      for skew in 0 0.2 0.4 0.8 1; do
+        distrbution=2
+        KimRun
+        let "id++"
+      done
+
+      ## Figure 4
+      echo test varying window size 15 - 18
+      for WINDOW_SIZE in 1000 10000 50000 100000; do
+        KimRun
+        let "id++"
       done
       ;;
 

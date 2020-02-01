@@ -332,7 +332,7 @@ $ cat cpu-mapping.txt
 #include "util/params.h"             /* macro parameters */
 #include "affinity/numa_shuffle.h"       /* numa_shuffle_init() */
 #include <sched.h>
-#include <check.h>
+//#include <check.h>
 #include <assert.h>
 #include <string>
 #include "joins/joincommon.h"
@@ -426,7 +426,7 @@ extern int optind, opterr, optopt;
 /** All available algorithms */
 static struct algo_t algos[] =
         {
-                {"m-way",      sortmergejoin_multiway},
+                {"m-way",      sortmergejoin_multiway},/* m-pass: sort-merge join with multi-pass merge */
                 {"m-pass",     sortmergejoin_multipass},
                 {"mpsm",       sortmergejoin_mpsm},
                 {"m-way+skew", sortmergejoin_multiway_skewhandling},
@@ -468,10 +468,10 @@ struct temp_tuple {
 
 void
 check_avx_sort() {
-    int64_t sz = 256;//rand() % MAXTESTSIZE;
+    int64_t sz = 256000;//rand() % MAXTESTSIZE;
     tuple_t *in = generate_rand_tuples(sz);
-    DEBUGMSG(1, "Original relation: %s",
-             print_relation(in, sz).c_str())
+//    DEBUGMSG(1, "Original relation: %s",
+//             print_relation(in, sz).c_str())
 
 
     temp_tuple *items = (temp_tuple *) malloc(sizeof(temp_tuple) * 10);
@@ -484,9 +484,9 @@ check_avx_sort() {
     double_t *ditems = (double_t *) items;
 
     __m256d ra = _mm256_load_pd((double const *) (ditems));
-    __m256d rb = _mm256_loadu_pd ((double const *)(ditems + 4));
-    __m256d rc = _mm256_loadu_pd ((double const *)(ditems + 8));
-    __m256d rd = _mm256_loadu_pd ((double const *)(ditems + 12));
+    __m256d rb = _mm256_loadu_pd((double const *) (ditems + 4));
+    __m256d rc = _mm256_loadu_pd((double const *) (ditems + 8));
+    __m256d rd = _mm256_loadu_pd((double const *) (ditems + 12));
 
 //    tuple_t *out2 = (tuple_t *) malloc(sz * sizeof(tuple_t));
 //    scalarsort_tuples(&in, &out2, sz);
@@ -502,7 +502,7 @@ check_avx_sort() {
     DEBUGMSG(1, "Sorted relation: %s",
              print_relation(out, sz).c_str())
 
-    assert(is_sorted_tuples(out, sz)==0);
+    assert(is_sorted_tuples(out, sz) == 0);
     free(in);
     free(out);
 }
@@ -531,7 +531,7 @@ main(int argc, char *argv[]) {
     cmdparam_t cmd_params;
 
     /* Default values if not specified on command line */
-    cmd_params.algo = &algos[1]; /* m-pass: sort-merge join with multi-pass merge */
+    cmd_params.algo = &algos[0]; //0:m-way, 1: m-pass
     cmd_params.nthreads = 1;
     /* default dataset is Workload B (described in paper) */
     cmd_params.r_size = 129999;

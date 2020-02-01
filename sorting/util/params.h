@@ -15,7 +15,7 @@
 
 /** The partitioning fan-out for the inital step of sort-merge joins */
 #ifndef NRADIXBITS_DEFAULT
-#define NRADIXBITS_DEFAULT 6
+#define NRADIXBITS_DEFAULT 7
 #endif
 
 /** Default partitioning fan-out, can be adjusted from command line. */
