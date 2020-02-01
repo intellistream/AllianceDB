@@ -801,7 +801,7 @@ delete_relation(relation_t *rel) {
 void
 delete_relation_payload(relation_payload_t *relPl) {
     /* clean up */
-    FREE(relPl->ts, relPl->num_tuples * sizeof(table_t));
+    FREE(relPl->ts, relPl->num_tuples * sizeof(milliseconds));
 }
 
 // for string delimiter
