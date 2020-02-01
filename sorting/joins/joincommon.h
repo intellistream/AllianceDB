@@ -182,5 +182,4 @@ struct relationpair_t {
     relation_t S;
 };
 
-
 #endif //ALLIANCEDB_JOINCOMMON_H
