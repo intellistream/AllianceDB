@@ -28,7 +28,7 @@ algo=""
 Threads=36
 timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
-for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #SHJ_HS_NP PMJ_HS_NP  #RPJ_JM_NP RPJ_JBCR_NP RPJ_HS_NP
+for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #
   RSIZE=1
   SSIZE=1
   RPATH=""
@@ -57,43 +57,43 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #SHJ_HS_NP P
 
       ts=1 # stream case
       # step size should be bigger than nthreads
-      for STEP_SIZE in 100 200 400 800; do
-        WINDOW_SIZE=$(expr $WINDOW_SIZE \* 1000 / $STEP_SIZE) #ensure relation size is the same.
+      for STEP_SIZE in 100 1000 10000 100000; do
+        WINDOW_SIZE=$(expr 1000 \* 1000 / $STEP_SIZE) #ensure relation size is the same.
         echo Figure 1 window size is $WINDOW_SIZE
         KimRun
         let "id++"
       done
 
-      ## Figure 2
-      TS_DISTRIBUTION=2
-      WINDOW_SIZE=1000 #default
-      STEP_SIZE=1000   #default
-      echo test varying zipf distribution timestamp 5 - 9
-      for ZIPF_FACTOR in 0 0.2 0.4 0.8 1; do
-        KimRun
-        let "id++"
-      done
-
-      ## Figure 3
-      TS_DISTRIBUTION=0
-      echo test varying key distribution 10 - 15
-      distrbution=0 #unique
-      KimRun
-      let "id++"
-
-      distrbution=2 #zipf
-      for skew in 0 0.2 0.4 0.8 1; do
-        KimRun
-        let "id++"
-      done
-
-      distrbution=0 #unique
-      ## Figure 4
-      echo test varying window size 16 - 18
-      for WINDOW_SIZE in 1000 10000 50000; do
-        KimRun
-        let "id++"
-      done
+#      ## Figure 2
+#      TS_DISTRIBUTION=2
+#      WINDOW_SIZE=1000 #default
+#      STEP_SIZE=1000   #default
+#      echo test varying zipf distribution timestamp 5 - 9
+#      for ZIPF_FACTOR in 0 0.2 0.4 0.8 1; do
+#        KimRun
+#        let "id++"
+#      done
+#
+#      ## Figure 3
+#      TS_DISTRIBUTION=0
+#      echo test varying key distribution 10 - 15
+#      distrbution=0 #unique
+#      KimRun
+#      let "id++"
+#
+#      distrbution=2 #zipf
+#      for skew in 0 0.2 0.4 0.8 1; do
+#        KimRun
+#        let "id++"
+#      done
+#
+#      distrbution=0 #unique
+#      ## Figure 4
+#      echo test varying window size 16 - 18
+#      for WINDOW_SIZE in 1000 5000 10000; do
+#        KimRun
+#        let "id++"
+#      done
       ;;
 
     "DEBS")

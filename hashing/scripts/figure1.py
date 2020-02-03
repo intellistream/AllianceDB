@@ -1,15 +1,11 @@
-import getopt
 import os
-import sys
 
-import matplotlib as mpl
-
-mpl.use('Agg')
-
+import itertools as it
+import matplotlib
 import matplotlib.pyplot as plt
+import numpy as np
 import pylab
 from matplotlib.font_manager import FontProperties
-from matplotlib.ticker import LinearLocator
 from matplotlib.ticker import LogLocator
 
 OPT_FONT_NAME = 'Helvetica'
@@ -24,18 +20,18 @@ MARKERS = (['o', 's', 'v', "^", "h", "v", ">", "x", "d", "<", "|", "", "+", "_"]
 # you may want to change the color map for different figures
 COLOR_MAP = ('#F15854', '#5DA5DA', '#60BD68', '#B276B2', '#DECF3F', '#F17CB0', '#B2912F', '#FAA43A', '#AFAFAF')
 # you may want to change the patterns for different figures
-PATTERNS = (["////", "\\\\", "//////", "o", "o", "\\\\", "\\\\", "//////", "//////", ".", "\\\\\\", "\\\\\\"])
+PATTERNS = (["////", "\\\\", "|||", "o", "---", "\\\\", "\\\\", "//////", "//////", ".", "\\\\\\", "\\\\\\"])
 LABEL_WEIGHT = 'bold'
 LINE_COLORS = COLOR_MAP
 LINE_WIDTH = 3.0
 MARKER_SIZE = 13.0
 MARKER_FREQUENCY = 1000
 
-mpl.rcParams['ps.useafm'] = True
-mpl.rcParams['pdf.use14corefonts'] = True
-mpl.rcParams['xtick.labelsize'] = TICK_FONT_SIZE
-mpl.rcParams['ytick.labelsize'] = TICK_FONT_SIZE
-mpl.rcParams['font.family'] = OPT_FONT_NAME
+matplotlib.rcParams['ps.useafm'] = True
+matplotlib.rcParams['pdf.use14corefonts'] = True
+matplotlib.rcParams['xtick.labelsize'] = TICK_FONT_SIZE
+matplotlib.rcParams['ytick.labelsize'] = TICK_FONT_SIZE
+matplotlib.rcParams['font.family'] = OPT_FONT_NAME
 
 FIGURE_FOLDER = '/data1/xtra/results/figure'
 
@@ -47,66 +43,6 @@ def ConvertEpsToPdf(dir_filename):
     os.system("rm -rf " + dir_filename + ".eps")
 
 
-# example for reading csv file
-def ReadFile():
-    col1 = []
-    col2 = []
-    col3 = []
-    col4 = []
-    col5 = []
-    col6 = []
-
-    for id in range(0, 4):
-        file = '/data1/xtra/results/timestamps/SHJ_JM_NP_{}.txt'.format(id)
-        f = open(file, "r")
-        read = f.readlines()
-        x = float(read.pop(read.count() - 1).strip("\n"))  # get last timestamp
-        value = read.count() / x  # get throughput (#items/ms)
-        col1.append(value)
-
-    for id in range(0, 4):
-        file = '/data1/xtra/results/timestamps/SHJ_JBCR_NP_{}.txt'.format(id)
-        f = open(file, "r")
-        read = f.readlines()
-        x = float(read.pop(read.count() - 1).strip("\n"))  # get last timestamp
-        value = read.count() / x  # get throughput (#items/ms)
-        col2.append(value)
-
-    for id in range(0, 4):
-        file = '/data1/xtra/results/timestamps/PMJ_JM_NP_{}.txt'.format(id)
-        f = open(file, "r")
-        read = f.readlines()
-        x = float(read.pop(read.count() - 1).strip("\n"))  # get last timestamp
-        value = read.count() / x  # get throughput (#items/ms)
-        col3.append(value)
-
-    for id in range(0, 4):
-        file = '/data1/xtra/results/timestamps/PMJ_JBCR_NP_{}.txt'.format(id)
-        f = open(file, "r")
-        read = f.readlines()
-        x = float(read.pop(read.count() - 1).strip("\n"))  # get last timestamp
-        value = read.count() / x  # get throughput (#items/ms)
-        col4.append(value)
-
-    for id in range(0, 4):
-        file = '/data1/xtra/results/timestamps/PRJ_{}.txt'.format(id)
-        f = open(file, "r")
-        read = f.readlines()
-        x = float(read.pop(read.count() - 1).strip("\n"))  # get last timestamp
-        value = read.count() / x  # get throughput (#items/ms)
-        col5.append(value)
-
-    for id in range(0, 4):
-        file = '/data1/xtra/results/timestamps/NPJ_{}.txt'.format(id)
-        f = open(file, "r")
-        read = f.readlines()
-        x = float(read.pop(read.count() - 1).strip("\n"))  # get last timestamp
-        value = read.count() / x  # get throughput (#items/ms)
-        col6.append(value)
-
-    return col1, col2, col3, col4, col5, col6
-
-
 def DrawLegend(legend_labels, filename):
     fig = pylab.figure()
     ax1 = fig.add_subplot(111)
@@ -115,7 +51,7 @@ def DrawLegend(legend_labels, filename):
     MARKER_SIZE = 12.0
     LEGEND_FP = FontProperties(style='normal', size=26)
 
-    figlegend = pylab.figure(figsize=(11, 0.3))
+    figlegend = pylab.figure(figsize=(12, 0.5))
     idx = 0
     lines = [None] * (len(FIGURE_LABEL))
     data = [1]
@@ -126,13 +62,12 @@ def DrawLegend(legend_labels, filename):
         lines[idx], = ax1.plot(x_values, data,
                                color=LINE_COLORS[idx], linewidth=LINE_WIDTH,
                                marker=MARKERS[idx], markersize=MARKER_SIZE, label=str(group))
-
         idx = idx + 1
 
     # LEGEND
     figlegend.legend(lines, FIGURE_LABEL, prop=LEGEND_FP,
                      loc=1, ncol=len(FIGURE_LABEL), mode="expand", shadow=False,
-                     frameon=False, borderaxespad=-0.3, handlelength=2)
+                     frameon=False, borderaxespad=0.0, handlelength=2)
 
     if not os.path.exists(FIGURE_FOLDER):
         os.makedirs(FIGURE_FOLDER)
@@ -141,7 +76,7 @@ def DrawLegend(legend_labels, filename):
 
 
 # draw a line chart
-def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, y_min, y_max, filename, allow_legend):
+def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max, filename, allow_legend):
     # you may change the figure size on your own.
     fig = plt.figure(figsize=(8, 3))
     figure = fig.add_subplot(111)
@@ -151,68 +86,127 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
     if not os.path.exists(FIGURE_FOLDER):
         os.makedirs(FIGURE_FOLDER)
 
-    x_values = xvalues
-    y_values = yvalues
-
-    lines = [None] * (len(FIGURE_LABEL))
+    # values in the x_xis
+    index = np.arange(len(x_values))
+    # the bar width.
+    # you may need to tune it to get the best figure.
+    width = 0.15
+    # draw the bars
+    bars = [None] * (len(FIGURE_LABEL))
     for i in range(len(y_values)):
-        lines[i], = figure.plot(x_values, y_values[i], color=LINE_COLORS[i], \
-                                linewidth=LINE_WIDTH, marker=MARKERS[i], \
-                                markersize=MARKER_SIZE, label=FIGURE_LABEL[i])
+        bars[i] = plt.bar(index + i * width + width / 2,
+                          y_values[i], width,
+                          hatch=PATTERNS[i],
+                          color=LINE_COLORS[i],
+                          label=FIGURE_LABEL[i])
 
     # sometimes you may not want to draw legends.
     if allow_legend == True:
-        plt.legend(lines,
-                   FIGURE_LABEL,
+        plt.legend(bars, FIGURE_LABEL,
                    prop=LEGEND_FP,
-                   loc='upper center',
                    ncol=3,
+                   loc='upper center',
                    #                     mode='expand',
-                   bbox_to_anchor=(0.55, 1.5), shadow=False,
+                   shadow=False,
+                   bbox_to_anchor=(0.45, 1.6),
                    columnspacing=0.1,
-                   frameon=True, borderaxespad=0.0, handlelength=1.5,
-                   handletextpad=0.1,
-                   labelspacing=0.1)
+                   handletextpad=0.2,
+                   #                     bbox_transform=ax.transAxes,
+                   #                     frameon=True,
+                   #                     columnspacing=5.5,
+                   #                     handlelength=2,
+                   )
 
+    # you may need to tune the xticks position to get the best figure.
+    plt.xticks(index + 2.4 * width, x_values)
     plt.yscale('log')
-    plt.xticks(x_values)
-    # you may control the limits on your own.
-    plt.xlim(x_min, x_max)
-    plt.ylim(y_min, y_max)
 
     plt.grid(axis='y', color='gray')
     figure.yaxis.set_major_locator(LogLocator(base=10))
-    figure.xaxis.set_major_locator(LinearLocator(5))
-
+    # figure.xaxis.set_major_locator(LinearLocator(5))
     figure.get_xaxis().set_tick_params(direction='in', pad=10)
     figure.get_yaxis().set_tick_params(direction='in', pad=10)
 
     plt.xlabel(x_label, fontproperties=LABEL_FP)
     plt.ylabel(y_label, fontproperties=LABEL_FP)
 
-    size = fig.get_size_inches()
-    dpi = fig.get_dpi()
+    plt.savefig(FIGURE_FOLDER + "/" + filename + ".pdf", bbox_inches='tight')
 
-    plt.savefig(FIGURE_FOLDER + "/" + filename + ".eps", bbox_inches='tight', format='eps')
-    ConvertEpsToPdf(FIGURE_FOLDER + "/" + filename)
+# example for reading csv file
+def ReadFile():
+    y = []
+    col1 = []
+    col2 = []
+    col3 = []
+    col4 = []
+    col5 = []
+    col6 = []
+
+    for id in it.chain(range(1, 5), range(0, 1)):
+        file = '/data1/xtra/results/timestamps/PRJ_{}.txt'.format(id)
+        f = open(file, "r")
+        read = f.readlines()
+        x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
+        value = len(read) / x  # get throughput (#items/ms)
+        col1.append(value)
+    y.append(col1)
+
+    for id in it.chain(range(1, 5), range(0, 1)):
+        file = '/data1/xtra/results/timestamps/NPJ_{}.txt'.format(id)
+        f = open(file, "r")
+        read = f.readlines()
+        x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
+        value = len(read) / x  # get throughput (#items/ms)
+        col2.append(value)
+    y.append(col2)
+
+    for id in it.chain(range(1, 5), range(0, 1)):
+        file = '/data1/xtra/results/timestamps/SHJ_JM_NP_{}.txt'.format(id)
+        f = open(file, "r")
+        read = f.readlines()
+        x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
+        value = len(read) / x  # get throughput (#items/ms)
+        col3.append(value)
+    y.append(col3)
+
+    for id in it.chain(range(1, 5), range(0, 1)):
+        file = '/data1/xtra/results/timestamps/SHJ_JBCR_NP_{}.txt'.format(id)
+        f = open(file, "r")
+        read = f.readlines()
+        x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
+        value = len(read) / x  # get throughput (#items/ms)
+        col4.append(value)
+    y.append(col4)
+
+    for id in it.chain(range(1, 5), range(0, 1)):
+        file = '/data1/xtra/results/timestamps/PMJ_JM_NP_{}.txt'.format(id)
+        f = open(file, "r")
+        read = f.readlines()
+        x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
+        value = len(read) / x  # get throughput (#items/ms)
+        col5.append(value)
+    y.append(col5)
+
+    for id in it.chain(range(1, 5), range(0, 1)):
+        file = '/data1/xtra/results/timestamps/PMJ_JBCR_NP_{}.txt'.format(id)
+        f = open(file, "r")
+        read = f.readlines()
+        x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
+        value = len(read) / x  # get throughput (#items/ms)
+        col6.append(value)
+    y.append(col6)
+    return y
 
 
 if __name__ == "__main__":
+    x_values = [100, 1000, 10000, 100000, 'Inf']
 
-    legend_labels = ['Hash_JM', 'Hash_JB', 'Sort_JM', 'Sort_JB', 'PRJ', 'NPJ']
-    col0 = []
-    for x in 1, 10, 100, 1000, 10000:
-        col0.append(x)
+    y_values = ReadFile()
 
-    col1, col2, col3, col4, col5, col6 = ReadFile()
-    # print(len(col1), len(col2), len(col3), len(col4), len(col5))
-    # alignment
-    lines = [col1, col2, col3, col4, col5, col6]
-    DrawFigure(col0, lines, legend_labels,
-               'Number of results', 'time (usec)',
-               1,
-               10000,
-               0, 100000,
-               'progressive_results',
-               True)
-    # DrawLegend(legend_labels, 'interval_legend')
+    legend_labels = ['PRJ', 'NPJ', 'SHJ$^M$', 'SHJ$^B$', 'PMJ$^M$', 'PMJ$^B$']
+
+    DrawFigure(x_values, y_values, legend_labels,
+               'Input arrival rate', 'Throughput', 0,
+               400, 'figure1', True)
+
+#  DrawLegend(legend_labels, 'factor_legend')
