@@ -19,7 +19,7 @@
 #ifndef ALLIANCEDB_JOINCOMMON_H
 #define ALLIANCEDB_JOINCOMMON_H
 
-#define DEBUG
+//#define DEBUG
 
 #include <stdint.h>
 #include <stdlib.h>             /* posix_memalign, EXIT_FAILURE */

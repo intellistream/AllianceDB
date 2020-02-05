@@ -35,14 +35,6 @@ matplotlib.rcParams['font.family'] = OPT_FONT_NAME
 
 FIGURE_FOLDER = '/data1/xtra/results/figure'
 
-
-# there are some embedding problems if directly exporting the pdf figure using matplotlib.
-# so we generate the eps format first and convert it to pdf.
-def ConvertEpsToPdf(dir_filename):
-    os.system("epstopdf --outfile " + dir_filename + ".pdf " + dir_filename + ".eps")
-    os.system("rm -rf " + dir_filename + ".eps")
-
-
 def DrawLegend(legend_labels, filename):
     fig = pylab.figure()
     ax1 = fig.add_subplot(111)
@@ -73,7 +65,6 @@ def DrawLegend(legend_labels, filename):
         os.makedirs(FIGURE_FOLDER)
     # no need to export eps in this case.
     figlegend.savefig(FIGURE_FOLDER + '/' + filename + '.pdf')
-
 
 # draw a line chart
 def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max, filename, allow_legend):
@@ -119,10 +110,10 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
 
     # you may need to tune the xticks position to get the best figure.
     plt.xticks(index + 2.4 * width, x_values)
-    plt.yscale('log')
+    # plt.yscale('log')
 
     plt.grid(axis='y', color='gray')
-    figure.yaxis.set_major_locator(LogLocator(base=10))
+    # figure.yaxis.set_major_locator(LogLocator(base=10))
     # figure.xaxis.set_major_locator(LinearLocator(5))
     figure.get_xaxis().set_tick_params(direction='in', pad=10)
     figure.get_yaxis().set_tick_params(direction='in', pad=10)
@@ -144,7 +135,7 @@ def ReadFile():
     col7 = []
     col8 = []
 
-    for id in it.chain(range(1, 5), range(0, 1)):
+    for id in it.chain(range(5, 10)):
         file = '/data1/xtra/results/timestamps/PRJ_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -153,7 +144,7 @@ def ReadFile():
         col1.append(value)
     y.append(col1)
 
-    for id in it.chain(range(1, 5), range(0, 1)):
+    for id in it.chain(range(5, 10)):
         file = '/data1/xtra/results/timestamps/NPJ_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -162,7 +153,7 @@ def ReadFile():
         col2.append(value)
     y.append(col2)
 
-    for id in it.chain(range(1, 5), range(0, 1)):
+    for id in it.chain(range(5, 10)):
         file = '/data1/xtra/results/timestamps/MPASS_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -171,7 +162,7 @@ def ReadFile():
         col3.append(value)
     y.append(col3)
 
-    for id in it.chain(range(1, 5), range(0, 1)):
+    for id in it.chain(range(5, 10)):
         file = '/data1/xtra/results/timestamps/MWAY_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -180,7 +171,7 @@ def ReadFile():
         col4.append(value)
     y.append(col4)
 
-    for id in it.chain(range(1, 5), range(0, 1)):
+    for id in it.chain(range(5, 10)):
         file = '/data1/xtra/results/timestamps/SHJ_JM_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -189,7 +180,7 @@ def ReadFile():
         col5.append(value)
     y.append(col5)
 
-    for id in it.chain(range(1, 5), range(0, 1)):
+    for id in it.chain(range(5, 10)):
         file = '/data1/xtra/results/timestamps/SHJ_JBCR_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -198,7 +189,7 @@ def ReadFile():
         col6.append(value)
     y.append(col6)
 
-    for id in it.chain(range(1, 5), range(0, 1)):
+    for id in it.chain(range(5, 10)):
         file = '/data1/xtra/results/timestamps/PMJ_JM_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -207,7 +198,7 @@ def ReadFile():
         col7.append(value)
     y.append(col7)
 
-    for id in it.chain(range(1, 5), range(0, 1)):
+    for id in it.chain(range(5, 10)):
         file = '/data1/xtra/results/timestamps/PMJ_JBCR_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -219,14 +210,14 @@ def ReadFile():
 
 
 if __name__ == "__main__":
-    x_values = [100, 1000, 10000, 100000, 'Inf']
+    x_values = [0, 0.2, 0.4, 0.8, 1]
 
     y_values = ReadFile()
 
     legend_labels = ['PRJ', 'NPJ','M-PASS', 'M-WAY', 'SHJ$^M$', 'SHJ$^B$', 'PMJ$^M$', 'PMJ$^B$']
 
     DrawFigure(x_values, y_values, legend_labels,
-               'Input arrival rate (e/ms)', 'Throughput (#matches/ms)', 0,
-               400, 'figure1', True)
+               'Input Arrival Skewness', 'Throughput (#matches/ms)', 0,
+               400, 'figure2', True)
 
 #  DrawLegend(legend_labels, 'factor_legend')

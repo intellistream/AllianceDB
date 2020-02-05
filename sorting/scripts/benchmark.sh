@@ -7,28 +7,28 @@ make -j4
 function benchmarkRun() {
   #####native execution
   echo "==benchmark:$benchmark -a $algo -n $Threads=="
-  ./hashing -a $algo -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads
+  ./sorting -a $algo -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads
 }
 
 function Run() {
   #####native execution
   echo "==benchmark:$benchmark -a $algo -n $Threads=="
-  ./hashing -a $algo -r $RSIZE -s $SSIZE -n $Threads
+  ./sorting -a $algo -r $RSIZE -s $SSIZE -n $Threads
 }
 
 function KimRun() {
   #####native execution
   echo "==benchmark:$benchmark -a $algo -n $Threads #TEST:$id=="
-  ./hashing -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id
+  ./sorting -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id
 }
 
 # Configurable variables
 # Generate a timestamp
 algo=""
-Threads=36
+Threads=32
 timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
-for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #
+for algo in m-way m-pass; do #
   RSIZE=1
   SSIZE=1
   RPATH=""
@@ -52,7 +52,7 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #
       ## Figure 1
       echo test varying input arrival rate 0 - 4 # test (1) means infinite arrival rate (batch).
       ts=0                                       # batch case
-      #      KimRun
+#      KimRun
       let "id++"
 
       ts=1 # stream case
@@ -60,11 +60,11 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #
       for STEP_SIZE in 100 1000 10000 100000; do
         WINDOW_SIZE=$(expr 1000 \* 1000 / $STEP_SIZE) #ensure relation size is the same.
         echo Figure 1 window size is $WINDOW_SIZE
-        #        KimRun
+#        KimRun
         let "id++"
       done
 
-      ## Figure 2
+#      ## Figure 2
       TS_DISTRIBUTION=2
       WINDOW_SIZE=1000 #default
       STEP_SIZE=100   #default
@@ -73,28 +73,27 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #
         KimRun
         let "id++"
       done
-
-      #
-      #      ## Figure 3
-      #      TS_DISTRIBUTION=0
-      #      echo test varying key distribution 10 - 15
-      #      distrbution=0 #unique
-      #      KimRun
-      #      let "id++"
-      #
-      #      distrbution=2 #zipf
-      #      for skew in 0 0.2 0.4 0.8 1; do
-      #        KimRun
-      #        let "id++"
-      #      done
-      #
-      #      distrbution=0 #unique
-      #      ## Figure 4
-      #      echo test varying window size 16 - 18
-      #      for WINDOW_SIZE in 1000 5000 10000; do
-      #        KimRun
-      #        let "id++"
-      #      done
+#
+#      ## Figure 3
+#      TS_DISTRIBUTION=0
+#      echo test varying key distribution 10 - 15
+#      distrbution=0 #unique
+#      KimRun
+#      let "id++"
+#
+#      distrbution=2 #zipf
+#      for skew in 0 0.2 0.4 0.8 1; do
+#        KimRun
+#        let "id++"
+#      done
+#
+#      distrbution=0 #unique
+#      ## Figure 4
+#      echo test varying window size 16 - 18
+#      for WINDOW_SIZE in 1000 5000 10000; do
+#        KimRun
+#        let "id++"
+#      done
       ;;
 
     "DEBS")
