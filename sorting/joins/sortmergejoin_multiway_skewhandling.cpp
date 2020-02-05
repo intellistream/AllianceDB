@@ -17,7 +17,7 @@
 #include <stdlib.h> /* malloc() */
 #include <math.h>   /* log2(), ceil() */
 
-#include "../util/rdtsc.h"              /* startTimer, stopTimer */
+
 #include "../util/barrier.h"            /* pthread_barrier_* */
 #include "../affinity/cpu_mapping.h"        /* cpu_id NUMA related methods */
 
@@ -70,7 +70,7 @@ sortmergejoin_multiway_skewhandling_thread(void * param);
 
 result_t *
 sortmergejoin_multiway_skewhandling(relation_t * relR, relation_t * relS,
-                                    joinconfig_t * joincfg)
+                                    joinconfig_t * joincfg, int exp_id)
 {
     /* check whether nr. of threads is a power of 2 */
     if((joincfg->NTHREADS & (joincfg->NTHREADS-1)) != 0){
@@ -80,7 +80,7 @@ sortmergejoin_multiway_skewhandling(relation_t * relR, relation_t * relS,
     }
 
     return sortmergejoin_initrun(relR, relS, joincfg,
-                                 sortmergejoin_multiway_skewhandling_thread);
+                                 sortmergejoin_multiway_skewhandling_thread, exp_id, nullptr);
 }
 
 

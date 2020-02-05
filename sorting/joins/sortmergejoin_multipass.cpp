@@ -17,7 +17,6 @@
 #include <stdlib.h> /* malloc() */
 #include <math.h>   /* log2(), ceil() */
 
-#include "../util/rdtsc.h"              /* startTimer, stopTimer */
 #include "../util/barrier.h"            /* pthread_barrier_* */
 
 #include "sortmergejoin_multipass.h"
@@ -49,7 +48,7 @@ void *
 sortmergejoin_multipass_thread(void *param);
 
 result_t *
-sortmergejoin_multipass(relation_t *relR, relation_t *relS, joinconfig_t *joincfg) {
+sortmergejoin_multipass(relation_t *relR, relation_t *relS, joinconfig_t *joincfg, int exp_id) {
     /* check whether nr. of threads is a power of 2 */
     if ((joincfg->NTHREADS & (joincfg->NTHREADS - 1)) != 0) {
         fprintf(stdout, "[ERROR] m-pass sort-merge join runs with a power of 2 #threads.\n");
@@ -57,7 +56,7 @@ sortmergejoin_multipass(relation_t *relR, relation_t *relS, joinconfig_t *joincf
     }
 
     return sortmergejoin_initrun(relR, relS, joincfg,
-                                 sortmergejoin_multipass_thread);
+                                 sortmergejoin_multipass_thread, exp_id, "MPASS");
 }
 
 
@@ -146,15 +145,25 @@ sortmergejoin_multipass_thread(void *param) {
     BARRIER_ARRIVE(args->barrier, rv);
 #endif
 
-    BARRIER_ARRIVE(args->barrier, rv);
-    if (my_tid == 0) {
-        gettimeofday(&args->start, NULL);
-        startTimer(&args->part);
-        startTimer(&args->sort);
-        startTimer(&args->mergedelta);
-        startTimer(&args->merge);
-        startTimer(&args->join);
-    }
+    BARRIER_ARRIVE(args->barrier, rv)
+
+#ifndef NO_TIMING
+    START_MEASURE((*(args->timer)))
+    BEGIN_MEASURE_PARTITION((*(args->timer)))/* partitioning start */
+    BEGIN_MEASURE_SORT((*(args->timer)))/* sort start */
+    BEGIN_MEASURE_MERGEDELTA((*(args->timer)))/* mergedelta start */
+    BEGIN_MEASURE_MERGE((*(args->timer)))/* merge start */
+    BEGIN_MEASURE_JOIN((*(args->timer)))/* join start */
+#endif
+
+//    if (my_tid == 0) {
+//        gettimeofday(&args->start, NULL);
+//        startTimer(&args->part);
+//        startTimer(&args->sort);
+//        startTimer(&args->mergedelta);
+//        startTimer(&args->merge);
+//        startTimer(&args->join);
+//    }
 
 
     /*************************************************************************
@@ -168,10 +177,13 @@ sortmergejoin_multipass_thread(void *param) {
 
 
     BARRIER_ARRIVE(args->barrier, rv);
-    if (my_tid == 0) {
-        stopTimer(&args->part);
-    }
+//    if (my_tid == 0) {
+//        stopTimer(&args->part);
+//    }
 
+#ifndef NO_TIMING
+    END_MEASURE_PARTITION((*(args->timer)))/* sort end */
+#endif
 
     /*************************************************************************
      *
@@ -182,9 +194,14 @@ sortmergejoin_multipass_thread(void *param) {
 
 
     BARRIER_ARRIVE(args->barrier, rv);
-    if (my_tid == 0) {
-        stopTimer(&args->sort);
-    }
+//    if (my_tid == 0) {
+//        stopTimer(&args->sort);
+//    }
+
+#ifndef NO_TIMING
+    END_MEASURE_SORT((*(args->timer)))/* sort end */
+#endif
+
 #ifdef PERF_COUNTERS
     if(my_tid == 0){
         PCM_start();
@@ -207,8 +224,13 @@ sortmergejoin_multipass_thread(void *param) {
                                &numrunstomerge, &mergerunsR, &mergerunsS);
 
     BARRIER_ARRIVE(args->barrier, rv);
+
+#ifndef NO_TIMING
+    END_MEASURE_MERGEDELTA((*(args->timer)))/* mergedeleta end */
+#endif
+
     if (my_tid == 0) {
-        stopTimer(&args->mergedelta);
+//        stopTimer(&args->mergedelta);
         /* we don't need the partitioning & sorting temporary spaces any more. */
         if (args->nthreads > 1) {
             free(args->tmp_partR);
@@ -241,9 +263,14 @@ sortmergejoin_multipass_thread(void *param) {
 
 
     BARRIER_ARRIVE(args->barrier, rv);
-    if (my_tid == 0) {
-        stopTimer(&args->merge);
-    }
+//    if (my_tid == 0) {
+//        stopTimer(&args->merge);
+//    }
+
+#ifndef NO_TIMING
+    END_MEASURE_MERGE((*(args->timer)))/* merge end */
+#endif
+
 #ifdef PERF_COUNTERS
     BARRIER_ARRIVE(args->barrier, rv);
     if(my_tid == 0) {
@@ -270,11 +297,14 @@ sortmergejoin_multipass_thread(void *param) {
 
     /* for proper timing */
     BARRIER_ARRIVE(args->barrier, rv);
-    if (my_tid == 0) {
-        stopTimer(&args->join);
-        gettimeofday(&args->end, NULL);
-    }
-
+//    if (my_tid == 0) {
+//        stopTimer(&args->join);
+//        gettimeofday(&args->end, NULL);
+//    }
+#ifndef NO_TIMING
+    END_MEASURE_JOIN((*(args->timer)))/* join end */
+    END_MEASURE((*(args->timer)))/* end overall*/
+#endif
 
     /* clean-up */
     free(mergerunsR);
@@ -349,7 +379,9 @@ mpass_sorting_phase(relation_t **relRparts, relation_t **relSparts, arg_t *args)
         ntuples_per_part = relRparts[i]->num_tuples;
         offset += ALIGN_NUMTUPLES(ntuples_per_part);
 
-        DEBUGMSG(1, "PART-%d-SIZE: %"PRIu64"\n", i, relRparts[i]->num_tuples);
+        DEBUGMSG(1, "PART-%d-SIZE: %"
+                PRIu64
+                "\n", i, relRparts[i]->num_tuples);
 
         if (scalarsortflag)
             scalarsort_tuples(&inptr, &outptr, ntuples_per_part);
@@ -710,7 +742,7 @@ mpass_mergejoin_phase(relation_t *mergedRelR, relation_t *mergedRelS, arg_t *arg
 
 
     uint64_t nresults = merge_join(rtuples, stuples,
-                                   mergedRelR->num_tuples, mergedRelS->num_tuples, chainedbuf);
+                                   mergedRelR->num_tuples, mergedRelS->num_tuples, chainedbuf, args->timer);
 
     args->result = nresults;
 

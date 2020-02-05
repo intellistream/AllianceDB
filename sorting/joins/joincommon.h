@@ -31,6 +31,7 @@
 #include "../util/barrier.h"            /* pthread_barrier_* */
 #include "../datagen/generator.h"          /* numa_localize() --> TODO: refactor */
 #include "../util/params.h"             /* macro parameters */
+#include "../util/t_timer.h"
 
 #ifdef PERF_COUNTERS
 #include "perf_counters.h"      /* PCM_x */
@@ -80,8 +81,8 @@ std::string print_relation(tuple_t *tuple, int length);
 
 /** Initialize and run the given join algorithm with given number of threads */
 result_t *
-sortmergejoin_initrun(relation_t *relR, relation_t *relS, joinconfig_t *joincfg,
-                      void *(*jointhread)(void *));
+sortmergejoin_initrun(relation_t *relR, relation_t *relS, joinconfig_t *joincfg, void *(*jointhread)(void *),
+                      int exp_id, const string algoName);
 
 /** Print out timing stats for the given start and end timestamps */
 void print_timing(uint64_t numtuples, struct timeval *start, struct timeval *end,
@@ -99,7 +100,7 @@ void print_timing(uint64_t numtuples, struct timeval *start, struct timeval *end
  */
 uint64_t
 merge_join(tuple_t *rtuples, tuple_t *stuples,
-           const uint64_t numR, const uint64_t numS, void *output);
+           const uint64_t numR, const uint64_t numS, void *output, T_TIMER *timer);
 
 /**
  * Does merge join on two sorted relations with interpolation
@@ -173,6 +174,7 @@ struct arg_t {
     struct timeval start, end;
     uint64_t part, sort, mergedelta, merge, join;
 
+    T_TIMER *timer;
 } __attribute__((aligned(CACHE_LINE_SIZE)));
 
 

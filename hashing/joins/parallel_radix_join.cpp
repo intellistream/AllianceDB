@@ -1528,8 +1528,8 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads,
 
 #ifndef NO_TIMING
     T_TIMER timer[nthreads];//every thread has its own timer.
-#endif
     auto startTS = now();
+#endif
 
     /* first assign chunks of relR & relS for each thread */
     numperthr[0] = relR->num_tuples / nthreads;
@@ -1601,6 +1601,7 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads,
     for (i = 0; i < nthreads; i++) {
         print_breakdown(args[i].result, args[i].timer, lastTS, fp);
     }
+    sortRecords("PRJ", exp_id, lastTS);
     fclose(fp);
 #endif
 
@@ -1628,9 +1629,6 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads,
     }
 #endif
 
-#ifndef NO_TIMING
-    sortRecords("PRJ", exp_id, lastTS);
-#endif
     /* clean up */
     for (i = 0; i < nthreads; i++) {
         free(histR[i]);

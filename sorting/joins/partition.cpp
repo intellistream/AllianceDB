@@ -5,6 +5,7 @@
 #include <stdio.h>
 
 #include "partition.h"
+#include "../affinity/memalloc.h"
 /* #include "iacaMarks.h" */
 
 #ifdef PERF_COUNTERS
@@ -57,46 +58,44 @@ typedef union cacheline {
  * @return
  */
 static inline void
-store_nontemp_64B(void * dst, void * src)
-{
-#ifdef __AVX__
-    register __m256i * d1 = (__m256i*) dst;
-    register __m256i s1 = *((__m256i*) src);
-    register __m256i * d2 = d1+1;
-    register __m256i s2 = *(((__m256i*) src)+1);
-
-    _mm256_stream_si256(d1, s1);
-    _mm256_stream_si256(d2, s2);
-#elif defined(__SSE2__)
-
-    register __m128i * d1 = (__m128i*) dst;
-    register __m128i * d2 = d1+1;
-    register __m128i * d3 = d1+2;
-    register __m128i * d4 = d1+3;
-    register __m128i s1 = *(__m128i*) src;
-    register __m128i s2 = *((__m128i*)src + 1);
-    register __m128i s3 = *((__m128i*)src + 2);
-    register __m128i s4 = *((__m128i*)src + 3);
-
-    _mm_stream_si128 (d1, s1);
-    _mm_stream_si128 (d2, s2);
-    _mm_stream_si128 (d3, s3);
-    _mm_stream_si128 (d4, s4);
-
-#else
-    /* just copy with assignment */
+store_nontemp_64B(void *dst, void *src) {
+//#ifdef __AVX__
+//    register __m256i *d1 = (__m256i *) dst;
+//    register __m256i s1 = *((__m256i *) src);
+//    register __m256i *d2 = d1 + 1;
+//    register __m256i s2 = *(((__m256i *) src) + 1);
+//
+//    _mm256_stream_si256(d1, s1); //bug in this line.
+//    _mm256_stream_si256(d2, s2);
+//#elif defined(__SSE2__)
+//
+//    register __m128i * d1 = (__m128i*) dst;
+//    register __m128i * d2 = d1+1;
+//    register __m128i * d3 = d1+2;
+//    register __m128i * d4 = d1+3;
+//    register __m128i s1 = *(__m128i*) src;
+//    register __m128i s2 = *((__m128i*)src + 1);
+//    register __m128i s3 = *((__m128i*)src + 2);
+//    register __m128i s4 = *((__m128i*)src + 3);
+//
+//    _mm_stream_si128 (d1, s1);
+//    _mm_stream_si128 (d2, s2);
+//    _mm_stream_si128 (d3, s3);
+//    _mm_stream_si128 (d4, s4);
+//
+//#else
+//    /* just copy with assignment */
+//    *(cacheline_t *)dst = *(cacheline_t *)src;
+//#endif
     *(cacheline_t *)dst = *(cacheline_t *)src;
-
-#endif
 }
 
 void
-radix_cluster(relation_t * restrict outRel,
-              relation_t * restrict inRel,
-              int32_t * restrict hist,
+radix_cluster(relation_t *restrict outRel,
+              relation_t *restrict inRel,
+              int32_t *restrict hist,
               int R,
-              int D)
-{
+              int D) {
     uint32_t i;
     uint32_t M = ((1 << D) - 1) << R;
     uint32_t offset;
@@ -108,13 +107,13 @@ radix_cluster(relation_t * restrict outRel,
     uint32_t dst[fanOut];
 
     /* count tuples per cluster */
-    for( i=0; i < inRel->num_tuples; i++ ){
+    for (i = 0; i < inRel->num_tuples; i++) {
         uint32_t idx = HASH_BIT_MODULO(inRel->tuples[i].key, M, R);
         hist[idx]++;
     }
     offset = 0;
     /* determine the start and end of each cluster depending on the counts. */
-    for ( i=0; i < fanOut; i++ ) {
+    for (i = 0; i < fanOut; i++) {
         /* dst[i]      = outRel->tuples + offset; */
         /* determine the beginning of each partitioning by adding some
            padding to avoid L1 conflict misses during scatter. */
@@ -124,15 +123,15 @@ radix_cluster(relation_t * restrict outRel,
 
 
     const uint32_t num = inRel->num_tuples;
-    tuple_t * restrict in = inRel->tuples;
-    tuple_t * restrict out = outRel->tuples;
+    tuple_t *restrict in = inRel->tuples;
+    tuple_t *restrict out = outRel->tuples;
 
     /* copy tuples to their corresponding clusters at appropriate offsets */
 #if 1
-    for( i=0; i < num; i++ ){
+    for (i = 0; i < num; i++) {
         /* IACA_START */
         register uint32_t idx = HASH_BIT_MODULO(in[i].key, M, R);
-        register uint32_t d = dst[idx] ++;
+        register uint32_t d = dst[idx]++;
         out[d] = in[i];
     }
     /* IACA_END */
@@ -150,37 +149,37 @@ radix_cluster(relation_t * restrict outRel,
 
 
 void
-radix_cluster_optimized(relation_t * restrict outRel,
-                        relation_t * restrict inRel,
-                        int32_t * restrict hist,
+radix_cluster_optimized(relation_t *restrict outRel,
+                        relation_t *restrict inRel,
+                        int32_t *restrict hist,
                         int R,
-                        int D)
-{
+                        int D) {
     uint32_t i;
     uint32_t offset = 0;
-    const uint32_t M       = ((1 << D) - 1) << R;
-    const uint32_t fanOut  = 1 << D;
+    const uint32_t M = ((1 << D) - 1) << R;
+    const uint32_t fanOut = 1 << D;
     const uint32_t ntuples = inRel->num_tuples;
 
-    tuple_t * input  = inRel->tuples;
-    tuple_t * output = outRel->tuples;
+    tuple_t *input = inRel->tuples;
+    tuple_t *output = outRel->tuples;
 
-    uint32_t    dst[fanOut]    __attribute__((aligned(CACHE_LINE_SIZE)));
-    cacheline_t buffer[fanOut] __attribute__((aligned(CACHE_LINE_SIZE)));
-
+//    uint32_t    dst[fanOut]    __attribute__((aligned(CACHE_LINE_SIZE)));
+    auto dst = (uint32_t *) malloc_aligned(fanOut * sizeof(uint32_t));
+//    cacheline_t buffer[fanOut] __attribute__((aligned(CACHE_LINE_SIZE)));
+    auto buffer = (cacheline_t *) malloc_aligned(fanOut * sizeof(cacheline_t));
     /* count tuples per cluster */
-    for( i = 0; i < ntuples; i++ ){
+    for (i = 0; i < ntuples; i++) {
         uint32_t idx = HASH_BIT_MODULO(input->key, M, R);
         hist[idx]++;
         input++;
     }
 
-    for ( i = 0; i < fanOut; i++ ) {
+    for (i = 0; i < fanOut; i++) {
         buffer[i].data.slot = 0;
     }
 
     /* determine the start and end of each cluster depending on the counts. */
-    for ( i = 0; i < fanOut; i++ ) {
+    for (i = 0; i < fanOut; i++) {
         dst[i] = offset;
         /* for aligning partition-outputs to cacheline: */
         offset += ALIGN_NUMTUPLES(hist[i]);
@@ -188,17 +187,17 @@ radix_cluster_optimized(relation_t * restrict outRel,
 
     input = inRel->tuples;
     /* copy tuples to their corresponding clusters at appropriate offsets */
-    for( i = 0; i < ntuples; i++ ){
-        uint32_t  idx     = HASH_BIT_MODULO(input->key, M, R);
+    for (i = 0; i < ntuples; i++) {
+        uint32_t idx = HASH_BIT_MODULO(input->key, M, R);
         /* store in the cache-resident buffer first */
-        uint32_t  slot    = buffer[idx].data.slot;
-        tuple_t * tup     = (tuple_t *)(buffer + idx);
+        uint32_t slot = buffer[idx].data.slot;
+        tuple_t *tup = (tuple_t *) (buffer + idx);
         tup[slot] = *input;
-        input ++;
+        input++;
         slot++;
 
-        if(slot == TUPLESPERCACHELINE){
-            store_nontemp_64B((output+dst[idx]), (buffer+idx));
+        if (slot == TUPLESPERCACHELINE) {
+            store_nontemp_64B((output + dst[idx]), (buffer + idx));
             slot = 0;
             dst[idx] += TUPLESPERCACHELINE;
         }
@@ -206,12 +205,12 @@ radix_cluster_optimized(relation_t * restrict outRel,
     }
 
     /* flush the remainder tuples in the buffer */
-    for ( i = 0; i < fanOut; i++ ) {
-        uint32_t  num  = buffer[i].data.slot;
-        if(num > 0){
-            tuple_t * dest = output + dst[i];
+    for (i = 0; i < fanOut; i++) {
+        uint32_t num = buffer[i].data.slot;
+        if (num > 0) {
+            tuple_t *dest = output + dst[i];
 
-            for(uint32_t j = 0; j < num; j++) {
+            for (uint32_t j = 0; j < num; j++) {
                 dest[j] = buffer[i].data.tuples[j];
             }
         }
@@ -219,31 +218,30 @@ radix_cluster_optimized(relation_t * restrict outRel,
 }
 
 void
-radix_cluster_optimized_V2(relation_t * restrict outRel,
-                           relation_t * restrict inRel,
-                           int32_t * restrict hist,
+radix_cluster_optimized_V2(relation_t *restrict outRel,
+                           relation_t *restrict inRel,
+                           int32_t *restrict hist,
                            int R,
-                           int D)
-{
+                           int D) {
     uint32_t i;
     uint32_t offset = 0;
-    const uint32_t M       = ((1 << D) - 1) << R;
-    const uint32_t fanOut  = 1 << D;
+    const uint32_t M = ((1 << D) - 1) << R;
+    const uint32_t fanOut = 1 << D;
     const uint32_t ntuples = inRel->num_tuples;
 
-    tuple_t * input  = inRel->tuples;
-    tuple_t * output = outRel->tuples;
+    tuple_t *input = inRel->tuples;
+    tuple_t *output = outRel->tuples;
 
     cacheline_t buffer[fanOut] __attribute__((aligned(CACHE_LINE_SIZE)));
 
-    for( i = 0; i < ntuples; i++ ){
+    for (i = 0; i < ntuples; i++) {
         uint32_t idx = HASH_BIT_MODULO(input->key, M, R);
         hist[idx]++;
         input++;
     }
 
     /* determine the start and end of each cluster depending on the counts. */
-    for ( i = 0; i < fanOut; i++ ) {
+    for (i = 0; i < fanOut; i++) {
         buffer[i].data.slot = offset;
         /* for aligning partition-outputs to cacheline: */
         /* hist[i] = (hist[i] + (64/sizeof(tuple_t))) & ~((64/sizeof(tuple_t))-1); */
@@ -253,33 +251,33 @@ radix_cluster_optimized_V2(relation_t * restrict outRel,
 
     input = inRel->tuples;
     /* copy tuples to their corresponding clusters at appropriate offsets */
-    for( i = 0; i < ntuples; i++ ){
-        uint32_t  idx     = HASH_BIT_MODULO(input->key, M, R);
+    for (i = 0; i < ntuples; i++) {
+        uint32_t idx = HASH_BIT_MODULO(input->key, M, R);
         /* store in the cache-resident buffer first */
-        uint32_t  slot    = buffer[idx].data.slot;
-        tuple_t * tup     = (tuple_t *)(buffer + idx);
-        uint32_t  slotMod = (slot) & (TUPLESPERCACHELINE - 1); /* % operator */
+        uint32_t slot = buffer[idx].data.slot;
+        tuple_t *tup = (tuple_t *) (buffer + idx);
+        uint32_t slotMod = (slot) & (TUPLESPERCACHELINE - 1); /* % operator */
         tup[slotMod] = *input;
-        input ++;
+        input++;
 
-        if(slotMod == (TUPLESPERCACHELINE-1)){
+        if (slotMod == (TUPLESPERCACHELINE - 1)) {
             /* uintptr_t p = (uintptr_t)(output+slot-TUPLESPERCACHELINE); */
             /* if(p % 64 != 0){ */
             /*     printf("there is a problem\n"); */
             /* } */
-            store_nontemp_64B((output+slot-(TUPLESPERCACHELINE-1)), (buffer+idx));
+            store_nontemp_64B((output + slot - (TUPLESPERCACHELINE - 1)), (buffer + idx));
         }
-        buffer[idx].data.slot = slot+1;
+        buffer[idx].data.slot = slot + 1;
     }
 
     /* flush the remainder tuples in the buffer */
-    for ( i = 0; i < fanOut; i++ ) {
-        uint32_t  slot = buffer[i].data.slot;
-        uint32_t  num  = (slot) & (TUPLESPERCACHELINE - 1);
-        if(num > 0){
-            tuple_t * dest = output + slot - num;
+    for (i = 0; i < fanOut; i++) {
+        uint32_t slot = buffer[i].data.slot;
+        uint32_t num = (slot) & (TUPLESPERCACHELINE - 1);
+        if (num > 0) {
+            tuple_t *dest = output + slot - num;
 
-            for(uint32_t j = 0; j < num; j++) {
+            for (uint32_t j = 0; j < num; j++) {
                 dest[j] = buffer[i].data.tuples[j];
             }
         }
@@ -299,23 +297,22 @@ radix_cluster_optimized_V2(relation_t * restrict outRel,
  * @return
  */
 void
-partition_relation(relation_t ** partitions,
-                   relation_t * input,
-                   relation_t * output,
+partition_relation(relation_t **partitions,
+                   relation_t *input,
+                   relation_t *output,
                    int radixbits,
-                   int shiftbits)
-{
+                   int shiftbits) {
     int i;
     uint32_t offset = 0;
     const int fanOut = 1 << radixbits;
-    int32_t * hist;
+    int32_t *hist;
 
-    hist = (int32_t*) calloc(fanOut+1, sizeof(int32_t));
+    hist = (int32_t *) calloc(fanOut + 1, sizeof(int32_t));
 
     radix_cluster(output, input, hist, shiftbits, radixbits);//18-->0: for partition_test
 
-    for(i = 0; i < fanOut; i++) {
-        relation_t * part = partitions[i];
+    for (i = 0; i < fanOut; i++) {
+        relation_t *part = partitions[i];
 
         part->num_tuples = hist[i];
         part->tuples = output->tuples + offset;
@@ -327,24 +324,23 @@ partition_relation(relation_t ** partitions,
 }
 
 void
-partition_relation_optimized(relation_t ** partitions,
-                             relation_t * input,
-                             relation_t * output,
+partition_relation_optimized(relation_t **partitions,
+                             relation_t *input,
+                             relation_t *output,
                              uint32_t nbits,
-                             uint32_t shiftbits)
-{
+                             uint32_t shiftbits) {
     int i;
     uint32_t offset = 0;
     const int fanOut = 1 << nbits;
 
-    int32_t * hist, * histAligned;
-    hist = (int32_t*) calloc(fanOut + 16, sizeof(int32_t));
+    int32_t *hist, *histAligned;
+    hist = (int32_t *) calloc(fanOut + 16, sizeof(int32_t));
     histAligned = (int32_t *) ALIGNPTR(hist, 64);
 
     radix_cluster_optimized(output, input, histAligned, shiftbits, nbits);
 
-    for(i = 0; i < fanOut; i++) {
-        relation_t * part = partitions[i];
+    for (i = 0; i < fanOut; i++) {
+        relation_t *part = partitions[i];
         part->num_tuples = histAligned[i];
         part->tuples = output->tuples + offset;
 
@@ -354,18 +350,17 @@ partition_relation_optimized(relation_t ** partitions,
 }
 
 void
-partition_relation_optimized_V2(relation_t ** partitions,
-                                relation_t * input,
-                                relation_t * output,
+partition_relation_optimized_V2(relation_t **partitions,
+                                relation_t *input,
+                                relation_t *output,
                                 uint32_t nbits,
-                                uint32_t shiftbits)
-{
+                                uint32_t shiftbits) {
     int i;
     uint32_t offset = 0;
     const int fanOut = 1 << nbits;
 
-    int32_t * hist, * histAligned;
-    hist = (int32_t*) calloc(fanOut + 16, sizeof(int32_t));
+    int32_t *hist, *histAligned;
+    hist = (int32_t *) calloc(fanOut + 16, sizeof(int32_t));
     histAligned = (int32_t *) ALIGNPTR(hist, 64);
 
     /* int32_t histAligned[fanOut+1] __attribute__((aligned(CACHE_LINE_SIZE))); */
@@ -373,8 +368,8 @@ partition_relation_optimized_V2(relation_t ** partitions,
 
     radix_cluster_optimized_V2(output, input, histAligned, shiftbits, nbits);
 
-    for(i = 0; i < fanOut; i++) {
-        relation_t * part = partitions[i];
+    for (i = 0; i < fanOut; i++) {
+        relation_t *part = partitions[i];
         part->num_tuples = histAligned[i];
         part->tuples = output->tuples + offset;
 
@@ -385,12 +380,11 @@ partition_relation_optimized_V2(relation_t ** partitions,
 }
 
 void
-baseline_histogram_memcpy(relation_t * restrict outRel,
-                          relation_t * restrict inRel,
-                          int32_t * restrict hist,
+baseline_histogram_memcpy(relation_t *restrict outRel,
+                          relation_t *restrict inRel,
+                          int32_t *restrict hist,
                           int R,
-                          int D)
-{
+                          int D) {
     uint32_t i;
     uint32_t M = ((1 << D) - 1) << R;
     uint32_t offset;
@@ -402,13 +396,13 @@ baseline_histogram_memcpy(relation_t * restrict outRel,
     UNUSED uint32_t dst[fanOut];
 
     /* count tuples per cluster */
-    for( i=0; i < inRel->num_tuples; i++ ){
+    for (i = 0; i < inRel->num_tuples; i++) {
         uint32_t idx = HASH_BIT_MODULO(inRel->tuples[i].key, M, R);
         hist[idx]++;
     }
     offset = 0;
     /* determine the start and end of each cluster depending on the counts. */
-    for ( i=0; i < fanOut; i++ ) {
+    for (i = 0; i < fanOut; i++) {
         /* dst[i]      = outRel->tuples + offset; */
         /* determine the beginning of each partitioning by adding some
            padding to avoid L1 conflict misses during scatter. */
@@ -420,15 +414,14 @@ baseline_histogram_memcpy(relation_t * restrict outRel,
 }
 
 void
-histogram_memcpy_bench(relation_t ** partitions,
-                       relation_t * input,
-                       relation_t * output,
-                       uint32_t nbits)
-{
+histogram_memcpy_bench(relation_t **partitions,
+                       relation_t *input,
+                       relation_t *output,
+                       uint32_t nbits) {
     const int fanOut = 1 << nbits;
-    int32_t * hist;
+    int32_t *hist;
 
-    hist = (int32_t*) calloc(fanOut+1, sizeof(int32_t));
+    hist = (int32_t *) calloc(fanOut + 1, sizeof(int32_t));
 
     baseline_histogram_memcpy(output, input, hist, 0, nbits);
 

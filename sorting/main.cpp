@@ -387,7 +387,7 @@ typedef struct cmdparam_t cmdparam_t;
 struct algo_t {
     char name[128];
 
-    result_t *(*joinalgorithm)(relation_t *, relation_t *, joinconfig_t *);
+    result_t *(*joinalgorithm)(relation_t *, relation_t *, joinconfig_t *, int exp_id);
 };
 
 struct cmdparam_t {
@@ -547,10 +547,8 @@ createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int32_t 
     printf("OK \n");
 }
 
-
 int
 main(int argc, char *argv[]) {
-    struct timeval start, end;
     relation_t relR;
     relation_t relS;
 
@@ -573,8 +571,8 @@ main(int argc, char *argv[]) {
     cmdparam_t cmd_params;
 
     /* Default values if not specified on command line */
-    cmd_params.algo = &algos[1]; /* m-pass: sort-merge join with multi-pass merge */
-    cmd_params.nthreads = 4;
+    cmd_params.algo = &algos[1]; /* 0: m-way, 1: m-pass */
+    cmd_params.nthreads = 1;
     /* default dataset is Workload B (described in paper) */
     cmd_params.r_size = 128000;
     cmd_params.s_size = 128000;
@@ -589,8 +587,6 @@ main(int argc, char *argv[]) {
     cmd_params.no_numa = 0;
     cmd_params.scalar_sort = 0;
     cmd_params.scalar_merge = 0;
-
-
     cmd_params.loadfileR = NULL;
     cmd_params.loadfileS = NULL;
     cmd_params.rkey = 0;
@@ -727,10 +723,10 @@ main(int argc, char *argv[]) {
     /* Run the selected join algorithm */
     fprintf(stdout, "[INFO ] Running join algorithm %s ...\n", cmd_params.algo->name);
 
-    result_t *result = cmd_params.algo->joinalgorithm(&relR, &relS, &joincfg);
+    result_t *result = cmd_params.algo->joinalgorithm(&relR, &relS, &joincfg, cmd_params.exp_id);
 
     if (result != NULL) {
-        fprintf(stdout, "\n[INFO ] Results = %llu. DONE.\n", result->totalresults);
+        fprintf(stdout, "\n[INFO ] Results = %ld. DONE.\n", result->totalresults);
     }
 
 #if (defined(PERSIST_RELATIONS) && defined(JOIN_MATERIALIZE))

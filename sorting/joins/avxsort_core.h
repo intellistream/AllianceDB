@@ -11,13 +11,17 @@
 #include <stdio.h>
 #include <stdlib.h>             /* qsort() */
 #include <math.h>               /* log2()  */
+
 #ifdef __cplusplus
+
 #include <algorithm>            /* sort()  */
+
 #endif
 
 #include "avxcommon.h"
 
 #include "../util/params.h"
+#include "../affinity/memalloc.h"
 /* #include "iacaMarks.h" */
 
 /* just make the code compile without AVX support */
@@ -51,7 +55,7 @@
  *  Fixed size single-block AVX sorting routine
  */
 inline void
-avxsort_block(int64_t ** inputptr, int64_t ** outputptr, const int BLOCK_SIZE);
+avxsort_block(int64_t **inputptr, int64_t **outputptr, const int BLOCK_SIZE);
 
 /**
  * In-register sorting of 4x4=16 <32-bit key,32-bit val> pairs pointed
@@ -61,7 +65,7 @@ avxsort_block(int64_t ** inputptr, int64_t ** outputptr, const int BLOCK_SIZE);
  * @param output 4-sorted 16x64-bit output values
  */
 inline void
-inregister_sort_keyval32(int64_t * items, int64_t * output);
+inregister_sort_keyval32(int64_t *items, int64_t *output);
 
 /**
  * Merges two sorted lists of length len into a new sorted list of length
@@ -74,8 +78,8 @@ inregister_sort_keyval32(int64_t * items, int64_t * output);
  * @param len length of input
  */
 inline void
-merge4_eqlen(int64_t * const inpA, int64_t * const inpB,
-             int64_t * const out, const uint32_t len);
+merge4_eqlen(int64_t *const inpA, int64_t *const inpB,
+             int64_t *const out, const uint32_t len);
 
 /**
  * Merges two sorted lists of length len into a new sorted list of length
@@ -88,8 +92,8 @@ merge4_eqlen(int64_t * const inpA, int64_t * const inpB,
  * @param len length of input
  */
 inline void
-merge16_eqlen(int64_t * const inpA, int64_t * const inpB,
-              int64_t * const out, const uint32_t len);
+merge16_eqlen(int64_t *const inpA, int64_t *const inpB,
+              int64_t *const out, const uint32_t len);
 
 
 /*******************************************************************************
@@ -100,26 +104,25 @@ merge16_eqlen(int64_t * const inpA, int64_t * const inpB,
 
 /**************** Helper Methods************************************************/
 inline __attribute__((__always_inline__)) uint32_t
-mylog2(const uint32_t n)
-{
+mylog2(const uint32_t n) {
     register uint32_t res;
-    __asm__ ( "\tbsr %1, %0\n" : "=r"(res) : "r"(n) );
+    __asm__ ( "\tbsr %1, %0\n" : "=r"(res) : "r"(n));
     return res;
 }
+
 /*******************************************************************************/
 
 inline void __attribute((always_inline))
-merge4_eqlen(int64_t * const inpA, int64_t * const inpB,
-             int64_t * const out, const uint32_t len)
-{
-    register block4 * inA  = (block4 *) inpA;
-    register block4 * inB  = (block4 *) inpB;
-    block4 * const    endA = (block4 *) (inpA + len);
-    block4 * const    endB = (block4 *) (inpB + len);
+merge4_eqlen(int64_t *const inpA, int64_t *const inpB,
+             int64_t *const out, const uint32_t len) {
+    register block4 *inA = (block4 *) inpA;
+    register block4 *inB = (block4 *) inpB;
+    block4 *const endA = (block4 *) (inpA + len);
+    block4 *const endB = (block4 *) (inpB + len);
 
-    block4 * outp = (block4 *) out;
+    block4 *outp = (block4 *) out;
 
-    register block4 * next = inB;
+    register block4 *next = inB;
 
     register __m256d outreg1;
     register __m256d outreg2;
@@ -127,16 +130,16 @@ merge4_eqlen(int64_t * const inpA, int64_t * const inpB,
     register __m256d regA = _mm256_loadu_pd((double const *) inA);
     register __m256d regB = _mm256_loadu_pd((double const *) next);
 
-    inA ++;
-    inB ++;
+    inA++;
+    inB++;
 
     BITONIC_MERGE4(outreg1, outreg2, regA, regB);
 
     /* store outreg1 */
     _mm256_storeu_pd((double *) outp, outreg1);
-    outp ++;
+    outp++;
 
-    while( inA < endA && inB < endB ) {
+    while (inA < endA && inB < endB) {
 
         /* 3 Options : normal-if, cmove-with-assembly, sw-predication */
         IFELSECONDMOVE(next, inA, inB, 32);
@@ -148,30 +151,30 @@ merge4_eqlen(int64_t * const inpA, int64_t * const inpB,
 
         /* store outreg1 */
         _mm256_storeu_pd((double *) outp, outreg1);
-        outp ++;
+        outp++;
     }
 
     /* handle remaining items */
-    while( inA < endA ) {
+    while (inA < endA) {
         __m256d regA = _mm256_loadu_pd((double const *) inA);
         __m256d regB = outreg2;
 
         BITONIC_MERGE4(outreg1, outreg2, regA, regB);
 
         _mm256_storeu_pd((double *) outp, outreg1);
-        inA ++;
-        outp ++;
+        inA++;
+        outp++;
     }
 
-    while( inB < endB ) {
+    while (inB < endB) {
         __m256d regA = outreg2;
         __m256d regB = _mm256_loadu_pd((double const *) inB);
 
         BITONIC_MERGE4(outreg1, outreg2, regA, regB);
 
         _mm256_storeu_pd((double *) outp, outreg1);
-        inB ++;
-        outp ++;
+        inB++;
+        outp++;
     }
 
     /* store the last remaining register values */
@@ -190,17 +193,16 @@ merge4_eqlen(int64_t * const inpA, int64_t * const inpB,
  * @param len length of input
  */
 inline void __attribute((always_inline))
-merge8_eqlen(int64_t * const inpA, int64_t * const inpB,
-             int64_t * const out, const uint32_t len)
-{
-    register block8 * inA  = (block8 *) inpA;
-    register block8 * inB  = (block8 *) inpB;
-    block8 * const    endA = (block8 *) (inpA + len);
-    block8 * const    endB = (block8 *) (inpB + len);
+merge8_eqlen(int64_t *const inpA, int64_t *const inpB,
+             int64_t *const out, const uint32_t len) {
+    register block8 *inA = (block8 *) inpA;
+    register block8 *inB = (block8 *) inpB;
+    block8 *const endA = (block8 *) (inpA + len);
+    block8 *const endB = (block8 *) (inpB + len);
 
-    block8 * outp = (block8 *) out;
+    block8 *outp = (block8 *) out;
 
-    register block8 * next = inB;
+    register block8 *next = inB;
 
     register __m256d outreg1l, outreg1h;
     register __m256d outreg2l, outreg2h;
@@ -211,17 +213,17 @@ merge8_eqlen(int64_t * const inpA, int64_t * const inpB,
     LOAD8U(regAl, regAh, inA);
     LOAD8U(regBl, regBh, next);
 
-    inA ++;
-    inB ++;
+    inA++;
+    inB++;
 
     BITONIC_MERGE8(outreg1l, outreg1h, outreg2l, outreg2h,
                    regAl, regAh, regBl, regBh);
 
     /* store outreg1 */
     STORE8U(outp, outreg1l, outreg1h);
-    outp ++;
+    outp++;
 
-    while( inA < endA && inB < endB ) {
+    while (inA < endA && inB < endB) {
 
         /* 3 Options : normal-if, cmove-with-assembly, sw-predication */
         IFELSECONDMOVE(next, inA, inB, 64);
@@ -235,11 +237,11 @@ merge8_eqlen(int64_t * const inpA, int64_t * const inpB,
 
         /* store outreg1 */
         STORE8U(outp, outreg1l, outreg1h);
-        outp ++;
+        outp++;
     }
 
     /* handle remaining items */
-    while( inA < endA ) {
+    while (inA < endA) {
         __m256d regAl, regAh;
         LOAD8U(regAl, regAh, inA);
 
@@ -251,11 +253,11 @@ merge8_eqlen(int64_t * const inpA, int64_t * const inpB,
 
         /* store outreg1 */
         STORE8U(outp, outreg1l, outreg1h);
-        outp ++;
-        inA ++;
+        outp++;
+        inA++;
     }
 
-    while( inB < endB ) {
+    while (inB < endB) {
         __m256d regAl = outreg2l;
         __m256d regAh = outreg2h;
         __m256d regBl, regBh;
@@ -267,8 +269,8 @@ merge8_eqlen(int64_t * const inpA, int64_t * const inpB,
 
         /* store outreg1 */
         STORE8U(outp, outreg1l, outreg1h);
-        outp ++;
-        inB ++;
+        outp++;
+        inB++;
     }
 
     /* store the last remaining register values */
@@ -276,17 +278,16 @@ merge8_eqlen(int64_t * const inpA, int64_t * const inpB,
 }
 
 inline void __attribute((always_inline))
-merge16_eqlen(int64_t * const inpA, int64_t * const inpB,
-              int64_t * const out, const uint32_t len)
-{
-    register block16 * inA  = (block16 *) inpA;
-    register block16 * inB  = (block16 *) inpB;
-    block16 * const    endA = (block16 *) (inpA + len);
-    block16 * const    endB = (block16 *) (inpB + len);
+merge16_eqlen(int64_t *const inpA, int64_t *const inpB,
+              int64_t *const out, const uint32_t len) {
+    register block16 *inA = (block16 *) inpA;
+    register block16 *inB = (block16 *) inpB;
+    block16 *const endA = (block16 *) (inpA + len);
+    block16 *const endB = (block16 *) (inpB + len);
 
-    block16 * outp = (block16 *) out;
+    block16 *outp = (block16 *) out;
 
-    register block16 * next = inB;
+    register block16 *next = inB;
 
     __m256d outreg1l1, outreg1l2, outreg1h1, outreg1h2;
     __m256d outreg2l1, outreg2l2, outreg2h1, outreg2h2;
@@ -295,12 +296,12 @@ merge16_eqlen(int64_t * const inpA, int64_t * const inpB,
     __m256d regBl1, regBl2, regBh1, regBh2;
 
     LOAD8U(regAl1, regAl2, inA);
-    LOAD8U(regAh1, regAh2, ((block8 *)(inA) + 1));
-    inA ++;
+    LOAD8U(regAh1, regAh2, ((block8 *) (inA) + 1));
+    inA++;
 
     LOAD8U(regBl1, regBl2, inB);
-    LOAD8U(regBh1, regBh2, ((block8 *)(inB) + 1));
-    inB ++;
+    LOAD8U(regBh1, regBh2, ((block8 *) (inB) + 1));
+    inB++;
 
     BITONIC_MERGE16(outreg1l1, outreg1l2, outreg1h1, outreg1h2,
                     outreg2l1, outreg2l2, outreg2h1, outreg2h2,
@@ -309,10 +310,10 @@ merge16_eqlen(int64_t * const inpA, int64_t * const inpB,
 
     /* store outreg1 */
     STORE8U(outp, outreg1l1, outreg1l2);
-    STORE8U(((block8 *)outp + 1), outreg1h1, outreg1h2);
-    outp ++;
+    STORE8U(((block8 *) outp + 1), outreg1h1, outreg1h2);
+    outp++;
 
-    while( inA < endA && inB < endB ) {
+    while (inA < endA && inB < endB) {
 
         /** The inline assembly below does exactly the following code: */
         /* Option 3: with assembly */
@@ -324,7 +325,7 @@ merge16_eqlen(int64_t * const inpA, int64_t * const inpB,
         regAh2 = outreg2h2;
 
         LOAD8U(regBl1, regBl2, next);
-        LOAD8U(regBh1, regBh2, ((block8 *)next + 1));
+        LOAD8U(regBh1, regBh2, ((block8 *) next + 1));
 
         BITONIC_MERGE16(outreg1l1, outreg1l2, outreg1h1, outreg1h2,
                         outreg2l1, outreg2l2, outreg2h1, outreg2h2,
@@ -333,12 +334,12 @@ merge16_eqlen(int64_t * const inpA, int64_t * const inpB,
 
         /* store outreg1 */
         STORE8U(outp, outreg1l1, outreg1l2);
-        STORE8U(((block8 *)outp + 1), outreg1h1, outreg1h2);
-        outp ++;
+        STORE8U(((block8 *) outp + 1), outreg1h1, outreg1h2);
+        outp++;
     }
 
     /* handle remaining items */
-    while( inA < endA ) {
+    while (inA < endA) {
         __m256d regAl1, regAl2, regAh1, regAh2;
         __m256d regBl1 = outreg2l1;
         __m256d regBl2 = outreg2l2;
@@ -346,8 +347,8 @@ merge16_eqlen(int64_t * const inpA, int64_t * const inpB,
         __m256d regBh2 = outreg2h2;
 
         LOAD8U(regAl1, regAl2, inA);
-        LOAD8U(regAh1, regAh2, ((block8 *)(inA) + 1));
-        inA ++;
+        LOAD8U(regAh1, regAh2, ((block8 *) (inA) + 1));
+        inA++;
 
         BITONIC_MERGE16(outreg1l1, outreg1l2, outreg1h1, outreg1h2,
                         outreg2l1, outreg2l2, outreg2h1, outreg2h2,
@@ -356,11 +357,11 @@ merge16_eqlen(int64_t * const inpA, int64_t * const inpB,
 
         /* store outreg1 */
         STORE8U(outp, outreg1l1, outreg1l2);
-        STORE8U(((block8 *)outp + 1), outreg1h1, outreg1h2);
-        outp ++;
+        STORE8U(((block8 *) outp + 1), outreg1h1, outreg1h2);
+        outp++;
     }
 
-    while( inB < endB ) {
+    while (inB < endB) {
         __m256d regBl1, regBl2, regBh1, regBh2;
         __m256d regAl1 = outreg2l1;
         __m256d regAl2 = outreg2l2;
@@ -368,8 +369,8 @@ merge16_eqlen(int64_t * const inpA, int64_t * const inpB,
         __m256d regAh2 = outreg2h2;
 
         LOAD8U(regBl1, regBl2, inB);
-        LOAD8U(regBh1, regBh2, ((block8 *)inB + 1));
-        inB ++;
+        LOAD8U(regBh1, regBh2, ((block8 *) inB + 1));
+        inB++;
 
         BITONIC_MERGE16(outreg1l1, outreg1l2, outreg1h1, outreg1h2,
                         outreg2l1, outreg2l2, outreg2h1, outreg2h2,
@@ -378,13 +379,13 @@ merge16_eqlen(int64_t * const inpA, int64_t * const inpB,
 
         /* store outreg1 */
         STORE8U(outp, outreg1l1, outreg1l2);
-        STORE8U(((block8 *)outp + 1), outreg1h1, outreg1h2);
-        outp ++;
+        STORE8U(((block8 *) outp + 1), outreg1h1, outreg1h2);
+        outp++;
     }
 
     /* store the last remaining register values */
     STORE8U(outp, outreg2l1, outreg2l2);
-    STORE8U(((block8 *)outp + 1), outreg2h1, outreg2h2);
+    STORE8U(((block8 *) outp + 1), outreg2h1, outreg2h2);
 
 }
 
@@ -398,27 +399,26 @@ merge16_eqlen(int64_t * const inpA, int64_t * const inpB,
  * @param lenB size of B
  */
 inline void __attribute__((always_inline))
-merge16_varlen(int64_t * restrict inpA,
-               int64_t * restrict inpB,
-               int64_t * restrict Out,
+merge16_varlen(int64_t *restrict inpA,
+               int64_t *restrict inpB,
+               int64_t *restrict Out,
                const uint32_t lenA,
-               const uint32_t lenB)
-{
+               const uint32_t lenB) {
     uint32_t lenA16 = lenA & ~0xF, lenB16 = lenB & ~0xF;
     uint32_t ai = 0, bi = 0;
 
-    int64_t * out = Out;
+    int64_t *out = Out;
 
-    if(lenA16 > 16 && lenB16 > 16) {
+    if (lenA16 > 16 && lenB16 > 16) {
 
-        register block16 * inA  = (block16 *) inpA;
-        register block16 * inB  = (block16 *) inpB;
-        block16 * const    endA = (block16 *) (inpA + lenA) - 1;
-        block16 * const    endB = (block16 *) (inpB + lenB) - 1;
+        register block16 *inA = (block16 *) inpA;
+        register block16 *inB = (block16 *) inpB;
+        block16 *const endA = (block16 *) (inpA + lenA) - 1;
+        block16 *const endB = (block16 *) (inpB + lenB) - 1;
 
-        block16 * outp = (block16 *) out;
+        block16 *outp = (block16 *) out;
 
-        register block16 * next = inB;
+        register block16 *next = inB;
 
         __m256d outreg1l1, outreg1l2, outreg1h1, outreg1h2;
         __m256d outreg2l1, outreg2l2, outreg2h1, outreg2h2;
@@ -427,12 +427,12 @@ merge16_varlen(int64_t * restrict inpA,
         __m256d regBl1, regBl2, regBh1, regBh2;
 
         LOAD8U(regAl1, regAl2, inA);
-        LOAD8U(regAh1, regAh2, ((block8 *)(inA) + 1));
-        inA ++;
+        LOAD8U(regAh1, regAh2, ((block8 *) (inA) + 1));
+        inA++;
 
         LOAD8U(regBl1, regBl2, inB);
-        LOAD8U(regBh1, regBh2, ((block8 *)(inB) + 1));
-        inB ++;
+        LOAD8U(regBh1, regBh2, ((block8 *) (inB) + 1));
+        inB++;
 
         BITONIC_MERGE16(outreg1l1, outreg1l2, outreg1h1, outreg1h2,
                         outreg2l1, outreg2l2, outreg2h1, outreg2h2,
@@ -441,10 +441,10 @@ merge16_varlen(int64_t * restrict inpA,
 
         /* store outreg1 */
         STORE8U(outp, outreg1l1, outreg1l2);
-        STORE8U(((block8 *)outp + 1), outreg1h1, outreg1h2);
-        outp ++;
+        STORE8U(((block8 *) outp + 1), outreg1h1, outreg1h2);
+        outp++;
 
-        while( inA < endA && inB < endB ) {
+        while (inA < endA && inB < endB) {
 
             /** The inline assembly below does exactly the following code: */
             /* Option 3: with assembly */
@@ -456,7 +456,7 @@ merge16_varlen(int64_t * restrict inpA,
             regAh2 = outreg2h2;
 
             LOAD8U(regBl1, regBl2, next);
-            LOAD8U(regBh1, regBh2, ((block8 *)next + 1));
+            LOAD8U(regBh1, regBh2, ((block8 *) next + 1));
 
             BITONIC_MERGE16(outreg1l1, outreg1l2, outreg1h1, outreg1h2,
                             outreg2l1, outreg2l2, outreg2h1, outreg2h2,
@@ -465,107 +465,106 @@ merge16_varlen(int64_t * restrict inpA,
 
             /* store outreg1 */
             STORE8U(outp, outreg1l1, outreg1l2);
-            STORE8U(((block8 *)outp + 1), outreg1h1, outreg1h2);
-            outp ++;
+            STORE8U(((block8 *) outp + 1), outreg1h1, outreg1h2);
+            outp++;
         }
 
         /* flush the register to one of the lists */
-        int64_t hireg[4] __attribute__((aligned(16)));
-        _mm256_store_pd ( (double *)hireg, outreg2h2);
+//        int64_t hireg[4] __attribute__((aligned(16)));
+        auto hireg = (int64_t *) malloc_aligned(4 * sizeof(int64_t));
+        _mm256_store_pd((double *) hireg, outreg2h2);
 
-        if(*((int64_t *)inA) >= *((int64_t*)(hireg+3))) {
+        if (*((int64_t *) inA) >= *((int64_t *) (hireg + 3))) {
             /* store the last remaining register values to A */
-            inA --;
+            inA--;
             STORE8U(inA, outreg2l1, outreg2l2);
-            STORE8U(((block8 *)inA + 1), outreg2h1, outreg2h2);
-        }
-        else {
+            STORE8U(((block8 *) inA + 1), outreg2h1, outreg2h2);
+        } else {
             /* store the last remaining register values to B */
-            inB --;
+            inB--;
             STORE8U(inB, outreg2l1, outreg2l2);
-            STORE8U(((block8 *)inB + 1), outreg2h1, outreg2h2);
+            STORE8U(((block8 *) inB + 1), outreg2h1, outreg2h2);
         }
 
-        ai = ((int64_t *)inA - inpA);
-        bi = ((int64_t *)inB - inpB);
+        ai = ((int64_t *) inA - inpA);
+        bi = ((int64_t *) inB - inpB);
 
-        inpA = (int64_t *)inA;
-        inpB = (int64_t *)inB;
-        out  = (int64_t *)outp;
+        inpA = (int64_t *) inA;
+        inpB = (int64_t *) inB;
+        out = (int64_t *) outp;
     }
 
     /* serial-merge */
-    while(ai < lenA && bi < lenB){
-        int64_t * in = inpB;
+    while (ai < lenA && bi < lenB) {
+        int64_t *in = inpB;
         uint32_t cmp = (*inpA < *inpB);
         uint32_t notcmp = !cmp;
 
         ai += cmp;
         bi += notcmp;
 
-        if(cmp)
+        if (cmp)
             in = inpA;
 
         *out = *in;
-        out ++;
+        out++;
         inpA += cmp;
         inpB += notcmp;
     }
 
-    if(ai < lenA) {
+    if (ai < lenA) {
         /* if A has any more items to be output */
 
-        if((lenA - ai) >= 8) {
+        if ((lenA - ai) >= 8) {
             /* if A still has some times to be output with AVX */
-            uint32_t lenA8 = ((lenA-ai) & ~0x7);
-            register block8 * inA  = (block8 *) inpA;
-            block8 * const    endA = (block8 *) (inpA + lenA8);
-            block8 * outp = (block8 *) out;
+            uint32_t lenA8 = ((lenA - ai) & ~0x7);
+            register block8 *inA = (block8 *) inpA;
+            block8 *const endA = (block8 *) (inpA + lenA8);
+            block8 *outp = (block8 *) out;
 
-            while(inA < endA) {
+            while (inA < endA) {
                 __m256d regAl, regAh;
                 LOAD8U(regAl, regAh, inA);
                 STORE8U(outp, regAl, regAh);
-                outp ++;
-                inA ++;
+                outp++;
+                inA++;
             }
 
-            ai   += ((int64_t*)inA - inpA);
-            inpA  = (int64_t *)inA;
-            out   = (int64_t *)outp;
+            ai += ((int64_t *) inA - inpA);
+            inpA = (int64_t *) inA;
+            out = (int64_t *) outp;
         }
 
-        while(ai < lenA) {
+        while (ai < lenA) {
             *out = *inpA;
             ai++;
             out++;
             inpA++;
         }
-    }
-    else if(bi < lenB) {
+    } else if (bi < lenB) {
         /* if B has any more items to be output */
 
-        if((lenB - bi) >= 8) {
+        if ((lenB - bi) >= 8) {
             /* if B still has some times to be output with AVX */
-            uint32_t lenB8 = ((lenB-bi) & ~0x7);
-            register block8 * inB  = (block8 *) inpB;
-            block8 * const    endB = (block8 *) (inpB + lenB8);
-            block8 * outp = (block8 *) out;
+            uint32_t lenB8 = ((lenB - bi) & ~0x7);
+            register block8 *inB = (block8 *) inpB;
+            block8 *const endB = (block8 *) (inpB + lenB8);
+            block8 *outp = (block8 *) out;
 
-            while(inB < endB) {
+            while (inB < endB) {
                 __m256d regBl, regBh;
                 LOAD8U(regBl, regBh, inB);
                 STORE8U(outp, regBl, regBh);
-                outp ++;
-                inB ++;
+                outp++;
+                inB++;
             }
 
-            bi   += ((int64_t*)inB - inpB);
-            inpB  = (int64_t *)inB;
-            out   = (int64_t *)outp;
+            bi += ((int64_t *) inB - inpB);
+            inpB = (int64_t *) inB;
+            out = (int64_t *) outp;
         }
 
-        while(bi < lenB) {
+        while (bi < lenB) {
             *out = *inpB;
             bi++;
             out++;
@@ -584,27 +583,26 @@ merge16_varlen(int64_t * restrict inpA,
  * @param lenB size of B
  */
 inline void __attribute__((always_inline))
-merge8_varlen(int64_t * restrict inpA,
-              int64_t * restrict inpB,
-              int64_t * restrict Out,
+merge8_varlen(int64_t *restrict inpA,
+              int64_t *restrict inpB,
+              int64_t *restrict Out,
               const uint32_t lenA,
-              const uint32_t lenB)
-{
+              const uint32_t lenB) {
     uint32_t lenA8 = lenA & ~0x7, lenB8 = lenB & ~0x7;
     uint32_t ai = 0, bi = 0;
 
-    int64_t * out = Out;
+    int64_t *out = Out;
 
-    if(lenA8 > 8 && lenB8 > 8) {
+    if (lenA8 > 8 && lenB8 > 8) {
 
-        register block8 * inA  = (block8 *) inpA;
-        register block8 * inB  = (block8 *) inpB;
-        block8 * const    endA = (block8 *) (inpA + lenA) - 1;
-        block8 * const    endB = (block8 *) (inpB + lenB) - 1;
+        register block8 *inA = (block8 *) inpA;
+        register block8 *inB = (block8 *) inpB;
+        block8 *const endA = (block8 *) (inpA + lenA) - 1;
+        block8 *const endB = (block8 *) (inpB + lenB) - 1;
 
-        block8 * outp = (block8 *) out;
+        block8 *outp = (block8 *) out;
 
-        register block8 * next = inB;
+        register block8 *next = inB;
 
         register __m256d outreg1l, outreg1h;
         register __m256d outreg2l, outreg2h;
@@ -615,17 +613,17 @@ merge8_varlen(int64_t * restrict inpA,
         LOAD8U(regAl, regAh, inA);
         LOAD8U(regBl, regBh, next);
 
-        inA ++;
-        inB ++;
+        inA++;
+        inB++;
 
         BITONIC_MERGE8(outreg1l, outreg1h, outreg2l, outreg2h,
                        regAl, regAh, regBl, regBh);
 
         /* store outreg1 */
         STORE8U(outp, outreg1l, outreg1h);
-        outp ++;
+        outp++;
 
-        while( inA < endA && inB < endB ) {
+        while (inA < endA && inB < endB) {
 
             /* 3 Options : normal-if, cmove-with-assembly, sw-predication */
             IFELSECONDMOVE(next, inA, inB, 64);
@@ -639,104 +637,103 @@ merge8_varlen(int64_t * restrict inpA,
 
             /* store outreg1 */
             STORE8U(outp, outreg1l, outreg1h);
-            outp ++;
+            outp++;
         }
 
         /* flush the register to one of the lists */
-        int64_t hireg[4] __attribute__((aligned(16)));
-        _mm256_store_pd ( (double *)hireg, outreg2h);
+//        int64_t hireg[4] __attribute__((aligned(16)));
+        auto hireg = (int64_t *) malloc_aligned(4 * sizeof(int64_t));
+        _mm256_store_pd((double *) hireg, outreg2h);
 
-        if(*((int64_t *)inA) >= *((int64_t*)(hireg+3))) {
+        if (*((int64_t *) inA) >= *((int64_t *) (hireg + 3))) {
             /* store the last remaining register values to A */
-            inA --;
+            inA--;
             STORE8U(inA, outreg2l, outreg2h);
-        }
-        else {
+        } else {
             /* store the last remaining register values to B */
-            inB --;
+            inB--;
             STORE8U(inB, outreg2l, outreg2h);
         }
 
-        ai = ((int64_t *)inA - inpA);
-        bi = ((int64_t *)inB - inpB);
+        ai = ((int64_t *) inA - inpA);
+        bi = ((int64_t *) inB - inpB);
 
-        inpA = (int64_t *)inA;
-        inpB = (int64_t *)inB;
-        out  = (int64_t *)outp;
+        inpA = (int64_t *) inA;
+        inpB = (int64_t *) inB;
+        out = (int64_t *) outp;
     }
 
     /* serial-merge */
-    while(ai < lenA && bi < lenB){
-        int64_t * in = inpB;
+    while (ai < lenA && bi < lenB) {
+        int64_t *in = inpB;
         uint32_t cmp = (*inpA < *inpB);
         uint32_t notcmp = !cmp;
 
         ai += cmp;
         bi += notcmp;
 
-        if(cmp)
+        if (cmp)
             in = inpA;
 
         *out = *in;
-        out ++;
+        out++;
         inpA += cmp;
         inpB += notcmp;
     }
 
-    if(ai < lenA) {
+    if (ai < lenA) {
         /* if A has any more items to be output */
 
-        if((lenA - ai) >= 8) {
+        if ((lenA - ai) >= 8) {
             /* if A still has some times to be output with AVX */
-            uint32_t lenA8_ = ((lenA-ai) & ~0x7);
-            register block8 * inA  = (block8 *) inpA;
-            block8 * const    endA = (block8 *) (inpA + lenA8_);
-            block8 * outp = (block8 *) out;
+            uint32_t lenA8_ = ((lenA - ai) & ~0x7);
+            register block8 *inA = (block8 *) inpA;
+            block8 *const endA = (block8 *) (inpA + lenA8_);
+            block8 *outp = (block8 *) out;
 
-            while(inA < endA) {
+            while (inA < endA) {
                 __m256d regAl, regAh;
                 LOAD8U(regAl, regAh, inA);
                 STORE8U(outp, regAl, regAh);
-                outp ++;
-                inA ++;
+                outp++;
+                inA++;
             }
 
-            ai   += ((int64_t*)inA - inpA);
-            inpA  = (int64_t *)inA;
-            out   = (int64_t *)outp;
+            ai += ((int64_t *) inA - inpA);
+            inpA = (int64_t *) inA;
+            out = (int64_t *) outp;
         }
 
-        while(ai < lenA) {
+        while (ai < lenA) {
             *out = *inpA;
             ai++;
             out++;
             inpA++;
         }
-    }
-    else if(bi < lenB) {
+    } else if (bi < lenB) {
         /* if B has any more items to be output */
 
-        if((lenB - bi) >= 8) {
+        if ((lenB - bi) >= 8) {
             /* if B still has some times to be output with AVX */
-            uint32_t lenB8_ = ((lenB-bi) & ~0x7);
-            register block8 * inB  = (block8 *) inpB;
-            block8 * const    endB = (block8 *) (inpB + lenB8_);
-            block8 * outp = (block8 *) out;
+            uint32_t lenB8_ = ((lenB - bi) & ~0x7);
+            register block8 *inB = (block8 *) inpB;
+            block8 *const endB = (block8 *) (inpB + lenB8_);
+            block8 *outp = (block8 *) out;
 
-            while(inB < endB) {
+            while (inB < endB) {
                 __m256d regBl, regBh;
                 LOAD8U(regBl, regBh, inB);
                 STORE8U(outp, regBl, regBh);
-                outp ++;
-                inB ++;
+                outp++;
+                inB++;
             }
 
-            bi   += ((int64_t*)inB - inpB);
-            inpB  = (int64_t *)inB;
-            out   = (int64_t *)outp;
+            bi += ((int64_t *) inB - inpB);
+            inpB = (int64_t *) inB;
+            out = (int64_t *) outp;
         }
 
-        while(bi < lenB) {
+        while (bi < lenB) {
             *out = *inpB;
             bi++;
             out++;
@@ -755,27 +752,26 @@ merge8_varlen(int64_t * restrict inpA,
  * @param lenB size of B
  */
 inline void __attribute__((always_inline))
-merge8_varlen_aligned(int64_t * restrict inpA,
-                      int64_t * restrict inpB,
-                      int64_t * restrict Out,
+merge8_varlen_aligned(int64_t *restrict inpA,
+                      int64_t *restrict inpB,
+                      int64_t *restrict Out,
                       const uint32_t lenA,
-                      const uint32_t lenB)
-{
+                      const uint32_t lenB) {
     uint32_t lenA8 = lenA & ~0x7, lenB8 = lenB & ~0x7;
     uint32_t ai = 0, bi = 0;
 
-    int64_t * out = Out;
+    int64_t *out = Out;
 
-    if(lenA8 > 8 && lenB8 > 8) {
+    if (lenA8 > 8 && lenB8 > 8) {
 
-        register block8 * inA  = (block8 *) inpA;
-        register block8 * inB  = (block8 *) inpB;
-        block8 * const    endA = (block8 *) (inpA + lenA) - 1;
-        block8 * const    endB = (block8 *) (inpB + lenB) - 1;
+        register block8 *inA = (block8 *) inpA;
+        register block8 *inB = (block8 *) inpB;
+        block8 *const endA = (block8 *) (inpA + lenA) - 1;
+        block8 *const endB = (block8 *) (inpB + lenB) - 1;
 
-        block8 * outp = (block8 *) out;
+        block8 *outp = (block8 *) out;
 
-        register block8 * next = inB;
+        register block8 *next = inB;
 
         register __m256d outreg1l, outreg1h;
         register __m256d outreg2l, outreg2h;
@@ -786,17 +782,17 @@ merge8_varlen_aligned(int64_t * restrict inpA,
         LOAD8(regAl, regAh, inA);
         LOAD8(regBl, regBh, next);
 
-        inA ++;
-        inB ++;
+        inA++;
+        inB++;
 
         BITONIC_MERGE8(outreg1l, outreg1h, outreg2l, outreg2h,
                        regAl, regAh, regBl, regBh);
 
         /* store outreg1 */
         STORE8(outp, outreg1l, outreg1h);
-        outp ++;
+        outp++;
 
-        while( inA < endA && inB < endB ) {
+        while (inA < endA && inB < endB) {
 
             /* 3 Options : normal-if, cmove-with-assembly, sw-predication */
             IFELSECONDMOVE(next, inA, inB, 64);
@@ -810,104 +806,102 @@ merge8_varlen_aligned(int64_t * restrict inpA,
 
             /* store outreg1 */
             STORE8(outp, outreg1l, outreg1h);
-            outp ++;
+            outp++;
         }
 
         /* flush the register to one of the lists */
         int64_t hireg[4] __attribute__((aligned(32)));
-        _mm256_store_pd ( (double *)hireg, outreg2h);
+        _mm256_store_pd((double *) hireg, outreg2h);
 
-        if(*((int64_t *)inA) >= *((int64_t*)(hireg+3))) {
+        if (*((int64_t *) inA) >= *((int64_t *) (hireg + 3))) {
             /* store the last remaining register values to A */
-            inA --;
+            inA--;
             STORE8(inA, outreg2l, outreg2h);
-        }
-        else {
+        } else {
             /* store the last remaining register values to B */
-            inB --;
+            inB--;
             STORE8(inB, outreg2l, outreg2h);
         }
 
-        ai = ((int64_t *)inA - inpA);
-        bi = ((int64_t *)inB - inpB);
+        ai = ((int64_t *) inA - inpA);
+        bi = ((int64_t *) inB - inpB);
 
-        inpA = (int64_t *)inA;
-        inpB = (int64_t *)inB;
-        out  = (int64_t *)outp;
+        inpA = (int64_t *) inA;
+        inpB = (int64_t *) inB;
+        out = (int64_t *) outp;
     }
 
     /* serial-merge */
-    while(ai < lenA && bi < lenB){
-        int64_t * in = inpB;
+    while (ai < lenA && bi < lenB) {
+        int64_t *in = inpB;
         uint32_t cmp = (*inpA < *inpB);
         uint32_t notcmp = !cmp;
 
         ai += cmp;
         bi += notcmp;
 
-        if(cmp)
+        if (cmp)
             in = inpA;
 
         *out = *in;
-        out ++;
+        out++;
         inpA += cmp;
         inpB += notcmp;
     }
 
-    if(ai < lenA) {
+    if (ai < lenA) {
         /* if A has any more items to be output */
 
-        if((lenA - ai) >= 8) {
+        if ((lenA - ai) >= 8) {
             /* if A still has some times to be output with AVX */
-            uint32_t lenA8_ = ((lenA-ai) & ~0x7);
-            register block8 * inA  = (block8 *) inpA;
-            block8 * const    endA = (block8 *) (inpA + lenA8_);
-            block8 * outp = (block8 *) out;
+            uint32_t lenA8_ = ((lenA - ai) & ~0x7);
+            register block8 *inA = (block8 *) inpA;
+            block8 *const endA = (block8 *) (inpA + lenA8_);
+            block8 *outp = (block8 *) out;
 
-            while(inA < endA) {
+            while (inA < endA) {
                 __m256d regAl, regAh;
                 LOAD8U(regAl, regAh, inA);
                 STORE8U(outp, regAl, regAh);
-                outp ++;
-                inA ++;
+                outp++;
+                inA++;
             }
 
-            ai   += ((int64_t*)inA - inpA);
-            inpA  = (int64_t *)inA;
-            out   = (int64_t *)outp;
+            ai += ((int64_t *) inA - inpA);
+            inpA = (int64_t *) inA;
+            out = (int64_t *) outp;
         }
 
-        while(ai < lenA) {
+        while (ai < lenA) {
             *out = *inpA;
             ai++;
             out++;
             inpA++;
         }
-    }
-    else if(bi < lenB) {
+    } else if (bi < lenB) {
         /* if B has any more items to be output */
 
-        if((lenB - bi) >= 8) {
+        if ((lenB - bi) >= 8) {
             /* if B still has some times to be output with AVX */
-            uint32_t lenB8_ = ((lenB-bi) & ~0x7);
-            register block8 * inB  = (block8 *) inpB;
-            block8 * const    endB = (block8 *) (inpB + lenB8_);
-            block8 * outp = (block8 *) out;
+            uint32_t lenB8_ = ((lenB - bi) & ~0x7);
+            register block8 *inB = (block8 *) inpB;
+            block8 *const endB = (block8 *) (inpB + lenB8_);
+            block8 *outp = (block8 *) out;
 
-            while(inB < endB) {
+            while (inB < endB) {
                 __m256d regBl, regBh;
                 LOAD8U(regBl, regBh, inB);
                 STORE8U(outp, regBl, regBh);
-                outp ++;
-                inB ++;
+                outp++;
+                inB++;
             }
 
-            bi   += ((int64_t*)inB - inpB);
-            inpB  = (int64_t *)inB;
-            out   = (int64_t *)outp;
+            bi += ((int64_t *) inB - inpB);
+            inpB = (int64_t *) inB;
+            out = (int64_t *) outp;
         }
 
-        while(bi < lenB) {
+        while (bi < lenB) {
             *out = *inpB;
             bi++;
             out++;
@@ -926,43 +920,42 @@ merge8_varlen_aligned(int64_t * restrict inpA,
  * @param lenB size of B
  */
 inline void __attribute__((always_inline))
-merge4_varlen(int64_t * restrict inpA,
-              int64_t * restrict inpB,
-              int64_t * restrict Out,
+merge4_varlen(int64_t *restrict inpA,
+              int64_t *restrict inpB,
+              int64_t *restrict Out,
               const uint32_t lenA,
-              const uint32_t lenB)
-{
+              const uint32_t lenB) {
     uint32_t lenA4 = lenA & ~0x3, lenB4 = lenB & ~0x3;
     uint32_t ai = 0, bi = 0;
 
-    int64_t * out = Out;
+    int64_t *out = Out;
 
-    if(lenA4 > 4 && lenB4 > 4) {
+    if (lenA4 > 4 && lenB4 > 4) {
 
-        register block4 * inA  = (block4 *) inpA;
-        register block4 * inB  = (block4 *) inpB;
-        block4 * const    endA = (block4 *) (inpA + lenA) - 1;
-        block4 * const    endB = (block4 *) (inpB + lenB) - 1;
+        register block4 *inA = (block4 *) inpA;
+        register block4 *inB = (block4 *) inpB;
+        block4 *const endA = (block4 *) (inpA + lenA) - 1;
+        block4 *const endB = (block4 *) (inpB + lenB) - 1;
 
-        block4 * outp = (block4 *) out;
+        block4 *outp = (block4 *) out;
 
-        register block4 * next = inB;
+        register block4 *next = inB;
         register __m256d outreg1;
         register __m256d outreg2;
 
         register __m256d regA = _mm256_loadu_pd((double const *) inA);
         register __m256d regB = _mm256_loadu_pd((double const *) next);
 
-        inA ++;
-        inB ++;
+        inA++;
+        inB++;
 
         BITONIC_MERGE4(outreg1, outreg2, regA, regB);
 
         /* store outreg1 */
         _mm256_storeu_pd((double *) outp, outreg1);
-        outp ++;
+        outp++;
 
-        while( inA < endA && inB < endB ) {
+        while (inA < endA && inB < endB) {
             /* 3 Options : normal-if, cmove-with-assembly, sw-predication */
             IFELSECONDMOVE(next, inA, inB, 32);
 
@@ -973,104 +966,103 @@ merge4_varlen(int64_t * restrict inpA,
 
             /* store outreg1 */
             _mm256_storeu_pd((double *) outp, outreg1);
-            outp ++;
+            outp++;
         }
 
         /* flush the register to one of the lists */
-        int64_t hireg[4] __attribute__((aligned(16)));
-        _mm256_store_pd ( (double *)hireg, outreg2);
+//        int64_t hireg[4] __attribute__((aligned(16)));
+        auto hireg = (int64_t *) malloc_aligned(4 * sizeof(int64_t));
+        _mm256_store_pd((double *) hireg, outreg2);
 
-        if(*((int64_t *)inA) >= *((int64_t*)(hireg+3))) {
+        if (*((int64_t *) inA) >= *((int64_t *) (hireg + 3))) {
             /* store the last remaining register values to A */
-            inA --;
+            inA--;
             _mm256_storeu_pd((double *) inA, outreg2);
-        }
-        else {
+        } else {
             /* store the last remaining register values to B */
-            inB --;
+            inB--;
             _mm256_storeu_pd((double *) inB, outreg2);
         }
 
-        ai = ((int64_t *)inA - inpA);
-        bi = ((int64_t *)inB - inpB);
+        ai = ((int64_t *) inA - inpA);
+        bi = ((int64_t *) inB - inpB);
 
-        inpA = (int64_t *)inA;
-        inpB = (int64_t *)inB;
-        out  = (int64_t *)outp;
+        inpA = (int64_t *) inA;
+        inpB = (int64_t *) inB;
+        out = (int64_t *) outp;
     }
 
     /* serial-merge */
-    while(ai < lenA && bi < lenB){
-        int64_t * in = inpB;
+    while (ai < lenA && bi < lenB) {
+        int64_t *in = inpB;
         uint32_t cmp = (*inpA < *inpB);
         uint32_t notcmp = !cmp;
 
         ai += cmp;
         bi += notcmp;
 
-        if(cmp)
+        if (cmp)
             in = inpA;
 
         *out = *in;
-        out ++;
+        out++;
         inpA += cmp;
         inpB += notcmp;
     }
 
-    if(ai < lenA) {
+    if (ai < lenA) {
         /* if A has any more items to be output */
 
-        if((lenA - ai) >= 8) {
+        if ((lenA - ai) >= 8) {
             /* if A still has some times to be output with AVX */
-            uint32_t lenA8 = ((lenA-ai) & ~0x7);
-            register block8 * inA  = (block8 *) inpA;
-            block8 * const    endA = (block8 *) (inpA + lenA8);
-            block8 * outp = (block8 *) out;
+            uint32_t lenA8 = ((lenA - ai) & ~0x7);
+            register block8 *inA = (block8 *) inpA;
+            block8 *const endA = (block8 *) (inpA + lenA8);
+            block8 *outp = (block8 *) out;
 
-            while(inA < endA) {
+            while (inA < endA) {
                 __m256d regAl, regAh;
                 LOAD8U(regAl, regAh, inA);
                 STORE8U(outp, regAl, regAh);
-                outp ++;
-                inA ++;
+                outp++;
+                inA++;
             }
 
-            ai   += ((int64_t*)inA - inpA);
-            inpA  = (int64_t *)inA;
-            out   = (int64_t *)outp;
+            ai += ((int64_t *) inA - inpA);
+            inpA = (int64_t *) inA;
+            out = (int64_t *) outp;
         }
 
-        while(ai < lenA) {
+        while (ai < lenA) {
             *out = *inpA;
             ai++;
             out++;
             inpA++;
         }
-    }
-    else if(bi < lenB) {
+    } else if (bi < lenB) {
         /* if B has any more items to be output */
 
-        if((lenB - bi) >= 8) {
+        if ((lenB - bi) >= 8) {
             /* if B still has some times to be output with AVX */
-            uint32_t lenB8 = ((lenB-bi) & ~0x7);
-            register block8 * inB  = (block8 *) inpB;
-            block8 * const    endB = (block8 *) (inpB + lenB8);
-            block8 * outp = (block8 *) out;
+            uint32_t lenB8 = ((lenB - bi) & ~0x7);
+            register block8 *inB = (block8 *) inpB;
+            block8 *const endB = (block8 *) (inpB + lenB8);
+            block8 *outp = (block8 *) out;
 
-            while(inB < endB) {
+            while (inB < endB) {
                 __m256d regBl, regBh;
                 LOAD8U(regBl, regBh, inB);
                 STORE8U(outp, regBl, regBh);
-                outp ++;
-                inB ++;
+                outp++;
+                inB++;
             }
 
-            bi   += ((int64_t*)inB - inpB);
-            inpB  = (int64_t *)inB;
-            out   = (int64_t *)outp;
+            bi += ((int64_t *) inB - inpB);
+            inpB = (int64_t *) inB;
+            out = (int64_t *) outp;
         }
 
-        while(bi < lenB) {
+        while (bi < lenB) {
             *out = *inpB;
             bi++;
             out++;
@@ -1081,43 +1073,42 @@ merge4_varlen(int64_t * restrict inpA,
 
 /** aligned version */
 inline void __attribute__((always_inline))
-merge4_varlen_aligned(int64_t * restrict inpA,
-                      int64_t * restrict inpB,
-                      int64_t * restrict Out,
+merge4_varlen_aligned(int64_t *restrict inpA,
+                      int64_t *restrict inpB,
+                      int64_t *restrict Out,
                       const uint32_t lenA,
-                      const uint32_t lenB)
-{
+                      const uint32_t lenB) {
     uint32_t lenA4 = lenA & ~0x3, lenB4 = lenB & ~0x3;
     uint32_t ai = 0, bi = 0;
 
-    int64_t * out = Out;
+    int64_t *out = Out;
 
-    if(lenA4 > 4 && lenB4 > 4) {
+    if (lenA4 > 4 && lenB4 > 4) {
 
-        register block4 * inA  = (block4 *) inpA;
-        register block4 * inB  = (block4 *) inpB;
-        block4 * const    endA = (block4 *) (inpA + lenA) - 1;
-        block4 * const    endB = (block4 *) (inpB + lenB) - 1;
+        register block4 *inA = (block4 *) inpA;
+        register block4 *inB = (block4 *) inpB;
+        block4 *const endA = (block4 *) (inpA + lenA) - 1;
+        block4 *const endB = (block4 *) (inpB + lenB) - 1;
 
-        block4 * outp = (block4 *) out;
+        block4 *outp = (block4 *) out;
 
-        register block4 * next = inB;
+        register block4 *next = inB;
         register __m256d outreg1;
         register __m256d outreg2;
 
         register __m256d regA = _mm256_load_pd((double const *) inA);
         register __m256d regB = _mm256_load_pd((double const *) next);
 
-        inA ++;
-        inB ++;
+        inA++;
+        inB++;
 
         BITONIC_MERGE4(outreg1, outreg2, regA, regB);
 
         /* store outreg1 */
         _mm256_store_pd((double *) outp, outreg1);
-        outp ++;
+        outp++;
 
-        while( inA < endA && inB < endB ) {
+        while (inA < endA && inB < endB) {
             /* 3 Options : normal-if, cmove-with-assembly, sw-predication */
             IFELSECONDMOVE(next, inA, inB, 32);
 
@@ -1128,104 +1119,102 @@ merge4_varlen_aligned(int64_t * restrict inpA,
 
             /* store outreg1 */
             _mm256_store_pd((double *) outp, outreg1);
-            outp ++;
+            outp++;
         }
 
         /* flush the register to one of the lists */
         int64_t hireg[4] __attribute__((aligned(32)));
-        _mm256_store_pd ( (double *)hireg, outreg2);
+        _mm256_store_pd((double *) hireg, outreg2);
 
-        if(*((int64_t *)inA) >= *((int64_t*)(hireg+3))) {
+        if (*((int64_t *) inA) >= *((int64_t *) (hireg + 3))) {
             /* store the last remaining register values to A */
-            inA --;
+            inA--;
             _mm256_store_pd((double *) inA, outreg2);
-        }
-        else {
+        } else {
             /* store the last remaining register values to B */
-            inB --;
+            inB--;
             _mm256_store_pd((double *) inB, outreg2);
         }
 
-        ai = ((int64_t *)inA - inpA);
-        bi = ((int64_t *)inB - inpB);
+        ai = ((int64_t *) inA - inpA);
+        bi = ((int64_t *) inB - inpB);
 
-        inpA = (int64_t *)inA;
-        inpB = (int64_t *)inB;
-        out  = (int64_t *)outp;
+        inpA = (int64_t *) inA;
+        inpB = (int64_t *) inB;
+        out = (int64_t *) outp;
     }
 
     /* serial-merge */
-    while(ai < lenA && bi < lenB){
-        int64_t * in = inpB;
+    while (ai < lenA && bi < lenB) {
+        int64_t *in = inpB;
         uint32_t cmp = (*inpA < *inpB);
         uint32_t notcmp = !cmp;
 
         ai += cmp;
         bi += notcmp;
 
-        if(cmp)
+        if (cmp)
             in = inpA;
 
         *out = *in;
-        out ++;
+        out++;
         inpA += cmp;
         inpB += notcmp;
     }
 
-    if(ai < lenA) {
+    if (ai < lenA) {
         /* if A has any more items to be output */
 
-        if((lenA - ai) >= 8) {
+        if ((lenA - ai) >= 8) {
             /* if A still has some times to be output with AVX */
-            uint32_t lenA8 = ((lenA-ai) & ~0x7);
-            register block8 * inA  = (block8 *) inpA;
-            block8 * const    endA = (block8 *) (inpA + lenA8);
-            block8 * outp = (block8 *) out;
+            uint32_t lenA8 = ((lenA - ai) & ~0x7);
+            register block8 *inA = (block8 *) inpA;
+            block8 *const endA = (block8 *) (inpA + lenA8);
+            block8 *outp = (block8 *) out;
 
-            while(inA < endA) {
+            while (inA < endA) {
                 __m256d regAl, regAh;
                 LOAD8U(regAl, regAh, inA);
                 STORE8U(outp, regAl, regAh);
-                outp ++;
-                inA ++;
+                outp++;
+                inA++;
             }
 
-            ai   += ((int64_t*)inA - inpA);
-            inpA  = (int64_t *)inA;
-            out   = (int64_t *)outp;
+            ai += ((int64_t *) inA - inpA);
+            inpA = (int64_t *) inA;
+            out = (int64_t *) outp;
         }
 
-        while(ai < lenA) {
+        while (ai < lenA) {
             *out = *inpA;
             ai++;
             out++;
             inpA++;
         }
-    }
-    else if(bi < lenB) {
+    } else if (bi < lenB) {
         /* if B has any more items to be output */
 
-        if((lenB - bi) >= 8) {
+        if ((lenB - bi) >= 8) {
             /* if B still has some times to be output with AVX */
-            uint32_t lenB8 = ((lenB-bi) & ~0x7);
-            register block8 * inB  = (block8 *) inpB;
-            block8 * const    endB = (block8 *) (inpB + lenB8);
-            block8 * outp = (block8 *) out;
+            uint32_t lenB8 = ((lenB - bi) & ~0x7);
+            register block8 *inB = (block8 *) inpB;
+            block8 *const endB = (block8 *) (inpB + lenB8);
+            block8 *outp = (block8 *) out;
 
-            while(inB < endB) {
+            while (inB < endB) {
                 __m256d regBl, regBh;
                 LOAD8U(regBl, regBh, inB);
                 STORE8U(outp, regBl, regBh);
-                outp ++;
-                inB ++;
+                outp++;
+                inB++;
             }
 
-            bi   += ((int64_t*)inB - inpB);
-            inpB  = (int64_t *)inB;
-            out   = (int64_t *)outp;
+            bi += ((int64_t *) inB - inpB);
+            inpB = (int64_t *) inB;
+            out = (int64_t *) outp;
         }
 
-        while(bi < lenB) {
+        while (bi < lenB) {
             *out = *inpB;
             bi++;
             out++;
@@ -1235,13 +1224,12 @@ merge4_varlen_aligned(int64_t * restrict inpA,
 }
 
 inline void __attribute((always_inline))
-inregister_sort_keyval32(int64_t * items, int64_t * output)
-{
+inregister_sort_keyval32(int64_t *items, int64_t *output) {
 
-    __m256d ra = _mm256_loadu_pd ((double const *)(items));
-    __m256d rb = _mm256_loadu_pd ((double const *)(items + 4));
-    __m256d rc = _mm256_loadu_pd ((double const *)(items + 8));
-    __m256d rd = _mm256_loadu_pd ((double const *)(items + 12));
+    __m256d ra = _mm256_loadu_pd((double const *) (items));
+    __m256d rb = _mm256_loadu_pd((double const *) (items + 4));
+    __m256d rc = _mm256_loadu_pd((double const *) (items + 8));
+    __m256d rd = _mm256_loadu_pd((double const *) (items + 12));
 
     /* odd-even sorting network begins */
     /* 1st level of comparisons */
@@ -1298,20 +1286,19 @@ inregister_sort_keyval32(int64_t * items, int64_t * output)
 }
 
 inline void __attribute__((always_inline))
-avxsort_block(int64_t ** inputptr, int64_t ** outputptr, int BLOCK_SIZE)
-{
-    int64_t * ptrs[2];
+avxsort_block(int64_t **inputptr, int64_t **outputptr, int BLOCK_SIZE) {
+    int64_t *ptrs[2];
     const uint64_t logBSZ = log2(BLOCK_SIZE);
 
     ptrs[0] = *inputptr;
     ptrs[1] = *outputptr;
 
     /** 1.a) Perform in-register sort to get sorted seq of K(K=4)*/
-    block16 * inptr = (block16 *) ptrs[0];
-    block16 * const end = (block16 *) (ptrs[0] + BLOCK_SIZE);
-    while(inptr < end) {
-        inregister_sort_keyval32((int64_t*)inptr, (int64_t*)inptr);
-        inptr ++;
+    block16 *inptr = (block16 *) ptrs[0];
+    block16 *const end = (block16 *) (ptrs[0] + BLOCK_SIZE);
+    while (inptr < end) {
+        inregister_sort_keyval32((int64_t *) inptr, (int64_t *) inptr);
+        inptr++;
     }
 
 
@@ -1326,18 +1313,18 @@ avxsort_block(int64_t ** inputptr, int64_t ** outputptr, int BLOCK_SIZE)
     j = 2;
     {
         int ptridx = j & 1;
-        int64_t * inp = (int64_t *) ptrs[ptridx];
-        int64_t * out = (int64_t *) ptrs[ptridx ^ 1];
-        int64_t * const end = (int64_t*) (inp + BLOCK_SIZE);
+        int64_t *inp = (int64_t *) ptrs[ptridx];
+        int64_t *out = (int64_t *) ptrs[ptridx ^ 1];
+        int64_t *const end = (int64_t *) (inp + BLOCK_SIZE);
 
         /**
          *  merge length 2^j lists beginnig at inp and output a
          *  sorted list of length 2^(j+1) starting at out
          */
-        const uint64_t inlen  = (1 << j);
+        const uint64_t inlen = (1 << j);
         const uint64_t outlen = (inlen << 1);
 
-        while(inp < end) {
+        while (inp < end) {
 
             merge4_eqlen(inp, inp + inlen, out, inlen);
             inp += outlen;
@@ -1347,38 +1334,38 @@ avxsort_block(int64_t ** inputptr, int64_t ** outputptr, int BLOCK_SIZE)
     j = 3;
     {
         int ptridx = j & 1;
-        int64_t * inp = (int64_t *) ptrs[ptridx];
-        int64_t * out = (int64_t *) ptrs[ptridx ^ 1];
-        int64_t * const end = (int64_t*) (inp + BLOCK_SIZE);
+        int64_t *inp = (int64_t *) ptrs[ptridx];
+        int64_t *out = (int64_t *) ptrs[ptridx ^ 1];
+        int64_t *const end = (int64_t *) (inp + BLOCK_SIZE);
 
         /**
          *  merge length 2^j lists beginnig at inp and output a
          *  sorted list of length 2^(j+1) starting at out
          */
-        const uint64_t inlen  = (1 << j);
+        const uint64_t inlen = (1 << j);
         const uint64_t outlen = (inlen << 1);
 
-        while(inp < end) {
+        while (inp < end) {
 
             merge8_eqlen(inp, inp + inlen, out, inlen);
             inp += outlen;
             out += outlen;
         }
     }
-    for(j = 4; j < jend; j++) {
+    for (j = 4; j < jend; j++) {
         int ptridx = j & 1;
-        int64_t * inp = (int64_t *) ptrs[ptridx];
-        int64_t * out = (int64_t *) ptrs[ptridx ^ 1];
-        int64_t * const end = (int64_t*) (inp + BLOCK_SIZE);
+        int64_t *inp = (int64_t *) ptrs[ptridx];
+        int64_t *out = (int64_t *) ptrs[ptridx ^ 1];
+        int64_t *const end = (int64_t *) (inp + BLOCK_SIZE);
 
         /**
          *  merge length 2^j lists beginnig at inp and output a
          *  sorted list of length 2^(j+1) starting at out
          */
-        const uint64_t inlen  = (1 << j);
+        const uint64_t inlen = (1 << j);
         const uint64_t outlen = (inlen << 1);
 
-        while(inp < end) {
+        while (inp < end) {
 
             merge16_eqlen(inp, inp + inlen, out, inlen);
             inp += outlen;
@@ -1396,16 +1383,16 @@ avxsort_block(int64_t ** inputptr, int64_t ** outputptr, int BLOCK_SIZE)
      *  (using a 2K by 2K network) of length M/4 to obtain sorted
      *  sequences of M/2.
      */
-    uint64_t inlen  = (1 << j);
-    int64_t * inp;
-    int64_t * out;
+    uint64_t inlen = (1 << j);
+    int64_t *inp;
+    int64_t *out;
     int ptridx = j & 1;
 
     inp = ptrs[ptridx];
     out = ptrs[ptridx ^ 1];
 
     merge16_eqlen(inp, inp + inlen, out, inlen);
-    merge16_eqlen(inp+2*inlen, inp+3*inlen, out + 2*inlen, inlen);
+    merge16_eqlen(inp + 2 * inlen, inp + 3 * inlen, out + 2 * inlen, inlen);
 
     /* TODO: simultaneous merge of 2 list pairs */
     /**
@@ -1413,33 +1400,31 @@ avxsort_block(int64_t ** inputptr, int64_t ** outputptr, int BLOCK_SIZE)
      * 4K by 4K network) of length M/2 to get sorted seq. of M.
      */
     j++; /* j=(LOG2_BLOCK_SIZE-1); inputsize M/2 --> outputsize M*/
-    inlen  = (1 << j);
+    inlen = (1 << j);
     /* now we know that input is out from the last pass */
     merge16_eqlen(out, out + inlen, inp, inlen);
 
     /* finally swap input/output ptrs, output is the sorted list */
-    * outputptr = inp;
-    * inputptr  = out;
+    *outputptr = inp;
+    *inputptr = out;
 }
 
 inline __attribute__((__always_inline__))
-int keycmp(const void * k1, const void * k2)
-{
-    int64_t val = (*(int64_t *)k1 - *(int64_t *)k2);
+int keycmp(const void *k1, const void *k2) {
+    int64_t val = (*(int64_t *) k1 - *(int64_t *) k2);
 
     int ret = 0;
-    if(val < 0)
+    if (val < 0)
         ret = -1;
-    else if(val > 0)
+    else if (val > 0)
         ret = 1;
 
     return ret;
 }
 
 inline __attribute__((__always_inline__)) void
-swap(int64_t ** A, int64_t ** B)
-{
-    int64_t * tmp = *A;
+swap(int64_t **A, int64_t **B) {
+    int64_t *tmp = *A;
     *A = *B;
     *B = tmp;
 }
@@ -1455,44 +1440,43 @@ swap(int64_t ** A, int64_t ** B)
  * @param nitems
  */
 inline void __attribute__((always_inline))
-avxsort_rem(int64_t ** inputptr, int64_t ** outputptr, uint32_t nitems)
-{
-    int64_t * inp = *inputptr;
-    int64_t * out = *outputptr;
+avxsort_rem(int64_t **inputptr, int64_t **outputptr, uint32_t nitems) {
+    int64_t *inp = *inputptr;
+    int64_t *out = *outputptr;
 
 #if 1 /* sort using AVX */
     /* each chunk keeps track of its temporary memory offset */
-    int64_t * ptrs[8][2];/* [chunk-in, chunk-out-tmp] */
+    int64_t *ptrs[8][2];/* [chunk-in, chunk-out-tmp] */
 
     uint32_t n = nitems, pos = 0, i = 0;
     uint32_t nxtpow = 8192;
     uint32_t sizes[6];
 
-    while(n < nxtpow) {
+    while (n < nxtpow) {
         nxtpow >>= 1;
     }
 
-    while(nxtpow > 128) {
+    while (nxtpow > 128) {
         ptrs[i][0] = inp + pos;
         ptrs[i][1] = out + pos;
-        sizes[i]   = nxtpow;
+        sizes[i] = nxtpow;
 
         avxsort_block(&ptrs[i][0], &ptrs[i][1], nxtpow);
         pos += nxtpow;
-        n   -= nxtpow;
+        n -= nxtpow;
         swap(&ptrs[i][0], &ptrs[i][1]);
         i++;
 
-        while(n < nxtpow) {
+        while (n < nxtpow) {
             nxtpow >>= 1;
         }
     }
 
-    if(n > 0) {
+    if (n > 0) {
         /* sort last n < 128 items using scalar sort */
         ptrs[i][0] = inp + pos;
         ptrs[i][1] = out + pos;
-        sizes[i]   = n;
+        sizes[i] = n;
 
 #ifdef __cplusplus
         std::sort(ptrs[i][0], ptrs[i][0] + n);
@@ -1506,29 +1490,29 @@ avxsort_rem(int64_t ** inputptr, int64_t ** outputptr, uint32_t nitems)
     uint32_t nchunks = i;
 
     /* merge sorted blocks */
-    while(nchunks > 1) {
+    while (nchunks > 1) {
         uint64_t k = 0;
-        for(uint64_t j = 0; j < (nchunks-1); j += 2) {
-            int64_t * inpA  = ptrs[j][0];
-            int64_t * inpB  = ptrs[j+1][0];
-            int64_t * out   = ptrs[j][1];
-            uint32_t  sizeA = sizes[j];
-            uint32_t  sizeB = sizes[j+1];
+        for (uint64_t j = 0; j < (nchunks - 1); j += 2) {
+            int64_t *inpA = ptrs[j][0];
+            int64_t *inpB = ptrs[j + 1][0];
+            int64_t *out = ptrs[j][1];
+            uint32_t sizeA = sizes[j];
+            uint32_t sizeB = sizes[j + 1];
 
             merge16_varlen(inpA, inpB, out, sizeA, sizeB);
 
             /* setup new pointers */
             ptrs[k][0] = out;
             ptrs[k][1] = inpA;
-            sizes[k]   = sizeA + sizeB;
+            sizes[k] = sizeA + sizeB;
             k++;
         }
 
-        if((nchunks % 2)) {
+        if ((nchunks % 2)) {
             /* just move the pointers */
-            ptrs[k][0] = ptrs[nchunks-1][0];
-            ptrs[k][1] = ptrs[nchunks-1][1];
-            sizes[k]   = sizes[nchunks-1];
+            ptrs[k][0] = ptrs[nchunks - 1][0];
+            ptrs[k][1] = ptrs[nchunks - 1][1];
+            sizes[k] = sizes[nchunks - 1];
             k++;
         }
 
@@ -1536,12 +1520,12 @@ avxsort_rem(int64_t ** inputptr, int64_t ** outputptr, uint32_t nitems)
     }
 
     /* finally swap input/output pointers, where output holds the sorted list */
-    * outputptr = ptrs[0][0];
-    * inputptr  = ptrs[0][1];
+    *outputptr = ptrs[0][0];
+    *inputptr = ptrs[0][1];
 
 #else /* sort using scalar */
 
-    #ifdef __cplusplus
+#ifdef __cplusplus
     std::sort(inp, inp + nitems);
 #else
     qsort(inp, nitems, sizeof(int64_t), keycmp);
@@ -1560,13 +1544,12 @@ avxsort_rem(int64_t ** inputptr, int64_t ** outputptr, uint32_t nitems)
  *******************************************************************************/
 
 inline void __attribute((always_inline))
-inregister_sort_keyval32_aligned(int64_t * items, int64_t * output)
-{
+inregister_sort_keyval32_aligned(int64_t *items, int64_t *output) {
 /* IACA_START */
-    __m256d ra = _mm256_load_pd ((double const *)(items));
-    __m256d rb = _mm256_load_pd ((double const *)(items + 4));
-    __m256d rc = _mm256_load_pd ((double const *)(items + 8));
-    __m256d rd = _mm256_load_pd ((double const *)(items + 12));
+    __m256d ra = _mm256_load_pd((double const *) (items));
+    __m256d rb = _mm256_load_pd((double const *) (items + 4));
+    __m256d rc = _mm256_load_pd((double const *) (items + 8));
+    __m256d rd = _mm256_load_pd((double const *) (items + 12));
 
     /* odd-even sorting network begins */
     /* 1st level of comparisons */
@@ -1623,17 +1606,16 @@ inregister_sort_keyval32_aligned(int64_t * items, int64_t * output)
 }
 
 inline void __attribute((always_inline))
-merge4_eqlen_aligned(int64_t * const inpA, int64_t * const inpB,
-                     int64_t * const out, const uint32_t len)
-{
-    register block4 * inA  = (block4 *) inpA;
-    register block4 * inB  = (block4 *) inpB;
-    block4 * const    endA = (block4 *) (inpA + len);
-    block4 * const    endB = (block4 *) (inpB + len);
+merge4_eqlen_aligned(int64_t *const inpA, int64_t *const inpB,
+                     int64_t *const out, const uint32_t len) {
+    register block4 *inA = (block4 *) inpA;
+    register block4 *inB = (block4 *) inpB;
+    block4 *const endA = (block4 *) (inpA + len);
+    block4 *const endB = (block4 *) (inpB + len);
 
-    block4 * outp = (block4 *) out;
+    block4 *outp = (block4 *) out;
 
-    register block4 * next = inB;
+    register block4 *next = inB;
 
     register __m256d outreg1;
     register __m256d outreg2;
@@ -1641,16 +1623,16 @@ merge4_eqlen_aligned(int64_t * const inpA, int64_t * const inpB,
     register __m256d regA = _mm256_load_pd((double const *) inA);
     register __m256d regB = _mm256_load_pd((double const *) next);
 
-    inA ++;
-    inB ++;
+    inA++;
+    inB++;
 
     BITONIC_MERGE4(outreg1, outreg2, regA, regB);
 
     /* store outreg1 */
     _mm256_store_pd((double *) outp, outreg1);
-    outp ++;
+    outp++;
 
-    while( inA < endA && inB < endB ) {
+    while (inA < endA && inB < endB) {
 
         /* 3 Options : normal-if, cmove-with-assembly, sw-predication */
         IFELSECONDMOVE(next, inA, inB, 32);
@@ -1662,30 +1644,30 @@ merge4_eqlen_aligned(int64_t * const inpA, int64_t * const inpB,
 
         /* store outreg1 */
         _mm256_store_pd((double *) outp, outreg1);
-        outp ++;
+        outp++;
     }
 
     /* handle remaining items */
-    while( inA < endA ) {
+    while (inA < endA) {
         __m256d regA = _mm256_load_pd((double const *) inA);
         __m256d regB = outreg2;
 
         BITONIC_MERGE4(outreg1, outreg2, regA, regB);
 
         _mm256_store_pd((double *) outp, outreg1);
-        inA ++;
-        outp ++;
+        inA++;
+        outp++;
     }
 
-    while( inB < endB ) {
+    while (inB < endB) {
         __m256d regA = outreg2;
         __m256d regB = _mm256_load_pd((double const *) inB);
 
         BITONIC_MERGE4(outreg1, outreg2, regA, regB);
 
         _mm256_store_pd((double *) outp, outreg1);
-        inB ++;
-        outp ++;
+        inB++;
+        outp++;
     }
 
     /* store the last remaining register values */
@@ -1694,17 +1676,16 @@ merge4_eqlen_aligned(int64_t * const inpA, int64_t * const inpB,
 }
 
 inline void __attribute((always_inline))
-merge8_eqlen_aligned(int64_t * const inpA, int64_t * const inpB,
-                     int64_t * const out, const uint32_t len)
-{
-    register block8 * inA  = (block8 *) inpA;
-    register block8 * inB  = (block8 *) inpB;
-    block8 * const    endA = (block8 *) (inpA + len);
-    block8 * const    endB = (block8 *) (inpB + len);
+merge8_eqlen_aligned(int64_t *const inpA, int64_t *const inpB,
+                     int64_t *const out, const uint32_t len) {
+    register block8 *inA = (block8 *) inpA;
+    register block8 *inB = (block8 *) inpB;
+    block8 *const endA = (block8 *) (inpA + len);
+    block8 *const endB = (block8 *) (inpB + len);
 
-    block8 * outp = (block8 *) out;
+    block8 *outp = (block8 *) out;
 
-    register block8 * next = inB;
+    register block8 *next = inB;
 
     register __m256d outreg1l, outreg1h;
     register __m256d outreg2l, outreg2h;
@@ -1715,17 +1696,17 @@ merge8_eqlen_aligned(int64_t * const inpA, int64_t * const inpB,
     LOAD8(regAl, regAh, inA);
     LOAD8(regBl, regBh, next);
 
-    inA ++;
-    inB ++;
+    inA++;
+    inB++;
 
     BITONIC_MERGE8(outreg1l, outreg1h, outreg2l, outreg2h,
                    regAl, regAh, regBl, regBh);
 
     /* store outreg1 */
     STORE8(outp, outreg1l, outreg1h);
-    outp ++;
+    outp++;
 
-    while( inA < endA && inB < endB ) {
+    while (inA < endA && inB < endB) {
 
         /* 3 Options : normal-if, cmove-with-assembly, sw-predication */
         IFELSECONDMOVE(next, inA, inB, 64);
@@ -1739,11 +1720,11 @@ merge8_eqlen_aligned(int64_t * const inpA, int64_t * const inpB,
 
         /* store outreg1 */
         STORE8(outp, outreg1l, outreg1h);
-        outp ++;
+        outp++;
     }
 
     /* handle remaining items */
-    while( inA < endA ) {
+    while (inA < endA) {
         __m256d regAl, regAh;
         LOAD8(regAl, regAh, inA);
 
@@ -1755,11 +1736,11 @@ merge8_eqlen_aligned(int64_t * const inpA, int64_t * const inpB,
 
         /* store outreg1 */
         STORE8(outp, outreg1l, outreg1h);
-        outp ++;
-        inA ++;
+        outp++;
+        inA++;
     }
 
-    while( inB < endB ) {
+    while (inB < endB) {
         __m256d regAl = outreg2l;
         __m256d regAh = outreg2h;
         __m256d regBl, regBh;
@@ -1771,8 +1752,8 @@ merge8_eqlen_aligned(int64_t * const inpA, int64_t * const inpB,
 
         /* store outreg1 */
         STORE8(outp, outreg1l, outreg1h);
-        outp ++;
-        inB ++;
+        outp++;
+        inB++;
     }
 
     /* store the last remaining register values */
@@ -1780,17 +1761,16 @@ merge8_eqlen_aligned(int64_t * const inpA, int64_t * const inpB,
 }
 
 inline void __attribute((always_inline))
-merge16_eqlen_aligned(int64_t * const inpA, int64_t * const inpB,
-                      int64_t * const out, const uint32_t len)
-{
-    register block16 * inA  = (block16 *) inpA;
-    register block16 * inB  = (block16 *) inpB;
-    block16 * const    endA = (block16 *) (inpA + len);
-    block16 * const    endB = (block16 *) (inpB + len);
+merge16_eqlen_aligned(int64_t *const inpA, int64_t *const inpB,
+                      int64_t *const out, const uint32_t len) {
+    register block16 *inA = (block16 *) inpA;
+    register block16 *inB = (block16 *) inpB;
+    block16 *const endA = (block16 *) (inpA + len);
+    block16 *const endB = (block16 *) (inpB + len);
 
-    block16 * outp = (block16 *) out;
+    block16 *outp = (block16 *) out;
 
-    register block16 * next = inB;
+    register block16 *next = inB;
 
     __m256d outreg1l1, outreg1l2, outreg1h1, outreg1h2;
     __m256d outreg2l1, outreg2l2, outreg2h1, outreg2h2;
@@ -1799,12 +1779,12 @@ merge16_eqlen_aligned(int64_t * const inpA, int64_t * const inpB,
     __m256d regBl1, regBl2, regBh1, regBh2;
 
     LOAD8(regAl1, regAl2, inA);
-    LOAD8(regAh1, regAh2, ((block8 *)(inA) + 1));
-    inA ++;
+    LOAD8(regAh1, regAh2, ((block8 *) (inA) + 1));
+    inA++;
 
     LOAD8(regBl1, regBl2, inB);
-    LOAD8(regBh1, regBh2, ((block8 *)(inB) + 1));
-    inB ++;
+    LOAD8(regBh1, regBh2, ((block8 *) (inB) + 1));
+    inB++;
 
     BITONIC_MERGE16(outreg1l1, outreg1l2, outreg1h1, outreg1h2,
                     outreg2l1, outreg2l2, outreg2h1, outreg2h2,
@@ -1813,10 +1793,10 @@ merge16_eqlen_aligned(int64_t * const inpA, int64_t * const inpB,
 
     /* store outreg1 */
     STORE8(outp, outreg1l1, outreg1l2);
-    STORE8(((block8 *)outp + 1), outreg1h1, outreg1h2);
-    outp ++;
+    STORE8(((block8 *) outp + 1), outreg1h1, outreg1h2);
+    outp++;
 
-    while( inA < endA && inB < endB ) {
+    while (inA < endA && inB < endB) {
 
         /* 3 Options : normal-if, cmove-with-assembly, sw-predication */
         IFELSECONDMOVE(next, inA, inB, 128);
@@ -1827,7 +1807,7 @@ merge16_eqlen_aligned(int64_t * const inpA, int64_t * const inpB,
         regAh2 = outreg2h2;
 
         LOAD8(regBl1, regBl2, next);
-        LOAD8(regBh1, regBh2, ((block8 *)next + 1));
+        LOAD8(regBh1, regBh2, ((block8 *) next + 1));
 
         BITONIC_MERGE16(outreg1l1, outreg1l2, outreg1h1, outreg1h2,
                         outreg2l1, outreg2l2, outreg2h1, outreg2h2,
@@ -1836,12 +1816,12 @@ merge16_eqlen_aligned(int64_t * const inpA, int64_t * const inpB,
 
         /* store outreg1 */
         STORE8(outp, outreg1l1, outreg1l2);
-        STORE8(((block8 *)outp + 1), outreg1h1, outreg1h2);
-        outp ++;
+        STORE8(((block8 *) outp + 1), outreg1h1, outreg1h2);
+        outp++;
     }
 
     /* handle remaining items */
-    while( inA < endA ) {
+    while (inA < endA) {
         __m256d regAl1, regAl2, regAh1, regAh2;
         __m256d regBl1 = outreg2l1;
         __m256d regBl2 = outreg2l2;
@@ -1849,8 +1829,8 @@ merge16_eqlen_aligned(int64_t * const inpA, int64_t * const inpB,
         __m256d regBh2 = outreg2h2;
 
         LOAD8(regAl1, regAl2, inA);
-        LOAD8(regAh1, regAh2, ((block8 *)(inA) + 1));
-        inA ++;
+        LOAD8(regAh1, regAh2, ((block8 *) (inA) + 1));
+        inA++;
 
         BITONIC_MERGE16(outreg1l1, outreg1l2, outreg1h1, outreg1h2,
                         outreg2l1, outreg2l2, outreg2h1, outreg2h2,
@@ -1859,11 +1839,11 @@ merge16_eqlen_aligned(int64_t * const inpA, int64_t * const inpB,
 
         /* store outreg1 */
         STORE8(outp, outreg1l1, outreg1l2);
-        STORE8(((block8 *)outp + 1), outreg1h1, outreg1h2);
-        outp ++;
+        STORE8(((block8 *) outp + 1), outreg1h1, outreg1h2);
+        outp++;
     }
 
-    while( inB < endB ) {
+    while (inB < endB) {
         __m256d regBl1, regBl2, regBh1, regBh2;
         __m256d regAl1 = outreg2l1;
         __m256d regAl2 = outreg2l2;
@@ -1871,8 +1851,8 @@ merge16_eqlen_aligned(int64_t * const inpA, int64_t * const inpB,
         __m256d regAh2 = outreg2h2;
 
         LOAD8(regBl1, regBl2, inB);
-        LOAD8(regBh1, regBh2, ((block8 *)inB + 1));
-        inB ++;
+        LOAD8(regBh1, regBh2, ((block8 *) inB + 1));
+        inB++;
 
         BITONIC_MERGE16(outreg1l1, outreg1l2, outreg1h1, outreg1h2,
                         outreg2l1, outreg2l2, outreg2h1, outreg2h2,
@@ -1881,13 +1861,13 @@ merge16_eqlen_aligned(int64_t * const inpA, int64_t * const inpB,
 
         /* store outreg1 */
         STORE8(outp, outreg1l1, outreg1l2);
-        STORE8(((block8 *)outp + 1), outreg1h1, outreg1h2);
-        outp ++;
+        STORE8(((block8 *) outp + 1), outreg1h1, outreg1h2);
+        outp++;
     }
 
     /* store the last remaining register values */
     STORE8(outp, outreg2l1, outreg2l2);
-    STORE8(((block8 *)outp + 1), outreg2h1, outreg2h2);
+    STORE8(((block8 *) outp + 1), outreg2h1, outreg2h2);
 
 }
 
@@ -1901,27 +1881,26 @@ merge16_eqlen_aligned(int64_t * const inpA, int64_t * const inpB,
  * @param lenB size of B
  */
 inline void __attribute__((always_inline))
-merge16_varlen_aligned(int64_t * restrict inpA,
-                       int64_t * restrict inpB,
-                       int64_t * restrict Out,
+merge16_varlen_aligned(int64_t *restrict inpA,
+                       int64_t *restrict inpB,
+                       int64_t *restrict Out,
                        const uint32_t lenA,
-                       const uint32_t lenB)
-{
+                       const uint32_t lenB) {
     uint32_t lenA16 = lenA & ~0xF, lenB16 = lenB & ~0xF;
     uint32_t ai = 0, bi = 0;
 
-    int64_t * out = Out;
+    int64_t *out = Out;
 
-    if(lenA16 > 16 && lenB16 > 16) {
+    if (lenA16 > 16 && lenB16 > 16) {
 
-        register block16 * inA  = (block16 *) inpA;
-        register block16 * inB  = (block16 *) inpB;
-        block16 * const    endA = (block16 *) (inpA + lenA) - 1;
-        block16 * const    endB = (block16 *) (inpB + lenB) - 1;
+        register block16 *inA = (block16 *) inpA;
+        register block16 *inB = (block16 *) inpB;
+        block16 *const endA = (block16 *) (inpA + lenA) - 1;
+        block16 *const endB = (block16 *) (inpB + lenB) - 1;
 
-        block16 * outp = (block16 *) out;
+        block16 *outp = (block16 *) out;
 
-        register block16 * next = inB;
+        register block16 *next = inB;
 
         __m256d outreg1l1, outreg1l2, outreg1h1, outreg1h2;
         __m256d outreg2l1, outreg2l2, outreg2h1, outreg2h2;
@@ -1930,12 +1909,12 @@ merge16_varlen_aligned(int64_t * restrict inpA,
         __m256d regBl1, regBl2, regBh1, regBh2;
 
         LOAD8(regAl1, regAl2, inA);
-        LOAD8(regAh1, regAh2, ((block8 *)(inA) + 1));
-        inA ++;
+        LOAD8(regAh1, regAh2, ((block8 *) (inA) + 1));
+        inA++;
 
         LOAD8(regBl1, regBl2, inB);
-        LOAD8(regBh1, regBh2, ((block8 *)(inB) + 1));
-        inB ++;
+        LOAD8(regBh1, regBh2, ((block8 *) (inB) + 1));
+        inB++;
 
         BITONIC_MERGE16(outreg1l1, outreg1l2, outreg1h1, outreg1h2,
                         outreg2l1, outreg2l2, outreg2h1, outreg2h2,
@@ -1944,10 +1923,10 @@ merge16_varlen_aligned(int64_t * restrict inpA,
 
         /* store outreg1 */
         STORE8(outp, outreg1l1, outreg1l2);
-        STORE8(((block8 *)outp + 1), outreg1h1, outreg1h2);
-        outp ++;
+        STORE8(((block8 *) outp + 1), outreg1h1, outreg1h2);
+        outp++;
 
-        while( inA < endA && inB < endB ) {
+        while (inA < endA && inB < endB) {
 
             /** The inline assembly below does exactly the following code: */
             /* Option 3: with assembly */
@@ -1959,7 +1938,7 @@ merge16_varlen_aligned(int64_t * restrict inpA,
             regAh2 = outreg2h2;
 
             LOAD8(regBl1, regBl2, next);
-            LOAD8(regBh1, regBh2, ((block8 *)next + 1));
+            LOAD8(regBh1, regBh2, ((block8 *) next + 1));
 
             BITONIC_MERGE16(outreg1l1, outreg1l2, outreg1h1, outreg1h2,
                             outreg2l1, outreg2l2, outreg2h1, outreg2h2,
@@ -1968,107 +1947,106 @@ merge16_varlen_aligned(int64_t * restrict inpA,
 
             /* store outreg1 */
             STORE8(outp, outreg1l1, outreg1l2);
-            STORE8(((block8 *)outp + 1), outreg1h1, outreg1h2);
-            outp ++;
+            STORE8(((block8 *) outp + 1), outreg1h1, outreg1h2);
+            outp++;
         }
 
         /* flush the register to one of the lists */
-        int64_t hireg[4] __attribute__((aligned(16)));
-        _mm256_store_pd ( (double *)hireg, outreg2h2);
+//        int64_t hireg[4] __attribute__((aligned(16)));
+        auto hireg = (int64_t *) malloc_aligned(4 * sizeof(int64_t));
+        _mm256_store_pd((double *) hireg, outreg2h2);
 
-        if(*((int64_t *)inA) >= *((int64_t*)(hireg+3))) {
+        if (*((int64_t *) inA) >= *((int64_t *) (hireg + 3))) {
             /* store the last remaining register values to A */
-            inA --;
+            inA--;
             STORE8(inA, outreg2l1, outreg2l2);
-            STORE8(((block8 *)inA + 1), outreg2h1, outreg2h2);
-        }
-        else {
+            STORE8(((block8 *) inA + 1), outreg2h1, outreg2h2);
+        } else {
             /* store the last remaining register values to B */
-            inB --;
+            inB--;
             STORE8(inB, outreg2l1, outreg2l2);
-            STORE8(((block8 *)inB + 1), outreg2h1, outreg2h2);
+            STORE8(((block8 *) inB + 1), outreg2h1, outreg2h2);
         }
 
-        ai = ((int64_t *)inA - inpA);
-        bi = ((int64_t *)inB - inpB);
+        ai = ((int64_t *) inA - inpA);
+        bi = ((int64_t *) inB - inpB);
 
-        inpA = (int64_t *)inA;
-        inpB = (int64_t *)inB;
-        out  = (int64_t *)outp;
+        inpA = (int64_t *) inA;
+        inpB = (int64_t *) inB;
+        out = (int64_t *) outp;
     }
 
     /* serial-merge */
-    while(ai < lenA && bi < lenB){
-        int64_t * in = inpB;
+    while (ai < lenA && bi < lenB) {
+        int64_t *in = inpB;
         uint32_t cmp = (*inpA < *inpB);
         uint32_t notcmp = !cmp;
 
         ai += cmp;
         bi += notcmp;
 
-        if(cmp)
+        if (cmp)
             in = inpA;
 
         *out = *in;
-        out ++;
+        out++;
         inpA += cmp;
         inpB += notcmp;
     }
 
-    if(ai < lenA) {
+    if (ai < lenA) {
         /* if A has any more items to be output */
 
-        if((lenA - ai) >= 8) {
+        if ((lenA - ai) >= 8) {
             /* if A still has some times to be output with AVX */
-            uint32_t lenA8 = ((lenA-ai) & ~0x7);
-            register block8 * inA  = (block8 *) inpA;
-            block8 * const    endA = (block8 *) (inpA + lenA8);
-            block8 * outp = (block8 *) out;
+            uint32_t lenA8 = ((lenA - ai) & ~0x7);
+            register block8 *inA = (block8 *) inpA;
+            block8 *const endA = (block8 *) (inpA + lenA8);
+            block8 *outp = (block8 *) out;
 
-            while(inA < endA) {
+            while (inA < endA) {
                 __m256d regAl, regAh;
                 LOAD8U(regAl, regAh, inA);
                 STORE8U(outp, regAl, regAh);
-                outp ++;
-                inA ++;
+                outp++;
+                inA++;
             }
 
-            ai   += ((int64_t*)inA - inpA);
-            inpA  = (int64_t *)inA;
-            out   = (int64_t *)outp;
+            ai += ((int64_t *) inA - inpA);
+            inpA = (int64_t *) inA;
+            out = (int64_t *) outp;
         }
 
-        while(ai < lenA) {
+        while (ai < lenA) {
             *out = *inpA;
             ai++;
             out++;
             inpA++;
         }
-    }
-    else if(bi < lenB) {
+    } else if (bi < lenB) {
         /* if B has any more items to be output */
 
-        if((lenB - bi) >= 8) {
+        if ((lenB - bi) >= 8) {
             /* if B still has some times to be output with AVX */
-            uint32_t lenB8 = ((lenB-bi) & ~0x7);
-            register block8 * inB  = (block8 *) inpB;
-            block8 * const    endB = (block8 *) (inpB + lenB8);
-            block8 * outp = (block8 *) out;
+            uint32_t lenB8 = ((lenB - bi) & ~0x7);
+            register block8 *inB = (block8 *) inpB;
+            block8 *const endB = (block8 *) (inpB + lenB8);
+            block8 *outp = (block8 *) out;
 
-            while(inB < endB) {
+            while (inB < endB) {
                 __m256d regBl, regBh;
                 LOAD8U(regBl, regBh, inB);
                 STORE8U(outp, regBl, regBh);
-                outp ++;
-                inB ++;
+                outp++;
+                inB++;
             }
 
-            bi   += ((int64_t*)inB - inpB);
-            inpB  = (int64_t *)inB;
-            out   = (int64_t *)outp;
+            bi += ((int64_t *) inB - inpB);
+            inpB = (int64_t *) inB;
+            out = (int64_t *) outp;
         }
 
-        while(bi < lenB) {
+        while (bi < lenB) {
             *out = *inpB;
             bi++;
             out++;
@@ -2078,20 +2056,19 @@ merge16_varlen_aligned(int64_t * restrict inpA,
 }
 
 inline void __attribute__((always_inline))
-avxsort_block_aligned(int64_t ** inputptr, int64_t ** outputptr, int BLOCK_SIZE)
-{
-    int64_t * ptrs[2];
+avxsort_block_aligned(int64_t **inputptr, int64_t **outputptr, int BLOCK_SIZE) {
+    int64_t *ptrs[2];
     const uint64_t logBSZ = mylog2(BLOCK_SIZE);
 
     ptrs[0] = *inputptr;
     ptrs[1] = *outputptr;
 
     /** 1.a) Perform in-register sort to get sorted seq of K(K=4)*/
-    block16 * inptr = (block16 *) ptrs[0];
-    block16 * const end = (block16 *) (ptrs[0] + BLOCK_SIZE);
-    while(inptr < end) {
-        inregister_sort_keyval32_aligned((int64_t*)inptr, (int64_t*)inptr);
-        inptr ++;
+    block16 *inptr = (block16 *) ptrs[0];
+    block16 *const end = (block16 *) (ptrs[0] + BLOCK_SIZE);
+    while (inptr < end) {
+        inregister_sort_keyval32_aligned((int64_t *) inptr, (int64_t *) inptr);
+        inptr++;
     }
 
 
@@ -2106,18 +2083,18 @@ avxsort_block_aligned(int64_t ** inputptr, int64_t ** outputptr, int BLOCK_SIZE)
     j = 2;
     {
         int ptridx = j & 1;
-        int64_t * inp = (int64_t *) ptrs[ptridx];
-        int64_t * out = (int64_t *) ptrs[ptridx ^ 1];
-        int64_t * const end = (int64_t*) (inp + BLOCK_SIZE);
+        int64_t *inp = (int64_t *) ptrs[ptridx];
+        int64_t *out = (int64_t *) ptrs[ptridx ^ 1];
+        int64_t *const end = (int64_t *) (inp + BLOCK_SIZE);
 
         /**
          *  merge length 2^j lists beginnig at inp and output a
          *  sorted list of length 2^(j+1) starting at out
          */
-        const uint64_t inlen  = (1 << j);
+        const uint64_t inlen = (1 << j);
         const uint64_t outlen = (inlen << 1);
 
-        while(inp < end) {
+        while (inp < end) {
 
             merge4_eqlen_aligned(inp, inp + inlen, out, inlen);
             inp += outlen;
@@ -2127,38 +2104,38 @@ avxsort_block_aligned(int64_t ** inputptr, int64_t ** outputptr, int BLOCK_SIZE)
     j = 3;
     {
         int ptridx = j & 1;
-        int64_t * inp = (int64_t *) ptrs[ptridx];
-        int64_t * out = (int64_t *) ptrs[ptridx ^ 1];
-        int64_t * const end = (int64_t*) (inp + BLOCK_SIZE);
+        int64_t *inp = (int64_t *) ptrs[ptridx];
+        int64_t *out = (int64_t *) ptrs[ptridx ^ 1];
+        int64_t *const end = (int64_t *) (inp + BLOCK_SIZE);
 
         /**
          *  merge length 2^j lists beginnig at inp and output a
          *  sorted list of length 2^(j+1) starting at out
          */
-        const uint64_t inlen  = (1 << j);
+        const uint64_t inlen = (1 << j);
         const uint64_t outlen = (inlen << 1);
 
-        while(inp < end) {
+        while (inp < end) {
 
             merge8_eqlen_aligned(inp, inp + inlen, out, inlen);
             inp += outlen;
             out += outlen;
         }
     }
-    for(j = 4; j < jend; j++) {
+    for (j = 4; j < jend; j++) {
         int ptridx = j & 1;
-        int64_t * inp = (int64_t *) ptrs[ptridx];
-        int64_t * out = (int64_t *) ptrs[ptridx ^ 1];
-        int64_t * const end = (int64_t*) (inp + BLOCK_SIZE);
+        int64_t *inp = (int64_t *) ptrs[ptridx];
+        int64_t *out = (int64_t *) ptrs[ptridx ^ 1];
+        int64_t *const end = (int64_t *) (inp + BLOCK_SIZE);
 
         /**
          *  merge length 2^j lists beginnig at inp and output a
          *  sorted list of length 2^(j+1) starting at out
          */
-        const uint64_t inlen  = (1 << j);
+        const uint64_t inlen = (1 << j);
         const uint64_t outlen = (inlen << 1);
 
-        while(inp < end) {
+        while (inp < end) {
 
             merge16_eqlen_aligned(inp, inp + inlen, out, inlen);
             inp += outlen;
@@ -2176,16 +2153,16 @@ avxsort_block_aligned(int64_t ** inputptr, int64_t ** outputptr, int BLOCK_SIZE)
      *  (using a 2K by 2K network) of length M/4 to obtain sorted
      *  sequences of M/2.
      */
-    uint64_t inlen  = (1 << j);
-    int64_t * inp;
-    int64_t * out;
+    uint64_t inlen = (1 << j);
+    int64_t *inp;
+    int64_t *out;
     int ptridx = j & 1;
 
     inp = ptrs[ptridx];
     out = ptrs[ptridx ^ 1];
 
     merge16_eqlen_aligned(inp, inp + inlen, out, inlen);
-    merge16_eqlen_aligned(inp+2*inlen, inp+3*inlen, out + 2*inlen, inlen);
+    merge16_eqlen_aligned(inp + 2 * inlen, inp + 3 * inlen, out + 2 * inlen, inlen);
 
     /* TODO: simultaneous merge of 2 list pairs */
     /**
@@ -2193,13 +2170,13 @@ avxsort_block_aligned(int64_t ** inputptr, int64_t ** outputptr, int BLOCK_SIZE)
      * 4K by 4K network) of length M/2 to get sorted seq. of M.
      */
     j++; /* j=(LOG2_BLOCK_SIZE-1); inputsize M/2 --> outputsize M*/
-    inlen  = (1 << j);
+    inlen = (1 << j);
     /* now we know that input is out from the last pass */
     merge16_eqlen_aligned(out, out + inlen, inp, inlen);
 
     /* finally swap input/output ptrs, output is the sorted list */
-    * outputptr = inp;
-    * inputptr  = out;
+    *outputptr = inp;
+    *inputptr = out;
 }
 
 /**
@@ -2212,44 +2189,43 @@ avxsort_block_aligned(int64_t ** inputptr, int64_t ** outputptr, int BLOCK_SIZE)
  * @param nitems
  */
 inline void __attribute__((always_inline))
-avxsort_rem_aligned(int64_t ** inputptr, int64_t ** outputptr, uint32_t nitems)
-{
-    int64_t * inp = *inputptr;
-    int64_t * out = *outputptr;
+avxsort_rem_aligned(int64_t **inputptr, int64_t **outputptr, uint32_t nitems) {
+    int64_t *inp = *inputptr;
+    int64_t *out = *outputptr;
 
 #if 1 /* sort using AVX */
     /* each chunk keeps track of its temporary memory offset */
-    int64_t * ptrs[8][2];/* [chunk-in, chunk-out-tmp] */
+    int64_t *ptrs[8][2];/* [chunk-in, chunk-out-tmp] */
 
     uint32_t n = nitems, pos = 0, i = 0;
     uint32_t nxtpow = 8192;/* TODO: infer from nitems, nearest pow2 to nitems */
     uint32_t sizes[6];
 
-    while(n < nxtpow) {
+    while (n < nxtpow) {
         nxtpow >>= 1;
     }
 
-    while(nxtpow > 128) {
+    while (nxtpow > 128) {
         ptrs[i][0] = inp + pos;
         ptrs[i][1] = out + pos;
-        sizes[i]   = nxtpow;
+        sizes[i] = nxtpow;
 
         avxsort_block_aligned(&ptrs[i][0], &ptrs[i][1], nxtpow);
         pos += nxtpow;
-        n   -= nxtpow;
+        n -= nxtpow;
         swap(&ptrs[i][0], &ptrs[i][1]);
         i++;
 
-        while(n < nxtpow) {
+        while (n < nxtpow) {
             nxtpow >>= 1;
         }
     }
 
-    if(n > 0) {
+    if (n > 0) {
         /* sort last n < 128 items using scalar sort */
         ptrs[i][0] = inp + pos;
         ptrs[i][1] = out + pos;
-        sizes[i]   = n;
+        sizes[i] = n;
 
 #ifdef __cplusplus
         std::sort(ptrs[i][0], ptrs[i][0] + n);
@@ -2263,29 +2239,29 @@ avxsort_rem_aligned(int64_t ** inputptr, int64_t ** outputptr, uint32_t nitems)
     uint32_t nchunks = i;
 
     /* merge sorted blocks */
-    while(nchunks > 1) {
+    while (nchunks > 1) {
         uint64_t k = 0;
-        for(uint64_t j = 0; j < (nchunks-1); j += 2) {
-            int64_t * inpA  = ptrs[j][0];
-            int64_t * inpB  = ptrs[j+1][0];
-            int64_t * out   = ptrs[j][1];
-            uint32_t  sizeA = sizes[j];
-            uint32_t  sizeB = sizes[j+1];
+        for (uint64_t j = 0; j < (nchunks - 1); j += 2) {
+            int64_t *inpA = ptrs[j][0];
+            int64_t *inpB = ptrs[j + 1][0];
+            int64_t *out = ptrs[j][1];
+            uint32_t sizeA = sizes[j];
+            uint32_t sizeB = sizes[j + 1];
 
             merge16_varlen_aligned(inpA, inpB, out, sizeA, sizeB);
 
             /* setup new pointers */
             ptrs[k][0] = out;
             ptrs[k][1] = inpA;
-            sizes[k]   = sizeA + sizeB;
+            sizes[k] = sizeA + sizeB;
             k++;
         }
 
-        if((nchunks % 2)) {
+        if ((nchunks % 2)) {
             /* just move the pointers */
-            ptrs[k][0] = ptrs[nchunks-1][0];
-            ptrs[k][1] = ptrs[nchunks-1][1];
-            sizes[k]   = sizes[nchunks-1];
+            ptrs[k][0] = ptrs[nchunks - 1][0];
+            ptrs[k][1] = ptrs[nchunks - 1][1];
+            sizes[k] = sizes[nchunks - 1];
             k++;
         }
 
@@ -2293,12 +2269,12 @@ avxsort_rem_aligned(int64_t ** inputptr, int64_t ** outputptr, uint32_t nitems)
     }
 
     /* finally swap input/output pointers, where output holds the sorted list */
-    * outputptr = ptrs[0][0];
-    * inputptr  = ptrs[0][1];
+    *outputptr = ptrs[0][0];
+    *inputptr = ptrs[0][1];
 
 #else /* sort using scalar */
 
-    #ifdef __cplusplus
+#ifdef __cplusplus
     std::sort(inp, inp + nitems);
 #else
     qsort(inp, nitems, sizeof(int64_t), keycmp);

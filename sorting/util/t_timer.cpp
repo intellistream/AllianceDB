@@ -2,10 +2,6 @@
 // Created by Shuhao Zhang on 17/10/19.
 //
 
-
-#include "../helper/launcher.h"
-#include "../utils/barrier.h"
-#include "../utils/t_timer.h"  /* startTimer, stopTimer */
 #include <sys/time.h>           /* gettimeofday */
 #include <stdlib.h>             /* memalign */
 #include <stdio.h>              /* printf */
@@ -13,8 +9,8 @@
 #include <pthread.h>            /* pthread_* */
 #include <sstream>
 #include <zconf.h>
+#include <algorithm>
 #include "t_timer.h"
-
 
 using namespace std;
 

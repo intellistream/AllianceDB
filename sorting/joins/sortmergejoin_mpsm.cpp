@@ -16,7 +16,6 @@
 #include "joincommon.h"
 #include "avxsort.h"    /* avxsort_tuples() */
 #include "scalarsort.h" /* scalarsort_tuples() */
-#include "../util/rdtsc.h"              /* startTimer, stopTimer */
 
 
 #ifdef JOIN_MATERIALIZE
@@ -37,7 +36,7 @@ mpsmjoin_thread(void * param);
 
 /** @note The implementation of mpsm is excluded from this source code package. Contact us if you need it. */
 result_t *
-sortmergejoin_mpsm(relation_t * relR, relation_t * relS, joinconfig_t * joincfg)
+sortmergejoin_mpsm(relation_t * relR, relation_t * relS, joinconfig_t * joincfg, int exp_id)
 {
     /* Just a place holder */
     printf("[WARN ] The implementation of mpsm is excluded from this source code package. Contact us if you need it.\n");
