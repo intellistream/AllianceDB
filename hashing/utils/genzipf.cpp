@@ -52,6 +52,30 @@ gen_alphabet(unsigned int size) {
 }
 
 /**
+ * Create an alphabet, an array of size @a size with randomly
+ * permuted values 0..size-1.
+ *
+ * @param size alphabet size
+ * @return an <code>item_t</code> array with @a size elements;
+ *         contains values 0..size-1 in a random permutation; the
+ *         return value is malloc'ed, don't forget to free it afterward.
+ */
+static uint32_t *
+gen_incremental_alphabet(unsigned int size) {
+    uint32_t *alphabet;
+
+    /* allocate */
+    alphabet = (uint32_t *) malloc(size * sizeof(*alphabet));
+    assert(alphabet);
+
+    /* populate */
+    for (unsigned int i = 0; i < size; i++)
+        alphabet[i] = i + 1;   /* don't let 0 be in the alphabet */
+
+    return alphabet;
+}
+
+/**
  * Generate a lookup table with the cumulated density function
  *
  * (This is derived from code originally written by Rene Mueller.)
@@ -166,7 +190,8 @@ gen_zipf_ts(unsigned int stream_size,
     int32_t *ret;
 
     /* prepare stuff for Zipf generation */
-    uint32_t *alphabet = gen_alphabet(alphabet_size);
+//    uint32_t *alphabet = gen_alphabet(alphabet_size);
+    uint32_t *alphabet = gen_incremental_alphabet(alphabet_size);
     assert (alphabet);
 
     double *lut = gen_zipf_lut(zipf_factor, alphabet_size);
