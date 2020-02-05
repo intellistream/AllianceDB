@@ -179,7 +179,7 @@ cpu_mapping_cleanup()
 void
 cpu_mapping_init()
 {
-    max_cpus  = sysconf(_SC_NPROCESSORS_ONLN);
+    max_cpus  = sysconf(_SC_NPROCESSORS_ONLN) /2;//remove HT
     if( init_mappings_from_file() == 0 ) {
         int i;
 
