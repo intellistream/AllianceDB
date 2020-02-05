@@ -75,6 +75,22 @@ gen_incremental_alphabet(unsigned int size) {
     return alphabet;
 }
 
+static uint32_t *
+gen_decremental_alphabet(unsigned int size) {
+    uint32_t *alphabet;
+
+    /* allocate */
+    alphabet = (uint32_t *) malloc(size * sizeof(*alphabet));
+    assert(alphabet);
+
+    /* populate */
+    for (unsigned int i = 0; i < size; i++)
+        alphabet[size - 1 - i] = i + 1;   /* don't let 0 be in the alphabet */
+
+    return alphabet;
+}
+
+
 /**
  * Generate a lookup table with the cumulated density function
  *
@@ -185,18 +201,22 @@ gen_zipf(unsigned int stream_size,
  */
 int32_t *
 gen_zipf_ts(unsigned int stream_size,
-         unsigned int alphabet_size,
-         double zipf_factor) {
+            unsigned int alphabet_size,
+            double zipf_factor) {
     int32_t *ret;
 
     /* prepare stuff for Zipf generation */
 //    uint32_t *alphabet = gen_alphabet(alphabet_size);
-    uint32_t *alphabet = gen_incremental_alphabet(alphabet_size);
+    uint32_t *alphabet = gen_decremental_alphabet(alphabet_size);
     assert (alphabet);
 
     double *lut = gen_zipf_lut(zipf_factor, alphabet_size);
 
     assert (lut);
+
+//    for (int i = 0; i < alphabet_size; i++) {
+//        printf("LUT%d: %f\n", i, lut[i]);
+//    }
 
     ret = (int32_t *) malloc(stream_size * sizeof(*ret));
 
@@ -233,7 +253,7 @@ gen_zipf_ts(unsigned int stream_size,
     free(alphabet);
 
     // sort ret
-    std::sort(ret, ret+stream_size);
+    std::sort(ret, ret + stream_size);
 
 //    for (int i=0; i < stream_size; i++) {
 //        printf("%d\n", ret[i]);

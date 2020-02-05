@@ -146,7 +146,7 @@ void add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_
  * @param zipf_param
  */
 void add_zipf_ts(relation_t *relation, relation_payload_t *relationPayload,
-        int window_size, int numThr, const double zipf_param) {
+                 int window_size, int numThr, const double zipf_param) {
 
     uint64_t i;
     int32_t ts = 0;
@@ -157,6 +157,9 @@ void add_zipf_ts(relation_t *relation, relation_payload_t *relationPayload,
 
     // num_tuples = window_size / interval * step_size
     // generate timestamps with three parameters
+
+    int small = 0;
+    int large = 0;
     for (int i = 0; i < nthreads; i++) {
         if (last_thread(i, nthreads)) {
             thread_num_tuples = relation->num_tuples - i * tpPerThr;
@@ -164,8 +167,18 @@ void add_zipf_ts(relation_t *relation, relation_payload_t *relationPayload,
             for (int j = 0; j < thread_num_tuples; j++) {
                 index = i * tpPerThr + j;
                 relationPayload->ts[index] = (milliseconds) timestamps[j];
-//                printf("%d, %d\n", relation->tuples[index].key, relationPayload->ts[index]);
+//                printf("%d, %ld\n", relation->tuples[index].key, relationPayload->ts[index].count());
+#ifdef DEBUG
+                if (relationPayload->ts[index].count() < 10) {
+                    small++;
+                } else {
+                    large++;
+                }
+#endif
             }
+
+            DEBUGMSG("small ts:%d, large ts:%d\n", small, large);
+
         } else {
             thread_num_tuples = tpPerThr;
             int32_t *timestamps = gen_zipf_ts(thread_num_tuples, window_size, zipf_param);
@@ -253,7 +266,7 @@ random_unique_gen_thread(void *args) {
     for (i = 0; i < rel->num_tuples; i++) {
         rel->tuples[i].key = firstkey;
         rel->tuples[i].payloadID = firstkey;
-        if(rel->tuples[i].payloadID <0){
+        if (rel->tuples[i].payloadID < 0) {
             printf("Something is wrong.");
         }
         if (firstkey == maxid)

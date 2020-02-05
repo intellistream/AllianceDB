@@ -41,7 +41,7 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #
   ZIPF_FACTOR=0     # uniform time distribution
   distrbution=0     # uniform key distribution
   skew=0            # uniform key distribution
-  INTERVAL=10        # interval of 1.
+  INTERVAL=100        # interval of 10.
   STEP_SIZE=1000    # arrival rate = 1000 / ms
   WINDOW_SIZE=1000  #MS rel size = window_size / interval * step_size.
   for benchmark in Kim; do #"Kim" "Stock" "DEBS" "YSB" #"Rovio" #"Google" "Amazon"
@@ -66,7 +66,7 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #
 
       ## Figure 2
       TS_DISTRIBUTION=2
-      WINDOW_SIZE=1000 #default
+      WINDOW_SIZE=10000 #default
       STEP_SIZE=100   #default
       echo test varying zipf distribution timestamp 5 - 9
       for ZIPF_FACTOR in 0 0.2 0.4 0.8 1; do
