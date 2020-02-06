@@ -213,7 +213,7 @@ gen_zipf_ts(unsigned int stream_size,
 
     /* prepare stuff for Zipf generation */
 //    uint32_t *alphabet = gen_alphabet(alphabet_size);
-    uint32_t *alphabet = gen_decremental_alphabet(alphabet_size);
+    uint32_t *alphabet = gen_incremental_alphabet(alphabet_size);
     assert (alphabet);
 
     double *lut = gen_zipf_lut(zipf_factor, alphabet_size);

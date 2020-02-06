@@ -124,7 +124,7 @@ def DrawLegend(legend_labels, filename):
     x_values = [1]
 
     idx = 0
-    for group in xrange(len(FIGURE_LABEL)):
+    for group in range(len(FIGURE_LABEL)):
         lines[idx], = ax1.plot(x_values, data,
                                color=LINE_COLORS[idx], linewidth=LINE_WIDTH,
                                marker=MARKERS[idx], markersize=MARKER_SIZE, label=str(group))

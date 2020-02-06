@@ -39,9 +39,9 @@ for algo in m-way m-pass; do #
   STS=0
   TS_DISTRIBUTION=0 # uniform time distribution
   ZIPF_FACTOR=0     # uniform time distribution
-  distrbution=0     # uniform key distribution
+  distrbution=2     # uniform key distribution
   skew=0            # uniform key distribution
-  INTERVAL=10        # interval of 1.
+  INTERVAL=1        # interval of 1.
   STEP_SIZE=1000    # arrival rate = 1000 / ms
   WINDOW_SIZE=1000  #MS rel size = window_size / interval * step_size.
   for benchmark in Kim; do #"Kim" "Stock" "DEBS" "YSB" #"Rovio" #"Google" "Amazon"
@@ -52,48 +52,73 @@ for algo in m-way m-pass; do #
       ## Figure 1
       echo test varying input arrival rate 0 - 4 # test (1) means infinite arrival rate (batch).
       ts=0                                       # batch case
-#      KimRun
+      #      KimRun
       let "id++"
 
       ts=1 # stream case
       # step size should be bigger than nthreads
       for STEP_SIZE in 100 1000 10000 100000; do
         WINDOW_SIZE=$(expr 1000 \* 1000 / $STEP_SIZE) #ensure relation size is the same.
-        echo Figure 1 window size is $WINDOW_SIZE
+        #        echo Figure 1 window size is $WINDOW_SIZE
+        #        KimRun
+        let "id++"
+      done
+
+      #      ## Figure 2
+      TS_DISTRIBUTION=2
+      WINDOW_SIZE=10000 #default
+      STEP_SIZE=100     #default
+      echo test varying zipf distribution timestamp 5 - 9
+      for ZIPF_FACTOR in 0 0.2 0.4 0.8 1; do
+        #        KimRun
+        let "id++"
+      done
+      #
+      ## Figure 3
+      TS_DISTRIBUTION=2
+      ZIPF_FACTOR=0.4
+      echo test varying key distribution 10 - 15
+      distrbution=0 #unique
+#      KimRun
+      let "id++"
+
+      distrbution=2 #zipf
+      for skew in 0 0.2 0.4 0.8 1; do
 #        KimRun
         let "id++"
       done
 
-#      ## Figure 2
-      TS_DISTRIBUTION=2
-      WINDOW_SIZE=1000 #default
-      STEP_SIZE=100   #default
-      echo test varying zipf distribution timestamp 5 - 9
-      for ZIPF_FACTOR in 0 0.2 0.4 0.8 1; do
+      distrbution=2 #uniform
+      skew=0.4
+      ## Figure 4
+      echo test varying window size 16 - 18
+      for WINDOW_SIZE in 1000 10000 100000; do
+#        KimRun
+        let "id++"
+      done
+
+      ## Figure 5
+      TS_DISTRIBUTION=0
+      ZIPF_FACTOR=0
+      echo test varying key distribution 19 - 24
+      distrbution=0 #unique
+      KimRun
+      let "id++"
+
+      distrbution=2 #zipf
+      for skew in 0 0.2 0.4 0.8 1; do
         KimRun
         let "id++"
       done
-#
-#      ## Figure 3
-#      TS_DISTRIBUTION=0
-#      echo test varying key distribution 10 - 15
-#      distrbution=0 #unique
-#      KimRun
-#      let "id++"
-#
-#      distrbution=2 #zipf
-#      for skew in 0 0.2 0.4 0.8 1; do
-#        KimRun
-#        let "id++"
-#      done
-#
-#      distrbution=0 #unique
-#      ## Figure 4
-#      echo test varying window size 16 - 18
-#      for WINDOW_SIZE in 1000 5000 10000; do
-#        KimRun
-#        let "id++"
-#      done
+
+      distrbution=2 #uniform
+      skew=0.4
+      ## Figure 6
+      echo test varying window size 25 - 27
+      for WINDOW_SIZE in 1000 10000 100000; do
+        KimRun
+        let "id++"
+      done
       ;;
 
     "DEBS")
