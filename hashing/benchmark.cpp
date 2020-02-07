@@ -128,6 +128,15 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int
     printf("OK \n");
 }
 
+void writefile(relation_payload_t *relPl, const param_t cmd_params) {
+    string path = "/data1/xtra/datasets/Kim/data_distribution_zipf" + std::to_string(cmd_params.zipf_param) + ".txt";
+    ofstream outputFile(path, std::ios::trunc);
+    for (auto i=0; i<relPl->num_tuples; i++) {
+        outputFile << (std::to_string(relPl->ts[i].count()) + "\n");
+    }
+    outputFile.close();
+}
+
 /**
  *
  * @param cmd_params
@@ -160,6 +169,7 @@ benchmark(const param_t cmd_params) {
     // TODO: Execute query with dataset, need to submit a join function
 
 //    string path = "/data1/xtra/datasets/Kim/data_distribution_zipf" + std::to_string(cmd_params.zipf_param) + ".txt";
+//    writefile(relR.payload, cmd_params);
 
     /* Run the selected join algorithm */
     printf("[INFO ] Running join algorithm %s ...\n", cmd_params.algo->name);
