@@ -79,12 +79,12 @@ for algo in m-way m-pass; do #
       ZIPF_FACTOR=0.4
       echo test varying key distribution 10 - 15
       distrbution=0 #unique
-#      KimRun
+      #      KimRun
       let "id++"
 
       distrbution=2 #zipf
       for skew in 0 0.2 0.4 0.8 1; do
-#        KimRun
+        #        KimRun
         let "id++"
       done
 
@@ -93,16 +93,18 @@ for algo in m-way m-pass; do #
       ## Figure 4
       echo test varying window size 16 - 18
       for WINDOW_SIZE in 1000 10000 100000; do
-#        KimRun
+        #        KimRun
         let "id++"
       done
 
+      ts=0 # data at rest.
       ## Figure 5
+      WINDOW_SIZE=10000
       TS_DISTRIBUTION=0
       ZIPF_FACTOR=0
       echo test varying key distribution 19 - 24
       distrbution=0 #unique
-      KimRun
+      #      KimRun
       let "id++"
 
       distrbution=2 #zipf

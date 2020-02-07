@@ -34,7 +34,6 @@ matplotlib.rcParams['font.family'] = OPT_FONT_NAME
 
 FIGURE_FOLDER = '/data1/xtra/results/figure'
 
-
 # there are some embedding problems if directly exporting the pdf figure using matplotlib.
 # so we generate the eps format first and convert it to pdf.
 def ConvertEpsToPdf(dir_filename):
@@ -144,7 +143,7 @@ def ReadFile():
     col7 = []
     col8 = []
 
-    for id in it.chain(range(20, 25)):
+    for id in it.chain(range(11, 16)):
         file = '/data1/xtra/results/timestamps/PRJ_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -153,7 +152,7 @@ def ReadFile():
         col1.append(value)
     y.append(col1)
 
-    for id in it.chain(range(20, 25)):
+    for id in it.chain(range(11, 16)):
         file = '/data1/xtra/results/timestamps/NPJ_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -162,7 +161,7 @@ def ReadFile():
         col2.append(value)
     y.append(col2)
 
-    for id in it.chain(range(20, 25)):
+    for id in it.chain(range(11, 16)):
         file = '/data1/xtra/results/timestamps/MPASS_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -171,7 +170,7 @@ def ReadFile():
         col3.append(value)
     y.append(col3)
 
-    for id in it.chain(range(20, 25)):
+    for id in it.chain(range(11, 16)):
         file = '/data1/xtra/results/timestamps/MWAY_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -180,7 +179,7 @@ def ReadFile():
         col4.append(value)
     y.append(col4)
 
-    for id in it.chain(range(20, 25)):
+    for id in it.chain(range(11, 16)):
         file = '/data1/xtra/results/timestamps/SHJ_JM_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -189,7 +188,7 @@ def ReadFile():
         col5.append(value)
     y.append(col5)
 
-    for id in it.chain(range(20, 25)):
+    for id in it.chain(range(11, 16)):
         file = '/data1/xtra/results/timestamps/SHJ_JBCR_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -198,7 +197,7 @@ def ReadFile():
         col6.append(value)
     y.append(col6)
 
-    for id in it.chain(range(20, 25)):
+    for id in it.chain(range(11, 16)):
         file = '/data1/xtra/results/timestamps/PMJ_JM_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -207,7 +206,7 @@ def ReadFile():
         col7.append(value)
     y.append(col7)
 
-    for id in it.chain(range(20, 25)):
+    for id in it.chain(range(11, 16)):
         file = '/data1/xtra/results/timestamps/PMJ_JBCR_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -227,7 +226,7 @@ if __name__ == "__main__":
     legend_labels = ['PRJ', 'NPJ', 'M-PASS', 'M-WAY', 'SHJ$^M$', 'SHJ$^B$', 'PMJ$^M$', 'PMJ$^B$']
 
     DrawFigure(x_values, y_values, legend_labels,
-               'Key Skewness (zipf)', 'Throughput (#matches/ms)', 0,
-               400, 'throughput_figure5', False)
+               'Key Skewness (zipf)', '$99^{th}$ latency (ms)', 0,
+               400, 'latency_figure3', False)
 
 #  DrawLegend(legend_labels, 'factor_legend')

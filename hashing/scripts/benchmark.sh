@@ -76,6 +76,7 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #
 
       #
       ## Figure 3
+      WINDOW_SIZE=10000
       TS_DISTRIBUTION=2
       ZIPF_FACTOR=0.4
       echo test varying key distribution 10 - 15
@@ -91,7 +92,6 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #
 
       distrbution=2 #uniform
       skew=0.4
-
       ## Figure 4
       echo test varying window size 16 - 18
       for WINDOW_SIZE in 1000 10000 100000; do
@@ -99,12 +99,14 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #
         let "id++"
       done
 
+      ts=0 # data at rest.
       ## Figure 5
+      WINDOW_SIZE=10000
       TS_DISTRIBUTION=0
       ZIPF_FACTOR=0
       echo test varying key distribution 19 - 24
       distrbution=0 #unique
-      KimRun
+      #      KimRun
       let "id++"
 
       distrbution=2 #zipf
@@ -123,7 +125,7 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #
       done
       ;;
 
-      "DEBS")
+    "DEBS")
       RSIZE=1000000
       SSIZE=1000000
       RPATH=/data1/xtra/datasets/DEBS/posts_key32_partitioned.csv
