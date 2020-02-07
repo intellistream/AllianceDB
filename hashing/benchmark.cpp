@@ -96,11 +96,11 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int
         // check params 1, window_size, 2. step_size, 3. interval, 4. distribution, 5. zipf factor, 6. nthreads
         switch (cmd_params.key_distribution) {
             case 0: // unique
-//                parallel_create_relation(rel, rel_size,
-//                                 nthreads,
-//                                 rel_size);
-                parallel_create_relation_with_ts(rel, relPl, rel->num_tuples, nthreads, rel->num_tuples,
-                                                 cmd_params.step_size, cmd_params.interval);
+                parallel_create_relation(rel, rel_size,
+                                 nthreads,
+                                 rel_size);
+//                parallel_create_relation_with_ts(rel, relPl, rel->num_tuples, nthreads, rel->num_tuples,
+//                                                 cmd_params.step_size, cmd_params.interval);
                 break;
             case 2: // zipf with zipf factor
                 create_relation_zipf(rel, rel_size, cmd_params.window_size, cmd_params.skew);

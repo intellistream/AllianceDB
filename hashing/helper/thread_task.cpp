@@ -69,7 +69,12 @@ THREAD_TASK_NOSHUFFLE(void *param) {
 
     //call different data BaseFetcher.
     baseFetcher *fetcher = args->fetcher;
-
+//
+//    struct timespec ts = {.tv_sec = 0, .tv_nsec = 0};
+//    ts.tv_sec += 50;
+//    if (clock_gettime(CLOCK_REALTIME, &ts) == -1) {
+//        /* Handle error */ }
+//
     do {
         fetch_t *fetch = fetcher->next_tuple();
 

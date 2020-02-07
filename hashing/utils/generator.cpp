@@ -168,16 +168,16 @@ void add_zipf_ts(relation_t *relation, relation_payload_t *relationPayload,
                 index = i * tpPerThr + j;
                 relationPayload->ts[index] = (milliseconds) timestamps[j];
 //                printf("%d, %ld\n", relation->tuples[index].key, relationPayload->ts[index].count());
-#ifdef DEBUG
+//#ifdef DEBUG
                 if (relationPayload->ts[index].count() < 10) {
                     small++;
                 } else {
                     large++;
                 }
-#endif
+//#endif
             }
 
-            DEBUGMSG("small ts:%d, large ts:%d\n", small, large);
+            printf("small ts:%d, large ts:%d\n", small, large);
 
         } else {
             thread_num_tuples = tpPerThr;
