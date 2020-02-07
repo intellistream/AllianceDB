@@ -217,7 +217,6 @@ def ReadFile():
     y.append(col8)
     return y
 
-
 if __name__ == "__main__":
     # x_values = ['Unique', 'Zipf(0)', 'Zipf(0.2)', 'Zipf(0.4)', 'Zipf(0.8)', 'Zipf(1)']
     x_values = [0, 0.2, 0.4, 0.8, 1]
