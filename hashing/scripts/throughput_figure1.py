@@ -47,32 +47,22 @@ def DrawLegend(legend_labels, filename):
     fig = pylab.figure()
     ax1 = fig.add_subplot(111)
     FIGURE_LABEL = legend_labels
-    LINE_WIDTH = 4.0
-    MARKER_SIZE = 14.0
     LEGEND_FP = FontProperties(style='normal', size=26)
 
-    figlegend = pylab.figure(figsize=(16, 0.5))
-    idx = 0
-    lines = [None] * (len(FIGURE_LABEL))
+    bars = [None] * (len(FIGURE_LABEL))
     data = [1]
     x_values = [1]
 
-    idx = 0
-    for group in range(len(FIGURE_LABEL)):
-        lines[idx], = ax1.plot(x_values, data,
-                               color=LINE_COLORS[idx], linewidth=LINE_WIDTH,
-                               marker=MARKERS[idx], markersize=MARKER_SIZE, label=str(group))
-        idx = idx + 1
+    width = 0.3
+    for i in range(len(FIGURE_LABEL)):
+        bars[i] = ax1.bar(x_values, data, width, hatch=PATTERNS[i], color=LINE_COLORS[i],
+                          linewidth=0.2)
 
     # LEGEND
-    figlegend.legend(lines, FIGURE_LABEL, prop=LEGEND_FP,
-                     loc='upper center',
-                     ncol=len(FIGURE_LABEL), mode="expand", shadow=False,
-                     frameon=False, borderaxespad=0.0, handlelength=1)
-
-    if not os.path.exists(FIGURE_FOLDER):
-        os.makedirs(FIGURE_FOLDER)
-    # no need to export eps in this case.
+    figlegend = pylab.figure(figsize=(16, 0.7))
+    figlegend.legend(bars, FIGURE_LABEL, prop=LEGEND_FP, \
+                     loc=1, ncol=len(FIGURE_LABEL), mode="expand", shadow=False, \
+                     frameon=False, handlelength=1.5, handletextpad=0.2, columnspacing=0.1)
     figlegend.savefig(FIGURE_FOLDER + '/' + filename + '.pdf')
 
 

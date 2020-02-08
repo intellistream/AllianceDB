@@ -34,7 +34,6 @@ X-axis: varying window size
 
 Required data: test varying key distribution.
 
-
 ## Fig 5: Varying key-field distribution (data at rest)
 
 Data without timestamp.
