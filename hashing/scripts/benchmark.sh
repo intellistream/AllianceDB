@@ -28,7 +28,7 @@ algo=""
 Threads=36
 timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
-for algo in PRO NPO ; do #SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
+for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #
   RSIZE=1
   SSIZE=1
   RPATH=""
@@ -71,7 +71,7 @@ for algo in PRO NPO ; do #SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
       STEP_SIZE=100     #default
       echo test varying zipf distribution timestamp 5 - 9
       for ZIPF_FACTOR in 0 0.2 0.4 0.8 1; do
-        #        KimRun
+        KimRun
         let "id++"
       done
 
@@ -82,12 +82,12 @@ for algo in PRO NPO ; do #SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
       ZIPF_FACTOR=0.4
       echo test varying key distribution 10 - 15
       distrbution=0 #unique
-      #      KimRun
+      KimRun
       let "id++"
 
       distrbution=2 #varying zipf factor
       for skew in 0 0.2 0.4 0.8 1; do
-        #        KimRun
+        KimRun
         let "id++"
       done
 
@@ -96,7 +96,7 @@ for algo in PRO NPO ; do #SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
       ## Figure 4
       echo test varying window size 16 - 18
       for WINDOW_SIZE in 1000 10000 100000; do
-        #        KimRun
+        KimRun
         let "id++"
       done
 
@@ -107,12 +107,12 @@ for algo in PRO NPO ; do #SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
       ZIPF_FACTOR=0
       echo test varying key distribution 19 - 24
       distrbution=0 #unique
-      #      KimRun
+      KimRun
       let "id++"
 
       distrbution=2 #zipf
       for skew in 0 0.2 0.4 0.8 1; do
-        #        KimRun
+        KimRun
         let "id++"
       done
 
@@ -121,7 +121,7 @@ for algo in PRO NPO ; do #SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
       ## Figure 6
       echo test varying window size 25 - 27
       for WINDOW_SIZE in 1000 10000 100000; do
-        #        KimRun
+        KimRun
         let "id++"
       done
       ;;
