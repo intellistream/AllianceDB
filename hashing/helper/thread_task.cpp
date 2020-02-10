@@ -21,10 +21,10 @@
  */
 //void* JOINFUNCTION(tuple_t *r_tuple, tuple_t *s_tuple, int64_t *matches) {
 void *AGGFUNCTION(const tuple_t *r_tuple, const tuple_t *s_tuple, int64_t *matches) {
-//    if (r_tuple->key == s_tuple->key) {
+    if (r_tuple->key == s_tuple->key) {
 //        (*matches)++;
-        DEBUGMSG("matches: %d", *matches);
-//    }
+        DEBUGMSG("matches: r:%d with s:%d", r_tuple->key, s_tuple->key);
+    }
 }
 
 /**

@@ -28,7 +28,7 @@ algo=""
 Threads=36
 timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
-for algo in PRO NPO SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #SHJ_JM_NP
+for algo in PRO NPO ; do #SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
   RSIZE=1
   SSIZE=1
   RPATH=""
@@ -52,6 +52,7 @@ for algo in PRO NPO SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #SHJ_JM_NP
       ## Figure 1
       echo test varying input arrival rate 0 - 4 # test (1) means infinite arrival rate (batch).
       ts=0                                       # batch case
+      echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
       KimRun
       let "id++"
 
@@ -59,7 +60,7 @@ for algo in PRO NPO SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #SHJ_JM_NP
       # step size should be bigger than nthreads
       for STEP_SIZE in 100 1000 10000 100000; do
         WINDOW_SIZE=$(expr 10000 \* 100 / $STEP_SIZE) #ensure relation size is the same.
-        #        echo Figure 1 window size is $WINDOW_SIZE
+        echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
         KimRun
         let "id++"
       done
@@ -84,7 +85,7 @@ for algo in PRO NPO SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #SHJ_JM_NP
       #      KimRun
       let "id++"
 
-      distrbution=2 #zipf
+      distrbution=2 #varying zipf factor
       for skew in 0 0.2 0.4 0.8 1; do
         #        KimRun
         let "id++"

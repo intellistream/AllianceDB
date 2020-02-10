@@ -146,8 +146,8 @@ benchmark(const param_t cmd_params) {
     createRelation(&relR, relR.payload, cmd_params.rkey, cmd_params.rts, cmd_params, cmd_params.loadfileR,
                    cmd_params.r_size,
                    cmd_params.r_seed);
-//    DEBUGMSG("relR [aligned:%d]: %s", is_aligned(relR.tuples, CACHE_LINE_SIZE),
-//             print_relation(relR.tuples, max((uint64_t) 1000, cmd_params.r_size)).c_str())
+    DEBUGMSG("relR [aligned:%d]: %s", is_aligned(relR.tuples, CACHE_LINE_SIZE),
+             print_relation(relR.tuples, min((uint64_t) 1000, cmd_params.r_size)).c_str())
 
 
     /* create relation S */
@@ -155,7 +155,7 @@ benchmark(const param_t cmd_params) {
                    cmd_params.s_size,
                    cmd_params.s_seed);
     DEBUGMSG("relS [aligned:%d]: %s", is_aligned(relS.tuples, CACHE_LINE_SIZE),
-             print_relation(relS.tuples, max((uint64_t) 1000, cmd_params.s_size)).c_str())
+             print_relation(relS.tuples, min((uint64_t) 1000, cmd_params.s_size)).c_str())
 
     // TODO: Execute query with dataset, need to submit a join function
 

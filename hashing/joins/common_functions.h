@@ -33,7 +33,7 @@
 #define HASH(X, MASK, SKIP) (((X) & MASK) >> SKIP)
 #endif
 
-//#define DEBUG
+#define DEBUG
 
 /** Debug msg logging method */
 #ifdef DEBUG

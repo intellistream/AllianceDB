@@ -217,9 +217,6 @@ int64_t proble_hashtable_single_measure(const hashtable_t *ht, const tuple_t *tu
 
     do {
         for (index_ht = 0; index_ht < b->count; index_ht++) {
-            if (thread_fun) {
-                thread_fun(tuple, &b->tuples[index_ht], matches);
-            }
             if (tuple->key == b->tuples[index_ht].key) {
                 (*matches)++;
 #ifdef JOIN_RESULT_MATERIALIZE
@@ -237,6 +234,10 @@ int64_t proble_hashtable_single_measure(const hashtable_t *ht, const tuple_t *tu
 //                }
                 END_PROGRESSIVE_MEASURE(tuple->payloadID, (*timer), ISTupleR)
 #endif
+
+                if (thread_fun) {
+                    thread_fun(tuple, &b->tuples[index_ht], matches);
+                }
             }
         }
 
