@@ -610,6 +610,10 @@ main(int argc, char *argv[]) {
 
     parse_args(argc, argv, &cmd_params);
 
+    //reset relation size according to our settings.
+    cmd_params.r_size = cmd_params.window_size / cmd_params.interval * cmd_params.step_size;
+    cmd_params.s_size = cmd_params.window_size / cmd_params.interval * cmd_params.step_size;
+
     if (check_avx() == 0) {
         /* no AVX support, just use scalar variants. */
         fprintf(stdout, "[WARN ] AVX is not supported, using scalar sort & merge.\n");
