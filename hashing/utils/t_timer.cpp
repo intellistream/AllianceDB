@@ -35,6 +35,7 @@ dump_timing(std::vector<std::chrono::milliseconds> vector, std::vector<int64_t> 
 
     //print progressive
     int n = vector.size() - 1;
+    int check10 = ceil(n * 0.10);
     int check25 = ceil(n * 0.25);
     int check50 = ceil(n * 0.5);
     int check75 = ceil(n * 0.75);

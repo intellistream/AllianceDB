@@ -22,6 +22,16 @@ function KimRun() {
   ./sorting -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id
 }
 
+function ResetParameters() {
+  TS_DISTRIBUTION=0 # uniform time distribution
+  ZIPF_FACTOR=0     # uniform time distribution
+  distrbution=0     # uniform key distribution
+  skew=0            # uniform key distribution
+  INTERVAL=1        # interval of 1. always..
+  STEP_SIZE=1000     # arrival rate = 1000 / ms
+  WINDOW_SIZE=10000 #MS rel size = window_size / interval * step_size.
+}
+
 # Configurable variables
 # Generate a timestamp
 algo=""
@@ -37,71 +47,63 @@ for algo in m-way m-pass; do #
   SKEY=0
   RTS=0
   STS=0
-  TS_DISTRIBUTION=0 # uniform time distribution
-  ZIPF_FACTOR=0     # uniform time distribution
-  distrbution=2     # uniform key distribution
-  skew=0            # uniform key distribution
-  INTERVAL=1        # interval of 1.
-  STEP_SIZE=100     # arrival rate = 1000 / ms
-  WINDOW_SIZE=10000 #MS rel size = window_size / interval * step_size.
   for benchmark in Kim; do #"Kim" "Stock" "DEBS" "YSB" #"Rovio" #"Google" "Amazon"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "Kim")
       id=0
       ## Figure 1
+      ResetParameters
       echo test varying input arrival rate 0 - 4 # test (1) means infinite arrival rate (batch).
       ts=0                                       # batch case
+      echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
       KimRun
       let "id++"
 
       ts=1 # stream case
       # step size should be bigger than nthreads
       for STEP_SIZE in 100 1000 10000 100000; do
-        WINDOW_SIZE=$(expr 1000 \* 1000 / $STEP_SIZE) #ensure relation size is the same.
-        #        echo Figure 1 window size is $WINDOW_SIZE
+        WINDOW_SIZE=$(expr 10000 \* 100 / $STEP_SIZE) #ensure relation size is the same.
+        echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
         KimRun
         let "id++"
       done
 
-      #      ## Figure 2
+      ## Figure 2
+      ResetParameters
       TS_DISTRIBUTION=2
-      WINDOW_SIZE=10000 #default
-      STEP_SIZE=100     #default
       echo test varying zipf distribution timestamp 5 - 9
-      for ZIPF_FACTOR in 0 0.2 0.4 0.8 1; do
+      for ZIPF_FACTOR in 0 0.2 0.4 0.8 1; do #
         KimRun
         let "id++"
       done
+
       #
       ## Figure 3
-      TS_DISTRIBUTION=2
-      ZIPF_FACTOR=0.4
+      ResetParameters
+      TS_DISTRIBUTION=0
       echo test varying key distribution 10 - 15
       distrbution=0 #unique
       KimRun
       let "id++"
 
-      distrbution=2 #zipf
+      distrbution=2 #varying zipf factor
       for skew in 0 0.2 0.4 0.8 1; do
         KimRun
         let "id++"
       done
 
-      distrbution=2 #uniform
-      skew=0.4
       ## Figure 4
+      ResetParameters
       echo test varying window size 16 - 18
       for WINDOW_SIZE in 1000 10000 100000; do
         KimRun
         let "id++"
       done
 
-      ts=0 # data at rest.
       ## Figure 5
-      WINDOW_SIZE=10000
-      TS_DISTRIBUTION=0
-      ZIPF_FACTOR=0
+      ResetParameters
+      ts=0 # data at rest.
       echo test varying key distribution 19 - 24
       distrbution=0 #unique
       KimRun
@@ -113,9 +115,9 @@ for algo in m-way m-pass; do #
         let "id++"
       done
 
-      distrbution=2 #uniform
-      skew=0.4
       ## Figure 6
+      ResetParameters
+      ts=0 # data at rest.
       echo test varying window size 25 - 27
       for WINDOW_SIZE in 1000 10000 100000; do
         KimRun

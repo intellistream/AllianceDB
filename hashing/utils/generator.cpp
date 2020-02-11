@@ -169,7 +169,7 @@ void add_zipf_ts(relation_t *relation, relation_payload_t *relationPayload, int 
         }
 //        printf("%d, %ld\n", relation->tuples[i].key, relationPayload->ts[i].count());
     }
-    printf("small ts:%d, large ts:%d\n", small, large);
+    printf("small ts %f\n", (double) small / relation->num_tuples);
 //    for (int i = 0; i < nthreads; i++) {
 //        if (last_thread(i, nthreads)) {
 //            thread_num_tuples = relation->num_tuples - i * tpPerThr;

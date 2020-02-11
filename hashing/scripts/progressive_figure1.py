@@ -1,6 +1,4 @@
-import getopt
 import os
-import sys
 
 import matplotlib as mpl
 
@@ -11,7 +9,6 @@ import pylab
 from matplotlib.font_manager import FontProperties
 from matplotlib.ticker import LinearLocator
 from matplotlib.ticker import LogLocator
-from pathlib import Path
 
 OPT_FONT_NAME = 'Helvetica'
 TICK_FONT_SIZE = 20
@@ -38,7 +35,7 @@ mpl.rcParams['xtick.labelsize'] = TICK_FONT_SIZE
 mpl.rcParams['ytick.labelsize'] = TICK_FONT_SIZE
 mpl.rcParams['font.family'] = OPT_FONT_NAME
 
-FIGURE_FOLDER ='/data1/xtra/results/figure'
+FIGURE_FOLDER = '/data1/xtra/results/figure'
 
 
 # there are some embedding problems if directly exporting the pdf figure using matplotlib.
@@ -56,58 +53,74 @@ def ReadFile(S):
     col4 = []
     col5 = []
     col6 = []
+    col7 = []
+    col8 = []
 
-    f = open("/data1/xtra/results/SHJ_JM_NP_timestamps.txt", "r")
-    cnt = 1
+    f = open("/data1/xtra/results/timestamps/PRJ_1.txt", "r")
+    cnt1 = 1
     read = f.readlines()
     for x in read:
-        if cnt % S == 0:
+        if cnt1 % S == 0:
             col1.append(int(x.strip("\n")))
-        cnt += 1
+        cnt1 += 1
 
-    f = open("/data1/xtra/results/SHJ_JBCR_NP_timestamps.txt", "r")
-    cnt = 1
+    f = open("/data1/xtra/results/timestamps/NPJ_1.txt", "r")
+    cnt2 = 1
     read = f.readlines()
     for x in read:
-        if cnt % S == 0:
+        if cnt2 % S == 0:
             col2.append(int(x.strip("\n")))
-        cnt += 1
+        cnt2 += 1
 
-    f = open("/data1/xtra/results/PMJ_JM_NP_timestamps.txt", "r")
-    cnt = 1
+    f = open("/data1/xtra/results/timestamps/MPASS_1.txt", "r")
+    cnt3 = 1
     read = f.readlines()
     for x in read:
-        if cnt % S == 0:
+        if cnt3 % S == 0:
             col3.append(int(x.strip("\n")))
-        cnt += 1
+        cnt3 += 1
 
-    f = open("/data1/xtra/results/PMJ_JBCR_NP_timestamps.txt", "r")
-    cnt = 1
+    f = open("/data1/xtra/results/timestamps/MWAY_1.txt", "r")
+    cnt4 = 1
     read = f.readlines()
     for x in read:
-        if cnt % S == 0:
+        if cnt4 % S == 0:
             col4.append(int(x.strip("\n")))
-        cnt += 1
+        cnt4 += 1
 
-    f = open("/data1/xtra/results/PRJ_timestamps.txt", "r")
-    cnt = 1
+    f = open("/data1/xtra/results/timestamps/SHJ_JM_NP_1.txt", "r")
+    cnt5 = 1
     read = f.readlines()
     for x in read:
-        if cnt % S == 0:
+        if cnt5 % S == 0:
             col5.append(int(x.strip("\n")))
-        cnt += 1
+        cnt5 += 1
 
-    f = open("/data1/xtra/results/NPJ_timestamps.txt", "r")
-    cnt = 1
+    f = open("/data1/xtra/results/timestamps/SHJ_JBCR_NP_1.txt", "r")
+    cnt6 = 1
     read = f.readlines()
     for x in read:
-        if cnt % S == 0:
+        if cnt6 % S == 0:
             col6.append(int(x.strip("\n")))
-        cnt += 1
+        cnt6 += 1
 
+    f = open("/data1/xtra/results/timestamps/PMJ_JM_NP_1.txt", "r")
+    cnt7 = 1
+    read = f.readlines()
+    for x in read:
+        if cnt7 % S == 0:
+            col7.append(int(x.strip("\n")))
+        cnt7 += 1
 
-    return col1, col2, col3, col4, col5, col6
+    f = open("/data1/xtra/results/timestamps/PMJ_JBCR_NP_1.txt", "r")
+    cnt8 = 1
+    read = f.readlines()
+    for x in read:
+        if cnt8 % S == 0:
+            col8.append(int(x.strip("\n")))
+        cnt8 += 1
 
+    return min([col1, col2, col3, col4, col5, col6, col7, col8]), col1, col2, col3, col4, col5, col6, col7, col8
 
 def DrawLegend(legend_labels, filename):
     fig = pylab.figure()
@@ -140,7 +153,6 @@ def DrawLegend(legend_labels, filename):
         os.makedirs(FIGURE_FOLDER)
     # no need to export eps in this case.
     figlegend.savefig(FIGURE_FOLDER + '/' + filename + '.pdf')
-
 
 # draw a line chart
 def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, y_min, y_max, filename, allow_legend):
@@ -200,39 +212,38 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
 
 
 if __name__ == "__main__":
-    N = 10000
-    S = 4
-    try:
-        opts, args = getopt.getopt(sys.argv[1:], '-h-n:-s:', ['sample=', 'number=', 'help'])
-    except getopt.GetoptError:
-        print('test.py -n number of matches')
-        sys.exit(2)
-    for opt, opt_value in opts:
-        if opt in ('-h', '--help'):
-            print("[*] Help info")
-            exit()
-        elif opt == '-n':
-            print('Number of join results ', opt_value)
-            N = (int)(opt_value)
-        elif opt == '-s':
-            print('Gap of sampling ', opt_value)
-            S = (int)(opt_value)
 
-    N = int(N/S)
+    # try:
+    #     opts, args = getopt.getopt(sys.argv[1:], '-h-n:-s:', ['sample=', 'number=', 'help'])
+    # except getopt.GetoptError:
+    #     print('test.py -n number of matches')
+    #     sys.exit(2)
+    # for opt, opt_value in opts:
+    #     if opt in ('-h', '--help'):
+    #         print("[*] Help info")
+    #         exit()
+    #     elif opt == '-n':
+    #         print('Number of join results ', opt_value)
+    #         N = (int)(opt_value)
+    #     elif opt == '-s':
+    #         print('Gap of sampling ', opt_value)
+    #         S = (int)(opt_value)
     # 'Hash_JM', 'Hash_JB', 'Hash_HS', 'Sort_JM', 'Sort_JB', 'Sort_HS', 'PRJ'
-    legend_labels = ['Hash_JM', 'Hash_JB', 'Sort_JM', 'Sort_JB', 'PRJ', 'NPJ']
+
+    legend_labels = ['PRJ', 'NPJ', 'M-PASS', 'M-WAY', 'SHJ$^M$', 'SHJ$^B$', 'PMJ$^M$', 'PMJ$^B$']
+    S = 100
+    N, col1, col2, col3, col4, col5, col6, col7, col8 = ReadFile(S)
     col0 = []
     for x in range(1, N + 1):
         col0.append(x * S)
-
-    col1, col2, col3, col4, col5, col6 = ReadFile(S)
     # print(len(col1), len(col2), len(col3), len(col4), len(col5))
     # alignment
     # lines = [col1, col2, col3, col4, col5, col6]
-    lines = [col1[(len(col1))-N:], col2[(len(col2))-N:], col3[(len(col3))-N:], col4[(len(col4))-N:], col5[(len(col5))-N:], col6[(len(col6))-N:]]
+    lines = [col1[(len(col1)) - N:], col2[(len(col2)) - N:], col3[(len(col3)) - N:], col4[(len(col4)) - N:],
+             col5[(len(col5)) - N:], col6[(len(col6)) - N:], col7[(len(col7)) - N:], col8[(len(col8)) - N:]]
     DrawFigure(col0, lines, legend_labels,
-               'Number of results', 'time (usec)', 0, N*S,
+               'Number of results', 'time (usec)', 0, N * S,
                0, 100000,
                'progressive_results',
-               True)
-    # DrawLegend(legend_labels, 'interval_legend')
+               False)
+    DrawLegend(legend_labels, 'progressive_legend')

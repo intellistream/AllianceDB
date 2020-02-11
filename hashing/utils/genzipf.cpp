@@ -255,10 +255,6 @@ gen_zipf_ts(unsigned int stream_size,
     // sort ret
     std::sort(ret, ret + stream_size);
 
-//    for (int i=0; i < stream_size; i++) {
-//        printf("%d\n", ret[i]);
-//    }
-
     return ret;
 }
 
