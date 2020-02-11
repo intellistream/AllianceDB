@@ -22,14 +22,17 @@ function KimRun() {
   ./hashing -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id
 }
 
+
+DEFAULT_WINDOW_SIZE=1000
+DEFAULT_STEP_SIZE=100
 function ResetParameters() {
   TS_DISTRIBUTION=0 # uniform time distribution
   ZIPF_FACTOR=0     # uniform time distribution
   distrbution=0     # unique
   skew=0            # uniform key distribution
   INTERVAL=1        # interval of 1. always..
-  STEP_SIZE=100     # arrival rate = 1000 / ms
-  WINDOW_SIZE=1000  #MS rel size = window_size / interval * step_size.
+  STEP_SIZE=$DEFAULT_STEP_SIZE     # arrival rate = 1000 / ms
+  WINDOW_SIZE=$DEFAULT_WINDOW_SIZE  #MS rel size = window_size / interval * step_size.
 }
 
 # Configurable variables
@@ -63,7 +66,7 @@ for algo in SHJ_JM_NP; do #PRO NPO  SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
       ts=1 # stream case
       # step size should be bigger than nthreads
       for STEP_SIZE in 100 1000 10000 100000; do
-        WINDOW_SIZE=$(expr 1000 \* 100 / $STEP_SIZE) #ensure relation size is the same.
+        WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
         echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
         #        KimRun
         let "id++"

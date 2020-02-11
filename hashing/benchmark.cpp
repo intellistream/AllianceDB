@@ -97,8 +97,8 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int
         switch (cmd_params.key_distribution) {
             case 0: // unique
                 parallel_create_relation(rel, rel_size,
-                                 nthreads,
-                                 rel_size);
+                                         nthreads,
+                                         rel_size);
 //                parallel_create_relation_with_ts(rel, relPl, rel->num_tuples, nthreads, rel->num_tuples,
 //                                                 cmd_params.step_size, cmd_params.interval);
                 break;
@@ -110,7 +110,7 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int
         }
         switch (cmd_params.ts_distribution) {
             case 0: // uniform
-                add_ts(rel, relPl, cmd_params.step_size, cmd_params.interval);
+                add_ts(rel, relPl, cmd_params.step_size, cmd_params.interval, cmd_params.window_size);
                 break;
             case 2: // zipf
                 add_zipf_ts(rel, relPl, cmd_params.window_size, cmd_params.zipf_param);
@@ -123,7 +123,7 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int
         parallel_create_relation(rel, rel_size,
                                  nthreads,
                                  rel_size);
-        add_ts(rel, relPl, cmd_params.step_size, 0);
+        add_ts(rel, relPl, cmd_params.step_size, 0,  cmd_params.window_size);
     }
     printf("OK \n");
 }

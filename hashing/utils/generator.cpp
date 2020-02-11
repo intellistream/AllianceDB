@@ -32,6 +32,7 @@
 #include <sstream>
 #include <vector>
 #include <chrono>
+#include <assert.h>
 
 using namespace std;
 using namespace std::chrono;
@@ -106,41 +107,16 @@ inline bool last_thread(int i, int nthreads) {
     return i == (nthreads - 1);
 }
 
-void add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_size, int interval) {
+void
+add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_size, int interval, const int window_size) {
     int ts = 0;
-//    int tpPerThr = relation->num_tuples / numThr;
-//    uint64_t index = 0;
     for (auto i = 0; i < relation->num_tuples; i++) {
-        if (i % (step_size / nthreads) == 0) {
+        if (i % (step_size) == 0) {
             ts += interval;
         }
         relationPayload->ts[i] = (milliseconds) ts;
     }
-
-    // num_tuples = window_size / interval * step_size
-    // generate timestamps with three parameters
-//    for (int i = 0; i < nthreads; i++) {
-//        if (last_thread(i, nthreads)) {
-//            for (int j = 0; j < (relation->num_tuples - i * tpPerThr); j++) {
-//                if (j % (step_size / nthreads) == 0) {
-//                    ts += interval;
-//                }
-//                index = i * tpPerThr + j;
-//                relationPayload->ts[index] = (milliseconds) ts;
-//            }
-//            ts = 0;
-//        } else {
-//            // generate timestamp for every thread tuples
-//            for (int j = 0; j < tpPerThr; j++) {
-//                if (j % (step_size / nthreads) == 0) {
-//                    ts += interval;
-//                }
-//                index = i * tpPerThr + j;
-//                relationPayload->ts[index] = (milliseconds) ts;
-//            }
-//            ts = 0;
-//        }
-//    }
+    assert(ts == window_size);
 }
 
 /**
@@ -152,47 +128,17 @@ void add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_
  */
 void add_zipf_ts(relation_t *relation, relation_payload_t *relationPayload, int window_size, const double zipf_param) {
 
-    // num_tuples = window_size / interval * step_size
-    // generate timestamps with three parameters
-
     int small = 0;
-    int large = 0;
-
     int32_t *timestamps = gen_zipf_ts(relation->num_tuples, window_size, zipf_param);
 
     for (auto i = 0; i < relation->num_tuples; i++) {
         relationPayload->ts[i] = (milliseconds) timestamps[i];
         if (relationPayload->ts[i].count() < 0.25 * window_size) {
             small++;
-        } else {
-            large++;
         }
-//        printf("%d, %ld\n", relation->tuples[i].key, relationPayload->ts[i].count());
+        DEBUGMSG("%d, %ld\n", relation->tuples[i].key, relationPayload->ts[i].count());
     }
     printf("small ts %f\n", (double) small / relation->num_tuples);
-//    for (int i = 0; i < nthreads; i++) {
-//        if (last_thread(i, nthreads)) {
-//            thread_num_tuples = relation->num_tuples - i * tpPerThr;
-//            int32_t *timestamps = gen_zipf_ts(thread_num_tuples, window_size, zipf_param);
-//            for (int j = 0; j < thread_num_tuples; j++) {
-//                index = i * tpPerThr + j;
-//                relationPayload->ts[index] = (milliseconds) timestamps[j];
-//
-//            }
-//
-//
-//
-//        } else {
-//            thread_num_tuples = tpPerThr;
-//            int32_t *timestamps = gen_zipf_ts(thread_num_tuples, window_size, zipf_param);
-//            // generate timestamp for every thread tuples
-//            for (int j = 0; j < tpPerThr; j++) {
-//                index = i * tpPerThr + j;
-//                relationPayload->ts[index] = (milliseconds) timestamps[j];
-////                printf("%d\n", relationPayload->ts[index]);
-//            }
-//        }
-//    }
 }
 
 /**
@@ -210,7 +156,7 @@ random_gen_with_ts(relation_t *rel, relation_payload_t *relPl, int64_t maxid, in
         rel->tuples[i].payloadID = i;//payload is simply the id of the tuple.
     }
 
-    add_ts(rel, relPl, step_size, interval);
+    add_ts(rel, relPl, step_size, interval, -1);
 }
 
 /**
@@ -579,7 +525,7 @@ parallel_create_relation_with_ts(relation_t *relation, relation_payload_t *relat
     write_relation(relation, tables[(rs++)%2]);
 #endif
 
-    add_ts(relation, relationPayload, step_size, interval);
+    add_ts(relation, relationPayload, step_size, interval, -1);
 
 //    add_zipf_ts(relation, relationPayload, num_tuples/step_size*interval, nthreads, 1);
 
