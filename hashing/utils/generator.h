@@ -29,10 +29,9 @@ void
 seed_generator(unsigned int seed);
 
 void
-add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_size, int interval, int numThr);
+add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_size, int interval);
 
-void add_zipf_ts(relation_t *relation, relation_payload_t *relationPayload,
-                 int window_size, int numThr, const double zipf_param);
+void add_zipf_ts(relation_t *relation, relation_payload_t *relationPayload, int window_size, const double zipf_param);
 
 /**
  * Create relation with non-unique keys uniformly distributed between [0, maxid]

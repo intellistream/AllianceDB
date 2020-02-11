@@ -110,10 +110,10 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int
         }
         switch (cmd_params.ts_distribution) {
             case 0: // uniform
-                add_ts(rel, relPl, cmd_params.step_size, cmd_params.interval, nthreads);
+                add_ts(rel, relPl, cmd_params.step_size, cmd_params.interval);
                 break;
             case 2: // zipf
-                add_zipf_ts(rel, relPl, cmd_params.window_size, nthreads, cmd_params.zipf_param);
+                add_zipf_ts(rel, relPl, cmd_params.window_size, cmd_params.zipf_param);
                 break;
             default:
                 break;
@@ -123,7 +123,7 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int
         parallel_create_relation(rel, rel_size,
                                  nthreads,
                                  rel_size);
-        add_ts(rel, relPl, cmd_params.step_size, 0, nthreads);
+        add_ts(rel, relPl, cmd_params.step_size, 0);
     }
     printf("OK \n");
 }
