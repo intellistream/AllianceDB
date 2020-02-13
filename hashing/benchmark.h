@@ -96,7 +96,8 @@ struct param_t {
     double zipf_param;
 
     int window_size;
-    int step_size;
+    int step_sizeR;
+    int step_sizeS;
     int interval;
 
     int exp_id;

@@ -198,7 +198,8 @@ gen_zipf (unsigned int stream_size,
     free (alphabet);
 
     *output = ret;
-
+    // sort ret
+    std::sort(ret, ret + stream_size);
     return ret;
 }
 

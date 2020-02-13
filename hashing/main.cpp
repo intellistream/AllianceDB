@@ -275,8 +275,8 @@ main(int argc, char **argv) {
 
 
     //reset relation size according to our settings.
-    cmd_params.r_size = cmd_params.window_size / cmd_params.interval * cmd_params.step_size;
-    cmd_params.s_size = cmd_params.window_size / cmd_params.interval * cmd_params.step_size;
+    cmd_params.r_size = cmd_params.window_size / cmd_params.interval * cmd_params.step_sizeR;
+    cmd_params.s_size = cmd_params.window_size / cmd_params.interval * cmd_params.step_sizeS;
 
     if (check_avx() == 0) {
         /* no AVX support, just use scalar variants. */
@@ -372,7 +372,8 @@ param_t defaultParam() {/* Command line parameters */
 
     cmd_params.gen_with_ts = 1;
     cmd_params.window_size = 10000;
-    cmd_params.step_size = 40;
+    cmd_params.step_sizeR = 40;
+    cmd_params.step_sizeS = -1;
     cmd_params.interval = 1000;
     cmd_params.kim = 0;
     cmd_params.key_distribution = 0;
@@ -501,7 +502,7 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
         /* getopt_long stores the option index here. */
         int option_index = 0;
 
-        c = getopt_long(argc, argv, "J:K:L:M:t:w:e:l:I:d:Z:D:a:n:p:r:s:o:x:y:z:R:S:hv",
+        c = getopt_long(argc, argv, "J:K:L:M:t:w:e:q:l:I:d:Z:D:a:n:p:r:s:o:x:y:z:R:S:hv",
                         long_options, &option_index);
 
         /* Detect the end of the options. */
@@ -634,7 +635,10 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
                 cmd_params->window_size = atoi(mystrdup(optarg));
                 break;
             case 'e':
-                cmd_params->step_size = atoi(mystrdup(optarg));
+                cmd_params->step_sizeR = atoi(mystrdup(optarg));
+                break;
+            case 'q':
+                cmd_params->step_sizeS = atoi(mystrdup(optarg));
                 break;
             case 'l':
                 cmd_params->interval = atoi(mystrdup(optarg));
@@ -658,6 +662,9 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
     /* if (verbose_flag) */
     /*     printf ("verbose flag is set \n"); */
 
+    if (cmd_params->step_sizeS == -1) {
+        cmd_params->step_sizeS = cmd_params->step_sizeR;
+    }
     cmd_params->nonunique_keys = nonunique_flag;
     cmd_params->verbose = verbose_flag;
     cmd_params->fullrange_keys = fullrange_flag;

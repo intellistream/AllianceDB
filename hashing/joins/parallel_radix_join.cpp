@@ -1592,7 +1592,7 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads,
 
     auto lastRTS = relR->payload->ts[relR->num_tuples - 1].count();
     auto lastSTS = relS->payload->ts[relS->num_tuples - 1].count();
-    auto lastTS = min(lastRTS, lastSTS);
+    auto lastTS = max(lastRTS, lastSTS);
 
     std::string name = "PRJ_" + std::to_string(exp_id);
     string path = "/data1/xtra/results/breakdown/" + name.append(".txt");

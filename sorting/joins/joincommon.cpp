@@ -210,7 +210,7 @@ sortmergejoin_initrun(relation_t *relR, relation_t *relS, joinconfig_t *joincfg,
 
 #ifndef NO_TIMING
     /* now print the timing results: */
-    auto lastTS = min(relR->payload->ts[relR->num_tuples - 1].count(),
+    auto lastTS = max(relR->payload->ts[relR->num_tuples - 1].count(),
                       relS->payload->ts[relS->num_tuples - 1].count());
 
     std::string name = algoName + "_" + std::to_string(exp_id);

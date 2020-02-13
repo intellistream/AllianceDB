@@ -10,6 +10,7 @@
 #include <time.h>               /* time() */
 #include <unistd.h>             /* getpagesize() */
 #include <string.h>             /* memcpy() */
+#include <assert.h>
 
 #include "generator.h"
 #include "../affinity/cpu_mapping.h"        /* get_cpu_id() */
@@ -18,6 +19,7 @@
 #include "../util/lock.h"
 #include "../util/barrier.h"
 #include "../affinity/memalloc.h"
+#include "../joins/joincommon.h"
 
 
 /* return a random number in range [0,N] */
@@ -49,15 +51,18 @@ inline bool last_thread(int i, int nthreads) {
     return i == (nthreads - 1);
 }
 
-void add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_size, int interval, int nthreads) {
+void
+add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_size, int interval, const int window_size) {
     int ts = 0;
     for (auto i = 0; i < relation->num_tuples; i++) {
-        if (i % (step_size / nthreads) == 0) {
+        if (i % (step_size) == 0) {
             ts += interval;
         }
         relationPayload->ts[i] = (milliseconds) ts;
     }
+    assert(interval == 0 || ts == window_size);
 }
+
 
 /**
  * @param numThr
@@ -66,26 +71,19 @@ void add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_
  * @param window_size
  * @param zipf_param
  */
-void add_zipf_ts(relation_t *relation, relation_payload_t *relationPayload,
-                 int window_size, int nthreads, const double zipf_param) {
-    // num_tuples = window_size / interval * step_size
-    // generate timestamps with three parameters
+void add_zipf_ts(relation_t *relation, relation_payload_t *relationPayload, int window_size, const double zipf_param) {
 
     int small = 0;
-    int large = 0;
-
     int32_t *timestamps = gen_zipf_ts(relation->num_tuples, window_size, zipf_param);
 
     for (auto i = 0; i < relation->num_tuples; i++) {
         relationPayload->ts[i] = (milliseconds) timestamps[i];
         if (relationPayload->ts[i].count() < 0.25 * window_size) {
             small++;
-        } else {
-            large++;
         }
-//        printf("%d, %ld\n", relation->tuples[i].key, relationPayload->ts[i].count());
+        DEBUGMSG("%d, %ld\n", relation->tuples[i].key, relationPayload->ts[i].count());
     }
-    printf("small ts:%d, large ts:%d\n", small, large);
+    printf("small ts %f\n", (double) small / relation->num_tuples);
 }
 
 /**

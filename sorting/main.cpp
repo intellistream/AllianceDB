@@ -431,7 +431,8 @@ struct cmdparam_t {
     double zipf_param;
 
     int window_size;
-    int step_size;
+    int step_sizeR;
+    int step_sizeS;
     int interval;
 
     int exp_id;
@@ -478,18 +479,15 @@ int check_avx() {
 
 void
 createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int32_t tsKey, const cmdparam_t &cmd_params,
-               char *loadfile, uint64_t rel_size, uint32_t seed) {
+               char *loadfile, uint64_t rel_size, uint32_t seed, int step_size) {
     seed_generator(seed);
     /* to pass information to the create_relation methods */
     auto nthreads = cmd_params.nthreads;
 
 //    if (cmd_params.kim) {
     // calculate num of tuples by params
-    if (cmd_params.step_size < nthreads) {
-        perror("step size should be bigger than the number of threads!");
-        return;
-    }
-    rel->num_tuples = (cmd_params.window_size / cmd_params.interval) * cmd_params.step_size;
+
+    rel->num_tuples = (cmd_params.window_size / cmd_params.interval) * step_size;
     rel_size = rel->num_tuples;
     relPl->num_tuples = rel->num_tuples;
 //    } else {
@@ -529,10 +527,10 @@ createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int32_t 
         }
         switch (cmd_params.ts_distribution) {
             case 0: // uniform
-                add_ts(rel, relPl, cmd_params.step_size, cmd_params.interval, nthreads);
+                add_ts(rel, relPl, step_size, cmd_params.interval, cmd_params.window_size);
                 break;
             case 2: // zipf
-                add_zipf_ts(rel, relPl, cmd_params.window_size, nthreads, cmd_params.zipf_param);
+                add_zipf_ts(rel, relPl, cmd_params.window_size, cmd_params.zipf_param);
                 break;
             default:
                 break;
@@ -542,7 +540,7 @@ createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int32_t 
         parallel_create_relation(rel, rel_size,
                                  nthreads,
                                  rel_size);
-        add_ts(rel, relPl, cmd_params.step_size, 0, nthreads);
+        add_ts(rel, relPl, step_size, 0, nthreads);
     }
 
 //    fprintf(stdout, "relS : %s", print_relation(rel->tuples, max((uint64_t) 1000, cmd_params.s_size)).c_str());
@@ -597,7 +595,8 @@ main(int argc, char *argv[]) {
 
     cmd_params.gen_with_ts = 0;
     cmd_params.window_size = 10000;
-    cmd_params.step_size = 40;
+    cmd_params.step_sizeR = 40;
+    cmd_params.step_sizeS = -1;
     cmd_params.interval = 1000;
     cmd_params.kim = 0;
     cmd_params.key_distribution = 0;
@@ -611,8 +610,8 @@ main(int argc, char *argv[]) {
     parse_args(argc, argv, &cmd_params);
 
     //reset relation size according to our settings.
-    cmd_params.r_size = cmd_params.window_size / cmd_params.interval * cmd_params.step_size;
-    cmd_params.s_size = cmd_params.window_size / cmd_params.interval * cmd_params.step_size;
+    cmd_params.r_size = cmd_params.window_size / cmd_params.interval * cmd_params.step_sizeR;
+    cmd_params.s_size = cmd_params.window_size / cmd_params.interval * cmd_params.step_sizeS;
 
     if (check_avx() == 0) {
         /* no AVX support, just use scalar variants. */
@@ -626,96 +625,16 @@ main(int argc, char *argv[]) {
     PCM_OUT    = cmd_params.perfout;
 #endif
 
-//    /***** create relation R *****/
-//    fprintf(stdout,
-//            "[INFO ] Creating relation R with size = %.3lf MiB, #tuples = %lld : ",
-//            (double) sizeof(tuple_t) * cmd_params.r_size / (1024.0 * 1024.0),
-//            cmd_params.r_size);
-//    fflush(stdout);
 
     seed_generator(cmd_params.r_seed);
 
-//    /* whether to localize input relations in a NUMA-aware manner */
-//    int nonumalocalize = cmd_params.no_numa;
-//
-//    /** first allocate the memory for relations (+ padding based on numthreads) : */
-//    /******* Relation R ********/
-//    relR.num_tuples = cmd_params.r_size;
-//    size_t relRsz = relR.num_tuples * sizeof(tuple_t)
-//                    + RELATION_PADDING(cmd_params.nthreads, cmd_params.part_fanout);
-//    relR.tuples = (tuple_t *) malloc_aligned(relRsz);
-//    /* if there is a need NUMA-localize the input: */
-//    if (!nonumalocalize) {
-//        numa_localize(relR.tuples, relR.num_tuples, cmd_params.nthreads);
-//    }
-//    /******* Relation S ********/
-//    relS.num_tuples = cmd_params.s_size;
-//    size_t relSsz = relS.num_tuples * sizeof(tuple_t)
-//                    + RELATION_PADDING(cmd_params.nthreads, cmd_params.part_fanout);
-//    relS.tuples = (tuple_t *) malloc_aligned(relSsz);
-//    /* NUMA-localize the input: */
-//    if (!nonumalocalize) {
-//        numa_localize(relS.tuples, relS.num_tuples, cmd_params.nthreads);
-//    }
-//
-//    gettimeofday(&start, NULL);
-//    if (cmd_params.fullrange_keys) {
-//        create_relation_nonunique(&relR, cmd_params.r_size, INT_MAX);
-//    } else if (cmd_params.nonunique_keys) {
-//        create_relation_nonunique(&relR, cmd_params.r_size, cmd_params.r_size);
-//    } else {
-//        parallel_create_relation(&relR, cmd_params.r_size,
-//                                 cmd_params.nthreads, cmd_params.r_size);
-//        /* create_relation_pk(&relR, cmd_params.r_size); */
-//    }
-//    gettimeofday(&end, NULL);
-//    fprintf(stdout, "OK \n");
-//    fprintf(stdout, "[INFO ] Time: ");
-//    print_timing(cmd_params.r_size, &start, &end, stdout);
-//    fprintf(stdout, "\n");
-//
-//    /***** create relation S *****/
-//    fprintf(stdout,
-//            "[INFO ] Creating relation S with size = %.3lf MiB, #tuples = %lld : ",
-//            (double) sizeof(tuple_t) * cmd_params.s_size / 1024.0 / 1024.0,
-//            cmd_params.s_size);
-//    fflush(stdout);
-
     createRelation(&relR, relR.payload, cmd_params.rkey, cmd_params.rts, cmd_params, cmd_params.loadfileR,
                    cmd_params.r_size,
-                   cmd_params.r_seed);
-
-//    seed_generator(cmd_params.s_seed);
-//
-//    gettimeofday(&start, NULL);
-//    if (cmd_params.fullrange_keys) {
-//        create_relation_fk_from_pk(&relS, &relR, cmd_params.s_size);
-//    } else if (cmd_params.nonunique_keys) {
-//        /* use size of R as the maxid */
-//        create_relation_nonunique(&relS, cmd_params.s_size, cmd_params.r_size);
-//    } else {
-//        /* if r_size == s_size then equal-dataset, else non-equal dataset */
-//
-//        if (cmd_params.skew > 0) {
-//            /* S is skewed */
-//            create_relation_zipf(&relS, cmd_params.s_size,
-//                                 cmd_params.r_size, cmd_params.skew);
-//        } else {
-//            /* S is uniform foreign key */
-//            parallel_create_relation(&relS, cmd_params.s_size,
-//                                     cmd_params.nthreads, cmd_params.r_size);
-//            /* create_relation_pk(&relS, cmd_params.s_size); */
-//        }
-//    }
-//    gettimeofday(&end, NULL);
-//    fprintf(stdout, "OK \n");
-//    fprintf(stdout, "[INFO ] Time: ");
-//    print_timing(cmd_params.s_size, &start, &end, stdout);
-//    fprintf(stdout, "\n");
+                   cmd_params.r_seed, cmd_params.step_sizeR);
 
     createRelation(&relS, relS.payload, cmd_params.skey, cmd_params.sts, cmd_params, cmd_params.loadfileS,
                    cmd_params.s_size,
-                   cmd_params.s_seed);
+                   cmd_params.s_seed, cmd_params.step_sizeS);
 
     /* setup join configuration parameters */
     joinconfig_t joincfg;
@@ -895,7 +814,7 @@ parse_args(int argc, char **argv, cmdparam_t *cmd_params) {
         int option_index = 0;
 
 //        c = getopt_long(argc, argv, "a:n:p:r:s:o:x:y:z:hvf:m:S:",
-        c = getopt_long(argc, argv, "R:S:J:K:L:M:t:w:e:l:I:d:Z:D:a:n:p:r:s:o:x:y:z:hvf:m:N:",
+        c = getopt_long(argc, argv, "R:S:J:K:L:M:t:w:e:q:l:I:d:Z:D:a:n:p:r:s:o:x:y:z:hvf:m:N:",
                         long_options, &option_index);
 
         /* Detect the end of the options. */
@@ -1029,7 +948,10 @@ parse_args(int argc, char **argv, cmdparam_t *cmd_params) {
                 cmd_params->window_size = atoi(mystrdup(optarg));
                 break;
             case 'e':
-                cmd_params->step_size = atoi(mystrdup(optarg));
+                cmd_params->step_sizeR = atoi(mystrdup(optarg));
+                break;
+            case 'q':
+                cmd_params->step_sizeS = atoi(mystrdup(optarg));
                 break;
             case 'l':
                 cmd_params->interval = atoi(mystrdup(optarg));
@@ -1075,7 +997,9 @@ parse_args(int argc, char **argv, cmdparam_t *cmd_params) {
 
     /* if (verbose_flag) */
     /*     printf ("verbose flag is set \n"); */
-
+    if (cmd_params->step_sizeS == -1) {
+        cmd_params->step_sizeS = cmd_params->step_sizeR;
+    }
     cmd_params->nonunique_keys = nonunique_flag;
     cmd_params->verbose = verbose_flag;
     cmd_params->fullrange_keys = fullrange_flag;

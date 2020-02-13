@@ -34,7 +34,7 @@ int check_avx() {
 }
 
 void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int32_t tsKey, const param_t &cmd_params,
-                    char *loadfile, uint64_t rel_size, uint32_t seed) {
+                    char *loadfile, uint64_t rel_size, uint32_t seed, const int step_size) {
     seed_generator(seed);
     /* to pass information to the create_relation methods */
     numalocalize = cmd_params.basic_numa;
@@ -46,7 +46,6 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int
 //        perror("step size should be bigger than the number of threads!");
 //        return;
 //    }
-    rel->num_tuples = (cmd_params.window_size / cmd_params.interval) * cmd_params.step_size;
     rel_size = rel->num_tuples;
     relPl->num_tuples = rel->num_tuples;
 //    } else {
@@ -110,7 +109,7 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int
         }
         switch (cmd_params.ts_distribution) {
             case 0: // uniform
-                add_ts(rel, relPl, cmd_params.step_size, cmd_params.interval, cmd_params.window_size);
+                add_ts(rel, relPl, step_size, cmd_params.interval, cmd_params.window_size);
                 break;
             case 2: // zipf
                 add_zipf_ts(rel, relPl, cmd_params.window_size, cmd_params.zipf_param);
@@ -123,7 +122,7 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int
         parallel_create_relation(rel, rel_size,
                                  nthreads,
                                  rel_size);
-        add_ts(rel, relPl, cmd_params.step_size, 0,  cmd_params.window_size);
+        add_ts(rel, relPl, step_size, 0, cmd_params.window_size);
     }
     printf("OK \n");
 }
@@ -143,19 +142,22 @@ benchmark(const param_t cmd_params) {
     result_t *results;
     // TODO: generate dataset
     /* create relation R */
+
+    relR.num_tuples = (cmd_params.window_size / cmd_params.interval) * cmd_params.step_sizeR;
     createRelation(&relR, relR.payload, cmd_params.rkey, cmd_params.rts, cmd_params, cmd_params.loadfileR,
                    cmd_params.r_size,
-                   cmd_params.r_seed);
+                   cmd_params.r_seed, cmd_params.step_sizeR);
     DEBUGMSG("relR [aligned:%d]: %s", is_aligned(relR.tuples, CACHE_LINE_SIZE),
-             print_relation(relR.tuples, min((uint64_t) 1000, cmd_params.r_size)).c_str())
+             print_relation(relR.tuples, min((uint64_t) 1000, cmd_params.r_size)).c_str());
 
 
     /* create relation S */
+    relS.num_tuples = (cmd_params.window_size / cmd_params.interval) * cmd_params.step_sizeS;
     createRelation(&relS, relS.payload, cmd_params.skey, cmd_params.sts, cmd_params, cmd_params.loadfileS,
                    cmd_params.s_size,
-                   cmd_params.s_seed);
+                   cmd_params.s_seed, cmd_params.step_sizeS);
     DEBUGMSG("relS [aligned:%d]: %s", is_aligned(relS.tuples, CACHE_LINE_SIZE),
-             print_relation(relS.tuples, min((uint64_t) 1000, cmd_params.s_size)).c_str())
+             print_relation(relS.tuples, min((uint64_t) 1000, cmd_params.s_size)).c_str());
 
     // TODO: Execute query with dataset, need to submit a join function
 

@@ -116,7 +116,7 @@ add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_size,
         }
         relationPayload->ts[i] = (milliseconds) ts;
     }
-    assert(ts == window_size);
+    assert(interval == 0 || ts == window_size);
 }
 
 /**

@@ -1,4 +1,6 @@
+import getopt
 import os
+import sys
 from math import ceil
 
 import matplotlib as mpl
@@ -201,7 +203,7 @@ def DrawLegend(legend_labels, filename):
 # draw a line chart
 def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, y_min, y_max, filename, allow_legend):
     # you may change the figure size on your own.
-    fig = plt.figure(figsize=(8, 3))
+    fig = plt.figure(figsize=(6, 3))
     figure = fig.add_subplot(111)
 
     FIGURE_LABEL = legend_labels
@@ -257,27 +259,28 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
 
 if __name__ == "__main__":
 
-    # try:
-    #     opts, args = getopt.getopt(sys.argv[1:], '-h-n:-s:', ['sample=', 'number=', 'help'])
-    # except getopt.GetoptError:
-    #     print('test.py -n number of matches')
-    #     sys.exit(2)
-    # for opt, opt_value in opts:
-    #     if opt in ('-h', '--help'):
-    #         print("[*] Help info")
-    #         exit()
-    #     elif opt == '-n':
-    #         print('Number of join results ', opt_value)
-    #         N = (int)(opt_value)
-    #     elif opt == '-s':
-    #         print('Gap of sampling ', opt_value)
-    #         S = (int)(opt_value)
-    # 'Hash_JM', 'Hash_JB', 'Hash_HS', 'Sort_JM', 'Sort_JB', 'Sort_HS', 'PRJ'
+    id = 0
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], '-i:h', ['test id', 'help'])
+    except getopt.GetoptError:
+        print('progressive_figure.py -id testid')
+        sys.exit(2)
+    for opt, opt_value in opts:
+        if opt in ('-h', '--help'):
+            print("[*] Help info")
+            exit()
+        elif opt == '-i':
+            print('Test ID:', opt_value)
+            id = (int)(opt_value)
 
-    id = 1
     legend_labels = ['PRJ', 'NPJ', 'M-PASS', 'M-WAY', 'SHJ$^M$', 'SHJ$^B$', 'PMJ$^M$', 'PMJ$^B$']
-    S = 100
+
+    S = 1
     maxts, N, col1, col2, col3, col4, col5, col6, col7, col8 = ReadFile(S, id)
+
+    S = N/10
+    maxts, N, col1, col2, col3, col4, col5, col6, col7, col8 = ReadFile(S, id)
+
     print(N)
     col0 = []
     for x in range(1, N + 1):
@@ -285,13 +288,13 @@ if __name__ == "__main__":
     # print(len(col1), len(col2), len(col3), len(col4), len(col5))
     # alignment
     # lines = [col1, col2, col3, col4, col5, col6]
-    print((len(col1)))
+    # print((len(col1)))
     lines = [col1[(len(col1)) - N:], col2[(len(col2)) - N:], col3[(len(col3)) - N:], col4[(len(col4)) - N:],
              col5[(len(col5)) - N:], col6[(len(col6)) - N:], col7[(len(col7)) - N:], col8[(len(col8)) - N:]]
 
     DrawFigure(col0, lines, legend_labels,
                'Number of results', 'time (msec)', 0, N * S,
                0, int(ceil(maxts / 100.0)) * 100,
-               'progressive_results',
+               'progressive_figure{}'.format(id),
                False)
     DrawLegend(legend_labels, 'progressive_legend')
