@@ -275,8 +275,8 @@ main(int argc, char **argv) {
 
 
     //reset relation size according to our settings.
-    cmd_params.r_size = cmd_params.window_size / cmd_params.interval * cmd_params.step_sizeR;
-    cmd_params.s_size = cmd_params.window_size / cmd_params.interval * cmd_params.step_sizeS;
+//    cmd_params.r_size = cmd_params.window_size / cmd_params.interval * cmd_params.step_sizeR;
+//    cmd_params.s_size = cmd_params.window_size / cmd_params.interval * cmd_params.step_sizeS;
 
     if (check_avx() == 0) {
         /* no AVX support, just use scalar variants. */
@@ -370,12 +370,12 @@ param_t defaultParam() {/* Command line parameters */
     cmd_params.rkey = 0;
     cmd_params.skey = 0;
 
-    cmd_params.gen_with_ts = 1;
+    cmd_params.old_param = 0;
     cmd_params.window_size = 10000;
     cmd_params.step_sizeR = 40;
     cmd_params.step_sizeS = -1;
     cmd_params.interval = 1000;
-    cmd_params.kim = 0;
+    cmd_params.kim = 1;
     cmd_params.key_distribution = 0;
     cmd_params.ts_distribution = 0;
     cmd_params.zipf_param = 0.0;
@@ -488,7 +488,8 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
                         {"numastrategy",     required_argument, 0,               'N'},
                         {"mwaybufsize",      required_argument, 0,               'm'},
 
-                        {"gen-with-ts",      required_argument, 0,               't'},
+                        {"gen_with_ts",              required_argument, 0,       't'},
+                        {"real_data",              required_argument, 0,         'B'},
                         {"window-size",      required_argument, 0,               'w'},
                         {"step-size",        required_argument, 0,               'e'},
                         {"interval",         required_argument, 0,               'l'},
@@ -502,7 +503,7 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
         /* getopt_long stores the option index here. */
         int option_index = 0;
 
-        c = getopt_long(argc, argv, "J:K:L:M:t:w:e:q:l:I:d:Z:D:a:n:p:r:s:o:x:y:z:R:S:hv",
+        c = getopt_long(argc, argv, "J:K:L:M:t:w:e:q:l:I:d:Z:D:B:a:n:p:r:s:o:x:y:z:R:S:hv",
                         long_options, &option_index);
 
         /* Detect the end of the options. */
@@ -654,6 +655,10 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
                 break;
             case 'I':
                 cmd_params->exp_id = atoi(mystrdup(optarg));
+                break;
+            case 'B':
+                cmd_params->old_param = atoi(mystrdup(optarg));
+                break;
             default:
                 break;
         }

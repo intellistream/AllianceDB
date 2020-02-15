@@ -7,7 +7,7 @@ make -j4
 function benchmarkRun() {
   #####native execution
   echo "==benchmark:$benchmark -a $algo -n $Threads=="
-  ./sorting -a $algo -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads
+  ./sorting -a $algo -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1
 }
 
 function Run() {

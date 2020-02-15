@@ -87,7 +87,7 @@ struct param_t {
     int32_t rts;
     int32_t sts;
 
-    int gen_with_ts; /* timestamps as payload */
+    int old_param; /* whether to use old parameters */
 
     int kim;
     int key_distribution;

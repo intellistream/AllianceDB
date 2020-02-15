@@ -585,9 +585,9 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t
 
     /* skip the header line */
     char c;
-    do {
-        c = fgetc(fp);
-    } while (c != '\n');
+//    do {
+//        c = fgetc(fp);
+//    } while (c != '\n');
 
     /* search for a whitespace for "key payload" format */
     int fmtspace = 0;
@@ -616,9 +616,9 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t
     /* rewind back to the beginning and start parsing again */
     rewind(fp);
     /* skip the header line */
-    do {
-        c = fgetc(fp);
-    } while (c != '\n');
+//    do {
+//        c = fgetc(fp);
+//    } while (c != '\n');
 
     uint64_t ntuples = rel->num_tuples;
     intkey_t key;

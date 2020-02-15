@@ -143,7 +143,11 @@ benchmark(const param_t cmd_params) {
     // TODO: generate dataset
     /* create relation R */
 
-    relR.num_tuples = (cmd_params.window_size / cmd_params.interval) * cmd_params.step_sizeR;
+    if (cmd_params.old_param) {
+        relR.num_tuples = cmd_params.r_size;
+    } else {
+        relR.num_tuples = (cmd_params.window_size / cmd_params.interval) * cmd_params.step_sizeR;
+    }
     createRelation(&relR, relR.payload, cmd_params.rkey, cmd_params.rts, cmd_params, cmd_params.loadfileR,
                    cmd_params.r_size,
                    cmd_params.r_seed, cmd_params.step_sizeR);
@@ -152,7 +156,11 @@ benchmark(const param_t cmd_params) {
 
 
     /* create relation S */
-    relS.num_tuples = (cmd_params.window_size / cmd_params.interval) * cmd_params.step_sizeS;
+    if (cmd_params.old_param) {
+        relS.num_tuples = cmd_params.s_size;
+    } else {
+        relS.num_tuples = (cmd_params.window_size / cmd_params.interval) * cmd_params.step_sizeS;
+    }
     createRelation(&relS, relS.payload, cmd_params.skey, cmd_params.sts, cmd_params, cmd_params.loadfileS,
                    cmd_params.s_size,
                    cmd_params.s_seed, cmd_params.step_sizeS);

@@ -422,7 +422,7 @@ struct cmdparam_t {
     int32_t rts;
     int32_t sts;
 
-    int gen_with_ts; /* timestamps as payload */
+    int old_param;
 
     int kim;
     int key_distribution;
@@ -486,8 +486,11 @@ createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int32_t 
 
 //    if (cmd_params.kim) {
     // calculate num of tuples by params
-
-    rel->num_tuples = (cmd_params.window_size / cmd_params.interval) * step_size;
+    if (cmd_params.old_param) {
+        rel->num_tuples = rel_size;
+    } else {
+        rel->num_tuples = (cmd_params.window_size / cmd_params.interval) * step_size;
+    }
     rel_size = rel->num_tuples;
     relPl->num_tuples = rel->num_tuples;
 //    } else {
@@ -593,12 +596,12 @@ main(int argc, char *argv[]) {
     cmd_params.rkey = 0;
     cmd_params.skey = 0;
 
-    cmd_params.gen_with_ts = 0;
+    cmd_params.old_param = 0;
     cmd_params.window_size = 10000;
     cmd_params.step_sizeR = 40;
     cmd_params.step_sizeS = -1;
     cmd_params.interval = 1000;
-    cmd_params.kim = 0;
+    cmd_params.kim = 1; // by default use Kim
     cmd_params.key_distribution = 0;
     cmd_params.ts_distribution = 0;
     cmd_params.zipf_param = 0.0;
@@ -610,8 +613,8 @@ main(int argc, char *argv[]) {
     parse_args(argc, argv, &cmd_params);
 
     //reset relation size according to our settings.
-    cmd_params.r_size = cmd_params.window_size / cmd_params.interval * cmd_params.step_sizeR;
-    cmd_params.s_size = cmd_params.window_size / cmd_params.interval * cmd_params.step_sizeS;
+//    cmd_params.r_size = cmd_params.window_size / cmd_params.interval * cmd_params.step_sizeR;
+//    cmd_params.s_size = cmd_params.window_size / cmd_params.interval * cmd_params.step_sizeS;
 
     if (check_avx() == 0) {
         /* no AVX support, just use scalar variants. */
@@ -801,6 +804,7 @@ parse_args(int argc, char **argv, cmdparam_t *cmd_params) {
                         {"r-ts",             required_argument, 0,               'L'},
                         {"s-ts",             required_argument, 0,               'M'},
                         {"gen-with-ts",      required_argument, 0,               't'},
+                        {"real_data",        required_argument, 0,               'B'},
                         {"window-size",      required_argument, 0,               'w'},
                         {"step-size",        required_argument, 0,               'e'},
                         {"interval",         required_argument, 0,               'l'},
@@ -814,7 +818,7 @@ parse_args(int argc, char **argv, cmdparam_t *cmd_params) {
         int option_index = 0;
 
 //        c = getopt_long(argc, argv, "a:n:p:r:s:o:x:y:z:hvf:m:S:",
-        c = getopt_long(argc, argv, "R:S:J:K:L:M:t:w:e:q:l:I:d:Z:D:a:n:p:r:s:o:x:y:z:hvf:m:N:",
+        c = getopt_long(argc, argv, "R:S:J:K:L:M:t:w:e:q:l:I:d:Z:D:a:B:n:p:r:s:o:x:y:z:hvf:m:N:",
                         long_options, &option_index);
 
         /* Detect the end of the options. */
@@ -967,6 +971,10 @@ parse_args(int argc, char **argv, cmdparam_t *cmd_params) {
                 break;
             case 'I':
                 cmd_params->exp_id = atoi(mystrdup(optarg));
+                break;
+            case 'B':
+                cmd_params->old_param = atoi(mystrdup(optarg));
+                break;
             default:
                 break;
         }
