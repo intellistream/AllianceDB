@@ -41,7 +41,7 @@ algo=""
 Threads=36
 timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
-for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do # PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
+for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #
   RSIZE=1
   SSIZE=1
   RPATH=""
@@ -50,7 +50,7 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do # PRO NPO SH
   SKEY=0
   RTS=0
   STS=0
-  for benchmark in Kim; do #"Kim" "Stock" "DEBS" "YSB" #"Rovio" #"Google" "Amazon"
+  for benchmark in "Kim"; do #"Kim" "Stock" "DEBS" "YSB" "Rovio" # #"Google" "Amazon"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "Kim")
@@ -77,7 +77,7 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do # PRO NPO SH
       TS_DISTRIBUTION=2
       echo test varying timestamp distribution 5 - 9
       for ZIPF_FACTOR in 0 0.2 0.4 0.8 1; do #
-        #        KimRun
+        KimRun
         let "id++"
       done
 
@@ -142,6 +142,7 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do # PRO NPO SH
       echo test relative arrival rate 32 - 35
       ts=1 # stream case
       # step size should be bigger than nthreads
+      # remember to fix the relation size of S.
       STEP_SIZE_S=100
       for STEP_SIZE in 100 1000 10000 100000; do
         WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
@@ -149,7 +150,6 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do # PRO NPO SH
         KimRun
         let "id++"
       done
-
       ;;
 
     "DEBS")

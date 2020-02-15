@@ -487,7 +487,7 @@ createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int32_t 
 //    if (cmd_params.kim) {
     // calculate num of tuples by params
 
-    rel->num_tuples = (cmd_params.window_size / cmd_params.interval) * step_size;
+
     rel_size = rel->num_tuples;
     relPl->num_tuples = rel->num_tuples;
 //    } else {
@@ -627,11 +627,11 @@ main(int argc, char *argv[]) {
 
 
     seed_generator(cmd_params.r_seed);
-
+    relR.num_tuples = (cmd_params.window_size / cmd_params.interval) * cmd_params.step_sizeR;
     createRelation(&relR, relR.payload, cmd_params.rkey, cmd_params.rts, cmd_params, cmd_params.loadfileR,
                    cmd_params.r_size,
                    cmd_params.r_seed, cmd_params.step_sizeR);
-
+    relS.num_tuples = (cmd_params.window_size / cmd_params.interval) * cmd_params.step_sizeR;
     createRelation(&relS, relS.payload, cmd_params.skey, cmd_params.sts, cmd_params, cmd_params.loadfileS,
                    cmd_params.s_size,
                    cmd_params.s_seed, cmd_params.step_sizeS);

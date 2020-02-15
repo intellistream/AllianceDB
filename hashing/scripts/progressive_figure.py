@@ -1,7 +1,7 @@
 import getopt
 import os
 import sys
-from math import ceil
+from math import ceil, floor
 
 import matplotlib as mpl
 
@@ -278,10 +278,13 @@ if __name__ == "__main__":
     S = 1
     maxts, N, col1, col2, col3, col4, col5, col6, col7, col8 = ReadFile(S, id)
 
-    S = N/10
+    S = floor(N / 10)
+
+    print("N:", N)
+    print("S:", S)
+
     maxts, N, col1, col2, col3, col4, col5, col6, col7, col8 = ReadFile(S, id)
 
-    print(N)
     col0 = []
     for x in range(1, N + 1):
         col0.append(x * S)
@@ -293,7 +296,7 @@ if __name__ == "__main__":
              col5[(len(col5)) - N:], col6[(len(col6)) - N:], col7[(len(col7)) - N:], col8[(len(col8)) - N:]]
 
     DrawFigure(col0, lines, legend_labels,
-               'Number of results', 'time (msec)', 0, N * S,
+               'Number of results', 'time (msec)', 0, ceil(N * S / 100) * 100,
                0, int(ceil(maxts / 100.0)) * 100,
                'progressive_figure{}'.format(id),
                False)

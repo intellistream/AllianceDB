@@ -18,8 +18,8 @@
 /** An experimental feature to allocate input relations numa-local */
 extern int nthreads;      /* defined in generator.c */
 extern int numalocalize;  /* defined in generator.c */
-struct t_window window0;
-struct t_window window1;
+//struct t_window window0;
+//struct t_window window1;
 
 #ifndef NEXT_POW_2
 /**
