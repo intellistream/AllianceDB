@@ -122,7 +122,7 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #
       ResetParameters
       ts=0 # data at rest.
       echo test varying window size 25 - 27
-      for WINDOW_SIZE in 1000 10000 100000; do
+      for WINDOW_SIZE in 1000 10000 20000; do
         KimRun
         let "id++"
       done
