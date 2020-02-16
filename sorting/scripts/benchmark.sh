@@ -7,7 +7,7 @@ make -j4
 function benchmarkRun() {
   #####native execution
   echo "==benchmark:$benchmark -a $algo -n $Threads=="
-  ./sorting -a $algo -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1
+  ./sorting -a $algo -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1
 }
 
 function Run() {
@@ -19,7 +19,7 @@ function Run() {
 function KimRun() {
   #####native execution
   echo "==benchmark:$benchmark -a $algo -n $Threads #TEST:$id=="
-  ./sorting -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id
+  ./sorting -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id  -W $FIXS
 }
 
 DEFAULT_WINDOW_SIZE=1000
@@ -77,7 +77,7 @@ for algo in m-way m-pass; do #
       TS_DISTRIBUTION=2
       echo test varying zipf distribution timestamp 5 - 9
       for ZIPF_FACTOR in 0 0.2 0.4 0.8 1; do #
-        #        KimRun
+        KimRun
         let "id++"
       done
 
@@ -87,12 +87,12 @@ for algo in m-way m-pass; do #
       TS_DISTRIBUTION=0
       echo test varying key distribution 10 - 15
       distrbution=0 #unique
-      #      KimRun
+      KimRun
       let "id++"
 
       distrbution=2 #varying zipf factor
       for skew in 0 0.2 0.4 0.8 1; do
-        #        KimRun
+        KimRun
         let "id++"
       done
 
@@ -100,7 +100,7 @@ for algo in m-way m-pass; do #
       ResetParameters
       echo test varying window size 16 - 18
       for WINDOW_SIZE in 1000 10000 100000; do
-        #        KimRun
+        KimRun
         let "id++"
       done
 
@@ -123,11 +123,12 @@ for algo in m-way m-pass; do #
       ts=0 # data at rest.
       echo test varying window size 25 - 27
       for WINDOW_SIZE in 1000 10000 100000; do
-        #KimRun
+        KimRun
         let "id++"
       done
 
       ## Figure 7
+      FIXS=1
       echo test relative arrival rate 28 - 31
       ts=1 # stream case
       # step size should be bigger than nthreads
@@ -135,11 +136,12 @@ for algo in m-way m-pass; do #
       for STEP_SIZE in 100 1000 10000 100000; do
         WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
         echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
-        #        KimRun
+        KimRun
         let "id++"
       done
 
       ## Figure 8
+      FIXS=1
       echo test relative arrival rate 32 - 35
       ts=1 # stream case
       # step size should be bigger than nthreads
@@ -147,7 +149,7 @@ for algo in m-way m-pass; do #
       for STEP_SIZE in 100 1000 10000 100000; do
         WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
         echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
-        #        KimRun
+        KimRun
         let "id++"
       done
       ;;

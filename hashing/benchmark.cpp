@@ -159,7 +159,11 @@ benchmark(const param_t cmd_params) {
     if (cmd_params.old_param) {
         relS.num_tuples = cmd_params.s_size;
     } else {
-        relS.num_tuples = (cmd_params.window_size / cmd_params.interval) * cmd_params.step_sizeS;
+
+        if (cmd_params.fixS)
+            relS.num_tuples = cmd_params.r_size;
+        else
+            relS.num_tuples = (cmd_params.window_size / cmd_params.interval) * cmd_params.step_sizeS;
     }
     createRelation(&relS, relS.payload, cmd_params.skey, cmd_params.sts, cmd_params, cmd_params.loadfileS,
                    cmd_params.s_size,

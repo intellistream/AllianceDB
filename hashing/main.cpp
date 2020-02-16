@@ -488,8 +488,8 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
                         {"numastrategy",     required_argument, 0,               'N'},
                         {"mwaybufsize",      required_argument, 0,               'm'},
 
-                        {"gen_with_ts",              required_argument, 0,       't'},
-                        {"real_data",              required_argument, 0,         'B'},
+                        {"gen_with_ts",      required_argument, 0,               't'},
+                        {"real_data",        required_argument, 0,               'B'},
                         {"window-size",      required_argument, 0,               'w'},
                         {"step-size",        required_argument, 0,               'e'},
                         {"interval",         required_argument, 0,               'l'},
@@ -497,13 +497,13 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
                         {"zipf_param",       required_argument, 0,               'Z'},
                         {"exp_id",           required_argument, 0,               'I'},
                         {"ts_distribution",  required_argument, 0,               'D'},
-                        {0, 0,                                  0,               0}
+                        {0,                  0,                 0,               0}
 
                 };
         /* getopt_long stores the option index here. */
         int option_index = 0;
 
-        c = getopt_long(argc, argv, "J:K:L:M:t:w:e:q:l:I:d:Z:D:B:a:n:p:r:s:o:x:y:z:R:S:hv",
+        c = getopt_long(argc, argv, "J:K:L:M:t:w:e:q:l:I:d:Z:D:B:W:a:n:p:r:s:o:x:y:z:R:S:hv",
                         long_options, &option_index);
 
         /* Detect the end of the options. */
@@ -658,6 +658,9 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
                 break;
             case 'B':
                 cmd_params->old_param = atoi(mystrdup(optarg));
+                break;
+            case 'W':
+                cmd_params->fixS = atoi(mystrdup(optarg));
                 break;
             default:
                 break;

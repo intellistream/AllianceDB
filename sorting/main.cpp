@@ -423,7 +423,7 @@ struct cmdparam_t {
     int32_t sts;
 
     int old_param;
-
+    int fixS;
     int kim;
     int key_distribution;
     int ts_distribution;
@@ -636,7 +636,10 @@ main(int argc, char *argv[]) {
     if (cmd_params.old_param) {
         relS.num_tuples = cmd_params.s_size;
     } else {
-        relS.num_tuples = (cmd_params.window_size / cmd_params.interval) * cmd_params.step_sizeS;
+        if (cmd_params.fixS)
+            relS.num_tuples = cmd_params.r_size;
+        else
+            relS.num_tuples = (cmd_params.window_size / cmd_params.interval) * cmd_params.step_sizeS;
     }
     createRelation(&relS, relS.payload, cmd_params.skey, cmd_params.sts, cmd_params, cmd_params.loadfileS,
                    cmd_params.s_size,
@@ -821,7 +824,7 @@ parse_args(int argc, char **argv, cmdparam_t *cmd_params) {
         int option_index = 0;
 
 //        c = getopt_long(argc, argv, "a:n:p:r:s:o:x:y:z:hvf:m:S:",
-        c = getopt_long(argc, argv, "R:S:J:K:L:M:t:w:e:q:l:I:d:Z:D:a:B:n:p:r:s:o:x:y:z:hvf:m:N:",
+        c = getopt_long(argc, argv, "R:S:J:K:L:M:t:w:e:q:l:I:d:Z:D:a:B:W:n:p:r:s:o:x:y:z:hvf:m:N:",
                         long_options, &option_index);
 
         /* Detect the end of the options. */
@@ -977,6 +980,9 @@ parse_args(int argc, char **argv, cmdparam_t *cmd_params) {
                 break;
             case 'B':
                 cmd_params->old_param = atoi(mystrdup(optarg));
+                break;
+            case 'W':
+                cmd_params->fixS = atoi(mystrdup(optarg));
                 break;
             default:
                 break;

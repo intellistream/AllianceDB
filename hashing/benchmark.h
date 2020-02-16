@@ -88,7 +88,7 @@ struct param_t {
     int32_t sts;
 
     int old_param; /* whether to use old parameters */
-
+    int fixS;
     int kim;
     int key_distribution;
     int ts_distribution;
