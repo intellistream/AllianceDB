@@ -33,6 +33,7 @@ function ResetParameters() {
   STEP_SIZE=$DEFAULT_STEP_SIZE     # arrival rate = 1000 / ms
   WINDOW_SIZE=$DEFAULT_WINDOW_SIZE #MS rel size = window_size / interval * step_size.
   STEP_SIZE_S=-1                   # let S has the same arrival rate of R.
+  FIXS=0
 }
 
 # Configurable variables
