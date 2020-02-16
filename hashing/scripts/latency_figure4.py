@@ -144,7 +144,7 @@ def ReadFile():
     col7 = []
     col8 = []
 
-    for id in it.chain(range(16, 19)):
+    for id in it.chain(range(16, 19), range(36, 37)):
         file = '/data1/xtra/results/latency/PRJ_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -152,7 +152,7 @@ def ReadFile():
         col1.append(x)
     y.append(col1)
 
-    for id in it.chain(range(16, 19)):
+    for id in it.chain(range(16, 19), range(36, 37)):
         file = '/data1/xtra/results/latency/NPJ_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -160,7 +160,7 @@ def ReadFile():
         col2.append(x)
     y.append(col2)
 
-    for id in it.chain(range(16, 19)):
+    for id in it.chain(range(16, 19), range(36, 37)):
         file = '/data1/xtra/results/latency/MPASS_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -168,7 +168,7 @@ def ReadFile():
         col3.append(x)
     y.append(col3)
 
-    for id in it.chain(range(16, 19)):
+    for id in it.chain(range(16, 19), range(36, 37)):
         file = '/data1/xtra/results/latency/MWAY_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -176,7 +176,7 @@ def ReadFile():
         col4.append(x)
     y.append(col4)
 
-    for id in it.chain(range(16, 19)):
+    for id in it.chain(range(16, 19), range(36, 37)):
         file = '/data1/xtra/results/latency/SHJ_JM_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -184,7 +184,7 @@ def ReadFile():
         col5.append(x)
     y.append(col5)
 
-    for id in it.chain(range(16, 19)):
+    for id in it.chain(range(16, 19), range(36, 37)):
         file = '/data1/xtra/results/latency/SHJ_JBCR_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -192,7 +192,7 @@ def ReadFile():
         col6.append(x)
     y.append(col6)
 
-    for id in it.chain(range(16, 19)):
+    for id in it.chain(range(16, 19), range(36, 37)):
         file = '/data1/xtra/results/latency/PMJ_JM_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -200,7 +200,7 @@ def ReadFile():
         col7.append(x)
     y.append(col7)
 
-    for id in it.chain(range(16, 19)):
+    for id in it.chain(range(16, 19), range(36, 37)):
         file = '/data1/xtra/results/latency/PMJ_JBCR_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -212,7 +212,7 @@ def ReadFile():
 
 if __name__ == "__main__":
     # x_values = ['Unique', 'Zipf(0)', 'Zipf(0.2)', 'Zipf(0.4)', 'Zipf(0.8)', 'Zipf(1)']
-    x_values = [100000, 500000, 1000000]
+    x_values = [100000, 500000, 1000000, 10000000]
 
     y_values = ReadFile()
 

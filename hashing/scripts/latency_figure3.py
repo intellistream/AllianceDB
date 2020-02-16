@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pylab
 from matplotlib.font_manager import FontProperties
-from matplotlib.ticker import LogLocator
+
 OPT_FONT_NAME = 'Helvetica'
 TICK_FONT_SIZE = 20
 LABEL_FONT_SIZE = 22
@@ -33,6 +33,7 @@ matplotlib.rcParams['ytick.labelsize'] = TICK_FONT_SIZE
 matplotlib.rcParams['font.family'] = OPT_FONT_NAME
 
 FIGURE_FOLDER = '/data1/xtra/results/figure'
+
 
 # there are some embedding problems if directly exporting the pdf figure using matplotlib.
 # so we generate the eps format first and convert it to pdf.
@@ -117,10 +118,10 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
 
     # you may need to tune the xticks position to get the best figure.
     plt.xticks(index + 2.4 * width, x_values)
-    plt.yscale('log')
+    # plt.yscale('log')
 
     plt.grid(axis='y', color='gray')
-    figure.yaxis.set_major_locator(LogLocator(base=10))
+    # figure.yaxis.set_major_locator(LogLocator(base=10))
     # figure.xaxis.set_major_locator(LinearLocator(5))
     figure.get_xaxis().set_tick_params(direction='in', pad=10)
     figure.get_yaxis().set_tick_params(direction='in', pad=10)
@@ -144,7 +145,7 @@ def ReadFile():
     col8 = []
 
     for id in it.chain(range(11, 16)):
-        file = '/data1/xtra/results/timestamps/PRJ_{}.txt'.format(id)
+        file = '/data1/xtra/results/latency/PRJ_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(int(len(read) * 0.99)).strip("\n"))  # get last timestamp
@@ -152,7 +153,7 @@ def ReadFile():
     y.append(col1)
 
     for id in it.chain(range(11, 16)):
-        file = '/data1/xtra/results/timestamps/NPJ_{}.txt'.format(id)
+        file = '/data1/xtra/results/latency/NPJ_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(int(len(read) * 0.99)).strip("\n"))  # get last timestamp
@@ -160,7 +161,7 @@ def ReadFile():
     y.append(col2)
 
     for id in it.chain(range(11, 16)):
-        file = '/data1/xtra/results/timestamps/MPASS_{}.txt'.format(id)
+        file = '/data1/xtra/results/latency/MPASS_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(int(len(read) * 0.99)).strip("\n"))  # get last timestamp
@@ -168,7 +169,7 @@ def ReadFile():
     y.append(col3)
 
     for id in it.chain(range(11, 16)):
-        file = '/data1/xtra/results/timestamps/MWAY_{}.txt'.format(id)
+        file = '/data1/xtra/results/latency/MWAY_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(int(len(read) * 0.99)).strip("\n"))  # get last timestamp
@@ -176,7 +177,7 @@ def ReadFile():
     y.append(col4)
 
     for id in it.chain(range(11, 16)):
-        file = '/data1/xtra/results/timestamps/SHJ_JM_NP_{}.txt'.format(id)
+        file = '/data1/xtra/results/latency/SHJ_JM_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(int(len(read) * 0.99)).strip("\n"))  # get last timestamp
@@ -184,7 +185,7 @@ def ReadFile():
     y.append(col5)
 
     for id in it.chain(range(11, 16)):
-        file = '/data1/xtra/results/timestamps/SHJ_JBCR_NP_{}.txt'.format(id)
+        file = '/data1/xtra/results/latency/SHJ_JBCR_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(int(len(read) * 0.99)).strip("\n"))  # get last timestamp
@@ -192,7 +193,7 @@ def ReadFile():
     y.append(col6)
 
     for id in it.chain(range(11, 16)):
-        file = '/data1/xtra/results/timestamps/PMJ_JM_NP_{}.txt'.format(id)
+        file = '/data1/xtra/results/latency/PMJ_JM_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(int(len(read) * 0.99)).strip("\n"))  # get last timestamp
@@ -200,7 +201,7 @@ def ReadFile():
     y.append(col7)
 
     for id in it.chain(range(11, 16)):
-        file = '/data1/xtra/results/timestamps/PMJ_JBCR_NP_{}.txt'.format(id)
+        file = '/data1/xtra/results/latency/PMJ_JBCR_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(int(len(read) * 0.99)).strip("\n"))  # get last timestamp
