@@ -99,7 +99,7 @@ for algo in m-way m-pass; do #
       ## Figure 4
       ResetParameters
       echo test varying window size 16 - 18
-      for WINDOW_SIZE in 1000 10000 100000; do
+      for WINDOW_SIZE in 1000 5000 10000; do
         KimRun
         let "id++"
       done
@@ -122,7 +122,7 @@ for algo in m-way m-pass; do #
       ResetParameters
       ts=0 # data at rest.
       echo test varying window size 25 - 27
-      for WINDOW_SIZE in 1000 10000 100000; do
+      for WINDOW_SIZE in 1000 5000 10000; do
         KimRun
         let "id++"
       done
