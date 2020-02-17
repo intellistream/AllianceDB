@@ -212,7 +212,7 @@ sortmergejoin_initrun(relation_t *relR, relation_t *relS, joinconfig_t *joincfg,
     /* now print the timing results: */
     auto lastTS = max(relR->payload->ts[relR->num_tuples - 1].count(),
                       relS->payload->ts[relS->num_tuples - 1].count());
-
+    printf("lastTS is:%ld\n", lastTS);
     std::string name = algoName + "_" + std::to_string(exp_id);
     string path = "/data1/xtra/results/breakdown/" + name.append(".txt");
     auto fp = fopen(path.c_str(), "w");
