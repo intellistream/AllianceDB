@@ -208,7 +208,7 @@ for algo in m-way m-pass; do #
       ;;
     "Stock") #Error yet.
       RSIZE=149711
-      SSIZE=196175
+      SSIZE=146175
       RPATH=/data1/xtra/datasets/stock/cj_30s_32t.txt
       SPATH=/data1/xtra/datasets/stock/sb_30s_32t.txt
       RKEY=0

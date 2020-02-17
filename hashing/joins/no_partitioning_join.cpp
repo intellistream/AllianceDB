@@ -396,6 +396,10 @@ NPO(relation_t *relR, relation_t *relS, int nthreads, int exp_id) {
     /* now print the timing results: */
     auto lastTS = max(relR->payload->ts[relR->num_tuples - 1].count(),
                       relS->payload->ts[relS->num_tuples - 1].count());
+    printf("relR->payload->ts[relR->num_tuples - 1].count():%ld, "
+           "relS->payload->ts[relR->num_tuples - 1].count() %ld,"
+           "lastTS is:%ld\n", relR->payload->ts[relR->num_tuples - 1].count(),
+           relS->payload->ts[relR->num_tuples - 1].count(), lastTS);
 
     std::string name = "NPJ_" + std::to_string(exp_id);
     string path = "/data1/xtra/results/breakdown/" + name.append(".txt");

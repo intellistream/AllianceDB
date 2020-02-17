@@ -38,7 +38,7 @@ dump_timing(std::vector<std::chrono::milliseconds> vector, std::vector<int64_t> 
     std::chrono::milliseconds start = vector.at(0);
 
     fprintf(stdout, "Time to obtain 10%%, 25%%, 50%%, 75%% of results (MSECS): \n");
-    fprintf(stdout, "(%.2lu) \t (%.2lu) \t (%.2lu)",
+    fprintf(stdout, "(%.2lu) \t (%.2lu) \t (%.2lu) \t (%.2lu)",
             vector.at(check10).count() + lastTS - start.count(),
             vector.at(check25).count() + lastTS - start.count(),
             vector.at(check50).count() + lastTS - start.count(),
