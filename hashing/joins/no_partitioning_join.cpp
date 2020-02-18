@@ -194,13 +194,6 @@ npo_thread(void *param) {
     /* wait at a barrier until each thread starts and start T_TIMER */
     BARRIER_ARRIVE(args->barrier, rv);
 
-//#ifndef NO_TIMING
-//    /* the first thread checkpoints the start time */
-//    if (args->tid == 0) {
-//        START_MEASURE((*(args->timer)))
-//        BEGIN_MEASURE_BUILD((*(args->timer)))
-//    }
-//#endif
 #ifndef NO_TIMING
     START_MEASURE((*(args->timer)))
     BEGIN_MEASURE_BUILD((*(args->timer)))/* build start */
@@ -222,14 +215,6 @@ npo_thread(void *param) {
     BARRIER_ARRIVE(args->barrier, rv);
 #endif
 
-
-//#ifndef NO_TIMING
-//    /* build phase finished, thread-0 checkpoints the time */
-//    if (args->tid == 0) {
-//        END_MEASURE_BUILD((*(args->timer)))
-//    }
-//#endif
-
 #ifndef NO_TIMING
     END_MEASURE_BUILD((*(args->timer)))
 #endif
@@ -249,16 +234,6 @@ npo_thread(void *param) {
     args->threadresult->results  = (void *) chainedbuf;
 #endif
 
-//#ifndef NO_TIMING
-//    /* for a reliable timing we have to wait until all finishes */
-//    BARRIER_ARRIVE(args->barrier, rv);
-//
-//    /* probe phase finished, thread-0 checkpoints the time */
-//    if (args->tid == 0) {
-//        END_MEASURE((*(args->timer)))
-//    }
-//#endif
-
 #ifndef NO_TIMING
     END_MEASURE((*(args->timer)))
 #endif
@@ -277,7 +252,6 @@ npo_thread(void *param) {
 
     /* clean-up the overflow buffers */
     free_bucket_buffer(overflowbuf);
-
     return 0;
 }
 
@@ -322,10 +296,14 @@ np_distribute(const relation_t *relR, const relation_t *relS, int nthreads, hash
         args[i].relR.tuples = relR->tuples + numRthr * i;
         numR -= numRthr;
 
+        DEBUGMSG("Assigning #R=%d to thread %d\n", args[i].relR.num_tuples, i)
+
         /* assing part of the relS for next thread */
         args[i].relS.num_tuples = (i == (nthreads - 1)) ? numS : numSthr;
         args[i].relS.tuples = relS->tuples + numSthr * i;
         numS -= numSthr;
+
+        DEBUGMSG("Assigning #S=%d to thread %d\n",  args[i].relS.num_tuples, i)
 
         args[i].threadresult = &(joinresult->resultlist[i]);
 

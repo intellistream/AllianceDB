@@ -867,11 +867,11 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t
         relPl->ts[i] = timestamp;
         i++;
 
-#ifdef DEBUG
-        if(i%1000==0){
-            printf("I have read %d tuples \n", i);
-        }
-#endif
+//#ifdef DEBUG
+//        if(i%1000==0){
+//            printf("I have read %d tuples \n", i);
+//        }
+//#endif
     }
 
 //    for (uint64_t i = 0; i < ntuples; i++) {

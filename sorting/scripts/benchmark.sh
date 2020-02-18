@@ -7,7 +7,7 @@ make -j4
 function benchmarkRun() {
   #####native execution
   echo "==benchmark:$benchmark -a $algo -n $Threads=="
-  ./sorting -a $algo -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1
+  ./sorting -a $algo -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t $ts
 }
 
 function Run() {
@@ -52,7 +52,7 @@ for algo in m-way m-pass; do #
   SKEY=0
   RTS=0
   STS=0
-  for benchmark in "Stock" "YSB"; do #"Kim" # "Rovio" "DEBS" "YSB"
+  for benchmark in "Rovio" "DEBS" "Stock" "YSB"; do #"Kim" # "Rovio" "DEBS" "YSB"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "Kim")
