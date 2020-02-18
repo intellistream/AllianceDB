@@ -52,7 +52,7 @@ for algo in m-way m-pass; do #
   SKEY=0
   RTS=0
   STS=0
-  for benchmark in "Kim" "Rovio" "DEBS" "Stock" "YSB"; do #"Kim" # "Rovio" "DEBS" "YSB"
+  for benchmark in "Rovio" "DEBS" "Stock" "YSB"; do #"Kim" # "Rovio" "DEBS" "YSB"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "Kim")
@@ -174,16 +174,20 @@ for algo in m-way m-pass; do #
       ;;
 
     "DEBS")
+      ts=1 # stream case
       RSIZE=1000000
       SSIZE=1000000
       RPATH=/data1/xtra/datasets/DEBS/posts_key32_partitioned.csv
       SPATH=/data1/xtra/datasets/DEBS/comments_key32_partitioned.csv
       RKEY=0
       SKEY=0
+      RTS=0
+      STS=0
       benchmarkRun
       ;;
       # Batch-Stream
     "YSB")
+      ts=1 # stream case
       RSIZE=1000
       SSIZE=600000
       RPATH=/data1/xtra/datasets/YSB/campaigns_1t.txt
@@ -196,6 +200,7 @@ for algo in m-way m-pass; do #
       ;;
       # Stream
     "Rovio") #matches:
+      ts=1 # stream case
       RSIZE=580700
       SSIZE=580700
       RPATH=/data1/xtra/datasets/rovio/60s_1t.txt
@@ -206,7 +211,8 @@ for algo in m-way m-pass; do #
       STS=3
       benchmarkRun
       ;;
-    "Stock") #Error yet.
+    "Stock") #
+      ts=1 # stream case
       RSIZE=194341
       SSIZE=240148
       RPATH=/data1/xtra/datasets/stock/cj_60s_1t.txt

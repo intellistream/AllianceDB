@@ -19,7 +19,7 @@ function Run() {
 function KimRun() {
   #####native execution
   echo "==benchmark:$benchmark -a $algo  #TEST:$id -n $Threads -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id=="
-  ./hashing -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id  -W $FIXS
+  ./hashing -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS
 }
 
 DEFAULT_WINDOW_SIZE=1000
@@ -52,7 +52,7 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #
   SKEY=0
   RTS=0
   STS=0
-  for benchmark in "Kim" "Stock" "DEBS" "YSB" "Rovio"; do #"Kim"  # #"Google" "Amazon"
+  for benchmark in "Stock" "DEBS" "YSB" "Rovio"; do #"Kim"  # #"Google" "Amazon"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "Kim")
@@ -174,16 +174,20 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #
       ;;
 
     "DEBS")
+      ts=1 # stream case
       RSIZE=1000000
       SSIZE=1000000
       RPATH=/data1/xtra/datasets/DEBS/posts_key32_partitioned.csv
       SPATH=/data1/xtra/datasets/DEBS/comments_key32_partitioned.csv
       RKEY=0
       SKEY=0
+      RTS=0
+      STS=0
       benchmarkRun
       ;;
       # Batch-Stream
     "YSB")
+      ts=1 # stream case
       RSIZE=1000
       SSIZE=600000
       RPATH=/data1/xtra/datasets/YSB/campaigns_1t.txt
@@ -196,6 +200,7 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #
       ;;
       # Stream
     "Rovio") #matches:
+      ts=1 # stream case
       RSIZE=580700
       SSIZE=580700
       RPATH=/data1/xtra/datasets/rovio/60s_1t.txt
@@ -206,7 +211,8 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #
       STS=3
       benchmarkRun
       ;;
-    "Stock") #Error yet.
+    "Stock")
+      ts=1 # stream case
       RSIZE=194341
       SSIZE=240148
       RPATH=/data1/xtra/datasets/stock/cj_60s_1t.txt
