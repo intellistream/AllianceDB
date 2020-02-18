@@ -52,7 +52,7 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #
   SKEY=0
   RTS=0
   STS=0
-  for benchmark in "YSB" "Rovio"; do #"Kim" "Stock" "DEBS" "YSB" "Rovio" # #"Google" "Amazon"
+  for benchmark in "Rovio"; do #"Kim" "Stock" "DEBS" "YSB" "Rovio" # #"Google" "Amazon"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "Kim")
@@ -185,9 +185,9 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #
       # Batch-Stream
     "YSB")
       RSIZE=1000
-      SSIZE=300000
+      SSIZE=600000
       RPATH=/data1/xtra/datasets/YSB/campaigns_1t.txt
-      SPATH=/data1/xtra/datasets/YSB/ad_30s_1t.txt
+      SPATH=/data1/xtra/datasets/YSB/ad_60s_1t.txt
       RKEY=0
       SKEY=0
       RTS=0
@@ -196,10 +196,10 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #
       ;;
       # Stream
     "Rovio") #matches:
-      RSIZE=290076
-      SSIZE=290076
-      RPATH=/data1/xtra/datasets/rovio/30s_1t.txt
-      SPATH=/data1/xtra/datasets/rovio/30s_1t.txt
+      RSIZE=580700
+      SSIZE=580700
+      RPATH=/data1/xtra/datasets/rovio/60s_1t.txt
+      SPATH=/data1/xtra/datasets/rovio/60s_1t.txt
       RKEY=0
       SKEY=0
       RTS=3
@@ -207,10 +207,10 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #
       benchmarkRun
       ;;
     "Stock") #Error yet.
-      RSIZE=149711
-      SSIZE=196175
-      RPATH=/data1/xtra/datasets/stock/cj_30s_1t.txt
-      SPATH=/data1/xtra/datasets/stock/sb_30s_1t.txt
+      RSIZE=194341
+      SSIZE=240148
+      RPATH=/data1/xtra/datasets/stock/cj_60s_1t.txt
+      SPATH=/data1/xtra/datasets/stock/sb_60s_1t.txt
       RKEY=0
       SKEY=0
       RTS=1
