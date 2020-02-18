@@ -32,6 +32,7 @@
 #include <sstream>
 #include <vector>
 #include <chrono>
+#include <assert.h>
 
 using namespace std;
 using namespace std::chrono;
@@ -106,36 +107,16 @@ inline bool last_thread(int i, int nthreads) {
     return i == (nthreads - 1);
 }
 
-void add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_size, int interval, int numThr) {
-    int32_t ts = 0;
-    int tpPerThr = relation->num_tuples / numThr;
-
-    uint64_t index = 0;
-
-    // num_tuples = window_size / interval * step_size
-    // generate timestamps with three parameters
-    for (int i = 0; i < nthreads; i++) {
-        if (last_thread(i, nthreads)) {
-            for (int j = 0; j < (relation->num_tuples - i * tpPerThr); j++) {
-                if (j % (step_size / nthreads) == 0) {
-                    ts += interval;
-                }
-                index = i * tpPerThr + j;
-                relationPayload->ts[index] = (milliseconds) ts;
-            }
-            ts = 0;
-        } else {
-            // generate timestamp for every thread tuples
-            for (int j = 0; j < tpPerThr; j++) {
-                if (j % (step_size / nthreads) == 0) {
-                    ts += interval;
-                }
-                index = i * tpPerThr + j;
-                relationPayload->ts[index] = (milliseconds) ts;
-            }
-            ts = 0;
+void
+add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_size, int interval, const int window_size) {
+    int ts = 0;
+    for (auto i = 0; i < relation->num_tuples; i++) {
+        if (i % (step_size) == 0) {
+            ts += interval;
         }
+        relationPayload->ts[i] = (milliseconds) ts;
     }
+//    assert(interval == 0 || ts == window_size);
 }
 
 /**
@@ -145,51 +126,19 @@ void add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_
  * @param window_size
  * @param zipf_param
  */
-void add_zipf_ts(relation_t *relation, relation_payload_t *relationPayload,
-                 int window_size, int numThr, const double zipf_param) {
-
-    uint64_t i;
-    int32_t ts = 0;
-    int tpPerThr = relation->num_tuples / numThr;
-
-    uint64_t index = 0;
-    int thread_num_tuples = 0;
-
-    // num_tuples = window_size / interval * step_size
-    // generate timestamps with three parameters
+void add_zipf_ts(relation_t *relation, relation_payload_t *relationPayload, int window_size, const double zipf_param) {
 
     int small = 0;
-    int large = 0;
-    for (int i = 0; i < nthreads; i++) {
-        if (last_thread(i, nthreads)) {
-            thread_num_tuples = relation->num_tuples - i * tpPerThr;
-            int32_t *timestamps = gen_zipf_ts(thread_num_tuples, window_size, zipf_param);
-            for (int j = 0; j < thread_num_tuples; j++) {
-                index = i * tpPerThr + j;
-                relationPayload->ts[index] = (milliseconds) timestamps[j];
-//                printf("%d, %ld\n", relation->tuples[index].key, relationPayload->ts[index].count());
-//#ifdef DEBUG
-                if (relationPayload->ts[index].count() < 10) {
-                    small++;
-                } else {
-                    large++;
-                }
-//#endif
-            }
+    int32_t *timestamps = gen_zipf_ts(relation->num_tuples, window_size, zipf_param);
 
-            printf("small ts:%d, large ts:%d\n", small, large);
-
-        } else {
-            thread_num_tuples = tpPerThr;
-            int32_t *timestamps = gen_zipf_ts(thread_num_tuples, window_size, zipf_param);
-            // generate timestamp for every thread tuples
-            for (int j = 0; j < tpPerThr; j++) {
-                index = i * tpPerThr + j;
-                relationPayload->ts[index] = (milliseconds) timestamps[j];
-//                printf("%d\n", relationPayload->ts[index]);
-            }
+    for (auto i = 0; i < relation->num_tuples; i++) {
+        relationPayload->ts[i] = (milliseconds) timestamps[i];
+        if (relationPayload->ts[i].count() < 0.25 * window_size) {
+            small++;
         }
+        DEBUGMSG("%d, %ld\n", relation->tuples[i].key, relationPayload->ts[i].count());
     }
+    printf("small ts %f\n", (double) small / relation->num_tuples);
 }
 
 /**
@@ -207,7 +156,7 @@ random_gen_with_ts(relation_t *rel, relation_payload_t *relPl, int64_t maxid, in
         rel->tuples[i].payloadID = i;//payload is simply the id of the tuple.
     }
 
-    add_ts(rel, relPl, step_size, interval, numThr);
+    add_ts(rel, relPl, step_size, interval, -1);
 }
 
 /**
@@ -576,7 +525,7 @@ parallel_create_relation_with_ts(relation_t *relation, relation_payload_t *relat
     write_relation(relation, tables[(rs++)%2]);
 #endif
 
-    add_ts(relation, relationPayload, step_size, interval, nthreads);
+    add_ts(relation, relationPayload, step_size, interval, -1);
 
 //    add_zipf_ts(relation, relationPayload, num_tuples/step_size*interval, nthreads, 1);
 
@@ -841,9 +790,9 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t
 
     /* skip the header line */
     char c;
-    do {
-        c = fgetc(fp);
-    } while (c != '\n');
+//    do {
+//        c = fgetc(fp);
+//    } while (c != '\n');
 
     /* search for a whitespace for "key payload" format */
     int fmtspace = 0;
@@ -872,9 +821,9 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t
     /* rewind back to the beginning and start parsing again */
     rewind(fp);
     /* skip the header line */
-    do {
-        c = fgetc(fp);
-    } while (c != '\n');
+//    do {
+//        c = fgetc(fp);
+//    } while (c != '\n');
 
     uint64_t ntuples = rel->num_tuples;
     intkey_t key;

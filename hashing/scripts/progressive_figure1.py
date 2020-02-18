@@ -1,6 +1,5 @@
-import getopt
 import os
-import sys
+from math import ceil
 
 import matplotlib as mpl
 
@@ -10,8 +9,6 @@ import matplotlib.pyplot as plt
 import pylab
 from matplotlib.font_manager import FontProperties
 from matplotlib.ticker import LinearLocator
-from matplotlib.ticker import LogLocator
-from pathlib import Path
 
 OPT_FONT_NAME = 'Helvetica'
 TICK_FONT_SIZE = 20
@@ -38,7 +35,7 @@ mpl.rcParams['xtick.labelsize'] = TICK_FONT_SIZE
 mpl.rcParams['ytick.labelsize'] = TICK_FONT_SIZE
 mpl.rcParams['font.family'] = OPT_FONT_NAME
 
-FIGURE_FOLDER ='/data1/xtra/results/figure'
+FIGURE_FOLDER = '/data1/xtra/results/figure'
 
 
 # there are some embedding problems if directly exporting the pdf figure using matplotlib.
@@ -49,64 +46,123 @@ def ConvertEpsToPdf(dir_filename):
 
 
 # example for reading csv file
-def ReadFile(S):
+def ReadFile(S, id):
     col1 = []
     col2 = []
     col3 = []
     col4 = []
     col5 = []
     col6 = []
+    col7 = []
+    col8 = []
 
-    f = open("/data1/xtra/results/SHJ_JM_NP_timestamps.txt", "r")
+    cnt1 = 0
+    cnt2 = 0
+    cnt3 = 0
+    cnt4 = 0
+    cnt5 = 0
+    cnt6 = 0
+    cnt7 = 0
+    cnt8 = 0
+    maxts = 0
+
+    f = open("/data1/xtra/results/timestamps/PRJ_{}.txt".format(id), "r")
     cnt = 1
     read = f.readlines()
     for x in read:
         if cnt % S == 0:
-            col1.append(int(x.strip("\n")))
+            value = int(x.strip("\n"))
+            col1.append(value)
+            cnt1 += 1
+            if (value > maxts):
+                maxts = value
         cnt += 1
 
-    f = open("/data1/xtra/results/SHJ_JBCR_NP_timestamps.txt", "r")
+    f = open("/data1/xtra/results/timestamps/NPJ_{}.txt".format(id), "r")
     cnt = 1
     read = f.readlines()
     for x in read:
         if cnt % S == 0:
-            col2.append(int(x.strip("\n")))
+            value = int(x.strip("\n"))
+            col2.append(value)
+            cnt2 += 1
+            if (value > maxts):
+                maxts = value
         cnt += 1
 
-    f = open("/data1/xtra/results/PMJ_JM_NP_timestamps.txt", "r")
+    f = open("/data1/xtra/results/timestamps/MPASS_{}.txt".format(id), "r")
     cnt = 1
     read = f.readlines()
     for x in read:
         if cnt % S == 0:
-            col3.append(int(x.strip("\n")))
+            value = int(x.strip("\n"))
+            col3.append(value)
+            cnt3 += 1
+            if (value > maxts):
+                maxts = value
         cnt += 1
 
-    f = open("/data1/xtra/results/PMJ_JBCR_NP_timestamps.txt", "r")
+    f = open("/data1/xtra/results/timestamps/MWAY_{}.txt".format(id), "r")
     cnt = 1
     read = f.readlines()
     for x in read:
         if cnt % S == 0:
-            col4.append(int(x.strip("\n")))
+            value = int(x.strip("\n"))
+            col4.append(value)
+            cnt4 += 1
+            if (value > maxts):
+                maxts = value
         cnt += 1
 
-    f = open("/data1/xtra/results/PRJ_timestamps.txt", "r")
+    f = open("/data1/xtra/results/timestamps/SHJ_JM_NP_{}.txt".format(id), "r")
     cnt = 1
     read = f.readlines()
     for x in read:
         if cnt % S == 0:
-            col5.append(int(x.strip("\n")))
+            value = int(x.strip("\n"))
+            col5.append(value)
+            cnt5 += 1
+            if (value > maxts):
+                maxts = value
         cnt += 1
 
-    f = open("/data1/xtra/results/NPJ_timestamps.txt", "r")
+    f = open("/data1/xtra/results/timestamps/SHJ_JBCR_NP_{}.txt".format(id), "r")
     cnt = 1
     read = f.readlines()
     for x in read:
         if cnt % S == 0:
-            col6.append(int(x.strip("\n")))
+            value = int(x.strip("\n"))
+            col6.append(value)
+            cnt6 += 1
+            if (value > maxts):
+                maxts = value
         cnt += 1
 
+    f = open("/data1/xtra/results/timestamps/PMJ_JM_NP_{}.txt".format(id), "r")
+    cnt = 1
+    read = f.readlines()
+    for x in read:
+        if cnt % S == 0:
+            value = int(x.strip("\n"))
+            col7.append(value)
+            cnt7 += 1
+            if (value > maxts):
+                maxts = value
+        cnt += 1
 
-    return col1, col2, col3, col4, col5, col6
+    f = open("/data1/xtra/results/timestamps/PMJ_JBCR_NP_{}.txt".format(id), "r")
+    cnt = 1
+    read = f.readlines()
+    for x in read:
+        if cnt % S == 0:
+            value = int(x.strip("\n"))
+            col8.append(value)
+            cnt8 += 1
+            if (value > maxts):
+                maxts = value
+        cnt += 1
+    minvalue = min(cnt1, cnt2, cnt3, cnt4, cnt5, cnt6, cnt7, cnt8)
+    return maxts, minvalue, col1, col2, col3, col4, col5, col6, col7, col8
 
 
 def DrawLegend(legend_labels, filename):
@@ -117,7 +173,7 @@ def DrawLegend(legend_labels, filename):
     MARKER_SIZE = 12.0
     LEGEND_FP = FontProperties(style='normal', size=26)
 
-    figlegend = pylab.figure(figsize=(11, 0.3))
+    figlegend = pylab.figure(figsize=(15, 0.3))
     idx = 0
     lines = [None] * (len(FIGURE_LABEL))
     data = [1]
@@ -134,7 +190,7 @@ def DrawLegend(legend_labels, filename):
     # LEGEND
     figlegend.legend(lines, FIGURE_LABEL, prop=LEGEND_FP,
                      loc=1, ncol=len(FIGURE_LABEL), mode="expand", shadow=False,
-                     frameon=False, borderaxespad=-0.3, handlelength=2)
+                     frameon=False, borderaxespad=-0.3, handlelength=1)
 
     if not os.path.exists(FIGURE_FOLDER):
         os.makedirs(FIGURE_FOLDER)
@@ -176,14 +232,14 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
                    handletextpad=0.1,
                    labelspacing=0.1)
 
-    plt.yscale('log')
+    # plt.yscale('log')
     plt.xticks(x_values)
     # you may control the limits on your own.
     plt.xlim(x_min, x_max)
     plt.ylim(y_min, y_max)
 
     plt.grid(axis='y', color='gray')
-    figure.yaxis.set_major_locator(LogLocator(base=10))
+    # figure.yaxis.set_major_locator(LogLocator(base=10))
     figure.xaxis.set_major_locator(LinearLocator(5))
 
     figure.get_xaxis().set_tick_params(direction='in', pad=10)
@@ -200,39 +256,42 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
 
 
 if __name__ == "__main__":
-    N = 10000
-    S = 4
-    try:
-        opts, args = getopt.getopt(sys.argv[1:], '-h-n:-s:', ['sample=', 'number=', 'help'])
-    except getopt.GetoptError:
-        print('test.py -n number of matches')
-        sys.exit(2)
-    for opt, opt_value in opts:
-        if opt in ('-h', '--help'):
-            print("[*] Help info")
-            exit()
-        elif opt == '-n':
-            print('Number of join results ', opt_value)
-            N = (int)(opt_value)
-        elif opt == '-s':
-            print('Gap of sampling ', opt_value)
-            S = (int)(opt_value)
 
-    N = int(N/S)
+    # try:
+    #     opts, args = getopt.getopt(sys.argv[1:], '-h-n:-s:', ['sample=', 'number=', 'help'])
+    # except getopt.GetoptError:
+    #     print('test.py -n number of matches')
+    #     sys.exit(2)
+    # for opt, opt_value in opts:
+    #     if opt in ('-h', '--help'):
+    #         print("[*] Help info")
+    #         exit()
+    #     elif opt == '-n':
+    #         print('Number of join results ', opt_value)
+    #         N = (int)(opt_value)
+    #     elif opt == '-s':
+    #         print('Gap of sampling ', opt_value)
+    #         S = (int)(opt_value)
     # 'Hash_JM', 'Hash_JB', 'Hash_HS', 'Sort_JM', 'Sort_JB', 'Sort_HS', 'PRJ'
-    legend_labels = ['Hash_JM', 'Hash_JB', 'Sort_JM', 'Sort_JB', 'PRJ', 'NPJ']
+
+    id = 1
+    legend_labels = ['PRJ', 'NPJ', 'M-PASS', 'M-WAY', 'SHJ$^M$', 'SHJ$^B$', 'PMJ$^M$', 'PMJ$^B$']
+    S = 100
+    maxts, N, col1, col2, col3, col4, col5, col6, col7, col8 = ReadFile(S, id)
+    print(N)
     col0 = []
     for x in range(1, N + 1):
         col0.append(x * S)
-
-    col1, col2, col3, col4, col5, col6 = ReadFile(S)
     # print(len(col1), len(col2), len(col3), len(col4), len(col5))
     # alignment
     # lines = [col1, col2, col3, col4, col5, col6]
-    lines = [col1[(len(col1))-N:], col2[(len(col2))-N:], col3[(len(col3))-N:], col4[(len(col4))-N:], col5[(len(col5))-N:], col6[(len(col6))-N:]]
+    print((len(col1)))
+    lines = [col1[(len(col1)) - N:], col2[(len(col2)) - N:], col3[(len(col3)) - N:], col4[(len(col4)) - N:],
+             col5[(len(col5)) - N:], col6[(len(col6)) - N:], col7[(len(col7)) - N:], col8[(len(col8)) - N:]]
+
     DrawFigure(col0, lines, legend_labels,
-               'Number of results', 'time (usec)', 0, N*S,
-               0, 100000,
+               'Number of results', 'time (msec)', 0, N * S,
+               0, int(ceil(maxts / 100.0)) * 100,
                'progressive_results',
-               True)
-    # DrawLegend(legend_labels, 'interval_legend')
+               False)
+    DrawLegend(legend_labels, 'progressive_legend')

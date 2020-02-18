@@ -131,10 +131,9 @@ void
 delete_relation_payload(relation_payload_t *relPl);
 
 void
-add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_size, int interval, int numThr);
+add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_size, int interval, const int i);
 
-void add_zipf_ts(relation_t *relation, relation_payload_t *relationPayload,
-                 int window_size, int numThr, const double zipf_param);
+void add_zipf_ts(relation_t *relation, relation_payload_t *relationPayload, int window_size, const double zipf_param);
 
 
 /** @} */

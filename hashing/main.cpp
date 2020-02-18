@@ -273,6 +273,11 @@ main(int argc, char **argv) {
     param_t cmd_params = defaultParam();
     parse_args(argc, argv, &cmd_params);
 
+
+    //reset relation size according to our settings.
+//    cmd_params.r_size = cmd_params.window_size / cmd_params.interval * cmd_params.step_sizeR;
+//    cmd_params.s_size = cmd_params.window_size / cmd_params.interval * cmd_params.step_sizeS;
+
     if (check_avx() == 0) {
         /* no AVX support, just use scalar variants. */
         fprintf(stdout, "[WARN ] AVX is not supported, using scalar sort & merge.\n");
@@ -346,13 +351,6 @@ param_t defaultParam() {/* Command line parameters */
      * */
     cmd_params.algo = &algos[0];
     cmd_params.nthreads = 1;//TODO: in HS mode, thread must be larger than 1. Fix it when nthread=1.
-
-    /* default dataset is Workload B (described in paper) */
-    cmd_params.r_size = 500000;
-    cmd_params.s_size = 500000;
-
-    assert(cmd_params.r_size <= cmd_params.s_size);
-
     cmd_params.r_seed = 12345;
     cmd_params.s_seed = 54321;
     cmd_params.skew = 0.0;
@@ -372,15 +370,24 @@ param_t defaultParam() {/* Command line parameters */
     cmd_params.rkey = 0;
     cmd_params.skey = 0;
 
-    cmd_params.gen_with_ts = 1;
+    cmd_params.old_param = 0;
     cmd_params.window_size = 10000;
-    cmd_params.step_size = 40;
+    cmd_params.step_sizeR = 40;
+    cmd_params.step_sizeS = -1;
     cmd_params.interval = 1000;
-    cmd_params.kim = 0;
+    cmd_params.kim = 1;
     cmd_params.key_distribution = 0;
     cmd_params.ts_distribution = 0;
     cmd_params.zipf_param = 0.0;
     cmd_params.exp_id = 0;
+
+
+
+    /* default dataset is Workload B (described in paper) */
+    cmd_params.r_size = 500000;
+    cmd_params.s_size = 500000;
+    assert(cmd_params.r_size <= cmd_params.s_size);
+
     return cmd_params;
 }
 
@@ -452,50 +459,51 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
         static struct option long_options[] =
                 {
                         /* These options set a flag. */
-                        {"verbose",        no_argument,       &verbose_flag,   1},
-                        {"brief",          no_argument,       &verbose_flag,   0},
-                        {"non-unique",     no_argument,       &nonunique_flag, 1},
-                        {"full-range",     no_argument,       &fullrange_flag, 1},
-                        {"basic-numa",     no_argument,       &basic_numa,     1},
-                        {"help",           no_argument,       0,               'h'},
-                        {"version",        no_argument,       0,               'v'},
+                        {"verbose",          no_argument,       &verbose_flag,   1},
+                        {"brief",            no_argument,       &verbose_flag,   0},
+                        {"non-unique",       no_argument,       &nonunique_flag, 1},
+                        {"full-range",       no_argument,       &fullrange_flag, 1},
+                        {"basic-numa",       no_argument,       &basic_numa,     1},
+                        {"help",             no_argument,       0,               'h'},
+                        {"version",          no_argument,       0,               'v'},
                         /* These options don't set a flag.
                            We distinguish them by their indices. */
-                        {"algo",           required_argument, 0,               'a'},
-                        {"nthreads",       required_argument, 0,               'n'},
-                        {"perfconf",       required_argument, 0,               'p'},
-                        {"r-size",         required_argument, 0,               'r'},
-                        {"s-size",         required_argument, 0,               's'},
-                        {"perfout",        required_argument, 0,               'o'},
-                        {"r-seed",         required_argument, 0,               'x'},
-                        {"s-seed",         required_argument, 0,               'y'},
-                        {"skew",           required_argument, 0,               'z'},
-                        {"r-file",         required_argument, 0,               'R'},
-                        {"s-file",         required_argument, 0,               'S'},
-                        {"r-key",          required_argument, 0,               'J'},
-                        {"s-key",          required_argument, 0,               'K'},
-                        {"r-ts",           required_argument, 0,               'L'},
-                        {"s-ts",           required_argument, 0,               'M'},
+                        {"algo",             required_argument, 0,               'a'},
+                        {"nthreads",         required_argument, 0,               'n'},
+                        {"perfconf",         required_argument, 0,               'p'},
+                        {"r-size",           required_argument, 0,               'r'},
+                        {"s-size",           required_argument, 0,               's'},
+                        {"perfout",          required_argument, 0,               'o'},
+                        {"r-seed",           required_argument, 0,               'x'},
+                        {"s-seed",           required_argument, 0,               'y'},
+                        {"skew",             required_argument, 0,               'z'},
+                        {"r-file",           required_argument, 0,               'R'},
+                        {"s-file",           required_argument, 0,               'S'},
+                        {"r-key",            required_argument, 0,               'J'},
+                        {"s-key",            required_argument, 0,               'K'},
+                        {"r-ts",             required_argument, 0,               'L'},
+                        {"s-ts",             required_argument, 0,               'M'},
                         /* partitioning fanout, e.g., 2^rdxbits */
-                        {"partfanout",   required_argument, 0,               'f'},
-                        {"numastrategy", required_argument, 0,               'N'},
-                        {"mwaybufsize",  required_argument, 0,               'm'},
+                        {"partfanout",       required_argument, 0,               'f'},
+                        {"numastrategy",     required_argument, 0,               'N'},
+                        {"mwaybufsize",      required_argument, 0,               'm'},
 
-                        {"gen-with-ts",  required_argument, 0,               't'},
-                        {"window-size",  required_argument, 0,               'w'},
-                        {"step-size",    required_argument, 0,               'e'},
-                        {"interval",     required_argument, 0,               'l'},
-                        {"key_distribution", required_argument, 0,           'd'},
-                        {"zipf_param",   required_argument, 0,               'Z'},
-                        {"exp_id",       required_argument, 0,               'I'},
-                        {"ts_distribution",  required_argument, 0,           'D'},
-                        {0, 0,                              0,               0}
+                        {"gen_with_ts",      required_argument, 0,               't'},
+                        {"real_data",        required_argument, 0,               'B'},
+                        {"window-size",      required_argument, 0,               'w'},
+                        {"step-size",        required_argument, 0,               'e'},
+                        {"interval",         required_argument, 0,               'l'},
+                        {"key_distribution", required_argument, 0,               'd'},
+                        {"zipf_param",       required_argument, 0,               'Z'},
+                        {"exp_id",           required_argument, 0,               'I'},
+                        {"ts_distribution",  required_argument, 0,               'D'},
+                        {0,                  0,                 0,               0}
 
                 };
         /* getopt_long stores the option index here. */
         int option_index = 0;
 
-        c = getopt_long(argc, argv, "J:K:L:M:t:w:e:l:I:d:Z:D:a:n:p:r:s:o:x:y:z:R:S:hv",
+        c = getopt_long(argc, argv, "J:K:L:M:t:w:e:q:l:I:d:Z:D:B:W:a:n:p:r:s:o:x:y:z:R:S:hv",
                         long_options, &option_index);
 
         /* Detect the end of the options. */
@@ -628,7 +636,10 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
                 cmd_params->window_size = atoi(mystrdup(optarg));
                 break;
             case 'e':
-                cmd_params->step_size = atoi(mystrdup(optarg));
+                cmd_params->step_sizeR = atoi(mystrdup(optarg));
+                break;
+            case 'q':
+                cmd_params->step_sizeS = atoi(mystrdup(optarg));
                 break;
             case 'l':
                 cmd_params->interval = atoi(mystrdup(optarg));
@@ -644,6 +655,13 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
                 break;
             case 'I':
                 cmd_params->exp_id = atoi(mystrdup(optarg));
+                break;
+            case 'B':
+                cmd_params->old_param = atoi(mystrdup(optarg));
+                break;
+            case 'W':
+                cmd_params->fixS = atoi(mystrdup(optarg));
+                break;
             default:
                 break;
         }
@@ -652,6 +670,9 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
     /* if (verbose_flag) */
     /*     printf ("verbose flag is set \n"); */
 
+    if (cmd_params->step_sizeS == -1) {
+        cmd_params->step_sizeS = cmd_params->step_sizeR;
+    }
     cmd_params->nonunique_keys = nonunique_flag;
     cmd_params->verbose = verbose_flag;
     cmd_params->fullrange_keys = fullrange_flag;

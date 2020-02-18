@@ -36,7 +36,7 @@
 
 /** L3 Cache size of the system in bytes */
 #ifndef L3_CACHE_SIZE
-#define L3_CACHE_SIZE (25*1024*1024) //25MB.
+#define L3_CACHE_SIZE (22*1024*1024) //22MB on MYC.
 #endif
 
 /**

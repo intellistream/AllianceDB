@@ -31,13 +31,15 @@ dump_timing(std::vector<std::chrono::milliseconds> vector, std::vector<int64_t> 
 
     //print progressive
     int n = vector.size() - 1;
+    int check10 = ceil(n * 0.10);
     int check25 = ceil(n * 0.25);
     int check50 = ceil(n * 0.5);
     int check75 = ceil(n * 0.75);
     std::chrono::milliseconds start = vector.at(0);
 
-    fprintf(stdout, "Time to obtain 25%%, 50%%, 75%% of results (MSECS): \n");
-    fprintf(stdout, "(%.2lu) \t (%.2lu) \t (%.2lu)",
+    fprintf(stdout, "Time to obtain 10%%, 25%%, 50%%, 75%% of results (MSECS): \n");
+    fprintf(stdout, "(%.2lu) \t (%.2lu) \t (%.2lu) \t (%.2lu)",
+            vector.at(check10).count() + lastTS - start.count(),
             vector.at(check25).count() + lastTS - start.count(),
             vector.at(check50).count() + lastTS - start.count(),
             vector.at(check75).count() + lastTS - start.count());
@@ -137,7 +139,7 @@ void sortRecords(std::string algo_name, int exp_id, long lastTS) {
     sort(global_record.begin(), global_record.end());
     sort(global_record_latency.begin(), global_record_latency.end());
     /* now print the progressive results: */
-    dump_timing(global_record, global_record_latency, algo_name, exp_id,lastTS);
+    dump_timing(global_record, global_record_latency, algo_name, exp_id, lastTS);
 
 }
 

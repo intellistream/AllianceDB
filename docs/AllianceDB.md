@@ -155,13 +155,14 @@ SHJ_JM_NP
 Kim data generator parameter
 
 1. `t`: either to generate tuples with timestamps, 0 - w/o ts, 1 - w/ ts.
-2. `w`: window size (msecs) of join operation, $w > 0$.
-3. `n`: number of threads, $n > 0$.
-4. `e`:  step size,  generate number of tuples at each step, all tuples in the same step have the same timestamp, $e > 0$.
-5. `l`: interval of each step (msecs),  [0, window_size], (0 means batch operation).
-6. `d`: distribution of key-field, [0 - unique, 2 - zipf].
-7. `z` : configure key-filed zipf distribution.
-8. `D`: distribution of ts-field, [0 - unique,  2 - zipf].
-7. `Z`: configure ts-field zipf distribution.  zipf factor of zipf distribution should be configured, range [0,1]
+2. `B`: either to use old relation configurations such as r_size, s_size. (currently, we only use it for real dataset processing)
+3. `w`: window size (msecs) of join operation, $w > 0$.
+4. `n`: number of threads, $n > 0$.
+5. `e`:  step size,  generate number of tuples at each step, all tuples in the same step have the same timestamp, $e > 0$.
+6. `l`: interval of each step (msecs),  [0, window_size], (0 means batch operation).
+7. `d`: distribution of key-field, [0 - unique, 2 - zipf].
+8. `z` : configure key-filed zipf distribution.
+9. `D`: distribution of ts-field, [0 - unique,  2 - zipf].
+10. `Z`: configure ts-field zipf distribution.  zipf factor of zipf distribution should be configured, range [0,1]
 
 num_tuples = (window_size / interval) * step_size;

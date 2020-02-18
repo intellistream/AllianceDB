@@ -18,8 +18,8 @@
 /** An experimental feature to allocate input relations numa-local */
 extern int nthreads;      /* defined in generator.c */
 extern int numalocalize;  /* defined in generator.c */
-struct t_window window0;
-struct t_window window1;
+//struct t_window window0;
+//struct t_window window1;
 
 #ifndef NEXT_POW_2
 /**
@@ -217,9 +217,6 @@ int64_t proble_hashtable_single_measure(const hashtable_t *ht, const tuple_t *tu
 
     do {
         for (index_ht = 0; index_ht < b->count; index_ht++) {
-            if (thread_fun) {
-                thread_fun(tuple, &b->tuples[index_ht], matches);
-            }
             if (tuple->key == b->tuples[index_ht].key) {
                 (*matches)++;
 #ifdef JOIN_RESULT_MATERIALIZE
@@ -237,6 +234,10 @@ int64_t proble_hashtable_single_measure(const hashtable_t *ht, const tuple_t *tu
 //                }
                 END_PROGRESSIVE_MEASURE(tuple->payloadID, (*timer), ISTupleR)
 #endif
+
+                if (thread_fun) {
+                    thread_fun(tuple, &b->tuples[index_ht], matches);
+                }
             }
         }
 

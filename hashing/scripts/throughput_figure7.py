@@ -144,7 +144,7 @@ def ReadFile():
     col7 = []
     col8 = []
 
-    for id in it.chain(range(16, 19), range(36, 37)):
+    for id in it.chain(range(28, 32)):
         file = '/data1/xtra/results/timestamps/PRJ_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -153,7 +153,7 @@ def ReadFile():
         col1.append(value)
     y.append(col1)
 
-    for id in it.chain(range(16, 19), range(36, 37)):
+    for id in it.chain(range(28, 32)):
         file = '/data1/xtra/results/timestamps/NPJ_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -162,7 +162,7 @@ def ReadFile():
         col2.append(value)
     y.append(col2)
 
-    for id in it.chain(range(16, 19), range(36, 37)):
+    for id in it.chain(range(28, 32)):
         file = '/data1/xtra/results/timestamps/MPASS_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -171,7 +171,7 @@ def ReadFile():
         col3.append(value)
     y.append(col3)
 
-    for id in it.chain(range(16, 19), range(36, 37)):
+    for id in it.chain(range(28, 32)):
         file = '/data1/xtra/results/timestamps/MWAY_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -180,7 +180,7 @@ def ReadFile():
         col4.append(value)
     y.append(col4)
 
-    for id in it.chain(range(16, 19), range(36, 37)):
+    for id in it.chain(range(28, 32)):
         file = '/data1/xtra/results/timestamps/SHJ_JM_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -189,7 +189,7 @@ def ReadFile():
         col5.append(value)
     y.append(col5)
 
-    for id in it.chain(range(16, 19), range(36, 37)):
+    for id in it.chain(range(28, 32)):
         file = '/data1/xtra/results/timestamps/SHJ_JBCR_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -198,7 +198,7 @@ def ReadFile():
         col6.append(value)
     y.append(col6)
 
-    for id in it.chain(range(16, 19), range(36, 37)):
+    for id in it.chain(range(28, 32)):
         file = '/data1/xtra/results/timestamps/PMJ_JM_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -207,7 +207,7 @@ def ReadFile():
         col7.append(value)
     y.append(col7)
 
-    for id in it.chain(range(16, 19), range(36, 37)):
+    for id in it.chain(range(28, 32)):
         file = '/data1/xtra/results/timestamps/PMJ_JBCR_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -220,14 +220,14 @@ def ReadFile():
 
 if __name__ == "__main__":
     # x_values = ['Unique', 'Zipf(0)', 'Zipf(0.2)', 'Zipf(0.4)', 'Zipf(0.8)', 'Zipf(1)']
-    x_values = [100000, 500000, 1000000, 10000000]
+    x_values = [100, 1000, 10000, 100000]
 
     y_values = ReadFile()
 
     legend_labels = ['PRJ', 'NPJ', 'M-PASS', 'M-WAY', 'SHJ$^M$', 'SHJ$^B$', 'PMJ$^M$', 'PMJ$^B$']
 
     DrawFigure(x_values, y_values, legend_labels,
-               'Window Size (#tuples)', 'Throughput (#matches/ms)', 0,
-               400, 'throughput_figure4', False)
+               'Arrival Rate of R', 'Throughput (#matches/ms)', 0,
+               400, 'throughput_figure7', False)
 
 #  DrawLegend(legend_labels, 'factor_legend')

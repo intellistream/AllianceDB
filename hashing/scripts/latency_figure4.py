@@ -1,11 +1,12 @@
-import itertools as it
 import os
 
+import itertools as it
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import pylab
 from matplotlib.font_manager import FontProperties
+from matplotlib.ticker import LogLocator
 
 OPT_FONT_NAME = 'Helvetica'
 TICK_FONT_SIZE = 20
@@ -74,7 +75,7 @@ def DrawLegend(legend_labels, filename):
     figlegend.savefig(FIGURE_FOLDER + '/' + filename + '.pdf')
 
 
-# draw a line chart
+# draw a bar chart
 def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max, filename, allow_legend):
     # you may change the figure size on your own.
     fig = plt.figure(figsize=(8, 3))
@@ -89,7 +90,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
     index = np.arange(len(x_values))
     # the bar width.
     # you may need to tune it to get the best figure.
-    width = 0.12
+    width = 0.1
     # draw the bars
     bars = [None] * (len(FIGURE_LABEL))
     for i in range(len(y_values)):
@@ -118,10 +119,10 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
 
     # you may need to tune the xticks position to get the best figure.
     plt.xticks(index + 2.4 * width, x_values)
-    # plt.yscale('log')
+    plt.yscale('log')
 
     plt.grid(axis='y', color='gray')
-    # figure.yaxis.set_major_locator(LogLocator(base=10))
+    figure.yaxis.set_major_locator(LogLocator(base=10))
     # figure.xaxis.set_major_locator(LinearLocator(5))
     figure.get_xaxis().set_tick_params(direction='in', pad=10)
     figure.get_yaxis().set_tick_params(direction='in', pad=10)
@@ -130,7 +131,6 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
     plt.ylabel(y_label, fontproperties=LABEL_FP)
 
     plt.savefig(FIGURE_FOLDER + "/" + filename + ".pdf", bbox_inches='tight')
-
 
 # example for reading csv file
 def ReadFile():
@@ -145,75 +145,67 @@ def ReadFile():
     col8 = []
 
     for id in it.chain(range(16, 19), range(36, 37)):
-        file = '/data1/xtra/results/timestamps/PRJ_{}.txt'.format(id)
+        file = '/data1/xtra/results/latency/PRJ_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
-        x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
-        value = len(read) / x  # get throughput (#items/ms)
-        col1.append(value)
+        x = float(read.pop(int(len(read) * 0.99)).strip("\n"))  # get last timestamp
+        col1.append(x)
     y.append(col1)
 
     for id in it.chain(range(16, 19), range(36, 37)):
-        file = '/data1/xtra/results/timestamps/NPJ_{}.txt'.format(id)
+        file = '/data1/xtra/results/latency/NPJ_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
-        x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
-        value = len(read) / x  # get throughput (#items/ms)
-        col2.append(value)
+        x = float(read.pop(int(len(read) * 0.99)).strip("\n"))  # get last timestamp
+        col2.append(x)
     y.append(col2)
 
     for id in it.chain(range(16, 19), range(36, 37)):
-        file = '/data1/xtra/results/timestamps/MPASS_{}.txt'.format(id)
+        file = '/data1/xtra/results/latency/MPASS_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
-        x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
-        value = len(read) / x  # get throughput (#items/ms)
-        col3.append(value)
+        x = float(read.pop(int(len(read) * 0.99)).strip("\n"))  # get last timestamp
+        col3.append(x)
     y.append(col3)
 
     for id in it.chain(range(16, 19), range(36, 37)):
-        file = '/data1/xtra/results/timestamps/MWAY_{}.txt'.format(id)
+        file = '/data1/xtra/results/latency/MWAY_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
-        x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
-        value = len(read) / x  # get throughput (#items/ms)
-        col4.append(value)
+        x = float(read.pop(int(len(read) * 0.99)).strip("\n"))  # get last timestamp
+        col4.append(x)
     y.append(col4)
 
     for id in it.chain(range(16, 19), range(36, 37)):
-        file = '/data1/xtra/results/timestamps/SHJ_JM_NP_{}.txt'.format(id)
+        file = '/data1/xtra/results/latency/SHJ_JM_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
-        x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
-        value = len(read) / x  # get throughput (#items/ms)
-        col5.append(value)
+        x = float(read.pop(int(len(read) * 0.99)).strip("\n"))  # get last timestamp
+        col5.append(x)
     y.append(col5)
 
     for id in it.chain(range(16, 19), range(36, 37)):
-        file = '/data1/xtra/results/timestamps/SHJ_JBCR_NP_{}.txt'.format(id)
+        file = '/data1/xtra/results/latency/SHJ_JBCR_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
-        x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
-        value = len(read) / x  # get throughput (#items/ms)
-        col6.append(value)
+        x = float(read.pop(int(len(read) * 0.99)).strip("\n"))  # get last timestamp
+        col6.append(x)
     y.append(col6)
 
     for id in it.chain(range(16, 19), range(36, 37)):
-        file = '/data1/xtra/results/timestamps/PMJ_JM_NP_{}.txt'.format(id)
+        file = '/data1/xtra/results/latency/PMJ_JM_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
-        x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
-        value = len(read) / x  # get throughput (#items/ms)
-        col7.append(value)
+        x = float(read.pop(int(len(read) * 0.99)).strip("\n"))  # get last timestamp
+        col7.append(x)
     y.append(col7)
 
     for id in it.chain(range(16, 19), range(36, 37)):
-        file = '/data1/xtra/results/timestamps/PMJ_JBCR_NP_{}.txt'.format(id)
+        file = '/data1/xtra/results/latency/PMJ_JBCR_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
-        x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
-        value = len(read) / x  # get throughput (#items/ms)
-        col8.append(value)
+        x = float(read.pop(int(len(read) * 0.99)).strip("\n"))  # get last timestamp
+        col8.append(x)
     y.append(col8)
     return y
 
@@ -224,10 +216,10 @@ if __name__ == "__main__":
 
     y_values = ReadFile()
 
-    legend_labels = ['PRJ', 'NPJ', 'M-PASS', 'M-WAY', 'SHJ$^M$', 'SHJ$^B$', 'PMJ$^M$', 'PMJ$^B$']
+    legend_labels = ['PRJ', 'NPJ','M-PASS', 'M-WAY', 'SHJ$^M$', 'SHJ$^B$', 'PMJ$^M$', 'PMJ$^B$']
 
     DrawFigure(x_values, y_values, legend_labels,
-               'Window Size (#tuples)', 'Throughput (#matches/ms)', 0,
-               400, 'throughput_figure4', False)
+               'Window Size (#tuples)', '$99^{th}$ latency (ms)', 0,
+               400, 'latency_figure4', False)
 
 #  DrawLegend(legend_labels, 'factor_legend')
