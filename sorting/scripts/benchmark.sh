@@ -186,8 +186,8 @@ for algo in m-way m-pass; do #
     "YSB")
       RSIZE=1000
       SSIZE=300000
-      RPATH=/data1/xtra/datasets/YSB/campaigns_32t.txt
-      SPATH=/data1/xtra/datasets/YSB/ad_30s_32t.txt
+      RPATH=/data1/xtra/datasets/YSB/campaigns_1t.txt
+      SPATH=/data1/xtra/datasets/YSB/ad_30s_1t.txt
       RKEY=0
       SKEY=0
       RTS=0
@@ -198,8 +198,8 @@ for algo in m-way m-pass; do #
     "Rovio") #matches:
       RSIZE=290076
       SSIZE=290076
-      RPATH=/data1/xtra/datasets/rovio/30s_32t.txt
-      SPATH=/data1/xtra/datasets/rovio/30s_32t.txt
+      RPATH=/data1/xtra/datasets/rovio/30s_1t.txt
+      SPATH=/data1/xtra/datasets/rovio/30s_1t.txt
       RKEY=0
       SKEY=0
       RTS=3
@@ -209,8 +209,8 @@ for algo in m-way m-pass; do #
     "Stock") #Error yet.
       RSIZE=149711
       SSIZE=146175
-      RPATH=/data1/xtra/datasets/stock/cj_30s_32t.txt
-      SPATH=/data1/xtra/datasets/stock/sb_30s_32t.txt
+      RPATH=/data1/xtra/datasets/stock/cj_30s_1t.txt
+      SPATH=/data1/xtra/datasets/stock/sb_30s_1t.txt
       RKEY=0
       SKEY=0
       RTS=1
