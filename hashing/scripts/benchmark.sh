@@ -186,8 +186,8 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #
     "YSB")
       RSIZE=1000
       SSIZE=300000
-      RPATH=/data1/xtra/datasets/YSB/campaigns_32t.txt
-      SPATH=/data1/xtra/datasets/YSB/ad_30s_32t.txt
+      RPATH=/data1/xtra/datasets/YSB/campaigns_1t.txt
+      SPATH=/data1/xtra/datasets/YSB/ad_30s_1t.txt
       RKEY=0
       SKEY=0
       RTS=0
@@ -198,8 +198,8 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #
     "Rovio") #matches:
       RSIZE=290076
       SSIZE=290076
-      RPATH=/data1/xtra/datasets/rovio/30s_32t.txt
-      SPATH=/data1/xtra/datasets/rovio/30s_32t.txt
+      RPATH=/data1/xtra/datasets/rovio/30s_1t.txt
+      SPATH=/data1/xtra/datasets/rovio/30s_1t.txt
       RKEY=0
       SKEY=0
       RTS=3
@@ -209,8 +209,8 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #
     "Stock") #Error yet.
       RSIZE=149711
       SSIZE=196175
-      RPATH=/data1/xtra/datasets/stock/cj_30s_32t.txt
-      SPATH=/data1/xtra/datasets/stock/sb_30s_32t.txt
+      RPATH=/data1/xtra/datasets/stock/cj_30s_1t.txt
+      SPATH=/data1/xtra/datasets/stock/sb_30s_1t.txt
       RKEY=0
       SKEY=0
       RTS=1
