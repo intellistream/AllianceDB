@@ -19,7 +19,7 @@ function Run() {
 function KimRun() {
   #####native execution
   echo "==benchmark:$benchmark -a $algo -n $Threads #TEST:$id=="
-  ./sorting -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id  -W $FIXS
+  ./sorting -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS
 }
 
 DEFAULT_WINDOW_SIZE=1000
@@ -52,7 +52,7 @@ for algo in m-way m-pass; do #
   SKEY=0
   RTS=0
   STS=0
-  for benchmark in  "Rovio"; do #"Stock"  "DEBS" "YSB" "Kim"
+  for benchmark in "Stock" "DEBS" "YSB" "Kim"; do #"Rovio"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "Kim")
@@ -154,7 +154,7 @@ for algo in m-way m-pass; do #
         #KimRun
         let "id++"
       done
-      
+
       ## Figure 4 extra
       ResetParameters
       echo test varying window size 36
