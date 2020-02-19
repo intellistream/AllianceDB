@@ -7,7 +7,7 @@ make -j4
 function benchmarkRun() {
   #####native execution
   echo "==benchmark:$benchmark -a $algo -n $Threads=="
-  ./sorting -a $algo -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t $ts
+  ./sorting -a $algo -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t $ts -I $id
 }
 
 function Run() {
@@ -52,7 +52,7 @@ for algo in m-way m-pass; do #
   SKEY=0
   RTS=0
   STS=0
-  for benchmark in "Rovio" "DEBS" "Stock" "YSB"; do #"Kim" # "Rovio" "DEBS" "YSB"
+  for benchmark in  "Rovio"; do #"Stock"  "DEBS" "YSB" "Kim"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "Kim")
@@ -173,33 +173,21 @@ for algo in m-way m-pass; do #
       done
       ;;
 
-    "DEBS")
+    "Stock")
+      id=38
       ts=1 # stream case
-      RSIZE=1000000
-      SSIZE=1000000
-      RPATH=/data1/xtra/datasets/DEBS/posts_key32_partitioned.csv
-      SPATH=/data1/xtra/datasets/DEBS/comments_key32_partitioned.csv
+      RSIZE=194341
+      SSIZE=240148
+      RPATH=/data1/xtra/datasets/stock/cj_60s_1t.txt
+      SPATH=/data1/xtra/datasets/stock/sb_60s_1t.txt
       RKEY=0
       SKEY=0
-      RTS=0
-      STS=0
-      benchmarkRun
-      ;;
-      # Batch-Stream
-    "YSB")
-      ts=1 # stream case
-      RSIZE=1000
-      SSIZE=600000
-      RPATH=/data1/xtra/datasets/YSB/campaigns_1t.txt
-      SPATH=/data1/xtra/datasets/YSB/ad_60s_1t.txt
-      RKEY=0
-      SKEY=0
-      RTS=0
+      RTS=1
       STS=1
       benchmarkRun
       ;;
-      # Stream
     "Rovio") #matches:
+      id=39
       ts=1 # stream case
       RSIZE=580700
       SSIZE=580700
@@ -211,16 +199,30 @@ for algo in m-way m-pass; do #
       STS=3
       benchmarkRun
       ;;
-    "Stock") #
+    "YSB")
+      id=40
       ts=1 # stream case
-      RSIZE=194341
-      SSIZE=240148
-      RPATH=/data1/xtra/datasets/stock/cj_60s_1t.txt
-      SPATH=/data1/xtra/datasets/stock/sb_60s_1t.txt
+      RSIZE=1000
+      SSIZE=600000
+      RPATH=/data1/xtra/datasets/YSB/campaigns_1t.txt
+      SPATH=/data1/xtra/datasets/YSB/ad_60s_1t.txt
       RKEY=0
       SKEY=0
-      RTS=1
+      RTS=0
       STS=1
+      benchmarkRun
+      ;;
+    "DEBS")
+      id=41
+      ts=1 # stream case
+      RSIZE=1000000
+      SSIZE=1000000
+      RPATH=/data1/xtra/datasets/DEBS/posts_key32_partitioned.csv
+      SPATH=/data1/xtra/datasets/DEBS/comments_key32_partitioned.csv
+      RKEY=0
+      SKEY=0
+      RTS=0
+      STS=0
       benchmarkRun
       ;;
     "Google") #Error yet.
