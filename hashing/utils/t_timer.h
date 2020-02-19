@@ -34,7 +34,7 @@ struct T_TIMER {
     std::vector<uint64_t> recordRID;
     std::vector<uint64_t> recordSID;
     int record_cnt = 0;
-    const int record_gap = 1000;
+    const int record_gap = 1;
 #endif
 };
 
