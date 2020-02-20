@@ -62,7 +62,7 @@ for algo in m-way m-pass; do #
       echo test varying input arrival rate 0 - 4 # test (1) means infinite arrival rate (batch).
       ts=0                                       # batch case
       echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
-      #KimRun
+      KimRun
       let "id++"
 
       ts=1 # stream case
@@ -70,7 +70,7 @@ for algo in m-way m-pass; do #
       for STEP_SIZE in 100 1000 10000 100000; do
         WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
         echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
-        #KimRun
+        KimRun
         let "id++"
       done
 
@@ -79,7 +79,7 @@ for algo in m-way m-pass; do #
       TS_DISTRIBUTION=2
       echo test varying zipf distribution timestamp 5 - 9
       for ZIPF_FACTOR in 0 0.2 0.4 0.8 1; do #
-        #KimRun
+        KimRun
         let "id++"
       done
 
@@ -89,12 +89,12 @@ for algo in m-way m-pass; do #
       TS_DISTRIBUTION=0
       echo test varying key distribution 10 - 15
       distrbution=0 #unique
-      #KimRun
+      KimRun
       let "id++"
 
       distrbution=2 #varying zipf factor
       for skew in 0 0.2 0.4 0.8 1; do
-        #KimRun
+        KimRun
         let "id++"
       done
 
@@ -102,7 +102,7 @@ for algo in m-way m-pass; do #
       ResetParameters
       echo test varying window size 16 - 18
       for WINDOW_SIZE in 1000 5000 10000; do
-        #KimRun
+        KimRun
         let "id++"
       done
 
@@ -111,12 +111,12 @@ for algo in m-way m-pass; do #
       ts=0 # data at rest.
       echo test varying key distribution 19 - 24
       distrbution=0 #unique
-      #KimRun
+      KimRun
       let "id++"
 
       distrbution=2 #zipf
       for skew in 0 0.2 0.4 0.8 1; do
-        #KimRun
+        KimRun
         let "id++"
       done
 
@@ -125,7 +125,7 @@ for algo in m-way m-pass; do #
       ts=0 # data at rest.
       echo test varying window size 25 - 27
       for WINDOW_SIZE in 1000 5000 10000; do
-        #KimRun
+        KimRun
         let "id++"
       done
 
@@ -138,7 +138,7 @@ for algo in m-way m-pass; do #
       for STEP_SIZE in 100 1000 10000 100000; do
         WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
         echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
-        #KimRun
+        KimRun
         let "id++"
       done
 
@@ -151,7 +151,7 @@ for algo in m-way m-pass; do #
       for STEP_SIZE in 100 1000 10000 100000; do
         WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
         echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
-        #KimRun
+        KimRun
         let "id++"
       done
 
