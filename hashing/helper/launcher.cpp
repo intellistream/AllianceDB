@@ -8,7 +8,6 @@
 void
 launch(int nthreads, relation_t *relR, relation_t *relS, t_param param, void *(*thread_fun)(void *),
        milliseconds *startTS) {
-
     int i;
     int rv;
     cpu_set_t set;
@@ -50,7 +49,6 @@ launch(int nthreads, relation_t *relR, relation_t *relS, t_param param, void *(*
                 param.args[i].joiner = new RippleJoiner(relR, relS, nthreads);
                 break;
         }
-
 
         param.args[i].nthreads = nthreads;
         param.args[i].tid = i;

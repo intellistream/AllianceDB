@@ -275,15 +275,15 @@ if __name__ == "__main__":
 
     legend_labels = ['PRJ', 'NPJ', 'M-PASS', 'M-WAY', 'SHJ$^M$', 'SHJ$^B$', 'PMJ$^M$', 'PMJ$^B$']
 
-    S = 25102718
+    S = 1 ##only when Ro set to 25102718
     maxts, N, col1, col2, col3, col4, col5, col6, col7, col8 = ReadFile(S, id)
 
-    # S = floor(N / 10)
+    S = floor(N / 10)
 
-    # print("N:", N)
-    # print("S:", S)
-    #
-    # maxts, N, col1, col2, col3, col4, col5, col6, col7, col8 = ReadFile(S, id)
+    print("N:", N)
+    print("S:", S)
+
+    maxts, N, col1, col2, col3, col4, col5, col6, col7, col8 = ReadFile(S, id)
 
     col0 = []
     for x in range(1, N + 1):
