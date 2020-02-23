@@ -85,12 +85,12 @@ void SHJJoiner::join(int32_t tid, tuple_t *tuple, bool ISTupleR, int64_t *matche
         END_MEASURE_BUILD_ACC(timer)//accumulate hash table build time.
 
         proble_hashtable_single_measure(htS,
-                                        tuple, hashmask_S, skipbits_S, matches, thread_fun, &timer, ISTupleR);//(2)
+                                        tuple, hashmask_S, skipbits_S, matches, thread_fun, timer, ISTupleR);//(2)
     } else {
         BEGIN_MEASURE_BUILD_ACC(timer)
         build_hashtable_single(htS, tuple, hashmask_S, skipbits_S);//(3)
         END_MEASURE_BUILD_ACC(timer)//accumulate hash table build time.
-        proble_hashtable_single_measure(htR, tuple, hashmask_R, skipbits_R, matches, thread_fun, &timer, ISTupleR);//(4)
+        proble_hashtable_single_measure(htR, tuple, hashmask_R, skipbits_R, matches, thread_fun, timer, ISTupleR);//(4)
     }
 }
 
@@ -188,7 +188,7 @@ pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid) {
     /***Sorting***/
     do {
         sorting_phase(tid, rel_R, rel_S, sizeR, sizeS, progressive_stepR, progressive_stepS, &i, &j, &joiner.matches,
-                      &Q, outptrR + i, outptrS + j, &joiner.timer);
+                      &Q, outptrR + i, outptrS + j,  joiner.timer);
 
     } while (i < sizeR - progressive_stepR && j < sizeS - progressive_stepS);//while R!=null, S!=null.
 
@@ -196,11 +196,11 @@ pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid) {
     progressive_stepR = sizeR - i;
     progressive_stepS = sizeS - j;
     sorting_phase(tid, rel_R, rel_S, sizeR, sizeS, progressive_stepR, progressive_stepS, &i, &j, &joiner.matches, &Q,
-                  outptrR + i, outptrS + j, &joiner.timer);
+                  outptrR + i, outptrS + j,  joiner.timer);
 
     DEBUGMSG("Join during run creation:%d", joiner.matches)
 
-    merging_phase(&joiner.matches, &Q, &joiner.timer);
+    merging_phase(&joiner.matches, &Q,  joiner.timer);
 
     DEBUGMSG("Join during run merge matches:%d", joiner.matches)
 #ifndef NO_TIMING
@@ -307,7 +307,7 @@ join(int32_t tid, tuple_t *tuple, int fat_tuple_size, bool IStuple_R, int64_t *m
         auto inputS = copy_tuples(arg->tmp_relS, arg->outerPtrS);
 
         join_tuple_single(tid, inputS, &arg->outerPtrS,
-                          tuple, fat_tuple_size, matches, &timer, arg,
+                          tuple, fat_tuple_size, matches,  timer, arg,
                           IStuple_R);
         DEBUGMSG("TID: %d Join during run creation:%d", tid, *matches)
 
@@ -324,7 +324,7 @@ join(int32_t tid, tuple_t *tuple, int fat_tuple_size, bool IStuple_R, int64_t *m
         DEBUGMSG("TID: %d Sorting in normal stage start", tid)
         auto inputR = copy_tuples(arg->tmp_relR, arg->outerPtrR);
         join_tuple_single(tid, inputR, &arg->outerPtrR, tuple, fat_tuple_size,
-                          matches, &timer, arg, IStuple_R);
+                          matches,  timer, arg, IStuple_R);
         DEBUGMSG("TID: %d Join during run creation:%d", tid, *matches)
 
     }
@@ -483,10 +483,10 @@ merge(int32_t tid, int64_t *matches,
                   out_relS,
 //                  arg->out_relR + arg->outerPtrR,
 //                  arg->out_relS + arg->outerPtrS,
-                  &timer);
+                   timer);
     DEBUGMSG("TID:%d Clean up stage: Join during run creation:%d, arg->Q %d", tid, *matches, arg->Q.size())
 
-    merging_phase(matches, &arg->Q, &timer);
+    merging_phase(matches, &arg->Q,  timer);
     DEBUGMSG("TID:%d Clean up stage: Join during run merge matches:%d", tid, *matches)
     return *matches;
 }
@@ -537,7 +537,7 @@ void PMJJoiner::join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *match
                           out_relS,
 //                          arg->out_relR + arg->outerPtrR,
 //                          arg->out_relS + arg->outerPtrS,
-                          &timer);
+                           timer);
             arg->outerPtrR += stepR;
             arg->outerPtrS += stepS;
             DEBUGMSG("Join during run creation:%d", *matches)
@@ -571,9 +571,9 @@ void PMJJoiner::join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *match
 //                      arg->out_relS + arg->outerPtrS,
                       out_relR,
                       out_relS,
-                      &timer);
+                       timer);
         DEBUGMSG("Join during run creation:%d", *matches)
-        merging_phase(matches, &arg->Q, &timer);
+        merging_phase(matches, &arg->Q,  timer);
         DEBUGMSG("Join during run merge matches:%d", *matches)
 
         delete out_relR;
@@ -648,14 +648,14 @@ void RippleJoiner::join(int32_t tid, tuple_t *tuple, bool ISTupleR, int64_t *mat
         samList.t_windows->R_Window.push_back(tuple);
         END_MEASURE_BUILD_ACC(timer)//accumulate hash table build time.
 
-        match_single_tuple(samList.t_windows->S_Window, tuple, matches, thread_fun, &timer, ISTupleR);
+        match_single_tuple(samList.t_windows->S_Window, tuple, matches, thread_fun, timer, ISTupleR);
     } else {
 //        samList.t_windows->S_Window.push_back(tuple->key);
         BEGIN_MEASURE_BUILD_ACC(timer)
         samList.t_windows->S_Window.push_back(tuple);
         END_MEASURE_BUILD_ACC(timer)//accumulate hash table build time.
 
-        match_single_tuple(samList.t_windows->R_Window, tuple, matches, thread_fun, &timer, ISTupleR);
+        match_single_tuple(samList.t_windows->R_Window, tuple, matches, thread_fun,  timer, ISTupleR);
     }
     // Compute estimation result
     long estimation_result = 0;

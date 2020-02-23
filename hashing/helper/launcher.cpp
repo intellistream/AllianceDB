@@ -18,23 +18,12 @@ launch(int nthreads, relation_t *relR, relation_t *relS, t_param param, void *(*
         CPU_ZERO(&set);
         CPU_SET(cpu_idx, &set);
         pthread_attr_setaffinity_np(param.attr, sizeof(cpu_set_t), &set);
+
+
+
         /**
          * Three key components
          */
-        switch (param.fetcher) {
-            case type_JM_NP_Fetcher:
-                param.args[i].fetcher = new JM_NP_Fetcher(nthreads, relR, relS, i, startTS);
-                break;
-            case type_JB_NP_Fetcher:
-                param.args[i].fetcher = new JB_NP_Fetcher(nthreads, relR, relS, i, startTS);
-                break;
-            case type_HS_NP_Fetcher:
-                param.args[i].fetcher = new HS_NP_Fetcher(nthreads, relR, relS, i, startTS);
-                break;
-            case type_PMJ_HS_NP_Fetcher:
-                param.args[i].fetcher = new PMJ_HS_NP_Fetcher(nthreads, relR, relS, i, startTS);
-                break;
-        }
         switch (param.joiner) {
             case type_SHJJoiner:
                 param.args[i].joiner = new SHJJoiner(relR->num_tuples,
@@ -50,10 +39,34 @@ launch(int nthreads, relation_t *relR, relation_t *relS, t_param param, void *(*
                 break;
         }
 
+        if (param.exp_id == 39) {//dataset=Rovio
+            param.args[i].joiner->timer->record_gap = 1000;
+        } else {
+            param.args[i].joiner->timer->record_gap = 1;
+        }
+
+        switch (param.fetcher) {
+            case type_JM_NP_Fetcher:
+                param.args[i].fetcher = new JM_NP_Fetcher(nthreads, relR, relS, i, startTS,
+                                                          param.args[i].joiner->timer);
+                break;
+            case type_JB_NP_Fetcher:
+                param.args[i].fetcher = new JB_NP_Fetcher(nthreads, relR, relS, i, startTS,
+                                                          param.args[i].joiner->timer);
+                break;
+            case type_HS_NP_Fetcher:
+                param.args[i].fetcher = new HS_NP_Fetcher(nthreads, relR, relS, i, startTS,
+                                                          param.args[i].joiner->timer);
+                break;
+            case type_PMJ_HS_NP_Fetcher:
+                param.args[i].fetcher = new PMJ_HS_NP_Fetcher(nthreads, relR, relS, i, startTS,
+                                                              param.args[i].joiner->timer);
+                break;
+        }
         param.args[i].nthreads = nthreads;
         param.args[i].tid = i;
         param.args[i].barrier = param.barrier;
-        param.args[i].timer = &param.args[i].joiner->timer;
+        param.args[i].timer = param.args[i].joiner->timer;
         param.args[i].matches = &param.args[i].joiner->matches;
         param.args[i].threadresult = &(param.joinresult->resultlist[i]);
         param.args[i].shuffler = param.shuffler;//shared shuffler.

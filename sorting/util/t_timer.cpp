@@ -74,26 +74,53 @@ dump_timing(std::vector<std::chrono::milliseconds> vector, std::vector<int64_t> 
  * @param timer
  * @param lastTS  in millseconds, lazy algorithms have to wait until very last tuple arrive before proceed.
  */
-void print_breakdown(int64_t result, T_TIMER *timer, long lastTS, _IO_FILE *pFile) {
+void dump_breakdown(int64_t result, T_TIMER *timer, long lastTS, _IO_FILE *pFile) {
     if (result != 0) {
+
         double diff_usec = (((timer->end).tv_sec * 1000000L + (timer->end).tv_usec)
                             - ((timer->start).tv_sec * 1000000L + (timer->start).tv_usec)) + lastTS * 1000L;
-        double cyclestuple = (timer->overall_timer + lastTS * 1000) / result;
-        fprintf(pFile, "[Info] RUNTIME TOTAL, BUILD, SORT, PART (cycles): \n");
-        fprintf(pFile, "%llu \t %llu (%.2f%%) \t %llu (%.2f%%)   \t %llu (%.2f%%) ",
+
+        if (lastTS != 0) {//lazy join algorithms.
+            timer->wait_timer = lastTS * 2.1 * 1000000;//MYC: 2.1GHz
+            timer->overall_timer += timer->wait_timer;
+        } else {//eager join algorithms.
+            timer->partition_timer -= timer->wait_timer;//exclude waiting time during tuple shuffling.
+        }
+        double cyclestuple = (timer->overall_timer) / result;
+
+        //for system to read.
+        //only take one thread to dump?
+        //WAIT, PART, BUILD, SORT, MERGE, JOIN
+        fprintf(pFile, "%lu\n%lu\n%lu\n%lu\n%lu\n%lu\n",
+                timer->wait_timer,
+                timer->partition_timer,
+                timer->buildtimer,
+                timer->sorttimer,
+                timer->mergetimer,
+                timer->overall_timer -
+                (timer->wait_timer + timer->partition_timer + timer->buildtimer + timer->sorttimer + timer->mergetimer)
+        );
+        fprintf(pFile,"===\n");
+
+        //for user to read.
+        fprintf(pFile, "[Info] RUNTIME TOTAL, WAIT, PART, BUILD, SORT, MERGE (cycles): \n");
+        fprintf(pFile, "%llu \t %llu (%.2f%%) \t %llu (%.2f%%) \t %llu (%.2f%%)  \t %llu (%.2f%%) ",
                 timer->overall_timer,
+                timer->wait_timer, (timer->wait_timer * 100 / (double) timer->overall_timer),
+                timer->partition_timer, (timer->partition_timer * 100 / (double) timer->overall_timer),
                 timer->buildtimer, (timer->buildtimer * 100 / (double) timer->overall_timer),
                 timer->sorttimer, (timer->sorttimer * 100 / (double) timer->overall_timer),
-                timer->partition_timer, (timer->partition_timer * 100 / (double) timer->overall_timer));
+                timer->mergetimer, (timer->mergetimer * 100 / (double) timer->overall_timer)
+        );
         fprintf(pFile, "\n");
         fprintf(pFile, "TOTAL-TIME-USECS, NUM-TUPLES, CYCLES-PER-TUPLE: \n");
         fprintf(pFile, "%.4lf \t %ld \t %.4lf", diff_usec, result, cyclestuple);
         fprintf(pFile, "\n");
         fprintf(pFile, "\n");
-        fflush(pFile);
     } else {
-        fprintf(pFile, "[Warning] This thread does not matches any tuple.\n\n");
+        fprintf(stdout, "[Warning] This thread does not matches any tuple.\n\n");
     }
+    fflush(pFile);
 }
 
 milliseconds actual_start_timestamp;

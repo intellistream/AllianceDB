@@ -148,12 +148,7 @@ sortmergejoin_multipass_thread(void *param) {
     BARRIER_ARRIVE(args->barrier, rv)
 
 #ifndef NO_TIMING
-    START_MEASURE((*(args->timer)))
-    BEGIN_MEASURE_PARTITION((*(args->timer)))/* partitioning start */
-    BEGIN_MEASURE_SORT((*(args->timer)))/* sort start */
-    BEGIN_MEASURE_MERGEDELTA((*(args->timer)))/* mergedelta start */
-    BEGIN_MEASURE_MERGE((*(args->timer)))/* merge start */
-    BEGIN_MEASURE_JOIN((*(args->timer)))/* join start */
+    START_MEASURE(args->timer)
 #endif
 
 //    if (my_tid == 0) {
@@ -166,6 +161,9 @@ sortmergejoin_multipass_thread(void *param) {
 //    }
 
 
+#ifndef NO_TIMING
+    BEGIN_MEASURE_PARTITION(args->timer)/* partitioning start */
+#endif
     /*************************************************************************
      *
      *   Phase.1) NUMA-local partitioning.
@@ -175,14 +173,17 @@ sortmergejoin_multipass_thread(void *param) {
     relation_t **partsS = NULL;
     mpass_partitioning_phase(&partsR, &partsS, args);
 
-
     BARRIER_ARRIVE(args->barrier, rv);
 //    if (my_tid == 0) {
 //        stopTimer(&args->part);
 //    }
 
 #ifndef NO_TIMING
-    END_MEASURE_PARTITION((*(args->timer)))/* sort end */
+    END_MEASURE_PARTITION(args->timer)/* partition end */
+#endif
+
+#ifndef NO_TIMING
+    BEGIN_MEASURE_SORT_ACC(args->timer)/* sort start */
 #endif
 
     /*************************************************************************
@@ -192,14 +193,10 @@ sortmergejoin_multipass_thread(void *param) {
      *************************************************************************/
     mpass_sorting_phase(partsR, partsS, args);
 
-
     BARRIER_ARRIVE(args->barrier, rv);
-//    if (my_tid == 0) {
-//        stopTimer(&args->sort);
-//    }
 
 #ifndef NO_TIMING
-    END_MEASURE_SORT((*(args->timer)))/* sort end */
+    END_MEASURE_SORT_ACC(args->timer)/* sort end */
 #endif
 
 #ifdef PERF_COUNTERS
@@ -209,6 +206,9 @@ sortmergejoin_multipass_thread(void *param) {
     BARRIER_ARRIVE(args->barrier, rv);
 #endif
 
+#ifndef NO_TIMING
+    BEGIN_MEASURE_MERGE_ACC(args->timer)/* merge start */
+#endif
     /*************************************************************************
      *
      *   Phase.3.1) First merge of NUMA-runs, Bringing remote runs to local
@@ -226,7 +226,7 @@ sortmergejoin_multipass_thread(void *param) {
     BARRIER_ARRIVE(args->barrier, rv);
 
 #ifndef NO_TIMING
-    END_MEASURE_MERGEDELTA((*(args->timer)))/* mergedeleta end */
+//    END_MEASURE_MERGEDELTA(args->timer)/* mergedeleta end */
 #endif
 
     if (my_tid == 0) {
@@ -268,7 +268,7 @@ sortmergejoin_multipass_thread(void *param) {
 //    }
 
 #ifndef NO_TIMING
-    END_MEASURE_MERGE((*(args->timer)))/* merge end */
+    END_MEASURE_MERGE_ACC(args->timer)/* merge end */
 #endif
 
 #ifdef PERF_COUNTERS
@@ -302,8 +302,7 @@ sortmergejoin_multipass_thread(void *param) {
 //        gettimeofday(&args->end, NULL);
 //    }
 #ifndef NO_TIMING
-    END_MEASURE_JOIN((*(args->timer)))/* join end */
-    END_MEASURE((*(args->timer)))/* end overall*/
+    END_MEASURE(args->timer)/* end overall*/
 #endif
 
     /* clean-up */

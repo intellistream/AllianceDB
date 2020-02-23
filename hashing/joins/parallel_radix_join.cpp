@@ -341,7 +341,7 @@ bucket_chaining_join(const relation_t *const R,
 #endif
                 matches++;
 #ifdef MEASURE
-                END_PROGRESSIVE_MEASURE(Stuples[i].payloadID, (*timer), false)//assume S as the input tuple.
+                END_PROGRESSIVE_MEASURE(Stuples[i].payloadID, (timer), false)//assume S as the input tuple.
 #endif
             }
         }
@@ -1068,8 +1068,8 @@ prj_thread(void *param) {
 //    SYNC_TIMERS_START(args, my_tid);
 
 #ifndef NO_TIMING
-    START_MEASURE((*(args->timer)))
-    BEGIN_MEASURE_PARTITION((*(args->timer)))/* partitioning start */
+    START_MEASURE((args->timer))
+    BEGIN_MEASURE_PARTITION((args->timer))/* partitioning start */
 #endif
 
     /********** 1st pass of multi-pass partitioning ************/
@@ -1362,8 +1362,8 @@ prj_thread(void *param) {
     SYNC_GLOBAL_STOP(&args->globaltimer->sync4, my_tid);
 
 #ifndef NO_TIMING
-    END_MEASURE_PARTITION((*(args->timer)));/* partitioning finished */
-    BEGIN_MEASURE_BUILD((*(args->timer)))
+    END_MEASURE_PARTITION( (args->timer) );/* partitioning finished */
+//    BEGIN_MEASURE_BUILD( (args->timer) )
 #endif
 
 #ifdef PERF_COUNTERS
@@ -1416,8 +1416,9 @@ prj_thread(void *param) {
 
 #ifndef NO_TIMING
     /* Actually with this setup we're not timing build */
-    END_MEASURE_BUILD((*(args->timer)))
-    END_MEASURE((*(args->timer)))
+//    END_MEASURE_BUILD(( args->timer) )
+    END_MEASURE(args->timer)
+
 #endif
 
 #ifdef PERF_COUNTERS
@@ -1599,7 +1600,7 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads,
     auto fp = fopen(path.c_str(), "w");
     /* now print the timing results: */
     for (i = 0; i < nthreads; i++) {
-        print_breakdown(args[i].result, args[i].timer, lastTS, fp);
+        dump_breakdown(args[i].result, args[i].timer, lastTS, fp);
     }
     sortRecords("PRJ", exp_id, lastTS);
     fclose(fp);
@@ -1700,7 +1701,7 @@ RJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id) {
     outRelS->num_tuples = relS->num_tuples;
 
 #ifndef NO_TIMING
-    T_TIMER timer;
+    T_TIMER *timer = new T_TIMER();
     START_MEASURE(timer)
     BEGIN_MEASURE_PARTITION(timer)
 #endif
@@ -1785,7 +1786,7 @@ RJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id) {
             tmpS.tuples = relS->tuples + s;
             s += S_count_per_cluster[i];
 
-            result += bucket_chaining_join(&tmpR, &tmpS, NULL, chainedbuf, &timer);
+            result += bucket_chaining_join(&tmpR, &tmpS, NULL, chainedbuf,  timer);
         } else {
             r += R_count_per_cluster[i];
             s += S_count_per_cluster[i];
@@ -1804,7 +1805,7 @@ RJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id) {
     END_MEASURE_BUILD(timer)
     END_MEASURE(timer)
     /* now print the timing results: */
-    print_breakdown(result, &timer, 0, nullptr);
+    dump_breakdown(result,  timer, 0, nullptr);
 #endif
 
     /* clean-up temporary buffers */

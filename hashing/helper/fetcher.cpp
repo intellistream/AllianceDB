@@ -61,14 +61,18 @@ fetch_t *PMJ_HS_NP_Fetcher::next_tuple() {
             if (min_gap > timegap) {//S is nearest.
                 min_gap = timegap;
                 DEBUGMSG("Thread %d is going to sleep for %d before get S", tid, min_gap)
+                BEGIN_MEASURE_WAIT_ACC((timer))
                 this_thread::sleep_for(min_gap);
+                END_MEASURE_WAIT_ACC((timer))
                 state->fetch.fat_tuple = readS;
                 state->fetch.ISTuple_R = false;
                 state->start_index_S += state->fetch.fat_tuple_size;
                 return &(state->fetch);
             } else if (readR != nullptr) {//R is nearest.
                 DEBUGMSG("Thread %d is going to sleep for %d before get R", tid, min_gap)
+                BEGIN_MEASURE_WAIT_ACC((timer))
                 this_thread::sleep_for(min_gap);
+                END_MEASURE_WAIT_ACC((timer))
                 state->fetch.fat_tuple = readR;
                 state->fetch.ISTuple_R = true;
                 state->start_index_R += state->fetch.fat_tuple_size;
@@ -81,13 +85,14 @@ fetch_t *PMJ_HS_NP_Fetcher::next_tuple() {
 
 
 fetch_t *baseFetcher::next_tuple() {
+
     milliseconds min_gap = (milliseconds) INT32_MAX;
     tuple_t *readR = nullptr;
     tuple_t *readS = nullptr;
     std::chrono::milliseconds arrivalTsR;
     std::chrono::milliseconds arrivalTsS;
     auto fetchTS = now() - fetchStartTime;
-    
+
     //try to read R first.
     if (state->start_index_R < state->end_index_R) {
         readR = &relR->tuples[state->start_index_R];
@@ -106,6 +111,7 @@ fetch_t *baseFetcher::next_tuple() {
             state->fetch.tuple = readR;
             state->fetch.ISTuple_R = true;
             state->start_index_R++;
+
             return &(state->fetch);
         } else {
             min_gap = timegap;
@@ -134,7 +140,9 @@ fetch_t *baseFetcher::next_tuple() {
             if (min_gap > timegap) {//S is nearest.
                 min_gap = timegap;
                 DEBUGMSG("Thread %d is going to sleep for %d before get S", tid, min_gap);
+                BEGIN_MEASURE_WAIT_ACC((timer))
                 this_thread::sleep_for(min_gap);
+                END_MEASURE_WAIT_ACC((timer))
                 state->fetch.tuple = readS;
                 state->fetch.ISTuple_R = false;
                 state->start_index_S++;
@@ -142,7 +150,9 @@ fetch_t *baseFetcher::next_tuple() {
                 return &(state->fetch);
             } else if (readR != nullptr) {//R is nearest.
                 DEBUGMSG("Thread %d is going to sleep for %d before get R", tid, min_gap);
+                BEGIN_MEASURE_WAIT_ACC((timer))
                 this_thread::sleep_for(min_gap);
+                END_MEASURE_WAIT_ACC((timer))
                 state->fetch.tuple = readR;
                 state->fetch.ISTuple_R = true;
                 state->start_index_R++;

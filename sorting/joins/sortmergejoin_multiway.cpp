@@ -144,12 +144,7 @@ sortmergejoin_multiway_thread(void *param) {
 
 
 #ifndef NO_TIMING
-    START_MEASURE((*(args->timer)))
-    BEGIN_MEASURE_PARTITION((*(args->timer)))/* partitioning start */
-    BEGIN_MEASURE_SORT((*(args->timer)))/* sort start */
-    BEGIN_MEASURE_MERGEDELTA((*(args->timer)))/* mergedelta start */
-    BEGIN_MEASURE_MERGE((*(args->timer)))/* merge start */
-    BEGIN_MEASURE_JOIN((*(args->timer)))/* join start */
+    START_MEASURE(args->timer)
 #endif
 
 //    if (my_tid == 0) {
@@ -160,8 +155,9 @@ sortmergejoin_multiway_thread(void *param) {
 //        startTimer(&args->merge);
 //        startTimer(&args->join);
 //    }
-
-
+#ifndef NO_TIMING
+    BEGIN_MEASURE_PARTITION(args->timer)/* partitioning start */
+#endif
     /*************************************************************************
      *
      *   Phase.1) NUMA-local partitioning.
@@ -184,7 +180,7 @@ sortmergejoin_multiway_thread(void *param) {
     BARRIER_ARRIVE(args->barrier, rv);
 
 #ifndef NO_TIMING
-    END_MEASURE_PARTITION((*(args->timer)))/* sort end */
+    END_MEASURE_PARTITION(args->timer)/* sort end */
 #endif
 
 #ifdef PERF_COUNTERS
@@ -192,6 +188,10 @@ sortmergejoin_multiway_thread(void *param) {
         PCM_start();
     }
     BARRIER_ARRIVE(args->barrier, rv);
+#endif
+
+#ifndef NO_TIMING
+    BEGIN_MEASURE_SORT_ACC(args->timer)/* sort start */
 #endif
 
     /*************************************************************************
@@ -231,7 +231,7 @@ sortmergejoin_multiway_thread(void *param) {
 
     BARRIER_ARRIVE(args->barrier, rv);
 #ifndef NO_TIMING
-    END_MEASURE_SORT((*(args->timer)))/* sort end */
+    END_MEASURE_SORT_ACC(args->timer)/* sort end */
 #endif
 
     /* check whether local relations are sorted? */
@@ -272,7 +272,11 @@ sortmergejoin_multiway_thread(void *param) {
     BARRIER_ARRIVE(args->barrier, rv);
 #endif
 
-
+#ifndef NO_TIMING
+//    BEGIN_MEASURE_MERGEDELTA(args->timer)/* mergedelta start */
+    BEGIN_MEASURE_MERGE_ACC(args->timer)/* merge start */
+#endif
+//    BEGIN_MEASURE_JOIN(args->timer)/* join start */
     /*************************************************************************
      *
      *   Phase.3) Apply multi-way merging with in-cache resident buffers.
@@ -284,7 +288,7 @@ sortmergejoin_multiway_thread(void *param) {
 
     BARRIER_ARRIVE(args->barrier, rv);
 #ifndef NO_TIMING
-    END_MEASURE_MERGEDELTA((*(args->timer)))/* mergedeleta end */
+//    END_MEASURE_MERGEDELTA(args->timer)/* mergedeleta end */
 #endif
 
     if (my_tid == 0) {
@@ -310,6 +314,10 @@ sortmergejoin_multiway_thread(void *param) {
 #endif
 
 
+#ifndef NO_TIMING
+    END_MEASURE_MERGE_ACC(args->timer)/* merge end */
+#endif
+
     /* To check whether sorted? */
     /*
     check_sorted((int64_t *)tmpoutR, (int64_t *)tmpoutS,
@@ -327,8 +335,8 @@ sortmergejoin_multiway_thread(void *param) {
     BARRIER_ARRIVE(args->barrier, rv);
 
 #ifndef NO_TIMING
-    END_MEASURE_JOIN((*(args->timer)))/* join end */
-    END_MEASURE((*(args->timer)))/* end overall*/
+//    END_MEASURE_JOIN(args->timer)/* join end */
+    END_MEASURE(args->timer)/* end overall*/
 #endif
 
     /* clean-up */

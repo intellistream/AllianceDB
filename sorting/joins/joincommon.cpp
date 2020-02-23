@@ -133,6 +133,13 @@ sortmergejoin_initrun(relation_t *relR, relation_t *relS, joinconfig_t *joincfg,
         pthread_attr_setaffinity_np(&attr, sizeof(cpu_set_t), &set);
 
         args[i].timer = &timer[i];
+
+        if (exp_id == 39) {
+            args[i].timer->record_gap = 1000;
+        } else {
+            args[i].timer->record_gap = 1;
+        }
+
         args[i].relR = relR->tuples + i * (numperthr[0]);
         args[i].relS = relS->tuples + i * (numperthr[1]);
 
@@ -221,7 +228,7 @@ sortmergejoin_initrun(relation_t *relR, relation_t *relS, joinconfig_t *joincfg,
     string path = "/data1/xtra/results/breakdown/" + name.append(".txt");
     auto fp = fopen(path.c_str(), "w");
     for (i = 0; i < nthreads; i++) {
-        print_breakdown(args[i].result, args[i].timer, lastTS, fp);
+        dump_breakdown(args[i].result, args[i].timer, lastTS, fp);
     }
     fclose(fp);
     sortRecords(algoName, exp_id, lastTS);
@@ -314,7 +321,7 @@ merge_join(tuple_t *rtuples, tuple_t *stuples,
 
                     matches++;
 #ifdef MEASURE
-                    END_PROGRESSIVE_MEASURE(stuples[j].payload, (*timer), false)
+                    END_PROGRESSIVE_MEASURE(stuples[j].payload, timer, false)
 #endif
                     jj++;
 

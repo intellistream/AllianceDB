@@ -61,7 +61,7 @@ t_param &finishing(int nthreads, t_param &param, milliseconds *startTS) {
     auto fp = fopen(path.c_str(), "w");
     /* now print the timing results: */
     for (i = 0; i < nthreads; i++) {
-        print_breakdown(*param.args[i].matches, param.args[i].timer, 0, fp);
+        dump_breakdown(*param.args[i].matches, param.args[i].timer, 0, fp);
     }
     fclose(fp);
 #endif
@@ -100,7 +100,7 @@ SHJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id) {
     thrres->threadid = 0;
     thrres->results  = (void *) chainedbuf;
 #endif
-    param.args[0].timer = &joiner.timer;
+    param.args[0].timer = joiner.timer;
     param.args[0].matches = &joiner.matches;
     finishing(1, param, nullptr);
     param.joinresult->totalresults = param.result;
@@ -198,7 +198,7 @@ result_t *PMJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id) {
     thrres->threadid = 0;
     thrres->results  = (void *) chainedbuf;
 #endif
-    param.args[0].timer = &joiner.timer;
+    param.args[0].timer = joiner.timer;
     param.args[0].matches = &joiner.matches;
     finishing(1, param, nullptr);
     param.joinresult->totalresults = param.result;
@@ -231,7 +231,7 @@ result_t *RPJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id) {
     thrres->threadid = 0;
     thrres->results  = (void *) chainedbuf;
 #endif
-    param.args[0].timer = &joiner.timer;
+    param.args[0].timer = joiner.timer;
     param.args[0].matches = &joiner.matches;
     finishing(1, param, nullptr);
     param.joinresult->totalresults = param.result;

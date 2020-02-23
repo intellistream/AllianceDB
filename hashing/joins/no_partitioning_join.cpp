@@ -123,7 +123,7 @@ NPO_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id) {
 #endif
 
 #ifndef NO_TIMING
-    T_TIMER timer;
+    T_TIMER *timer = new T_TIMER();
     START_MEASURE(timer)
     BEGIN_MEASURE_BUILD(timer)
 #endif
@@ -140,7 +140,7 @@ NPO_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id) {
     void *chainedbuf = NULL;
 #endif
 
-    result = probe_hashtable(ht, relS, chainedbuf, &timer);
+    result = probe_hashtable(ht, relS, chainedbuf, timer);
 
 #ifdef JOIN_RESULT_MATERIALIZE
     threadresult_t * thrres = &(joinresult->resultlist[0]);/* single-thread */
@@ -156,7 +156,7 @@ NPO_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id) {
     string path = "/data1/xtra/results/breakdown/" + name.append(".txt");
     auto fp = fopen(path.c_str(), "w");
     /* now print the timing results: */
-    print_breakdown(result, &timer, 0, fp);
+    dump_breakdown(result, timer, 0, fp);
     fclose(fp);
 #endif
 
@@ -195,8 +195,8 @@ npo_thread(void *param) {
     BARRIER_ARRIVE(args->barrier, rv);
 
 #ifndef NO_TIMING
-    START_MEASURE((*(args->timer)))
-    BEGIN_MEASURE_BUILD((*(args->timer)))/* build start */
+    START_MEASURE((args->timer))
+    BEGIN_MEASURE_BUILD((args->timer))/* build start */
 #endif
     /* insert tuples from the assigned part of relR to the ht */
     build_hashtable_mt(args->ht, &args->relR, &overflowbuf);
@@ -216,7 +216,7 @@ npo_thread(void *param) {
 #endif
 
 #ifndef NO_TIMING
-    END_MEASURE_BUILD((*(args->timer)))
+    END_MEASURE_BUILD((args->timer))
 #endif
 
 #ifdef JOIN_RESULT_MATERIALIZE
@@ -235,7 +235,9 @@ npo_thread(void *param) {
 #endif
 
 #ifndef NO_TIMING
-    END_MEASURE((*(args->timer)))
+//    END_MEASURE(&args->timer)
+    stopTimer(&args->timer->overall_timer); /* overall */ \
+    gettimeofday(&args->timer->end, NULL);
 #endif
 
 #ifdef PERF_COUNTERS
@@ -303,7 +305,7 @@ np_distribute(const relation_t *relR, const relation_t *relS, int nthreads, hash
         args[i].relS.tuples = relS->tuples + numSthr * i;
         numS -= numSthr;
 
-        DEBUGMSG("Assigning #S=%d to thread %d\n",  args[i].relS.num_tuples, i)
+        DEBUGMSG("Assigning #S=%d to thread %d\n", args[i].relS.num_tuples, i)
 
         args[i].threadresult = &(joinresult->resultlist[i]);
 
@@ -383,7 +385,7 @@ NPO(relation_t *relR, relation_t *relS, int nthreads, int exp_id) {
     string path = "/data1/xtra/results/breakdown/" + name.append(".txt");
     auto fp = fopen(path.c_str(), "w");
     for (i = 0; i < nthreads; i++) {
-        print_breakdown(args[i].result, args[i].timer, lastTS, fp);
+        dump_breakdown(args[i].result, args[i].timer, lastTS, fp);
     }
     fclose(fp);
     sortRecords("NPJ", exp_id, lastTS);

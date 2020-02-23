@@ -45,7 +45,7 @@ THREAD_TASK_NOSHUFFLE(void *param) {
 #endif
 
 #ifndef NO_TIMING
-    START_MEASURE((*(args->timer)))
+    START_MEASURE((args->timer))
 #endif
 
     int rv;
@@ -76,8 +76,9 @@ THREAD_TASK_NOSHUFFLE(void *param) {
 //        /* Handle error */ }
 //
     do {
+        BEGIN_MEASURE_PARTITION_ACC(args->timer)
         fetch_t *fetch = fetcher->next_tuple();
-
+        END_MEASURE_PARTITION_ACC(args->timer)
         if (fetch != nullptr) {
             args->joiner->join(
                     args->tid,
@@ -104,7 +105,9 @@ THREAD_TASK_NOSHUFFLE(void *param) {
 #endif
 
 #ifndef NO_TIMING
-    END_MEASURE((*(args->timer)))
+//    END_MEASURE(&((args->timer)))
+    stopTimer(&args->timer->overall_timer); /* overall */ \
+    gettimeofday(&args->timer->end, NULL);
 #endif
 
 #ifdef PERF_COUNTERS
@@ -133,7 +136,7 @@ void
 #endif
 
 #ifndef NO_TIMING
-    START_MEASURE((*(args->timer)))
+    START_MEASURE((args->timer))
 #endif
 
     int rv;
@@ -161,13 +164,15 @@ void
     //fetch: pointer points to state.fetch (*fetch = &(state->fetch))
     fetch_t *fetch;
     do {
+        BEGIN_MEASURE_PARTITION_ACC((args->timer))
         fetch = fetcher->next_tuple();
         if (fetch != nullptr) {
             shuffler->push(fetch->tuple->key, fetch, false);//pass-in pointer points to state.fetch
         }
-
 #ifdef EAGER
         fetch = shuffler->pull(args->tid, false);//re-fetch from its shuffler.
+        END_MEASURE_PARTITION_ACC((args->timer))
+
         if (fetch != nullptr) {
             args->joiner->join(
                     args->tid,
@@ -183,7 +188,9 @@ void
     /* wait at a barrier until each thread finishes fetch*/
     BARRIER_ARRIVE(args->barrier, rv)
     do {
+        BEGIN_MEASURE_PARTITION_ACC((args->timer))
         fetch = shuffler->pull(args->tid, false);//re-fetch from its shuffler.
+        END_MEASURE_PARTITION_ACC((args->timer))
         if (fetch != nullptr) {
             args->joiner->join(
                     args->tid,
@@ -209,7 +216,8 @@ void
 #endif
 
 #ifndef NO_TIMING
-    END_MEASURE((*(args->timer)))
+    stopTimer(&args->timer->overall_timer); /* overall */ \
+    gettimeofday(&args->timer->end, NULL);
 #endif
 
 #ifdef PERF_COUNTERS
@@ -433,7 +441,7 @@ void
 #endif
 
 #ifndef NO_TIMING
-    START_MEASURE((*(args->timer)))
+    START_MEASURE((args->timer))
 #endif
 
 #ifdef PERF_COUNTERS
@@ -531,7 +539,8 @@ void
 #endif
 
 #ifndef NO_TIMING
-    END_MEASURE((*(args->timer)))
+    stopTimer(&args->timer->overall_timer); /* overall */ \
+    gettimeofday(&args->timer->end, NULL);
 #endif
 
 #ifdef PERF_COUNTERS
@@ -560,7 +569,7 @@ void
 
 #ifndef NO_TIMING
     /* the first thread checkpoints the start time */
-    START_MEASURE((*(args->timer)))
+    START_MEASURE((args->timer))
 #endif
 
 #ifdef PERF_COUNTERS
@@ -633,7 +642,7 @@ void
 #endif
 
 #ifndef NO_TIMING
-    END_MEASURE((*(args->timer)))
+    END_MEASURE(args->timer)
 #endif
 
 #ifdef PERF_COUNTERS
@@ -649,6 +658,3 @@ void
 #endif
     pthread_exit(NULL);
 }
-
-
-

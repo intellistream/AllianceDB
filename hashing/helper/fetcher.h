@@ -60,6 +60,7 @@ public:
 //    bool start = true;
 
     milliseconds fetchStartTime;//initialize
+    T_TIMER *timer;
     t_state *state;
     int tid;
 
@@ -90,11 +91,12 @@ public:
 
     virtual bool finish() = 0;
 
-    baseFetcher(relation_t *relR, relation_t *relS, int tid, milliseconds *startTS) {
+    baseFetcher(relation_t *relR, relation_t *relS, int tid, milliseconds *startTS, T_TIMER *timer) {
         this->tid = tid;
         this->relR = relR;
         this->relS = relS;
         fetchStartTime = *startTS;//copy
+        this->timer = timer;
     }
 };
 
@@ -120,8 +122,8 @@ public:
      * @param relS
      */
     PMJ_HS_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS, int tid,
-                      duration<long, ratio<1, 1000>> *startTS)
-            : baseFetcher(relR, relS, tid, startTS) {
+                      duration<long, ratio<1, 1000>> *startTS, T_TIMER *timer)
+            : baseFetcher(relR, relS, tid, startTS, timer) {
         state = new t_state();
 
         //let first and last thread to read two streams.
@@ -156,8 +158,9 @@ public:
      * @param relR
      * @param relS
      */
-    HS_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS, int tid, duration<long, ratio<1, 1000>> *startTS)
-            : baseFetcher(relR, relS, tid, startTS) {
+    HS_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS, int tid, duration<long, ratio<1, 1000>> *startTS,
+                  T_TIMER *timer)
+            : baseFetcher(relR, relS, tid, startTS, timer) {
         state = new t_state();
 
         //let first and last thread to read two streams.
@@ -212,8 +215,9 @@ public:
      * @param relR
      * @param relS
      */
-    JM_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS, int tid, duration<long, ratio<1, 1000>> *startTS)
-            : baseFetcher(relR, relS, tid, startTS) {
+    JM_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS, int tid, duration<long, ratio<1, 1000>> *startTS,
+                  T_TIMER *timer)
+            : baseFetcher(relR, relS, tid, startTS, timer) {
         state = new t_state();
 
 
@@ -242,8 +246,9 @@ public:
                && state->start_index_S == state->end_index_S;
     }
 
-    JB_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS, int tid, duration<long, ratio<1, 1000>> *startTS)
-            : baseFetcher(relR, relS, tid, startTS) {
+    JB_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS, int tid, duration<long, ratio<1, 1000>> *startTS,
+                  T_TIMER *timer)
+            : baseFetcher(relR, relS, tid, startTS, timer) {
         state = new t_state[nthreads];
         int numRthr = relR->num_tuples / nthreads;// partition R,
         int numSthr = relS->num_tuples / nthreads;// partition S.

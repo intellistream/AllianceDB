@@ -64,7 +64,7 @@ public:
     //in a extreme case, hash-partition the queue.
     //moodycamel::ConcurrentQueue<fetch_t> queues[];//simple hashing first.
     T_CQueue *queues;//simple hashing first.
-    int32_t group_size = 2;
+    int32_t group_size = 2;//TODO: use a input parameter to tune this.
     int32_t numGrps;
     std::vector<int32_t> *grpToTh;
 //    int32_t *thToGrp;

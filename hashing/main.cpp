@@ -380,7 +380,7 @@ param_t defaultParam() {/* Command line parameters */
     cmd_params.ts_distribution = 0;
     cmd_params.zipf_param = 0.0;
     cmd_params.exp_id = 0;
-
+    cmd_params.fixS = 0;
 
 
     /* default dataset is Workload B (described in paper) */
@@ -429,7 +429,7 @@ print_version() {
     printf("\n%s\n", PACKAGE_STRING);
     printf("Copyright (c) 2012, 2013, ETH Zurich, Systems Group.\n");
     printf("http://www.systems.ethz.ch/projects/paralleljoins\n\n");
-    printf("Modified 2019, Shuhao Zhang (Tony) and Yancan Mao, NUS, Singapore. \n");
+    printf("Modified 2019, Shuhao Zhang (Tony) and Yancan Mao, TU Berlin, NUS. \n");
 }
 
 static char *
@@ -497,7 +497,7 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
                         {"zipf_param",       required_argument, 0,               'Z'},
                         {"exp_id",           required_argument, 0,               'I'},
                         {"ts_distribution",  required_argument, 0,               'D'},
-                        {0,                  0,                 0,               0}
+                        {0, 0,                                  0,               0}
 
                 };
         /* getopt_long stores the option index here. */

@@ -232,7 +232,7 @@ int64_t proble_hashtable_single_measure(const hashtable_t *ht, const tuple_t *tu
 //                           tuple->payloadID);
 //                    fflush(stdout);
 //                }
-                END_PROGRESSIVE_MEASURE(tuple->payloadID, (*timer), ISTupleR)
+                END_PROGRESSIVE_MEASURE(tuple->payloadID, (timer), ISTupleR)
 #endif
 
                 if (thread_fun) {
@@ -270,7 +270,7 @@ void match_single_tuple(const list<tuple_t *> list, const tuple_t *tuple, int64_
         }
         if (tuple->key == it.operator*()->key) {
             (*matches)++;
-            END_PROGRESSIVE_MEASURE(tuple->payloadID, (*timer), ISTupleR)
+            END_PROGRESSIVE_MEASURE(tuple->payloadID, (timer), ISTupleR)
         }
     }
     DEBUGMSG("JOINING: matches: %d, tuple: %d\n", *matches, tuple->key);
