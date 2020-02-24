@@ -50,7 +50,7 @@ typedef struct param_t param_t;
 struct algo_t {
     char name[128];
 
-    result_t *(*joinAlgo)(relation_t *, relation_t *, int, int);
+    result_t *(*joinAlgo)(relation_t *, relation_t *, int, int, int);
 };
 
 struct param_t {
@@ -100,6 +100,7 @@ struct param_t {
     int step_sizeS;
     int interval;
 
+    int group_size;
     int exp_id;
 };
 
