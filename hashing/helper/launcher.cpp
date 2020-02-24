@@ -44,7 +44,7 @@ launch(int nthreads, relation_t *relR, relation_t *relS, t_param param, void *(*
         } else {
             param.args[i].joiner->timer->record_gap = 1;
         }
-
+//        printf("record_gap:%d\n", param.args[i].joiner->timer->record_gap);
         switch (param.fetcher) {
             case type_JM_NP_Fetcher:
                 param.args[i].fetcher = new JM_NP_Fetcher(nthreads, relR, relS, i, startTS,

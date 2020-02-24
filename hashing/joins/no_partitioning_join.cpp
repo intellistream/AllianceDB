@@ -278,8 +278,8 @@ npo_thread(void *param) {
  */
 void
 np_distribute(const relation_t *relR, const relation_t *relS, int nthreads, hashtable_t *ht, int32_t numR, int32_t numS,
-              int32_t numRthr, int32_t numSthr, int i, int rv, cpu_set_t &set, struct arg_t *args, pthread_t *tid,
-              pthread_attr_t &attr, barrier_t &barrier, const result_t *joinresult, T_TIMER *timer) {
+              int32_t numRthr, int32_t numSthr, int i, int rv, cpu_set_t &set, arg_t *args, pthread_t *tid,
+              pthread_attr_t &attr, barrier_t &barrier, const result_t *joinresult, T_TIMER *timer, int exp_id) {
     for (i = 0; i < nthreads; i++) {
         int cpu_idx = get_cpu_id(i);
 
@@ -298,6 +298,13 @@ np_distribute(const relation_t *relR, const relation_t *relS, int nthreads, hash
         args[i].relR.tuples = relR->tuples + numRthr * i;
         numR -= numRthr;
 
+        if (exp_id == 39) {//dataset=Rovio
+            args[i].timer->record_gap = 1000;
+        } else {
+            args[i].timer->record_gap = 1;
+        }
+
+        printf(" record_gap:%d\n", args[i].timer->record_gap);
         DEBUGMSG("Assigning #R=%d to thread %d\n", args[i].relR.num_tuples, i)
 
         /* assing part of the relS for next thread */
@@ -342,6 +349,7 @@ NPO(relation_t *relR, relation_t *relS, int nthreads, int exp_id) {
 #ifndef NO_TIMING
     T_TIMER timer[nthreads];//every thread has its own timer.
 #endif
+
     auto startTS = now();
     uint32_t nbuckets = (relR->num_tuples / BUCKET_SIZE);
     allocate_hashtable(&ht, nbuckets);
@@ -360,7 +368,7 @@ NPO(relation_t *relR, relation_t *relS, int nthreads, int exp_id) {
     pthread_attr_init(&attr);
     np_distribute(relR, relS, nthreads, ht, numR, numS, numRthr, numSthr,
                   i, rv, set, args, tid, attr, barrier,
-                  joinresult, timer);
+                  joinresult, timer, exp_id);
     /* wait for threads to finish */
     for (i = 0; i < nthreads; i++) {
         pthread_join(tid[i], NULL);

@@ -139,6 +139,7 @@ sortmergejoin_initrun(relation_t *relR, relation_t *relS, joinconfig_t *joincfg,
         } else {
             args[i].timer->record_gap = 1;
         }
+//        printf("record_gap:%d\n", timer->record_gap);
 
         args[i].relR = relR->tuples + i * (numperthr[0]);
         args[i].relS = relS->tuples + i * (numperthr[1]);

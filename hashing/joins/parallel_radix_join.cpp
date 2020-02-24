@@ -1362,7 +1362,7 @@ prj_thread(void *param) {
     SYNC_GLOBAL_STOP(&args->globaltimer->sync4, my_tid);
 
 #ifndef NO_TIMING
-    END_MEASURE_PARTITION( (args->timer) );/* partitioning finished */
+    END_MEASURE_PARTITION((args->timer));/* partitioning finished */
 //    BEGIN_MEASURE_BUILD( (args->timer) )
 #endif
 
@@ -1529,6 +1529,7 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads,
 
 #ifndef NO_TIMING
     T_TIMER timer[nthreads];//every thread has its own timer.
+
     auto startTS = now();
 #endif
 
@@ -1545,6 +1546,14 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads,
         pthread_attr_setaffinity_np(&attr, sizeof(cpu_set_t), &set);
 
         args[i].timer = &timer[i];
+
+        if (exp_id == 39) {//dataset=Rovio
+            args[i].timer->record_gap = 1000;
+        } else {
+            args[i].timer->record_gap = 1;
+        }
+//        printf(" record_gap:%d\n", args[i].timer->record_gap);
+
         args[i].relR = relR->tuples + i * numperthr[0];
         args[i].tmpR = tmpRelR;
         args[i].histR = histR;
@@ -1786,7 +1795,7 @@ RJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id) {
             tmpS.tuples = relS->tuples + s;
             s += S_count_per_cluster[i];
 
-            result += bucket_chaining_join(&tmpR, &tmpS, NULL, chainedbuf,  timer);
+            result += bucket_chaining_join(&tmpR, &tmpS, NULL, chainedbuf, timer);
         } else {
             r += R_count_per_cluster[i];
             s += S_count_per_cluster[i];
@@ -1805,7 +1814,7 @@ RJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id) {
     END_MEASURE_BUILD(timer)
     END_MEASURE(timer)
     /* now print the timing results: */
-    dump_breakdown(result,  timer, 0, nullptr);
+    dump_breakdown(result, timer, 0, nullptr);
 #endif
 
     /* clean-up temporary buffers */

@@ -122,7 +122,7 @@ void dump_breakdown(int64_t result, T_TIMER *timer, long lastTS, _IO_FILE *pFile
         fprintf(pFile, "\n");
         fprintf(pFile, "\n");
     } else {
-        fprintf(pFile, "[Warning] This thread does not matches any tuple.\n\n");
+        fprintf(stdout, "[Warning] This thread does not matches any tuple.\n\n");
     }
     fflush(pFile);
 }
