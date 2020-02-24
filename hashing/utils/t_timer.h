@@ -32,7 +32,9 @@ struct T_TIMER {
     uint64_t debuildtimer_pre = 0, debuildtimer = 0;//buildtimer is accumulated.
     uint64_t sorttimer_pre = 0, sorttimer = 0;//accumulate.
     uint64_t mergetimer_pre = 0, mergetimer = 0;//accumulate.
+    uint64_t join_partitiontimer_pre = 0, join_partitiontimer = 0;//join during partition.
     uint64_t join_mergetimer_pre = 0, join_mergetimer = 0;//join during merge.
+    uint64_t join_timer_pre = 0, join_timer = 0;//join.
     std::vector<std::chrono::milliseconds> recordR;
     std::vector<std::chrono::milliseconds> recordS;
     std::vector<uint64_t> recordRID;
@@ -92,6 +94,28 @@ void sortRecords(std::string algo_name, int exp_id, long lastTS);
 #ifndef END_MEASURE_JOIN_MERGE_ACC
 #define END_MEASURE_JOIN_MERGE_ACC(timer) \
      accTimer(&timer->join_mergetimer_pre, &timer->join_mergetimer); /* merge time */
+#endif
+
+
+#ifndef BEGIN_MEASURE_JOIN_PARTITION_ACC
+#define BEGIN_MEASURE_JOIN_PARTITION_ACC(timer) \
+    startTimer(&timer->join_partitiontimer_pre);
+#endif
+
+#ifndef END_MEASURE_JOIN_PARTITION_ACC
+#define END_MEASURE_JOIN_PARTITION_ACC(timer) \
+     accTimer(&timer->join_partitiontimer_pre, &timer->join_partitiontimer); /* join during partition */
+#endif
+
+
+#ifndef BEGIN_MEASURE_JOIN_ACC
+#define BEGIN_MEASURE_JOIN_ACC(timer) \
+    startTimer(&timer->join_timer_pre);
+#endif
+
+#ifndef END_MEASURE_JOIN_ACC
+#define END_MEASURE_JOIN_ACC(timer) \
+     accTimer(&timer->join_timer_pre, &timer->join_timer); /* join time */
 #endif
 
 #ifndef BEGIN_MEASURE_MERGE_ACC

@@ -323,16 +323,20 @@ sortmergejoin_multiway_thread(void *param) {
     check_sorted((int64_t *)tmpoutR, (int64_t *)tmpoutS,
                  mergeRtotal, mergeStotal, my_tid);
      */
-
+#ifndef NO_TIMING
+    BEGIN_MEASURE_JOIN_ACC(args->timer)
+#endif
     /*************************************************************************
      *
      *   Phase.4) NUMA-local merge-join on local sorted runs.
      *
      *************************************************************************/
     mergejoin_phase(partsR, partsS, &mergedRelR, &mergedRelS, args);
-
-    /* for proper timing */
-    BARRIER_ARRIVE(args->barrier, rv);
+#ifndef NO_TIMING
+    END_MEASURE_JOIN_ACC(args->timer)
+#endif
+//    /* for proper timing */
+//    BARRIER_ARRIVE(args->barrier, rv);
 
 #ifndef NO_TIMING
 //    END_MEASURE_JOIN(args->timer)/* join end */

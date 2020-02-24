@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pylab
 from matplotlib.font_manager import FontProperties
-from matplotlib.ticker import LinearLocator
 
 OPT_FONT_NAME = 'Helvetica'
 TICK_FONT_SIZE = 20
@@ -47,7 +46,7 @@ def ConvertEpsToPdf(dir_filename):
 # draw a line chart
 def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, allow_legend):
     # you may change the figure size on your own.
-    fig = plt.figure(figsize=(11, 3.2))
+    fig = plt.figure(figsize=(9, 4))
     figure = fig.add_subplot(111)
 
     FIGURE_LABEL = legend_labels
@@ -75,10 +74,12 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, al
                    frameon=False, borderaxespad=0.0, handlelength=2, labelspacing=0.2)
 
     # you may need to tune the xticks position to get the best figure.
-    plt.xticks(index + 0.7 * width, x_values)
+    plt.xticks(index + 0.5 * width, x_values)
+    # plt.autofmt_xdate()
+    plt.xticks(rotation=30)
     # plt.yscale('log')
     plt.grid(axis='y', color='gray')
-    # figure.yaxis.set_major_locator(LinearLocator(6))
+    figure.yaxis.set_major_locator(pylab.LinearLocator(6))
 
     figure.get_xaxis().set_tick_params(direction='in', pad=10)
     figure.get_yaxis().set_tick_params(direction='in', pad=10)
@@ -89,6 +90,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, al
     size = fig.get_size_inches()
     dpi = fig.get_dpi()
 
+    plt.tight_layout()
     plt.savefig(FIGURE_FOLDER + '/' + filename + '.pdf')
     # plt.savefig(FIGURE_FOLDER + "/" + filename + ".eps", bbox_inches='tight', format='eps')
     # ConvertEpsToPdf(FIGURE_FOLDER + "/" + filename)
@@ -110,10 +112,12 @@ def DrawLegend(legend_labels, filename):
                           linewidth=0.2)
 
     # LEGEND
-    figlegend = pylab.figure(figsize=(12, 1))
+    figlegend = pylab.figure(figsize=(11, 0.5))
     figlegend.legend(bars, FIGURE_LABEL, prop=LEGEND_FP, \
-                     loc=1, ncol=len(FIGURE_LABEL), mode="expand", shadow=False, \
-                     frameon=False, handlelength=2)
+                     loc=9,
+                     bbox_to_anchor=(0, 0.4, 1, 1),
+                     ncol=len(FIGURE_LABEL), mode="expand", shadow=False, \
+                     frameon=False, handlelength=1.5)
 
     figlegend.savefig(FIGURE_FOLDER + '/' + filename + '.pdf')
 
@@ -243,6 +247,6 @@ if __name__ == "__main__":
     # break into 4 parts
     legend_labels = ['wait', 'partition', 'build', 'sort', 'merge', 'join']
 
-    DrawFigure(x_values, y_values, legend_labels, 'percentage', 'cycles', 'breakdown_figure{}'.format(id), False)
+    DrawFigure(x_values, y_values, legend_labels, '', 'cycles', 'breakdown_figure{}'.format(id), False)
 
     DrawLegend(legend_labels, 'breakdown_legend')

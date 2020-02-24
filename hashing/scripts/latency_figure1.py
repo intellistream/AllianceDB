@@ -61,7 +61,9 @@ def DrawLegend(legend_labels, filename):
     # LEGEND
     figlegend = pylab.figure(figsize=(16, 0.7))
     figlegend.legend(bars, FIGURE_LABEL, prop=LEGEND_FP, \
-                     loc=1, ncol=len(FIGURE_LABEL), mode="expand", shadow=False, \
+                     loc=9,
+                     bbox_to_anchor=(0,0.1,1,1),
+                     ncol=len(FIGURE_LABEL), mode="expand", shadow=False, \
                      frameon=False, handlelength=1.5, handletextpad=0.2, columnspacing=0.1)
     figlegend.savefig(FIGURE_FOLDER + '/' + filename + '.pdf')
 

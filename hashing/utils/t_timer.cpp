@@ -89,32 +89,39 @@ void dump_breakdown(int64_t result, T_TIMER *timer, long lastTS, _IO_FILE *pFile
             timer->overall_timer += timer->wait_timer;
         } else {//eager join algorithms.
             timer->partition_timer -= timer->wait_timer;//exclude waiting time during tuple shuffling.
+            timer->partition_timer -= timer->join_partitiontimer;//exclude join time during tuple shuffling.
         }
+
+        timer->join_timer += timer->join_mergetimer;
+
         double cyclestuple = (timer->overall_timer) / result;
 
         //for system to read.
         //only take one thread to dump?
-        //WAIT, PART, BUILD, SORT, MERGE, JOIN
-        fprintf(pFile, "%lu\n%lu\n%lu\n%lu\n%lu\n%lu\n",
+        //WAIT, PART, BUILD, SORT, MERGE, JOIN, OTHERS
+        fprintf(pFile, "%lu\n%lu\n%lu\n%lu\n%lu\n%lu\n%lu\n",
                 timer->wait_timer,
                 timer->partition_timer,
                 timer->buildtimer,
                 timer->sorttimer,
                 timer->mergetimer,
+                timer->join_timer,
                 timer->overall_timer -
-                (timer->wait_timer + timer->partition_timer + timer->buildtimer + timer->sorttimer + timer->mergetimer)
+                (timer->wait_timer + timer->partition_timer + timer->buildtimer + timer->sorttimer + timer->mergetimer +
+                 timer->join_timer)
         );
         fprintf(pFile, "===\n");
 
         //for user to read.
-        fprintf(pFile, "[Info] RUNTIME TOTAL, WAIT, PART, BUILD, SORT, MERGE (cycles): \n");
-        fprintf(pFile, "%llu \t %llu (%.2f%%) \t %llu (%.2f%%) \t %llu (%.2f%%)  \t %llu (%.2f%%) ",
+        fprintf(pFile, "[Info] RUNTIME TOTAL, WAIT, PART, BUILD, SORT, MERGE, JOIN (cycles): \n");
+        fprintf(pFile, "%llu \t %llu (%.2f%%) \t %llu (%.2f%%) \t %llu (%.2f%%)  \t %llu (%.2f%%)  \t %llu (%.2f%%)",
                 timer->overall_timer,
                 timer->wait_timer, (timer->wait_timer * 100 / (double) timer->overall_timer),
                 timer->partition_timer, (timer->partition_timer * 100 / (double) timer->overall_timer),
                 timer->buildtimer, (timer->buildtimer * 100 / (double) timer->overall_timer),
                 timer->sorttimer, (timer->sorttimer * 100 / (double) timer->overall_timer),
-                timer->mergetimer, (timer->mergetimer * 100 / (double) timer->overall_timer)
+                timer->mergetimer, (timer->mergetimer * 100 / (double) timer->overall_timer),
+                timer->join_timer, (timer->mergetimer * 100 / (double) timer->overall_timer)
         );
         fprintf(pFile, "\n");
         fprintf(pFile, "TOTAL-TIME-USECS, NUM-TUPLES, CYCLES-PER-TUPLE: \n");

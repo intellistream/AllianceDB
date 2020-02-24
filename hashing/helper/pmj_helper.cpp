@@ -213,8 +213,15 @@ void sorting_phase(int32_t tid, tuple_t *inptrR, int sizeR, tuple_t *inptrS, int
         DEBUGMSG("===> %d-thread -> S is NOT sorted, size = %d\n", tid, sizeS)
     }
 #endif
-
+#ifndef NO_TIMING
+    BEGIN_MEASURE_JOIN_ACC(timer)
+#endif
     earlyJoinInitialRuns(outputR, outputS, sizeR, sizeS, matches, timer);
+
+#ifndef NO_TIMING
+    END_MEASURE_JOIN_ACC(timer)
+#endif
+
     DEBUGMSG("Insert Q.")
     insert(Q, outputR, sizeR, outputS, sizeS);
 }

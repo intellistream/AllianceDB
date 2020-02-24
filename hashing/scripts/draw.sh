@@ -7,11 +7,10 @@
 #  python latency_figure$idx.py
 #  python throughput_figure$idx.py
 #done
-
-#for id in {41..41}; do
+#
+#for id in {0..41}; do
 #  python progressive_figure.py -i $id
 #done
-
 
 for id in {0..41}; do
   python breakdown.py -i $id

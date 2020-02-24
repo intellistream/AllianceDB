@@ -43,7 +43,7 @@ algo=""
 Threads=32
 timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
-for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #
+for algo in SHJ_JBCR_NP PMJ_JBCR_NP; do #PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
   RSIZE=1
   SSIZE=1
   RPATH=""
@@ -52,7 +52,7 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #
   SKEY=0
   RTS=0
   STS=0
-  for benchmark in  "Rovio"; do #"Rovio" "Stock" "DEBS" "YSB" "Kim" "Stock" "DEBS" "YSB"
+  for benchmark in "Kim"; do #"Rovio" "Stock" "DEBS" "YSB" "Kim" "Stock" "DEBS" "YSB"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "Kim")

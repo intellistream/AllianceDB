@@ -32,6 +32,7 @@ struct T_TIMER {
     uint64_t sorttimer_pre = 0, sorttimer = 0;//accumulate.
     uint64_t mergetimer_pre = 0, mergetimer = 0;//accumulate.
     uint64_t join_mergetimer_pre = 0, join_mergetimer = 0;//join during merge.
+    uint64_t join_timer_pre = 0, join_timer = 0;//join.
     std::vector<std::chrono::milliseconds> recordR;
     std::vector<std::chrono::milliseconds> recordS;
     std::vector<uint64_t> recordRID;
@@ -79,6 +80,16 @@ void sortRecords(std::string algo_name, int exp_id, long lastTS);
 #ifndef END_MEASURE_SORT_ACC
 #define END_MEASURE_SORT_ACC(timer) \
      accTimer(&timer->sorttimer_pre, &timer->sorttimer); /* sort time */
+#endif
+
+#ifndef BEGIN_MEASURE_JOIN_ACC
+#define BEGIN_MEASURE_JOIN_ACC(timer) \
+    startTimer(&timer->join_timer_pre);
+#endif
+
+#ifndef END_MEASURE_JOIN_ACC
+#define END_MEASURE_JOIN_ACC(timer) \
+     accTimer(&timer->join_timer_pre, &timer->join_timer); /* join time */
 #endif
 
 #ifndef BEGIN_MEASURE_JOIN_MERGE_ACC

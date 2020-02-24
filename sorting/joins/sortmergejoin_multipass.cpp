@@ -285,8 +285,9 @@ sortmergejoin_multipass_thread(void *param) {
 
 //    check_sorted((int64_t *)tmpoutR, (int64_t *)tmpoutS,
 //                 mergeRtotal, mergeStotal, my_tid);
-
-
+#ifndef NO_TIMING
+    BEGIN_MEASURE_JOIN_ACC(args->timer)
+#endif
     /*************************************************************************
      *
      *   Phase.4) NUMA-local merge-join on local sorted runs.
@@ -294,9 +295,12 @@ sortmergejoin_multipass_thread(void *param) {
      *************************************************************************/
     mpass_mergejoin_phase(&mergedRelR, &mergedRelS, args);
 
+#ifndef NO_TIMING
+    END_MEASURE_JOIN_ACC(args->timer)
+#endif
 
     /* for proper timing */
-    BARRIER_ARRIVE(args->barrier, rv);
+//    BARRIER_ARRIVE(args->barrier, rv);
 //    if (my_tid == 0) {
 //        stopTimer(&args->join);
 //        gettimeofday(&args->end, NULL);

@@ -163,16 +163,16 @@ void
 
     //fetch: pointer points to state.fetch (*fetch = &(state->fetch))
     fetch_t *fetch;
+    BEGIN_MEASURE_PARTITION_ACC((args->timer))
     do {
-        BEGIN_MEASURE_PARTITION_ACC((args->timer))
+//        BEGIN_MEASURE_PARTITION_ACC((args->timer))
         fetch = fetcher->next_tuple();
         if (fetch != nullptr) {
             shuffler->push(fetch->tuple->key, fetch, false);//pass-in pointer points to state.fetch
         }
 #ifdef EAGER
         fetch = shuffler->pull(args->tid, false);//re-fetch from its shuffler.
-        END_MEASURE_PARTITION_ACC((args->timer))
-
+        BEGIN_MEASURE_JOIN_PARTITION_ACC(args->timer)
         if (fetch != nullptr) {
             args->joiner->join(
                     args->tid,
@@ -182,11 +182,13 @@ void
                     AGGFUNCTION,
                     chainedbuf);//build and probe at the same time.
         }
+        END_MEASURE_JOIN_PARTITION_ACC(args->timer)
 #endif
     } while (!fetcher->finish());
 
     /* wait at a barrier until each thread finishes fetch*/
     BARRIER_ARRIVE(args->barrier, rv)
+    END_MEASURE_PARTITION_ACC((args->timer))
     do {
         BEGIN_MEASURE_PARTITION_ACC((args->timer))
         fetch = shuffler->pull(args->tid, false);//re-fetch from its shuffler.
@@ -216,8 +218,7 @@ void
 #endif
 
 #ifndef NO_TIMING
-    stopTimer(&args->timer->overall_timer); /* overall */ \
-    gettimeofday(&args->timer->end, NULL);
+    END_MEASURE(args->timer)
 #endif
 
 #ifdef PERF_COUNTERS

@@ -1382,16 +1382,17 @@ prj_thread(void *param) {
 #else
     void *chainedbuf = NULL;
 #endif
+#ifndef NO_TIMING
+    BEGIN_MEASURE_JOIN_ACC(args->timer)
+#endif
 
     while ((task = task_queue_get_atomic(join_queue))) {
         /* do the actual join. join method differs for different algorithms,
            i.e. bucket chaining, histogram-based, histogram-based with simd &
            prefetching  */
         results += args->join_function(&task->relR, &task->relS, &task->tmpR, chainedbuf, args->timer);
-
         args->parts_processed++;
     }
-
     args->result = results;
 
 #ifdef JOIN_RESULT_MATERIALIZE
@@ -1400,25 +1401,14 @@ prj_thread(void *param) {
     args->threadresult->results  = (void *) chainedbuf;
 #endif
 
-
-//#ifndef NO_TIMING
-//    /* this is for just reliable timing of finish time */
-//    BARRIER_ARRIVE(args->barrier, rv);
-//    if (my_tid == 0) {
-//        /* Actually with this setup we're not timing build */
-//        END_MEASURE_BUILD((*(args->timer)))
-//        END_MEASURE((*(args->timer)))
-//    }
-//#endif
-
     /* global finish time */
 //    SYNC_GLOBAL_STOP(&args->globaltimer->finish_time, my_tid);
 
 #ifndef NO_TIMING
     /* Actually with this setup we're not timing build */
 //    END_MEASURE_BUILD(( args->timer) )
+    END_MEASURE_JOIN_ACC(args->timer)
     END_MEASURE(args->timer)
-
 #endif
 
 #ifdef PERF_COUNTERS

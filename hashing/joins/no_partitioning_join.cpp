@@ -225,6 +225,10 @@ npo_thread(void *param) {
     void *chainedbuf = NULL;
 #endif
 
+#ifndef NO_TIMING
+    BEGIN_MEASURE_JOIN_ACC(args->timer)
+#endif
+
     /* probe for matching tuples from the assigned part of relS */
     args->result = probe_hashtable(args->ht, &args->relS, chainedbuf, args->timer);
 
@@ -235,9 +239,8 @@ npo_thread(void *param) {
 #endif
 
 #ifndef NO_TIMING
-//    END_MEASURE(&args->timer)
-    stopTimer(&args->timer->overall_timer); /* overall */ \
-    gettimeofday(&args->timer->end, NULL);
+    END_MEASURE_JOIN_ACC(args->timer)
+    END_MEASURE(args->timer)
 #endif
 
 #ifdef PERF_COUNTERS

@@ -84,13 +84,17 @@ void SHJJoiner::join(int32_t tid, tuple_t *tuple, bool ISTupleR, int64_t *matche
         build_hashtable_single(htR, tuple, hashmask_R, skipbits_R);//(1)
         END_MEASURE_BUILD_ACC(timer)//accumulate hash table build time.
 
-        proble_hashtable_single_measure(htS,
-                                        tuple, hashmask_S, skipbits_S, matches, thread_fun, timer, ISTupleR);//(2)
+        BEGIN_MEASURE_JOIN_ACC(timer)
+        proble_hashtable_single_measure(htS,tuple, hashmask_S, skipbits_S, matches, thread_fun, timer, ISTupleR);//(2)
+        END_MEASURE_JOIN_ACC(timer)
     } else {
         BEGIN_MEASURE_BUILD_ACC(timer)
         build_hashtable_single(htS, tuple, hashmask_S, skipbits_S);//(3)
         END_MEASURE_BUILD_ACC(timer)//accumulate hash table build time.
+
+        BEGIN_MEASURE_JOIN_ACC(timer)
         proble_hashtable_single_measure(htR, tuple, hashmask_R, skipbits_R, matches, thread_fun, timer, ISTupleR);//(4)
+        END_MEASURE_JOIN_ACC(timer)
     }
 }
 
