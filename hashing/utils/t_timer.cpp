@@ -122,7 +122,7 @@ void dump_breakdown(int64_t result, T_TIMER *timer, long lastTS, _IO_FILE *pFile
                 timer->buildtimer, (timer->buildtimer * 100 / (double) timer->overall_timer),
                 timer->sorttimer, (timer->sorttimer * 100 / (double) timer->overall_timer),
                 timer->mergetimer, (timer->mergetimer * 100 / (double) timer->overall_timer),
-                timer->join_timer, (timer->mergetimer * 100 / (double) timer->overall_timer)
+                timer->join_timer, (timer->join_timer * 100 / (double) timer->overall_timer)
         );
         fprintf(pFile, "\n");
         fprintf(pFile, "TOTAL-TIME-USECS, NUM-TUPLES, CYCLES-PER-TUPLE: \n");
