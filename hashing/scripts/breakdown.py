@@ -245,7 +245,7 @@ if __name__ == "__main__":
     # y_norm_values = normalize(y_values)
 
     # break into 4 parts
-    legend_labels = ['wait', 'partition', 'build', 'sort', 'merge', 'join']
+    legend_labels = ['wait', 'partition', 'build', 'sort', 'merge', 'join', 'others']
 
     DrawFigure(x_values, y_values, legend_labels, '', 'cycles', 'breakdown_figure{}'.format(id), False)
 
