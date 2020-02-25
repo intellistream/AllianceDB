@@ -1440,7 +1440,7 @@ prj_thread(void *param) {
  * - PRHO, Parallel Radix Histogram-based Optimized -> histogram_optimized_join()
  */
 result_t *
-join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads, int exp_id) {
+join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads,int exp_id, int group_size) {
     int i, rv;
     pthread_t tid[nthreads];
     pthread_attr_t attr;
@@ -1656,25 +1656,25 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads,
 
 /** \copydoc PRO */
 result_t *
-PRO(relation_t *relR, relation_t *relS, int nthreads, int exp_id) {
-    return join_init_run(relR, relS, bucket_chaining_join, nthreads, exp_id);
+PRO(relation_t *relR, relation_t *relS, int nthreads,int exp_id, int group_size) {
+    return join_init_run(relR, relS, bucket_chaining_join, nthreads, exp_id, group_size);
 }
 
 /** \copydoc PRH */
 result_t *
-PRH(relation_t *relR, relation_t *relS, int nthreads, int exp_id) {
-    return join_init_run(relR, relS, histogram_join, nthreads, exp_id);
+PRH(relation_t *relR, relation_t *relS, int nthreads,int exp_id, int group_size) {
+    return join_init_run(relR, relS, histogram_join, nthreads, exp_id, group_size);
 }
 
 /** \copydoc PRHO */
 result_t *
-PRHO(relation_t *relR, relation_t *relS, int nthreads, int exp_id) {
-    return join_init_run(relR, relS, histogram_optimized_join, nthreads, exp_id);
+PRHO(relation_t *relR, relation_t *relS, int nthreads,int exp_id, int group_size) {
+    return join_init_run(relR, relS, histogram_optimized_join, nthreads, exp_id, group_size);
 }
 
 /** \copydoc RJ */
 result_t *
-RJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id) {
+RJ_st(relation_t *relR, relation_t *relS, int nthreads,int exp_id, int group_size) {
     int64_t result = 0;
     result_t *joinresult;
     uint32_t i;

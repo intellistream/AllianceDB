@@ -137,7 +137,7 @@ def normalize(y_values):
 # example for reading csv file
 def ReadFile(id):
     # Creates a list containing 6 lists, each of 8 items, all set to 0
-    w, h = 8, 7;
+    w, h = 8, 7
     y = [[0 for x in range(w)] for y in range(h)]
 
     cnt = 0
