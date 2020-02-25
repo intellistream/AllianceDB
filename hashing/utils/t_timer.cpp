@@ -114,7 +114,8 @@ void dump_breakdown(int64_t result, T_TIMER *timer, long lastTS, _IO_FILE *pFile
 
         //for user to read.
         fprintf(pFile, "[Info] RUNTIME TOTAL, WAIT, PART, BUILD, SORT, MERGE, JOIN (cycles): \n");
-        fprintf(pFile, "%llu \t %llu (%.2f%%) \t %llu (%.2f%%) \t %llu (%.2f%%)  \t %llu (%.2f%%)  \t %llu (%.2f%%)",
+        fprintf(pFile, "%llu \t %llu (%.2f%%) \t %llu (%.2f%%) \t %llu (%.2f%%)  "
+                       "\t %llu (%.2f%%)  \t %llu (%.2f%%) \t %llu (%.2f%%)",
                 timer->overall_timer,
                 timer->wait_timer, (timer->wait_timer * 100 / (double) timer->overall_timer),
                 timer->partition_timer, (timer->partition_timer * 100 / (double) timer->overall_timer),
