@@ -14,14 +14,11 @@
 #include <fstream>
 #include <cmath>
 #include "types.h"
-
-
 #include <chrono>
 
 using namespace std::chrono;
 
 #define MEASURE
-
 //thread_local structure.
 struct T_TIMER {
 #ifdef MEASURE
@@ -42,8 +39,6 @@ struct T_TIMER {
     int record_cnt = 0;
     int record_gap = 1;
 #endif
-
-
 };
 
 milliseconds now();
