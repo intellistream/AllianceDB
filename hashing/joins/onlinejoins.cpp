@@ -42,12 +42,16 @@ void initialize(int nthreads, const t_param &param) {
 }
 
 t_param &finishing(int nthreads, t_param &param, milliseconds *startTS) {
+
     int i;
     for (i = 0; i < nthreads; i++) {
         if (param.tid[i] != -1)
             pthread_join(param.tid[i], NULL);
         /* sum up results */
         param.result += *param.args[i].matches;
+    }
+
+    for (i = 0; i < nthreads; i++) {
 #ifdef MEASURE
         merge(param.args[i].timer, param.args[i].fetcher->relR, param.args[i].fetcher->relS, startTS);
 #endif
