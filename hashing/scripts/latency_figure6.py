@@ -19,7 +19,7 @@ MARKERS = (['o', 's', 'v', "^", "h", "v", ">", "x", "d", "<", "|", "", "+", "_"]
 # you may want to change the color map for different figures
 COLOR_MAP = ('#F15854', '#5DA5DA', '#60BD68', '#B276B2', '#DECF3F', '#F17CB0', '#B2912F', '#FAA43A', '#AFAFAF')
 # you may want to change the patterns for different figures
-PATTERNS = (["////", "\\\\", "|||", "o", "---", "\\\\", "\\\\", "//////", "//////", ".", "\\\\\\", "\\\\\\"])
+PATTERNS = (["|", "\\", "/", "+", "-", ".", "*", "x", "o", "O", "////", ".", "|||", "o", "---", "+", "\\\\", "*"])
 LABEL_WEIGHT = 'bold'
 LINE_COLORS = COLOR_MAP
 LINE_WIDTH = 3.0

@@ -175,7 +175,7 @@ def DrawLegend(legend_labels, filename):
     MARKER_SIZE = 12.0
     LEGEND_FP = FontProperties(style='normal', size=26)
 
-    figlegend = pylab.figure(figsize=(15, 0.3))
+    figlegend = pylab.figure(figsize=(16, 0.3))
     idx = 0
     lines = [None] * (len(FIGURE_LABEL))
     data = [1]
@@ -275,16 +275,18 @@ if __name__ == "__main__":
 
     legend_labels = ['PRJ', 'NPJ', 'M-PASS', 'M-WAY', 'SHJ$^M$', 'SHJ$^B$', 'PMJ$^M$', 'PMJ$^B$']
 
-    S = 1 ##only when Ro set to 25102718
-    maxts, N, col1, col2, col3, col4, col5, col6, col7, col8 = ReadFile(S, id)
+    if id == 39:#only when Ro set to 25102718
+        S = 358850
+    elif id == 41:
+        S =25103314
+    else:
+        S = 1  #
+        maxts, N, col1, col2, col3, col4, col5, col6, col7, col8 = ReadFile(S, id)
+        S = floor(N / 10)
 
-    S = floor(N / 10)
-
-    print("N:", N)
     print("S:", S)
-
     maxts, N, col1, col2, col3, col4, col5, col6, col7, col8 = ReadFile(S, id)
-
+    print("N:", N)
     col0 = []
     for x in range(1, N + 1):
         col0.append(x * S)
