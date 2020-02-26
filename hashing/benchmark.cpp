@@ -33,8 +33,9 @@ int check_avx() {
     return 1; /* has AVX support! */
 }
 
+// TODO: why need so many parameters, only need cmd_params inside.
 void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int32_t tsKey, const param_t &cmd_params,
-                    char *loadfile, uint64_t rel_size, uint32_t seed, const int step_size) {
+                    char *loadfile, uint32_t seed, const int step_size) {
     seed_generator(seed);
     /* to pass information to the create_relation methods */
     numalocalize = cmd_params.basic_numa;
@@ -46,13 +47,8 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int
 //        perror("step size should be bigger than the number of threads!");
 //        return;
 //    }
-    rel_size = rel->num_tuples;
+    uint64_t rel_size = rel->num_tuples;
     relPl->num_tuples = rel->num_tuples;
-//    } else {
-//        /** first allocate the memory for relations (+ padding based on numthreads) : */
-//        rel->num_tuples = cmd_params.r_size;
-//        relPl->num_tuples = rel->num_tuples;
-//    }
 
     fprintf(stdout,
             "[INFO ] %s relation with size = %.3lf MiB, #tuples = %llu : ",
@@ -149,7 +145,6 @@ benchmark(const param_t cmd_params) {
     relS.payload = new relation_payload_t();
 
     result_t *results;
-    // TODO: generate dataset
     /* create relation R */
 
     if (cmd_params.old_param) {
@@ -158,7 +153,6 @@ benchmark(const param_t cmd_params) {
         relR.num_tuples = (cmd_params.window_size / cmd_params.interval) * cmd_params.step_sizeR;
     }
     createRelation(&relR, relR.payload, cmd_params.rkey, cmd_params.rts, cmd_params, cmd_params.loadfileR,
-                   cmd_params.r_size,
                    cmd_params.r_seed, cmd_params.step_sizeR);
     DEBUGMSG("relR [aligned:%d]: %s", is_aligned(relR.tuples, CACHE_LINE_SIZE),
              print_relation(relR.tuples, min((uint64_t) 1000, cmd_params.r_size)).c_str());
@@ -175,12 +169,9 @@ benchmark(const param_t cmd_params) {
             relS.num_tuples = (cmd_params.window_size / cmd_params.interval) * cmd_params.step_sizeS;
     }
     createRelation(&relS, relS.payload, cmd_params.skey, cmd_params.sts, cmd_params, cmd_params.loadfileS,
-                   cmd_params.s_size,
                    cmd_params.s_seed, cmd_params.step_sizeS);
     DEBUGMSG("relS [aligned:%d]: %s", is_aligned(relS.tuples, CACHE_LINE_SIZE),
              print_relation(relS.tuples, min((uint64_t) 1000, cmd_params.s_size)).c_str());
-
-    // TODO: Execute query with dataset, need to submit a join function
 
 //    string path = "/data1/xtra/datasets/Kim/data_distribution_zipf" + std::to_string(cmd_params.zipf_param) + ".txt";
 //    writefile(relR.payload, cmd_params);

@@ -61,18 +61,26 @@ fetch_t *PMJ_HS_NP_Fetcher::next_tuple() {
             if (min_gap > timegap) {//S is nearest.
                 min_gap = timegap;
                 DEBUGMSG("Thread %d is going to sleep for %d before get S", tid, min_gap)
+#ifndef NO_TIMING
                 BEGIN_MEASURE_WAIT_ACC((timer))
+#endif
                 this_thread::sleep_for(min_gap);
+#ifndef NO_TIMING
                 END_MEASURE_WAIT_ACC((timer))
+#endif
                 state->fetch.fat_tuple = readS;
                 state->fetch.ISTuple_R = false;
                 state->start_index_S += state->fetch.fat_tuple_size;
                 return &(state->fetch);
             } else if (readR != nullptr) {//R is nearest.
                 DEBUGMSG("Thread %d is going to sleep for %d before get R", tid, min_gap)
+#ifndef NO_TIMING
                 BEGIN_MEASURE_WAIT_ACC((timer))
+#endif
                 this_thread::sleep_for(min_gap);
+#ifndef NO_TIMING
                 END_MEASURE_WAIT_ACC((timer))
+#endif
                 state->fetch.fat_tuple = readR;
                 state->fetch.ISTuple_R = true;
                 state->start_index_R += state->fetch.fat_tuple_size;
@@ -140,9 +148,13 @@ fetch_t *baseFetcher::next_tuple() {
             if (min_gap > timegap) {//S is nearest.
                 min_gap = timegap;
                 DEBUGMSG("Thread %d is going to sleep for %d before get S", tid, min_gap);
+#ifndef NO_TIMING
                 BEGIN_MEASURE_WAIT_ACC((timer))
+#endif
                 this_thread::sleep_for(min_gap);
+#ifndef NO_TIMING
                 END_MEASURE_WAIT_ACC((timer))
+#endif
                 state->fetch.tuple = readS;
                 state->fetch.ISTuple_R = false;
                 state->start_index_S++;
@@ -150,9 +162,13 @@ fetch_t *baseFetcher::next_tuple() {
                 return &(state->fetch);
             } else if (readR != nullptr) {//R is nearest.
                 DEBUGMSG("Thread %d is going to sleep for %d before get R", tid, min_gap);
+#ifndef NO_TIMING
                 BEGIN_MEASURE_WAIT_ACC((timer))
+#endif
                 this_thread::sleep_for(min_gap);
+#ifndef NO_TIMING
                 END_MEASURE_WAIT_ACC((timer))
+#endif
                 state->fetch.tuple = readR;
                 state->fetch.ISTuple_R = true;
                 state->start_index_R++;

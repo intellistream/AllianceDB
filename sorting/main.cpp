@@ -479,14 +479,14 @@ int check_avx() {
 
 void
 createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int32_t tsKey, const cmdparam_t &cmd_params,
-               char *loadfile, uint64_t rel_size, uint32_t seed, int step_size) {
+               char *loadfile, uint32_t seed, int step_size) {
     seed_generator(seed);
     /* to pass information to the create_relation methods */
     auto nthreads = cmd_params.nthreads;
 
 //    if (cmd_params.kim) {
     // calculate num of tuples by params
-    rel_size = rel->num_tuples;
+    uint64_t rel_size = rel->num_tuples;
     relPl->num_tuples = rel->num_tuples;
 //    } else {
 //        /** first allocate the memory for relations (+ padding based on numthreads) : */
@@ -631,7 +631,6 @@ main(int argc, char *argv[]) {
         relR.num_tuples = (cmd_params.window_size / cmd_params.interval) * cmd_params.step_sizeR;
     }
     createRelation(&relR, relR.payload, cmd_params.rkey, cmd_params.rts, cmd_params, cmd_params.loadfileR,
-                   cmd_params.r_size,
                    cmd_params.r_seed, cmd_params.step_sizeR);
     if (cmd_params.old_param) {
         relS.num_tuples = cmd_params.s_size;
@@ -642,7 +641,6 @@ main(int argc, char *argv[]) {
             relS.num_tuples = (cmd_params.window_size / cmd_params.interval) * cmd_params.step_sizeS;
     }
     createRelation(&relS, relS.payload, cmd_params.skey, cmd_params.sts, cmd_params, cmd_params.loadfileS,
-                   cmd_params.s_size,
                    cmd_params.s_seed, cmd_params.step_sizeS);
 
     /* setup join configuration parameters */

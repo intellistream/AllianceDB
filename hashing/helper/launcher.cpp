@@ -7,7 +7,7 @@
 
 void
 launch(int nthreads, relation_t *relR, relation_t *relS, t_param param, void *(*thread_fun)(void *),
-       milliseconds *startTS) {
+       milliseconds *startTS, milliseconds *joinStart) {
     int i;
     int rv;
     cpu_set_t set;
@@ -36,12 +36,14 @@ launch(int nthreads, relation_t *relR, relation_t *relS, t_param param, void *(*
                 break;
         }
 
+#ifndef NO_TIMING
         if (param.exp_id == 39) {//dataset=Rovio
             param.args[i].joiner->timer->record_gap = 1000;
         } else {
             param.args[i].joiner->timer->record_gap = 1;
         }
 //        printf("record_gap:%d\n", param.args[i].joiner->timer->record_gap);
+#endif
 
         param.args[i].nthreads = nthreads;
         param.args[i].tid = i;
@@ -76,6 +78,10 @@ launch(int nthreads, relation_t *relR, relation_t *relS, t_param param, void *(*
             exit(-1);
         }
 //        printf("Launch thread[%d] :%lu\n", param.args[i].tid, param.tid[i]);
+
+        // TODO: add a timer here, need to have global view?
+        *joinStart = now();
+
         fflush(stdout);
     }
 }

@@ -79,6 +79,7 @@ dump_timing(std::vector<std::chrono::milliseconds> vector, std::vector<int64_t> 
  * @param lastTS  in millseconds, lazy algorithms have to wait until very last tuple arrive before proceed.
  */
 void dump_breakdown(int64_t result, T_TIMER *timer, long lastTS, _IO_FILE *pFile) {
+#ifndef NO_TIMING
     if (result != 0) {
 
         double diff_usec = (((timer->end).tv_sec * 1000000L + (timer->end).tv_usec)
@@ -133,6 +134,7 @@ void dump_breakdown(int64_t result, T_TIMER *timer, long lastTS, _IO_FILE *pFile
         fprintf(stdout, "[Warning] This thread does not matches any tuple.\n\n");
     }
     fflush(pFile);
+#endif
 }
 
 milliseconds actual_start_timestamp;
@@ -140,7 +142,7 @@ std::vector<std::chrono::milliseconds> global_record;
 std::vector<int64_t> global_record_latency;
 
 void merge(T_TIMER *timer, relation_t *relR, relation_t *relS, milliseconds *startTS) {
-#ifdef MEASURE
+#ifndef NO_TIMING
     //For progressiveness measurement
     actual_start_timestamp = *startTS;
     for (auto i = 0; i < timer->recordR.size(); i++) {

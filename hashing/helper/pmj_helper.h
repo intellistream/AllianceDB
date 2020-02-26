@@ -110,7 +110,7 @@ struct sweepArea {
             } else {  //perform join.
                 if (EqualPredicate(it.operator*(), tuple)) {
                     (*matches)++;
-#ifdef MEASURE
+#ifndef NO_TIMING
                     END_PROGRESSIVE_MEASURE(tuple->payloadID, (timer),ISTupleR)
 #endif
                 }

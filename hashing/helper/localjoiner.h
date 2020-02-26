@@ -31,12 +31,12 @@ class baseJoiner {
 public:
 
     virtual void join(int32_t tid, tuple_t *tuple, bool tuple_R, int64_t *matches,
-                      void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid) = 0;
+                      /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ void *pVoid) = 0;
 
     virtual void clean(int32_t tid, tuple_t *tuple, bool cleanR) = 0;
 
     virtual long
-    merge(int32_t tid, int64_t *matches, void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),
+    merge(int32_t tid, int64_t *matches, /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/
           void *pVoid) {
         //do nothing.
     }
@@ -46,16 +46,16 @@ public:
     }
 
     virtual void join(int32_t tid, tuple_t *fat_tuple, int fat_tuple_size, bool IStuple_R, int64_t *matches,
-                      void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid) {
+                      /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ void *pVoid) {
         //only supported by PMJ.
     }
 
 //every joiner has its own timer --> this completely avoids interference.
 //dump the measurement into file and analysis the results when program exit.
     int64_t matches = 0;
-#ifndef NO_TIMING
+//#ifndef NO_TIMING
     T_TIMER *timer = new T_TIMER();
-#endif
+//#endif
 };
 
 
@@ -70,7 +70,7 @@ private:
 public:
     void
     join(int32_t tid, tuple_t *tuple, bool ISTupleR, int64_t *matches,
-         void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid) override;
+         /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ void *pVoid) override;
 
     RippleJoiner(relation_t *relR, relation_t *relS, int nthreads);
 
@@ -130,13 +130,13 @@ public:
 
     void
     join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *matches,
-         void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid);
+         /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ void *pVoid);
 
     void join(int32_t tid, tuple_t *fat_tuple, int fat_tuple_size, bool IStuple_R, int64_t *matches,
-              void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid);
+              /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ void *pVoid);
 
     long
-    merge(int32_t tid, int64_t *matches, void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),
+    merge(int32_t tid, int64_t *matches, /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/
           void *pVoid) override;
 
     void clean(int32_t tid, tuple_t *tuple, bool cleanR);
@@ -162,7 +162,7 @@ public:
 
     void
     join(int32_t tid, tuple_t *tuple, bool ISTupleR, int64_t *matches,
-         void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid) override;
+         /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ void *pVoid) override;
 
     void clean(int32_t tid, tuple_t *tuple, bool cleanR) override;
 };

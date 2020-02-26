@@ -20,13 +20,14 @@
  * @return
  */
 //void* JOINFUNCTION(tuple_t *r_tuple, tuple_t *s_tuple, int64_t *matches) {
+#ifdef AGG_FUNCTION
 void *AGGFUNCTION(const tuple_t *r_tuple, const tuple_t *s_tuple, int64_t *matches) {
     if (r_tuple->key == s_tuple->key) {
 //        (*matches)++;
         DEBUGMSG("matches: r:%d with s:%d", r_tuple->key, s_tuple->key);
     }
 }
-
+#endif
 /**
  * Just a wrapper to call the _shj_st
  *
@@ -76,16 +77,22 @@ THREAD_TASK_NOSHUFFLE(void *param) {
 //        /* Handle error */ }
 //
     do {
+#ifndef NO_TIMING
         BEGIN_MEASURE_PARTITION_ACC(args->timer)
+#endif
+
         fetch_t *fetch = fetcher->next_tuple();
+
+#ifndef NO_TIMING
         END_MEASURE_PARTITION_ACC(args->timer)
+#endif
         if (fetch != nullptr) {
             args->joiner->join(
                     args->tid,
                     fetch->tuple,
                     fetch->ISTuple_R,
                     args->matches,
-                    AGGFUNCTION,
+//                    AGGFUNCTION,
                     chainedbuf);//build and probe at the same time.
         }
     } while (!fetcher->finish());
@@ -93,7 +100,7 @@ THREAD_TASK_NOSHUFFLE(void *param) {
     args->joiner->merge(
             args->tid,
             args->matches,
-            AGGFUNCTION,
+//            AGGFUNCTION,
             chainedbuf);
 
     DEBUGMSG("args->num_results (%d): %ld\n", args->tid, *args->matches);
@@ -163,7 +170,9 @@ void
 
     //fetch: pointer points to state.fetch (*fetch = &(state->fetch))
     fetch_t *fetch;
+#ifndef NO_TIMING
     BEGIN_MEASURE_PARTITION_ACC((args->timer))
+#endif
     do {
 //        BEGIN_MEASURE_PARTITION_ACC((args->timer))
         fetch = fetcher->next_tuple();
@@ -172,40 +181,50 @@ void
         }
 #ifdef EAGER
         fetch = shuffler->pull(args->tid, false);//re-fetch from its shuffler.
+#ifndef NO_TIMING
         BEGIN_MEASURE_JOIN_PARTITION_ACC(args->timer)
+#endif
         if (fetch != nullptr) {
             args->joiner->join(
                     args->tid,
                     fetch->tuple,
                     fetch->ISTuple_R,
                     args->matches,
-                    AGGFUNCTION,
+//                    AGGFUNCTION,
                     chainedbuf);//build and probe at the same time.
         }
+#ifndef NO_TIMING
         END_MEASURE_JOIN_PARTITION_ACC(args->timer)
+#endif
 #endif
     } while (!fetcher->finish());
 
     /* wait at a barrier until each thread finishes fetch*/
     BARRIER_ARRIVE(args->barrier, rv)
+#ifndef NO_TIMING
     END_MEASURE_PARTITION_ACC((args->timer))
+#endif
     do {
+#ifndef NO_TIMING
         BEGIN_MEASURE_PARTITION_ACC((args->timer))
+#endif
         fetch = shuffler->pull(args->tid, false);//re-fetch from its shuffler.
+#ifndef NO_TIMING
         END_MEASURE_PARTITION_ACC((args->timer))
+#endif
         if (fetch != nullptr) {
             args->joiner->join(
                     args->tid,
                     fetch->tuple,
                     fetch->ISTuple_R,
                     args->matches,
-                    AGGFUNCTION,
+//                    AGGFUNCTION,
                     chainedbuf);
         } else {
             args->joiner->merge(
                     args->tid,
                     args->matches,
-                    AGGFUNCTION,
+//                    AGGFUNCTION,
                     chainedbuf);
             break;
         }
@@ -269,7 +288,7 @@ processLeft(arg_t *args, fetch_t *fetch, int64_t *matches, void *chainedbuf) {
                 fetch->tuple,
                 fetch->ISTuple_R,
                 matches,
-                AGGFUNCTION,
+//                AGGFUNCTION,
                 chainedbuf);
     }
 }
@@ -303,7 +322,7 @@ processLeft_PMJ(arg_t *args, fetch_t *fetch, int64_t *matches, void *chainedbuf)
                 fetch->fat_tuple_size,
                 fetch->ISTuple_R,
                 matches,
-                AGGFUNCTION,
+//                AGGFUNCTION,
                 chainedbuf);
     }
 }
@@ -330,7 +349,7 @@ processRight(baseShuffler *shuffler, arg_t *args, fetch_t *fetch, int64_t *match
                 fetch->tuple,
                 fetch->ISTuple_R,
                 matches,
-                AGGFUNCTION,
+//                AGGFUNCTION,
                 chainedbuf);//build and probe at the same time.
     }
 
@@ -367,7 +386,7 @@ processRight_PMJ(baseShuffler *shuffler, arg_t *args, fetch_t *fetch, int64_t *m
                 fetch->fat_tuple_size,
                 fetch->ISTuple_R,
                 matches,
-                AGGFUNCTION,
+//                AGGFUNCTION,
                 chainedbuf);//build and probe at the same time.
     }
 
@@ -530,7 +549,7 @@ void
     args->joiner->merge(
             args->tid,
             args->matches,
-            AGGFUNCTION,
+//            AGGFUNCTION,
             chainedbuf);
 
 #ifdef JOIN_RESULT_MATERIALIZE

@@ -167,9 +167,9 @@ struct arg_t {
 
     /* stats about the thread */
     int32_t parts_processed;
-#ifndef NO_TIMING
+//#ifndef NO_TIMING
     T_TIMER *timer;
-#endif
+//#endif
 #ifdef SYNCSTATS
     /** Thread local timers : */
     synctimer_t localtimer;
@@ -340,7 +340,7 @@ bucket_chaining_join(const relation_t *const R,
                 joinres->payload  = Stuples[i].payload;     /* S-rid */
 #endif
                 matches++;
-#ifdef MEASURE
+#ifndef NO_TIMING
                 END_PROGRESSIVE_MEASURE(Stuples[i].payloadID, (timer), false)//assume S as the input tuple.
 #endif
             }
@@ -1517,9 +1517,8 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads,
     args[0].globaltimer = (synctimer_t*) malloc(sizeof(synctimer_t));
 #endif
 
+T_TIMER timer[nthreads];//every thread has its own timer.
 #ifndef NO_TIMING
-    T_TIMER timer[nthreads];//every thread has its own timer.
-
     auto startTS = now();
 #endif
 
@@ -1537,12 +1536,14 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads,
 
         args[i].timer = &timer[i];
 
+#ifndef NO_TIMING
         if (exp_id == 39) {//dataset=Rovio
             args[i].timer->record_gap = 1000;
         } else {
             args[i].timer->record_gap = 1;
         }
 //        printf(" record_gap:%d\n", args[i].timer->record_gap);
+#endif
 
         args[i].relR = relR->tuples + i * numperthr[0];
         args[i].tmpR = tmpRelR;
@@ -1699,8 +1700,8 @@ RJ_st(relation_t *relR, relation_t *relS, int nthreads,int exp_id, int group_siz
     outRelS->tuples = (tuple_t *) malloc(sz);
     outRelS->num_tuples = relS->num_tuples;
 
-#ifndef NO_TIMING
     T_TIMER *timer = new T_TIMER();
+#ifndef NO_TIMING
     START_MEASURE(timer)
     BEGIN_MEASURE_PARTITION(timer)
 #endif

@@ -69,9 +69,9 @@ struct arg_t {
     /* results of the thread */
     threadresult_t *threadresult;
 
-#ifndef NO_TIMING
+//#ifndef NO_TIMING
     T_TIMER *timer;
-#endif
+//#endif
     int64_t result;
 };
 
@@ -122,8 +122,8 @@ NPO_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_s
     joinresult->resultlist = (threadresult_t *) malloc(sizeof(threadresult_t));
 #endif
 
-#ifndef NO_TIMING
     T_TIMER *timer = new T_TIMER();
+#ifndef NO_TIMING
     START_MEASURE(timer)
     BEGIN_MEASURE_BUILD(timer)
 #endif
@@ -302,13 +302,15 @@ np_distribute(const relation_t *relR, const relation_t *relS, int nthreads, hash
         args[i].relR.tuples = relR->tuples + numRthr * i;
         numR -= numRthr;
 
+#ifndef NO_TIMING
         if (exp_id == 39) {//dataset=Rovio
             args[i].timer->record_gap = 1000;
         } else {
             args[i].timer->record_gap = 1;
         }
-
         printf(" record_gap:%d\n", args[i].timer->record_gap);
+#endif
+
         DEBUGMSG("Assigning #R=%d to thread %d\n", args[i].relR.num_tuples, i)
 
         /* assing part of the relS for next thread */
@@ -350,9 +352,9 @@ NPO(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size
                                                        * nthreads);
 #endif
 
-#ifndef NO_TIMING
+//#ifndef NO_TIMING
     T_TIMER timer[nthreads];//every thread has its own timer.
-#endif
+//#endif
 
     auto startTS = now();
     uint32_t nbuckets = (relR->num_tuples / BUCKET_SIZE);

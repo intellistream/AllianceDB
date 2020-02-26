@@ -42,11 +42,11 @@ shj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid) {
 #endif
     do {
         if (index_R < rel_R->num_tuples) {
-            joiner.join(tid, &rel_R->tuples[index_R], true, &joiner.matches, NULL, pVoid);
+            joiner.join(tid, &rel_R->tuples[index_R], true, &joiner.matches, /*NULL,*/ pVoid);
             index_R++;
         }
         if (index_S < rel_S->num_tuples) {
-            joiner.join(tid, &rel_S->tuples[index_S], false, &joiner.matches, NULL, pVoid);
+            joiner.join(tid, &rel_S->tuples[index_S], false, &joiner.matches,/* NULL,*/ pVoid);
             index_S++;
         }
     } while (index_R < rel_R->num_tuples || index_S < rel_S->num_tuples);
@@ -71,7 +71,7 @@ shj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid) {
  * @return
  */
 void SHJJoiner::join(int32_t tid, tuple_t *tuple, bool ISTupleR, int64_t *matches,
-                     void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid) {
+                     /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ void *pVoid) {
 
     const uint32_t hashmask_R = htR->hash_mask;
     const uint32_t skipbits_R = htR->skip_bits;
@@ -80,21 +80,37 @@ void SHJJoiner::join(int32_t tid, tuple_t *tuple, bool ISTupleR, int64_t *matche
 
 //    DEBUGMSG(1, "JOINING: tid: %d, tuple: %d, R?%d\n", tid, tuple->key, tuple_R)
     if (ISTupleR) {
+#ifndef NO_TIMING
         BEGIN_MEASURE_BUILD_ACC(timer)
+#endif
         build_hashtable_single(htR, tuple, hashmask_R, skipbits_R);//(1)
+#ifndef NO_TIMING
         END_MEASURE_BUILD_ACC(timer)//accumulate hash table build time.
+#endif
 
+#ifndef NO_TIMING
         BEGIN_MEASURE_JOIN_ACC(timer)
-        proble_hashtable_single_measure(htS,tuple, hashmask_S, skipbits_S, matches, thread_fun, timer, ISTupleR);//(2)
+#endif
+        proble_hashtable_single_measure(htS,tuple, hashmask_S, skipbits_S, matches, /*thread_fun,*/ timer, ISTupleR);//(2)
+#ifndef NO_TIMING
         END_MEASURE_JOIN_ACC(timer)
+#endif
     } else {
+#ifndef NO_TIMING
         BEGIN_MEASURE_BUILD_ACC(timer)
+#endif
         build_hashtable_single(htS, tuple, hashmask_S, skipbits_S);//(3)
+#ifndef NO_TIMING
         END_MEASURE_BUILD_ACC(timer)//accumulate hash table build time.
+#endif
 
+#ifndef NO_TIMING
         BEGIN_MEASURE_JOIN_ACC(timer)
-        proble_hashtable_single_measure(htR, tuple, hashmask_R, skipbits_R, matches, thread_fun, timer, ISTupleR);//(4)
+#endif
+        proble_hashtable_single_measure(htR, tuple, hashmask_R, skipbits_R, matches, /*thread_fun,*/ timer, ISTupleR);//(4)
+#ifndef NO_TIMING
         END_MEASURE_JOIN_ACC(timer)
+#endif
     }
 }
 
@@ -109,15 +125,22 @@ void SHJJoiner::join(int32_t tid, tuple_t *tuple, bool ISTupleR, int64_t *matche
 void SHJJoiner::clean(int32_t tid, tuple_t *tuple, bool cleanR) {
     if (cleanR) {
         //if SHJ is used, we need to clean up hashtable of R.
+#ifndef NO_TIMING
         BEGIN_MEASURE_DEBUILD_ACC(timer)
+#endif
         debuild_hashtable_single(htR, tuple, htR->hash_mask, htR->skip_bits);
+#ifndef NO_TIMING
         END_MEASURE_DEBUILD_ACC(timer)
-
+#endif
 
     } else {
+#ifndef NO_TIMING
         BEGIN_MEASURE_DEBUILD_ACC(timer)
+#endif
         debuild_hashtable_single(htS, tuple, htS->hash_mask, htS->skip_bits);
+#ifndef NO_TIMING
         END_MEASURE_DEBUILD_ACC(timer)
+#endif
 
     }
 }
@@ -292,17 +315,21 @@ PMJJoiner::join_tuple_single(int32_t tid, tuple_t *tmp_rel, int *outerPtr, tuple
  */
 void PMJJoiner:: //0x7fff08000c70
 join(int32_t tid, tuple_t *tuple, int fat_tuple_size, bool IStuple_R, int64_t *matches,
-     void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid) {
+     /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ void *pVoid) {
     auto *arg = (t_pmj *) t_arg;
 
     //store tuples.
     if (IStuple_R) {
         DEBUGMSG("TID %d: before store R is %s.", tid,
                  print_tuples(arg->tmp_relR, arg->outerPtrR).c_str())
+#ifndef NO_TIMING
         BEGIN_MEASURE_BUILD_ACC(timer)
+#endif
         keep_tuple_single(arg->tmp_relR, arg->outerPtrR, tuple, fat_tuple_size);
         arg->outerPtrR += fat_tuple_size;
+#ifndef NO_TIMING
         END_MEASURE_BUILD_ACC(timer)//accumulate hash table build time.
+#endif
         DEBUGMSG("TID %d: after store R is %s.", tid,
                  print_tuples(arg->tmp_relR, arg->outerPtrR).c_str())
 
@@ -318,10 +345,14 @@ join(int32_t tid, tuple_t *tuple, int fat_tuple_size, bool IStuple_R, int64_t *m
     } else {
         DEBUGMSG("TID %d: before store S is %s.", tid,
                  print_tuples(arg->tmp_relS, arg->outerPtrS).c_str())
+#ifndef NO_TIMING
         BEGIN_MEASURE_BUILD_ACC(timer)
+#endif
         keep_tuple_single(arg->tmp_relS, arg->outerPtrS, tuple, fat_tuple_size);
         arg->outerPtrS += fat_tuple_size;
+#ifndef NO_TIMING
         END_MEASURE_BUILD_ACC(timer)//accumulate hash table build time.
+#endif
         DEBUGMSG("TID %d: after store S is %s.", tid,
                  print_tuples(arg->tmp_relS, arg->outerPtrS).c_str())
 
@@ -459,7 +490,7 @@ clean(int32_t tid, tuple_t *fat_tuple, int fat_tuple_size, bool cleanR) {
 
 long PMJJoiner::
 merge(int32_t tid, int64_t *matches,
-      void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid) {
+      /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ void *pVoid) {
     auto *arg = (t_pmj *) t_arg;
     int stepR;
     int stepS;
@@ -504,7 +535,7 @@ PMJJoiner::PMJJoiner(int
 }
 
 void PMJJoiner::join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *matches,
-                     void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid) {
+                     /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ void *pVoid) {
     auto *arg = (t_pmj *) t_arg;
 
     //store tuples.
@@ -614,11 +645,11 @@ rpj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid) {
     // just a simple nested loop with progressive response, R and S have the same input rate
     do {
         if (index_R < rel_R->num_tuples) {
-            joiner.join(tid, &rel_R->tuples[index_R], true, &joiner.matches, NULL, pVoid);
+            joiner.join(tid, &rel_R->tuples[index_R], true, &joiner.matches, /*NULL,*/ pVoid);
             index_R++;
         }
         if (index_S < rel_S->num_tuples) {
-            joiner.join(tid, &rel_S->tuples[index_S], false, &joiner.matches, NULL, pVoid);
+            joiner.join(tid, &rel_S->tuples[index_S], false, &joiner.matches, /*NULL,*/ pVoid);
             index_S++;
         }
     } while (index_R < rel_R->num_tuples || index_S < rel_S->num_tuples);
@@ -645,21 +676,27 @@ rpj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid) {
  */
 
 void RippleJoiner::join(int32_t tid, tuple_t *tuple, bool ISTupleR, int64_t *matches,
-                        void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *), void *pVoid) {
+                        /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ void *pVoid) {
     DEBUGMSG("tid: %d, tuple: %d, R?%d\n", tid, tuple->key, ISTupleR);
     if (ISTupleR) {
+#ifndef NO_TIMING
         BEGIN_MEASURE_BUILD_ACC(timer)
+#endif
         samList.t_windows->R_Window.push_back(tuple);
+#ifndef NO_TIMING
         END_MEASURE_BUILD_ACC(timer)//accumulate hash table build time.
-
-        match_single_tuple(samList.t_windows->S_Window, tuple, matches, thread_fun, timer, ISTupleR);
+#endif
+        match_single_tuple(samList.t_windows->S_Window, tuple, matches, /*thread_fun,*/ timer, ISTupleR);
     } else {
 //        samList.t_windows->S_Window.push_back(tuple->key);
+#ifndef NO_TIMING
         BEGIN_MEASURE_BUILD_ACC(timer)
+#endif
         samList.t_windows->S_Window.push_back(tuple);
+#ifndef NO_TIMING
         END_MEASURE_BUILD_ACC(timer)//accumulate hash table build time.
-
-        match_single_tuple(samList.t_windows->R_Window, tuple, matches, thread_fun,  timer, ISTupleR);
+#endif
+        match_single_tuple(samList.t_windows->R_Window, tuple, matches, /*thread_fun,*/  timer, ISTupleR);
     }
     // Compute estimation result
     long estimation_result = 0;
