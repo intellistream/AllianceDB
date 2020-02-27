@@ -99,7 +99,7 @@ fetch_t *baseFetcher::next_tuple() {
     tuple_t *readS = nullptr;
     std::chrono::milliseconds arrivalTsR;
     std::chrono::milliseconds arrivalTsS;
-    auto fetchTS = now() - fetchStartTime;
+    auto fetchTS = now() - *fetchStartTime;
 
     //try to read R first.
     if (state->start_index_R < state->end_index_R) {

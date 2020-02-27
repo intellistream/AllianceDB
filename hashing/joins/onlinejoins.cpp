@@ -132,6 +132,7 @@ SHJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int grou
     param.exp_id = exp_id;
     auto startTS = now();
     auto joinStart = (milliseconds) 0;
+    printf("startTS init: %ld\n", startTS.count());
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_NOSHUFFLE, &startTS, &joinStart)
     param = finishing(nthreads, param, &startTS, &joinStart);
     return param.joinresult;

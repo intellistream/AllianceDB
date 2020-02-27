@@ -59,7 +59,7 @@ public:
 //    milliseconds *SdataTime;
 //    bool start = true;
 
-    milliseconds fetchStartTime;//initialize
+    milliseconds *fetchStartTime;//initialize
     T_TIMER *timer;
     t_state *state;
     int tid;
@@ -76,7 +76,7 @@ public:
 //        return (*arrival_ts - *RdataTime) -
 //               (now() - fetchStartTime);//if it's positive, the tuple is not ready yet.
 
-        return *arrival_ts - (now() - fetchStartTime);
+        return *arrival_ts - (now() - *fetchStartTime);
     }
 
     milliseconds StimeGap(milliseconds *arrival_ts) {
@@ -86,7 +86,7 @@ public:
 //        }
 //        return (*time - *SdataTime) -
 //               (now() - fetchStartTime);//if it's positive, the tuple is not ready yet.
-        return *arrival_ts - (now() - fetchStartTime);
+        return *arrival_ts - (now() - *fetchStartTime);
     }
 
     virtual bool finish() = 0;
@@ -95,7 +95,7 @@ public:
         this->tid = tid;
         this->relR = relR;
         this->relS = relS;
-        fetchStartTime = *startTS;//copy
+        fetchStartTime = startTS;//copy
         this->timer = timer;
     }
 };

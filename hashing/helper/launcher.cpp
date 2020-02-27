@@ -52,6 +52,7 @@ launch(int nthreads, relation_t *relR, relation_t *relS, t_param param, void *(*
         param.args[i].matches = &param.args[i].joiner->matches;
         param.args[i].threadresult = &(param.joinresult->resultlist[i]);
         param.args[i].shuffler = param.shuffler;//shared shuffler.
+        param.args[i].startTS = startTS;
 
         switch (param.fetcher) {
             case type_JM_NP_Fetcher:
@@ -78,10 +79,9 @@ launch(int nthreads, relation_t *relR, relation_t *relS, t_param param, void *(*
             exit(-1);
         }
 //        printf("Launch thread[%d] :%lu\n", param.args[i].tid, param.tid[i]);
-
-        // TODO: add a timer here, need to have global view?
-        *joinStart = now();
-
         fflush(stdout);
     }
+    // TODO: add a timer here, need to have global view?
+    *joinStart = now();
+    printf("startTS later: %ld\n", startTS->count());
 }
