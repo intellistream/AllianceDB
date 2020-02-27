@@ -175,6 +175,8 @@ struct arg_t {
     uint64_t part, sort, mergedelta, merge, join;
 
     T_TIMER *timer;
+
+    milliseconds *startTS;
 } __attribute__((aligned(CACHE_LINE_SIZE)));
 
 
