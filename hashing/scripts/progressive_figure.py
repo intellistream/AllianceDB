@@ -297,9 +297,14 @@ if __name__ == "__main__":
     lines = [col1[(len(col1)) - N:], col2[(len(col2)) - N:], col3[(len(col3)) - N:], col4[(len(col4)) - N:],
              col5[(len(col5)) - N:], col6[(len(col6)) - N:], col7[(len(col7)) - N:], col8[(len(col8)) - N:]]
 
+    legend=False
+    if id == 8:
+        legend=True
+        
     DrawFigure(col0, lines, legend_labels,
                'Number of results', 'time (msec)', 0, ceil(N * S / 100) * 100,
                0, int(ceil(maxts / 100.0)) * 100,
                'progressive_figure{}'.format(id),
-               False)
-    DrawLegend(legend_labels, 'progressive_legend')
+               legend)
+    if id == 1:
+        DrawLegend(legend_labels, 'progressive_legend')

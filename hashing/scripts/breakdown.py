@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pylab
 from matplotlib.font_manager import FontProperties
+from numpy.ma import ceil
 
 OPT_FONT_NAME = 'Helvetica'
 TICK_FONT_SIZE = 20
@@ -18,7 +19,7 @@ TICK_FP = FontProperties(style='normal', size=TICK_FONT_SIZE)
 
 MARKERS = (['o', 's', 'v', "^", "h", "v", ">", "x", "d", "<", "|", "", "|", "_"])
 # you may want to change the color map for different figures
-COLOR_MAP = ('#F15854', '#5DA5DA', '#60BD68', '#B276B2', '#DECF3F', '#F17CB0', '#B2912F', '#FAA43A', '#AFAFAF')
+COLOR_MAP = (['#000000', '#5DA5DA', '#60BD68', '#B276B2', '#DECF3F', '#F17CB0', '#B2912F', '#FAA43A', '#AFAFAF'])
 # you may want to change the patterns for different figures
 PATTERNS = (["////", "\\\\", "//////", "o", "o", "\\\\", "\\\\", "//////", "//////", ".", "\\\\\\", "\\\\\\"])
 LABEL_WEIGHT = 'bold'
@@ -44,7 +45,7 @@ def ConvertEpsToPdf(dir_filename):
 
 
 # draw a line chart
-def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, allow_legend):
+def DrawFigure(x_values, y_values, y_max, legend_labels, x_label, y_label, filename, allow_legend):
     # you may change the figure size on your own.
     fig = plt.figure(figsize=(9, 4))
     figure = fig.add_subplot(111)
@@ -73,6 +74,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, al
                    loc='upper center', ncol=len(legend_labels), mode='expand', bbox_to_anchor=(0.45, 1.2), shadow=False,
                    frameon=False, borderaxespad=0.0, handlelength=2, labelspacing=0.2)
 
+    plt.ylim(0, y_max)
     # you may need to tune the xticks position to get the best figure.
     plt.xticks(index + 0.5 * width, x_values)
     # plt.autofmt_xdate()
@@ -117,7 +119,7 @@ def DrawLegend(legend_labels, filename):
                      loc=9,
                      bbox_to_anchor=(0, 0.4, 1, 1),
                      ncol=len(FIGURE_LABEL), mode="expand", shadow=False, \
-                     frameon=False, handlelength=1.5)
+                     frameon=False, handlelength=1.1, handletextpad=0.2, columnspacing=0.1)
 
     figlegend.savefig(FIGURE_FOLDER + '/' + filename + '.pdf')
 
@@ -139,95 +141,106 @@ def ReadFile(id):
     # Creates a list containing 6 lists, each of 8 items, all set to 0
     w, h = 8, 7
     y = [[0 for x in range(w)] for y in range(h)]
+    matches = len(open("/data1/xtra/results/timestamps/PRJ_{}.txt".format(id), "r").readlines())
+    # print(matches)
+    max_value = 0
 
     cnt = 0
     f = open("/data1/xtra/results/breakdown/PRJ_{}.txt".format(id), "r")
     read = f.readlines()
-    matches = len(read)
     for x in read:
         if x == "===\n":
             break
         value = int(x.strip("\n")) / matches
+        if value > max_value:
+            max_value = value
         y[cnt][0] = value
         cnt += 1
 
     cnt = 0
     f = open("/data1/xtra/results/breakdown/NPJ_{}.txt".format(id), "r")
     read = f.readlines()
-    matches = len(read)
     for x in read:
         if x == "===\n":
             break
         value = int(x.strip("\n")) / matches
+        if value > max_value:
+            max_value = value
         y[cnt][1] = value
         cnt += 1
 
     cnt = 0
     f = open("/data1/xtra/results/breakdown/MPASS_{}.txt".format(id), "r")
     read = f.readlines()
-    matches = len(read)
     for x in read:
         if x == "===\n":
             break
         value = int(x.strip("\n")) / matches
+        if value > max_value:
+            max_value = value
         y[cnt][2] = value
         cnt += 1
 
     cnt = 0
     f = open("/data1/xtra/results/breakdown/MWAY_{}.txt".format(id), "r")
     read = f.readlines()
-    matches = len(read)
     for x in read:
         if x == "===\n":
             break
         value = int(x.strip("\n")) / matches
+        if value > max_value:
+            max_value = value
         y[cnt][3] = value
         cnt += 1
 
     cnt = 0
     f = open("/data1/xtra/results/breakdown/SHJ_JM_NP_{}.txt".format(id), "r")
     read = f.readlines()
-    matches = len(read)
     for x in read:
         if x == "===\n":
             break
         value = int(x.strip("\n")) / matches
+        if value > max_value:
+            max_value = value
         y[cnt][4] = value
         cnt += 1
 
     cnt = 0
     f = open("/data1/xtra/results/breakdown/SHJ_JBCR_NP_{}.txt".format(id), "r")
     read = f.readlines()
-    matches = len(read)
     for x in read:
         if x == "===\n":
             break
         value = int(x.strip("\n")) / matches
+        if value > max_value:
+            max_value = value
         y[cnt][5] = value
         cnt += 1
 
     cnt = 0
     f = open("/data1/xtra/results/breakdown/PMJ_JM_NP_{}.txt".format(id), "r")
     read = f.readlines()
-    matches = len(read)
     for x in read:
         if x == "===\n":
             break
         value = int(x.strip("\n")) / matches
+        if value > max_value:
+            max_value = value
         y[cnt][6] = value
         cnt += 1
 
     cnt = 0
     f = open("/data1/xtra/results/breakdown/PMJ_JBCR_NP_{}.txt".format(id), "r")
     read = f.readlines()
-    matches = len(read)
     for x in read:
         if x == "===\n":
             break
         value = int(x.strip("\n")) / matches
+        if value > max_value:
+            max_value = value
         y[cnt][7] = value
         cnt += 1
-    return y
+    return y, max_value
 
 
 if __name__ == "__main__":
@@ -248,13 +261,14 @@ if __name__ == "__main__":
     x_values = ['PRJ', 'NPJ', 'M-PASS', 'M-WAY', 'SHJ$^M$', 'SHJ$^B$', 'PMJ$^M$',
                 'PMJ$^B$']  # join time is getting from total - others.
 
-    y_values = ReadFile(id)
+    y_values, max_value = ReadFile(id)
 
     # y_norm_values = normalize(y_values)
 
     # break into 4 parts
     legend_labels = ['wait', 'partition', 'build', 'sort', 'merge', 'join', 'others']
 
-    DrawFigure(x_values, y_values, legend_labels, '', 'cycles per output tuple', 'breakdown_figure{}'.format(id), False)
+    DrawFigure(x_values, y_values, int(ceil(max_value / 1000.0)) * 1000, legend_labels, '', 'cycles per output tuple',
+               'breakdown_figure{}'.format(id), False)
 
     DrawLegend(legend_labels, 'breakdown_legend')
