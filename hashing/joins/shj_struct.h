@@ -37,9 +37,10 @@ struct arg_t {
     /* results of the thread */
     threadresult_t *threadresult;
 
-#ifndef NO_TIMING
+//#ifndef NO_TIMING
     T_TIMER *timer;
-#endif
+    milliseconds *startTS;
+//#endif
 
 };
 
