@@ -150,6 +150,8 @@ struct arg_t {
     int64_t totalR;
     int64_t totalS;
 
+    milliseconds *startTS;
+
     task_queue_t **join_queue;
     task_queue_t **part_queue;
 #ifdef SKEW_HANDLING
@@ -170,6 +172,7 @@ struct arg_t {
 //#ifndef NO_TIMING
     T_TIMER *timer;
 //#endif
+
 #ifdef SYNCSTATS
     /** Thread local timers : */
     synctimer_t localtimer;
@@ -1055,6 +1058,11 @@ prj_thread(void *param) {
 
     args->parts_processed = 0;
 
+    int lock;
+    /* wait at a barrier until each thread started*/
+    BARRIER_ARRIVE(args->barrier, lock)
+    *args->startTS = now();
+
 #ifdef PERF_COUNTERS
     if(my_tid == 0){
         PCM_initPerformanceMonitor(NULL, NULL);
@@ -1518,9 +1526,9 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads,
 #endif
 
 T_TIMER timer[nthreads];//every thread has its own timer.
-#ifndef NO_TIMING
+//#ifndef NO_TIMING
     auto startTS = now();
-#endif
+//#endif
 
     /* first assign chunks of relR & relS for each thread */
     numperthr[0] = relR->num_tuples / nthreads;
@@ -1571,6 +1579,8 @@ T_TIMER timer[nthreads];//every thread has its own timer.
         args[i].join_function = jf;
         args[i].nthreads = nthreads;
         args[i].threadresult = &(joinresult->resultlist[i]);
+
+        args[i].startTS = &startTS;
 
         rv = pthread_create(&tid[i], &attr, prj_thread, (void *) &args[i]);
         if (rv) {

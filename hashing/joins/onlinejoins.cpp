@@ -54,7 +54,7 @@ t_param &finishing(int nthreads, t_param &param, milliseconds *startTS, millisec
     // TODO: add a timer here, how to minus startTimer? Can I use t_timer.h
     int64_t processingTime = now().count() - startTS->count();
 #ifndef NO_TIMING
-    printf("With timing, otal processing time is: %ld\n", processingTime);
+    printf("With timing, Total processing time is: %ld\n", processingTime);
 #endif
 #ifdef NO_TIMING
     printf("No timing, Total processing time is: %ld\n", processingTime);

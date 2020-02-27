@@ -73,6 +73,8 @@ struct arg_t {
     T_TIMER *timer;
 //#endif
     int64_t result;
+
+    milliseconds *startTS;
 };
 
 /** @} */
@@ -184,6 +186,11 @@ npo_thread(void *param) {
     bucket_buffer_t *overflowbuf;
     init_bucket_buffer(&overflowbuf);
 
+    int lock;
+    /* wait at a barrier until each thread started*/
+    BARRIER_ARRIVE(args->barrier, lock)
+    *args->startTS = now();
+
 #ifdef PERF_COUNTERS
     if(args->tid == 0){
         PCM_initPerformanceMonitor(NULL, NULL);
@@ -283,7 +290,7 @@ void
 np_distribute(const relation_t *relR, const relation_t *relS, int nthreads, hashtable_t *ht, int32_t numR, int32_t numS,
               int32_t numRthr, int32_t numSthr, int i, int rv, cpu_set_t &set, arg_t *args, pthread_t *tid,
               pthread_attr_t &attr, barrier_t &barrier, const result_t *joinresult, T_TIMER *timer, int exp_id,
-              int group_size) {
+              int group_size, milliseconds *startTS) {
     for (i = 0; i < nthreads; i++) {
         int cpu_idx = get_cpu_id(i);
 
@@ -296,6 +303,7 @@ np_distribute(const relation_t *relR, const relation_t *relS, int nthreads, hash
         args[i].timer = &timer[i];
         args[i].ht = ht;
         args[i].barrier = &barrier;
+        args[i].startTS = startTS;
 
         /* assing part of the relR for next thread */
         args[i].relR.num_tuples = (i == (nthreads - 1)) ? numR : numRthr;
@@ -374,7 +382,7 @@ NPO(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size
     pthread_attr_init(&attr);
     np_distribute(relR, relS, nthreads, ht, numR, numS, numRthr, numSthr,
                   i, rv, set, args, tid, attr, barrier,
-                  joinresult, timer, exp_id, group_size);
+                  joinresult, timer, exp_id, group_size, &startTS);
     /* wait for threads to finish */
     for (i = 0; i < nthreads; i++) {
         pthread_join(tid[i], NULL);

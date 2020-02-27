@@ -83,5 +83,4 @@ launch(int nthreads, relation_t *relR, relation_t *relS, t_param param, void *(*
     }
     // TODO: add a timer here, need to have global view?
     *joinStart = now();
-    printf("startTS later: %ld\n", startTS->count());
 }

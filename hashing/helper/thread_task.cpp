@@ -49,7 +49,6 @@ THREAD_TASK_NOSHUFFLE(void *param) {
     /* wait at a barrier until each thread started*/
     BARRIER_ARRIVE(args->barrier, lock)
     *args->startTS = now();
-    printf("startTS changed: %ld\n", now().count());
 
 #ifndef NO_TIMING
     START_MEASURE((args->timer))
@@ -151,7 +150,7 @@ void
     int lock;
     /* wait at a barrier until each thread started*/
     BARRIER_ARRIVE(args->barrier, lock)
-    auto startTS = now();
+    *args->startTS = now();
 
 #ifndef NO_TIMING
     START_MEASURE((args->timer))
