@@ -79,7 +79,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, al
     plt.xticks(rotation=30)
     # plt.yscale('log')
     plt.grid(axis='y', color='gray')
-    figure.yaxis.set_major_locator(pylab.LinearLocator(6))
+    figure.yaxis.set_major_locator(pylab.LinearLocator(5))
 
     figure.get_xaxis().set_tick_params(direction='in', pad=10)
     figure.get_yaxis().set_tick_params(direction='in', pad=10)
@@ -143,80 +143,88 @@ def ReadFile(id):
     cnt = 0
     f = open("/data1/xtra/results/breakdown/PRJ_{}.txt".format(id), "r")
     read = f.readlines()
+    matches = len(read)
     for x in read:
         if x == "===\n":
             break
-        value = int(x.strip("\n"))
+        value = int(x.strip("\n")) / matches
         y[cnt][0] = value
         cnt += 1
 
     cnt = 0
     f = open("/data1/xtra/results/breakdown/NPJ_{}.txt".format(id), "r")
     read = f.readlines()
+    matches = len(read)
     for x in read:
         if x == "===\n":
             break
-        value = int(x.strip("\n"))
+        value = int(x.strip("\n")) / matches
         y[cnt][1] = value
         cnt += 1
 
     cnt = 0
     f = open("/data1/xtra/results/breakdown/MPASS_{}.txt".format(id), "r")
     read = f.readlines()
+    matches = len(read)
     for x in read:
         if x == "===\n":
             break
-        value = int(x.strip("\n"))
+        value = int(x.strip("\n")) / matches
         y[cnt][2] = value
         cnt += 1
 
     cnt = 0
     f = open("/data1/xtra/results/breakdown/MWAY_{}.txt".format(id), "r")
     read = f.readlines()
+    matches = len(read)
     for x in read:
         if x == "===\n":
             break
-        value = int(x.strip("\n"))
+        value = int(x.strip("\n")) / matches
         y[cnt][3] = value
         cnt += 1
 
     cnt = 0
     f = open("/data1/xtra/results/breakdown/SHJ_JM_NP_{}.txt".format(id), "r")
     read = f.readlines()
+    matches = len(read)
     for x in read:
         if x == "===\n":
             break
-        value = int(x.strip("\n"))
+        value = int(x.strip("\n")) / matches
         y[cnt][4] = value
         cnt += 1
 
     cnt = 0
     f = open("/data1/xtra/results/breakdown/SHJ_JBCR_NP_{}.txt".format(id), "r")
     read = f.readlines()
+    matches = len(read)
     for x in read:
         if x == "===\n":
             break
-        value = int(x.strip("\n"))
+        value = int(x.strip("\n")) / matches
         y[cnt][5] = value
         cnt += 1
 
     cnt = 0
     f = open("/data1/xtra/results/breakdown/PMJ_JM_NP_{}.txt".format(id), "r")
     read = f.readlines()
+    matches = len(read)
     for x in read:
         if x == "===\n":
             break
-        value = int(x.strip("\n"))
+        value = int(x.strip("\n")) / matches
         y[cnt][6] = value
         cnt += 1
 
     cnt = 0
     f = open("/data1/xtra/results/breakdown/PMJ_JBCR_NP_{}.txt".format(id), "r")
     read = f.readlines()
+    matches = len(read)
     for x in read:
         if x == "===\n":
             break
-        value = int(x.strip("\n"))
+        value = int(x.strip("\n")) / matches
         y[cnt][7] = value
         cnt += 1
     return y
@@ -247,6 +255,6 @@ if __name__ == "__main__":
     # break into 4 parts
     legend_labels = ['wait', 'partition', 'build', 'sort', 'merge', 'join', 'others']
 
-    DrawFigure(x_values, y_values, legend_labels, '', 'cycles', 'breakdown_figure{}'.format(id), False)
+    DrawFigure(x_values, y_values, legend_labels, '', 'cycles per output tuple', 'breakdown_figure{}'.format(id), False)
 
     DrawLegend(legend_labels, 'breakdown_legend')

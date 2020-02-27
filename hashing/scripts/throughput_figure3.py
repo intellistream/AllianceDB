@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pylab
 from matplotlib.font_manager import FontProperties
+from matplotlib.ticker import LogLocator
 
 OPT_FONT_NAME = 'Helvetica'
 TICK_FONT_SIZE = 20
@@ -19,7 +20,7 @@ MARKERS = (['o', 's', 'v', "^", "h", "v", ">", "x", "d", "<", "|", "", "+", "_"]
 # you may want to change the color map for different figures
 COLOR_MAP = ('#F15854', '#5DA5DA', '#60BD68', '#B276B2', '#DECF3F', '#F17CB0', '#B2912F', '#FAA43A', '#AFAFAF')
 # you may want to change the patterns for different figures
-PATTERNS = (["////", "\\\\", "|||", "o", "---", "\\\\", "\\\\", "//////", "//////", ".", "\\\\\\", "\\\\\\"])
+PATTERNS = (["|", "\\", "/", "+", "-", ".", "*", "x", "o", "O", "////", ".", "|||", "o", "---", "+", "\\\\", "*"])
 LABEL_WEIGHT = 'bold'
 LINE_COLORS = COLOR_MAP
 LINE_WIDTH = 3.0
@@ -118,10 +119,10 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
 
     # you may need to tune the xticks position to get the best figure.
     plt.xticks(index + 2.4 * width, x_values)
-    # plt.yscale('log')
+    plt.yscale('log')
 
     plt.grid(axis='y', color='gray')
-    # figure.yaxis.set_major_locator(LogLocator(base=10))
+    figure.yaxis.set_major_locator(LogLocator(base=10))
     # figure.xaxis.set_major_locator(LinearLocator(5))
     figure.get_xaxis().set_tick_params(direction='in', pad=10)
     figure.get_yaxis().set_tick_params(direction='in', pad=10)

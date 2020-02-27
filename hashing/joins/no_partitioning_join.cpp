@@ -316,7 +316,7 @@ np_distribute(const relation_t *relR, const relation_t *relS, int nthreads, hash
         } else {
             args[i].timer->record_gap = 1;
         }
-        printf(" record_gap:%d\n", args[i].timer->record_gap);
+//         printf(" record_gap:%d\n", args[i].timer->record_gap);
 #endif
 
         DEBUGMSG("Assigning #R=%d to thread %d\n", args[i].relR.num_tuples, i)
