@@ -1545,7 +1545,7 @@ T_TIMER timer[nthreads];//every thread has its own timer.
         args[i].timer = &timer[i];
 
 #ifndef NO_TIMING
-        if (exp_id == 39) {//dataset=Rovio
+        if (exp_id == 39 || exp_id == 41) {//dataset=Rovio
             args[i].timer->record_gap = 1000;
         } else {
             args[i].timer->record_gap = 1;

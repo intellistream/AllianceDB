@@ -228,7 +228,7 @@ if __name__ == "__main__":
     legend_labels = ['PRJ', 'NPJ', 'M-PASS', 'M-WAY', 'SHJ$^M$', 'SHJ$^B$', 'PMJ$^M$', 'PMJ$^B$']
 
     DrawFigure(x_values, y_values, legend_labels,
-               'Key Skewness (zipf)', 'Throughput (#matches/ms)', 0,
+               '$skew_{key}$ (zipf)', 'Throughput (#matches/ms)', 0,
                400, 'throughput_figure3', False)
 
 #  DrawLegend(legend_labels, 'factor_legend')

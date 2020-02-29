@@ -35,6 +35,7 @@ function ResetParameters() {
   STEP_SIZE_S=-1                   # let S has the same arrival rate of R.
   FIXS=0
   ts=1 # stream case
+  Threads=32
 }
 
 # Configurable variables
@@ -43,7 +44,7 @@ algo=""
 Threads=32
 timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
-for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
+for algo in PMJ_JBCR_NP; do #PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP
   RSIZE=1
   SSIZE=1
   RPATH=""
@@ -52,10 +53,10 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #PRO NPO SHJ
   SKEY=0
   RTS=0
   STS=0
-  for benchmark in "Kim" "Stock" "DEBS" "YSB"  "Rovio"; do #
+  for benchmark in "ScaleStock"; do #"Stock" "DEBS" "YSB" "Rovio"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
-    "Kim")
+    "AR") #test arrival rate
       id=0
       ## Figure 1
       ResetParameters
@@ -73,7 +74,9 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #PRO NPO SHJ
         KimRun
         let "id++"
       done
-
+      ;;
+    "AD") #test arrival distribution
+      id=5
       ## Figure 2
       ResetParameters
       TS_DISTRIBUTION=2
@@ -82,8 +85,9 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #PRO NPO SHJ
         KimRun
         let "id++"
       done
-
-      #
+      ;;
+    "KD") #test key distribution
+      id=10
       ## Figure 3
       ResetParameters
       echo test varying key distribution 10 - 15
@@ -96,7 +100,9 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #PRO NPO SHJ
         KimRun
         let "id++"
       done
-
+      ;;
+    "WS") #test window size
+      id=16
       ## Figure 4
       ResetParameters
       echo test varying window size 16 - 18
@@ -104,7 +110,9 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #PRO NPO SHJ
         KimRun
         let "id++"
       done
-
+      ;;
+    "KD2") #test key distribution when data at rest.
+      id=19
       ## Figure 5
       ResetParameters
       ts=0 # data at rest.
@@ -118,7 +126,9 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #PRO NPO SHJ
         KimRun
         let "id++"
       done
-
+      ;;
+    "WS2") #test window size when data at rest.
+      id=25
       ## Figure 6
       ResetParameters
       ts=0 # data at rest.
@@ -127,7 +137,9 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #PRO NPO SHJ
         KimRun
         let "id++"
       done
-
+      ;;
+    "RAR") #test relative arrival rate when S is large
+      id=28
       ## Figure 7
       FIXS=1
       echo test relative arrival rate 28 - 31
@@ -140,7 +152,9 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #PRO NPO SHJ
         KimRun
         let "id++"
       done
-
+      ;;
+    "RAR2") #test relative arrival rate when S is small
+      id=32
       ## Figure 8
       FIXS=1
       echo test relative arrival rate 32 - 35
@@ -154,7 +168,9 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #PRO NPO SHJ
         KimRun
         let "id++"
       done
-
+      ;;
+    "WS3") #test window size for extra large size of window
+      id=36
       ## Figure 4 extra
       ResetParameters
       echo test varying window size 36
@@ -162,7 +178,9 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #PRO NPO SHJ
         KimRun
         let "id++"
       done
-
+      ;;
+    "WS4") #test window size for extra large size of window when data at rest
+      id=37
       ## Figure 6 extra
       ResetParameters
       ts=0 # data at rest.
@@ -224,24 +242,58 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #PRO NPO SHJ
       STS=0
       benchmarkRun
       ;;
-    "Google") #Error yet.
-      RSIZE=3747939
-      SSIZE=11931801
-      RPATH=/data1/xtra/datasets/google/users_key32_partitioned.csv
-      SPATH=/data1/xtra/datasets/google/reviews_key32_partitioned.csv
-      RKEY=1
-      SKEY=1
-      benchmarkRun
-      ;;
-    "Amazon") #Error yet.
-      RSIZE=10
-      SSIZE=10
-      RPATH=/data1/xtra/datasets/amazon/amazon_question_partitioned.csv
-      SPATH=/data1/xtra/datasets/amazon/amazon_answer_partitioned.csv
+    "ScaleStock")
+      id=42
+      ts=1 # stream case
+      RSIZE=194341
+      SSIZE=240148
+      RPATH=/data1/xtra/datasets/stock/cj_60s_1t.txt
+      SPATH=/data1/xtra/datasets/stock/sb_60s_1t.txt
       RKEY=0
       SKEY=0
-      benchmarkRun
+      RTS=1
+      STS=1
+      echo test scalability of Stock 42 - 45
+      for Threads in 1 8 16 32; do
+        benchmarkRun
+        let "id++"
+      done
       ;;
+    "ScaleRovio")
+      id=46
+      ts=1 # stream case
+      RSIZE=580700
+      SSIZE=58070
+      RPATH=/data1/xtra/datasets/rovio/60s_1t.txt
+      SPATH=/data1/xtra/datasets/rovio/60s_1t.txt
+      RKEY=0
+      SKEY=0
+      RTS=3
+      STS=3
+      echo test scalability 46 - 49
+      for Threads in 1 8 16 32; do
+        benchmarkRun
+        let "id++"
+      done
+      ;;
+      #    "Google") #Error yet.
+      #      RSIZE=3747939
+      #      SSIZE=11931801
+      #      RPATH=/data1/xtra/datasets/google/users_key32_partitioned.csv
+      #      SPATH=/data1/xtra/datasets/google/reviews_key32_partitioned.csv
+      #      RKEY=1
+      #      SKEY=1
+      #      benchmarkRun
+      #      ;;
+      #    "Amazon") #Error yet.
+      #      RSIZE=10
+      #      SSIZE=10
+      #      RPATH=/data1/xtra/datasets/amazon/amazon_question_partitioned.csv
+      #      SPATH=/data1/xtra/datasets/amazon/amazon_answer_partitioned.csv
+      #      RKEY=0
+      #      SKEY=0
+      #      benchmarkRun
+      #      ;;
     esac
   done
 done

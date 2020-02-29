@@ -383,7 +383,6 @@ param_t defaultParam() {/* Command line parameters */
     cmd_params.group_size = 2;
     cmd_params.fixS = 0;
 
-
     /* default dataset is Workload B (described in paper) */
     cmd_params.r_size = 500000;
     cmd_params.s_size = 500000;
@@ -681,6 +680,11 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
     cmd_params->verbose = verbose_flag;
     cmd_params->fullrange_keys = fullrange_flag;
     cmd_params->basic_numa = basic_numa;
+
+    if (cmd_params->nthreads == 1) {
+        cmd_params->group_size = 1;
+        printf("[INFO] reset group size to one");
+    }
 
     /* Print any remaining command line arguments (not options). */
     if (optind < argc) {

@@ -637,7 +637,6 @@ rpj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid) {
 
     uint32_t cur_step = 0;
 
-
 #ifndef NO_TIMING
     START_MEASURE(joiner.timer)
 #endif
@@ -653,6 +652,7 @@ rpj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid) {
             index_S++;
         }
     } while (index_R < rel_R->num_tuples || index_S < rel_S->num_tuples);
+
 #ifndef NO_TIMING
     END_MEASURE(joiner.timer)
 #endif

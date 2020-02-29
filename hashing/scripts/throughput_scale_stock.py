@@ -1,5 +1,5 @@
+import itertools as it
 import os
-from math import ceil
 
 import matplotlib as mpl
 
@@ -44,9 +44,9 @@ def ConvertEpsToPdf(dir_filename):
     os.system("epstopdf --outfile " + dir_filename + ".pdf " + dir_filename + ".eps")
     os.system("rm -rf " + dir_filename + ".eps")
 
-
 # example for reading csv file
-def ReadFile(S, id):
+def ReadFile():
+    y = []
     col1 = []
     col2 = []
     col3 = []
@@ -56,113 +56,78 @@ def ReadFile(S, id):
     col7 = []
     col8 = []
 
-    cnt1 = 0
-    cnt2 = 0
-    cnt3 = 0
-    cnt4 = 0
-    cnt5 = 0
-    cnt6 = 0
-    cnt7 = 0
-    cnt8 = 0
-    maxts = 0
+    for id in it.chain(range(42, 45)):
+        file = '/data1/xtra/results/timestamps/PRJ_{}.txt'.format(id)
+        f = open(file, "r")
+        read = f.readlines()
+        x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
+        value = len(read) / x  # get throughput (#items/ms)
+        col1.append(value)
+    y.append(col1)
 
-    f = open("/data1/xtra/results/timestamps/PRJ_{}.txt".format(id), "r")
-    cnt = 1
-    read = f.readlines()
-    for x in read:
-        if cnt % S == 0:
-            value = int(x.strip("\n"))
-            col1.append(value)
-            cnt1 += 1
-            if (value > maxts):
-                maxts = value
-        cnt += 1
+    for id in it.chain(range(42, 45)):
+        file = '/data1/xtra/results/timestamps/NPJ_{}.txt'.format(id)
+        f = open(file, "r")
+        read = f.readlines()
+        x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
+        value = len(read) / x  # get throughput (#items/ms)
+        col2.append(value)
+    y.append(col2)
 
-    f = open("/data1/xtra/results/timestamps/NPJ_{}.txt".format(id), "r")
-    cnt = 1
-    read = f.readlines()
-    for x in read:
-        if cnt % S == 0:
-            value = int(x.strip("\n"))
-            col2.append(value)
-            cnt2 += 1
-            if (value > maxts):
-                maxts = value
-        cnt += 1
+    for id in it.chain(range(42, 45)):
+        file = '/data1/xtra/results/timestamps/MPASS_{}.txt'.format(id)
+        f = open(file, "r")
+        read = f.readlines()
+        x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
+        value = len(read) / x  # get throughput (#items/ms)
+        col3.append(value)
+    y.append(col3)
 
-    f = open("/data1/xtra/results/timestamps/MPASS_{}.txt".format(id), "r")
-    cnt = 1
-    read = f.readlines()
-    for x in read:
-        if cnt % S == 0:
-            value = int(x.strip("\n"))
-            col3.append(value)
-            cnt3 += 1
-            if (value > maxts):
-                maxts = value
-        cnt += 1
+    for id in it.chain(range(42, 45)):
+        file = '/data1/xtra/results/timestamps/MWAY_{}.txt'.format(id)
+        f = open(file, "r")
+        read = f.readlines()
+        x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
+        value = len(read) / x  # get throughput (#items/ms)
+        col4.append(value)
+    y.append(col4)
 
-    f = open("/data1/xtra/results/timestamps/MWAY_{}.txt".format(id), "r")
-    cnt = 1
-    read = f.readlines()
-    for x in read:
-        if cnt % S == 0:
-            value = int(x.strip("\n"))
-            col4.append(value)
-            cnt4 += 1
-            if (value > maxts):
-                maxts = value
-        cnt += 1
+    for id in it.chain(range(42, 45)):
+        file = '/data1/xtra/results/timestamps/SHJ_JM_NP_{}.txt'.format(id)
+        f = open(file, "r")
+        read = f.readlines()
+        x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
+        value = len(read) / x  # get throughput (#items/ms)
+        col5.append(value)
+    y.append(col5)
 
-    f = open("/data1/xtra/results/timestamps/SHJ_JM_NP_{}.txt".format(id), "r")
-    cnt = 1
-    read = f.readlines()
-    for x in read:
-        if cnt % S == 0:
-            value = int(x.strip("\n"))
-            col5.append(value)
-            cnt5 += 1
-            if (value > maxts):
-                maxts = value
-        cnt += 1
+    for id in it.chain(range(42, 45)):
+        file = '/data1/xtra/results/timestamps/SHJ_JBCR_NP_{}.txt'.format(id)
+        f = open(file, "r")
+        read = f.readlines()
+        x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
+        value = len(read) / x  # get throughput (#items/ms)
+        col6.append(value)
+    y.append(col6)
 
-    f = open("/data1/xtra/results/timestamps/SHJ_JBCR_NP_{}.txt".format(id), "r")
-    cnt = 1
-    read = f.readlines()
-    for x in read:
-        if cnt % S == 0:
-            value = int(x.strip("\n"))
-            col6.append(value)
-            cnt6 += 1
-            if (value > maxts):
-                maxts = value
-        cnt += 1
+    for id in it.chain(range(42, 45)):
+        file = '/data1/xtra/results/timestamps/PMJ_JM_NP_{}.txt'.format(id)
+        f = open(file, "r")
+        read = f.readlines()
+        x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
+        value = len(read) / x  # get throughput (#items/ms)
+        col7.append(value)
+    y.append(col7)
 
-    f = open("/data1/xtra/results/timestamps/PMJ_JM_NP_{}.txt".format(id), "r")
-    cnt = 1
-    read = f.readlines()
-    for x in read:
-        if cnt % S == 0:
-            value = int(x.strip("\n"))
-            col7.append(value)
-            cnt7 += 1
-            if (value > maxts):
-                maxts = value
-        cnt += 1
-
-    f = open("/data1/xtra/results/timestamps/PMJ_JBCR_NP_{}.txt".format(id), "r")
-    cnt = 1
-    read = f.readlines()
-    for x in read:
-        if cnt % S == 0:
-            value = int(x.strip("\n"))
-            col8.append(value)
-            cnt8 += 1
-            if (value > maxts):
-                maxts = value
-        cnt += 1
-    minvalue = min(cnt1, cnt2, cnt3, cnt4, cnt5, cnt6, cnt7, cnt8)
-    return maxts, minvalue, col1, col2, col3, col4, col5, col6, col7, col8
+    for id in it.chain(range(42, 45)):
+        file = '/data1/xtra/results/timestamps/PMJ_JBCR_NP_{}.txt'.format(id)
+        f = open(file, "r")
+        read = f.readlines()
+        x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
+        value = len(read) / x  # get throughput (#items/ms)
+        col8.append(value)
+    y.append(col8)
+    return y
 
 
 def DrawLegend(legend_labels, filename):
@@ -184,7 +149,6 @@ def DrawLegend(legend_labels, filename):
         lines[idx], = ax1.plot(x_values, data,
                                color=LINE_COLORS[idx], linewidth=LINE_WIDTH,
                                marker=MARKERS[idx], markersize=MARKER_SIZE, label=str(group))
-
         idx = idx + 1
 
     # LEGEND
@@ -235,8 +199,8 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
     # plt.yscale('log')
     plt.xticks(x_values)
     # you may control the limits on your own.
-    plt.xlim(x_min, x_max)
-    plt.ylim(y_min, y_max)
+    # plt.xlim(x_min, x_max)
+    # plt.ylim(y_min, y_max)
 
     plt.grid(axis='y', color='gray')
     # figure.yaxis.set_major_locator(LogLocator(base=10))
@@ -256,42 +220,14 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
 
 
 if __name__ == "__main__":
-
-    # try:
-    #     opts, args = getopt.getopt(sys.argv[1:], '-h-n:-s:', ['sample=', 'number=', 'help'])
-    # except getopt.GetoptError:
-    #     print('test.py -n number of matches')
-    #     sys.exit(2)
-    # for opt, opt_value in opts:
-    #     if opt in ('-h', '--help'):
-    #         print("[*] Help info")
-    #         exit()
-    #     elif opt == '-n':
-    #         print('Number of join results ', opt_value)
-    #         N = (int)(opt_value)
-    #     elif opt == '-s':
-    #         print('Gap of sampling ', opt_value)
-    #         S = (int)(opt_value)
-    # 'Hash_JM', 'Hash_JB', 'Hash_HS', 'Sort_JM', 'Sort_JB', 'Sort_HS', 'PRJ'
-
-    id = 1
     legend_labels = ['PRJ', 'NPJ', 'M-PASS', 'M-WAY', 'SHJ$^M$', 'SHJ$^B$', 'PMJ$^M$', 'PMJ$^B$']
-    S = 100
-    maxts, N, col1, col2, col3, col4, col5, col6, col7, col8 = ReadFile(S, id)
-    print(N)
-    col0 = []
-    for x in range(1, N + 1):
-        col0.append(x * S)
-    # print(len(col1), len(col2), len(col3), len(col4), len(col5))
-    # alignment
-    # lines = [col1, col2, col3, col4, col5, col6]
-    print((len(col1)))
-    lines = [col1[(len(col1)) - N:], col2[(len(col2)) - N:], col3[(len(col3)) - N:], col4[(len(col4)) - N:],
-             col5[(len(col5)) - N:], col6[(len(col6)) - N:], col7[(len(col7)) - N:], col8[(len(col8)) - N:]]
+    y = ReadFile()
+    x = range(1, 32)
 
-    DrawFigure(col0, lines, legend_labels,
-               'Number of results', 'time (msec)', 0, N * S,
-               0, int(ceil(maxts / 100.0)) * 100,
-               'progressive_results',
+    DrawFigure(x, y, legend_labels,
+               'Number of threads', 'Throughput (#matches/ms)',
+               1, 32,  # not in use.
+               0, 0,  # not in use.
+               'throughput_scale_stock',
                False)
-    DrawLegend(legend_labels, 'progressive_legend')
+    DrawLegend(legend_labels, 'throughput_scale_legend')

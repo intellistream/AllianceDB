@@ -185,7 +185,7 @@ if __name__ == "__main__":
     legend_labels = ['PRJ', 'NPJ', 'M-PASS', 'M-WAY', 'SHJ$^M$', 'SHJ$^B$', 'PMJ$^M$', 'PMJ$^B$']
 
     DrawFigure(x_values, y_values, legend_labels,
-               'Input Arrival Skewness (zipf)', '$99^{th}$ latency (ms)', 0,
+               '$Skew_{ts}$ (zipf)', '$99^{th}$ latency (ms)', 0,
                400, 'latency_figure2', False)
 
 #  DrawLegend(legend_labels, 'factor_legend')

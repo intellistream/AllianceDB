@@ -175,18 +175,19 @@ void sortRecords(std::string algo_name, int exp_id, long lastTS);
     gettimeofday(&timer->end, NULL);
 #endif
 
-#ifndef /*END_PROGRESSIVE_MEASURE*/NO_TIMING
-#define END_PROGRESSIVE_MEASURE(payloadID, timer, IStupleR)     \
-        auto ts =now();\
-        if(timer->record_cnt % timer->record_gap==0){             \
+#ifndef END_PROGRESSIVE_MEASURE
+#define END_PROGRESSIVE_MEASURE(payloadID, timer, IStupleR)      \
+        auto ts =now();                                          \
+        if(timer->record_cnt == timer->record_gap){              \
             if(IStupleR){                                        \
                 timer->recordRID.push_back(payloadID);           \
-                timer->recordR.push_back(ts);                     \
-            }else{                                                \
+                timer->recordR.push_back(ts);                    \
+            }else{                                               \
                 timer->recordSID.push_back(payloadID);           \
                 timer->recordS.push_back(ts);                    \
-                }                                               \
-        }                                                       \
+                }                                                \
+            timer->record_cnt=0;                                 \
+        }                                                        \
         timer->record_cnt++;
 #endif
 

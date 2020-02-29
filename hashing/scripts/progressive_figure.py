@@ -3,14 +3,15 @@ import os
 import sys
 from math import ceil, floor
 
+import matplotlib
 import matplotlib as mpl
+from matplotlib.ticker import FuncFormatter, LinearLocator
 
 mpl.use('Agg')
 
 import matplotlib.pyplot as plt
 import pylab
 from matplotlib.font_manager import FontProperties
-from matplotlib.ticker import LinearLocator
 
 OPT_FONT_NAME = 'Helvetica'
 TICK_FONT_SIZE = 20
@@ -241,10 +242,13 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
     plt.ylim(y_min, y_max)
 
     plt.grid(axis='y', color='gray')
+
     # figure.yaxis.set_major_locator(LogLocator(base=10))
+    # figure.xaxis.set_major_locator(matplotlib.ticker.FixedFormatter(["0.25", "0.5", "0.75", "1"]))
+    figure.xaxis.set_major_formatter(matplotlib.ticker.PercentFormatter(1.0))
     figure.xaxis.set_major_locator(LinearLocator(5))
 
-    figure.get_xaxis().set_tick_params(direction='in', pad=10)
+    figure.get_xaxis().set_tick_params(direction='in', pad=5)
     figure.get_yaxis().set_tick_params(direction='in', pad=10)
 
     plt.xlabel(x_label, fontproperties=LABEL_FP)
@@ -275,10 +279,10 @@ if __name__ == "__main__":
 
     legend_labels = ['PRJ', 'NPJ', 'M-PASS', 'M-WAY', 'SHJ$^M$', 'SHJ$^B$', 'PMJ$^M$', 'PMJ$^B$']
 
-    if id == 39:#only when Ro set to 25102718
-        S = 358850
+    if id == 39:
+        S = 350000
     elif id == 41:
-        S =25103314
+        S = 25000  # DEBS
     else:
         S = 1  #
         maxts, N, col1, col2, col3, col4, col5, col6, col7, col8 = ReadFile(S, id)
@@ -286,10 +290,12 @@ if __name__ == "__main__":
 
     print("S:", S)
     maxts, N, col1, col2, col3, col4, col5, col6, col7, col8 = ReadFile(S, id)
-    print("N:", N)
+    print("Number of points:", N)
     col0 = []
     for x in range(1, N + 1):
-        col0.append(x * S)
+        col0.append(x / N)
+        # print("fraction :", x / N)
+
     # print(len(col1), len(col2), len(col3), len(col4), len(col5))
     # alignment
     # lines = [col1, col2, col3, col4, col5, col6]
@@ -297,13 +303,12 @@ if __name__ == "__main__":
     lines = [col1[(len(col1)) - N:], col2[(len(col2)) - N:], col3[(len(col3)) - N:], col4[(len(col4)) - N:],
              col5[(len(col5)) - N:], col6[(len(col6)) - N:], col7[(len(col7)) - N:], col8[(len(col8)) - N:]]
 
-    legend=False
-    if id == 8:
-        legend=True
-        
+    legend = False
+    # if id == 8:
+    #     legend = True
     DrawFigure(col0, lines, legend_labels,
-               'Number of results', 'time (msec)', 0, ceil(N * S / 100) * 100,
-               0, int(ceil(maxts / 100.0)) * 100,
+               'fraction of matched results', 'time (msec)', 0, 1,
+               1, int(ceil(maxts / 100.0)) * 100,
                'progressive_figure{}'.format(id),
                legend)
     if id == 1:

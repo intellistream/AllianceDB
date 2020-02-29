@@ -134,12 +134,12 @@ sortmergejoin_initrun(relation_t *relR, relation_t *relS, joinconfig_t *joincfg,
 
         args[i].timer = &timer[i];
 
-        if (exp_id == 39) {
+        if (exp_id == 39 || exp_id == 41) {//dataset=Rovio/DEBS
             args[i].timer->record_gap = 1000;
         } else {
             args[i].timer->record_gap = 1;
         }
-//        printf("record_gap:%d\n", timer->record_gap);
+//        printf("record_gap:%d\n",  args[i].timer ->record_gap);
 
         args[i].relR = relR->tuples + i * (numperthr[0]);
         args[i].relS = relS->tuples + i * (numperthr[1]);
@@ -166,7 +166,6 @@ sortmergejoin_initrun(relation_t *relR, relation_t *relS, joinconfig_t *joincfg,
         args[i].histR = histR;
         args[i].tmpRglobal = tmpRelpartR;
         args[i].totalR = relR->num_tuples;
-
         args[i].startTS = &startTS;
 
 #ifdef SKEW_HANDLING

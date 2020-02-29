@@ -57,7 +57,7 @@ def DrawLegend(legend_labels, filename):
     x_values = [1]
 
     idx = 0
-    for group in xrange(len(FIGURE_LABEL)):
+    for group in range(len(FIGURE_LABEL)):
         lines[idx], = ax1.plot(x_values, data,
                                color=LINE_COLORS[idx], linewidth=LINE_WIDTH,
                                marker=MARKERS[idx], markersize=MARKER_SIZE, label=str(group))
@@ -118,7 +118,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
 
     # you may need to tune the xticks position to get the best figure.
     plt.xticks(index + 2.4 * width, x_values)
-    # plt.yscale('log')
+    plt.yscale('log')
 
     plt.grid(axis='y', color='gray')
     # figure.yaxis.set_major_locator(LogLocator(base=10))
