@@ -140,6 +140,7 @@ void dump_breakdown(int64_t result, T_TIMER *timer, long lastTS, _IO_FILE *pFile
 milliseconds actual_start_timestamp;
 std::vector<std::chrono::milliseconds> global_record;
 std::vector<int64_t> global_record_latency;
+std::vector<int32_t> global_record_gap;
 
 void merge(T_TIMER *timer, relation_t *relR, relation_t *relS, milliseconds *startTS) {
 #ifndef NO_TIMING
@@ -151,19 +152,25 @@ void merge(T_TIMER *timer, relation_t *relR, relation_t *relS, milliseconds *sta
     for (auto i = 0; i < timer->recordS.size(); i++) {
         global_record.push_back(timer->recordS.at(i));
     }
-    //For latency measurement
+    //For latency and disorder measurement
     int64_t latency = -1;
+    int32_t gap = 0;
     for (auto i = 0; i < timer->recordRID.size(); i++) {
         latency =
                 timer->recordR.at(i).count() - startTS->count()
                 - relR->payload->ts[timer->recordRID.at(i)].count();//latency of one tuple.
         global_record_latency.push_back(latency);
+
+        gap = timer->recordRID.at(i) - i;//if it's sequentially processed, gap should be zero.
+        global_record_gap.push_back(gap);
     }
     for (auto i = 0; i < timer->recordSID.size(); i++) {
         latency =
                 timer->recordS.at(i).count() - startTS->count() -
                 relS->payload->ts[timer->recordSID.at(i)].count();//latency of one tuple.
         global_record_latency.push_back(latency);
+        gap = timer->recordSID.at(i) - i;//if it's sequentially processed, gap should be zero.
+        global_record_gap.push_back(gap);
     }
 #endif
 }

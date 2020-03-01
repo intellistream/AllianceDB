@@ -44,7 +44,7 @@ algo=""
 Threads=32
 timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
-for algo in SHJ_JBCR_NP; do #PRO NPO SHJ_JM_NP   PMJ_JM_NP PMJ_JBCR_NP
+for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP ; do #PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
   RSIZE=1
   SSIZE=1
   RPATH=""
@@ -53,7 +53,7 @@ for algo in SHJ_JBCR_NP; do #PRO NPO SHJ_JM_NP   PMJ_JM_NP PMJ_JBCR_NP
   SKEY=0
   RTS=0
   STS=0
-  for benchmark in "ScaleRovio" "ScaleYSB" "ScaleDEBS"; do #"Stock"  "Rovio" "YSB"  "DEBS" #"ScaleStock"
+  for benchmark in "ScaleRovio" ; do #"Stock"  "Rovio" "YSB"  "DEBS" # "ScaleStock"  "ScaleYSB" "ScaleDEBS"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "AR") #test arrival rate
@@ -263,7 +263,7 @@ for algo in SHJ_JBCR_NP; do #PRO NPO SHJ_JM_NP   PMJ_JM_NP PMJ_JBCR_NP
       id=46
       ts=1 # stream case
       RSIZE=580700
-      SSIZE=58070
+      SSIZE=580700
       RPATH=/data1/xtra/datasets/rovio/60s_1t.txt
       SPATH=/data1/xtra/datasets/rovio/60s_1t.txt
       RKEY=0

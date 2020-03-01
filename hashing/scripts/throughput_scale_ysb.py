@@ -8,7 +8,7 @@ mpl.use('Agg')
 import matplotlib.pyplot as plt
 import pylab
 from matplotlib.font_manager import FontProperties
-from matplotlib.ticker import LinearLocator
+from matplotlib.ticker import LinearLocator, MaxNLocator
 
 OPT_FONT_NAME = 'Helvetica'
 TICK_FONT_SIZE = 20
@@ -205,7 +205,7 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
 
     plt.grid(axis='y', color='gray')
     # figure.yaxis.set_major_locator(LogLocator(base=10))
-    figure.xaxis.set_major_locator(LinearLocator(4))
+    figure.xaxis.set_major_locator(MaxNLocator(integer=True))
 
     figure.get_xaxis().set_tick_params(direction='in', pad=10)
     figure.get_yaxis().set_tick_params(direction='in', pad=10)
@@ -226,9 +226,9 @@ if __name__ == "__main__":
     x = [1, 8, 16, 32]
 
     DrawFigure(x, y, legend_labels,
-               'Number of threads', 'Throughput (#matches/ms)',
+               'Number of threads', 'Tpt. (#matches/ms)',
                1, 32,  # not in use.
                0, 0,  # not in use.
                'throughput_scale_ysb',
                False)
-    DrawLegend(legend_labels, 'throughput_scale_legend')
+    #DrawLegend(legend_labels, 'throughput_scale_legend')
