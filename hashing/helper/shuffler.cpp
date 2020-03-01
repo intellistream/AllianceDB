@@ -5,6 +5,7 @@
 #include <iostream>
 #include "shuffler.h"
 #include "../joins/common_functions.h"
+#include "algorithm"
 
 //TODO: Make Better Hashing..
 int32_t TID_To_IDX(int32_t tid) {
@@ -100,11 +101,10 @@ HashShuffler::HashShuffler(int nthreads, relation_t *relR, relation_t *relS)
 //    }
 }
 
-ContRandShuffler::ContRandShuffler(int nthreads, relation_t *relR,
-                                   relation_t *relS)
+ContRandShuffler::ContRandShuffler(int nthreads, relation_t *relR, relation_t *relS, int group_size)
         : baseShuffler(nthreads, relR, relS) {
     isCR = true;
-    numGrps = ceil(nthreads / group_size);
+    numGrps = std::max(1.0, ceil(nthreads / group_size));
     queues = new T_CQueue[nthreads];
     grpToTh = new std::vector<int32_t>[numGrps];
 //    thToGrp = new int32_t[nthreads];

@@ -62,7 +62,8 @@ void earlyJoinMergedRuns(std::vector<run> *Q, int64_t *matches, run *newRun, T_T
 
         int actual_merge_step = std::min((int) Q->size(), merge_step);
 
-        for (auto run_itr = Q->begin(); run_itr < Q->begin() + actual_merge_step; ++run_itr) {//iterate through several runs.
+        for (auto run_itr = Q->begin();
+             run_itr < Q->begin() + actual_merge_step; ++run_itr) {//iterate through several runs.
 
             if (Q->size() < 2) { break; }
 
@@ -260,7 +261,13 @@ void sorting_phase(int32_t tid, const relation_t *rel_R, const relation_t *rel_S
 #ifndef NO_TIMING
         BEGIN_MEASURE_SORT_ACC(timer)
 #endif
-        avxsort_tuples(&inptrR, &outptrR, progressive_stepR);// the method will swap input and output pointers.
+
+        if (scalarflag)
+            scalarsort_tuples(&inptrR, &outptrR, progressive_stepR);
+        else
+            avxsort_tuples(&inptrR, &outptrR, progressive_stepR);// the method will swap input and output pointers.
+
+
 #ifndef NO_TIMING
         END_MEASURE_SORT_ACC(timer)
 #endif

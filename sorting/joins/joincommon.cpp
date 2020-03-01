@@ -134,7 +134,10 @@ sortmergejoin_initrun(relation_t *relR, relation_t *relS, joinconfig_t *joincfg,
 
         args[i].timer = &timer[i];
 
-        if (exp_id == 39 || exp_id == 41) {//dataset=Rovio/DEBS
+        if (exp_id == 39 || exp_id == 41
+            || (exp_id >= 46 && exp_id <= 49)
+            || (exp_id >= 54 && exp_id <= 57)
+                ) {//dataset=Rovio/DEBS
             args[i].timer->record_gap = 1000;
         } else {
             args[i].timer->record_gap = 1;

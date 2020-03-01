@@ -683,7 +683,7 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
 
     if (cmd_params->nthreads == 1) {
         cmd_params->group_size = 1;
-        printf("[INFO] reset group size to one");
+        printf("[INFO] reset group size to one\n");
     }
 
     /* Print any remaining command line arguments (not options). */
@@ -691,6 +691,6 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
         printf("non-option arguments: ");
         while (optind < argc)
             printf("%s ", argv[optind++]);
-        printf("\n");
+        printf("\nc");
     }
 }

@@ -53,7 +53,7 @@ for algo in m-way m-pass; do #
   SKEY=0
   RTS=0
   STS=0
-  for benchmark in "ScaleStock"; do #"Stock" "DEBS" "YSB" "Rovio"
+  for benchmark in "ScaleRovio" "ScaleYSB" "ScaleDEBS"; do #"Stock"  "Rovio" "YSB"  "DEBS" #"ScaleStock"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "AR") #test arrival rate
@@ -271,6 +271,40 @@ for algo in m-way m-pass; do #
       RTS=3
       STS=3
       echo test scalability 46 - 49
+      for Threads in 1 8 16 32; do
+        benchmarkRun
+        let "id++"
+      done
+      ;;
+    "ScaleYSB")
+      id=50
+      ts=1 # stream case
+      RSIZE=1000
+      SSIZE=600000
+      RPATH=/data1/xtra/datasets/YSB/campaigns_1t.txt
+      SPATH=/data1/xtra/datasets/YSB/ad_60s_1t.txt
+      RKEY=0
+      SKEY=0
+      RTS=0
+      STS=1
+      echo test scalability 50 - 53
+      for Threads in 1 8 16 32; do
+        benchmarkRun
+        let "id++"
+      done
+      ;;
+    "ScaleDEBS")
+      id=54
+      ts=1 # stream case
+      RSIZE=1000000
+      SSIZE=1000000
+      RPATH=/data1/xtra/datasets/DEBS/posts_key32_partitioned.csv
+      SPATH=/data1/xtra/datasets/DEBS/comments_key32_partitioned.csv
+      RKEY=0
+      SKEY=0
+      RTS=0
+      STS=0
+      echo test scalability 54 - 57
       for Threads in 1 8 16 32; do
         benchmarkRun
         let "id++"

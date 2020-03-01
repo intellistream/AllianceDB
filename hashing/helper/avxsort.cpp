@@ -212,6 +212,23 @@ avxsort_aligned(int64_t ** inputptr, int64_t ** outputptr, uint64_t nitems)
 
 }
 
+/** for sorting tuples on key */
+static inline int
+compare_tuples(const tuple_t a, const tuple_t b)
+{
+    return (a.key < b.key);
+}
+
+void scalarsort_tuples(tuple_t **inputptr, tuple_t **outputptr, uint64_t nitems) {
+    tuple_t * in  = *inputptr;
+    tuple_t * out = *outputptr;
+
+    std::sort(in, in + nitems, compare_tuples);
+
+    *inputptr = out;
+    *outputptr = in;
+}
+
 void
 avxsort_tuples(tuple_t ** inputptr, tuple_t ** outputptr, uint64_t nitems)
 {

@@ -37,7 +37,10 @@ launch(int nthreads, relation_t *relR, relation_t *relS, t_param param, void *(*
         }
 
 #ifndef NO_TIMING
-        if (param.exp_id == 39 || param.exp_id == 41) {//dataset=Rovio/DEBS
+        if (param.exp_id == 39 || param.exp_id == 41
+            || (param.exp_id >= 46 && param.exp_id <= 49)
+            || (param.exp_id >= 54 && param.exp_id <= 57)
+                ) {//dataset=Rovio/DEBS
             param.args[i].joiner->timer->record_gap = 1000;
         } else {
             param.args[i].joiner->timer->record_gap = 1;

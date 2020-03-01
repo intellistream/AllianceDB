@@ -19,7 +19,7 @@ public:
     bool isCR = false;
 
     //only used by JBCR.
-    int32_t group_size = 2;//TODO: use a input parameter to tune this.
+//    int32_t group_size = 2;//TODO: use a input parameter to tune this.
 
     baseShuffler(int tid, relation_t *relR,
                  relation_t *relS);
@@ -71,7 +71,7 @@ public:
     std::vector<int32_t> *grpToTh;
 //    int32_t *thToGrp;
 
-    ContRandShuffler(int nthreads, relation_t *relR, relation_t *relS);
+    ContRandShuffler(int nthreads, relation_t *relR, relation_t *relS, int i);
 
     void push(intkey_t key, fetch_t *fetch, bool pushR) override;
 

@@ -10,6 +10,8 @@
 #include <cstdio>
 #include "../utils/types.h"
 
+#define scalarflag 0
+
 /** utility method to check whether arrays are sorted */
 int
 is_sorted_helper(int64_t *items, uint64_t nitems);

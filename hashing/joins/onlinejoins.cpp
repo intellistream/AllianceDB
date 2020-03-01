@@ -160,7 +160,7 @@ SHJ_JBCR_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int gr
     t_param param(nthreads);
     initialize(nthreads, param);
     param.fetcher = type_JB_NP_Fetcher;//new JB_NP_Fetcher(nthreads, relR, relS);
-    param.shuffler = new ContRandShuffler(nthreads, relR, relS);
+    param.shuffler = new ContRandShuffler(nthreads, relR, relS, group_size);
     param.joiner = type_SHJJoiner;//new SHJJoiner();
     param.algo_name = "SHJ_JBCR_NP";
     param.exp_id = exp_id;
@@ -278,7 +278,6 @@ result_t *PMJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id
     initialize(nthreads, param);
     param.fetcher = type_JB_NP_Fetcher;//new JM_NP_Fetcher(nthreads, relR, relS);
     param.shuffler = new HashShuffler(nthreads, relR, relS);
-    param.shuffler->group_size = group_size;
     param.joiner = type_PMJJoiner;//new PMJJoiner(relR->num_tuples, relS->num_tuples / nthreads, nthreads);
     param.algo_name = "PMJ_JB_NP";
     param.exp_id = exp_id;
@@ -294,8 +293,7 @@ result_t *PMJ_JBCR_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_
     t_param param(nthreads);
     initialize(nthreads, param);
     param.fetcher = type_JB_NP_Fetcher;//new JM_NP_Fetcher(nthreads, relR, relS);
-    param.shuffler = new ContRandShuffler(nthreads, relR, relS);
-    param.shuffler->group_size = group_size;
+    param.shuffler = new ContRandShuffler(nthreads, relR, relS, group_size);
     param.joiner = type_PMJJoiner;//new PMJJoiner(relR->num_tuples, relS->num_tuples / nthreads, nthreads);
     param.algo_name = "PMJ_JBCR_NP";
     param.exp_id = exp_id;
@@ -364,7 +362,7 @@ RPJ_JBCR_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int gr
     t_param param(nthreads);
     initialize(nthreads, param);
     param.fetcher = type_JB_NP_Fetcher;//new JB_NP_Fetcher(nthreads, relR, relS);
-    param.shuffler = new ContRandShuffler(nthreads, relR, relS);
+    param.shuffler = new ContRandShuffler(nthreads, relR, relS, 0);
     param.joiner = type_RippleJoiner;// new RippleJoiner(relR, relS, nthreads);
     param.algo_name = "RPJ_JBCR_NP";
     param.exp_id = exp_id;
