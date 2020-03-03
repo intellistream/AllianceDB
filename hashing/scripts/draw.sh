@@ -3,15 +3,19 @@
 
 
 
-#for idx in {1..8} ; do #
-#  python latency_figure$idx.py
-#  python throughput_figure$idx.py
-#done
+for idx in {1..8} ; do #
+  python latency_figure$idx.py
+  python throughput_figure$idx.py
+done
 
-for id in {5..10}; do
+for id in {0..41}; do
   python progressive_figure.py -i $id
 done
 
-#for id in {0..41}; do
-#  python breakdown.py -i $id
+for id in {0..41}; do
+  python breakdown.py -i $id
+done
+
+#for id in {38..41}; do
+#  python disorderCDF.py -i $id
 #done
