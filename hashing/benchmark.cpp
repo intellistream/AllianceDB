@@ -35,7 +35,7 @@ int check_avx() {
 
 // TODO: why need so many parameters, only need cmd_params inside.
 void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int32_t tsKey, const param_t &cmd_params,
-                    char *loadfile, uint32_t seed, const int step_size) {
+                    char *loadfile, uint32_t seed, const int step_size, int partitions) {
     seed_generator(seed);
     /* to pass information to the create_relation methods */
     numalocalize = cmd_params.basic_numa;
@@ -103,12 +103,13 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int
             default:
                 break;
         }
+
         switch (cmd_params.ts_distribution) {
             case 0: // uniform
-                add_ts(rel, relPl, step_size, cmd_params.interval, cmd_params.window_size);
+                add_ts(rel, relPl, step_size, cmd_params.interval, partitions);
                 break;
             case 2: // zipf
-                add_zipf_ts(rel, relPl, cmd_params.window_size, cmd_params.zipf_param);
+                add_zipf_ts(rel, relPl, cmd_params.window_size, cmd_params.zipf_param, partitions);
                 break;
             default:
                 break;
@@ -118,7 +119,7 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int
         parallel_create_relation(rel, rel_size,
                                  nthreads,
                                  rel_size);
-        add_ts(rel, relPl, step_size, 0, cmd_params.window_size);
+        add_ts(rel, relPl, step_size, 0, 0);
     }
     printf("OK \n");
 }
@@ -153,7 +154,7 @@ benchmark(const param_t cmd_params) {
         relR.num_tuples = (cmd_params.window_size / cmd_params.interval) * cmd_params.step_sizeR;
     }
     createRelation(&relR, relR.payload, cmd_params.rkey, cmd_params.rts, cmd_params, cmd_params.loadfileR,
-                   cmd_params.r_seed, cmd_params.step_sizeR);
+                   cmd_params.r_seed, cmd_params.step_sizeR, nthreads);
     DEBUGMSG("relR [aligned:%d]: %s", is_aligned(relR.tuples, CACHE_LINE_SIZE),
              print_relation(relR.tuples, min((uint64_t) 1000, cmd_params.r_size)).c_str());
 
@@ -168,8 +169,15 @@ benchmark(const param_t cmd_params) {
         else
             relS.num_tuples = (cmd_params.window_size / cmd_params.interval) * cmd_params.step_sizeS;
     }
+
+    // check which fetcher is used, to decide whether need to partition ts.
+    int partitions = nthreads;
+    if (strstr(cmd_params.algo->name, "JM") != NULL) {
+        partitions = 1;
+    }
+
     createRelation(&relS, relS.payload, cmd_params.skey, cmd_params.sts, cmd_params, cmd_params.loadfileS,
-                   cmd_params.s_seed, cmd_params.step_sizeS);
+                   cmd_params.s_seed, cmd_params.step_sizeS, partitions);
     DEBUGMSG("relS [aligned:%d]: %s", is_aligned(relS.tuples, CACHE_LINE_SIZE),
              print_relation(relS.tuples, min((uint64_t) 1000, cmd_params.s_size)).c_str());
 

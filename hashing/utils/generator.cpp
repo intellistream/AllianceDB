@@ -108,13 +108,36 @@ inline bool last_thread(int i, int nthreads) {
 }
 
 void
-add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_size, int interval, const int window_size) {
+add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_size, int interval, uint32_t partitions) {
     int ts = 0;
+
+    int numthr = relation->num_tuples / partitions;//replicate R, partition S.
+
+    int *tid_offsets = new int[partitions];
+    int *tid_start_idx = new int[partitions];
+    int *tid_end_idx = new int[partitions];
+
+    for (auto partition = 0; partition < partitions; partition++) {
+        tid_offsets[partition] = 0;
+        tid_start_idx[partition] = numthr * partition;
+        tid_end_idx[partition] = (last_thread(partition, partitions)) ? relation->num_tuples : numthr * (partition + 1);
+    }
+
     for (auto i = 0; i < relation->num_tuples; i++) {
         if (i % (step_size) == 0) {
             ts += interval;
         }
-        relationPayload->ts[i] = (milliseconds) ts;
+        // round robin to assign ts to each thread.
+        auto partition = i % partitions;
+        // record cur index in partition
+        int cur_index = tid_start_idx[partition] + tid_offsets[partition];
+        relationPayload->ts[cur_index] = (milliseconds) ts;
+        tid_offsets[partition]++;
+
+        if (tid_offsets[partition] > tid_end_idx[partition] + 1) {
+            printf("index out of range: %d, %d \n", tid_offsets[partition], tid_end_idx[partition]);
+            return;
+        }
     }
 //    assert(interval == 0 || ts == window_size);
 }
@@ -126,13 +149,35 @@ add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_size,
  * @param window_size
  * @param zipf_param
  */
-void add_zipf_ts(relation_t *relation, relation_payload_t *relationPayload, int window_size, const double zipf_param) {
+void add_zipf_ts(relation_t *relation, relation_payload_t *relationPayload, int window_size, const double zipf_param, uint32_t partitions) {
 
     int small = 0;
     int32_t *timestamps = gen_zipf_ts(relation->num_tuples, window_size, zipf_param);
 
+    int numthr = relation->num_tuples / partitions;//replicate R, partition S.
+
+    int *tid_offsets = new int[partitions];
+    int *tid_start_idx = new int[partitions];
+    int *tid_end_idx = new int[partitions];
+
+    for (auto partition = 0; partition < partitions; partition++) {
+        tid_offsets[partition] = 0;
+        tid_start_idx[partition] = numthr * partition;
+        tid_end_idx[partition] = (last_thread(partition, partitions)) ? relation->num_tuples : numthr * (partition + 1);
+    }
+
     for (auto i = 0; i < relation->num_tuples; i++) {
-        relationPayload->ts[i] = (milliseconds) timestamps[i];
+        // round robin to assign ts to each thread.
+        int partition = i % partitions;
+        // record cur index in partition
+        int cur_index = tid_start_idx[partition] + tid_offsets[partition];
+        relationPayload->ts[cur_index] = (milliseconds) timestamps[i];
+        tid_offsets[partition]++;
+        if (tid_offsets[partition] > tid_end_idx[partition] + 1) {
+            printf("index out of range: %d, %d \n", tid_offsets[partition], tid_end_idx[partition]);
+            return;
+        }
+
         if (relationPayload->ts[i].count() < 0.25 * window_size) {
             small++;
         }
@@ -156,7 +201,7 @@ random_gen_with_ts(relation_t *rel, relation_payload_t *relPl, int64_t maxid, in
         rel->tuples[i].payloadID = i;//payload is simply the id of the tuple.
     }
 
-    add_ts(rel, relPl, step_size, interval, -1);
+    add_ts(rel, relPl, step_size, interval, 0);
 }
 
 /**
@@ -525,7 +570,7 @@ parallel_create_relation_with_ts(relation_t *relation, relation_payload_t *relat
     write_relation(relation, tables[(rs++)%2]);
 #endif
 
-    add_ts(relation, relationPayload, step_size, interval, -1);
+    add_ts(relation, relationPayload, step_size, interval, 0);
 
 //    add_zipf_ts(relation, relationPayload, num_tuples/step_size*interval, nthreads, 1);
 
