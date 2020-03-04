@@ -2,6 +2,9 @@
 // Created by Shuhao Zhang on 17/10/19.
 //
 
+
+
+#include "t_timer.h"  /* startTimer, stopTimer */
 #include <sys/time.h>           /* gettimeofday */
 #include <stdlib.h>             /* memalign */
 #include <stdio.h>              /* printf */
@@ -10,7 +13,7 @@
 #include <sstream>
 #include <zconf.h>
 #include <algorithm>
-#include "t_timer.h"
+
 
 using namespace std;
 
@@ -68,73 +71,100 @@ dump_timing(std::vector<std::chrono::milliseconds> vector, std::vector<int64_t> 
     outputFile_latency.close();
 }
 
+
+uint64_t wait_time = 0;
+uint64_t partition_time = 0;
+uint64_t build_time = 0;
+uint64_t sort_time = 0;
+uint64_t merge_time = 0;
+uint64_t join_time = 0;
+uint64_t others_time = 0;
+
+
+void breakdown_global(int nthreads, _IO_FILE *pFile) {
+    fprintf(pFile, "%lu\n%lu\n%lu\n%lu\n%lu\n%lu\n%lu\n",
+            wait_time / nthreads,
+            partition_time / nthreads,
+            build_time / nthreads,
+            sort_time / nthreads,
+            merge_time / nthreads,
+            join_time / nthreads,
+            others_time / nthreads
+    );
+    fflush(pFile);
+}
+
 /**
  *
  * @param result
  * @param timer
  * @param lastTS  in millseconds, lazy algorithms have to wait until very last tuple arrive before proceed.
  */
-void dump_breakdown(int64_t result, T_TIMER *timer, long lastTS, _IO_FILE *pFile) {
+void breakdown_thread(int64_t result, T_TIMER *timer, long lastTS, _IO_FILE *pFile) {
+#ifndef NO_TIMING
     if (result != 0) {
-
         double diff_usec = (((timer->end).tv_sec * 1000000L + (timer->end).tv_usec)
                             - ((timer->start).tv_sec * 1000000L + (timer->start).tv_usec)) + lastTS * 1000L;
 
         if (lastTS != 0) {//lazy join algorithms.
-            timer->wait_timer = lastTS * 2.1 * 1000000;//MYC: 2.1GHz
+//#ifndef NO_TIMING
+//            BEGIN_MEASURE_WAIT_ACC(timer)
+//#endif
+//            this_thread::sleep_for(chrono::milliseconds(lastTS));//simulating the waiting period.
+//#ifndef NO_TIMING
+//            END_MEASURE_WAIT_ACC(timer)
+//#endif
+            SET_WAIT_ACC(timer, lastTS * 2.1 * 1E6)
             timer->overall_timer += timer->wait_timer;
-        } else {//eager join algorithms.
-            timer->partition_timer -= timer->wait_timer;//exclude waiting time during tuple shuffling.
         }
-
-        timer->join_timer += timer->join_mergetimer;
-
         double cyclestuple = (timer->overall_timer) / result;
 
         //for system to read.
         //only take one thread to dump?
         //WAIT, PART, BUILD, SORT, MERGE, JOIN, OTHERS
-        fprintf(pFile, "%lu\n%lu\n%lu\n%lu\n%lu\n%lu\n%lu\n",
-                timer->wait_timer,
-                timer->partition_timer,
-                timer->buildtimer,
-                timer->sorttimer,
-                timer->mergetimer,
-                timer->join_timer,
-                timer->overall_timer -
-                (timer->wait_timer + timer->partition_timer + timer->buildtimer + timer->sorttimer + timer->mergetimer +
-                 timer->join_timer)
-        );
-        fprintf(pFile, "===\n");
+        auto others = (timer->overall_timer -
+                       (timer->wait_timer + timer->partition_timer + timer->buildtimer + timer->sorttimer +
+                        timer->mergetimer + timer->join_timer));
+        wait_time += timer->wait_timer / result;
+        partition_time += timer->partition_timer / result;
+        build_time += timer->buildtimer / result;
+        sort_time += timer->sorttimer / result;
+        merge_time += timer->mergetimer / result;
+        join_time += timer->join_timer / result;
+        others_time += others / result;
 
         //for user to read.
-        fprintf(pFile, "[Info] RUNTIME TOTAL, WAIT, PART, BUILD, SORT, MERGE, JOIN (cycles): \n");
-        fprintf(pFile, "%llu \t %llu (%.2f%%) \t %llu (%.2f%%) \t %llu (%.2f%%)  \t %llu (%.2f%%)  \t %llu (%.2f%%)",
-                timer->overall_timer,
-                timer->wait_timer, (timer->wait_timer * 100 / (double) timer->overall_timer),
-                timer->partition_timer, (timer->partition_timer * 100 / (double) timer->overall_timer),
-                timer->buildtimer, (timer->buildtimer * 100 / (double) timer->overall_timer),
-                timer->sorttimer, (timer->sorttimer * 100 / (double) timer->overall_timer),
-                timer->mergetimer, (timer->mergetimer * 100 / (double) timer->overall_timer),
-                timer->join_timer, (timer->mergetimer * 100 / (double) timer->overall_timer)
+        fprintf(stdout, "[Info] RUNTIME TOTAL, WAIT, PART, BUILD, SORT, MERGE, JOIN, others (cycles): \n");
+        fprintf(stdout, "%llu \t %llu (%.2f%%) \t %llu (%.2f%%) \t %llu (%.2f%%)  "
+                        "\t %llu (%.2f%%)  \t %llu (%.2f%%) \t %llu (%.2f%%) \t %llu (%.2f%%)",
+                timer->overall_timer / result,
+                timer->wait_timer / result, (timer->wait_timer * 100 / (double) timer->overall_timer),
+                timer->partition_timer / result, (timer->partition_timer * 100 / (double) timer->overall_timer),
+                timer->buildtimer / result, (timer->buildtimer * 100 / (double) timer->overall_timer),
+                timer->sorttimer / result, (timer->sorttimer * 100 / (double) timer->overall_timer),
+                timer->mergetimer / result, (timer->mergetimer * 100 / (double) timer->overall_timer),
+                timer->join_timer / result, (timer->join_timer * 100 / (double) timer->overall_timer),
+                others / result, (others * 100 / (double) timer->overall_timer)
         );
-        fprintf(pFile, "\n");
-        fprintf(pFile, "TOTAL-TIME-USECS, NUM-TUPLES, CYCLES-PER-TUPLE: \n");
-        fprintf(pFile, "%.4lf \t %ld \t %.4lf", diff_usec, result, cyclestuple);
-        fprintf(pFile, "\n");
-        fprintf(pFile, "\n");
+        fprintf(stdout, "\n");
+        fprintf(stdout, "TOTAL-TIME-USECS, NUM-TUPLES, CYCLES-PER-TUPLE: \n");
+        fprintf(stdout, "%.4lf \t %ld \t %.4lf", diff_usec, result, cyclestuple);
+        fprintf(stdout, "\n");
+        fprintf(stdout, "\n");
     } else {
         fprintf(stdout, "[Warning] This thread does not matches any tuple.\n\n");
     }
     fflush(pFile);
+#endif
 }
 
 milliseconds actual_start_timestamp;
 std::vector<std::chrono::milliseconds> global_record;
 std::vector<int64_t> global_record_latency;
+std::vector<int32_t> global_record_gap;
 
 void merge(T_TIMER *timer, relation_t *relR, relation_t *relS, milliseconds *startTS) {
-#ifdef MEASURE
+#ifndef NO_TIMING
     //For progressiveness measurement
     actual_start_timestamp = *startTS;
     for (auto i = 0; i < timer->recordR.size(); i++) {
@@ -143,19 +173,25 @@ void merge(T_TIMER *timer, relation_t *relR, relation_t *relS, milliseconds *sta
     for (auto i = 0; i < timer->recordS.size(); i++) {
         global_record.push_back(timer->recordS.at(i));
     }
-    //For latency measurement
+    //For latency and disorder measurement
     int64_t latency = -1;
+    int32_t gap = 0;
     for (auto i = 0; i < timer->recordRID.size(); i++) {
         latency =
                 timer->recordR.at(i).count() - startTS->count()
                 - relR->payload->ts[timer->recordRID.at(i)].count();//latency of one tuple.
         global_record_latency.push_back(latency);
+
+        gap = timer->recordRID.at(i) - i;//if it's sequentially processed, gap should be zero.
+        global_record_gap.push_back(gap);
     }
     for (auto i = 0; i < timer->recordSID.size(); i++) {
         latency =
                 timer->recordS.at(i).count() - startTS->count() -
                 relS->payload->ts[timer->recordSID.at(i)].count();//latency of one tuple.
         global_record_latency.push_back(latency);
+        gap = timer->recordSID.at(i) - i;//if it's sequentially processed, gap should be zero.
+        global_record_gap.push_back(gap);
     }
 #endif
 }

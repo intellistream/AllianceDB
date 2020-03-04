@@ -27,11 +27,11 @@
 #include <stdio.h>              /* FILE */
 #include <string>
 
-#include "../util/types.h"             /* relation_t, tuple_t, result_t */
-#include "../util/barrier.h"            /* pthread_barrier_* */
+#include "../utils/types.h"             /* relation_t, tuple_t, result_t */
+#include "../utils/barrier.h"            /* pthread_barrier_* */
 #include "../datagen/generator.h"          /* numa_localize() --> TODO: refactor */
-#include "../util/params.h"             /* macro parameters */
-#include "../util/t_timer.h"
+#include "../utils/params.h"             /* macro parameters */
+#include "../timer/t_timer.h"
 
 #ifdef PERF_COUNTERS
 #include "perf_counters.h"      /* PCM_x */
@@ -45,7 +45,7 @@
 
 #ifdef SKEW_HANDLING
 
-#include "../util/generic_task_queue.h" /* taskqueue_t */
+#include "../utils/generic_task_queue.h" /* taskqueue_t */
 
 
 #endif

@@ -233,8 +233,9 @@ sortmergejoin_initrun(relation_t *relR, relation_t *relS, joinconfig_t *joincfg,
     string path = "/data1/xtra/results/breakdown/" + name.append(".txt");
     auto fp = fopen(path.c_str(), "w");
     for (i = 0; i < nthreads; i++) {
-        dump_breakdown(args[i].result, args[i].timer, lastTS, fp);
+        breakdown_thread(args[i].result, args[i].timer, lastTS, fp);
     }
+    breakdown_global(nthreads, fp);
     fclose(fp);
     sortRecords(algoName, exp_id, lastTS);
 #endif

@@ -22,19 +22,19 @@ SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 
 add_executable(sorting
         datagen/generator.h datagen/generator.cpp datagen/genzipf.cpp datagen/genzipf.h
-        util/types.h config.h util/rdtsc.h
+        utils/types.h config.h utils/rdtsc.h
         affinity/cpu_mapping.cpp affinity/cpu_mapping.h
         joins/sortmergejoin_multipass.h joins/sortmergejoin_multiway.h
         joins/sortmergejoin_multiway_skewhandling.h joins/sortmergejoin_mpsm.h
-        affinity/memalloc.cpp affinity/memalloc.h util/params.h
+        affinity/memalloc.cpp affinity/memalloc.h utils/params.h
         affinity/numa_shuffle.cpp affinity/numa_shuffle.h joins/joincommon.cpp joins/joincommon.h
-        util/generic_task_queue.cpp util/generic_task_queue.h util/barrier.h util/lock.h
+        utils/generic_task_queue.cpp utils/generic_task_queue.h utils/barrier.h utils/lock.h
         joins/avxcommon.h joins/merge.cpp joins/merge.h joins/scalar_multiwaymerge.cpp joins/scalar_multiwaymerge.h
         joins/partition.cpp joins/partition.h joins/avxsort.cpp joins/avxsort.h joins/avxintrin_emu.h joins/avxsort_core.h
         joins/scalarsort.cpp joins/scalarsort.h joins/avx_multiwaymerge.cpp joins/avx_multiwaymerge.h joins/avxsort_multiway.cpp
         joins/avxsort_multiway.h joins/sortmergejoin_multiway.cpp
         joins/sortmergejoin_multipass.cpp joins/sortmergejoin_mpsm.cpp joins/sortmergejoin_multiway_skewhandling.cpp
-        test/check_avxsort.cpp test/testutil.cpp test/testutil.h params.h util/t_timer.cpp util/t_timer.h
+        test/check_avxsort.cpp test/testutil.cpp test/testutil.h params.h timer/t_timer.cpp timer/t_timer.h
         main.cpp )
 
 target_link_libraries(sorting numa)

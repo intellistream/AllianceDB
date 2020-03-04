@@ -154,7 +154,7 @@ benchmark(const param_t cmd_params) {
         relR.num_tuples = (cmd_params.window_size / cmd_params.interval) * cmd_params.step_sizeR;
     }
     createRelation(&relR, relR.payload, cmd_params.rkey, cmd_params.rts, cmd_params, cmd_params.loadfileR,
-                   cmd_params.r_seed, cmd_params.step_sizeR, nthreads);
+                   cmd_params.r_seed, cmd_params.step_sizeR, cmd_params.nthreads);
     DEBUGMSG("relR [aligned:%d]: %s", is_aligned(relR.tuples, CACHE_LINE_SIZE),
              print_relation(relR.tuples, min((uint64_t) 1000, cmd_params.r_size)).c_str());
 
@@ -171,7 +171,7 @@ benchmark(const param_t cmd_params) {
     }
 
     // check which fetcher is used, to decide whether need to partition ts.
-    int partitions = nthreads;
+    int partitions = cmd_params.nthreads;
     if (strstr(cmd_params.algo->name, "JM") != NULL) {
         partitions = 1;
     }
