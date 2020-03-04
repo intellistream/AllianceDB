@@ -59,7 +59,7 @@ public:
 //    milliseconds *SdataTime;
 //    bool start = true;
 
-    milliseconds *fetchStartTime;//initialize
+    duration<int64_t, milli> fetchStartTime;//initialize
     T_TIMER *timer;
     t_state *state;
     int tid;
@@ -68,7 +68,7 @@ public:
     uint64_t cntR = 0;
     uint64_t cntS = 0;
 
-    milliseconds RtimeGap(milliseconds *arrival_ts) {
+    milliseconds timeGap(milliseconds *arrival_ts) {
 //        if (start) {
 //            fetchStartTime = now();
 //            start = false;
@@ -76,26 +76,15 @@ public:
 //        return (*arrival_ts - *RdataTime) -
 //               (now() - fetchStartTime);//if it's positive, the tuple is not ready yet.
 
-        return *arrival_ts - (now() - *fetchStartTime);
-    }
-
-    milliseconds StimeGap(milliseconds *arrival_ts) {
-//        if (start) {
-//            fetchStartTime = now();
-//            start = false;
-//        }
-//        return (*time - *SdataTime) -
-//               (now() - fetchStartTime);//if it's positive, the tuple is not ready yet.
-        return *arrival_ts - (now() - *fetchStartTime);
+        return *arrival_ts - (now() - fetchStartTime);
     }
 
     virtual bool finish() = 0;
 
-    baseFetcher(relation_t *relR, relation_t *relS, int tid, milliseconds *startTS, T_TIMER *timer) {
+    baseFetcher(relation_t *relR, relation_t *relS, int tid, T_TIMER *timer) {
         this->tid = tid;
         this->relR = relR;
         this->relS = relS;
-        fetchStartTime = startTS;//copy
         this->timer = timer;
     }
 };
@@ -121,9 +110,8 @@ public:
      * @param relR
      * @param relS
      */
-    PMJ_HS_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS, int tid,
-                      duration<long, ratio<1, 1000>> *startTS, T_TIMER *timer)
-            : baseFetcher(relR, relS, tid, startTS, timer) {
+    PMJ_HS_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS, int tid, T_TIMER *timer)
+            : baseFetcher(relR, relS, tid, timer) {
         state = new t_state();
 
         //let first and last thread to read two streams.
@@ -160,7 +148,7 @@ public:
      */
     HS_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS, int tid, duration<long, ratio<1, 1000>> *startTS,
                   T_TIMER *timer)
-            : baseFetcher(relR, relS, tid, startTS, timer) {
+            : baseFetcher(relR, relS, tid, timer) {
         state = new t_state();
 
         //let first and last thread to read two streams.
@@ -215,11 +203,10 @@ public:
      * @param relR
      * @param relS
      */
-    JM_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS, int tid, duration<long, ratio<1, 1000>> *startTS,
+    JM_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS, int tid, chrono::milliseconds *startTS,
                   T_TIMER *timer)
-            : baseFetcher(relR, relS, tid, startTS, timer) {
+            : baseFetcher(relR, relS, tid, timer) {
         state = new t_state();
-
 
         int numSthr = relS->num_tuples / nthreads;//replicate R, partition S.
 
@@ -248,7 +235,7 @@ public:
 
     JB_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS, int tid, duration<long, ratio<1, 1000>> *startTS,
                   T_TIMER *timer)
-            : baseFetcher(relR, relS, tid, startTS, timer) {
+            : baseFetcher(relR, relS, tid, timer) {
         state = new t_state[nthreads];
         int numRthr = relR->num_tuples / nthreads;// partition R,
         int numSthr = relS->num_tuples / nthreads;// partition S.

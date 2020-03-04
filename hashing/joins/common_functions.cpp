@@ -2,7 +2,7 @@
 // Created by Shuhao Zhang on 26/10/19.
 //
 
-#include "../utils/t_timer.h"
+#include "../timer/t_timer.h"
 #include "../utils/generator.h"          /* numa_localize() */
 #include "../utils/lock.h"               /* lock, unlock */
 #include "npj_types.h"          /* bucket_t, hashtable_t, bucket_buffer_t */
@@ -194,15 +194,14 @@ int64_t probe_hashtable(hashtable_t *ht, relation_t *rel, void *output, T_TIMER 
     chainedtuplebuffer_t * chainedbuf = (chainedtuplebuffer_t *) output;
 #endif
     for (i = 0; i < rel->num_tuples; i++) {
-        proble_hashtable_single_measure
-                (ht, rel, i, hashmask, skipbits, &matches, /*NULL,*/ timer);
+        proble_hashtable_single_measure(ht, rel, i, hashmask, skipbits, &matches, timer);
     }
     return matches;
 }
 
 int64_t proble_hashtable_single_measure(const hashtable_t *ht, const tuple_t *tuple, const uint32_t hashmask,
                                         const uint32_t skipbits, int64_t *matches,
-                                        /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/
+        /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/
                                         T_TIMER *timer, bool ISTupleR) {
     uint32_t index_ht;
 #ifdef PREFETCH_NPJ
@@ -226,13 +225,8 @@ int64_t proble_hashtable_single_measure(const hashtable_t *ht, const tuple_t *tu
                 joinres->key      = b->tuples[j].payload;   /* R-rid */
                 joinres->payload  = rel->tuples[i].payload; /* S-rid */
 #endif
-#ifndef NO_TIMING
 
-//                if (!ISTupleR && tuple->payloadID == 2059) {
-//                    printf("Match 2059, R?S=%d, at:%ld, tuple->payloadID:%d\n", ISTupleR, now().count(),
-//                           tuple->payloadID);
-//                    fflush(stdout);
-//                }
+#ifndef NO_TIMING
                 END_PROGRESSIVE_MEASURE(tuple->payloadID, (timer), ISTupleR)
 #endif
 
@@ -241,7 +235,6 @@ int64_t proble_hashtable_single_measure(const hashtable_t *ht, const tuple_t *tu
                 }*/
             }
         }
-
         b = b->next;/* follow overflow pointer */
     } while (b);
     return *matches;
@@ -249,10 +242,10 @@ int64_t proble_hashtable_single_measure(const hashtable_t *ht, const tuple_t *tu
 
 int64_t proble_hashtable_single_measure(const hashtable_t *ht, const relation_t *rel, uint32_t index_rel,
                                         const uint32_t hashmask, const uint32_t skipbits, int64_t *matches,
-                                        /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/
+        /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/
                                         T_TIMER *timer) {
     return proble_hashtable_single_measure(ht, &rel->tuples[index_rel], hashmask, skipbits, matches,
-                                           /*thread_fun,*/ timer, false);
+            /*thread_fun,*/ timer, false);
 }
 
 /**
@@ -262,7 +255,7 @@ int64_t proble_hashtable_single_measure(const hashtable_t *ht, const relation_t 
  * @param matches
  */
 void match_single_tuple(const list<tuple_t *> list, const tuple_t *tuple, int64_t *matches,
-                        /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ T_TIMER *timer,
+        /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ T_TIMER *timer,
                         bool ISTupleR) {
     // TODO: refactor RPJ related methods to RPJ helper
     for (auto it = list.begin(); it != list.end(); it++) {

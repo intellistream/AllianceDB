@@ -140,7 +140,7 @@ sortmergejoin_initrun(relation_t *relR, relation_t *relS, joinconfig_t *joincfg,
                 ) {//dataset=Rovio/DEBS
             args[i].timer->record_gap = 1000;
         } else {
-            args[i].timer->record_gap = 1;
+            args[i].timer->record_gap = 100;
         }
 //        printf("record_gap:%d\n",  args[i].timer ->record_gap);
 

@@ -10,7 +10,7 @@
 #include "../utils/xxhash64.h"
 #include "../utils/barrier.h"
 #include "../joins/common_functions.h"
-#include "../utils/t_timer.h"  /* startTimer, stopTimer */
+#include "../timer/t_timer.h"  /* startTimer, stopTimer */
 #include "../utils/generator.h"          /* numa_localize() */
 #include "../utils/cpu_mapping.h"        /* get_cpu_id */
 #include "../utils/lock.h"               /* lock, unlock */

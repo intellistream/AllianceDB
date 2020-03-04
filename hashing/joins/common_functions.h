@@ -9,7 +9,7 @@
 #include <list>
 #include <mutex>
 #include "npj_types.h"
-#include "../utils/t_timer.h"
+#include "../timer/t_timer.h"
 
 //#define NO_TIMING
 

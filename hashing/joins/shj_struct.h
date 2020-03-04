@@ -6,7 +6,7 @@
 #define ALLIANCEDB_SHJ_STRUCT_H
 
 #include "npj_types.h"
-#include "../utils/t_timer.h"
+#include "../timer/t_timer.h"
 #include "../helper/fetcher.h"
 #include "../helper/shuffler.h"
 #include "../helper/localjoiner.h"

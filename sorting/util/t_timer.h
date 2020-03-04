@@ -166,12 +166,13 @@ void sortRecords(std::string algo_name, int exp_id, long lastTS);
 
 #ifndef END_PROGRESSIVE_MEASURE
 #define END_PROGRESSIVE_MEASURE(payloadID, timer, IStupleR)      \
-        auto ts =now();                                          \
         if(timer->record_cnt == timer->record_gap){              \
+            auto ts =now();                                      \
             if(IStupleR){                                        \
                 timer->recordRID.push_back(payloadID);           \
                 timer->recordR.push_back(ts);                    \
             }else{                                               \
+                auto ts =now();                                  \
                 timer->recordSID.push_back(payloadID);           \
                 timer->recordS.push_back(ts);                    \
                 }                                                \

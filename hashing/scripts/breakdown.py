@@ -141,7 +141,6 @@ def ReadFile(id):
     # Creates a list containing 6 lists, each of 8 items, all set to 0
     w, h = 8, 7
     y = [[0 for x in range(w)] for y in range(h)]
-    matches = len(open("/data1/xtra/results/timestamps/PRJ_{}.txt".format(id), "r").readlines())
     # print(matches)
     max_value = 0
 
@@ -151,7 +150,7 @@ def ReadFile(id):
     for x in read:
         if x == "===\n":
             break
-        value = int(x.strip("\n")) / matches
+        value = int(x.strip("\n"))
         if value > max_value:
             max_value = value
         y[cnt][0] = value
@@ -161,9 +160,8 @@ def ReadFile(id):
     f = open("/data1/xtra/results/breakdown/NPJ_{}.txt".format(id), "r")
     read = f.readlines()
     for x in read:
-        if x == "===\n":
-            break
-        value = int(x.strip("\n")) / matches
+
+        value = int(x.strip("\n"))
         if value > max_value:
             max_value = value
         y[cnt][1] = value
@@ -175,7 +173,7 @@ def ReadFile(id):
     for x in read:
         if x == "===\n":
             break
-        value = int(x.strip("\n")) / matches
+        value = int(x.strip("\n"))
         if value > max_value:
             max_value = value
         y[cnt][2] = value
@@ -187,7 +185,7 @@ def ReadFile(id):
     for x in read:
         if x == "===\n":
             break
-        value = int(x.strip("\n")) / matches
+        value = int(x.strip("\n"))
         if value > max_value:
             max_value = value
         y[cnt][3] = value
@@ -199,7 +197,7 @@ def ReadFile(id):
     for x in read:
         if x == "===\n":
             break
-        value = int(x.strip("\n")) / matches
+        value = int(x.strip("\n"))
         if value > max_value:
             max_value = value
         y[cnt][4] = value
@@ -211,7 +209,7 @@ def ReadFile(id):
     for x in read:
         if x == "===\n":
             break
-        value = int(x.strip("\n")) / matches
+        value = int(x.strip("\n"))
         if value > max_value:
             max_value = value
         y[cnt][5] = value
@@ -223,7 +221,7 @@ def ReadFile(id):
     for x in read:
         if x == "===\n":
             break
-        value = int(x.strip("\n")) / matches
+        value = int(x.strip("\n"))
         if value > max_value:
             max_value = value
         y[cnt][6] = value
@@ -235,7 +233,7 @@ def ReadFile(id):
     for x in read:
         if x == "===\n":
             break
-        value = int(x.strip("\n")) / matches
+        value = int(x.strip("\n"))
         if value > max_value:
             max_value = value
         y[cnt][7] = value

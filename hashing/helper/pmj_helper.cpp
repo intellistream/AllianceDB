@@ -203,23 +203,24 @@ void sorting_phase(int32_t tid, tuple_t *inptrR, int sizeR, tuple_t *inptrS, int
 #ifndef NO_TIMING
     BEGIN_MEASURE_SORT_ACC(timer)
 #endif
-    avxsort_tuples(&inptrR, &outputR, sizeR);// the method will swap input and output pointers.
-#ifndef NO_TIMING
-    END_MEASURE_SORT_ACC(timer)
-#endif
+    if (scalarflag)
+        scalarsort_tuples(&inptrR, &outputR, sizeR);
+    else
+        avxsort_tuples(&inptrR, &outputR, sizeR);// the method will swap input and output pointers.
     DEBUGMSG("TID:%d, Sorted R: %s", tid, print_relation(outputR, sizeR).c_str())
+
 #ifdef DEBUG
     if (!is_sorted_helper((int64_t *) outputR, sizeR)) {
         DEBUGMSG("===> %d-thread -> R is NOT sorted, size = %d\n", tid, sizeR)
     }
 #endif
-
     DEBUGMSG("%d-thread Initial S [aligned:%d]: %s", tid, is_aligned(inptrS, CACHE_LINE_SIZE),
              print_relation(inptrS, sizeS).c_str())
-#ifndef NO_TIMING
-    BEGIN_MEASURE_SORT_ACC(timer)
-#endif
-    avxsort_tuples(&inptrS, &outputS, sizeS);// the method will swap input and output pointers.
+
+    if (scalarflag)
+        scalarsort_tuples(&inptrS, &outputS, sizeS);
+    else
+        avxsort_tuples(&inptrS, &outputS, sizeS);// the method will swap input and output pointers.
 #ifndef NO_TIMING
     END_MEASURE_SORT_ACC(timer)
 #endif
@@ -241,6 +242,7 @@ void sorting_phase(int32_t tid, tuple_t *inptrR, int sizeR, tuple_t *inptrS, int
     END_MEASURE_JOIN_ACC(timer)
 #endif
 
+//this is considered as part of ``others" overhead.
     DEBUGMSG("Insert Q.")
     insert(Q, outputR, sizeR, outputS, sizeS);
 }

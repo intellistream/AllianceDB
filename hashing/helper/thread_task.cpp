@@ -28,6 +28,7 @@ void *AGGFUNCTION(const tuple_t *r_tuple, const tuple_t *s_tuple, int64_t *match
     }
 }
 #endif
+
 /**
  * Just a wrapper to call the _shj_st
  *
@@ -48,13 +49,13 @@ THREAD_TASK_NOSHUFFLE(void *param) {
     int lock;
     /* wait at a barrier until each thread started*/
     BARRIER_ARRIVE(args->barrier, lock)
-    *args->startTS = now();
-
+    if (args->tid == 0)
+        *args->startTS = now();
+    BARRIER_ARRIVE(args->barrier, lock)
 #ifndef NO_TIMING
     START_MEASURE((args->timer))
 #endif
 
-    int rv;
 #ifdef PERF_COUNTERS
     if (args->tid == 0) {
         PCM_stop();
@@ -72,44 +73,45 @@ THREAD_TASK_NOSHUFFLE(void *param) {
     void *chainedbuf = NULL;
 #endif
 
-
     //call different data BaseFetcher.
     baseFetcher *fetcher = args->fetcher;
-//
-//    struct timespec ts = {.tv_sec = 0, .tv_nsec = 0};
-//    ts.tv_sec += 50;
-//    if (clock_gettime(CLOCK_REALTIME, &ts) == -1) {
-//        /* Handle error */ }
-//
+    fetcher->fetchStartTime = *args->startTS;//set the fetch starting time.
+#ifndef NO_TIMING
+    BEGIN_MEASURE_PARTITION(args->timer)
+#endif
     do {
-#ifndef NO_TIMING
-        BEGIN_MEASURE_PARTITION_ACC(args->timer)
-#endif
-
-        fetch_t *fetch = fetcher->next_tuple();
-
-#ifndef NO_TIMING
-        END_MEASURE_PARTITION_ACC(args->timer)
-#endif
+        fetch_t *fetch = fetcher->next_tuple();/*time to fetch, waiting time*/
         if (fetch != nullptr) {
-            args->joiner->join(
+            BEGIN_MEASURE_JOIN_ACC(args->timer)
+            args->joiner->join(/*time to join for one tuple*/
                     args->tid,
                     fetch->tuple,
                     fetch->ISTuple_R,
                     args->matches,
 //                    AGGFUNCTION,
                     chainedbuf);//build and probe at the same time.
+            END_MEASURE_JOIN_ACC(args->timer)
         }
+
     } while (!fetcher->finish());
 
+#ifndef NO_TIMING
+    END_MEASURE_PARTITION(args->timer)
+    args->timer->partition_timer -= args->timer->wait_timer;//exclude waiting time.
+    args->timer->partition_timer -= args->timer->join_timer;//exclude joining time.
+    args->timer->join_timer -= args->timer->buildtimer;
+    args->timer->join_timer -= args->timer->sorttimer;
+    args->timer->join_timer -= args->timer->mergetimer;
+#endif
+
+//other overheads.
+//only PMJ needs this.
     args->joiner->merge(
             args->tid,
             args->matches,
 //            AGGFUNCTION,
             chainedbuf);
-
     DEBUGMSG("args->num_results (%d): %ld\n", args->tid, *args->matches);
-
 #ifdef JOIN_RESULT_MATERIALIZE
     args->threadresult->nresults = args->num_results;
     args->threadresult->threadid = args->tid;
@@ -117,9 +119,7 @@ THREAD_TASK_NOSHUFFLE(void *param) {
 #endif
 
 #ifndef NO_TIMING
-//    END_MEASURE(&((args->timer)))
-    stopTimer(&args->timer->overall_timer); /* overall */ \
-    gettimeofday(&args->timer->end, NULL);
+    END_MEASURE(args->timer)
 #endif
 
 #ifdef PERF_COUNTERS
@@ -140,6 +140,7 @@ THREAD_TASK_NOSHUFFLE(void *param) {
 void
 *THREAD_TASK_SHUFFLE(void *param) {
     arg_t *args = (arg_t *) param;
+
 #ifdef PERF_COUNTERS
     if (args->tid == 0) {
         PCM_initPerformanceMonitor(NULL, NULL);
@@ -150,7 +151,9 @@ void
     int lock;
     /* wait at a barrier until each thread started*/
     BARRIER_ARRIVE(args->barrier, lock)
-    *args->startTS = now();
+    if (args->tid == 0)
+        *args->startTS = now();
+    BARRIER_ARRIVE(args->barrier, lock)
 
 #ifndef NO_TIMING
     START_MEASURE((args->timer))
@@ -174,10 +177,10 @@ void
     void *chainedbuf = NULL;
 #endif
 
-    //call different data BaseFetcher.
+    //call different BaseFetcher.
     baseFetcher *fetcher = args->fetcher;
     baseShuffler *shuffler = args->shuffler;
-
+    fetcher->fetchStartTime = *args->startTS;//set the fetch starting time.
     //fetch: pointer points to state.fetch (*fetch = &(state->fetch))
     fetch_t *fetch;
 #ifndef NO_TIMING
@@ -191,10 +194,10 @@ void
         }
 #ifdef EAGER
         fetch = shuffler->pull(args->tid, false);//re-fetch from its shuffler.
-#ifndef NO_TIMING
-        BEGIN_MEASURE_JOIN_PARTITION_ACC(args->timer)
-#endif
         if (fetch != nullptr) {
+#ifndef NO_TIMING
+            BEGIN_MEASURE_JOIN_ACC(args->timer)
+#endif
             args->joiner->join(
                     args->tid,
                     fetch->tuple,
@@ -202,27 +205,29 @@ void
                     args->matches,
 //                    AGGFUNCTION,
                     chainedbuf);//build and probe at the same time.
-        }
 #ifndef NO_TIMING
-        END_MEASURE_JOIN_PARTITION_ACC(args->timer)
+            END_MEASURE_JOIN_ACC(args->timer)
 #endif
+        }
 #endif
     } while (!fetcher->finish());
 
-    /* wait at a barrier until each thread finishes fetch*/
-    BARRIER_ARRIVE(args->barrier, rv)
 #ifndef NO_TIMING
     END_MEASURE_PARTITION_ACC((args->timer))
 #endif
+
+    /* wait at a barrier until each thread finishes fetch*/
+    BARRIER_ARRIVE(args->barrier, rv)
+
+#ifndef NO_TIMING
+    BEGIN_MEASURE_PARTITION_ACC((args->timer))
+#endif
     do {
-#ifndef NO_TIMING
-        BEGIN_MEASURE_PARTITION_ACC((args->timer))
-#endif
         fetch = shuffler->pull(args->tid, false);//re-fetch from its shuffler.
-#ifndef NO_TIMING
-        END_MEASURE_PARTITION_ACC((args->timer))
-#endif
         if (fetch != nullptr) {
+#ifndef NO_TIMING
+            BEGIN_MEASURE_JOIN_ACC(args->timer)
+#endif
             args->joiner->join(
                     args->tid,
                     fetch->tuple,
@@ -230,15 +235,27 @@ void
                     args->matches,
 //                    AGGFUNCTION,
                     chainedbuf);
-        } else {
-            args->joiner->merge(
-                    args->tid,
-                    args->matches,
-//                    AGGFUNCTION,
-                    chainedbuf);
-            break;
+#ifndef NO_TIMING
+            END_MEASURE_JOIN_ACC(args->timer)
+#endif
         }
-    } while (true);
+    } while (fetch != nullptr);
+#ifndef NO_TIMING
+    END_MEASURE_PARTITION_ACC((args->timer))
+    args->timer->partition_timer -= args->timer->wait_timer;//exclude waiting time.
+    args->timer->partition_timer -= args->timer->join_timer;//exclude joining time.
+    args->timer->join_timer -= args->timer->buildtimer;//build time for SHJ; sort and merge time for PMJ.
+    args->timer->join_timer -= args->timer->sorttimer;
+    args->timer->join_timer -= args->timer->mergetimer;
+#endif
+
+//group into other overheads.
+//only PMJ needs this.
+    args->joiner->merge(
+            args->tid,
+            args->matches,
+//                    AGGFUNCTION,
+            chainedbuf);
 
 #ifdef JOIN_RESULT_MATERIALIZE
     args->threadresult->nresults = args->num_results;
@@ -460,6 +477,11 @@ void forward_tuples_PMJ(baseShuffler *shuffler, arg_t *args, fetch_t *fetchR, fe
     }
 }
 
+/**
+ * OUTDATED..
+ * @param param
+ * @return
+ */
 void
 *THREAD_TASK_SHUFFLE_HS(void *param) {
     arg_t *args = (arg_t *) param;
@@ -495,6 +517,7 @@ void
     baseFetcher *fetcher = args->fetcher;
     baseShuffler *shuffler = args->shuffler;
 
+    fetcher->fetchStartTime = *args->startTS;//set the fetch starting time.
 
     fetch_t *fetchR;
     fetch_t *fetchS;
@@ -587,6 +610,11 @@ void
     pthread_exit(NULL);
 }
 
+/**
+ * OUTDATED..
+ * @param param
+ * @return
+ */
 void
 *THREAD_TASK_SHUFFLE_PMJHS(void *param) {
     arg_t *args = (arg_t *) param;

@@ -34,7 +34,7 @@
 #include "../utils/barrier.h"            /* pthread_barrier_* */
 //#include "../../utils/affinity.h"           /* pthread_attr_setaffinity_np */
 #include "../utils/generator.h"          /* numa_localize() */
-#include "../utils/t_timer.h"
+#include "../timer/t_timer.h"
 #include "common_functions.h"
 #include <sched.h>
 
@@ -158,7 +158,7 @@ NPO_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_s
     string path = "/data1/xtra/results/breakdown/" + name.append(".txt");
     auto fp = fopen(path.c_str(), "w");
     /* now print the timing results: */
-    dump_breakdown(result, timer, 0, fp);
+    breakdown_thread(result, timer, 0, fp);
     fclose(fp);
 #endif
 
@@ -186,40 +186,38 @@ npo_thread(void *param) {
     bucket_buffer_t *overflowbuf;
     init_bucket_buffer(&overflowbuf);
 
-    int lock;
-    /* wait at a barrier until each thread started*/
-    BARRIER_ARRIVE(args->barrier, lock)
-    *args->startTS = now();
-
-#ifdef PERF_COUNTERS
-    if(args->tid == 0){
-        PCM_initPerformanceMonitor(NULL, NULL);
-        PCM_start();
-    }
-#endif
-
     /* wait at a barrier until each thread starts and start T_TIMER */
     BARRIER_ARRIVE(args->barrier, rv);
 
 #ifndef NO_TIMING
+    if (args->tid == 0)
+        *args->startTS = now();//assign the start timestamp
     START_MEASURE((args->timer))
     BEGIN_MEASURE_BUILD((args->timer))/* build start */
 #endif
+
+#ifdef PERF_COUNTERS
+    if(args->tid == 0){
+            PCM_initPerformanceMonitor(NULL, NULL);
+            PCM_start();
+        }
+#endif
+
     /* insert tuples from the assigned part of relR to the ht */
     build_hashtable_mt(args->ht, &args->relR, &overflowbuf);
 
     /* wait at a barrier until each thread completes build phase */
-    BARRIER_ARRIVE(args->barrier, rv);
+    BARRIER_ARRIVE(args->barrier, rv)
 
 #ifdef PERF_COUNTERS
-    if(args->tid == 0){
-      PCM_stop();
-      PCM_log("========== Build phase profiling results ==========\n");
-      PCM_printResults();
-      PCM_start();
-    }
-    /* Just to make sure we get consistent performance numbers */
-    BARRIER_ARRIVE(args->barrier, rv);
+        if(args->tid == 0){
+          PCM_stop();
+          PCM_log("========== Build phase profiling results ==========\n");
+          PCM_printResults();
+          PCM_start();
+        }
+        /* Just to make sure we get consistent performance numbers */
+        BARRIER_ARRIVE(args->barrier, rv);
 #endif
 
 #ifndef NO_TIMING
@@ -229,6 +227,7 @@ npo_thread(void *param) {
 #ifdef JOIN_RESULT_MATERIALIZE
     chainedtuplebuffer_t * chainedbuf = chainedtuplebuffer_init();
 #else
+
     void *chainedbuf = NULL;
 #endif
 
@@ -237,18 +236,8 @@ npo_thread(void *param) {
 #endif
 
     /* probe for matching tuples from the assigned part of relS */
-    args->result = probe_hashtable(args->ht, &args->relS, chainedbuf, args->timer);
-
-#ifdef JOIN_RESULT_MATERIALIZE
-    args->threadresult->nresults = args->num_results;
-    args->threadresult->threadid = args->tid;
-    args->threadresult->results  = (void *) chainedbuf;
-#endif
-
-#ifndef NO_TIMING
-    END_MEASURE_JOIN_ACC(args->timer)
-    END_MEASURE(args->timer)
-#endif
+    args->result =
+            probe_hashtable(args->ht, &args->relS, chainedbuf, args->timer);
 
 #ifdef PERF_COUNTERS
     if(args->tid == 0) {
@@ -260,6 +249,17 @@ npo_thread(void *param) {
     }
     /* Just to make sure we get consistent performance numbers */
     BARRIER_ARRIVE(args->barrier, rv);
+#endif
+
+#ifdef JOIN_RESULT_MATERIALIZE
+    args->threadresult->nresults = args->num_results;
+    args->threadresult->threadid = args->tid;
+    args->threadresult->results  = (void *) chainedbuf;
+#endif
+
+#ifndef NO_TIMING
+    END_MEASURE_JOIN_ACC(args->timer)
+    END_MEASURE(args->timer)
 #endif
 
     /* clean-up the overflow buffers */
@@ -312,10 +312,10 @@ np_distribute(const relation_t *relR, const relation_t *relS, int nthreads, hash
 
 #ifndef NO_TIMING
         if (exp_id == 39 || exp_id == 41 || (exp_id >= 46 && exp_id <= 49)
-                            || (exp_id >= 54 && exp_id <= 57)) {//dataset=Rovio
+            || (exp_id >= 54 && exp_id <= 57)) {//dataset=Rovio
             args[i].timer->record_gap = 1000;
         } else {
-            args[i].timer->record_gap = 1;
+            args[i].timer->record_gap = 100;
         }
 //         printf(" record_gap:%d\n", args[i].timer->record_gap);
 #endif
@@ -365,7 +365,7 @@ NPO(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size
     T_TIMER timer[nthreads];//every thread has its own timer.
 //#endif
 
-    auto startTS = now();
+    chrono::milliseconds *startTS = new chrono::milliseconds();
     uint32_t nbuckets = (relR->num_tuples / BUCKET_SIZE);
     allocate_hashtable(&ht, nbuckets);
 
@@ -383,13 +383,13 @@ NPO(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size
     pthread_attr_init(&attr);
     np_distribute(relR, relS, nthreads, ht, numR, numS, numRthr, numSthr,
                   i, rv, set, args, tid, attr, barrier,
-                  joinresult, timer, exp_id, group_size, &startTS);
+                  joinresult, timer, exp_id, group_size, startTS);
     /* wait for threads to finish */
     for (i = 0; i < nthreads; i++) {
         pthread_join(tid[i], NULL);
         result += args[i].result;
 #ifndef NO_TIMING
-        merge(args[i].timer, relR, relS, &startTS);
+        merge(args[i].timer, relR, relS, startTS);
 #endif
     }
     joinresult->totalresults = result;
@@ -408,8 +408,9 @@ NPO(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size
     string path = "/data1/xtra/results/breakdown/" + name.append(".txt");
     auto fp = fopen(path.c_str(), "w");
     for (i = 0; i < nthreads; i++) {
-        dump_breakdown(args[i].result, args[i].timer, lastTS, fp);
+        breakdown_thread(args[i].result, args[i].timer, lastTS, fp);
     }
+    breakdown_global(nthreads, fp);
     fclose(fp);
     sortRecords("NPJ", exp_id, lastTS);
 #endif

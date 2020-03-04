@@ -6,7 +6,7 @@
 #define ALLIANCEDB_LOCALJOINER_H
 
 #include "../utils/xxhash64.h"
-#include "../utils/t_timer.h"  /* startTimer, stopTimer */
+#include "../timer/t_timer.h"  /* startTimer, stopTimer */
 #include "../utils/generator.h"          /* numa_localize() */
 #include "../joins/npj_types.h"          /* bucket_t, hashtable_t, bucket_buffer_t */
 #include "../joins/npj_params.h"         /* constant parameters */

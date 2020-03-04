@@ -35,7 +35,7 @@
 #include <sched.h>
 //#include "../utils/affinity.h"           /* pthread_attr_setaffinity_np */
 #include "../utils/generator.h"          /* numa_localize() */
-#include "../utils/t_timer.h" /* startTimer, stopTimer */
+#include "../timer/t_timer.h" /* startTimer, stopTimer */
 #include <immintrin.h>
 #include <algorithm>
 
@@ -161,7 +161,7 @@ struct arg_t {
     pthread_barrier_t *barrier;
     JoinFunction join_function;
     int64_t result;
-    int32_t my_tid;
+    int32_t tid;
     int nthreads;
 
     /* results of the thread */
@@ -778,7 +778,7 @@ parallel_radix_partition(part_t *const part) {
     int32_t **hist = part->hist;
     int64_t *restrict output = part->output;
 
-    const uint32_t my_tid = part->thrargs->my_tid;
+    const uint32_t my_tid = part->thrargs->tid;
     const uint32_t nthreads = part->thrargs->nthreads;
     const uint32_t num_tuples = part->num_tuples;
 
@@ -918,7 +918,7 @@ parallel_radix_partition_optimized(part_t *const part) {
     int32_t **hist = part->hist;
     int64_t *restrict output = part->output;
 
-    const uint32_t my_tid = part->thrargs->my_tid;
+    const uint32_t my_tid = part->thrargs->tid;
     const uint32_t nthreads = part->thrargs->nthreads;
     const uint32_t num_tuples = part->num_tuples;
 
@@ -1021,7 +1021,7 @@ prj_thread(void *param) {
 
 
     arg_t *args = (arg_t *) param;
-    int32_t my_tid = args->my_tid;
+    int32_t my_tid = args->tid;
 
     const int fanOut = 1 << (NUM_RADIX_BITS / NUM_PASSES);//PASS1RADIXBITS;
     const int R = (NUM_RADIX_BITS / NUM_PASSES);//PASS1RADIXBITS;
@@ -1058,11 +1058,6 @@ prj_thread(void *param) {
 
     args->parts_processed = 0;
 
-    int lock;
-    /* wait at a barrier until each thread started*/
-    BARRIER_ARRIVE(args->barrier, lock)
-    *args->startTS = now();
-
 #ifdef PERF_COUNTERS
     if(my_tid == 0){
         PCM_initPerformanceMonitor(NULL, NULL);
@@ -1071,11 +1066,12 @@ prj_thread(void *param) {
 #endif
 
 //    /* wait at a barrier until each thread starts and then start the T_TIMER */
-    BARRIER_ARRIVE(args->barrier, rv);
+    BARRIER_ARRIVE(args->barrier, rv)
     /* if monitoring synchronization stats */
-//    SYNC_TIMERS_START(args, my_tid);
-
+    
 #ifndef NO_TIMING
+    if (args->tid == 0)
+        *args->startTS = now();//assign the start timestamp
     START_MEASURE((args->timer))
     BEGIN_MEASURE_PARTITION((args->timer))/* partitioning start */
 #endif
@@ -1430,9 +1426,9 @@ prj_thread(void *param) {
     /* Just to make sure we get consistent performance numbers */
     BARRIER_ARRIVE(args->barrier, rv);
 #endif
-#ifdef DEBUG
+
     DEBUGMSG("Thread %d exit, I have finished processing %ld\n", args->my_tid, args->result)
-#endif
+
     return 0;
 }
 
@@ -1526,9 +1522,8 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads,
 #endif
 
     T_TIMER timer[nthreads];//every thread has its own timer.
-//#ifndef NO_TIMING
-    auto startTS = now();
-//#endif
+
+    chrono::milliseconds *startTS = new chrono::milliseconds();
 
     /* first assign chunks of relR & relS for each thread */
     numperthr[0] = relR->num_tuples / nthreads;
@@ -1541,7 +1536,6 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads,
         CPU_ZERO(&set);
         CPU_SET(cpu_idx, &set);
         pthread_attr_setaffinity_np(&attr, sizeof(cpu_set_t), &set);
-
         args[i].timer = &timer[i];
 
 #ifndef NO_TIMING
@@ -1549,9 +1543,8 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads,
             || (exp_id >= 54 && exp_id <= 57)) {//dataset=Rovio
             args[i].timer->record_gap = 1000;
         } else {
-            args[i].timer->record_gap = 1;
+            args[i].timer->record_gap = 100;
         }
-//        printf(" record_gap:%d\n", args[i].timer->record_gap);
 #endif
 
         args[i].relR = relR->tuples + i * numperthr[0];
@@ -1569,7 +1562,7 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads,
         args[i].totalR = relR->num_tuples;
         args[i].totalS = relS->num_tuples;
 
-        args[i].my_tid = i;
+        args[i].tid = i;
         args[i].part_queue = part_queue;
         args[i].join_queue = join_queue;
 #ifdef SKEW_HANDLING
@@ -1581,7 +1574,7 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads,
         args[i].nthreads = nthreads;
         args[i].threadresult = &(joinresult->resultlist[i]);
 
-        args[i].startTS = &startTS;
+        args[i].startTS = startTS;
 
         rv = pthread_create(&tid[i], &attr, prj_thread, (void *) &args[i]);
         if (rv) {
@@ -1594,7 +1587,7 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads,
         pthread_join(tid[i], NULL);
         result += args[i].result;
 #ifndef NO_TIMING
-        merge(args[i].timer, relR, relS, &startTS);
+        merge(args[i].timer, relR, relS, startTS);
 #endif
     }
     joinresult->totalresults = result;
@@ -1611,8 +1604,9 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads,
     auto fp = fopen(path.c_str(), "w");
     /* now print the timing results: */
     for (i = 0; i < nthreads; i++) {
-        dump_breakdown(args[i].result, args[i].timer, lastTS, fp);
+        breakdown_thread(args[i].result, args[i].timer, lastTS, fp);
     }
+    breakdown_global(nthreads, fp);
     sortRecords("PRJ", exp_id, lastTS);
     fclose(fp);
 #endif
@@ -1816,7 +1810,7 @@ RJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_si
     END_MEASURE_BUILD(timer)
     END_MEASURE(timer)
     /* now print the timing results: */
-    dump_breakdown(result, timer, 0, nullptr);
+    breakdown_thread(result, timer, 0, nullptr);
 #endif
 
     /* clean-up temporary buffers */

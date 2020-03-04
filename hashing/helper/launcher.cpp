@@ -43,7 +43,7 @@ launch(int nthreads, relation_t *relR, relation_t *relS, t_param param, void *(*
                 ) {//dataset=Rovio/DEBS
             param.args[i].joiner->timer->record_gap = 1000;
         } else {
-            param.args[i].joiner->timer->record_gap = 1;
+            param.args[i].joiner->timer->record_gap = 100;
         }
 //        printf("record_gap:%d\n", param.args[i].joiner->timer->record_gap);
 #endif
@@ -71,7 +71,7 @@ launch(int nthreads, relation_t *relR, relation_t *relS, t_param param, void *(*
                                                           param.args[i].joiner->timer);
                 break;
             case type_PMJ_HS_NP_Fetcher:
-                param.args[i].fetcher = new PMJ_HS_NP_Fetcher(nthreads, relR, relS, i, startTS,
+                param.args[i].fetcher = new PMJ_HS_NP_Fetcher(nthreads, relR, relS, i,
                                                               param.args[i].joiner->timer);
                 break;
         }
