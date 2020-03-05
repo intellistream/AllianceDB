@@ -122,7 +122,8 @@ add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_size,
         tid_start_idx[partition] = numthr * partition;
         tid_end_idx[partition] = (last_thread(partition, partitions)) ? relation->num_tuples : numthr * (partition + 1);
 
-        printf("partition %d start idx: %d end idx: %d\n", partition, tid_start_idx[partition], tid_end_idx[partition]);
+        DEBUGMSG("partition %d start idx: %d end idx: %d\n", partition, tid_start_idx[partition],
+                 tid_end_idx[partition]);
 
     }
 
@@ -140,10 +141,11 @@ add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_size,
         relationPayload->ts[cur_index] = (milliseconds) ts;
         tid_offsets[partition]++;
     }
-
+#ifdef DEBUG
     for (auto i = 0; i < relation->num_tuples; i++) {
         printf("ts: %ld\n", relationPayload->ts[i].count());
     }
+#endif
 //    assert(interval == 0 || ts == window_size);
 }
 
@@ -154,7 +156,8 @@ add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_size,
  * @param window_size
  * @param zipf_param
  */
-void add_zipf_ts(relation_t *relation, relation_payload_t *relationPayload, int window_size, const double zipf_param, uint32_t partitions) {
+void add_zipf_ts(relation_t *relation, relation_payload_t *relationPayload, int window_size, const double zipf_param,
+                 uint32_t partitions) {
 
     int small = 0;
     int32_t *timestamps = gen_zipf_ts(relation->num_tuples, window_size, zipf_param);
