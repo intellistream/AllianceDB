@@ -80,7 +80,7 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int
 
     if (loadfile != NULL && loadfile != "") {
         /* load relation from file */
-        load_relation(rel, relPl, key, tsKey, loadfile, rel_size);
+        load_relation(rel, relPl, key, tsKey, loadfile, rel_size, partitions);
     } else if (cmd_params.fullrange_keys) {
         create_relation_nonunique(rel, rel_size, INT_MAX);
     } else if (cmd_params.nonunique_keys) {

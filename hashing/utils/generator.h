@@ -123,7 +123,7 @@ write_relation(relation_t *rel, char *filename);
 
 /** Load a relation from given file name */
 int
-load_relation(relation_t *relation, relation_payload_t* relation_payload, int32_t keyby, int32_t tsKey, char *filename, uint64_t num_tuples);
+load_relation(relation_t *relation, relation_payload_t* relation_payload, int32_t keyby, int32_t tsKey, char *filename, uint64_t num_tuples, uint32_t partitions);
 
 
 /**
