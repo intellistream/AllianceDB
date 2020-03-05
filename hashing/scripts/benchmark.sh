@@ -109,7 +109,7 @@ for algo in SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP PRO NPO; do #
       ## Figure 4
       ResetParameters
       echo test varying window size 16 - 18
-      for WINDOW_SIZE in 1000 5000 10000; do
+      for WINDOW_SIZE in 500 5000 10000; do
         KimRun
         let "id++"
       done
@@ -136,7 +136,7 @@ for algo in SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP PRO NPO; do #
       ResetParameters
       ts=0 # data at rest.
       echo test varying window size 25 - 27
-      for WINDOW_SIZE in 1000 5000 10000; do
+      for WINDOW_SIZE in 500 5000 10000; do
         KimRun
         let "id++"
       done
@@ -148,9 +148,9 @@ for algo in SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP PRO NPO; do #
       echo test relative arrival rate 28 - 31
       ts=1 # stream case
       # step size should be bigger than nthreads
-      STEP_SIZE_S=100000
-      for STEP_SIZE in 100 1000 10000 100000; do
-        WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
+      STEP_SIZE_S=1000
+      for STEP_SIZE in 10 100 1000 10000; do
+#        WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
         echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
         KimRun
         let "id++"
@@ -165,8 +165,8 @@ for algo in SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP PRO NPO; do #
       # step size should be bigger than nthreads
       # remember to fix the relation size of S.
       STEP_SIZE_S=100
-      for STEP_SIZE in 100 1000 10000 100000; do
-        WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
+      for STEP_SIZE in 10 100 1000 10000; do
+#        WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
         echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
         KimRun
         let "id++"

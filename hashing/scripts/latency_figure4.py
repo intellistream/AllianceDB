@@ -1,6 +1,6 @@
+import itertools as it
 import os
 
-import itertools as it
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
@@ -132,6 +132,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
 
     plt.savefig(FIGURE_FOLDER + "/" + filename + ".pdf", bbox_inches='tight')
 
+
 # example for reading csv file
 def ReadFile():
     y = []
@@ -212,11 +213,11 @@ def ReadFile():
 
 if __name__ == "__main__":
     # x_values = ['Unique', 'Zipf(0)', 'Zipf(0.2)', 'Zipf(0.4)', 'Zipf(0.8)', 'Zipf(1)']
-    x_values = [1000, 5000, 10000, 100000]
+    x_values = [500, 5000, 10000, 20000]
 
     y_values = ReadFile()
 
-    legend_labels = ['PRJ', 'NPJ','M-PASS', 'M-WAY', 'SHJ$^M$', 'SHJ$^B$', 'PMJ$^M$', 'PMJ$^B$']
+    legend_labels = ['PRJ', 'NPJ', 'M-PASS', 'M-WAY', 'SHJ$^M$', 'SHJ$^B$', 'PMJ$^M$', 'PMJ$^B$']
 
     DrawFigure(x_values, y_values, legend_labels,
                'Window Size (ms)', '$99^{th}$ latency (ms)', 0,

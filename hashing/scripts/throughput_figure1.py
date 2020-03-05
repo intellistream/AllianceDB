@@ -143,7 +143,7 @@ def ReadFile():
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
-        value = len(read) *100 / x  # get throughput (#items/ms)
+        value = len(read) / x  # get throughput (#items/ms)
         col1.append(value)
     y.append(col1)
 
@@ -152,7 +152,7 @@ def ReadFile():
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
-        value = len(read) *100 / x  # get throughput (#items/ms)
+        value = len(read) / x  # get throughput (#items/ms)
         col2.append(value)
     y.append(col2)
 
@@ -161,7 +161,7 @@ def ReadFile():
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
-        value = len(read) *100 / x  # get throughput (#items/ms)
+        value = len(read) / x  # get throughput (#items/ms)
         col3.append(value)
     y.append(col3)
 
@@ -170,7 +170,7 @@ def ReadFile():
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
-        value = len(read) *100 / x  # get throughput (#items/ms)
+        value = len(read) / x  # get throughput (#items/ms)
         col4.append(value)
     y.append(col4)
 
@@ -179,7 +179,7 @@ def ReadFile():
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
-        value = len(read) *100 / x  # get throughput (#items/ms)
+        value = len(read) / x  # get throughput (#items/ms)
         col5.append(value)
     y.append(col5)
 
@@ -188,7 +188,7 @@ def ReadFile():
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
-        value = len(read) *100 / x  # get throughput (#items/ms)
+        value = len(read) / x  # get throughput (#items/ms)
         col6.append(value)
     y.append(col6)
 
@@ -197,7 +197,7 @@ def ReadFile():
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
-        value = len(read) *100 / x  # get throughput (#items/ms)
+        value = len(read) / x  # get throughput (#items/ms)
         col7.append(value)
     y.append(col7)
 
@@ -206,14 +206,14 @@ def ReadFile():
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
-        value = len(read) *100 / x  # get throughput (#items/ms)
+        value = len(read) / x  # get throughput (#items/ms)
         col8.append(value)
     y.append(col8)
     return y
 
 
 if __name__ == "__main__":
-    x_values = [100, 1000, 10000, 100000, 'Inf']
+    x_values = [50, 100, 250, 500, 'Inf']
 
     y_values = ReadFile()
 

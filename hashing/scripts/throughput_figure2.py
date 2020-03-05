@@ -1,12 +1,11 @@
+import itertools as it
 import os
 
-import itertools as it
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import pylab
 from matplotlib.font_manager import FontProperties
-from matplotlib.ticker import LogLocator
 
 OPT_FONT_NAME = 'Helvetica'
 TICK_FONT_SIZE = 20
@@ -34,6 +33,7 @@ matplotlib.rcParams['ytick.labelsize'] = TICK_FONT_SIZE
 matplotlib.rcParams['font.family'] = OPT_FONT_NAME
 
 FIGURE_FOLDER = '/data1/xtra/results/figure'
+
 
 def DrawLegend(legend_labels, filename):
     fig = pylab.figure()
@@ -65,6 +65,7 @@ def DrawLegend(legend_labels, filename):
         os.makedirs(FIGURE_FOLDER)
     # no need to export eps in this case.
     figlegend.savefig(FIGURE_FOLDER + '/' + filename + '.pdf')
+
 
 # draw a line chart
 def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max, filename, allow_legend):
@@ -123,6 +124,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
 
     plt.savefig(FIGURE_FOLDER + "/" + filename + ".pdf", bbox_inches='tight')
 
+
 # example for reading csv file
 def ReadFile():
     y = []
@@ -140,7 +142,7 @@ def ReadFile():
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
-        value = len(read) *100 / x  # get throughput (#items/ms)
+        value = len(read) / x  # get throughput (#items/ms)
         col1.append(value)
     y.append(col1)
 
@@ -149,7 +151,7 @@ def ReadFile():
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
-        value = len(read) *100 / x  # get throughput (#items/ms)
+        value = len(read) / x  # get throughput (#items/ms)
         col2.append(value)
     y.append(col2)
 
@@ -158,7 +160,7 @@ def ReadFile():
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
-        value = len(read) *100 / x  # get throughput (#items/ms)
+        value = len(read) / x  # get throughput (#items/ms)
         col3.append(value)
     y.append(col3)
 
@@ -167,7 +169,7 @@ def ReadFile():
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
-        value = len(read) *100 / x  # get throughput (#items/ms)
+        value = len(read) / x  # get throughput (#items/ms)
         col4.append(value)
     y.append(col4)
 
@@ -176,7 +178,7 @@ def ReadFile():
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
-        value = len(read) *100 / x  # get throughput (#items/ms)
+        value = len(read) / x  # get throughput (#items/ms)
         col5.append(value)
     y.append(col5)
 
@@ -185,7 +187,7 @@ def ReadFile():
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
-        value = len(read) *100 / x  # get throughput (#items/ms)
+        value = len(read) / x  # get throughput (#items/ms)
         col6.append(value)
     y.append(col6)
 
@@ -194,7 +196,7 @@ def ReadFile():
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
-        value = len(read) *100 / x  # get throughput (#items/ms)
+        value = len(read) / x  # get throughput (#items/ms)
         col7.append(value)
     y.append(col7)
 
@@ -203,7 +205,7 @@ def ReadFile():
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
-        value = len(read) *100 / x  # get throughput (#items/ms)
+        value = len(read) / x  # get throughput (#items/ms)
         col8.append(value)
     y.append(col8)
     return y
@@ -214,10 +216,10 @@ if __name__ == "__main__":
 
     y_values = ReadFile()
 
-    legend_labels = ['PRJ', 'NPJ','M-PASS', 'M-WAY', 'SHJ$^M$', 'SHJ$^B$', 'PMJ$^M$', 'PMJ$^B$']
+    legend_labels = ['PRJ', 'NPJ', 'M-PASS', 'M-WAY', 'SHJ$^M$', 'SHJ$^B$', 'PMJ$^M$', 'PMJ$^B$']
 
     DrawFigure(x_values, y_values, legend_labels,
-               '$Skew_{ts}$ (zipf)', 'Throughput (#matches/ms)', 0,
+               '$Skew_{ts}$ (zipf)', 'Tpt. (#matches/ms)', 0,
                400, 'throughput_figure2', False)
 
 #  DrawLegend(legend_labels, 'factor_legend')

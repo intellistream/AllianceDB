@@ -166,10 +166,11 @@ void breakdown_thread(int64_t result, T_TIMER *timer, long lastTS, _IO_FILE *pFi
         fprintf(stdout, "%.4lf \t %ld \t %.4lf", diff_usec, result, cyclestuple);
         fprintf(stdout, "\n");
         fprintf(stdout, "\n");
+#endif
     } else {
         fprintf(stdout, "[Warning] This thread does not matches any tuple.\n\n");
     }
-#endif
+    fflush(pFile);
 #endif
 }
 

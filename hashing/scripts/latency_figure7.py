@@ -212,14 +212,14 @@ def ReadFile():
 
 if __name__ == "__main__":
     # x_values = ['Unique', 'Zipf(0)', 'Zipf(0.2)', 'Zipf(0.4)', 'Zipf(0.8)', 'Zipf(1)']
-    x_values = [100, 1000, 10000, 100000]
+    x_values = [10, 100, 1000, 10000]
 
     y_values = ReadFile()
 
     legend_labels = ['PRJ', 'NPJ', 'M-PASS', 'M-WAY', 'SHJ$^M$', 'SHJ$^B$', 'PMJ$^M$', 'PMJ$^B$']
 
     DrawFigure(x_values, y_values, legend_labels,
-               'Arrival Rate of R', '$99^{th}$ latency (ms)', 0,
+               'Input arrival rate of R (e/ms)', '$99^{th}$ latency (ms)', 0,
                400, 'latency_figure7', False)
 
 #  DrawLegend(legend_labels, 'factor_legend')

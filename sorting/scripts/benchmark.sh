@@ -69,7 +69,7 @@ for algo in m-way m-pass; do #
 
       ts=1 # stream case
       # step size should be bigger than nthreads
-      for STEP_SIZE in 50 100 250 500; do
+      for STEP_SIZE in 50 100 250 500; do #
         #WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
         echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
         KimRun
@@ -107,7 +107,7 @@ for algo in m-way m-pass; do #
       ## Figure 4
       ResetParameters
       echo test varying window size 16 - 18
-      for WINDOW_SIZE in 1000 5000 10000; do
+      for WINDOW_SIZE in 500 5000 10000; do
         KimRun
         let "id++"
       done
@@ -134,7 +134,7 @@ for algo in m-way m-pass; do #
       ResetParameters
       ts=0 # data at rest.
       echo test varying window size 25 - 27
-      for WINDOW_SIZE in 1000 5000 10000; do
+      for WINDOW_SIZE in 500 5000 10000; do
         KimRun
         let "id++"
       done
@@ -146,9 +146,9 @@ for algo in m-way m-pass; do #
       echo test relative arrival rate 28 - 31
       ts=1 # stream case
       # step size should be bigger than nthreads
-      STEP_SIZE_S=100000
-      for STEP_SIZE in 100 1000 10000 100000; do
-        WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
+      STEP_SIZE_S=1000
+      for STEP_SIZE in 10 100 1000 10000; do
+#        WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
         echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
         KimRun
         let "id++"
@@ -163,8 +163,8 @@ for algo in m-way m-pass; do #
       # step size should be bigger than nthreads
       # remember to fix the relation size of S.
       STEP_SIZE_S=100
-      for STEP_SIZE in 100 1000 10000 100000; do
-        WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
+      for STEP_SIZE in 10 100 1000 10000; do
+#        WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
         echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
         KimRun
         let "id++"
