@@ -187,8 +187,12 @@ benchmark(const param_t cmd_params) {
     /* Run the selected join algorithm */
     printf("[INFO ] Running join algorithm %s ...\n", cmd_params.algo->name);
 
-    results = cmd_params.algo->joinAlgo(&relR, &relS, cmd_params.nthreads, cmd_params.exp_id, cmd_params.group_size,
-                                        cmd_params.window_size);
+    if(cmd_params.kim==0)
+        results = cmd_params.algo->joinAlgo(&relR, &relS, cmd_params.nthreads, cmd_params.exp_id, cmd_params.group_size,
+                                        0);//no window to wait.
+    else
+        results = cmd_params.algo->joinAlgo(&relR, &relS, cmd_params.nthreads, cmd_params.exp_id, cmd_params.group_size,
+                                            cmd_params.window_size);
 
     printf("[INFO ] Results = %ld. DONE.\n", results->totalresults);
 

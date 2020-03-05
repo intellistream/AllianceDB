@@ -177,7 +177,7 @@ for algo in SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP PRO NPO; do #
       ## Figure 4 extra
       ResetParameters
       echo test varying window size 36
-      for WINDOW_SIZE in 100000; do
+      for WINDOW_SIZE in 20000; do
         KimRun
         let "id++"
       done
@@ -188,7 +188,7 @@ for algo in SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP PRO NPO; do #
       ResetParameters
       ts=0 # data at rest.
       echo test varying window size 37
-      for WINDOW_SIZE in 100000; do
+      for WINDOW_SIZE in 20000; do
         KimRun
         let "id++"
       done

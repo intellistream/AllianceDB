@@ -663,10 +663,13 @@ main(int argc, char *argv[]) {
 
     /* Run the selected join algorithm */
     fprintf(stdout, "[INFO ] Running join algorithm %s ...\n", cmd_params.algo->name);
-
-    result_t *result = cmd_params.algo->joinalgorithm(&relR, &relS, &joincfg, cmd_params.exp_id,
-                                                      cmd_params.window_size);
-
+    result_t *result;
+    if (cmd_params.kim == 0)
+        result = cmd_params.algo->joinalgorithm(&relR, &relS, &joincfg, cmd_params.exp_id,
+                                                0);
+    else
+        result = cmd_params.algo->joinalgorithm(&relR, &relS, &joincfg, cmd_params.exp_id,
+                                                cmd_params.window_size);
     if (result != NULL) {
         fprintf(stdout, "\n[INFO ] Results = %ld. DONE.\n", result->totalresults);
     }

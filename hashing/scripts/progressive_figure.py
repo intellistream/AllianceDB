@@ -80,7 +80,7 @@ def ReadFile(S, id):
             if (value > maxts):
                 maxts = value
         cnt += 1
-
+    print(cnt1)
     f = open("/data1/xtra/results/timestamps/NPJ_{}.txt".format(id), "r")
     cnt = 1
     read = f.readlines()
@@ -92,7 +92,7 @@ def ReadFile(S, id):
             if (value > maxts):
                 maxts = value
         cnt += 1
-
+    print(cnt2)
     f = open("/data1/xtra/results/timestamps/MPASS_{}.txt".format(id), "r")
     cnt = 1
     read = f.readlines()
@@ -104,7 +104,7 @@ def ReadFile(S, id):
             if (value > maxts):
                 maxts = value
         cnt += 1
-
+    print(cnt3)
     f = open("/data1/xtra/results/timestamps/MWAY_{}.txt".format(id), "r")
     cnt = 1
     read = f.readlines()
@@ -116,7 +116,7 @@ def ReadFile(S, id):
             if (value > maxts):
                 maxts = value
         cnt += 1
-
+    print(cnt4)
     f = open("/data1/xtra/results/timestamps/SHJ_JM_NP_{}.txt".format(id), "r")
     cnt = 1
     read = f.readlines()
@@ -128,7 +128,7 @@ def ReadFile(S, id):
             if (value > maxts):
                 maxts = value
         cnt += 1
-
+    print(cnt5)
     f = open("/data1/xtra/results/timestamps/SHJ_JBCR_NP_{}.txt".format(id), "r")
     cnt = 1
     read = f.readlines()
@@ -140,7 +140,7 @@ def ReadFile(S, id):
             if (value > maxts):
                 maxts = value
         cnt += 1
-
+    print(cnt6)
     f = open("/data1/xtra/results/timestamps/PMJ_JM_NP_{}.txt".format(id), "r")
     cnt = 1
     read = f.readlines()
@@ -152,7 +152,7 @@ def ReadFile(S, id):
             if (value > maxts):
                 maxts = value
         cnt += 1
-
+    print(cnt7)
     f = open("/data1/xtra/results/timestamps/PMJ_JBCR_NP_{}.txt".format(id), "r")
     cnt = 1
     read = f.readlines()
@@ -164,6 +164,7 @@ def ReadFile(S, id):
             if (value > maxts):
                 maxts = value
         cnt += 1
+    print(cnt8)
     minvalue = min(cnt1, cnt2, cnt3, cnt4, cnt5, cnt6, cnt7, cnt8)
     return maxts, minvalue, col1, col2, col3, col4, col5, col6, col7, col8
 
