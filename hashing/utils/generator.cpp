@@ -121,10 +121,8 @@ add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_size,
         tid_offsets[partition] = 0;
         tid_start_idx[partition] = numthr * partition;
         tid_end_idx[partition] = (last_thread(partition, partitions)) ? relation->num_tuples : numthr * (partition + 1);
-
         DEBUGMSG("partition %d start idx: %d end idx: %d\n", partition, tid_start_idx[partition],
                  tid_end_idx[partition]);
-
     }
 
     for (auto i = 0; i < relation->num_tuples; i++) {

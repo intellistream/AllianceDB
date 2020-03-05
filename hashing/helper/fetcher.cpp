@@ -105,7 +105,7 @@ fetch_t *baseFetcher::next_tuple() {
     if (state->start_index_R < state->end_index_R) {
         readR = &relR->tuples[state->start_index_R];
         //check the timestamp whether the tuple is ``ready" to be fetched.
-        arrivalTsR= relR->payload->ts[readR->payloadID];
+        arrivalTsR = relR->payload->ts[readR->payloadID];
         auto timegap = arrivalTsR - fetchTS;
         if (timegap.count() <= 0) {//if it's negative means our fetch is too slow.
             state->fetch.tuple = readR;
@@ -121,7 +121,7 @@ fetch_t *baseFetcher::next_tuple() {
     if (state->start_index_S < state->end_index_S) {
         readS = &relS->tuples[state->start_index_S];
         //check the timestamp whether the tuple is ``ready" to be fetched.
-        arrivalTsS= relS->payload->ts[readS->payloadID];
+        arrivalTsS = relS->payload->ts[readS->payloadID];
         auto timegap = arrivalTsS - fetchTS;
         if (timegap.count() <= 0) {//if it's negative means our fetch is too slow.
             state->fetch.tuple = readS;
