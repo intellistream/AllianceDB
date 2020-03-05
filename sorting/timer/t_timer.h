@@ -15,7 +15,6 @@
 #include <cmath>
 #include "../utils/types.h"
 #include <chrono>
-#include <boost/filesystem.hpp>
 using namespace std::chrono;
 
 //thread_local structure.

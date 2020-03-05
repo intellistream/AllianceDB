@@ -16,8 +16,8 @@
 #include "../affinity/cpu_mapping.h"        /* get_cpu_id() */
 //#include "../affinity/affinity.h"           /* pthread_attr_setaffinity_np */
 #include "genzipf.h"            /* gen_zipf() */
-#include "../util/lock.h"
-#include "../util/barrier.h"
+#include "../utils/lock.h"
+#include "../utils/barrier.h"
 #include "../affinity/memalloc.h"
 #include "../joins/joincommon.h"
 
@@ -52,14 +52,44 @@ inline bool last_thread(int i, int nthreads) {
 }
 
 void
-add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_size, int interval, const int window_size) {
+add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_size, int interval, const int partitions) {
     int ts = 0;
+
+    int numthr = relation->num_tuples / partitions;//replicate R, partition S.
+
+    int *tid_offsets = new int[partitions];
+    int *tid_start_idx = new int[partitions];
+    int *tid_end_idx = new int[partitions];
+
+    for (auto partition = 0; partition < partitions; partition++) {
+        tid_offsets[partition] = 0;
+        tid_start_idx[partition] = numthr * partition;
+        tid_end_idx[partition] = (last_thread(partition, partitions)) ? relation->num_tuples : numthr * (partition + 1);
+
+        printf("partition %d start idx: %d end idx: %d\n", partition, tid_start_idx[partition], tid_end_idx[partition]);
+
+    }
+
     for (auto i = 0; i < relation->num_tuples; i++) {
         if (i % (step_size) == 0) {
             ts += interval;
         }
-        relationPayload->ts[i] = (milliseconds) ts;
+        // round robin to assign ts to each thread.
+        auto partition = i % partitions;
+        if (tid_start_idx[partition] + tid_offsets[partition] == tid_end_idx[partition]) {
+            partition = partitions - 1; // if reach the maximum size, append the tuple to the last partition
+        }
+        // record cur index in partition
+        int cur_index = tid_start_idx[partition] + tid_offsets[partition];
+        relationPayload->ts[cur_index] = (milliseconds) ts;
+        tid_offsets[partition]++;
     }
+
+#ifdef DEBUG
+    for (auto i = 0; i < relation->num_tuples; i++) {
+        printf("ts: %ld\n", relationPayload->ts[i].count());
+    }
+#endif
 //    assert(interval == 0 || ts == window_size);
 }
 
@@ -71,13 +101,36 @@ add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_size,
  * @param window_size
  * @param zipf_param
  */
-void add_zipf_ts(relation_t *relation, relation_payload_t *relationPayload, int window_size, const double zipf_param) {
+void add_zipf_ts(relation_t *relation, relation_payload_t *relationPayload, int window_size, const double zipf_param,
+                 int partitions) {
 
     int small = 0;
     int32_t *timestamps = gen_zipf_ts(relation->num_tuples, window_size, zipf_param);
 
+    int numthr = relation->num_tuples / partitions;//replicate R, partition S.
+
+    int *tid_offsets = new int[partitions];
+    int *tid_start_idx = new int[partitions];
+    int *tid_end_idx = new int[partitions];
+
+    for (auto partition = 0; partition < partitions; partition++) {
+        tid_offsets[partition] = 0;
+        tid_start_idx[partition] = numthr * partition;
+        tid_end_idx[partition] = (last_thread(partition, partitions)) ? relation->num_tuples : numthr * (partition + 1);
+    }
+
     for (auto i = 0; i < relation->num_tuples; i++) {
-        relationPayload->ts[i] = (milliseconds) timestamps[i];
+        // round robin to assign ts to each thread.
+        int partition = i % partitions;
+        if (tid_start_idx[partition] + tid_offsets[partition] == tid_end_idx[partition]) {
+            partition = partitions - 1; // if reach the maximum size, append the tuple to the last partition
+        }
+
+        // record cur index in partition
+        int cur_index = tid_start_idx[partition] + tid_offsets[partition];
+        relationPayload->ts[cur_index] = (milliseconds) timestamps[i];
+        tid_offsets[partition]++;
+
         if (relationPayload->ts[i].count() < 0.25 * window_size) {
             small++;
         }

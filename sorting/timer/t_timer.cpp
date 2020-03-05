@@ -55,7 +55,7 @@ dump_timing(std::vector<std::chrono::milliseconds> vector,
 
     //dump timestmap.
     std::string name = arg_name + "_" + std::to_string(exp_id);
-    string path = "/data1/xtra/results/timestamps/" + name.append(".txt");
+    string path = "/data1/xtra/results/timestamps/" + name +".txt";
 
 //    boost::filesystem::path dir(path);
 //    if(boost::filesystem::create_directories(dir)) {
@@ -71,7 +71,7 @@ dump_timing(std::vector<std::chrono::milliseconds> vector,
 
     //dump latency
     std::string name_latency = arg_name + "_" + std::to_string(exp_id);
-    string path_latency = "/data1/xtra/results/latency/" + name_latency.append(".txt");
+    string path_latency = "/data1/xtra/results/latency/" + name_latency + ".txt";
 //    boost::filesystem::path dir2(path);
 //    if(boost::filesystem::create_directories(dir2)) {
 //        std::cout << "create directory" << "\n";
@@ -84,14 +84,13 @@ dump_timing(std::vector<std::chrono::milliseconds> vector,
 
 
     //dump gap
-    string path_gap = "/data1/xtra/results/gaps/" + name.append(".txt");
+    string path_gap = "/data1/xtra/results/gaps/" + name + ".txt";
     ofstream outputFile_gap(path_gap, std::ios::trunc);
     for (auto &element : global_record_gap) {
         outputFile_gap << (std::to_string(element + lastTS) + "\n");
     }
     outputFile_gap.close();
 }
-
 
 
 void breakdown_global(int64_t total_results, int nthreads, T_TIMER *timer, long lastTS, _IO_FILE *pFile) {
@@ -223,7 +222,7 @@ void sortRecords(std::string algo_name, int exp_id, long lastTS) {
     global_record.push_back(actual_start_timestamp);
     sort(global_record.begin(), global_record.end());
     sort(global_record_latency.begin(), global_record_latency.end());
-    sort(global_record_gap.begin(),global_record_gap.end());
+    sort(global_record_gap.begin(), global_record_gap.end());
     /* now print the progressive results: */
     dump_timing(global_record, global_record_latency, global_record_gap, algo_name, exp_id, lastTS);
 

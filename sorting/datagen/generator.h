@@ -13,7 +13,7 @@
 #ifndef GENERATOR_H
 #define GENERATOR_H
 
-#include "../util/types.h" /* relation_t, tuple_t */
+#include "../utils/types.h" /* relation_t, tuple_t */
 #include <chrono>
 using namespace std::chrono;
 
@@ -131,9 +131,10 @@ void
 delete_relation_payload(relation_payload_t *relPl);
 
 void
-add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_size, int interval, const int i);
+add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_size, int interval, const int partitions);
 
-void add_zipf_ts(relation_t *relation, relation_payload_t *relationPayload, int window_size, const double zipf_param);
+void
+add_zipf_ts(relation_t *relation, relation_payload_t *relationPayload, int window_size, const double zipf_param, int i);
 
 
 /** @} */
