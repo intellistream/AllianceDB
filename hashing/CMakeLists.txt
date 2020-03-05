@@ -40,21 +40,21 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -msse4.1 -mavx2")
 #####ADD GOOGLE TEST########
 # Prevent GoogleTest from overriding our compiler/linker options
 # when building with Visual Studio
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+#set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 # Add googletest directly to our build. This adds the following targets:
 # gtest, gtest_main, gmock and gmock_main
-enable_testing()
-add_subdirectory("${CMAKE_BINARY_DIR}/googletest-src"
-        "${CMAKE_BINARY_DIR}/googletest-build"
-        )
+#enable_testing()
+#add_subdirectory("${CMAKE_BINARY_DIR}/googletest-src"
+#        "${CMAKE_BINARY_DIR}/googletest-build"
+#        )
 # The gtest/gmock targets carry header search path dependencies
 # automatically when using CMake 2.8.11 or later. Otherwise we
 # have to add them here ourselves.
-if(CMAKE_VERSION VERSION_LESS 2.8.11)
-    include_directories("${gtest_SOURCE_DIR}/include"
-            "${gmock_SOURCE_DIR}/include"
-            )
-endif()
+#if(CMAKE_VERSION VERSION_LESS 2.8.11)
+#    include_directories("${gtest_SOURCE_DIR}/include"
+#            "${gmock_SOURCE_DIR}/include"
+#            )
+#endif()
 
 ADD_LIBRARY(common OBJECT utils/xxhash64.h timer/t_timer.h timer/t_timer.cpp utils/types.h utils/generator.cpp utils/generator.h utils/perf_counters.cpp utils/perf_counters.h utils/cpu_mapping.cpp utils/cpu_mapping.h utils/genzipf.cpp utils/genzipf.h utils/lock.h utils/rdtsc.h utils/barrier.h utils/task_queue.h utils/config.h
         joins/npj_types.h joins/npj_params.h joins/no_partitioning_join.cpp joins/no_partitioning_join.h joins/onlinejoins.cpp joins/onlinejoins.h
@@ -63,9 +63,9 @@ ADD_LIBRARY(common OBJECT utils/xxhash64.h timer/t_timer.h timer/t_timer.cpp uti
 
 # Now simply link your own targets against gtest, gmock,
 # etc. as appropriate
-add_executable(runUnitTests $<TARGET_OBJECTS:common>)
-target_link_libraries(runUnitTests gtest gtest_main)
-add_test( runUnitTests runUnitTests )
+#add_executable(runUnitTests $<TARGET_OBJECTS:common>)
+#target_link_libraries(runUnitTests gtest gtest_main)
+#add_test( runUnitTests runUnitTests )
 
 target_link_libraries(runUnitTests ${CMAKE_DL_LIBS}) ##used by boost
 target_link_libraries(runUnitTests numa)
