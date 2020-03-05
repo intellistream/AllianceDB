@@ -315,7 +315,7 @@ np_distribute(const relation_t *relR, const relation_t *relS, int nthreads, hash
             || (exp_id >= 54 && exp_id <= 57)) {//dataset=Rovio
             args[i].timer->record_gap = 1000;
         } else {
-            args[i].timer->record_gap = 100;
+            args[i].timer->record_gap = 1;
         }
 //         printf(" record_gap:%d\n", args[i].timer->record_gap);
 #endif

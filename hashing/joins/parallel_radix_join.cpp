@@ -1544,7 +1544,7 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads,
             || (exp_id >= 54 && exp_id <= 57)) {//dataset=Rovio
             args[i].timer->record_gap = 1000;
         } else {
-            args[i].timer->record_gap = 100;
+            args[i].timer->record_gap = 1;
         }
 #endif
 

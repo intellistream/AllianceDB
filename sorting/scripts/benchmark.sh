@@ -24,7 +24,7 @@ function KimRun() {
 }
 
 DEFAULT_WINDOW_SIZE=2000 #ms
-DEFAULT_STEP_SIZE=50   # |tuples| per ms.
+DEFAULT_STEP_SIZE=100   # |tuples| per ms.
 function ResetParameters() {
   TS_DISTRIBUTION=0                # uniform time distribution
   ZIPF_FACTOR=0                    # uniform time distribution
@@ -69,7 +69,7 @@ for algo in m-way m-pass; do #
 
       ts=1 # stream case
       # step size should be bigger than nthreads
-      for STEP_SIZE in 10 25 50 100; do
+      for STEP_SIZE in 50 100 250 500; do
         #WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
         echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
         KimRun

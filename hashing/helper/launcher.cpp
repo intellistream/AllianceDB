@@ -43,7 +43,7 @@ launch(int nthreads, relation_t *relR, relation_t *relS, t_param param, void *(*
                 ) {//dataset=Rovio/DEBS
             param.args[i].joiner->timer->record_gap = 1000;
         } else {
-            param.args[i].joiner->timer->record_gap = 100;
+            param.args[i].joiner->timer->record_gap = 1;
         }
 //        printf("record_gap:%d\n", param.args[i].joiner->timer->record_gap);
 #endif
