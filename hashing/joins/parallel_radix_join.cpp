@@ -1068,7 +1068,7 @@ prj_thread(void *param) {
 //    /* wait at a barrier until each thread starts and then start the T_TIMER */
     BARRIER_ARRIVE(args->barrier, rv)
     /* if monitoring synchronization stats */
-    
+
 #ifndef NO_TIMING
     if (args->tid == 0)
         *args->startTS = now();//assign the start timestamp
@@ -1444,7 +1444,8 @@ prj_thread(void *param) {
  * - PRHO, Parallel Radix Histogram-based Optimized -> histogram_optimized_join()
  */
 result_t *
-join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads, int exp_id, int group_size) {
+join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads, int exp_id, int group_size,
+              int window_size) {
     int i, rv;
     pthread_t tid[nthreads];
     pthread_attr_t attr;
@@ -1595,20 +1596,16 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads,
 
 #ifndef NO_TIMING
 
-    auto lastRTS = relR->payload->ts[relR->num_tuples - 1].count();
-    auto lastSTS = relS->payload->ts[relS->num_tuples - 1].count();
-    auto lastTS = max(lastRTS, lastSTS);
-
     std::string name = "PRJ_" + std::to_string(exp_id);
     string path = "/data1/xtra/results/breakdown/" + name.append(".txt");
     auto fp = fopen(path.c_str(), "w");
     /* now print the timing results: */
     for (i = 0; i < nthreads; i++) {
-        breakdown_thread(args[i].result, args[i].timer, lastTS, fp);
+        breakdown_thread(args[i].result, args[i].timer, window_size, fp);
     }
-    breakdown_global(nthreads, fp);
-    sortRecords("PRJ", exp_id, lastTS);
+    breakdown_global(result, nthreads, args[0].timer, 0, fp);
     fclose(fp);
+    sortRecords("PRJ", exp_id, window_size);
 #endif
 
 
@@ -1662,25 +1659,25 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads,
 
 /** \copydoc PRO */
 result_t *
-PRO(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size) {
-    return join_init_run(relR, relS, bucket_chaining_join, nthreads, exp_id, group_size);
+PRO(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size) {
+    return join_init_run(relR, relS, bucket_chaining_join, nthreads, exp_id, group_size, window_size);
 }
 
 /** \copydoc PRH */
 result_t *
-PRH(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size) {
-    return join_init_run(relR, relS, histogram_join, nthreads, exp_id, group_size);
+PRH(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size) {
+    return join_init_run(relR, relS, histogram_join, nthreads, exp_id, group_size, window_size);
 }
 
 /** \copydoc PRHO */
 result_t *
-PRHO(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size) {
-    return join_init_run(relR, relS, histogram_optimized_join, nthreads, exp_id, group_size);
+PRHO(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size) {
+    return join_init_run(relR, relS, histogram_optimized_join, nthreads, exp_id, group_size, window_size);
 }
 
 /** \copydoc RJ */
 result_t *
-RJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size) {
+RJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size) {
     int64_t result = 0;
     result_t *joinresult;
     uint32_t i;

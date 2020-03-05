@@ -111,7 +111,7 @@ init_bucket_buffer(bucket_buffer_t **ppbuf) {
 
 /** \copydoc NPO_st */
 result_t *
-NPO_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size) {
+NPO_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size) {
     hashtable_t *ht;
     int64_t result = 0;
     result_t *joinresult;
@@ -342,7 +342,7 @@ np_distribute(const relation_t *relR, const relation_t *relS, int nthreads, hash
 
 /** \copydoc NPO */
 result_t *
-NPO(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size) {
+NPO(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size) {
     hashtable_t *ht;
     int64_t result = 0;
     int32_t numR, numS, numRthr, numSthr; /* total and per thread num */
@@ -397,22 +397,16 @@ NPO(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size
 
 #ifndef NO_TIMING
     /* now print the timing results: */
-    auto lastTS = max(relR->payload->ts[relR->num_tuples - 1].count(),
-                      relS->payload->ts[relS->num_tuples - 1].count());
-    printf("relR->payload->ts[relR->num_tuples - 1].count():%ld, "
-           "relS->payload->ts[relR->num_tuples - 1].count() %ld,"
-           "lastTS is:%ld\n", relR->payload->ts[relR->num_tuples - 1].count(),
-           relS->payload->ts[relR->num_tuples - 1].count(), lastTS);
 
     std::string name = "NPJ_" + std::to_string(exp_id);
     string path = "/data1/xtra/results/breakdown/" + name.append(".txt");
     auto fp = fopen(path.c_str(), "w");
     for (i = 0; i < nthreads; i++) {
-        breakdown_thread(args[i].result, args[i].timer, lastTS, fp);
+        breakdown_thread(args[i].result, args[i].timer, window_size, fp);
     }
-    breakdown_global(nthreads, fp);
+    breakdown_global(result, nthreads, args[0].timer, 0, fp);
     fclose(fp);
-    sortRecords("NPJ", exp_id, lastTS);
+    sortRecords("NPJ", exp_id, window_size);
 #endif
 //    for (i = 0; i < nthreads; i++) {
 //        pthread_join(tid[i], NULL);

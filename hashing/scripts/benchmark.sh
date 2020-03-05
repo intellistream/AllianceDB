@@ -7,23 +7,26 @@ make -j4
 function benchmarkRun() {
   #####native execution
   echo "==benchmark:$benchmark -a $algo -n $Threads=="
+  echo 3 >/proc/sys/vm/drop_caches
   ./hashing -a $algo -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id
 }
 
 function Run() {
   #####native execution
   echo "==benchmark:$benchmark -a $algo -n $Threads=="
+  echo 3 >/proc/sys/vm/drop_caches
   ./hashing -a $algo -r $RSIZE -s $SSIZE -n $Threads
 }
 
 function KimRun() {
   #####native execution
   echo "==benchmark:$benchmark -a $algo  #TEST:$id -n $Threads -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id=="
+  echo 3 >/proc/sys/vm/drop_caches
   ./hashing -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS
 }
 
-DEFAULT_WINDOW_SIZE=1000
-DEFAULT_STEP_SIZE=100
+DEFAULT_WINDOW_SIZE=5000 #(ms) -- 5 seconds
+DEFAULT_STEP_SIZE=100    # |tuples| per ms. -- 100K per seconds.
 function ResetParameters() {
   TS_DISTRIBUTION=0                # uniform time distribution
   ZIPF_FACTOR=0                    # uniform time distribution
@@ -44,7 +47,7 @@ algo=""
 Threads=32
 timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
-for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP ; do #PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
+for algo in PRO NPO SHJ_JM_NP ; do #SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
   RSIZE=1
   SSIZE=1
   RPATH=""
@@ -53,7 +56,7 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP ; do #PRO NPO SH
   SKEY=0
   RTS=0
   STS=0
-  for benchmark in "AR" "AD" "KD" "WS" "KD2" "WS2" "RAR" "RAR2" "WS3" "WS4"; do #"Stock"  "Rovio" "YSB"  "DEBS" # "ScaleStock"  "ScaleYSB" "ScaleDEBS"
+  for benchmark in "AR"; do #"Stock"  "Rovio" "YSB"  "DEBS" # "ScaleStock" "AD" "KD" "WS" "KD2" "WS2" "RAR" "RAR2" "WS3" "WS4"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "AR") #test arrival rate
@@ -68,8 +71,8 @@ for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP ; do #PRO NPO SH
 
       ts=1 # stream case
       # step size should be bigger than nthreads
-      for STEP_SIZE in 100 1000 10000 100000; do
-        WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
+      for STEP_SIZE in 50 1000; do #100 500
+#        WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
         echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
         KimRun
         let "id++"

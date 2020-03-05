@@ -31,7 +31,7 @@ std::string GetCurrentWorkingDir(void) {
 void
 dump_timing(std::vector<std::chrono::milliseconds> vector,
             std::vector<int64_t> vector_latency,
-            std::vector<int32_t> global_gaps,
+            std::vector<int32_t> global_record_gap,
             std::string arg_name,
             int exp_id, long lastTS) {
 
@@ -85,32 +85,27 @@ dump_timing(std::vector<std::chrono::milliseconds> vector,
 
     //dump gap
     string path_gap = "/data1/xtra/results/gaps/" + name.append(".txt");
-    ofstream outputFile_gap(path_latency, std::ios::trunc);
-    for (auto &element : global_gaps) {
+    ofstream outputFile_gap(path_gap, std::ios::trunc);
+    for (auto &element : global_record_gap) {
         outputFile_gap << (std::to_string(element + lastTS) + "\n");
     }
     outputFile_gap.close();
 }
 
 
-uint64_t wait_time = 0;
-uint64_t partition_time = 0;
-uint64_t build_time = 0;
-uint64_t sort_time = 0;
-uint64_t merge_time = 0;
-uint64_t join_time = 0;
-uint64_t others_time = 0;
 
-
-void breakdown_global(int nthreads, _IO_FILE *pFile) {
+void breakdown_global(int64_t total_results, int nthreads, T_TIMER *timer, long lastTS, _IO_FILE *pFile) {
+    auto others = (timer->overall_timer -
+                   (timer->wait_timer + timer->partition_timer + timer->buildtimer + timer->sorttimer +
+                    timer->mergetimer + timer->join_timer));
     fprintf(pFile, "%lu\n%lu\n%lu\n%lu\n%lu\n%lu\n%lu\n",
-            wait_time / nthreads,
-            partition_time / nthreads,
-            build_time / nthreads,
-            sort_time / nthreads,
-            merge_time / nthreads,
-            join_time / nthreads,
-            others_time / nthreads
+            timer->wait_timer / (total_results / nthreads),
+            timer->partition_timer / (total_results / nthreads),
+            timer->buildtimer / (total_results / nthreads),
+            timer->sorttimer / (total_results / nthreads),
+            timer->mergetimer / (total_results / nthreads),
+            timer->join_timer / (total_results / nthreads),
+            others / (total_results / nthreads)
     );
     fflush(pFile);
 }
@@ -146,13 +141,13 @@ void breakdown_thread(int64_t result, T_TIMER *timer, long lastTS, _IO_FILE *pFi
         auto others = (timer->overall_timer -
                        (timer->wait_timer + timer->partition_timer + timer->buildtimer + timer->sorttimer +
                         timer->mergetimer + timer->join_timer));
-        wait_time += timer->wait_timer / result;
-        partition_time += timer->partition_timer / result;
-        build_time += timer->buildtimer / result;
-        sort_time += timer->sorttimer / result;
-        merge_time += timer->mergetimer / result;
-        join_time += timer->join_timer / result;
-        others_time += others / result;
+//        wait_time += timer->wait_timer / result;
+//        partition_time += timer->partition_timer / result;
+//        build_time += timer->buildtimer / result;
+//        sort_time += timer->sorttimer / result;
+//        merge_time += timer->mergetimer / result;
+//        join_time += timer->join_timer / result;
+//        others_time += others / result;
 
         //for user to read.
         fprintf(stdout, "[Info] RUNTIME TOTAL, WAIT, PART, BUILD, SORT, MERGE, JOIN, others (cycles): \n");

@@ -67,7 +67,6 @@ t_param &finishing(int nthreads, t_param &param, milliseconds *startTS, millisec
     param.joinresult->totalresults = param.result;
     param.joinresult->nthreads = nthreads;
 #ifndef NO_TIMING
-    sortRecords(param.algo_name, param.exp_id, 0);
     std::string name = param.algo_name + "_" + std::to_string(param.exp_id);
     string path = "/data1/xtra/results/breakdown/" + name.append(".txt");
     auto fp = fopen(path.c_str(), "w");
@@ -75,8 +74,9 @@ t_param &finishing(int nthreads, t_param &param, milliseconds *startTS, millisec
     for (i = 0; i < nthreads; i++) {
         breakdown_thread(*param.args[i].matches, param.args[i].timer, 0, fp);
     }
-    breakdown_global(nthreads, fp);
+    breakdown_global(param.result, nthreads, param.args[0].timer, 0, fp);
     fclose(fp);
+    sortRecords(param.algo_name, param.exp_id, 0);
 #endif
     return param;
 }
@@ -89,7 +89,7 @@ t_param &finishing(int nthreads, t_param &param, milliseconds *startTS, millisec
  * @return
  */
 result_t *
-SHJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size) {
+SHJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size) {
 
     t_param param(1);
 
@@ -123,7 +123,7 @@ SHJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_s
 
 //1st online algorithm
 result_t *
-SHJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size) {
+SHJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size) {
     t_param param(nthreads);
     initialize(nthreads, param);
     param.fetcher = type_JM_NP_Fetcher;//new JM_NP_Fetcher(nthreads, relR, relS);
@@ -140,7 +140,7 @@ SHJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int grou
 
 //2nd online algorithm
 result_t *
-SHJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size) {
+SHJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size) {
     t_param param(nthreads);
     initialize(nthreads, param);
     param.fetcher = type_JB_NP_Fetcher;//new JB_NP_Fetcher(nthreads, relR, relS);
@@ -157,7 +157,7 @@ SHJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int grou
 
 //3rd online algorithm
 result_t *
-SHJ_JBCR_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size) {
+SHJ_JBCR_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size) {
     t_param param(nthreads);
     initialize(nthreads, param);
     param.fetcher = type_JB_NP_Fetcher;//new JB_NP_Fetcher(nthreads, relR, relS);
@@ -174,7 +174,7 @@ SHJ_JBCR_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int gr
 
 //4th
 result_t *
-SHJ_HS_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size) {
+SHJ_HS_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size) {
     t_param param(nthreads);
     initialize(nthreads, param);
     param.fetcher = type_HS_NP_Fetcher;//new HS_NP_Fetcher(nthreads, relR, relS);
@@ -189,7 +189,7 @@ SHJ_HS_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int grou
     return param.joinresult;
 }
 
-result_t *PMJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size) {
+result_t *PMJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size) {
 
     t_param param(1);
 
@@ -224,7 +224,7 @@ result_t *PMJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, i
     return param.joinresult;
 }
 
-result_t *RPJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size) {
+result_t *RPJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size) {
 
     t_param param(1);
 #ifdef JOIN_RESULT_MATERIALIZE
@@ -258,7 +258,7 @@ result_t *RPJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, i
 }
 
 //5th
-result_t *PMJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size) {
+result_t *PMJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size) {
     t_param param(nthreads);
     initialize(nthreads, param);
     param.fetcher = type_JM_NP_Fetcher;//new JM_NP_Fetcher(nthreads, relR, relS);
@@ -274,7 +274,7 @@ result_t *PMJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id
 }
 
 //6th
-result_t *PMJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size) {
+result_t *PMJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size) {
     t_param param(nthreads);
     initialize(nthreads, param);
     param.fetcher = type_JB_NP_Fetcher;//new JM_NP_Fetcher(nthreads, relR, relS);
@@ -290,7 +290,7 @@ result_t *PMJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id
 }
 
 //7th
-result_t *PMJ_JBCR_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size) {
+result_t *PMJ_JBCR_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size) {
     t_param param(nthreads);
     initialize(nthreads, param);
     param.fetcher = type_JB_NP_Fetcher;//new JM_NP_Fetcher(nthreads, relR, relS);
@@ -306,7 +306,7 @@ result_t *PMJ_JBCR_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_
 }
 
 //8th
-result_t *PMJ_HS_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size) {
+result_t *PMJ_HS_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size) {
     t_param param(nthreads);
     initialize(nthreads, param);
     param.fetcher = type_PMJ_HS_NP_Fetcher;//new JM_NP_Fetcher(nthreads, relR, relS);
@@ -324,7 +324,7 @@ result_t *PMJ_HS_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id
 
 //9th
 result_t *
-RPJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size) {
+RPJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size) {
     t_param param(nthreads);
     initialize(nthreads, param);
     param.fetcher = type_JM_NP_Fetcher;//new JM_NP_Fetcher(nthreads, relR, relS);
@@ -342,7 +342,7 @@ RPJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int grou
 
 //10th
 result_t *
-RPJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size) {
+RPJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size) {
     t_param param(nthreads);
     initialize(nthreads, param);
     param.fetcher = type_JB_NP_Fetcher;//new JB_NP_Fetcher(nthreads, relR, relS);
@@ -359,7 +359,7 @@ RPJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int grou
 
 //11th
 result_t *
-RPJ_JBCR_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size) {
+RPJ_JBCR_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size) {
     t_param param(nthreads);
     initialize(nthreads, param);
     param.fetcher = type_JB_NP_Fetcher;//new JB_NP_Fetcher(nthreads, relR, relS);
@@ -376,7 +376,7 @@ RPJ_JBCR_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int gr
 }
 
 //12th
-result_t *RPJ_HS_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size) {
+result_t *RPJ_HS_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size) {
     t_param param(nthreads);
     initialize(nthreads, param);
     param.fetcher = type_HS_NP_Fetcher;//new HS_NP_Fetcher(nthreads, relR, relS);

@@ -22,8 +22,8 @@ function KimRun() {
   ./sorting -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS
 }
 
-DEFAULT_WINDOW_SIZE=1000
-DEFAULT_STEP_SIZE=100
+DEFAULT_WINDOW_SIZE=1000 #ms
+DEFAULT_STEP_SIZE=1000   # |tuples| per ms.
 function ResetParameters() {
   TS_DISTRIBUTION=0                # uniform time distribution
   ZIPF_FACTOR=0                    # uniform time distribution
@@ -53,7 +53,7 @@ for algo in m-way m-pass; do #
   SKEY=0
   RTS=0
   STS=0
-  for benchmark in "AR" "AD" "KD" "WS" "KD2" "WS2" "RAR" "RAR2" "WS3" "WS4" "Stock" "Rovio" "YSB" "DEBS"; do #"Stock"  "Rovio" "YSB"  "DEBS" #"ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS"
+  for benchmark in "AR"; do #"Stock"  "Rovio" "YSB"  "DEBS" #"ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "AD" "KD" "WS" "KD2" "WS2" "RAR" "RAR2" "WS3" "WS4" "Stock" "Rovio" "YSB" "DEBS"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "AR") #test arrival rate

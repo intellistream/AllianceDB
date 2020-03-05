@@ -31,7 +31,7 @@
  * @return number of result tuples
  */
 result_t *
-PRO(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size);
+PRO(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size);
 
 /**
  * RJ: Radix Join.
@@ -47,7 +47,7 @@ PRO(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size
  * @return number of result tuples
  */
 result_t *
-RJ_st(relation_t *relR, relation_t *relS, int nthreads,int exp_id, int group_size);
+RJ_st(relation_t *relR, relation_t *relS, int nthreads,int exp_id, int group_size, int window_size);
 
 /**
  * PRH: Parallel Radix Join Histogram-based.
@@ -63,7 +63,7 @@ RJ_st(relation_t *relR, relation_t *relS, int nthreads,int exp_id, int group_siz
  * @return number of result tuples
  */
 result_t *
-PRH(relation_t *relR, relation_t *relS, int nthreads,int exp_id, int group_size);
+PRH(relation_t *relR, relation_t *relS, int nthreads,int exp_id, int group_size, int window_size);
 
 /**
  * PRHO: Parallel Radix Join Histogram-based Optimized.
@@ -79,6 +79,6 @@ PRH(relation_t *relR, relation_t *relS, int nthreads,int exp_id, int group_size)
  * @return number of result tuples
  */
 result_t *
-PRHO(relation_t *relR, relation_t *relS, int nthreads,int exp_id, int group_size);
+PRHO(relation_t *relR, relation_t *relS, int nthreads,int exp_id, int group_size, int window_size);
 
 #endif /* PARALLEL_RADIX_JOIN_H */

@@ -220,7 +220,7 @@ if __name__ == "__main__":
     legend_labels = ['PRJ', 'NPJ', 'M-PASS', 'M-WAY', 'SHJ$^M$', 'SHJ$^B$', 'PMJ$^M$', 'PMJ$^B$']
 
     DrawFigure(x_values, y_values, legend_labels,
-               'Input arrival rate (e/ms)', 'Throughput (#matches/ms)', 0,
+               '$\nu$ (e/ms)', 'Tpt. (#matches/ms)', 0,
                400, 'throughput_figure1', False)
 
     DrawLegend(legend_labels, 'throughput_legend')

@@ -148,7 +148,6 @@ sortmergejoin_multiway_thread(void *param) {
     if (args->tid == 0)
         *args->startTS = now();//assign the start timestamp
     START_MEASURE((args->timer))
-    BEGIN_MEASURE_BUILD((args->timer))/* build start */
 #endif
 
 //    if (my_tid == 0) {

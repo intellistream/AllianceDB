@@ -127,7 +127,7 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int
 void writefile(relation_payload_t *relPl, const param_t cmd_params) {
     string path = "/data1/xtra/datasets/Kim/data_distribution_zipf" + std::to_string(cmd_params.zipf_param) + ".txt";
     ofstream outputFile(path, std::ios::trunc);
-    for (auto i=0; i<relPl->num_tuples; i++) {
+    for (auto i = 0; i < relPl->num_tuples; i++) {
         outputFile << (std::to_string(relPl->ts[i].count()) + "\n");
     }
     outputFile.close();
@@ -187,7 +187,8 @@ benchmark(const param_t cmd_params) {
     /* Run the selected join algorithm */
     printf("[INFO ] Running join algorithm %s ...\n", cmd_params.algo->name);
 
-    results = cmd_params.algo->joinAlgo(&relR, &relS, cmd_params.nthreads, cmd_params.exp_id, cmd_params.group_size);
+    results = cmd_params.algo->joinAlgo(&relR, &relS, cmd_params.nthreads, cmd_params.exp_id, cmd_params.group_size,
+                                        cmd_params.window_size);
 
     printf("[INFO ] Results = %ld. DONE.\n", results->totalresults);
 

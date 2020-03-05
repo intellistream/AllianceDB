@@ -44,7 +44,7 @@ struct T_TIMER {
 milliseconds now();
 
 /** print out the execution time statistics of the join */
-void breakdown_global(int nthreads, _IO_FILE *pFile);
+void breakdown_global(int64_t result, int nthreads, T_TIMER *timer, long lastTS, _IO_FILE *pFile);
 
 /** print out the execution time statistics of the join */
 void breakdown_thread(int64_t result, T_TIMER *timer, long lastTS, _IO_FILE *pFile);

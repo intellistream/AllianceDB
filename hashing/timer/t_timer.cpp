@@ -40,14 +40,17 @@ dump_timing(std::vector<std::chrono::milliseconds> vector, std::vector<int64_t> 
     int check25 = ceil(n * 0.25);
     int check50 = ceil(n * 0.5);
     int check75 = ceil(n * 0.75);
+    int check100 = n;
     std::chrono::milliseconds start = vector.at(0);
 
-    fprintf(stdout, "Time to obtain 10%%, 25%%, 50%%, 75%% of results (MSECS): \n");
-    fprintf(stdout, "(%.2lu) \t (%.2lu) \t (%.2lu) \t (%.2lu)",
+    fprintf(stdout, "Time to obtain 10%%, 25%%, 50%%, 75%%, 100%% of results (MSECS): \n");
+    fprintf(stdout, "(%.2lu) \t (%.2lu) \t (%.2lu) \t (%.2lu) \t (%.2lu)",
             vector.at(check10).count() + lastTS - start.count(),
             vector.at(check25).count() + lastTS - start.count(),
             vector.at(check50).count() + lastTS - start.count(),
-            vector.at(check75).count() + lastTS - start.count());
+            vector.at(check75).count() + lastTS - start.count(),
+            vector.at(check100).count() + lastTS - start.count()
+    );
     fprintf(stdout, "\n");
     fprintf(stdout, "\n");
     fflush(stdout);
@@ -75,7 +78,7 @@ dump_timing(std::vector<std::chrono::milliseconds> vector, std::vector<int64_t> 
 
     //dump gap
     string path_gap = "/data1/xtra/results/gaps/" + name.append(".txt");
-    ofstream outputFile_gap(path_latency, std::ios::trunc);
+    ofstream outputFile_gap(path_gap, std::ios::trunc);
     for (auto &element : global_record_gap) {
         outputFile_gap << (std::to_string(element + lastTS) + "\n");
     }
@@ -83,24 +86,18 @@ dump_timing(std::vector<std::chrono::milliseconds> vector, std::vector<int64_t> 
 }
 
 
-uint64_t wait_time = 0;
-uint64_t partition_time = 0;
-uint64_t build_time = 0;
-uint64_t sort_time = 0;
-uint64_t merge_time = 0;
-uint64_t join_time = 0;
-uint64_t others_time = 0;
-
-
-void breakdown_global(int nthreads, _IO_FILE *pFile) {
+void breakdown_global(int64_t total_results, int nthreads, T_TIMER *timer, long lastTS, _IO_FILE *pFile) {
+    auto others = (timer->overall_timer -
+                   (timer->wait_timer + timer->partition_timer + timer->buildtimer + timer->sorttimer +
+                    timer->mergetimer + timer->join_timer));
     fprintf(pFile, "%lu\n%lu\n%lu\n%lu\n%lu\n%lu\n%lu\n",
-            wait_time / nthreads,
-            partition_time / nthreads,
-            build_time / nthreads,
-            sort_time / nthreads,
-            merge_time / nthreads,
-            join_time / nthreads,
-            others_time / nthreads
+            timer->wait_timer / (total_results / nthreads),
+            timer->partition_timer / (total_results / nthreads),
+            timer->buildtimer / (total_results / nthreads),
+            timer->sorttimer / (total_results / nthreads),
+            timer->mergetimer / (total_results / nthreads),
+            timer->join_timer / (total_results / nthreads),
+            others / (total_results / nthreads)
     );
     fflush(pFile);
 }
@@ -118,35 +115,29 @@ void breakdown_thread(int64_t result, T_TIMER *timer, long lastTS, _IO_FILE *pFi
                             - ((timer->start).tv_sec * 1000000L + (timer->start).tv_usec)) + lastTS * 1000L;
 
         if (lastTS != 0) {//lazy join algorithms.
-//#ifndef NO_TIMING
-//            BEGIN_MEASURE_WAIT_ACC(timer)
-//#endif
-//            this_thread::sleep_for(chrono::milliseconds(lastTS));//simulating the waiting period.
-//#ifndef NO_TIMING
-//            END_MEASURE_WAIT_ACC(timer)
-//#endif
             SET_WAIT_ACC(timer, lastTS * 2.1 * 1E6)
             timer->overall_timer += timer->wait_timer;
         }
         double cyclestuple = (timer->overall_timer) / result;
 
         //for system to read.
-        //only take one thread to dump?
+        //only take one thread to dump? YES!
         //WAIT, PART, BUILD, SORT, MERGE, JOIN, OTHERS
         auto others = (timer->overall_timer -
                        (timer->wait_timer + timer->partition_timer + timer->buildtimer + timer->sorttimer +
                         timer->mergetimer + timer->join_timer));
-        wait_time += timer->wait_timer / result;
-        partition_time += timer->partition_timer / result;
-        build_time += timer->buildtimer / result;
-        sort_time += timer->sorttimer / result;
-        merge_time += timer->mergetimer / result;
-        join_time += timer->join_timer / result;
-        others_time += others / result;
+//
+//        wait_time += timer->wait_timer / result;
+//        partition_time += timer->partition_timer / result;
+//        build_time += timer->buildtimer / result;
+//        sort_time += timer->sorttimer / result;
+//        merge_time += timer->mergetimer / result;
+//        join_time += timer->join_timer / result;
+//        others_time += others / result;
 
         //for user to read.
-        fprintf(stdout, "[Info] RUNTIME TOTAL, WAIT, PART, BUILD, SORT, MERGE, JOIN, others (cycles): \n");
-        fprintf(stdout, "%llu \t %llu (%.2f%%) \t %llu (%.2f%%) \t %llu (%.2f%%)  "
+        DEBUGMSG("[Info] RUNTIME TOTAL, WAIT, PART, BUILD, SORT, MERGE, JOIN, others (cycles): \n");
+        DEBUGMSG( "%llu \t %llu (%.2f%%) \t %llu (%.2f%%) \t %llu (%.2f%%)  "
                         "\t %llu (%.2f%%)  \t %llu (%.2f%%) \t %llu (%.2f%%) \t %llu (%.2f%%)",
                 timer->overall_timer / result,
                 timer->wait_timer / result, (timer->wait_timer * 100 / (double) timer->overall_timer),
@@ -157,15 +148,14 @@ void breakdown_thread(int64_t result, T_TIMER *timer, long lastTS, _IO_FILE *pFi
                 timer->join_timer / result, (timer->join_timer * 100 / (double) timer->overall_timer),
                 others / result, (others * 100 / (double) timer->overall_timer)
         );
-        fprintf(stdout, "\n");
-        fprintf(stdout, "TOTAL-TIME-USECS, NUM-TUPLES, CYCLES-PER-TUPLE: \n");
-        fprintf(stdout, "%.4lf \t %ld \t %.4lf", diff_usec, result, cyclestuple);
-        fprintf(stdout, "\n");
-        fprintf(stdout, "\n");
+        DEBUGMSG(  "\n");
+        DEBUGMSG( "TOTAL-TIME-USECS, NUM-TUPLES, CYCLES-PER-TUPLE: \n");
+        DEBUGMSG( "%.4lf \t %ld \t %.4lf", diff_usec, result, cyclestuple);
+        DEBUGMSG( "\n");
+        DEBUGMSG( "\n");
     } else {
-        fprintf(stdout, "[Warning] This thread does not matches any tuple.\n\n");
+        DEBUGMSG( "[Warning] This thread does not matches any tuple.\n\n");
     }
-    fflush(pFile);
 #endif
 }
 

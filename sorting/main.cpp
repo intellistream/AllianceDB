@@ -571,7 +571,7 @@ main(int argc, char *argv[]) {
     cmdparam_t cmd_params;
 
     /* Default values if not specified on command line */
-    cmd_params.algo = &algos[1]; /* 0: m-way, 1: m-pass */
+    cmd_params.algo = &algos[0]; /* 0: m-way, 1: m-pass */
     cmd_params.nthreads = 1;
     /* default dataset is Workload B (described in paper) */
     cmd_params.r_size = 128000;
