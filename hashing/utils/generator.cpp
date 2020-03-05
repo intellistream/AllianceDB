@@ -107,6 +107,27 @@ inline bool last_thread(int i, int nthreads) {
     return i == (nthreads - 1);
 }
 
+// TODO: going ot
+void ts_shuffle(relation_t *relation, relation_payload_t *relationPayload, uint32_t partitions) {
+    int numthr = relation->num_tuples / partitions;//replicate R, partition S.
+
+    int *tid_offsets = new int[partitions];
+    int *tid_start_idx = new int[partitions];
+    int *tid_end_idx = new int[partitions];
+
+    for (auto partition = 0; partition < partitions; partition++) {
+        tid_offsets[partition] = 0;
+        tid_start_idx[partition] = numthr * partition;
+        tid_end_idx[partition] = (last_thread(partition, partitions)) ? relation->num_tuples : numthr * (partition + 1);
+
+        printf("partition %d start idx: %d end idx: %d\n", partition, tid_start_idx[partition], tid_end_idx[partition]);
+    }
+
+    for (auto i = 0; i < relation->num_tuples; i++) {
+
+    }
+}
+
 void
 add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_size, int interval, uint32_t partitions) {
     int ts = 0;
@@ -121,9 +142,6 @@ add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_size,
         tid_offsets[partition] = 0;
         tid_start_idx[partition] = numthr * partition;
         tid_end_idx[partition] = (last_thread(partition, partitions)) ? relation->num_tuples : numthr * (partition + 1);
-
-        printf("partition %d start idx: %d end idx: %d\n", partition, tid_start_idx[partition], tid_end_idx[partition]);
-
     }
 
     for (auto i = 0; i < relation->num_tuples; i++) {
@@ -139,10 +157,6 @@ add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_size,
         int cur_index = tid_start_idx[partition] + tid_offsets[partition];
         relationPayload->ts[cur_index] = (milliseconds) ts;
         tid_offsets[partition]++;
-    }
-
-    for (auto i = 0; i < relation->num_tuples; i++) {
-        printf("ts: %ld\n", relationPayload->ts[i].count());
     }
 //    assert(interval == 0 || ts == window_size);
 }
@@ -325,7 +339,7 @@ numa_localize_thread(void *args) {
  * NUMA-aware).
  */
 void
-read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t tsKey, char *filename);
+read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t tsKey, char *filename, uint32_t partitions);
 
 /**
  * Write relation to a file.
@@ -584,7 +598,7 @@ parallel_create_relation_with_ts(relation_t *relation, relation_payload_t *relat
 
 int
 load_relation(relation_t *relation, relation_payload_t *relation_payload, int32_t keyby, int32_t tsKey, char *filename,
-              uint64_t num_tuples) {
+              uint64_t num_tuples, uint32_t partitions) {
     relation->num_tuples = num_tuples;
 
     /* we need aligned allocation of items */
@@ -600,7 +614,7 @@ load_relation(relation_t *relation, relation_payload_t *relation_payload, int32_
     }
 
     /* load from the given input file */
-    read_relation(relation, relation_payload, keyby, tsKey, filename);
+    read_relation(relation, relation_payload, keyby, tsKey, filename, partitions);
 
     return 0;
 }
@@ -835,7 +849,7 @@ vector<string> split(string s, string delimiter) {
 }
 
 void
-read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t tsKey, char *filename) {
+read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t tsKey, char *filename, uint32_t partitions) {
     FILE *fp = fopen(filename, "r");
 
     /* skip the header line */
@@ -884,8 +898,19 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t
     int32_t payload = 0;
 
     int warn = 1;
-
     int i = 0;
+
+    int numthr = rel->num_tuples / partitions;//replicate R, partition S.
+
+    int *tid_offsets = new int[partitions];
+    int *tid_start_idx = new int[partitions];
+    int *tid_end_idx = new int[partitions];
+
+    for (auto partition = 0; partition < partitions; partition++) {
+        tid_offsets[partition] = 0;
+        tid_start_idx[partition] = numthr * partition;
+        tid_end_idx[partition] = (last_thread(partition, partitions)) ? rel->num_tuples : numthr * (partition + 1);
+    }
 
     while ((read = getline(&line, &len, fp)) != -1 && i < ntuples) {
 //        printf("Retrieved line of length %zu:\n", read);
@@ -910,20 +935,23 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t
             printf("error!!\n");
             return;
         }
-
-        rel->tuples[i].key = key;
-        rel->tuples[i].payloadID = payload;
 //        relPl->rows[i] = row;
-        relPl->ts[i] = timestamp;
+//        relPl->ts[i] = timestamp;
+
+        // round robin to assign ts to each thread.
+        auto partition = i % partitions;
+        if (tid_start_idx[partition] + tid_offsets[partition] == tid_end_idx[partition]) {
+            partition = partitions - 1; // if reach the maximum size, append the tuple to the last partition
+        }
+        // record cur index in partition
+        int cur_index = tid_start_idx[partition] + tid_offsets[partition];
+        relPl->ts[cur_index] = timestamp;
+        rel->tuples[cur_index].key = key;
+        rel->tuples[cur_index].payloadID = payload;
+        tid_offsets[partition]++;
+
         i++;
-
-//#ifdef DEBUG
-//        if(i%1000==0){
-//            printf("I have read %d tuples \n", i);
-//        }
-//#endif
     }
-
 //    for (uint64_t i = 0; i < ntuples; i++) {
 //        if (fmtspace) {
 //            fscanf(fp, "%d %d", &key, &row.value);
