@@ -28,7 +28,7 @@
 
 result_t *
 sortmergejoin_initrun(relation_t *relR, relation_t *relS, joinconfig_t *joincfg, void *(*jointhread)(void *),
-                      int exp_id, const string algoName) {
+                      int exp_id, int window_size, const string algoName) {
     int i, rv;
     int nthreads = joincfg->NTHREADS;
     int PARTFANOUT = joincfg->PARTFANOUT;
@@ -222,13 +222,13 @@ sortmergejoin_initrun(relation_t *relR, relation_t *relS, joinconfig_t *joincfg,
 
 #ifndef NO_TIMING
     /* now print the timing results: */
-    long ts_R = relR->payload->ts[relR->num_tuples - 1].count();
-    long ts_S = relS->payload->ts[relS->num_tuples - 1].count();
-    auto lastTS = std::max(ts_R, ts_S);
+//    long ts_R = relR->payload->ts[relR->num_tuples - 1].count();
+//    long ts_S = relS->payload->ts[relS->num_tuples - 1].count();
+//    auto lastTS = std::max(ts_R, ts_S);
 
-    printf("relR->payload->ts[relR->num_tuples - 1].count():%ld, "
-           "relS->payload->ts[relR->num_tuples - 1].count() %ld,"
-           "lastTS is:%ld\n", ts_R, ts_S, lastTS);
+//    printf("relR->payload->ts[relR->num_tuples - 1].count():%ld, "
+//           "relS->payload->ts[relR->num_tuples - 1].count() %ld,"
+//           "lastTS is:%ld\n", ts_R, ts_S, lastTS);
     std::string name = algoName + "_" + std::to_string(exp_id);
     string path = "/data1/xtra/results/breakdown/" + name.append(".txt");
 
@@ -239,11 +239,11 @@ sortmergejoin_initrun(relation_t *relR, relation_t *relS, joinconfig_t *joincfg,
 
     auto fp = fopen(path.c_str(), "w");
     for (i = 0; i < nthreads; i++) {
-        breakdown_thread(args[i].result, args[i].timer, lastTS, fp);
+        breakdown_thread(args[i].result, args[i].timer,   window_size, fp);
     }
     breakdown_global(result, nthreads, args[0].timer, 0, fp);
     fclose(fp);
-    sortRecords(algoName, exp_id, lastTS);
+    sortRecords(algoName, exp_id,   window_size);
 #endif
 
     /* clean-up */

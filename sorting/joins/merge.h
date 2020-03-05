@@ -14,7 +14,7 @@
 
 #include <stdint.h>
 
-#include "../util/types.h" /* tuple_t */
+#include "../utils/types.h" /* tuple_t */
 
 /**
  * Merges two sorted lists of length len into a new sorted list of length

@@ -5,7 +5,7 @@
 #ifndef ALLIANCEDB_SORTMERGEJOIN_MULTIPASS_H
 #define ALLIANCEDB_SORTMERGEJOIN_MULTIPASS_H
 
-#include "../util/types.h"              /* relation_t, tuple_t, result_t */
+#include "../utils/types.h"              /* relation_t, tuple_t, result_t */
 
 
 /**
@@ -25,6 +25,6 @@
  *
  * \ingroup Joins
  */
-result_t *sortmergejoin_multipass(relation_t *relR, relation_t *relS, joinconfig_t *joincfg, int exp_id);
+result_t *sortmergejoin_multipass(relation_t *relR, relation_t *relS, joinconfig_t *joincfg, int exp_id, int window_size);
 
 #endif //ALLIANCEDB_SORTMERGEJOIN_MULTIPASS_H

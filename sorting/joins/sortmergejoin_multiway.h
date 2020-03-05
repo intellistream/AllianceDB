@@ -6,7 +6,7 @@
 #define ALLIANCEDB_SORTMERGEJOIN_MULTIWAY_H
 
 
-#include "../util/types.h"              /* relation_t, tuple_t, result_t */
+#include "../utils/types.h"              /* relation_t, tuple_t, result_t */
 
 /**
  * "m-may sort-merge join"
@@ -23,7 +23,7 @@
  *
  * \ingroup Joins
  */
-result_t * sortmergejoin_multiway(relation_t *relR, relation_t *relS, joinconfig_t *joincfg, int exp_id);
+result_t * sortmergejoin_multiway(relation_t *relR, relation_t *relS, joinconfig_t *joincfg, int exp_id, int window_size);
 
 
 

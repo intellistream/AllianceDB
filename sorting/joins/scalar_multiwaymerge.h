@@ -12,7 +12,7 @@
 #ifndef SCALARMULTIWAYMERGE_H
 #define SCALARMULTIWAYMERGE_H
 
-#include "../util/types.h" /* tuple_t, relation_t */
+#include "../utils/types.h" /* tuple_t, relation_t */
 
 /**
  * Scalar Multi-Way Merging with cache-resident merge buffers.

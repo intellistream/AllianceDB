@@ -20,7 +20,7 @@
 
 #include "avxcommon.h"
 
-#include "../util/params.h"
+#include "../utils/params.h"
 #include "../affinity/memalloc.h"
 /* #include "iacaMarks.h" */
 
