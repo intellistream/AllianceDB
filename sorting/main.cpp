@@ -349,6 +349,7 @@ $ cat cpu-mapping.txt
 #endif
 
 #include "config.h"          /* autoconf header */
+#include "utils/types.h"
 #include <chrono>
 
 using namespace std::chrono;
@@ -601,6 +602,7 @@ main(int argc, char *argv[]) {
     cmd_params.ts_distribution = 0;
     cmd_params.zipf_param = 0.0;
     cmd_params.exp_id = 0;
+    cmd_params.fixS = 0;
 
     /* TODO: get L3 buffer size programmatically. */
     cmd_params.mwaymerge_bufsize = MWAY_MERGE_BUFFER_SIZE_DEFAULT;

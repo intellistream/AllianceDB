@@ -134,7 +134,7 @@ mpass_mergejoin_phase(relation_t *mergedRelR, relation_t *mergedRelS, arg_t *arg
 void *
 sortmergejoin_multipass_thread(void *param) {
     arg_t *args = (arg_t *) param;
-    int32_t my_tid = args->my_tid;
+    int32_t my_tid = args->tid;
     int rv;
 
     DEBUGMSG(1, "Thread-%d started running ... \n", my_tid);
@@ -269,9 +269,6 @@ sortmergejoin_multipass_thread(void *param) {
 
 
     BARRIER_ARRIVE(args->barrier, rv);
-//    if (my_tid == 0) {
-//        stopTimer(&args->merge);
-//    }
 
 #ifndef NO_TIMING
     END_MEASURE_MERGE_ACC(args->timer)/* merge end */
@@ -373,7 +370,7 @@ mpass_sorting_phase(relation_t **relRparts, relation_t **relSparts, arg_t *args)
     const int PARTFANOUT = args->joincfg->PARTFANOUT;//how many partitions to handle in one thread.
     const int scalarsortflag = args->joincfg->SCALARSORT;
 
-    int32_t my_tid = args->my_tid;
+    int32_t my_tid = args->tid;
 
     args->threadrelchunks[my_tid] = (relationpair_t *)
             malloc_aligned(PARTFANOUT * sizeof(relationpair_t));
@@ -449,7 +446,7 @@ mpass_firstnumamerge_phase(arg_t *args,
     const int PARTFANOUT = args->joincfg->PARTFANOUT;
     const int scalarmergeflag = args->joincfg->SCALARMERGE;
 
-    int32_t my_tid = args->my_tid;
+    int32_t my_tid = args->tid;
 
     int numruns = 0;
     uint64_t mergeRtotal = 0, mergeStotal = 0;
@@ -655,7 +652,7 @@ void
 mpass_fullmultipassmerge_phase(arg_t *args, int numrunstomerge,
                                relation_t *mergerunsR, relation_t *mergerunsS,
                                relation_t *mergedRelR, relation_t *mergedRelS) {
-    int32_t my_tid = args->my_tid;
+    int32_t my_tid = args->tid;
     const int scalarmergeflag = args->joincfg->SCALARMERGE;
 
     /* Full-merge of relation R */

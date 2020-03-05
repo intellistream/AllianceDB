@@ -238,7 +238,7 @@ void *
 sortmergejoin_multiway_skewhandling_thread(void * param)
 {
     arg_t * args   = (arg_t*) param;
-    int32_t my_tid = args->my_tid;
+    int32_t my_tid = args->tid;
     int rv;
 
     DEBUGMSG(1, "Thread-%d started running ... \n", my_tid);
@@ -461,7 +461,7 @@ multiwaymerge_phase_withskewhandling(int numaregionid,
     const int PARTFANOUT = args->joincfg->PARTFANOUT;
     const int scalarmergeflag = args->joincfg->SCALARMERGE;
 
-    int32_t my_tid = args->my_tid;
+    int32_t my_tid = args->tid;
     uint64_t mergeRtotal = 0, mergeStotal = 0;
     tuple_t * tmpoutR = NULL;
     tuple_t * tmpoutS = NULL;

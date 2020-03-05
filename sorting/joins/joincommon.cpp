@@ -43,7 +43,7 @@ sortmergejoin_initrun(relation_t *relR, relation_t *relS, joinconfig_t *joincfg,
 
 //#ifndef NO_TIMING
     T_TIMER timer[nthreads];//every thread has its own timer.
-    auto startTS = now();
+    chrono::milliseconds *startTS = new chrono::milliseconds();
 //#endif
 
     /**** allocate temporary space for partitioning ****/
@@ -158,7 +158,7 @@ sortmergejoin_initrun(relation_t *relR, relation_t *relS, joinconfig_t *joincfg,
         args[i].numS = (i == (nthreads - 1)) ?
                        (relS->num_tuples - i * numperthr[1]) : numperthr[1];
 
-        args[i].my_tid = i;/* this is the logical CPU-ID */
+        args[i].tid = i;/* this is the logical CPU-ID */
         args[i].nthreads = nthreads;
         args[i].joincfg = joincfg;
         args[i].barrier = &barrier;
@@ -169,7 +169,7 @@ sortmergejoin_initrun(relation_t *relR, relation_t *relS, joinconfig_t *joincfg,
         args[i].histR = histR;
         args[i].tmpRglobal = tmpRelpartR;
         args[i].totalR = relR->num_tuples;
-        args[i].startTS = &startTS;
+        args[i].startTS = startTS;
 
 #ifdef SKEW_HANDLING
         /** skew handling task queue ptrs. */
@@ -195,7 +195,7 @@ sortmergejoin_initrun(relation_t *relR, relation_t *relS, joinconfig_t *joincfg,
         pthread_join(tid[i], NULL);
         result += args[i].result;
 #ifndef NO_TIMING
-        merge(args[i].timer, relR, relS, &startTS);
+        merge(args[i].timer, relR, relS, startTS);
 #endif
     }
     joinresult->totalresults = result;
@@ -231,6 +231,12 @@ sortmergejoin_initrun(relation_t *relR, relation_t *relS, joinconfig_t *joincfg,
            "lastTS is:%ld\n", ts_R, ts_S, lastTS);
     std::string name = algoName + "_" + std::to_string(exp_id);
     string path = "/data1/xtra/results/breakdown/" + name.append(".txt");
+
+//    boost::filesystem::path dir(path);
+//    if(boost::filesystem::create_directories(dir)) {
+//        std::cout << "create directory" << "\n";
+//    }
+
     auto fp = fopen(path.c_str(), "w");
     for (i = 0; i < nthreads; i++) {
         breakdown_thread(args[i].result, args[i].timer, lastTS, fp);
@@ -326,7 +332,7 @@ merge_join(tuple_t *rtuples, tuple_t *stuples,
 #endif
 
                     matches++;
-#ifdef MEASURE
+#ifndef NO_TIMING
                     END_PROGRESSIVE_MEASURE(stuples[j].payload, timer, false)
 #endif
                     jj++;

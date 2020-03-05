@@ -142,7 +142,7 @@ struct arg_t {
     int32_t numR;
     int32_t numS;
 
-    int32_t my_tid;
+    int32_t tid;
     int nthreads;
     /* join configuration parameters: */
     joinconfig_t *joincfg;

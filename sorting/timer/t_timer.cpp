@@ -29,7 +29,10 @@ std::string GetCurrentWorkingDir(void) {
  * @param vector
  */
 void
-dump_timing(std::vector<std::chrono::milliseconds> vector, std::vector<int64_t> vector_latency, std::string arg_name,
+dump_timing(std::vector<std::chrono::milliseconds> vector,
+            std::vector<int64_t> vector_latency,
+            std::vector<int32_t> global_gaps,
+            std::string arg_name,
             int exp_id, long lastTS) {
 
     //print progressive
@@ -53,6 +56,11 @@ dump_timing(std::vector<std::chrono::milliseconds> vector, std::vector<int64_t> 
     //dump timestmap.
     std::string name = arg_name + "_" + std::to_string(exp_id);
     string path = "/data1/xtra/results/timestamps/" + name.append(".txt");
+
+//    boost::filesystem::path dir(path);
+//    if(boost::filesystem::create_directories(dir)) {
+//        std::cout << "create directory" << "\n";
+//    }
     ofstream outputFile(path, std::ios::trunc);
     auto begin = vector.begin().operator*();
     vector.erase(vector.begin());
@@ -64,11 +72,24 @@ dump_timing(std::vector<std::chrono::milliseconds> vector, std::vector<int64_t> 
     //dump latency
     std::string name_latency = arg_name + "_" + std::to_string(exp_id);
     string path_latency = "/data1/xtra/results/latency/" + name_latency.append(".txt");
+//    boost::filesystem::path dir2(path);
+//    if(boost::filesystem::create_directories(dir2)) {
+//        std::cout << "create directory" << "\n";
+//    }
     ofstream outputFile_latency(path_latency, std::ios::trunc);
     for (auto &element : vector_latency) {
         outputFile_latency << (std::to_string(element + lastTS) + "\n");
     }
     outputFile_latency.close();
+
+
+    //dump gap
+    string path_gap = "/data1/xtra/results/gaps/" + name.append(".txt");
+    ofstream outputFile_gap(path_latency, std::ios::trunc);
+    for (auto &element : global_gaps) {
+        outputFile_gap << (std::to_string(element + lastTS) + "\n");
+    }
+    outputFile_gap.close();
 }
 
 
@@ -207,8 +228,9 @@ void sortRecords(std::string algo_name, int exp_id, long lastTS) {
     global_record.push_back(actual_start_timestamp);
     sort(global_record.begin(), global_record.end());
     sort(global_record_latency.begin(), global_record_latency.end());
+    sort(global_record_gap.begin(),global_record_gap.end());
     /* now print the progressive results: */
-    dump_timing(global_record, global_record_latency, algo_name, exp_id, lastTS);
+    dump_timing(global_record, global_record_latency, global_record_gap, algo_name, exp_id, lastTS);
 
 }
 

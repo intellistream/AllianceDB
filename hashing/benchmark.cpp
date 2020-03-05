@@ -119,7 +119,7 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int
         parallel_create_relation(rel, rel_size,
                                  nthreads,
                                  rel_size);
-        add_ts(rel, relPl, step_size, 0, 0);
+        add_ts(rel, relPl, step_size, 0, partitions);
     }
     printf("OK \n");
 }

@@ -35,7 +35,7 @@ set(CMAKE_CXX_FLAGS "-Wall -Wextra")
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -msse4.1 -mavx2")
-
+#set (CMAKE_STATIC_LINKER_FLAGS -lboost_system)
 
 #####ADD GOOGLE TEST########
 # Prevent GoogleTest from overriding our compiler/linker options
@@ -69,9 +69,10 @@ add_test( runUnitTests runUnitTests )
 
 target_link_libraries(runUnitTests ${CMAKE_DL_LIBS}) ##used by boost
 target_link_libraries(runUnitTests numa)
+#target_link_libraries(runUnitTests boost_system)
 
 add_executable(hashing  main.cpp $<TARGET_OBJECTS:common> )
 
 target_link_libraries(hashing ${CMAKE_DL_LIBS}) ##used by boost
 target_link_libraries(hashing numa)
-
+#target_link_libraries(hashing boost_system)

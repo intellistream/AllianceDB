@@ -19,7 +19,7 @@
 #include <string.h> /* memcpy() */
 
 
-#include "../util/barrier.h"            /* pthread_barrier_* */
+#include "../utils/barrier.h"            /* pthread_barrier_* */
 #include "../affinity/cpu_mapping.h"        /* cpu_id NUMA related methods */
 
 #include "sortmergejoin_multiway.h"
@@ -128,15 +128,11 @@ mergejoin_phase(relation_t **relRparts, relation_t **relSparts,
 void *
 sortmergejoin_multiway_thread(void *param) {
     arg_t *args = (arg_t *) param;
-    int32_t my_tid = args->my_tid;
+    int32_t my_tid = args->tid;
     int rv;
 
     DEBUGMSG(1, "Thread-%d started running ... \n", my_tid);
 
-    int lock;
-    /* wait at a barrier until each thread started*/
-    BARRIER_ARRIVE(args->barrier, lock)
-    *args->startTS = now();
 
 #ifdef PERF_COUNTERS
     if(my_tid == 0){
@@ -148,9 +144,11 @@ sortmergejoin_multiway_thread(void *param) {
 
     BARRIER_ARRIVE(args->barrier, rv);
 
-
 #ifndef NO_TIMING
-    START_MEASURE(args->timer)
+    if (args->tid == 0)
+        *args->startTS = now();//assign the start timestamp
+    START_MEASURE((args->timer))
+    BEGIN_MEASURE_BUILD((args->timer))/* build start */
 #endif
 
 //    if (my_tid == 0) {
@@ -433,7 +431,7 @@ sorting_phase(relation_t **relRparts, relation_t **relSparts, arg_t *args) {
     const int PARTFANOUT = args->joincfg->PARTFANOUT;
     const int scalarsortflag = args->joincfg->SCALARSORT;
 
-    int32_t my_tid = args->my_tid;
+    int32_t my_tid = args->tid;
 
     args->threadrelchunks[my_tid] = (relationpair_t *)
             malloc_aligned(PARTFANOUT * sizeof(relationpair_t));
@@ -510,7 +508,7 @@ multiwaymerge_phase(int numaregionid,
     const int PARTFANOUT = args->joincfg->PARTFANOUT;
     const int scalarmergeflag = args->joincfg->SCALARMERGE;
 
-    int32_t my_tid = args->my_tid;
+    int32_t my_tid = args->tid;
     uint64_t mergeRtotal = 0, mergeStotal = 0;
     tuple_t *tmpoutR = NULL;
     tuple_t *tmpoutS = NULL;
