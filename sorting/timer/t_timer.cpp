@@ -147,7 +147,7 @@ void breakdown_thread(int64_t result, T_TIMER *timer, long lastTS, _IO_FILE *pFi
 //        merge_time += timer->mergetimer / result;
 //        join_time += timer->join_timer / result;
 //        others_time += others / result;
-
+#ifdef DEBUG
         //for user to read.
         fprintf(stdout, "[Info] RUNTIME TOTAL, WAIT, PART, BUILD, SORT, MERGE, JOIN, others (cycles): \n");
         fprintf(stdout, "%llu \t %llu (%.2f%%) \t %llu (%.2f%%) \t %llu (%.2f%%)  "
@@ -169,7 +169,7 @@ void breakdown_thread(int64_t result, T_TIMER *timer, long lastTS, _IO_FILE *pFi
     } else {
         fprintf(stdout, "[Warning] This thread does not matches any tuple.\n\n");
     }
-    fflush(pFile);
+#endif
 #endif
 }
 
