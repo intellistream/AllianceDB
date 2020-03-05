@@ -41,4 +41,4 @@ add_executable(sorting
 target_link_libraries(sorting numa)
 target_link_libraries(sorting check)
 target_link_libraries(sorting rt)
-target_link_libraries(sorting boost_system)
+#target_link_libraries(sorting boost_system)

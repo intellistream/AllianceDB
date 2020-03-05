@@ -5,7 +5,7 @@
 #ifndef ALLIANCEDB_SORTMERGEJOIN_MULTIWAY_SKEWHANDLING_H
 #define ALLIANCEDB_SORTMERGEJOIN_MULTIWAY_SKEWHANDLING_H
 
-#include "../util/types.h"              /* relation_t, tuple_t, result_t */
+#include "../utils/types.h"              /* relation_t, tuple_t, result_t */
 
 /**
  * "m-may sort-merge join" + fine-grained skew handling mechanisms.
@@ -23,7 +23,7 @@
  * \ingroup Joins
  */
 result_t *
-sortmergejoin_multiway_skewhandling(relation_t * relR, relation_t * relS, joinconfig_t * joincfg, int exp_id);
+sortmergejoin_multiway_skewhandling(relation_t * relR, relation_t * relS, joinconfig_t * joincfg, int exp_id, int window_size);
 
 
 #endif //ALLIANCEDB_SORTMERGEJOIN_MULTIWAY_SKEWHANDLING_H

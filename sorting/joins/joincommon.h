@@ -82,7 +82,7 @@ std::string print_relation(tuple_t *tuple, int length);
 /** Initialize and run the given join algorithm with given number of threads */
 result_t *
 sortmergejoin_initrun(relation_t *relR, relation_t *relS, joinconfig_t *joincfg, void *(*jointhread)(void *),
-                      int exp_id, const string algoName);
+                      int exp_id, int window_size, const string algoName);
 
 /** Print out timing stats for the given start and end timestamps */
 void print_timing(uint64_t numtuples, struct timeval *start, struct timeval *end,

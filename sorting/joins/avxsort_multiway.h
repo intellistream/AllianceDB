@@ -14,7 +14,7 @@
 
 #include <stdint.h>
 
-#include "../util/types.h" /* tuple_t */
+#include "../utils/types.h" /* tuple_t */
 
 /**
  * \ingroup sorting

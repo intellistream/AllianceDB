@@ -12,7 +12,7 @@
 #ifndef PARTITION_H
 #define PARTITION_H
 
-#include "../util/types.h" /* relation_t, tuple_t */
+#include "../utils/types.h" /* relation_t, tuple_t */
 
 /* just to enable compilation with g++ */
 #if defined(__cplusplus) && !defined(restrict)

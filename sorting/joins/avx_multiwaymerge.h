@@ -13,7 +13,7 @@
 #ifndef AVXMULTIWAYMERGE_H
 #define AVXMULTIWAYMERGE_H
 
-#include "../util/types.h" /* tuple_t, relation_t */
+#include "../utils/types.h" /* tuple_t, relation_t */
 
 /**
  * AVX-based Multi-Way Merging with cache-resident merge buffers.

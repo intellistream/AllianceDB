@@ -70,7 +70,7 @@ sortmergejoin_multiway_skewhandling_thread(void * param);
 
 result_t *
 sortmergejoin_multiway_skewhandling(relation_t * relR, relation_t * relS,
-                                    joinconfig_t * joincfg, int exp_id)
+                                    joinconfig_t * joincfg, int exp_id, int window_size)
 {
     /* check whether nr. of threads is a power of 2 */
     if((joincfg->NTHREADS & (joincfg->NTHREADS-1)) != 0){
@@ -80,7 +80,7 @@ sortmergejoin_multiway_skewhandling(relation_t * relR, relation_t * relS,
     }
 
     return sortmergejoin_initrun(relR, relS, joincfg,
-                                 sortmergejoin_multiway_skewhandling_thread, exp_id, nullptr);
+                                 sortmergejoin_multiway_skewhandling_thread, exp_id,   window_size, "MWAY_SKEW");
 }
 
 

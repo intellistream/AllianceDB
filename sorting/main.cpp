@@ -328,7 +328,7 @@ $ cat cpu-mapping.txt
 
 //#include "affinity/affinity.h"           /* CPU_SET, setaffinity(), pthread_attr_setaffinity_np */
 #include "affinity/cpu_mapping.h"        /* cpu_mapping_cleanup() */
-#include "util/types.h"
+#include "utils/types.h"
 #include "datagen/generator.h"
 #include "affinity/memalloc.h"           /* malloc_aligned() */
 #include "params.h"             /* macro parameters */
@@ -388,7 +388,7 @@ typedef struct cmdparam_t cmdparam_t;
 struct algo_t {
     char name[128];
 
-    result_t *(*joinalgorithm)(relation_t *, relation_t *, joinconfig_t *, int exp_id);
+    result_t *(*joinalgorithm)(relation_t *, relation_t *, joinconfig_t *, int exp_id, int window_size);
 };
 
 struct cmdparam_t {
@@ -658,7 +658,8 @@ main(int argc, char *argv[]) {
     /* Run the selected join algorithm */
     fprintf(stdout, "[INFO ] Running join algorithm %s ...\n", cmd_params.algo->name);
 
-    result_t *result = cmd_params.algo->joinalgorithm(&relR, &relS, &joincfg, cmd_params.exp_id);
+    result_t *result = cmd_params.algo->joinalgorithm(&relR, &relS, &joincfg, cmd_params.exp_id,
+                                                      cmd_params.window_size);
 
     if (result != NULL) {
         fprintf(stdout, "\n[INFO ] Results = %ld. DONE.\n", result->totalresults);

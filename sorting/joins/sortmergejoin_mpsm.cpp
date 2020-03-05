@@ -36,7 +36,7 @@ mpsmjoin_thread(void * param);
 
 /** @note The implementation of mpsm is excluded from this source code package. Contact us if you need it. */
 result_t *
-sortmergejoin_mpsm(relation_t * relR, relation_t * relS, joinconfig_t * joincfg, int exp_id)
+sortmergejoin_mpsm(relation_t * relR, relation_t * relS, joinconfig_t * joincfg, int exp_id, int window_size)
 {
     /* Just a place holder */
     printf("[WARN ] The implementation of mpsm is excluded from this source code package. Contact us if you need it.\n");
