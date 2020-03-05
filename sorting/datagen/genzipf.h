@@ -14,7 +14,7 @@
 #ifndef GENZIPF_H
 #define GENZIPF_H
 
-#include "../util/types.h"
+#include "../utils/types.h"
 
 typedef tuple_t item_t;
 

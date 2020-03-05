@@ -57,7 +57,7 @@ dump_timing(std::vector<std::chrono::milliseconds> vector, std::vector<int64_t> 
 
     //dump timestmap.
     std::string name = arg_name + "_" + std::to_string(exp_id);
-    string path = "/data1/xtra/results/timestamps/" + name.append(".txt");
+    string path = "/data1/xtra/results/timestamps/" + name + ".txt";
     ofstream outputFile(path, std::ios::trunc);
     auto begin = vector.begin().operator*();
     vector.erase(vector.begin());
@@ -68,7 +68,7 @@ dump_timing(std::vector<std::chrono::milliseconds> vector, std::vector<int64_t> 
 
     //dump latency
 
-    string path_latency = "/data1/xtra/results/latency/" + name.append(".txt");
+    string path_latency = "/data1/xtra/results/latency/" + name + ".txt";
     ofstream outputFile_latency(path_latency, std::ios::trunc);
     for (auto &element : vector_latency) {
         outputFile_latency << (std::to_string(element + lastTS) + "\n");
@@ -77,7 +77,7 @@ dump_timing(std::vector<std::chrono::milliseconds> vector, std::vector<int64_t> 
 
 
     //dump gap
-    string path_gap = "/data1/xtra/results/gaps/" + name.append(".txt");
+    string path_gap = "/data1/xtra/results/gaps/" + name + ".txt";
     ofstream outputFile_gap(path_gap, std::ios::trunc);
     for (auto &element : global_record_gap) {
         outputFile_gap << (std::to_string(element + lastTS) + "\n");
@@ -137,24 +137,24 @@ void breakdown_thread(int64_t result, T_TIMER *timer, long lastTS, _IO_FILE *pFi
 
         //for user to read.
         DEBUGMSG("[Info] RUNTIME TOTAL, WAIT, PART, BUILD, SORT, MERGE, JOIN, others (cycles): \n");
-        DEBUGMSG( "%llu \t %llu (%.2f%%) \t %llu (%.2f%%) \t %llu (%.2f%%)  "
-                        "\t %llu (%.2f%%)  \t %llu (%.2f%%) \t %llu (%.2f%%) \t %llu (%.2f%%)",
-                timer->overall_timer / result,
-                timer->wait_timer / result, (timer->wait_timer * 100 / (double) timer->overall_timer),
-                timer->partition_timer / result, (timer->partition_timer * 100 / (double) timer->overall_timer),
-                timer->buildtimer / result, (timer->buildtimer * 100 / (double) timer->overall_timer),
-                timer->sorttimer / result, (timer->sorttimer * 100 / (double) timer->overall_timer),
-                timer->mergetimer / result, (timer->mergetimer * 100 / (double) timer->overall_timer),
-                timer->join_timer / result, (timer->join_timer * 100 / (double) timer->overall_timer),
-                others / result, (others * 100 / (double) timer->overall_timer)
+        DEBUGMSG("%llu \t %llu (%.2f%%) \t %llu (%.2f%%) \t %llu (%.2f%%)  "
+                 "\t %llu (%.2f%%)  \t %llu (%.2f%%) \t %llu (%.2f%%) \t %llu (%.2f%%)",
+                 timer->overall_timer / result,
+                 timer->wait_timer / result, (timer->wait_timer * 100 / (double) timer->overall_timer),
+                 timer->partition_timer / result, (timer->partition_timer * 100 / (double) timer->overall_timer),
+                 timer->buildtimer / result, (timer->buildtimer * 100 / (double) timer->overall_timer),
+                 timer->sorttimer / result, (timer->sorttimer * 100 / (double) timer->overall_timer),
+                 timer->mergetimer / result, (timer->mergetimer * 100 / (double) timer->overall_timer),
+                 timer->join_timer / result, (timer->join_timer * 100 / (double) timer->overall_timer),
+                 others / result, (others * 100 / (double) timer->overall_timer)
         );
-        DEBUGMSG(  "\n");
-        DEBUGMSG( "TOTAL-TIME-USECS, NUM-TUPLES, CYCLES-PER-TUPLE: \n");
-        DEBUGMSG( "%.4lf \t %ld \t %.4lf", diff_usec, result, cyclestuple);
-        DEBUGMSG( "\n");
-        DEBUGMSG( "\n");
+        DEBUGMSG("\n");
+        DEBUGMSG("TOTAL-TIME-USECS, NUM-TUPLES, CYCLES-PER-TUPLE: \n");
+        DEBUGMSG("%.4lf \t %ld \t %.4lf", diff_usec, result, cyclestuple);
+        DEBUGMSG("\n");
+        DEBUGMSG("\n");
     } else {
-        DEBUGMSG( "[Warning] This thread does not matches any tuple.\n\n");
+        DEBUGMSG("[Warning] This thread does not matches any tuple.\n\n");
     }
 #endif
 }

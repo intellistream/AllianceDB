@@ -9,7 +9,6 @@
 #include "fetcher.h"
 #include "shuffler.h"
 #include "../utils/perf_counters.h"
-#include "boost/stacktrace.hpp"
 #include "../joins/shj_struct.h"
 
 /**

@@ -480,7 +480,7 @@ int check_avx() {
 
 void
 createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int32_t tsKey, const cmdparam_t &cmd_params,
-               char *loadfile, uint32_t seed, int step_size) {
+               char *loadfile, uint32_t seed, int step_size, int partitions) {
     seed_generator(seed);
     /* to pass information to the create_relation methods */
     auto nthreads = cmd_params.nthreads;
@@ -526,10 +526,10 @@ createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int32_t 
         }
         switch (cmd_params.ts_distribution) {
             case 0: // uniform
-                add_ts(rel, relPl, step_size, cmd_params.interval, cmd_params.window_size);
+                add_ts(rel, relPl, step_size, cmd_params.interval, partitions);
                 break;
             case 2: // zipf
-                add_zipf_ts(rel, relPl, cmd_params.window_size, cmd_params.zipf_param);
+                add_zipf_ts(rel, relPl, cmd_params.window_size, cmd_params.zipf_param, partitions);
                 break;
             default:
                 break;
@@ -539,7 +539,7 @@ createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int32_t 
         parallel_create_relation(rel, rel_size,
                                  nthreads,
                                  rel_size);
-        add_ts(rel, relPl, step_size, 0, nthreads);
+        add_ts(rel, relPl, step_size, 0, partitions);
     }
 
 //    fprintf(stdout, "relS : %s", print_relation(rel->tuples, max((uint64_t) 1000, cmd_params.s_size)).c_str());
@@ -633,7 +633,7 @@ main(int argc, char *argv[]) {
         relR.num_tuples = (cmd_params.window_size / cmd_params.interval) * cmd_params.step_sizeR;
     }
     createRelation(&relR, relR.payload, cmd_params.rkey, cmd_params.rts, cmd_params, cmd_params.loadfileR,
-                   cmd_params.r_seed, cmd_params.step_sizeR);
+                   cmd_params.r_seed, cmd_params.step_sizeR, cmd_params.nthreads);
     if (cmd_params.old_param) {
         relS.num_tuples = cmd_params.s_size;
     } else {
@@ -642,8 +642,14 @@ main(int argc, char *argv[]) {
         else
             relS.num_tuples = (cmd_params.window_size / cmd_params.interval) * cmd_params.step_sizeS;
     }
+
+    // check which fetcher is used, to decide whether need to partition ts.
+    int partitions = cmd_params.nthreads;
+    if (strstr(cmd_params.algo->name, "JM") != NULL) {
+        partitions = 1;
+    }
     createRelation(&relS, relS.payload, cmd_params.skey, cmd_params.sts, cmd_params, cmd_params.loadfileS,
-                   cmd_params.s_seed, cmd_params.step_sizeS);
+                   cmd_params.s_seed, cmd_params.step_sizeS, partitions);
 
     /* setup join configuration parameters */
     joinconfig_t joincfg;

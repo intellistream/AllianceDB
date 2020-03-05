@@ -25,8 +25,8 @@ function KimRun() {
   ./hashing -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS
 }
 
-DEFAULT_WINDOW_SIZE=5000 #(ms) -- 5 seconds
-DEFAULT_STEP_SIZE=100    # |tuples| per ms. -- 100K per seconds.
+DEFAULT_WINDOW_SIZE=2000 #(ms) -- 2 seconds
+DEFAULT_STEP_SIZE=100    # |tuples| per ms. -- 50K per seconds.
 function ResetParameters() {
   TS_DISTRIBUTION=0                # uniform time distribution
   ZIPF_FACTOR=0                    # uniform time distribution
@@ -47,7 +47,7 @@ algo=""
 Threads=32
 timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
-for algo in PRO NPO SHJ_JM_NP ; do #SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
+for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #
   RSIZE=1
   SSIZE=1
   RPATH=""
@@ -56,7 +56,7 @@ for algo in PRO NPO SHJ_JM_NP ; do #SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
   SKEY=0
   RTS=0
   STS=0
-  for benchmark in "AR"; do #"Stock"  "Rovio" "YSB"  "DEBS" # "ScaleStock" "AD" "KD" "WS" "KD2" "WS2" "RAR" "RAR2" "WS3" "WS4"
+  for benchmark in "AR" "AD" "KD" "WS" "KD2" "WS2" "RAR" "RAR2" "WS3" "WS4"; do #"Stock"  "Rovio" "YSB"  "DEBS" # "ScaleStock" "AD" "KD" "WS" "KD2" "WS2" "RAR" "RAR2" "WS3" "WS4"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "AR") #test arrival rate
@@ -71,8 +71,8 @@ for algo in PRO NPO SHJ_JM_NP ; do #SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
 
       ts=1 # stream case
       # step size should be bigger than nthreads
-      for STEP_SIZE in 50 1000; do #100 500
-#        WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
+      for STEP_SIZE in 50 100 250 500; do #
+        #WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
         echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
         KimRun
         let "id++"
