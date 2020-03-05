@@ -121,6 +121,9 @@ add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_size,
         tid_offsets[partition] = 0;
         tid_start_idx[partition] = numthr * partition;
         tid_end_idx[partition] = (last_thread(partition, partitions)) ? relation->num_tuples : numthr * (partition + 1);
+
+        printf("partition %d start idx: %d end idx: %d\n", partition, tid_start_idx[partition], tid_end_idx[partition]);
+
     }
 
     for (auto i = 0; i < relation->num_tuples; i++) {
@@ -129,15 +132,17 @@ add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_size,
         }
         // round robin to assign ts to each thread.
         auto partition = i % partitions;
+        if (tid_start_idx[partition] + tid_offsets[partition] == tid_end_idx[partition]) {
+            partition = partitions - 1; // if reach the maximum size, append the tuple to the last partition
+        }
         // record cur index in partition
         int cur_index = tid_start_idx[partition] + tid_offsets[partition];
         relationPayload->ts[cur_index] = (milliseconds) ts;
         tid_offsets[partition]++;
+    }
 
-        if (tid_offsets[partition] > tid_end_idx[partition] + 1) {
-            printf("index out of range: %d, %d \n", tid_offsets[partition], tid_end_idx[partition]);
-            return;
-        }
+    for (auto i = 0; i < relation->num_tuples; i++) {
+        printf("ts: %ld\n", relationPayload->ts[i].count());
     }
 //    assert(interval == 0 || ts == window_size);
 }
@@ -169,14 +174,14 @@ void add_zipf_ts(relation_t *relation, relation_payload_t *relationPayload, int 
     for (auto i = 0; i < relation->num_tuples; i++) {
         // round robin to assign ts to each thread.
         int partition = i % partitions;
+        if (tid_start_idx[partition] + tid_offsets[partition] == tid_end_idx[partition]) {
+            partition = partitions - 1; // if reach the maximum size, append the tuple to the last partition
+        }
+
         // record cur index in partition
         int cur_index = tid_start_idx[partition] + tid_offsets[partition];
         relationPayload->ts[cur_index] = (milliseconds) timestamps[i];
         tid_offsets[partition]++;
-        if (tid_offsets[partition] > tid_end_idx[partition] + 1) {
-            printf("index out of range: %d, %d \n", tid_offsets[partition], tid_end_idx[partition]);
-            return;
-        }
 
         if (relationPayload->ts[i].count() < 0.25 * window_size) {
             small++;
