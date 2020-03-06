@@ -281,7 +281,7 @@ if __name__ == "__main__":
     legend_labels = ['PRJ', 'NPJ', 'M-PASS', 'M-WAY', 'SHJ$^M$', 'SHJ$^B$', 'PMJ$^M$', 'PMJ$^B$']
 
     if id == 39:
-        S = 350000
+        S = 3500
     elif id == 41:
         S = 25000  # DEBS
     else:

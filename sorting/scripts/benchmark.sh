@@ -207,10 +207,10 @@ for algo in m-way m-pass; do #
     "Rovio") #matches:
       id=39
       ts=1 # stream case
-      RSIZE=580700
-      SSIZE=580700
-      RPATH=/data1/xtra/datasets/rovio/60s_1t.txt
-      SPATH=/data1/xtra/datasets/rovio/60s_1t.txt
+      RSIZE=58300
+      SSIZE=58300
+      RPATH=/data1/xtra/datasets/rovio/6s_1t.txt
+      SPATH=/data1/xtra/datasets/rovio/6s_1t.txt
       RKEY=0
       SKEY=0
       RTS=3
@@ -221,9 +221,9 @@ for algo in m-way m-pass; do #
       id=40
       ts=1 # stream case
       RSIZE=1000
-      SSIZE=600000
+      SSIZE=5000000
       RPATH=/data1/xtra/datasets/YSB/campaigns_1t.txt
-      SPATH=/data1/xtra/datasets/YSB/ad_60s_1t.txt
+      SPATH=/data1/xtra/datasets/YSB/ad_5s_1t.txt
       RKEY=0
       SKEY=0
       RTS=0
