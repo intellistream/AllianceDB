@@ -61,6 +61,7 @@ for algo in m-way m-pass; do #
       id=0
       ## Figure 1
       ResetParameters
+      STEP_SIZE=500
       echo test varying input arrival rate 0 - 4 # test (1) means infinite arrival rate (batch).
       ts=0                                       # batch case
       echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)

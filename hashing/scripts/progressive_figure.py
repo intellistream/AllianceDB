@@ -70,7 +70,7 @@ def ReadFile(S, id):
     maxts = 0
 
     f = open("/data1/xtra/results/timestamps/PRJ_{}.txt".format(id), "r")
-    cnt = 1
+    cnt = 0
     read = f.readlines()
     for x in read:
         if cnt % S == 0:
@@ -82,7 +82,7 @@ def ReadFile(S, id):
         cnt += 1
     print(cnt1)
     f = open("/data1/xtra/results/timestamps/NPJ_{}.txt".format(id), "r")
-    cnt = 1
+    cnt = 0
     read = f.readlines()
     for x in read:
         if cnt % S == 0:
@@ -94,7 +94,7 @@ def ReadFile(S, id):
         cnt += 1
     print(cnt2)
     f = open("/data1/xtra/results/timestamps/MPASS_{}.txt".format(id), "r")
-    cnt = 1
+    cnt = 0
     read = f.readlines()
     for x in read:
         if cnt % S == 0:
@@ -106,7 +106,7 @@ def ReadFile(S, id):
         cnt += 1
     print(cnt3)
     f = open("/data1/xtra/results/timestamps/MWAY_{}.txt".format(id), "r")
-    cnt = 1
+    cnt = 0
     read = f.readlines()
     for x in read:
         if cnt % S == 0:
@@ -118,7 +118,7 @@ def ReadFile(S, id):
         cnt += 1
     print(cnt4)
     f = open("/data1/xtra/results/timestamps/SHJ_JM_NP_{}.txt".format(id), "r")
-    cnt = 1
+    cnt = 0
     read = f.readlines()
     for x in read:
         if cnt % S == 0:
@@ -130,7 +130,7 @@ def ReadFile(S, id):
         cnt += 1
     print(cnt5)
     f = open("/data1/xtra/results/timestamps/SHJ_JBCR_NP_{}.txt".format(id), "r")
-    cnt = 1
+    cnt = 0
     read = f.readlines()
     for x in read:
         if cnt % S == 0:
@@ -142,7 +142,7 @@ def ReadFile(S, id):
         cnt += 1
     print(cnt6)
     f = open("/data1/xtra/results/timestamps/PMJ_JM_NP_{}.txt".format(id), "r")
-    cnt = 1
+    cnt = 0
     read = f.readlines()
     for x in read:
         if cnt % S == 0:
@@ -154,7 +154,7 @@ def ReadFile(S, id):
         cnt += 1
     print(cnt7)
     f = open("/data1/xtra/results/timestamps/PMJ_JBCR_NP_{}.txt".format(id), "r")
-    cnt = 1
+    cnt = 0
     read = f.readlines()
     for x in read:
         if cnt % S == 0:
@@ -240,7 +240,7 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
     plt.xticks(x_values)
     # you may control the limits on your own.
     plt.xlim(x_min, x_max)
-    plt.ylim(y_min, y_max)
+    # plt.ylim(y_min, y_max)
 
     plt.grid(axis='y', color='gray')
 
@@ -287,13 +287,14 @@ if __name__ == "__main__":
     else:
         S = 1  #
         maxts, N, col1, col2, col3, col4, col5, col6, col7, col8 = ReadFile(S, id)
-        S = floor(N / 10)
+        S = floor(N / 50)
 
     print("S:", S)
     maxts, N, col1, col2, col3, col4, col5, col6, col7, col8 = ReadFile(S, id)
+    N = (int)(N / 2)
     print("Number of points:", N)
     col0 = []
-    for x in range(1, N + 1):
+    for x in range(0, N):
         col0.append(x / N)
         # print("fraction :", x / N)
 
@@ -301,14 +302,22 @@ if __name__ == "__main__":
     # alignment
     # lines = [col1, col2, col3, col4, col5, col6]
     # print((len(col1)))
-    lines = [col1[(len(col1)) - N:], col2[(len(col2)) - N:], col3[(len(col3)) - N:], col4[(len(col4)) - N:],
-             col5[(len(col5)) - N:], col6[(len(col6)) - N:], col7[(len(col7)) - N:], col8[(len(col8)) - N:]]
+    lines = [
+        col1[0:(len(col1)) - N - 1],
+        col2[0:(len(col2)) - N - 1],
+        col3[0:(len(col3)) - N - 1],
+        col4[0:(len(col4)) - N - 1],
+        col5[0:(len(col5)) - N - 1],
+        col6[0:(len(col6)) - N - 1],
+        col7[0:(len(col7)) - N - 1],
+        col8[0:(len(col8)) - N - 1]
+    ]
 
     legend = False
     # if id == 8:
     #     legend = True
     DrawFigure(col0, lines, legend_labels,
-               'fraction of matched results', 'time (msec)', 0, 1,
+               'fraction of matched results', 'time (msec)', 0, 0.5,
                1, int(ceil(maxts / 100.0)) * 100,
                'progressive_figure{}'.format(id),
                legend)
