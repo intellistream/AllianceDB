@@ -79,9 +79,10 @@ def DrawFigure(x_values, y_values, y_max, legend_labels, x_label, y_label, filen
     plt.xticks(index + 0.5 * width, x_values)
     # plt.autofmt_xdate()
     plt.xticks(rotation=30)
-    # plt.yscale('log')
+    plt.yscale('log')
     plt.grid(axis='y', color='gray')
-    figure.yaxis.set_major_locator(pylab.LinearLocator(5))
+
+    # figure.yaxis.set_major_locator(pylab.LinearLocator(5))
 
     figure.get_xaxis().set_tick_params(direction='in', pad=10)
     figure.get_yaxis().set_tick_params(direction='in', pad=10)

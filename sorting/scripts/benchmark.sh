@@ -7,7 +7,7 @@ make -j4
 function benchmarkRun() {
   #####native execution
   echo "==benchmark:$benchmark -a $algo -n $Threads #TEST:$id=="
-  ./sorting -a $algo -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t $ts -I $id
+  ./sorting -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t $ts -I $id
 }
 
 function Run() {
@@ -54,7 +54,7 @@ for algo in m-way m-pass; do #
   SKEY=0
   RTS=0
   STS=0
-  for benchmark in "AR" "AD" "KD" "WS" "KD2" "WS2" "RAR" "RAR2" "WS3" "WS4"; do #"Stock"  "Rovio" "YSB"  "DEBS" #"ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "AR" "AD" "KD" "WS" "KD2" "WS2" "RAR" "RAR2" "WS3" "WS4" "Stock" "Rovio" "YSB" "DEBS"
+  for benchmark in "Stock"  "Rovio" "YSB"  "DEBS" ; do #"Stock"  "Rovio" "YSB"  "DEBS" #"ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "AR" "AD" "KD" "WS" "KD2" "WS2" "RAR" "RAR2" "WS3" "WS4" "Stock" "Rovio" "YSB" "DEBS"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "AR") #test arrival rate
@@ -143,6 +143,7 @@ for algo in m-way m-pass; do #
     "RAR") #test relative arrival rate when S is large
       id=28
       ## Figure 7
+      ResetParameters
       FIXS=1
       echo test relative arrival rate 28 - 31
       ts=1 # stream case
@@ -158,6 +159,7 @@ for algo in m-way m-pass; do #
     "RAR2") #test relative arrival rate when S is small
       id=32
       ## Figure 8
+      ResetParameters
       FIXS=1
       echo test relative arrival rate 32 - 35
       ts=1 # stream case
@@ -195,6 +197,7 @@ for algo in m-way m-pass; do #
     "Stock")
       id=38
       ts=1 # stream case
+      WINDOW_SIZE=60000
       RSIZE=194341
       SSIZE=240148
       RPATH=/data1/xtra/datasets/stock/cj_60s_1t.txt
@@ -208,6 +211,7 @@ for algo in m-way m-pass; do #
     "Rovio") #matches:
       id=39
       ts=1 # stream case
+      WINDOW_SIZE=6000
       RSIZE=58300
       SSIZE=58300
       RPATH=/data1/xtra/datasets/rovio/6s_1t.txt
@@ -221,6 +225,7 @@ for algo in m-way m-pass; do #
     "YSB")
       id=40
       ts=1 # stream case
+      WINDOW_SIZE=5000
       RSIZE=1000
       SSIZE=5000000
       RPATH=/data1/xtra/datasets/YSB/campaigns_1t.txt
@@ -234,6 +239,7 @@ for algo in m-way m-pass; do #
     "DEBS")
       id=41
       ts=1 # stream case
+      WINDOW_SIZE=0
       RSIZE=1000000
       SSIZE=1000000
       RPATH=/data1/xtra/datasets/DEBS/posts_key32_partitioned.csv

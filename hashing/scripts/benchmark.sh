@@ -8,7 +8,7 @@ function benchmarkRun() {
   #####native execution
   echo "==benchmark:$benchmark -a $algo -n $Threads=="
   echo 3 >/proc/sys/vm/drop_caches
-  ./hashing -a $algo -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id
+  ./hashing -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id
 }
 
 function Run() {
@@ -56,7 +56,7 @@ for algo in SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP PRO NPO; do #
   SKEY=0
   RTS=0
   STS=0
-  for benchmark in "AR" ; do #"Stock"  "Rovio" "YSB"  "DEBS" # "ScaleStock" "AD" "KD" "WS" "KD2" "WS2" "RAR" "RAR2" "WS3" "WS4"
+  for benchmark in "Stock"  "Rovio" "YSB"  "DEBS"; do #"Stock"  "Rovio" "YSB"  "DEBS" # "ScaleStock" "AD" "KD" "WS" "KD2" "WS2" "RAR" "RAR2" "WS3" "WS4"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "AR") #test arrival rate
@@ -145,6 +145,7 @@ for algo in SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP PRO NPO; do #
     "RAR") #test relative arrival rate when S is large
       id=28
       ## Figure 7
+      ResetParameters
       FIXS=1
       echo test relative arrival rate 28 - 31
       ts=1 # stream case
@@ -160,6 +161,7 @@ for algo in SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP PRO NPO; do #
     "RAR2") #test relative arrival rate when S is small
       id=32
       ## Figure 8
+      ResetParameters
       FIXS=1
       echo test relative arrival rate 32 - 35
       ts=1 # stream case
@@ -197,6 +199,7 @@ for algo in SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP PRO NPO; do #
     "Stock")
       id=38
       ts=1 # stream case
+      WINDOW_SIZE=60000
       RSIZE=194341
       SSIZE=240148
       RPATH=/data1/xtra/datasets/stock/cj_60s_1t.txt
@@ -210,6 +213,7 @@ for algo in SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP PRO NPO; do #
     "Rovio") #matches:
       id=39
       ts=1 # stream case
+      WINDOW_SIZE=6000
       RSIZE=58300
       SSIZE=58300
       RPATH=/data1/xtra/datasets/rovio/6s_1t.txt
@@ -223,6 +227,7 @@ for algo in SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP PRO NPO; do #
     "YSB")
       id=40
       ts=1 # stream case
+      WINDOW_SIZE=5000
       RSIZE=1000
       SSIZE=5000000
       RPATH=/data1/xtra/datasets/YSB/campaigns_1t.txt
@@ -236,6 +241,7 @@ for algo in SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP PRO NPO; do #
     "DEBS")
       id=41
       ts=1 # stream case
+      WINDOW_SIZE=0
       RSIZE=1000000
       SSIZE=1000000
       RPATH=/data1/xtra/datasets/DEBS/posts_key32_partitioned.csv

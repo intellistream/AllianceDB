@@ -37,18 +37,21 @@ dump_timing(std::vector<std::chrono::milliseconds> vector,
 
     //print progressive
     int n = vector.size() - 1;
+    int check01 = ceil(n * 0.001);
+    int check1 = ceil(n * 0.01);
+    int check5 = ceil(n * 0.05);
     int check10 = ceil(n * 0.10);
-    int check25 = ceil(n * 0.25);
-    int check50 = ceil(n * 0.5);
-    int check75 = ceil(n * 0.75);
+    int check15 = ceil(n * 0.15);
     std::chrono::milliseconds start = vector.at(0);
 
-    fprintf(stdout, "Time to obtain 10%%, 25%%, 50%%, 75%% of results (MSECS): \n");
-    fprintf(stdout, "(%.2lu) \t (%.2lu) \t (%.2lu) \t (%.2lu)",
+    fprintf(stdout, "Time to obtain 0.1%%, 1%%, 5%%, 10%%, 15%% of results (MSECS): \n");
+    fprintf(stdout, "(%.2lu) \t (%.2lu) \t (%.2lu) \t (%.2lu) \t (%.2lu)",
+            vector.at(check01).count() + lastTS - start.count(),
+            vector.at(check1).count() + lastTS - start.count(),
+            vector.at(check5).count() + lastTS - start.count(),
             vector.at(check10).count() + lastTS - start.count(),
-            vector.at(check25).count() + lastTS - start.count(),
-            vector.at(check50).count() + lastTS - start.count(),
-            vector.at(check75).count() + lastTS - start.count());
+            vector.at(check15).count() + lastTS - start.count()
+    );
     fprintf(stdout, "\n");
     fprintf(stdout, "\n");
     fflush(stdout);
@@ -168,7 +171,9 @@ void breakdown_thread(int64_t result, T_TIMER *timer, long lastTS, _IO_FILE *pFi
         fprintf(stdout, "\n");
 #endif
     } else {
-        fprintf(stdout, "[Warning] This thread does not matches any tuple.\n\n");
+#ifdef DEBUG
+        (stdout, "[Warning] This thread does not matches any tuple.\n\n");
+#endif
     }
     fflush(pFile);
 #endif

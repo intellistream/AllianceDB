@@ -624,32 +624,40 @@ main(int argc, char *argv[]) {
     PCM_CONFIG = cmd_params.perfconf;
     PCM_OUT    = cmd_params.perfout;
 #endif
-
-
     seed_generator(cmd_params.r_seed);
+
+
+    /* create relation R */
+
     if (cmd_params.old_param) {
         relR.num_tuples = cmd_params.r_size;
     } else {
         relR.num_tuples = (cmd_params.window_size / cmd_params.interval) * cmd_params.step_sizeR;
     }
-    createRelation(&relR, relR.payload, cmd_params.rkey, cmd_params.rts, cmd_params, cmd_params.loadfileR,
-                   cmd_params.r_seed, cmd_params.step_sizeR, cmd_params.nthreads);
-    if (cmd_params.old_param) {
-        relS.num_tuples = cmd_params.s_size;
-    } else {
-        if (cmd_params.fixS)
-            relS.num_tuples = cmd_params.r_size;
-        else
-            relS.num_tuples = (cmd_params.window_size / cmd_params.interval) * cmd_params.step_sizeS;
-    }
-
     // check which fetcher is used, to decide whether need to partition ts.
     int partitions = cmd_params.nthreads;
     if (strstr(cmd_params.algo->name, "JM") != NULL) {
         partitions = 1;
     }
+
+    createRelation(&relR, relR.payload, cmd_params.rkey, cmd_params.rts, cmd_params, cmd_params.loadfileR,
+                   cmd_params.r_seed, cmd_params.step_sizeR, partitions);
+    DEBUGMSG("relR [aligned:%d]: %s", is_aligned(relR.tuples, CACHE_LINE_SIZE),
+             print_relation(relR.tuples, min((uint64_t) 1000, cmd_params.r_size)).c_str());
+
+
+    /* create relation S */
+    if (cmd_params.old_param) {
+        relS.num_tuples = cmd_params.s_size;
+    } else {
+        if (cmd_params.fixS)
+            relS.num_tuples = (cmd_params.window_size / cmd_params.interval) * cmd_params.step_sizeS;
+        else
+            relS.num_tuples = relR.num_tuples;
+    }
+
     createRelation(&relS, relS.payload, cmd_params.skey, cmd_params.sts, cmd_params, cmd_params.loadfileS,
-                   cmd_params.s_seed, cmd_params.step_sizeS, partitions);
+                   cmd_params.s_seed, cmd_params.step_sizeS, cmd_params.nthreads);
 
     /* setup join configuration parameters */
     joinconfig_t joincfg;

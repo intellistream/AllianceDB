@@ -280,14 +280,15 @@ if __name__ == "__main__":
 
     legend_labels = ['PRJ', 'NPJ', 'M-PASS', 'M-WAY', 'SHJ$^M$', 'SHJ$^B$', 'PMJ$^M$', 'PMJ$^B$']
 
-    if id == 39:
-        S = 3500
-    elif id == 41:
-        S = 25000  # DEBS
-    else:
-        S = 1  #
-        maxts, N, col1, col2, col3, col4, col5, col6, col7, col8 = ReadFile(S, id)
-        S = floor(N / 50)
+    # S = #matches / 50
+    # if id == 39:
+    #     S = 3500
+    # elif id == 41:
+    #     S = 25000  # DEBS
+    # else:
+    S = 1  #
+    maxts, N, col1, col2, col3, col4, col5, col6, col7, col8 = ReadFile(S, id)
+    S = floor(N / 50)
 
     print("S:", S)
     maxts, N, col1, col2, col3, col4, col5, col6, col7, col8 = ReadFile(S, id)
@@ -303,14 +304,14 @@ if __name__ == "__main__":
     # lines = [col1, col2, col3, col4, col5, col6]
     # print((len(col1)))
     lines = [
-        col1[0:(len(col1)) - N - 1],
-        col2[0:(len(col2)) - N - 1],
-        col3[0:(len(col3)) - N - 1],
-        col4[0:(len(col4)) - N - 1],
-        col5[0:(len(col5)) - N - 1],
-        col6[0:(len(col6)) - N - 1],
-        col7[0:(len(col7)) - N - 1],
-        col8[0:(len(col8)) - N - 1]
+        col1[0:N],
+        col2[0:N],
+        col3[0:N],
+        col4[0:N],
+        col5[0:N],
+        col6[0:N],
+        col7[0:N],
+        col8[0:N]
     ]
 
     legend = False
