@@ -54,12 +54,12 @@ public:
 
     relation_t *relR;//input relation
     relation_t *relS;//input relation
-
+    bool tryR = true;
 //    milliseconds *RdataTime;
 //    milliseconds *SdataTime;
 //    bool start = true;
 
-    duration<int64_t, milli> fetchStartTime;//initialize
+    std::chrono::milliseconds fetchStartTime;//initialize
     T_TIMER *timer;
     t_state *state;
     int tid;
