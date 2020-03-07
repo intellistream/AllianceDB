@@ -74,7 +74,7 @@ def DrawFigure(x_values, y_values, y_max, legend_labels, x_label, y_label, filen
                    loc='upper center', ncol=len(legend_labels), mode='expand', bbox_to_anchor=(0.45, 1.2), shadow=False,
                    frameon=False, borderaxespad=0.0, handlelength=2, labelspacing=0.2)
 
-    plt.ylim(0, y_max)
+    # plt.ylim(0, y_max)
     # you may need to tune the xticks position to get the best figure.
     plt.xticks(index + 0.5 * width, x_values)
     # plt.autofmt_xdate()
@@ -84,8 +84,8 @@ def DrawFigure(x_values, y_values, y_max, legend_labels, x_label, y_label, filen
 
     # figure.yaxis.set_major_locator(pylab.LinearLocator(5))
 
-    figure.get_xaxis().set_tick_params(direction='in', pad=10)
-    figure.get_yaxis().set_tick_params(direction='in', pad=10)
+    # figure.get_xaxis().set_tick_params(direction='in', pad=10)
+    # figure.get_yaxis().set_tick_params(direction='in', pad=10)
 
     plt.xlabel(x_label, fontproperties=LABEL_FP)
     plt.ylabel(y_label, fontproperties=LABEL_FP)
@@ -149,8 +149,6 @@ def ReadFile(id):
     f = open("/data1/xtra/results/breakdown/PRJ_{}.txt".format(id), "r")
     read = f.readlines()
     for x in read:
-        if x == "===\n":
-            break
         value = int(x.strip("\n"))
         if value > max_value:
             max_value = value
@@ -161,7 +159,6 @@ def ReadFile(id):
     f = open("/data1/xtra/results/breakdown/NPJ_{}.txt".format(id), "r")
     read = f.readlines()
     for x in read:
-
         value = int(x.strip("\n"))
         if value > max_value:
             max_value = value
@@ -172,8 +169,6 @@ def ReadFile(id):
     f = open("/data1/xtra/results/breakdown/MPASS_{}.txt".format(id), "r")
     read = f.readlines()
     for x in read:
-        if x == "===\n":
-            break
         value = int(x.strip("\n"))
         if value > max_value:
             max_value = value
@@ -184,8 +179,6 @@ def ReadFile(id):
     f = open("/data1/xtra/results/breakdown/MWAY_{}.txt".format(id), "r")
     read = f.readlines()
     for x in read:
-        if x == "===\n":
-            break
         value = int(x.strip("\n"))
         if value > max_value:
             max_value = value
@@ -196,8 +189,6 @@ def ReadFile(id):
     f = open("/data1/xtra/results/breakdown/SHJ_JM_NP_{}.txt".format(id), "r")
     read = f.readlines()
     for x in read:
-        if x == "===\n":
-            break
         value = int(x.strip("\n"))
         if value > max_value:
             max_value = value
@@ -208,8 +199,6 @@ def ReadFile(id):
     f = open("/data1/xtra/results/breakdown/SHJ_JBCR_NP_{}.txt".format(id), "r")
     read = f.readlines()
     for x in read:
-        if x == "===\n":
-            break
         value = int(x.strip("\n"))
         if value > max_value:
             max_value = value

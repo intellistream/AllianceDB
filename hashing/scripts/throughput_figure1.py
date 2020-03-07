@@ -213,7 +213,7 @@ def ReadFile():
 
 
 if __name__ == "__main__":
-    x_values = [50, 100, 250, 500, 'Inf']
+    x_values = [250, 500, 750, 1000, 'Inf']
 
     y_values = ReadFile()
 

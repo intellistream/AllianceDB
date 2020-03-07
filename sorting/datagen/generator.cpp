@@ -232,7 +232,7 @@ random_unique_gen_thread(void *args) {
     for (i = 0; i < rel->num_tuples; i++) {
         rel->tuples[i].key = firstkey;
 //        rel->tuples[i].payload = randstart + i;
-        rel->tuples[i].payload = firstkey;
+        rel->tuples[i].payloadID = firstkey;
 
         if (firstkey == maxid)
             firstkey = 0;
@@ -296,7 +296,7 @@ write_relation(relation_t *rel, char *filename) {
     fprintf(fp, "#KEY, VAL\n");
 
     for (i = 0; i < rel->num_tuples; i++) {
-        fprintf(fp, "%d %d\n", rel->tuples[i].key, rel->tuples[i].payload);
+        fprintf(fp, "%d %d\n", rel->tuples[i].key, rel->tuples[i].payloadID);
     }
 
     fclose(fp);
@@ -312,7 +312,7 @@ random_gen(relation_t *rel, const int64_t maxid) {
 
     for (i = 0; i < rel->num_tuples; i++) {
         rel->tuples[i].key = RAND_RANGE(maxid);
-        rel->tuples[i].payload = rel->num_tuples - i;
+        rel->tuples[i].payloadID = rel->num_tuples - i;
 
         /* avoid NaN in values */
         avoid_NaN((int64_t *) &(rel->tuples[i]));
@@ -708,7 +708,7 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t
         }
 
         rel->tuples[i].key = key;
-        rel->tuples[i].payload = payload;
+        rel->tuples[i].payloadID = payload;
 //        relPl->rows[i] = row;
         relPl->ts[i] = timestamp;
         i++;

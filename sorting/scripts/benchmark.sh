@@ -18,13 +18,13 @@ function Run() {
 
 function KimRun() {
   #####native execution
-  echo "==benchmark:$benchmark -a $algo -n $Threads #TEST:$id=="
+  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS=="
   echo 3 >/proc/sys/vm/drop_caches
   ./sorting -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS
 }
 
 DEFAULT_WINDOW_SIZE=2000 #ms
-DEFAULT_STEP_SIZE=100   # |tuples| per ms.
+DEFAULT_STEP_SIZE=500   # |tuples| per ms.
 function ResetParameters() {
   TS_DISTRIBUTION=0                # uniform time distribution
   ZIPF_FACTOR=0                    # uniform time distribution
@@ -54,7 +54,7 @@ for algo in m-way m-pass; do #
   SKEY=0
   RTS=0
   STS=0
-  for benchmark in "Stock"  "Rovio" "YSB"  "DEBS" ; do #"Stock"  "Rovio" "YSB"  "DEBS" #"ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "AR" "AD" "KD" "WS" "KD2" "WS2" "RAR" "RAR2" "WS3" "WS4" "Stock" "Rovio" "YSB" "DEBS"
+  for benchmark in "AR" "RAR2" ; do #"Stock"  "Rovio" "YSB"  "DEBS" #"ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "AR" "AD" "KD" "WS" "KD2" "WS2" "RAR" "RAR2" "WS3" "WS4" "Stock" "Rovio" "YSB" "DEBS"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "AR") #test arrival rate
@@ -70,8 +70,41 @@ for algo in m-way m-pass; do #
 
       ts=1 # stream case
       # step size should be bigger than nthreads
-      for STEP_SIZE in 50 100 250 500; do #
+      for STEP_SIZE in 250 500 750 1000; do #
         #WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
+        echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
+        KimRun
+        let "id++"
+      done
+      ;;
+    "RAR") #test relative arrival rate when S is large
+      id=28
+      ## Figure 7
+      ResetParameters
+      FIXS=1
+      echo test relative arrival rate 28 - 31
+      ts=1 # stream case
+      # step size should be bigger than nthreads
+      STEP_SIZE_S=250
+      for STEP_SIZE in 10 100 1000 10000; do
+#        WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
+        echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
+        KimRun
+        let "id++"
+      done
+      ;;
+    "RAR2") #test relative arrival rate when S is small
+      id=32
+      ## Figure 8
+      ResetParameters
+      FIXS=1
+      echo test relative arrival rate 32 - 35
+      ts=1 # stream case
+      # step size should be bigger than nthreads
+      # remember to fix the relation size of S.
+      STEP_SIZE_S=1000
+      for STEP_SIZE in 250 500 750 1000; do
+#        WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
         echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
         KimRun
         let "id++"
@@ -136,39 +169,6 @@ for algo in m-way m-pass; do #
       ts=0 # data at rest.
       echo test varying window size 25 - 27
       for WINDOW_SIZE in 500 5000 10000; do
-        KimRun
-        let "id++"
-      done
-      ;;
-    "RAR") #test relative arrival rate when S is large
-      id=28
-      ## Figure 7
-      ResetParameters
-      FIXS=1
-      echo test relative arrival rate 28 - 31
-      ts=1 # stream case
-      # step size should be bigger than nthreads
-      STEP_SIZE_S=1000
-      for STEP_SIZE in 10 100 1000 10000; do
-#        WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
-        echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
-        KimRun
-        let "id++"
-      done
-      ;;
-    "RAR2") #test relative arrival rate when S is small
-      id=32
-      ## Figure 8
-      ResetParameters
-      FIXS=1
-      echo test relative arrival rate 32 - 35
-      ts=1 # stream case
-      # step size should be bigger than nthreads
-      # remember to fix the relation size of S.
-      STEP_SIZE_S=100
-      for STEP_SIZE in 10 100 1000 10000; do
-#        WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
-        echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
         KimRun
         let "id++"
       done

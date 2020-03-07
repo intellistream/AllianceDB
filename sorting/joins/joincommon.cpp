@@ -333,7 +333,7 @@ merge_join(tuple_t *rtuples, tuple_t *stuples,
 
                     matches++;
 #ifndef NO_TIMING
-                    END_PROGRESSIVE_MEASURE(stuples[j].payload, timer, false)
+                    END_PROGRESSIVE_MEASURE(stuples[j].payloadID, timer, false)
 #endif
                     jj++;
 

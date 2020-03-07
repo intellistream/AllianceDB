@@ -716,7 +716,7 @@ balanced_sorted_partition(relation_t ** rels, int nrels, int eqhistsamples,
             uint64_t  idx               = (p+1) * eqwidth - 1;
             tuple_t * tup               = &(rels[i]->tuples[idx]);
             eqhist[i].tuples[p].key     = tup->key;
-            eqhist[i].tuples[p].payload = eqwidth;
+            eqhist[i].tuples[p].payloadID = eqwidth;
         }
     }
 
@@ -740,7 +740,7 @@ balanced_sorted_partition(relation_t ** rels, int nrels, int eqhistsamples,
         //if(my_tid == 3) printf("****************** HIST for %d\n", i);
         for(int p = eqhistsamples-1; p >= 0; p--){
             intkey_t key          = eqhist[i].tuples[p].key;
-            int      count        = eqhist[i].tuples[p].payload;
+            int      count        = eqhist[i].tuples[p].payloadID;
             if(cdfhist.find(key) != cdfhist.end()){
                 cdfhist[key]     += count;
             }
@@ -761,7 +761,7 @@ balanced_sorted_partition(relation_t ** rels, int nrels, int eqhistsamples,
          it != cdfhist.end(); ++it) {
         sum                         += it->second;
         prefixcdf.tuples[i].key      = it->first;
-        prefixcdf.tuples[i].payload  = sum;
+        prefixcdf.tuples[i].payloadID  = sum;
         i++;
     }
 
@@ -781,20 +781,20 @@ balanced_sorted_partition(relation_t ** rels, int nrels, int eqhistsamples,
     for(i = 0; i < nparts-1; i++) {
         value_t count = (i+1) * numperpart;
         for(; j < prefixcdf.num_tuples; j++) {
-            if(prefixcdf.tuples[j].payload == count){
+            if(prefixcdf.tuples[j].payloadID == count){
                 partkeys[i] = prefixcdf.tuples[j].key;
                 // fprintf(stderr, "TASK-%d partition-key = %d\n",
                 //         i, partkeys[i]);
                 break;
             }
-            else if(prefixcdf.tuples[j].payload > count){
-                int cnt2 = prefixcdf.tuples[j].payload;
+            else if(prefixcdf.tuples[j].payloadID > count){
+                int cnt2 = prefixcdf.tuples[j].payloadID;
                 int key2 = prefixcdf.tuples[j].key;
                 int cnt1 = 0;
                 int key1 = 0;
 
                 if( j > 0 ) {
-                    cnt1 = prefixcdf.tuples[j-1].payload;
+                    cnt1 = prefixcdf.tuples[j-1].payloadID;
                     key1 = prefixcdf.tuples[j-1].key;
                 }
 

@@ -63,7 +63,7 @@ typedef struct joinconfig_t joinconfig_t;
 struct tuple_t {
 //    value_t  payload;
 //    intkey_t key;
-    value_t payload;//TODO: make sure payload is simply the id of the tuple.
+    value_t payloadID;//TODO: make sure payload is simply the id of the tuple.
     intkey_t key;//little end, lowest is the most significant bit.
     bool operator < (const tuple_t& str) const
     {

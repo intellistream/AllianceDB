@@ -190,6 +190,7 @@ void sortRecords(std::string algo_name, int exp_id, long lastTS);
 
 #ifndef END_PROGRESSIVE_MEASURE
 #define END_PROGRESSIVE_MEASURE(payloadID, timer, IStupleR)      \
+        timer->record_cnt++;                                     \
         if(timer->record_cnt == timer->record_gap){              \
             if(IStupleR){                                        \
                 auto ts =now();                                  \
@@ -201,9 +202,7 @@ void sortRecords(std::string algo_name, int exp_id, long lastTS);
                 timer->recordS.push_back(ts);                    \
                 }                                                \
             timer->record_cnt=0;                                 \
-        }                                                        \
-        timer->record_cnt++;
+        }
 #endif
-
 
 #endif //ALLIANCEDB_T_TIMER_H

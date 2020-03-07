@@ -190,7 +190,7 @@ gen_zipf (unsigned int stream_size,
 //        dst->key = (intkey_t)alphabet[pos];
 //        /* ret[i] = alphabet[pos]; */
         ret[i].key = alphabet[pos];
-        ret[i].payload = alphabet[pos];
+        ret[i].payloadID = alphabet[pos];
 
     }
 
