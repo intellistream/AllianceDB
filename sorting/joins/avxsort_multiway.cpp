@@ -7,7 +7,7 @@
 #include "avx_multiwaymerge.h"     /* avx_multiway_merge() */
 #include "merge.h"                 /* avx_merge_int64() */
 
-#include "../util/params.h"
+#include "../utils/params.h"
 
 #ifndef CACHE_LINE_SIZE
 #define CACHE_LINE_SIZE 64
