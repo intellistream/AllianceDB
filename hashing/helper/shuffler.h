@@ -10,7 +10,6 @@
 #include "maps/robin_map.h"
 #include "readerwriterqueue.h"
 #include <list>
-
 class baseShuffler {
 public:
     int nthreads;
@@ -60,7 +59,6 @@ public:
     fetch_t *pull(int32_t tid, bool b) override;
 };
 
-
 class ContRandShuffler : public baseShuffler {
 public:
 
@@ -70,6 +68,7 @@ public:
     int32_t numGrps;
     std::vector<int32_t> *grpToTh;
 //    int32_t *thToGrp;
+
     ContRandShuffler(int nthreads, relation_t *relR, relation_t *relS, int i);
 
     void push(intkey_t key, fetch_t *fetch, bool pushR) override;

@@ -236,8 +236,6 @@ fetch_t *next_tuple_R_first(t_state *state, T_TIMER *timer, std::chrono::millise
     }
     return nullptr;
 }
-
-
 fetch_t *baseFetcher::next_tuple() {
     if (tryR) {
         tryR = false;

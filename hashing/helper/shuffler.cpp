@@ -100,7 +100,26 @@ HashShuffler::HashShuffler(int nthreads, relation_t *relR, relation_t *relS)
 //        queues[i] = new moodycamel::ConcurrentQueue<fetch_t *>();
 //    }
 }
+uint64_t s[2];
 
+void myseed(const uint64_t s0, const uint64_t s1) {
+    s[0] = s0;
+    s[1] = s1;
+}
+static inline uint64_t rotl(const uint64_t x, int k) {
+    return (x << k) | (x >> (64 - k));
+}
+uint64_t next(void) {
+    const uint64_t s0 = s[0];
+    uint64_t s1 = s[1];
+    const uint64_t result = s0 + s1;
+
+    s1 ^= s0;
+    s[0] = rotl(s0, 24) ^ s1 ^ (s1 << 16); // a, b
+    s[1] = rotl(s1, 37); // c
+
+    return result;
+}
 ContRandShuffler::ContRandShuffler(int nthreads, relation_t *relR, relation_t *relS, int group_size)
         : baseShuffler(nthreads, relR, relS) {
     isCR = true;
@@ -122,6 +141,9 @@ ContRandShuffler::ContRandShuffler(int nthreads, relation_t *relR, relation_t *r
         }
         count++;
     }
+    uint64_t s0 = 10446744073709551615ULL;
+    uint64_t s1 = ULLONG_MAX - s0;
+    myseed(s0, s1 + 1);
 }
 
 void ContRandShuffler::push(intkey_t key, fetch_t *fetch, bool pushR) {
@@ -141,7 +163,8 @@ void ContRandShuffler::push(intkey_t key, fetch_t *fetch, bool pushR) {
         }
     } else { // partition S
         DEBUGMSG("PUSH: %d, tuple: %d, R?%d\n", idx, fetch->tuple->key, fetch->ISTuple_R)
-        int32_t idx_s = rand() % curGrp.size(); // randomly distribute to threads in the groups
+        int32_t idx_s = next()% curGrp.size(); // randomly distribute to threads in the groups
+//        printf("idx_s:%d\n", idx_s);
         moodycamel::ConcurrentQueue<fetch_t *> *queue = queues[curGrp[idx_s]].queue;
         queue->enqueue(new fetch_t(fetch));
         DEBUGMSG("PUSH: %d, tuple: %d, queue size:%d\n", idx,
