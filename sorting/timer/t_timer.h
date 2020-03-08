@@ -207,10 +207,12 @@ void sortRecords(std::string algo_name, int exp_id, long lastTS);
 #endif
 
 #ifndef DUMMY
+#pragma GCC push_options
+#pragma GCC optimize ("O0")
 #define DUMMY(sum)                             \
-    for (auto i = 0; i < 100; i++) { \
+    for (auto i = 0; i < 10; i++) { \
         sum += i; \
     }
 #endif
-
+#pragma GCC pop_options
 #endif //ALLIANCEDB_T_TIMER_H

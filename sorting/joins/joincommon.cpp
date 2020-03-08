@@ -282,6 +282,8 @@ print_timing(uint64_t numtuples, struct timeval *start, struct timeval *end,
     fflush(out);
 }
 
+double sum = 0;
+
 /**
  * Does merge join on two sorted relations. Just a naive scalar
  * implementation. TODO: consider AVX for this code.
@@ -313,7 +315,7 @@ merge_join(tuple_t *rtuples, tuple_t *stuples,
 #ifdef JOIN_MATERIALIZE
     chainedtuplebuffer_t * chainedbuf = (chainedtuplebuffer_t *) output;
 #endif
-    double sum = 0;
+
     while (i < numR && j < numS) {
         if (rtuples[i].key < stuples[j].key)
             i++;
