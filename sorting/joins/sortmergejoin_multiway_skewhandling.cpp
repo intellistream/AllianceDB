@@ -18,7 +18,7 @@
 #include <math.h>   /* log2(), ceil() */
 
 
-#include "../util/barrier.h"            /* pthread_barrier_* */
+#include "../utils/barrier.h"            /* pthread_barrier_* */
 #include "../affinity/cpu_mapping.h"        /* cpu_id NUMA related methods */
 
 #include "sortmergejoin_multiway.h" /* partitioning&sorting phases are same. */

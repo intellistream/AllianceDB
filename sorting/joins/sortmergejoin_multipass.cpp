@@ -17,7 +17,7 @@
 #include <stdlib.h> /* malloc() */
 #include <math.h>   /* log2(), ceil() */
 
-#include "../util/barrier.h"            /* pthread_barrier_* */
+#include "../utils/barrier.h"            /* pthread_barrier_* */
 
 #include "sortmergejoin_multipass.h"
 #include "joincommon.h"
