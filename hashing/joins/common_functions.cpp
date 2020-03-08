@@ -11,6 +11,7 @@
 #include <stdio.h>              /* printf */
 #include <string.h>             /* memset */
 #include <list>
+#include <thread>
 #include "common_functions.h"
 #include "../utils/params.h"
 
@@ -219,6 +220,7 @@ int64_t proble_hashtable_single_measure(const hashtable_t *ht, const tuple_t *tu
         for (index_ht = 0; index_ht < b->count; index_ht++) {
             if (tuple->key == b->tuples[index_ht].key) {
                 (*matches)++;
+                this_thread::sleep_for(chrono::microseconds(timer->simulate_compute_time));
 #ifdef JOIN_RESULT_MATERIALIZE
                 /* copy to the result buffer */
                 tuple_t * joinres = cb_next_writepos(chainedbuf);
@@ -264,6 +266,7 @@ void match_single_tuple(const list<tuple_t *> list, const tuple_t *tuple, int64_
         }*/
         if (tuple->key == it.operator*()->key) {
             (*matches)++;
+            this_thread::sleep_for(chrono::microseconds(timer->simulate_compute_time));
 #ifndef NO_TIMING
             END_PROGRESSIVE_MEASURE(tuple->payloadID, (timer), ISTupleR)
 #endif

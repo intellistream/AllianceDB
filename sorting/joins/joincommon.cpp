@@ -13,6 +13,7 @@
 
 #include <stdio.h>
 #include <stdlib.h> /* posix_memalign() */
+#include <thread>
 
 #include "joincommon.h"
 #include "../affinity/cpu_mapping.h"        /* get_cpu_id() */
@@ -332,6 +333,7 @@ merge_join(tuple_t *rtuples, tuple_t *stuples,
 #endif
 
                     matches++;
+                    this_thread::sleep_for(chrono::microseconds(timer->simulate_compute_time));
 #ifndef NO_TIMING
                     END_PROGRESSIVE_MEASURE(stuples[j].payloadID, timer, false)
 #endif

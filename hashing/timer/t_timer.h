@@ -39,6 +39,7 @@ struct T_TIMER {
     std::vector<uint64_t> recordSID;
     int record_cnt = 0;
     int record_gap = 1;
+    int simulate_compute_time = 100;//(microseconds per output).
 #endif
 };
 

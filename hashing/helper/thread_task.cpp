@@ -189,13 +189,13 @@ void
 //        BEGIN_MEASURE_PARTITION_ACC((args->timer))
         fetch = fetcher->next_tuple();
         if (fetch != nullptr) {
-#ifndef NO_TIMING
-            BEGIN_MEASURE_SHUFFLE_ACC((args->timer))
-#endif
+//#ifndef NO_TIMING
+//            BEGIN_MEASURE_SHUFFLE_ACC((args->timer))
+//#endif
             shuffler->push(fetch->tuple->key, fetch, false);//pass-in pointer points to state.fetch
-#ifndef NO_TIMING
-            END_MEASURE_SHUFFLE_ACC((args->timer))
-#endif
+//#ifndef NO_TIMING
+//            END_MEASURE_SHUFFLE_ACC((args->timer))
+//#endif
         }
 #ifdef EAGER
         fetch = shuffler->pull(args->tid, false);//re-fetch from its shuffler.
@@ -249,7 +249,7 @@ void
     END_MEASURE_PARTITION_ACC((args->timer))
     args->timer->partition_timer -= args->timer->wait_timer;//exclude waiting time.
     args->timer->partition_timer -= args->timer->join_timer;//exclude joining time.
-    args->timer->partition_timer -= args->timer->shuffle_timer;//exclude shuffle time.
+//    args->timer->partition_timer -= args->timer->shuffle_timer;//exclude shuffle time.
     args->timer->join_timer -= args->timer->buildtimer;//build time for SHJ; sort and merge time for PMJ.
     args->timer->join_timer -= args->timer->sorttimer;
     args->timer->join_timer -= args->timer->mergetimer;
