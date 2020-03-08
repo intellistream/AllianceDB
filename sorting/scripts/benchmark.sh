@@ -54,7 +54,7 @@ for algo in m-way m-pass; do #
   SKEY=0
   RTS=0
   STS=0
-  for benchmark in "AR" "AD" "KD" "WS" "KD2" "WS2" "RAR" "RAR2" "WS3" "WS4" "Stock" "Rovio" "YSB" "DEBS"; do #"Stock"  "Rovio" "YSB"  "DEBS" #"ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "AR" "AD" "KD" "WS" "KD2" "WS2" "RAR" "RAR2" "WS3" "WS4" "Stock" "Rovio" "YSB" "DEBS"
+  for benchmark in "YSB"; do #"Stock"  "Rovio" "YSB"  "DEBS" #"ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "AR" "AD" "KD" "WS" "KD2" "WS2" "RAR" "RAR2" "WS3" "WS4" "Stock" "Rovio" "YSB" "DEBS"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "AR") #test arrival rate

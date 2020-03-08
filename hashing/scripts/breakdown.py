@@ -79,7 +79,7 @@ def DrawFigure(x_values, y_values, y_max, legend_labels, x_label, y_label, filen
     plt.xticks(index + 0.5 * width, x_values)
     # plt.autofmt_xdate()
     plt.xticks(rotation=30)
-    plt.yscale('log')
+    # plt.yscale('log')
     plt.grid(axis='y', color='gray')
 
     # figure.yaxis.set_major_locator(pylab.LinearLocator(5))
@@ -221,8 +221,6 @@ def ReadFile(id):
     f = open("/data1/xtra/results/breakdown/PMJ_JBCR_NP_{}.txt".format(id), "r")
     read = f.readlines()
     for x in read:
-        if x == "===\n":
-            break
         value = int(x.strip("\n"))
         if value > max_value:
             max_value = value

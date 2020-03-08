@@ -32,6 +32,7 @@ struct T_TIMER {
     uint64_t join_partitiontimer_pre = 0, join_partitiontimer = 0;//join during partition.
     uint64_t join_mergetimer_pre = 0, join_mergetimer = 0;//join during merge.
     uint64_t join_timer_pre = 0, join_timer = 0;//join.
+    uint64_t shuffle_timer_pre = 0, shuffle_timer = 0;//shuffle.
     std::vector<std::chrono::milliseconds> recordR;
     std::vector<std::chrono::milliseconds> recordS;
     std::vector<uint64_t> recordRID;
@@ -104,6 +105,15 @@ void sortRecords(std::string algo_name, int exp_id, long lastTS);
      accTimer(&timer->join_partitiontimer_pre, &timer->join_partitiontimer); /* join during partition */
 #endif
 
+#ifndef BEGIN_MEASURE_SHUFFLE_ACC
+#define BEGIN_MEASURE_SHUFFLE_ACC(timer) \
+    startTimer(&timer->shuffle_timer_pre);
+#endif
+
+#ifndef END_MEASURE_SHUFFLE_ACC
+#define END_MEASURE_SHUFFLE_ACC(timer) \
+     accTimer(&timer->shuffle_timer_pre, &timer->shuffle_timer); /* shuffle time */
+#endif
 
 #ifndef BEGIN_MEASURE_JOIN_ACC
 #define BEGIN_MEASURE_JOIN_ACC(timer) \

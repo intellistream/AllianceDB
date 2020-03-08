@@ -70,7 +70,6 @@ public:
     int32_t numGrps;
     std::vector<int32_t> *grpToTh;
 //    int32_t *thToGrp;
-
     ContRandShuffler(int nthreads, relation_t *relR, relation_t *relS, int i);
 
     void push(intkey_t key, fetch_t *fetch, bool pushR) override;
