@@ -173,10 +173,9 @@ struct arg_t {
     /* timing stats */
     struct timeval start, end;
     uint64_t part, sort, mergedelta, merge, join;
-
     T_TIMER *timer;
-
     milliseconds *startTS;
+
 } __attribute__((aligned(CACHE_LINE_SIZE)));
 
 
@@ -185,5 +184,8 @@ struct relationpair_t {
     relation_t R;
     relation_t S;
 };
+
+
+
 
 #endif //ALLIANCEDB_JOINCOMMON_H

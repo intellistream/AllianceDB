@@ -198,6 +198,7 @@ for algo in SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP PRO NPO; do #
       ;;
     "Stock")
       id=38
+      ResetParameters
       ts=1 # stream case
       WINDOW_SIZE=60000
       RSIZE=194341
@@ -212,6 +213,7 @@ for algo in SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP PRO NPO; do #
       ;;
     "Rovio") #matches:
       id=39
+      ResetParameters
       ts=1 # stream case
       WINDOW_SIZE=6000
       RSIZE=58300
@@ -226,6 +228,7 @@ for algo in SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP PRO NPO; do #
       ;;
     "YSB")
       id=40
+      ResetParameters
       ts=1 # stream case
       WINDOW_SIZE=5000
       RSIZE=1000
@@ -240,6 +243,7 @@ for algo in SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP PRO NPO; do #
       ;;
     "DEBS")
       id=41
+      ResetParameters
       ts=1 # stream case
       WINDOW_SIZE=0
       RSIZE=1000000
@@ -254,6 +258,7 @@ for algo in SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP PRO NPO; do #
       ;;
     "ScaleStock")
       id=42
+      ResetParameters
       ts=1 # stream case
       RSIZE=194341
       SSIZE=240148
@@ -271,6 +276,7 @@ for algo in SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP PRO NPO; do #
       ;;
     "ScaleRovio")
       id=46
+      ResetParameters
       ts=1 # stream case
       RSIZE=580700
       SSIZE=580700
@@ -288,6 +294,7 @@ for algo in SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP PRO NPO; do #
       ;;
     "ScaleYSB")
       id=50
+      ResetParameters
       ts=1 # stream case
       RSIZE=1000
       SSIZE=600000
@@ -305,6 +312,7 @@ for algo in SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP PRO NPO; do #
       ;;
     "ScaleDEBS")
       id=54
+      ResetParameters
       ts=1 # stream case
       RSIZE=1000000
       SSIZE=1000000

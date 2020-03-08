@@ -14,7 +14,7 @@
 #include <stdio.h>
 #include <stdlib.h> /* posix_memalign() */
 #include <thread>
-
+#include <time.h>
 #include "joincommon.h"
 #include "../affinity/cpu_mapping.h"        /* get_cpu_id() */
 //#include "affinity.h"           /* CPU_SET, CPU_ZERO */
@@ -199,6 +199,8 @@ sortmergejoin_initrun(relation_t *relR, relation_t *relS, joinconfig_t *joincfg,
         merge(args[i].timer, relR, relS, startTS);
 #endif
     }
+
+    printf("[INFO] join finished\n");
     joinresult->totalresults = result;
     joinresult->nthreads = nthreads;
 
@@ -240,11 +242,11 @@ sortmergejoin_initrun(relation_t *relR, relation_t *relS, joinconfig_t *joincfg,
 
     auto fp = fopen(path.c_str(), "w");
     for (i = 0; i < nthreads; i++) {
-        breakdown_thread(args[i].result, args[i].timer,   window_size, fp);
+        breakdown_thread(args[i].result, args[i].timer, window_size, fp);
     }
     breakdown_global(result, nthreads, args[0].timer, 0, fp);
     fclose(fp);
-    sortRecords(algoName, exp_id,   window_size);
+    sortRecords(algoName, exp_id, window_size);
 #endif
 
     /* clean-up */
@@ -311,7 +313,7 @@ merge_join(tuple_t *rtuples, tuple_t *stuples,
 #ifdef JOIN_MATERIALIZE
     chainedtuplebuffer_t * chainedbuf = (chainedtuplebuffer_t *) output;
 #endif
-
+    double sum = 0;
     while (i < numR && j < numS) {
         if (rtuples[i].key < stuples[j].key)
             i++;
@@ -331,9 +333,14 @@ merge_join(tuple_t *rtuples, tuple_t *stuples,
                     outtuple->key = stuples[jj].key;
                     outtuple->payload = stuples[jj].payload;
 #endif
-
                     matches++;
-                    this_thread::sleep_for(chrono::microseconds(timer->simulate_compute_time));
+//                    this_thread::sleep_for(chrono::nanoseconds (timer->simulate_compute_time));
+//                    timespec tim;
+//                    tim.tv_nsec = 1;
+//                    nanosleep(&tim, NULL);
+
+                    //call a dummy function that simulates the aggregation.
+                    DUMMY(sum)
 #ifndef NO_TIMING
                     END_PROGRESSIVE_MEASURE(stuples[j].payloadID, timer, false)
 #endif
@@ -366,7 +373,6 @@ merge_join(tuple_t *rtuples, tuple_t *stuples,
     /* if(rtuples[numR-1].key == stuples[j].key) */
     /*     printf("lastS equal lastR = %d\n", 1); */
     /* matches = merge_join8((int64_t *)rtuples, (int64_t*)stuples, 0, numR); */
-
     return matches;
 }
 

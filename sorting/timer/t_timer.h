@@ -15,6 +15,7 @@
 #include <cmath>
 #include "../utils/types.h"
 #include <chrono>
+
 using namespace std::chrono;
 
 //thread_local structure.
@@ -37,7 +38,6 @@ struct T_TIMER {
     std::vector<uint64_t> recordSID;
     int record_cnt = 0;
     int record_gap = 1;
-    int simulate_compute_time = 100;//(microseconds per output).
 #endif
 };
 
@@ -190,20 +190,27 @@ void sortRecords(std::string algo_name, int exp_id, long lastTS);
 #endif
 
 #ifndef END_PROGRESSIVE_MEASURE
-#define END_PROGRESSIVE_MEASURE(payloadID, timer, IStupleR)      \
-        timer->record_cnt++;                                     \
-        if(timer->record_cnt == timer->record_gap){              \
-            if(IStupleR){                                        \
-                auto ts =now();                                  \
-                timer->recordRID.push_back(payloadID);           \
-                timer->recordR.push_back(ts);                    \
-            }else{                                               \
-                auto ts =now();                                  \
-                timer->recordSID.push_back(payloadID);           \
-                timer->recordS.push_back(ts);                    \
-                }                                                \
-            timer->record_cnt=0;                                 \
+#define END_PROGRESSIVE_MEASURE(payloadID, timer, IStupleR)                             \
+        timer->record_cnt++;                                                            \
+        if(timer->record_cnt == timer->record_gap){                                     \
+            if(IStupleR){                                                               \
+                auto ts =now();                                                         \
+                timer->recordRID.push_back(payloadID);                                  \
+                timer->recordR.push_back(ts);                                           \
+            }else{                                                                      \
+                auto ts =now();                                                         \
+                timer->recordSID.push_back(payloadID);                                  \
+                timer->recordS.push_back(ts);                                           \
+                }                                                                       \
+            timer->record_cnt=0;                                                        \
         }
+#endif
+
+#ifndef DUMMY
+#define DUMMY(sum)                             \
+    for (auto i = 0; i < 100; i++) { \
+        sum += i; \
+    }
 #endif
 
 #endif //ALLIANCEDB_T_TIMER_H

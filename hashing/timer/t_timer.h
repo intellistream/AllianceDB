@@ -39,7 +39,7 @@ struct T_TIMER {
     std::vector<uint64_t> recordSID;
     int record_cnt = 0;
     int record_gap = 1;
-    int simulate_compute_time = 100;//(microseconds per output).
+    int simulate_compute_time = 1;//(microseconds per output).
 #endif
 };
 
@@ -217,5 +217,10 @@ void sortRecords(std::string algo_name, int exp_id, long lastTS);
         }
 #endif
 
-
+#ifndef DUMMY
+#define DUMMY(sum)                             \
+    for (auto i = 0; i < 100; i++) { \
+        sum += i; \
+    }
+#endif
 #endif //ALLIANCEDB_T_TIMER_H
