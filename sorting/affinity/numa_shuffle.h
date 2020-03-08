@@ -5,7 +5,7 @@
 #ifndef ALLIANCEDB_NUMA_SHUFFLE_H
 #define ALLIANCEDB_NUMA_SHUFFLE_H
 
-#include "../util/types.h" /* enum numa_strategy_t */
+#include "../utils/types.h" /* enum numa_strategy_t */
 #include "cpu_mapping.h" /* get_cpu_id() */
 #include "../datagen/generator.h" /* knuth_shuffle() */
 
