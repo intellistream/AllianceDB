@@ -39,17 +39,17 @@ dump_timing(std::vector<std::chrono::milliseconds> vector, std::vector<int64_t> 
     int check01 = ceil(n * 0.001);
     int check1 = ceil(n * 0.01);
     int check5 = ceil(n * 0.05);
-    int check10 = ceil(n * 0.10);
-    int check15 = ceil(n * 0.15);
+    int check50 = ceil(n * 0.50);
+    int check75 = ceil(n * 0.75);
     std::chrono::milliseconds start = vector.at(0);
 
-    fprintf(stdout, "Time to obtain 0.1%%, 1%%, 5%%, 10%%, 15%% of results (MSECS): \n");
+    fprintf(stdout, "Time to obtain 0.1%%, 1%%, 5%%, 50%%, 75%% of results (MSECS): \n");
     fprintf(stdout, "(%.2lu) \t (%.2lu) \t (%.2lu) \t (%.2lu) \t (%.2lu)",
             vector.at(check01).count() + lastTS - start.count(),
             vector.at(check1).count() + lastTS - start.count(),
             vector.at(check5).count() + lastTS - start.count(),
-            vector.at(check10).count() + lastTS - start.count(),
-            vector.at(check15).count() + lastTS - start.count()
+            vector.at(check50).count() + lastTS - start.count(),
+            vector.at(check75).count() + lastTS - start.count()
     );
     fprintf(stdout, "\n");
     fprintf(stdout, "\n");
