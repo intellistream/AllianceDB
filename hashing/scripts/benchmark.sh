@@ -25,7 +25,7 @@ function KimRun() {
   ./hashing -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS
 }
 
-DEFAULT_WINDOW_SIZE=2000 #(ms) -- 2 seconds
+DEFAULT_WINDOW_SIZE=1000 #(ms) -- 2 seconds
 DEFAULT_STEP_SIZE=500    # |tuples| per ms. -- 50K per seconds.
 function ResetParameters() {
   TS_DISTRIBUTION=0                # uniform time distribution
@@ -56,7 +56,7 @@ for algo in SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP PRO NPO; do #
   SKEY=0
   RTS=0
   STS=0
-  for benchmark in "AR" "RAR2"; do #"Stock"  "Rovio" "YSB"  "DEBS" # "ScaleStock" "AD" "KD" "WS" "KD2" "WS2" "RAR" "RAR2" "WS3" "WS4"
+  for benchmark in "AR" "AD" "KD" "WS" "KD2" "WS2" "RAR" "RAR2" "WS3" "WS4" "Stock" "Rovio" "YSB" "DEBS"; do #"Stock"  "Rovio" "YSB"  "DEBS" # "ScaleStock" "AD" "KD" "WS" "KD2" "WS2" "RAR" "RAR2" "WS3" "WS4"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "AR") #test arrival rate
@@ -143,7 +143,39 @@ for algo in SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP PRO NPO; do #
       ## Figure 4
       ResetParameters
       echo test varying window size 16 - 18
-      for WINDOW_SIZE in 500 5000 10000; do
+      for WINDOW_SIZE in 500 750 1000; do
+        KimRun
+        let "id++"
+      done
+      ;;
+    "WS2") #test window size when data at rest.
+      id=25
+      ## Figure 6
+      ResetParameters
+      ts=0 # data at rest.
+      echo test varying window size 25 - 27
+      for WINDOW_SIZE in 500 750 1000; do
+        KimRun
+        let "id++"
+      done
+      ;;
+    "WS3") #test window size for extra large size of window
+      id=36
+      ## Figure 4 extra
+      ResetParameters
+      echo test varying window size 36
+      for WINDOW_SIZE in 1500; do
+        KimRun
+        let "id++"
+      done
+      ;;
+    "WS4") #test window size for extra large size of window when data at rest
+      id=37
+      ## Figure 6 extra
+      ResetParameters
+      ts=0 # data at rest.
+      echo test varying window size 37
+      for WINDOW_SIZE in 1500; do
         KimRun
         let "id++"
       done
@@ -160,38 +192,6 @@ for algo in SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP PRO NPO; do #
 
       distrbution=2 #zipf
       for skew in 0 0.2 0.4 0.8 1; do
-        KimRun
-        let "id++"
-      done
-      ;;
-    "WS2") #test window size when data at rest.
-      id=25
-      ## Figure 6
-      ResetParameters
-      ts=0 # data at rest.
-      echo test varying window size 25 - 27
-      for WINDOW_SIZE in 500 5000 10000; do
-        KimRun
-        let "id++"
-      done
-      ;;
-    "WS3") #test window size for extra large size of window
-      id=36
-      ## Figure 4 extra
-      ResetParameters
-      echo test varying window size 36
-      for WINDOW_SIZE in 20000; do
-        KimRun
-        let "id++"
-      done
-      ;;
-    "WS4") #test window size for extra large size of window when data at rest
-      id=37
-      ## Figure 6 extra
-      ResetParameters
-      ts=0 # data at rest.
-      echo test varying window size 37
-      for WINDOW_SIZE in 20000; do
         KimRun
         let "id++"
       done

@@ -213,7 +213,7 @@ def ReadFile():
 
 if __name__ == "__main__":
     # x_values = ['Unique', 'Zipf(0)', 'Zipf(0.2)', 'Zipf(0.4)', 'Zipf(0.8)', 'Zipf(1)']
-    x_values = [500, 5000, 10000, 20000]
+    x_values = [500, 750, 1000, 1500]
 
     y_values = ReadFile()
 
