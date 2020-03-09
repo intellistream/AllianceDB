@@ -221,7 +221,7 @@ void sortRecords(std::string algo_name, int exp_id, long lastTS);
 #pragma GCC push_options
 #pragma GCC optimize ("O0")
 #define DUMMY(sum)                             \
-    for (auto i = 0; i < 200; i++) { \
+    for (auto i = 0; i < 10; i++) { \
         sum += now().count(); \
     }
 #endif

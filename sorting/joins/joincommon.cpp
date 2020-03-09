@@ -281,9 +281,6 @@ print_timing(uint64_t numtuples, struct timeval *start, struct timeval *end,
     fprintf(out, "%.4lf ", (numtuples / (diff_usec / 1000000L)));
     fflush(out);
 }
-
-double sum = 0;
-
 /**
  * Does merge join on two sorted relations. Just a naive scalar
  * implementation. TODO: consider AVX for this code.
@@ -299,7 +296,7 @@ merge_join(tuple_t *rtuples, tuple_t *stuples,
            const uint64_t numR, const uint64_t numS, void *output, T_TIMER *timer) {
     uint64_t i = 0, j = 0;
     uint64_t matches = 0;
-
+    double sum = 0;
 #if DEBUG_SORT_CHECK
     if (is_sorted_helper((int64_t *) rtuples, numR))
         printf("[INFO ] merge_join() -> R is sorted, size = %d\n", numR);

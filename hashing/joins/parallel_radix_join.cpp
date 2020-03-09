@@ -325,7 +325,7 @@ bucket_chaining_join(const relation_t *const R,
 #ifdef JOIN_RESULT_MATERIALIZE
     chainedtuplebuffer_t * chainedbuf = (chainedtuplebuffer_t *) output;
 #endif
-
+    double sum = 0;
     /* Disable the following loop for no-probe for the break-down experiments */
     /* PROBE-LOOP */
     for (uint32_t i = 0; i < numS; i++) {
@@ -343,6 +343,7 @@ bucket_chaining_join(const relation_t *const R,
                 joinres->payload  = Stuples[i].payload;     /* S-rid */
 #endif
                 matches++;
+                DUMMY(sum);
 #ifndef NO_TIMING
                 END_PROGRESSIVE_MEASURE(Stuples[i].payloadID, (timer), false)//assume S as the input tuple.
 #endif
@@ -1019,7 +1020,6 @@ parallel_radix_partition_optimized(part_t *const part) {
 void *
 prj_thread(void *param) {
 
-
     arg_t *args = (arg_t *) param;
     int32_t my_tid = args->tid;
 
@@ -1070,10 +1070,11 @@ prj_thread(void *param) {
     /* if monitoring synchronization stats */
 
 #ifndef NO_TIMING
-    if (args->tid == 0)
+    if (args->tid == 0) {
         *args->startTS = now();//assign the start timestamp
-    START_MEASURE((args->timer))
-    BEGIN_MEASURE_PARTITION((args->timer))/* partitioning start */
+        START_MEASURE((args->timer))
+        BEGIN_MEASURE_PARTITION((args->timer))/* partitioning start */
+    }
 #endif
 
     /********** 1st pass of multi-pass partitioning ************/
@@ -1366,7 +1367,9 @@ prj_thread(void *param) {
     SYNC_GLOBAL_STOP(&args->globaltimer->sync4, my_tid);
 
 #ifndef NO_TIMING
-    END_MEASURE_PARTITION((args->timer));/* partitioning finished */
+    if(args->tid==0) {
+        END_MEASURE_PARTITION((args->timer));/* partitioning finished */
+    }
 //    BEGIN_MEASURE_BUILD( (args->timer) )
 #endif
 
@@ -1386,8 +1389,11 @@ prj_thread(void *param) {
 #else
     void *chainedbuf = NULL;
 #endif
+
 #ifndef NO_TIMING
-    BEGIN_MEASURE_JOIN_ACC(args->timer)
+    if(args->tid==0) {
+        BEGIN_MEASURE_JOIN_ACC(args->timer)
+    }
 #endif
 
     while ((task = task_queue_get_atomic(join_queue))) {
@@ -1406,7 +1412,7 @@ prj_thread(void *param) {
 #endif
 
     /* global finish time */
-//    SYNC_GLOBAL_STOP(&args->globaltimer->finish_time, my_tid);
+    SYNC_GLOBAL_STOP(&args->globaltimer->finish_time, my_tid);
 
 #ifndef NO_TIMING
     /* Actually with this setup we're not timing build */

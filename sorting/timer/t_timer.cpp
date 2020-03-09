@@ -100,6 +100,15 @@ void breakdown_global(int64_t total_results, int nthreads, T_TIMER *timer, long 
     auto others = (timer->overall_timer -
                    (timer->wait_timer + timer->partition_timer + timer->buildtimer + timer->sorttimer +
                     timer->mergetimer + timer->join_timer));
+    printf("%lu\n%lu\n%lu\n%lu\n%lu\n%lu\n%lu\n",
+           timer->wait_timer / (total_results / nthreads),
+           timer->partition_timer / (total_results / nthreads),
+           timer->buildtimer / (total_results / nthreads),
+           timer->sorttimer / (total_results / nthreads),
+           timer->mergetimer / (total_results / nthreads),
+           timer->join_timer / (total_results / nthreads),
+           others / (total_results / nthreads)
+    );
     fprintf(pFile, "%lu\n%lu\n%lu\n%lu\n%lu\n%lu\n%lu\n",
             timer->wait_timer / (total_results / nthreads),
             timer->partition_timer / (total_results / nthreads),

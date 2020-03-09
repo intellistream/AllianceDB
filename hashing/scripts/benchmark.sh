@@ -47,7 +47,7 @@ algo=""
 Threads=16
 timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
-for algo in PRO NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #
+for algo in PRO; do #  NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
   RSIZE=1
   SSIZE=1
   RPATH=""

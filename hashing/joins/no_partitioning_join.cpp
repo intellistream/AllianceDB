@@ -188,12 +188,12 @@ npo_thread(void *param) {
 
     /* wait at a barrier until each thread starts and start T_TIMER */
     BARRIER_ARRIVE(args->barrier, rv);
-
 #ifndef NO_TIMING
-    if (args->tid == 0)
+    if (args->tid == 0) {
         *args->startTS = now();//assign the start timestamp
-    START_MEASURE((args->timer))
-    BEGIN_MEASURE_BUILD((args->timer))/* build start */
+        START_MEASURE((args->timer))
+        BEGIN_MEASURE_BUILD((args->timer))/* build start */
+    }
 #endif
 
 #ifdef PERF_COUNTERS
@@ -208,7 +208,6 @@ npo_thread(void *param) {
 
     /* wait at a barrier until each thread completes build phase */
     BARRIER_ARRIVE(args->barrier, rv)
-
 #ifdef PERF_COUNTERS
         if(args->tid == 0){
           PCM_stop();
@@ -221,7 +220,9 @@ npo_thread(void *param) {
 #endif
 
 #ifndef NO_TIMING
-    END_MEASURE_BUILD((args->timer))
+    if (args->tid == 0) {
+        END_MEASURE_BUILD((args->timer))
+    }
 #endif
 
 #ifdef JOIN_RESULT_MATERIALIZE
@@ -232,12 +233,22 @@ npo_thread(void *param) {
 #endif
 
 #ifndef NO_TIMING
-    BEGIN_MEASURE_JOIN_ACC(args->timer)
+    if (args->tid == 0) {
+        BEGIN_MEASURE_JOIN_ACC(args->timer)
+    }
 #endif
 
     /* probe for matching tuples from the assigned part of relS */
     args->result =
             probe_hashtable(args->ht, &args->relS, chainedbuf, args->timer);
+#ifdef JOIN_RESULT_MATERIALIZE
+    args->threadresult->nresults = args->num_results;
+    args->threadresult->threadid = args->tid;
+    args->threadresult->results  = (void *) chainedbuf;
+#endif
+
+    /* wait at a barrier until each thread completes join phase */
+    BARRIER_ARRIVE(args->barrier, rv)
 
 #ifdef PERF_COUNTERS
     if(args->tid == 0) {
@@ -251,15 +262,11 @@ npo_thread(void *param) {
     BARRIER_ARRIVE(args->barrier, rv);
 #endif
 
-#ifdef JOIN_RESULT_MATERIALIZE
-    args->threadresult->nresults = args->num_results;
-    args->threadresult->threadid = args->tid;
-    args->threadresult->results  = (void *) chainedbuf;
-#endif
-
 #ifndef NO_TIMING
-    END_MEASURE_JOIN_ACC(args->timer)
-    END_MEASURE(args->timer)
+    if (args->tid == 0) {
+        END_MEASURE_JOIN_ACC(args->timer)
+        END_MEASURE(args->timer)
+    }
 #endif
 
     /* clean-up the overflow buffers */

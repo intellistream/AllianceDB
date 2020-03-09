@@ -14,12 +14,16 @@ if(LIBNUMA_LIB-NOTFOUND)
 else()
     link_libraries(${LIBNUMA_LIB})
 endif()
-set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${./bin})
-set (CMAKE_STATIC_LINKER_FLAGS -lnuma)
-#set (CMAKE_STATIC_LINKER_FLAGS -lboost_system)
-set (CMAKE_STATIC_LINKER_FLAGS -lrt)
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -msse4.2 -mavx2")
-SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+
+SET (CMAKE_STATIC_LINKER_FLAGS -lnuma)
+#SET (CMAKE_STATIC_LINKER_FLAGS -lboost_system)
+SET (CMAKE_STATIC_LINKER_FLAGS -lrt)
+
+SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${./bin})
+SET(CMAKE_CXX_FLAGS "-Wall -Wextra")
+SET(CMAKE_CXX_FLAGS_DEBUG "-g")
+SET(CMAKE_CXX_FLAGS_RELEASE "-O3")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -msse4.2 -mavx2")
 
 add_executable(sorting
         datagen/generator.h datagen/generator.cpp datagen/genzipf.cpp datagen/genzipf.h
