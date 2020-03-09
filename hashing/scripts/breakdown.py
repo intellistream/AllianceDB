@@ -45,7 +45,7 @@ def ConvertEpsToPdf(dir_filename):
 
 
 # draw a line chart
-def DrawFigure(x_values, y_values, y_max, legend_labels, x_label, y_label, filename, allow_legend):
+def DrawFigure(x_values, y_values, y_max, legend_labels, x_label, y_label, filename, id, allow_legend):
     # you may change the figure size on your own.
     fig = plt.figure(figsize=(9, 4))
     figure = fig.add_subplot(111)
@@ -79,7 +79,8 @@ def DrawFigure(x_values, y_values, y_max, legend_labels, x_label, y_label, filen
     plt.xticks(index + 0.5 * width, x_values)
     # plt.autofmt_xdate()
     plt.xticks(rotation=30)
-    # plt.yscale('log')
+    if id == 38:  # stock: all algorithms are idle most of the time.
+        plt.yscale('log')
     plt.grid(axis='y', color='gray')
 
     # figure.yaxis.set_major_locator(pylab.LinearLocator(5))
@@ -255,6 +256,6 @@ if __name__ == "__main__":
     legend_labels = ['wait', 'partition', 'build', 'sort', 'merge', 'join', 'others']
 
     DrawFigure(x_values, y_values, int(ceil(max_value / 1000.0)) * 1000, legend_labels, '', 'cycles per output tuple',
-               'breakdown_figure{}'.format(id), False)
+               'breakdown_figure{}'.format(id), id, False)
 
     DrawLegend(legend_labels, 'breakdown_legend')

@@ -325,11 +325,9 @@ bucket_chaining_join(const relation_t *const R,
 #ifdef JOIN_RESULT_MATERIALIZE
     chainedtuplebuffer_t * chainedbuf = (chainedtuplebuffer_t *) output;
 #endif
-    double sum = 0;
     /* Disable the following loop for no-probe for the break-down experiments */
     /* PROBE-LOOP */
     for (uint32_t i = 0; i < numS; i++) {
-
         uint32_t idx = HASH_BIT_MODULO(Stuples[i].key, MASK, NUM_RADIX_BITS);
 
         for (int hit = bucket[idx]; hit > 0; hit = next[hit - 1]) {
@@ -343,7 +341,8 @@ bucket_chaining_join(const relation_t *const R,
                 joinres->payload  = Stuples[i].payload;     /* S-rid */
 #endif
                 matches++;
-                DUMMY(sum);
+//                printf("no dummy");
+                DUMMY()
 #ifndef NO_TIMING
                 END_PROGRESSIVE_MEASURE(Stuples[i].payloadID, (timer), false)//assume S as the input tuple.
 #endif

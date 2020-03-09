@@ -15,6 +15,11 @@ else()
     link_libraries(${LIBNUMA_LIB})
 endif()
 
+#####OTHERS########
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release)
+endif()
+
 SET (CMAKE_STATIC_LINKER_FLAGS -lnuma)
 #SET (CMAKE_STATIC_LINKER_FLAGS -lboost_system)
 SET (CMAKE_STATIC_LINKER_FLAGS -lrt)

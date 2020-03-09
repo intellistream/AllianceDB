@@ -38,6 +38,7 @@ struct T_TIMER {
     std::vector<uint64_t> recordSID;
     int record_cnt = 0;
     int record_gap = 1;
+    double sum = 0;
 #endif
 };
 
@@ -209,9 +210,9 @@ void sortRecords(std::string algo_name, int exp_id, long lastTS);
 #ifndef DUMMY
 #pragma GCC push_options
 #pragma GCC optimize ("O0")
-#define DUMMY(sum)                             \
-    for (auto i = 0; i < 200; i++) { \
-        sum += now().count(); \
+#define DUMMY(timer)                             \
+    for (short d = 0; d < 100; d++) { \
+        timer->sum += curtick(); \
     }
 #endif
 #pragma GCC pop_options

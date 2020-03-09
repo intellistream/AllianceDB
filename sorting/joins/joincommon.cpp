@@ -296,7 +296,6 @@ merge_join(tuple_t *rtuples, tuple_t *stuples,
            const uint64_t numR, const uint64_t numS, void *output, T_TIMER *timer) {
     uint64_t i = 0, j = 0;
     uint64_t matches = 0;
-    double sum = 0;
 #if DEBUG_SORT_CHECK
     if (is_sorted_helper((int64_t *) rtuples, numR))
         printf("[INFO ] merge_join() -> R is sorted, size = %d\n", numR);
@@ -339,7 +338,7 @@ merge_join(tuple_t *rtuples, tuple_t *stuples,
 //                    nanosleep(&tim, NULL);
 
                     //call a dummy function that simulates the aggregation.
-                    DUMMY(sum)
+                    DUMMY(timer)
 #ifndef NO_TIMING
                     END_PROGRESSIVE_MEASURE(stuples[j].payloadID, timer, false)
 #endif

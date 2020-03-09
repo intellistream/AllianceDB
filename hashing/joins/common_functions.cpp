@@ -196,6 +196,8 @@ int64_t probe_hashtable(hashtable_t *ht, relation_t *rel, void *output, T_TIMER 
 #endif
     for (i = 0; i < rel->num_tuples; i++) {
         proble_hashtable_single_measure(ht, rel, i, hashmask, skipbits, &matches, timer);
+//        proble_hashtable_single_measure(ht, &rel->tuples[i], hashmask, skipbits, &matches,
+//                /*thread_fun,*/ timer, false);
     }
     return matches;
 }
@@ -215,12 +217,11 @@ int64_t proble_hashtable_single_measure(const hashtable_t *ht, const tuple_t *tu
 
     intkey_t idx = HASH(tuple->key, hashmask, skipbits);
     bucket_t *b = ht->buckets + idx;
-    double sum=0;
     do {
         for (index_ht = 0; index_ht < b->count; index_ht++) {
             if (tuple->key == b->tuples[index_ht].key) {
                 (*matches)++;
-                DUMMY(sum)
+                DUMMY( )
 //                this_thread::sleep_for(chrono::microseconds(timer->simulate_compute_time));
 #ifdef JOIN_RESULT_MATERIALIZE
                 /* copy to the result buffer */
@@ -232,7 +233,6 @@ int64_t proble_hashtable_single_measure(const hashtable_t *ht, const tuple_t *tu
 #ifndef NO_TIMING
                 END_PROGRESSIVE_MEASURE(tuple->payloadID, (timer), ISTupleR)
 #endif
-
                 /*if (thread_fun) {
                     thread_fun(tuple, &b->tuples[index_ht], matches);
                 }*/
@@ -260,7 +260,6 @@ int64_t proble_hashtable_single_measure(const hashtable_t *ht, const relation_t 
 void match_single_tuple(const list<tuple_t *> list, const tuple_t *tuple, int64_t *matches,
         /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ T_TIMER *timer,
                         bool ISTupleR) {
-    double sum=0;
     // TODO: refactor RPJ related methods to RPJ helper
     for (auto it = list.begin(); it != list.end(); it++) {
         /*if (thread_fun) {
@@ -268,7 +267,7 @@ void match_single_tuple(const list<tuple_t *> list, const tuple_t *tuple, int64_
         }*/
         if (tuple->key == it.operator*()->key) {
             (*matches)++;
-            DUMMY(sum);
+            DUMMY()
 //            this_thread::sleep_for(chrono::microseconds(timer->simulate_compute_time));
 #ifndef NO_TIMING
             END_PROGRESSIVE_MEASURE(tuple->payloadID, (timer), ISTupleR)
