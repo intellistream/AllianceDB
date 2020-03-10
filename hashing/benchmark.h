@@ -29,7 +29,7 @@
 using namespace std::chrono;
 
 #ifdef JOIN_RESULT_MATERIALIZE
-#include "tuple_buffer.h"       /* for materialization */
+#include "utils/tuple_buffer.h"       /* for materialization */
 #endif
 
 #if !defined(__cplusplus)

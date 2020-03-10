@@ -19,7 +19,7 @@
 
 
 #ifdef JOIN_MATERIALIZE
-#include "tuple_buffer.h"
+#include "../utils/tuple_buffer.h"
 #endif
 
 /** Modulo hash function using bitmask and shift */

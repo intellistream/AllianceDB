@@ -94,7 +94,7 @@ SHJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_s
     t_param param(1);
 
 #ifdef JOIN_RESULT_MATERIALIZE
-    joinresult->resultlist = (threadresult_t *) malloc(sizeof(threadresult_t));
+    auto resultlist = (threadresult_t *) malloc(sizeof(threadresult_t));
 #endif
 
 #ifdef JOIN_RESULT_MATERIALIZE
@@ -108,8 +108,8 @@ SHJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_s
     SHJJoiner joiner = shj(0, relR, relS, chainedbuf);//build and probe at the same time.
 
 #ifdef JOIN_RESULT_MATERIALIZE
-    threadresult_t * thrres = &(joinresult->resultlist[0]);/* single-thread */
-    thrres->nresults = result;
+    threadresult_t * thrres = &(resultlist[0]);/* single-thread */
+    thrres->nresults = joiner.matches;
     thrres->threadid = 0;
     thrres->results  = (void *) chainedbuf;
 #endif
@@ -194,7 +194,7 @@ result_t *PMJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, i
     t_param param(1);
 
 #ifdef JOIN_RESULT_MATERIALIZE
-    joinresult->resultlist = (threadresult_t *) malloc(sizeof(threadresult_t));
+    auto resultlist = (threadresult_t *) malloc(sizeof(threadresult_t));
 #endif
 
 
@@ -210,8 +210,8 @@ result_t *PMJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, i
     PMJJoiner joiner = pmj(0, relR, relS, chainedbuf);//build and probe at the same time.
 
 #ifdef JOIN_RESULT_MATERIALIZE
-    threadresult_t * thrres = &(joinresult->resultlist[0]);/* single-thread */
-    thrres->nresults = result;
+    threadresult_t * thrres = &(resultlist[0]);/* single-thread */
+    thrres->nresults = joiner.matches;
     thrres->threadid = 0;
     thrres->results  = (void *) chainedbuf;
 #endif
@@ -228,7 +228,7 @@ result_t *RPJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, i
 
     t_param param(1);
 #ifdef JOIN_RESULT_MATERIALIZE
-    joinresult->resultlist = (threadresult_t *) malloc(sizeof(threadresult_t));
+    auto resultlist = (threadresult_t *) malloc(sizeof(threadresult_t));
 #endif
 
 
@@ -243,8 +243,8 @@ result_t *RPJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, i
 //    tParam.result = hrpj(0, relR, relS, chainedbuf, &timer);// hash version.
 
 #ifdef JOIN_RESULT_MATERIALIZE
-    threadresult_t * thrres = &(joinresult->resultlist[0]);/* single-thread */
-    thrres->nresults = result;
+    threadresult_t * thrres = &(resultlist[0]);/* single-thread */
+    thrres->nresults = joiner.matches;
     thrres->threadid = 0;
     thrres->results  = (void *) chainedbuf;
 #endif

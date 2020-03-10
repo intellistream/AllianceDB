@@ -11,6 +11,7 @@
 #include "npj_types.h"
 #include "../timer/t_timer.h"
 
+#define JOIN_RESULT_MATERIALIZE
 //#define NO_TIMING
 
 #ifndef PTHREAD_BARRIER_SERIAL_THREAD
@@ -28,7 +29,9 @@
 #endif
 
 #ifdef JOIN_RESULT_MATERIALIZE
-#include "tuple_buffer.h"       /* for materialization */
+
+#include "../utils/tuple_buffer.h"
+
 #endif
 
 #ifndef HASH
@@ -139,16 +142,17 @@ build_hashtable_single(const hashtable_t *ht, const relation_t *rel, uint32_t i,
 
 int64_t proble_hashtable_single_measure(const hashtable_t *ht, const tuple_t *tuple, const uint32_t hashmask,
                                         const uint32_t skipbits, int64_t *matches,
-                                        /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/
-                                        T_TIMER *timer, bool ISTupleR);
+        /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/
+                                        T_TIMER *timer, bool ISTupleR, void *output);
 
 int64_t proble_hashtable_single_measure(const hashtable_t *ht, const relation_t *rel, uint32_t index_rel,
                                         const uint32_t hashmask, const uint32_t skipbits, int64_t *matches,
-                                        /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/
-                                        T_TIMER *timer);
+        /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/
+                                        T_TIMER *timer, void *output);
 
 void match_single_tuple(const list<tuple_t *> list, const tuple_t *tuple, int64_t *matches,
-                        /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ T_TIMER *timer, bool ISTupleR);
+        /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ T_TIMER *timer, bool ISTupleR,
+                        void *output);
 
 int find_index(const tuple_t *rel, const int length, const tuple_t *tuple);
 

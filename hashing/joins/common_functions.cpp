@@ -191,13 +191,8 @@ int64_t probe_hashtable(hashtable_t *ht, relation_t *rel, void *output, T_TIMER 
     size_t prefetch_index = PREFETCH_DISTANCE;
 #endif
     matches = 0;
-#ifdef JOIN_RESULT_MATERIALIZE
-    chainedtuplebuffer_t * chainedbuf = (chainedtuplebuffer_t *) output;
-#endif
     for (i = 0; i < rel->num_tuples; i++) {
-        proble_hashtable_single_measure(ht, rel, i, hashmask, skipbits, &matches, timer);
-//        proble_hashtable_single_measure(ht, &rel->tuples[i], hashmask, skipbits, &matches,
-//                /*thread_fun,*/ timer, false);
+        proble_hashtable_single_measure(ht, rel, i, hashmask, skipbits, &matches, timer, output);
     }
     return matches;
 }
@@ -205,7 +200,7 @@ int64_t probe_hashtable(hashtable_t *ht, relation_t *rel, void *output, T_TIMER 
 int64_t proble_hashtable_single_measure(const hashtable_t *ht, const tuple_t *tuple, const uint32_t hashmask,
                                         const uint32_t skipbits, int64_t *matches,
         /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/
-                                        T_TIMER *timer, bool ISTupleR) {
+                                        T_TIMER *timer, bool ISTupleR, void *output) {
     uint32_t index_ht;
 #ifdef PREFETCH_NPJ
     if (prefetch_index < rel->num_tuples) {
@@ -214,6 +209,9 @@ int64_t proble_hashtable_single_measure(const hashtable_t *ht, const tuple_t *tu
             __builtin_prefetch(ht->buckets + idx_prefetch, 0, 1);
         }
 #endif
+#ifdef JOIN_RESULT_MATERIALIZE
+    chainedtuplebuffer_t *chainedbuf = (chainedtuplebuffer_t *) output;
+#endif
 
     intkey_t idx = HASH(tuple->key, hashmask, skipbits);
     bucket_t *b = ht->buckets + idx;
@@ -221,17 +219,18 @@ int64_t proble_hashtable_single_measure(const hashtable_t *ht, const tuple_t *tu
         for (index_ht = 0; index_ht < b->count; index_ht++) {
             if (tuple->key == b->tuples[index_ht].key) {
                 (*matches)++;
-                DUMMY( )
+//                DUMMY()
 //                this_thread::sleep_for(chrono::microseconds(timer->simulate_compute_time));
 #ifdef JOIN_RESULT_MATERIALIZE
                 /* copy to the result buffer */
-                tuple_t * joinres = cb_next_writepos(chainedbuf);
-                joinres->key      = b->tuples[j].payload;   /* R-rid */
-                joinres->payload  = rel->tuples[i].payload; /* S-rid */
+                /** We materialize only <S-key, S-RID> */
+                tuple_t *joinres = cb_next_writepos(chainedbuf);
+                joinres->key = tuple->key;
+                joinres->payloadID = tuple->payloadID;
 #endif
 
 #ifndef NO_TIMING
-                END_PROGRESSIVE_MEASURE(tuple->payloadID, (timer), ISTupleR)
+                END_PROGRESSIVE_MEASURE(tuple->payloadID, timer, ISTupleR)
 #endif
                 /*if (thread_fun) {
                     thread_fun(tuple, &b->tuples[index_ht], matches);
@@ -246,9 +245,9 @@ int64_t proble_hashtable_single_measure(const hashtable_t *ht, const tuple_t *tu
 int64_t proble_hashtable_single_measure(const hashtable_t *ht, const relation_t *rel, uint32_t index_rel,
                                         const uint32_t hashmask, const uint32_t skipbits, int64_t *matches,
         /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/
-                                        T_TIMER *timer) {
+                                        T_TIMER *timer, void *output) {
     return proble_hashtable_single_measure(ht, &rel->tuples[index_rel], hashmask, skipbits, matches,
-            /*thread_fun,*/ timer, false);
+            /*thread_fun,*/ timer, false, output);
 }
 
 /**
@@ -259,7 +258,7 @@ int64_t proble_hashtable_single_measure(const hashtable_t *ht, const relation_t 
  */
 void match_single_tuple(const list<tuple_t *> list, const tuple_t *tuple, int64_t *matches,
         /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ T_TIMER *timer,
-                        bool ISTupleR) {
+                        bool ISTupleR, void *output) {
     // TODO: refactor RPJ related methods to RPJ helper
     for (auto it = list.begin(); it != list.end(); it++) {
         /*if (thread_fun) {

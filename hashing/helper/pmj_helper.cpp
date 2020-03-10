@@ -8,7 +8,8 @@
 
 
 void
-earlyJoinInitialRuns(tuple_t *tupleR, tuple_t *tupleS, int lengthR, int lengthS, int64_t *matches, T_TIMER *timer) {
+earlyJoinInitialRuns(tuple_t *tupleR, tuple_t *tupleS, int lengthR, int lengthS, int64_t *matches, T_TIMER *timer,
+                     chainedtuplebuffer_t *chainedbuf) {
 //    //in early join
 
     int r = 0;
@@ -20,11 +21,11 @@ earlyJoinInitialRuns(tuple_t *tupleR, tuple_t *tupleS, int lengthR, int lengthS,
         tuple_t *ts = read(tupleS, lengthS, s);
         if (s == lengthS || (r < lengthR && tr->key <= ts->key)) {
             RM.insert(tr); //similar to SHJ's build.
-            SM.query(tr, matches, timer, true); //similar to SHJ's probe.
+            SM.query(tr, matches, timer, true, chainedbuf); //similar to SHJ's probe.
             r++;//remove tr from tupleR.
         } else {
             SM.insert(ts);
-            RM.query(ts, matches, timer, false);
+            RM.query(ts, matches, timer, false, chainedbuf);
             s++;//remove ts from tupleS.
         }
     }
@@ -37,7 +38,8 @@ earlyJoinInitialRuns(tuple_t *tupleR, tuple_t *tupleS, int lengthR, int lengthS,
  * @param tupleS
  * @param matches
  */
-void earlyJoinMergedRuns(std::vector<run> *Q, int64_t *matches, run *newRun, T_TIMER *timer) {
+void earlyJoinMergedRuns(std::vector<run> *Q, int64_t *matches, run *newRun, T_TIMER *timer,
+                         chainedtuplebuffer_t *chainedbuf) {
     bool findI;
     bool findJ;
     //following PMJ vldb'02 implementation.
@@ -134,7 +136,7 @@ void earlyJoinMergedRuns(std::vector<run> *Q, int64_t *matches, run *newRun, T_T
 #endif
             for (auto run_itr = 0; run_itr < actual_merge_step; run_itr++) {
                 if (run_itr != run_i) {// except (r,x)| x belong to Si.
-                    SM[run_itr].query(minR, matches, timer, false);
+                    SM[run_itr].query(minR, matches, timer, false, chainedbuf);
                 }
             }
 #ifndef NO_TIMING
@@ -158,7 +160,7 @@ void earlyJoinMergedRuns(std::vector<run> *Q, int64_t *matches, run *newRun, T_T
 #endif
             for (auto run_itr = 0; run_itr < actual_merge_step; run_itr++) {
                 if (run_itr != run_j) {// except (x,r)| x belong to Rj.
-                    RM[run_itr].query(minS, matches, timer, false);
+                    RM[run_itr].query(minS, matches, timer, false, chainedbuf);
                 }
             }
 #ifndef NO_TIMING
@@ -181,13 +183,13 @@ void insert(std::vector<run> *Q, tuple_t *run_R, int lengthR, tuple_t *run_S, in
     Q->push_back(run(run_R, run_S, lengthR, lengthS));
 }
 
-void merging_phase(int64_t *matches, std::vector<run> *Q, T_TIMER *timer) {
+void merging_phase(int64_t *matches, std::vector<run> *Q, T_TIMER *timer, chainedtuplebuffer_t *chainedbuf) {
 #ifndef NO_TIMING
     BEGIN_MEASURE_MERGE_ACC(timer)
 #endif
     do {
         run *newRun = new run();//empty run
-        earlyJoinMergedRuns(Q, matches, newRun, timer);
+        earlyJoinMergedRuns(Q, matches, newRun, timer, chainedbuf);
         Q->push_back(*newRun);
     } while (Q->size() > 1);
 #ifndef NO_TIMING
@@ -196,7 +198,8 @@ void merging_phase(int64_t *matches, std::vector<run> *Q, T_TIMER *timer) {
 }
 
 void sorting_phase(int32_t tid, tuple_t *inptrR, int sizeR, tuple_t *inptrS, int sizeS, int64_t *matches,
-                   std::vector<run> *Q, tuple_t *outputR, tuple_t *outputS, T_TIMER *timer) {
+                   std::vector<run> *Q, tuple_t *outputR, tuple_t *outputS, T_TIMER *timer,
+                   chainedtuplebuffer_t *chainedbuf) {
 
     DEBUGMSG("TID:%d, Initial R [aligned:%d]: %s", tid, is_aligned(inptrR, CACHE_LINE_SIZE),
              print_relation(inptrR, sizeR).c_str())
@@ -226,8 +229,6 @@ void sorting_phase(int32_t tid, tuple_t *inptrR, int sizeR, tuple_t *inptrS, int
 #endif
     DEBUGMSG("Sorted S: %s", print_relation(outputS, sizeS).c_str())
 
-    //sorting seems change input..
-
 #ifdef DEBUG
     if (!is_sorted_helper((int64_t *) outputS, sizeS)) {
         DEBUGMSG("===> %d-thread -> S is NOT sorted, size = %d\n", tid, sizeS)
@@ -236,7 +237,7 @@ void sorting_phase(int32_t tid, tuple_t *inptrR, int sizeR, tuple_t *inptrS, int
 #ifndef NO_TIMING
     BEGIN_MEASURE_JOIN_ACC(timer)
 #endif
-    earlyJoinInitialRuns(outputR, outputS, sizeR, sizeS, matches, timer);
+    earlyJoinInitialRuns(outputR, outputS, sizeR, sizeS, matches, timer, chainedbuf);
 
 #ifndef NO_TIMING
     END_MEASURE_JOIN_ACC(timer)
@@ -250,7 +251,7 @@ void sorting_phase(int32_t tid, tuple_t *inptrR, int sizeR, tuple_t *inptrS, int
 void sorting_phase(int32_t tid, const relation_t *rel_R, const relation_t *rel_S, int sizeR, int sizeS,
                    int progressive_stepR, int progressive_stepS, int *i, int *j, int64_t *matches, std::vector<run> *Q,
                    tuple_t *outptrR, tuple_t *outptrS,
-                   T_TIMER *timer) {
+                   T_TIMER *timer, chainedtuplebuffer_t *chainedbuf) {
 
     tuple_t *inptrR = nullptr;
     tuple_t *inptrS = nullptr;
@@ -300,7 +301,7 @@ void sorting_phase(int32_t tid, const relation_t *rel_R, const relation_t *rel_S
         }
 #endif
     }
-    earlyJoinInitialRuns(outptrR, outptrS, progressive_stepR, progressive_stepS, matches, timer);
+    earlyJoinInitialRuns(outptrR, outptrS, progressive_stepR, progressive_stepS, matches, timer, chainedbuf);
     insert(Q, outptrR, progressive_stepR, outptrS, progressive_stepS);
     *i += progressive_stepR;
     *j += progressive_stepS;

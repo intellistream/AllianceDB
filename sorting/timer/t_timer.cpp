@@ -100,23 +100,23 @@ void breakdown_global(int64_t total_results, int nthreads, T_TIMER *timer, long 
     auto others = (timer->overall_timer -
                    (timer->wait_timer + timer->partition_timer + timer->buildtimer + timer->sorttimer +
                     timer->mergetimer + timer->join_timer));
-    printf("%lu\n%lu\n%lu\n%lu\n%lu\n%lu\n%lu\n",
-           timer->wait_timer / (total_results / nthreads),
-           timer->partition_timer / (total_results / nthreads),
-           timer->buildtimer / (total_results / nthreads),
-           timer->sorttimer / (total_results / nthreads),
-           timer->mergetimer / (total_results / nthreads),
-           timer->join_timer / (total_results / nthreads),
-           others / (total_results / nthreads)
+    printf("%f\n%f\n%f\n%f\n%f\n%f\n%lu\n",
+           (double) timer->wait_timer / (total_results),
+           (double) timer->partition_timer / (total_results),
+           (double) timer->buildtimer / (total_results),
+           (double) timer->sorttimer / (total_results),
+           (double) timer->mergetimer / (total_results),
+           (double) timer->join_timer / (total_results),
+           others / (total_results)
     );
     fprintf(pFile, "%lu\n%lu\n%lu\n%lu\n%lu\n%lu\n%lu\n",
-            timer->wait_timer / (total_results / nthreads),
-            timer->partition_timer / (total_results / nthreads),
-            timer->buildtimer / (total_results / nthreads),
-            timer->sorttimer / (total_results / nthreads),
-            timer->mergetimer / (total_results / nthreads),
-            timer->join_timer / (total_results / nthreads),
-            others / (total_results / nthreads)
+            timer->wait_timer / (total_results),
+            timer->partition_timer / (total_results),
+            timer->buildtimer / (total_results),
+            timer->sorttimer / (total_results),
+            timer->mergetimer / (total_results),
+            timer->join_timer / (total_results),
+            others / (total_results)
     );
     fflush(pFile);
 }

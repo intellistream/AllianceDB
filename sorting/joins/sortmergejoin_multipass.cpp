@@ -28,7 +28,7 @@
 #include "../affinity/memalloc.h"   /* malloc_aligned() */
 
 #ifdef JOIN_MATERIALIZE
-#include "tuple_buffer.h"
+#include "../utils/tuple_buffer.h"
 #endif
 
 #ifdef PERF_COUNTERS
@@ -756,7 +756,7 @@ mpass_mergejoin_phase(relation_t *mergedRelR, relation_t *mergedRelS, arg_t *arg
 
 #ifdef JOIN_MATERIALIZE
     args->threadresult->nresults = nresults;
-    args->threadresult->threadid = args->my_tid;
+    args->threadresult->threadid = args->tid;
     args->threadresult->results  = (void *) chainedbuf;
 #endif
 }

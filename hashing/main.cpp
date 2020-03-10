@@ -289,16 +289,6 @@ main(int argc, char **argv) {
     PCM_OUT    = cmd_params.perfout;
 #endif
     benchmark(cmd_params);
-
-#if (defined(PERSIST_RELATIONS) && defined(JOIN_RESULT_MATERIALIZE))
-    printf("[INFO ] Persisting the join result to \"Out.tbl\" ...\n");
-    write_result_relation(results, "Out.tbl");
-#endif
-
-#ifdef JOIN_RESULT_MATERIALIZE
-    free(results->resultlist);
-#endif
-
     return 0;
 }
 

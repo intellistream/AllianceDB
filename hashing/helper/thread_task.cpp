@@ -63,7 +63,7 @@ THREAD_TASK_NOSHUFFLE(void *param) {
         PCM_start();
     }
     /* Just to make sure we get consistent performance numbers */
-    BARRIER_ARRIVE(args->barrier, rv);
+    BARRIER_ARRIVE(args->barrier, lock);
 #endif
 
 #ifdef JOIN_RESULT_MATERIALIZE
@@ -112,7 +112,7 @@ THREAD_TASK_NOSHUFFLE(void *param) {
             chainedbuf);
     DEBUGMSG("args->num_results (%d): %ld\n", args->tid, *args->matches);
 #ifdef JOIN_RESULT_MATERIALIZE
-    args->threadresult->nresults = args->num_results;
+    args->threadresult->nresults = *args->matches;
     args->threadresult->threadid = args->tid;
     args->threadresult->results  = (void *) chainedbuf;
 #endif
@@ -130,7 +130,7 @@ THREAD_TASK_NOSHUFFLE(void *param) {
         PCM_cleanup();
     }
     /* Just to make sure we get consistent performance numbers */
-    BARRIER_ARRIVE(args->barrier, rv);
+    BARRIER_ARRIVE(args->barrier, lock);
 #endif
     pthread_exit(NULL);
 }
@@ -139,13 +139,6 @@ THREAD_TASK_NOSHUFFLE(void *param) {
 void
 *THREAD_TASK_SHUFFLE(void *param) {
     arg_t *args = (arg_t *) param;
-
-#ifdef PERF_COUNTERS
-    if (args->tid == 0) {
-        PCM_initPerformanceMonitor(NULL, NULL);
-        PCM_start();
-    }
-#endif
 
     int lock;
     /* wait at a barrier until each thread started*/
@@ -156,18 +149,6 @@ void
 
 #ifndef NO_TIMING
     START_MEASURE((args->timer))
-#endif
-
-    int rv;
-#ifdef PERF_COUNTERS
-    if (args->tid == 0) {
-        PCM_stop();
-        PCM_log("========== Build phase profiling results ==========\n");
-        PCM_printResults();
-        PCM_start();
-    }
-    /* Just to make sure we get consistent performance numbers */
-    BARRIER_ARRIVE(args->barrier, rv);
 #endif
 
 #ifdef JOIN_RESULT_MATERIALIZE
@@ -185,6 +166,14 @@ void
 #ifndef NO_TIMING
     BEGIN_MEASURE_PARTITION_ACC((args->timer))
 #endif
+
+#ifdef PERF_COUNTERS
+    if (args->tid == 0) {
+        PCM_initPerformanceMonitor(NULL, NULL);
+        PCM_start();
+    }
+#endif
+
     do {
 //        BEGIN_MEASURE_PARTITION_ACC((args->timer))
         fetch = fetcher->next_tuple();
@@ -222,7 +211,7 @@ void
 #endif
 
     /* wait at a barrier until each thread finishes fetch*/
-    BARRIER_ARRIVE(args->barrier, rv)
+    BARRIER_ARRIVE(args->barrier, lock)
 
 #ifndef NO_TIMING
     BEGIN_MEASURE_PARTITION_ACC((args->timer))
@@ -264,7 +253,7 @@ void
             chainedbuf);
 
 #ifdef JOIN_RESULT_MATERIALIZE
-    args->threadresult->nresults = args->num_results;
+    args->threadresult->nresults = *args->matches;
     args->threadresult->threadid = args->tid;
     args->threadresult->results  = (void *) chainedbuf;
 #endif
@@ -276,13 +265,13 @@ void
 #ifdef PERF_COUNTERS
     if (args->tid == 0) {
         PCM_stop();
-        PCM_log("========== Probe phase profiling results ==========\n");
+        PCM_log("========== Entire phase profiling results ==========\n");
         PCM_printResults();
         PCM_log("===================================================\n");
         PCM_cleanup();
     }
     /* Just to make sure we get consistent performance numbers */
-    BARRIER_ARRIVE(args->barrier, rv);
+    BARRIER_ARRIVE(args->barrier, lock);
 #endif
     DEBUGMSG("args->num_results (%d): %ld\n", args->tid, *args->matches);
     fflush(stdout);
@@ -501,7 +490,7 @@ void
 #ifndef NO_TIMING
     START_MEASURE((args->timer))
 #endif
-
+    int rv;
 #ifdef PERF_COUNTERS
     if (args->tid == 0) {
         PCM_stop();
@@ -592,7 +581,7 @@ void
             chainedbuf);
 
 #ifdef JOIN_RESULT_MATERIALIZE
-    args->threadresult->nresults = args->num_results;
+    args->threadresult->nresults = *args->matches;
     args->threadresult->threadid = args->tid;
     args->threadresult->results  = (void *) chainedbuf;
 #endif
@@ -635,7 +624,7 @@ void
     /* the first thread checkpoints the start time */
     START_MEASURE((args->timer))
 #endif
-
+    int rv;
 #ifdef PERF_COUNTERS
     if (args->tid == 0) {
         PCM_stop();
@@ -700,7 +689,7 @@ void
     } while (!fetcher->finish());
 
 #ifdef JOIN_RESULT_MATERIALIZE
-    args->threadresult->nresults = args->num_results;
+    args->threadresult->nresults = *args->matches;
     args->threadresult->threadid = args->tid;
     args->threadresult->results  = (void *) chainedbuf;
 #endif

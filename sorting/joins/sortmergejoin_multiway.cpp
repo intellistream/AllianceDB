@@ -33,7 +33,7 @@
 #include "../affinity/numa_shuffle.h"       /* get_numa_shuffle_strategy() */
 
 #ifdef JOIN_MATERIALIZE
-#include "tuple_buffer.h"
+#include "../utils/tuple_buffer.h"
 #endif
 
 /**
@@ -628,7 +628,7 @@ mergejoin_phase(relation_t **relRparts, relation_t **relSparts,
 
 #ifdef JOIN_MATERIALIZE
     args->threadresult->nresults = nresults;
-    args->threadresult->threadid = args->my_tid;
+    args->threadresult->threadid = args->tid;
     args->threadresult->results  = (void *) chainedbuf;
 #endif
 

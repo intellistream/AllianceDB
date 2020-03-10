@@ -11,7 +11,10 @@ launch(int nthreads, relation_t *relR, relation_t *relS, t_param param, void *(*
     int i;
     int rv;
     cpu_set_t set;
-
+#ifdef JOIN_RESULT_MATERIALIZE
+    param.joinresult->resultlist = (threadresult_t *) malloc(sizeof(threadresult_t)
+                                                       * nthreads);
+#endif
     for (i = 0; i < nthreads; i++) {
         int cpu_idx = get_cpu_id(i);
         DEBUGMSG("Assigning thread-%d to CPU-%d\n", i, cpu_idx);

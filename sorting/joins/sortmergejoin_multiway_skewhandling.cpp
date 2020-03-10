@@ -33,7 +33,7 @@
 #include "../affinity/numa_shuffle.h"       /* get_numa_shuffle_strategy() */
 
 #ifdef JOIN_MATERIALIZE
-#include "tuple_buffer.h"
+#include "../utils/tuple_buffer.h"
 #endif
 
 /** For skew handling code that has C++ STL usage. */

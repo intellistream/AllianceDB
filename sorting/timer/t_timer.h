@@ -210,9 +210,10 @@ void sortRecords(std::string algo_name, int exp_id, long lastTS);
 #ifndef DUMMY
 #pragma GCC push_options
 #pragma GCC optimize ("O0")
-#define DUMMY(timer)                             \
-    for (short d = 0; d < 100; d++) { \
-        timer->sum += curtick(); \
+#define DUMMY()                             \
+    double sum=0;                           \
+    for (short d = 0; d < 10000; d++) { \
+         sum+=d; \
     }
 #endif
 #pragma GCC pop_options

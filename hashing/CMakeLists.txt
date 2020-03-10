@@ -30,16 +30,15 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif()
 
+SET (CMAKE_STATIC_LINKER_FLAGS -lnuma)
+#SET (CMAKE_STATIC_LINKER_FLAGS -lboost_system)
+SET (CMAKE_STATIC_LINKER_FLAGS -lrt)
+
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${./bin})
 SET(CMAKE_CXX_FLAGS "-Wall -Wextra")
 SET(CMAKE_CXX_FLAGS_DEBUG "-g")
 SET(CMAKE_CXX_FLAGS_RELEASE "-O3")
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -msse4.2 -mavx2")
-
-
-SET (CMAKE_STATIC_LINKER_FLAGS -lnuma)
-#SET (CMAKE_STATIC_LINKER_FLAGS -lboost_system)
-SET (CMAKE_STATIC_LINKER_FLAGS -lrt)
 
 #####ADD GOOGLE TEST########
 # Prevent GoogleTest from overriding our compiler/linker options
@@ -63,7 +62,7 @@ SET (CMAKE_STATIC_LINKER_FLAGS -lrt)
 ADD_LIBRARY(common OBJECT utils/xxhash64.h timer/t_timer.h timer/t_timer.cpp utils/types.h utils/generator.cpp utils/generator.h utils/perf_counters.cpp utils/perf_counters.h utils/cpu_mapping.cpp utils/cpu_mapping.h utils/genzipf.cpp utils/genzipf.h utils/lock.h utils/rdtsc.h utils/barrier.h utils/task_queue.h utils/config.h
         joins/npj_types.h joins/npj_params.h joins/no_partitioning_join.cpp joins/no_partitioning_join.h joins/onlinejoins.cpp joins/onlinejoins.h
         joins/parallel_radix_join.cpp joins/parallel_radix_join.h joins/prj_params.h joins/common_functions.cpp joins/common_functions.h helper/launcher.cpp helper/launcher.h helper/thread_task.cpp helper/thread_task.h helper/localjoiner.cpp helper/localjoiner.h helper/shuffler.cpp helper/shuffler.h helper/fetcher.cpp helper/fetcher.h joins/shj_struct.h lib/types.h lib/pci.h lib/msr.h lib/msr.cpp lib/cpucounters.cpp lib/cpucounters.h lib/utils.cpp lib/utils.h lib/client_bw.cpp lib/client_bw.h lib/mmio.cpp lib/mmio.h lib/width_extender.h lib/mutex.h lib/exceptions/unsupported_processor_exception.hpp lib/pci.cpp helper/concurrentqueue.h helper/maps/robin_growth_policy.h helper/maps/robin_hash.h helper/maps/robin_map.h helper/maps/robin_set.h helper/readerwriterqueue.h helper/atomicops.h helper/avxsort.cpp helper/avxsort.h helper/avxsort_core.h helper/avxcommon.h utils/params.h helper/avxintrin_emu.h helper/sort_common.cpp helper/sort_common.h
-        helper/pmj_helper.cpp helper/pmj_helper.h benchmark.cpp benchmark.h utils/skewness.h)
+        helper/pmj_helper.cpp helper/pmj_helper.h benchmark.cpp benchmark.h utils/skewness.h utils/tuple_buffer.h)
 
 # Now simply link your own targets against gtest, gmock,
 # etc. as appropriate

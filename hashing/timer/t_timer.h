@@ -223,7 +223,7 @@ void sortRecords(std::string algo_name, int exp_id, long lastTS);
 #define DUMMY()                             \
     double sum=0;                              \
     for (short d = 0; d < 100; d++) { \
-        sum += curtick(); \
+        sum++; \
     }
 #endif
 #pragma GCC pop_options

@@ -21,7 +21,7 @@
 #include "../affinity/memalloc.h"           /* malloc_aligned() */
 
 #ifdef JOIN_MATERIALIZE
-#include "tuple_buffer.h"
+#include "../utils/tuple_buffer.h"
 #endif
 
 #define REQUIRED_STACK_SIZE (32*1024*1024)
@@ -329,7 +329,7 @@ merge_join(tuple_t *rtuples, tuple_t *stuples,
                     /** We materialize only <S-key, S-RID> */
                     tuple_t * outtuple = cb_next_writepos(chainedbuf);
                     outtuple->key = stuples[jj].key;
-                    outtuple->payload = stuples[jj].payload;
+                    outtuple->payloadID = stuples[jj].payloadID;
 #endif
                     matches++;
 //                    this_thread::sleep_for(chrono::nanoseconds (timer->simulate_compute_time));
@@ -338,7 +338,7 @@ merge_join(tuple_t *rtuples, tuple_t *stuples,
 //                    nanosleep(&tim, NULL);
 
                     //call a dummy function that simulates the aggregation.
-                    DUMMY(timer)
+//                    DUMMY()
 #ifndef NO_TIMING
                     END_PROGRESSIVE_MEASURE(stuples[j].payloadID, timer, false)
 #endif

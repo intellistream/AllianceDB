@@ -24,12 +24,12 @@
 
 /** Is performance monitoring PER_CORE? */
 #ifndef PER_CORE
-#define PER_CORE 0
+#define PER_CORE 1
 #endif
 
 /** Is performance monitoring PER_SOCKET? */
 #ifndef PER_SOCKET
-#define PER_SOCKET 1
+#define PER_SOCKET 0
 #endif
 
 /** Is performance monitoring PER_SYSTEM? */

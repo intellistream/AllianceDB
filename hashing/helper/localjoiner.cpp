@@ -71,7 +71,7 @@ shj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid) {
  * @return
  */
 void SHJJoiner::join(int32_t tid, tuple_t *tuple, bool ISTupleR, int64_t *matches,
-                     /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ void *pVoid) {
+        /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ void *out) {
 
     const uint32_t hashmask_R = htR->hash_mask;
     const uint32_t skipbits_R = htR->skip_bits;
@@ -87,7 +87,8 @@ void SHJJoiner::join(int32_t tid, tuple_t *tuple, bool ISTupleR, int64_t *matche
 #ifndef NO_TIMING
         END_MEASURE_BUILD_ACC(timer)//accumulate hash table build time.
 #endif
-        proble_hashtable_single_measure(htS,tuple, hashmask_S, skipbits_S, matches, /*thread_fun,*/ timer, ISTupleR);//(2)
+        proble_hashtable_single_measure(htS, tuple, hashmask_S, skipbits_S, matches, /*thread_fun,*/ timer, ISTupleR,
+                                        out);//(2)
     } else {
 #ifndef NO_TIMING
         BEGIN_MEASURE_BUILD_ACC(timer)
@@ -96,7 +97,8 @@ void SHJJoiner::join(int32_t tid, tuple_t *tuple, bool ISTupleR, int64_t *matche
 #ifndef NO_TIMING
         END_MEASURE_BUILD_ACC(timer)//accumulate hash table build time.
 #endif
-        proble_hashtable_single_measure(htR, tuple, hashmask_R, skipbits_R, matches, /*thread_fun,*/ timer, ISTupleR);//(4)
+        proble_hashtable_single_measure(htR, tuple, hashmask_R, skipbits_R, matches, /*thread_fun,*/ timer, ISTupleR,
+                                        out);//(4)
     }
 }
 
@@ -163,9 +165,14 @@ SHJJoiner::~SHJJoiner() {
  * @return
  */
 PMJJoiner
-pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid) {
+pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *output) {
 
     PMJJoiner joiner(rel_R->num_tuples, rel_S->num_tuples, 1);
+
+#ifdef JOIN_RESULT_MATERIALIZE
+    chainedtuplebuffer_t *chainedbuf = (chainedtuplebuffer_t *) output;
+#endif
+
 #ifndef NO_TIMING
     START_MEASURE(joiner.timer)
 #endif
@@ -201,7 +208,7 @@ pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid) {
     /***Sorting***/
     do {
         sorting_phase(tid, rel_R, rel_S, sizeR, sizeS, progressive_stepR, progressive_stepS, &i, &j, &joiner.matches,
-                      &Q, outptrR + i, outptrS + j,  joiner.timer);
+                      &Q, outptrR + i, outptrS + j, joiner.timer, chainedbuf);
 
     } while (i < sizeR - progressive_stepR && j < sizeS - progressive_stepS);//while R!=null, S!=null.
 
@@ -209,11 +216,11 @@ pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid) {
     progressive_stepR = sizeR - i;
     progressive_stepS = sizeS - j;
     sorting_phase(tid, rel_R, rel_S, sizeR, sizeS, progressive_stepR, progressive_stepS, &i, &j, &joiner.matches, &Q,
-                  outptrR + i, outptrS + j,  joiner.timer);
+                  outptrR + i, outptrS + j, joiner.timer, chainedbuf);
 
     DEBUGMSG("Join during run creation:%d", joiner.matches)
 
-    merging_phase(&joiner.matches, &Q,  joiner.timer);
+    merging_phase(&joiner.matches, &Q, joiner.timer, chainedbuf);
 
     DEBUGMSG("Join during run merge matches:%d", joiner.matches)
 #ifndef NO_TIMING
@@ -233,7 +240,8 @@ void PMJJoiner::keep_tuple_single(tuple_t *tmp_rel, const int outerPtr,
 
 void
 PMJJoiner::join_tuple_single(int32_t tid, tuple_t *tmp_rel, int *outerPtr, tuple_t *tuple, int fat_tuple_size,
-                             int64_t *matches, T_TIMER *timer, t_pmj *pPmj, bool IStuple_R) {
+                             int64_t *matches,
+                             T_TIMER *timer, t_pmj *pPmj, bool IStuple_R, chainedtuplebuffer_t *chainedbuf) {
 
     if (*outerPtr > 0 && fat_tuple_size > 0) {
         tuple_t *out_relR;
@@ -256,7 +264,7 @@ PMJJoiner::join_tuple_single(int32_t tid, tuple_t *tmp_rel, int *outerPtr, tuple
                           &pPmj->Q,
                           out_relR,
                           out_relS,
-                          timer);
+                          timer, chainedbuf);
 
             pPmj->extraPtrR += fat_tuple_size;
             pPmj->extraPtrS += *outerPtr;
@@ -279,7 +287,7 @@ PMJJoiner::join_tuple_single(int32_t tid, tuple_t *tmp_rel, int *outerPtr, tuple
                           &pPmj->Q,
                           out_relR,
                           out_relS,
-                          timer);
+                          timer, chainedbuf);
             pPmj->extraPtrR += *outerPtr;
             pPmj->extraPtrS += fat_tuple_size;
         }
@@ -301,8 +309,12 @@ PMJJoiner::join_tuple_single(int32_t tid, tuple_t *tmp_rel, int *outerPtr, tuple
  */
 void PMJJoiner:: //0x7fff08000c70
 join(int32_t tid, tuple_t *tuple, int fat_tuple_size, bool IStuple_R, int64_t *matches,
-     /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ void *pVoid) {
+        /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ void *output) {
     auto *arg = (t_pmj *) t_arg;
+
+#ifdef JOIN_RESULT_MATERIALIZE
+    chainedtuplebuffer_t *chainedbuf = (chainedtuplebuffer_t *) output;
+#endif
 
     //store tuples.
     if (IStuple_R) {
@@ -324,8 +336,8 @@ join(int32_t tid, tuple_t *tuple, int fat_tuple_size, bool IStuple_R, int64_t *m
         auto inputS = copy_tuples(arg->tmp_relS, arg->outerPtrS);
 
         join_tuple_single(tid, inputS, &arg->outerPtrS,
-                          tuple, fat_tuple_size, matches,  timer, arg,
-                          IStuple_R);
+                          tuple, fat_tuple_size, matches, timer, arg,
+                          IStuple_R, chainedbuf);
         DEBUGMSG("TID: %d Join during run creation:%d", tid, *matches)
 
     } else {
@@ -345,7 +357,7 @@ join(int32_t tid, tuple_t *tuple, int fat_tuple_size, bool IStuple_R, int64_t *m
         DEBUGMSG("TID: %d Sorting in normal stage start", tid)
         auto inputR = copy_tuples(arg->tmp_relR, arg->outerPtrR);
         join_tuple_single(tid, inputR, &arg->outerPtrR, tuple, fat_tuple_size,
-                          matches,  timer, arg, IStuple_R);
+                          matches, timer, arg, IStuple_R, chainedbuf);
         DEBUGMSG("TID: %d Join during run creation:%d", tid, *matches)
 
     }
@@ -476,7 +488,7 @@ clean(int32_t tid, tuple_t *fat_tuple, int fat_tuple_size, bool cleanR) {
 
 long PMJJoiner::
 merge(int32_t tid, int64_t *matches,
-      /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ void *pVoid) {
+        /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ void *output) {
     auto *arg = (t_pmj *) t_arg;
     int stepR;
     int stepS;
@@ -496,6 +508,9 @@ merge(int32_t tid, int64_t *matches,
              + RELATION_PADDING(1, CACHELINEPADDING(1));//TODO: think why we need to patch this.
     out_relS = (tuple_t *) malloc_aligned(relRsz);
 
+#ifdef JOIN_RESULT_MATERIALIZE
+    chainedtuplebuffer_t *chainedbuf = (chainedtuplebuffer_t *) output;
+#endif
 
     sorting_phase(tid, arg->tmp_relR + arg->outerPtrR, stepR,
                   arg->tmp_relS + arg->outerPtrS, stepS,
@@ -504,10 +519,10 @@ merge(int32_t tid, int64_t *matches,
                   out_relS,
 //                  arg->out_relR + arg->outerPtrR,
 //                  arg->out_relS + arg->outerPtrS,
-                   timer);
+                  timer, chainedbuf);
     DEBUGMSG("TID:%d Clean up stage: Join during run creation:%d, arg->Q %d", tid, *matches, arg->Q.size())
 
-    merging_phase(matches, &arg->Q,  timer);
+    merging_phase(matches, &arg->Q, timer, chainedbuf);
     DEBUGMSG("TID:%d Clean up stage: Join during run merge matches:%d", tid, *matches)
     return *matches;
 }
@@ -521,7 +536,7 @@ PMJJoiner::PMJJoiner(int
 }
 
 void PMJJoiner::join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *matches,
-                     /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ void *pVoid) {
+        /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ void *output) {
     auto *arg = (t_pmj *) t_arg;
 
     //store tuples.
@@ -537,7 +552,9 @@ void PMJJoiner::join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *match
 
     tuple_t *out_relR;
     tuple_t *out_relS;
-
+#ifdef JOIN_RESULT_MATERIALIZE
+    chainedtuplebuffer_t *chainedbuf = (chainedtuplebuffer_t *) output;
+#endif
     if (arg->outerPtrR < arg->sizeR - stepR && arg->outerPtrS < arg->sizeS - stepS) {//normal process
         //check if it is ready to start process.
         if (arg->innerPtrR >= stepR
@@ -558,7 +575,7 @@ void PMJJoiner::join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *match
                           out_relS,
 //                          arg->out_relR + arg->outerPtrR,
 //                          arg->out_relS + arg->outerPtrS,
-                           timer);
+                          timer, chainedbuf);
             arg->outerPtrR += stepR;
             arg->outerPtrS += stepS;
             DEBUGMSG("Join during run creation:%d", *matches)
@@ -592,9 +609,9 @@ void PMJJoiner::join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *match
 //                      arg->out_relS + arg->outerPtrS,
                       out_relR,
                       out_relS,
-                       timer);
+                      timer, chainedbuf);
         DEBUGMSG("Join during run creation:%d", *matches)
-        merging_phase(matches, &arg->Q,  timer);
+        merging_phase(matches, &arg->Q, timer, chainedbuf);
         DEBUGMSG("Join during run merge matches:%d", *matches)
 
         delete out_relR;
@@ -662,7 +679,7 @@ rpj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *pVoid) {
  */
 
 void RippleJoiner::join(int32_t tid, tuple_t *tuple, bool ISTupleR, int64_t *matches,
-                        /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ void *pVoid) {
+        /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ void *out) {
     DEBUGMSG("tid: %d, tuple: %d, R?%d\n", tid, tuple->key, ISTupleR);
     if (ISTupleR) {
 #ifndef NO_TIMING
@@ -672,7 +689,7 @@ void RippleJoiner::join(int32_t tid, tuple_t *tuple, bool ISTupleR, int64_t *mat
 #ifndef NO_TIMING
         END_MEASURE_BUILD_ACC(timer)//accumulate hash table build time.
 #endif
-        match_single_tuple(samList.t_windows->S_Window, tuple, matches, /*thread_fun,*/ timer, ISTupleR);
+        match_single_tuple(samList.t_windows->S_Window, tuple, matches, /*thread_fun,*/ timer, ISTupleR, out);
     } else {
 //        samList.t_windows->S_Window.push_back(tuple->key);
 #ifndef NO_TIMING
@@ -682,7 +699,7 @@ void RippleJoiner::join(int32_t tid, tuple_t *tuple, bool ISTupleR, int64_t *mat
 #ifndef NO_TIMING
         END_MEASURE_BUILD_ACC(timer)//accumulate hash table build time.
 #endif
-        match_single_tuple(samList.t_windows->R_Window, tuple, matches, /*thread_fun,*/  timer, ISTupleR);
+        match_single_tuple(samList.t_windows->R_Window, tuple, matches, /*thread_fun,*/  timer, ISTupleR, out);
     }
     // Compute estimation result
     long estimation_result = 0;

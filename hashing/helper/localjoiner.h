@@ -146,7 +146,8 @@ public:
     void keep_tuple_single(tuple_t *tmp_rel, const int outerPtr, tuple_t *tuple, int fat_tuple_size);
 
     void join_tuple_single(int32_t tid, tuple_t *tmp_rel, int *outerPtr, tuple_t *tuple, int fat_tuple_size,
-                           int64_t *matches, T_TIMER *timer, t_pmj *pPmj, bool IStuple_R);
+                           int64_t *matches,
+                           T_TIMER *timer, t_pmj *pPmj, bool IStuple_R, chainedtuplebuffer_t *pChainedtuplebuffer);
 };
 
 class SHJJoiner : public baseJoiner {

@@ -27,21 +27,21 @@
 #include "../utils/task_queue.h"         /* task_queue_* */
 #include "../utils/cpu_mapping.h"        /* get_cpu_id */
 
-#ifdef PERF_COUNTERS
-#include "perf_counters.h"      /* PCM_x */
-#endif
 
 #include "../utils/barrier.h"            /* pthread_barrier_* */
 #include <sched.h>
 //#include "../utils/affinity.h"           /* pthread_attr_setaffinity_np */
 #include "../utils/generator.h"          /* numa_localize() */
 #include "../timer/t_timer.h" /* startTimer, stopTimer */
+#include "../utils/perf_counters.h"
 #include <immintrin.h>
 #include <algorithm>
 
 
 #ifdef JOIN_RESULT_MATERIALIZE
-#include "tuple_buffer.h"       /* for materialization */
+
+#include "../utils/tuple_buffer.h"       /* for materialization */
+
 #endif
 
 /** \internal */
@@ -323,7 +323,7 @@ bucket_chaining_join(const relation_t *const R,
     const uint32_t numS = S->num_tuples;
 
 #ifdef JOIN_RESULT_MATERIALIZE
-    chainedtuplebuffer_t * chainedbuf = (chainedtuplebuffer_t *) output;
+    chainedtuplebuffer_t *chainedbuf = (chainedtuplebuffer_t *) output;
 #endif
     /* Disable the following loop for no-probe for the break-down experiments */
     /* PROBE-LOOP */
@@ -336,13 +336,11 @@ bucket_chaining_join(const relation_t *const R,
 
 #ifdef JOIN_RESULT_MATERIALIZE
                 /* copy to the result buffer, we skip it */
-                tuple_t * joinres = cb_next_writepos(chainedbuf);
-                joinres->key      = Rtuples[hit-1].payload; /* R-rid */
-                joinres->payload  = Stuples[i].payload;     /* S-rid */
+                tuple_t *joinres = cb_next_writepos(chainedbuf);
+                joinres->key = Stuples[i].key;
+                joinres->payloadID = Stuples[i].payloadID;
 #endif
                 matches++;
-//                printf("no dummy");
-                DUMMY()
 #ifndef NO_TIMING
                 END_PROGRESSIVE_MEASURE(Stuples[i].payloadID, (timer), false)//assume S as the input tuple.
 #endif
@@ -1366,7 +1364,7 @@ prj_thread(void *param) {
     SYNC_GLOBAL_STOP(&args->globaltimer->sync4, my_tid);
 
 #ifndef NO_TIMING
-    if(args->tid==0) {
+    if (args->tid == 0) {
         END_MEASURE_PARTITION((args->timer));/* partitioning finished */
     }
 //    BEGIN_MEASURE_BUILD( (args->timer) )
@@ -1384,13 +1382,13 @@ prj_thread(void *param) {
 #endif
 
 #ifdef JOIN_RESULT_MATERIALIZE
-    chainedtuplebuffer_t * chainedbuf = chainedtuplebuffer_init();
+    chainedtuplebuffer_t *chainedbuf = chainedtuplebuffer_init();
 #else
     void *chainedbuf = NULL;
 #endif
 
 #ifndef NO_TIMING
-    if(args->tid==0) {
+    if (args->tid == 0) {
         BEGIN_MEASURE_JOIN_ACC(args->timer)
     }
 #endif
@@ -1407,7 +1405,7 @@ prj_thread(void *param) {
 #ifdef JOIN_RESULT_MATERIALIZE
     args->threadresult->nresults = results;
     args->threadresult->threadid = my_tid;
-    args->threadresult->results  = (void *) chainedbuf;
+    args->threadresult->results = (void *) chainedbuf;
 #endif
 
     /* global finish time */
@@ -1415,21 +1413,22 @@ prj_thread(void *param) {
 
 #ifndef NO_TIMING
     /* Actually with this setup we're not timing build */
-//    END_MEASURE_BUILD(( args->timer) )
-    END_MEASURE_JOIN_ACC(args->timer)
-    END_MEASURE(args->timer)
+    if (my_tid == 0) {
+        END_MEASURE_JOIN_ACC(args->timer)
+        END_MEASURE(args->timer)
+    }
 #endif
 
 #ifdef PERF_COUNTERS
-    if(my_tid == 0) {
-        PCM_stop();
-        PCM_log("=========== Build+Probe profiling results =========\n");
-        PCM_printResults();
-        PCM_log("===================================================\n");
-        PCM_cleanup();
-    }
-    /* Just to make sure we get consistent performance numbers */
-    BARRIER_ARRIVE(args->barrier, rv);
+        if(my_tid == 0) {
+            PCM_stop();
+            PCM_log("=========== Build+Probe profiling results =========\n");
+            PCM_printResults();
+            PCM_log("===================================================\n");
+            PCM_cleanup();
+        }
+        /* Just to make sure we get consistent performance numbers */
+        BARRIER_ARRIVE(args->barrier, rv);
 #endif
 
     DEBUGMSG("Thread %d exit, I have finished processing %ld\n", args->my_tid, args->result)
@@ -1769,7 +1768,7 @@ RJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_si
     }
 
 #ifdef JOIN_RESULT_MATERIALIZE
-    chainedtuplebuffer_t * chainedbuf = chainedtuplebuffer_init();
+    chainedtuplebuffer_t *chainedbuf = chainedtuplebuffer_init();
 #else
     void *chainedbuf = NULL;
 #endif
@@ -1801,10 +1800,10 @@ RJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_si
     }
 
 #ifdef JOIN_RESULT_MATERIALIZE
-    threadresult_t * thrres = &(joinresult->resultlist[0]);/* single-thread */
+    threadresult_t *thrres = &(joinresult->resultlist[0]);/* single-thread */
     thrres->nresults = result;
     thrres->threadid = 0;
-    thrres->results  = (void *) chainedbuf;
+    thrres->results = (void *) chainedbuf;
 #endif
 
 #ifndef NO_TIMING

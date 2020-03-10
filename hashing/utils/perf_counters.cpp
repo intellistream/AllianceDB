@@ -183,6 +183,8 @@ PCM_printResults()
            << getIPC(before_state, after_state) << endl;
 
     if(numEvents == 0){
+        (*out) << "L2Hit "
+               << getL2CacheHits(before_state, after_state) << endl;
         (*out) << "L2Misses "
                << getL2CacheMisses(before_state, after_state) << endl;
         (*out) << "L3Misses "

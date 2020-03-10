@@ -20,7 +20,7 @@
 #define ALLIANCEDB_JOINCOMMON_H
 
 //#define DEBUG
-
+#define JOIN_MATERIALIZE
 #include <stdint.h>
 #include <stdlib.h>             /* posix_memalign, EXIT_FAILURE */
 #include <sys/time.h>           /* gettimeofday */

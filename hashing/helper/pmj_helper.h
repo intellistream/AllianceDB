@@ -89,27 +89,19 @@ struct sweepArea {
         sx.push_back(tuple);
     }
 
-    void query(const tuple_t *tuple, int64_t *matches, T_TIMER *timer, bool ISTupleR) {
-
-//        iterator<const tuple_t *>  marker = NULL;
-//        for (auto it = sx.begin(); it != sx.end(); ++it) {
-//            //perform join.
-//            if (EqualPredicate(it.operator*(), tuple)) {
-//                (*matches)++;
-//#ifdef MEASURE
-//                END_PROGRESSIVE_MEASURE((*timer))
-//#endif
-//                if (marker == NULL)
-//                    marker = it;
-//            }
-//        }
-//        sx.erase(sx.begin(), ++marker);
+    void query(const tuple_t *tuple, int64_t *matches, T_TIMER *timer, bool ISTupleR,
+               chainedtuplebuffer_t *chainedbuf) {
         for (auto it = sx.begin(); it != sx.end();) {
             if (LessPredicate(it.operator*(), tuple)) {  //clean elements that are less than the current element.
                 it = sx.erase(it);
             } else {  //perform join.
                 if (EqualPredicate(it.operator*(), tuple)) {
                     (*matches)++;
+#ifdef JOIN_RESULT_MATERIALIZE
+                    tuple_t *joinres = cb_next_writepos(chainedbuf);
+                    joinres->key = tuple->key;
+                    joinres->payloadID = tuple->payloadID;
+#endif
 #ifndef NO_TIMING
                     END_PROGRESSIVE_MEASURE(tuple->payloadID, (timer), ISTupleR)
 #endif
@@ -122,14 +114,14 @@ struct sweepArea {
 
 
 void sorting_phase(int32_t tid, tuple_t *inptrR, int sizeR, tuple_t *inptrS, int sizeS, int64_t *matches,
-                   std::vector<run> *Q, tuple_t *outputR, tuple_t *outputS, T_TIMER *timer);
+                   std::vector<run> *Q, tuple_t *outputR, tuple_t *outputS, T_TIMER *timer, chainedtuplebuffer_t *chainedbuf);
 
 void sorting_phase(int32_t tid, const relation_t *rel_R, const relation_t *rel_S, int sizeR, int sizeS,
                    int progressive_stepR, int progressive_stepS, int *i, int *j, int64_t *matches, std::vector<run> *Q,
                    tuple_t *outptrR, tuple_t *outptrS,
-                   T_TIMER *timer);
+                   T_TIMER *timer, chainedtuplebuffer_t *chainedbuf);
 
-void merging_phase(int64_t *matches, std::vector<run> *Q, T_TIMER *timer);
+void merging_phase(int64_t *matches, std::vector<run> *Q, T_TIMER *timer, chainedtuplebuffer_t *chainedbuf);
 
 
 #endif //ALLIANCEDB_PMJ_HELPER_H

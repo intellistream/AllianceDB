@@ -204,5 +204,15 @@ benchmark(const param_t cmd_params) {
 
 //    results = join_from_file(cmd_params, cmd_params.loadfileR, cmd_params.loadfileS,
 //            cmd_params.rkey, cmd_params.skey, cmd_params.r_size, cmd_params.s_size);
+
+
+#if (defined(PERSIST_RELATIONS) && defined(JOIN_RESULT_MATERIALIZE))
+    printf("[INFO ] Persisting the join result to \"Out.tbl\" ...\n");
+    write_result_relation(results, "Out.tbl");
+#endif
+
+#ifdef JOIN_RESULT_MATERIALIZE
+    free(results->resultlist);
+#endif
 }
 
