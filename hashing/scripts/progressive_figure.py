@@ -6,6 +6,7 @@ from math import ceil, floor
 import matplotlib
 import matplotlib as mpl
 from matplotlib.ticker import FuncFormatter, LinearLocator
+from numpy import double
 
 mpl.use('Agg')
 
@@ -74,7 +75,7 @@ def ReadFile(S, id):
     read = f.readlines()
     for x in read:
         if cnt % S == 0:
-            value = int(x.strip("\n"))
+            value = double(x.strip("\n"))
             col1.append(value)
             cnt1 += 1
             if (value > maxts):
@@ -86,7 +87,7 @@ def ReadFile(S, id):
     read = f.readlines()
     for x in read:
         if cnt % S == 0:
-            value = int(x.strip("\n"))
+            value = double(x.strip("\n"))
             col2.append(value)
             cnt2 += 1
             if (value > maxts):
@@ -98,7 +99,7 @@ def ReadFile(S, id):
     read = f.readlines()
     for x in read:
         if cnt % S == 0:
-            value = int(x.strip("\n"))
+            value = double(x.strip("\n"))
             col3.append(value)
             cnt3 += 1
             if (value > maxts):
@@ -110,7 +111,7 @@ def ReadFile(S, id):
     read = f.readlines()
     for x in read:
         if cnt % S == 0:
-            value = int(x.strip("\n"))
+            value = double(x.strip("\n"))
             col4.append(value)
             cnt4 += 1
             if (value > maxts):
@@ -122,7 +123,7 @@ def ReadFile(S, id):
     read = f.readlines()
     for x in read:
         if cnt % S == 0:
-            value = int(x.strip("\n"))
+            value = double(x.strip("\n"))
             col5.append(value)
             cnt5 += 1
             if (value > maxts):
@@ -134,7 +135,7 @@ def ReadFile(S, id):
     read = f.readlines()
     for x in read:
         if cnt % S == 0:
-            value = int(x.strip("\n"))
+            value = double(x.strip("\n"))
             col6.append(value)
             cnt6 += 1
             if (value > maxts):
@@ -146,19 +147,20 @@ def ReadFile(S, id):
     read = f.readlines()
     for x in read:
         if cnt % S == 0:
-            value = int(x.strip("\n"))
+            value = double(x.strip("\n"))
             col7.append(value)
             cnt7 += 1
             if (value > maxts):
                 maxts = value
         cnt += 1
+
     print(cnt7)
     f = open("/data1/xtra/results/timestamps/PMJ_JBCR_NP_{}.txt".format(id), "r")
     cnt = 0
     read = f.readlines()
     for x in read:
         if cnt % S == 0:
-            value = int(x.strip("\n"))
+            value = double(x.strip("\n"))
             col8.append(value)
             cnt8 += 1
             if (value > maxts):
@@ -319,7 +321,7 @@ if __name__ == "__main__":
     #     legend = True
     DrawFigure(col0, lines, legend_labels,
                'fraction of matched results', 'time (msec)', 0, 0.5,
-               1, int(ceil(maxts / 100.0)) * 100,
+               1, double(ceil(maxts / 100.0)) * 100,
                'progressive_figure{}'.format(id),
                legend)
     if id == 1:

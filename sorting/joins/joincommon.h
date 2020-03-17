@@ -174,7 +174,7 @@ struct arg_t {
     struct timeval start, end;
     uint64_t part, sort, mergedelta, merge, join;
     T_TIMER *timer;
-    milliseconds *startTS;
+    uint64_t *startTS;
 
 } __attribute__((aligned(CACHE_LINE_SIZE)));
 

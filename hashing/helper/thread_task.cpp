@@ -49,7 +49,7 @@ THREAD_TASK_NOSHUFFLE(void *param) {
     /* wait at a barrier until each thread started*/
     BARRIER_ARRIVE(args->barrier, lock)
     if (args->tid == 0)
-        *args->startTS = now();
+        *args->startTS = curtick();
     BARRIER_ARRIVE(args->barrier, lock)
 #ifndef NO_TIMING
     START_MEASURE((args->timer))
@@ -144,7 +144,7 @@ void
     /* wait at a barrier until each thread started*/
     BARRIER_ARRIVE(args->barrier, lock)
     if (args->tid == 0)
-        *args->startTS = now();
+        *args->startTS = curtick();
     BARRIER_ARRIVE(args->barrier, lock)
 
 #ifndef NO_TIMING

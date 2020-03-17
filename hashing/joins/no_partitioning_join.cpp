@@ -28,7 +28,6 @@
 #include "../utils/cpu_mapping.h"        /* get_cpu_id */
 
 
-
 #include "../utils/barrier.h"            /* pthread_barrier_* */
 //#include "../../utils/affinity.h"           /* pthread_attr_setaffinity_np */
 #include "../utils/generator.h"          /* numa_localize() */
@@ -38,7 +37,10 @@
 #include "../utils/perf_counters.h"
 
 #ifdef JOIN_RESULT_MATERIALIZE
+
 #include "../utils/tuple_buffer.h"       /* for materialization */
+#include "../timer/clock.h"
+
 #endif
 
 #ifndef BARRIER_ARRIVE
@@ -73,7 +75,7 @@ struct arg_t {
 //#endif
     int64_t result;
 
-    milliseconds *startTS;
+    uint64_t *startTS;
 };
 
 /** @} */
@@ -136,7 +138,7 @@ NPO_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_s
 #endif
 
 #ifdef JOIN_RESULT_MATERIALIZE
-    chainedtuplebuffer_t * chainedbuf = chainedtuplebuffer_init();
+    chainedtuplebuffer_t *chainedbuf = chainedtuplebuffer_init();
 #else
     void *chainedbuf = NULL;
 #endif
@@ -144,10 +146,10 @@ NPO_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_s
     result = probe_hashtable(ht, relS, chainedbuf, timer);
 
 #ifdef JOIN_RESULT_MATERIALIZE
-    threadresult_t * thrres = &(joinresult->resultlist[0]);/* single-thread */
+    threadresult_t *thrres = &(joinresult->resultlist[0]);/* single-thread */
     thrres->nresults = result;
     thrres->threadid = 0;
-    thrres->results  = (void *) chainedbuf;
+    thrres->results = (void *) chainedbuf;
 #endif
 
 #ifndef NO_TIMING
@@ -189,7 +191,7 @@ npo_thread(void *param) {
     BARRIER_ARRIVE(args->barrier, rv);
 #ifndef NO_TIMING
     if (args->tid == 0) {
-        *args->startTS = now();//assign the start timestamp
+        *args->startTS = curtick();//assign the start timestamp
         START_MEASURE((args->timer))
         BEGIN_MEASURE_BUILD((args->timer))/* build start */
     }
@@ -208,14 +210,14 @@ npo_thread(void *param) {
     /* wait at a barrier until each thread completes build phase */
     BARRIER_ARRIVE(args->barrier, rv)
 #ifdef PERF_COUNTERS
-        if(args->tid == 0){
-          PCM_stop();
-          PCM_log("========== Build phase profiling results ==========\n");
-          PCM_printResults();
-          PCM_start();
-        }
-        /* Just to make sure we get consistent performance numbers */
-        BARRIER_ARRIVE(args->barrier, rv);
+    if(args->tid == 0){
+      PCM_stop();
+      PCM_log("========== Build phase profiling results ==========\n");
+      PCM_printResults();
+      PCM_start();
+    }
+    /* Just to make sure we get consistent performance numbers */
+    BARRIER_ARRIVE(args->barrier, rv);
 #endif
 
 #ifndef NO_TIMING
@@ -225,7 +227,7 @@ npo_thread(void *param) {
 #endif
 
 #ifdef JOIN_RESULT_MATERIALIZE
-    chainedtuplebuffer_t * chainedbuf = chainedtuplebuffer_init();
+    chainedtuplebuffer_t *chainedbuf = chainedtuplebuffer_init();
 #else
 
     void *chainedbuf = NULL;
@@ -244,7 +246,7 @@ npo_thread(void *param) {
 #ifdef JOIN_RESULT_MATERIALIZE
     args->threadresult->nresults = args->result;
     args->threadresult->threadid = args->tid;
-    args->threadresult->results  = (void *) chainedbuf;
+    args->threadresult->results = (void *) chainedbuf;
 #endif
 
     /* wait at a barrier until each thread completes join phase */
@@ -297,7 +299,7 @@ void
 np_distribute(const relation_t *relR, const relation_t *relS, int nthreads, hashtable_t *ht, int32_t numR, int32_t numS,
               int32_t numRthr, int32_t numSthr, int i, int rv, cpu_set_t &set, arg_t *args, pthread_t *tid,
               pthread_attr_t &attr, barrier_t &barrier, const result_t *joinresult, T_TIMER *timer, int exp_id,
-              int group_size, milliseconds *startTS) {
+              int group_size, uint64_t *startTS) {
     for (i = 0; i < nthreads; i++) {
         int cpu_idx = get_cpu_id(i);
 
@@ -322,7 +324,7 @@ np_distribute(const relation_t *relR, const relation_t *relS, int nthreads, hash
             || (exp_id >= 54 && exp_id <= 57)) {//dataset=Rovio
             args[i].timer->record_gap = 1000;
         } else {
-            args[i].timer->record_gap = 1;
+            args[i].timer->record_gap = 10;
         }
 //         printf(" record_gap:%d\n", args[i].timer->record_gap);
 #endif
@@ -372,7 +374,7 @@ NPO(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size
     T_TIMER timer[nthreads];//every thread has its own timer.
 //#endif
 
-    chrono::milliseconds *startTS = new chrono::milliseconds();
+    uint64_t *startTS = new uint64_t();
     uint32_t nbuckets = (relR->num_tuples / BUCKET_SIZE);
     allocate_hashtable(&ht, nbuckets);
 
@@ -394,14 +396,23 @@ NPO(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size
     /* wait for threads to finish */
     for (i = 0; i < nthreads; i++) {
         pthread_join(tid[i], NULL);
+    }
+
+    //compute results.
+    for (i = 0; i < nthreads; i++) {
         result += args[i].result;
+        printf("Thread[%d], produces %ld outputs\n", i, args[i].result);
 #ifndef NO_TIMING
-        merge(args[i].timer, relR, relS, startTS);
+        merge(args[i].timer, relR, relS, startTS, window_size);
 #endif
     }
     joinresult->totalresults = result;
     joinresult->nthreads = nthreads;
-
+    // TODO: add a timer here, how to minus startTimer? Can I use t_timer.h
+    int64_t processingTime = curtick() - *startTS;
+#ifndef NO_TIMING
+    printf("With timing, Total processing time is: %f\n", processingTime / (2.1 * 1E6));//cycle to ms
+#endif
 #ifndef NO_TIMING
     /* now print the timing results: */
 

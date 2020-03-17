@@ -503,11 +503,11 @@ createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int32_t 
 
     rel->tuples = (tuple_t *) MALLOC(rel->num_tuples * sizeof(tuple_t));
 
-    relPl->ts = (milliseconds *) MALLOC(relPl->num_tuples * sizeof(tuple_t));
+    relPl->ts = (uint64_t *) MALLOC(relPl->num_tuples * sizeof(uint64_t));
 
     if (loadfile != NULL && loadfile != "") {
         /* load relation from file */
-        load_relation(rel, relPl, key, tsKey, loadfile, rel_size);
+        load_relation(rel, relPl, key, tsKey, loadfile, rel_size, partitions);
     } else if (cmd_params.kim) {
         // check params 1, window_size, 2. step_size, 3. interval, 4. distribution, 5. zipf factor, 6. nthreads
         switch (cmd_params.key_distribution) {

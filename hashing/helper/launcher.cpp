@@ -7,7 +7,7 @@
 
 void
 launch(int nthreads, relation_t *relR, relation_t *relS, t_param param, void *(*thread_fun)(void *),
-       milliseconds *startTS, milliseconds *joinStart) {
+       uint64_t *startTS, uint64_t *joinStart) {
     int i;
     int rv;
     cpu_set_t set;
@@ -46,7 +46,7 @@ launch(int nthreads, relation_t *relR, relation_t *relS, t_param param, void *(*
                 ) {//dataset=Rovio/DEBS
             param.args[i].joiner->timer->record_gap = 1000;
         } else {
-            param.args[i].joiner->timer->record_gap = 1;
+            param.args[i].joiner->timer->record_gap = 10;
         }
 //        printf("record_gap:%d\n", param.args[i].joiner->timer->record_gap);
 #endif
@@ -88,5 +88,5 @@ launch(int nthreads, relation_t *relR, relation_t *relS, t_param param, void *(*
         fflush(stdout);
     }
     // TODO: add a timer here, need to have global view?
-    *joinStart = now();
+    *joinStart = curtick();
 }

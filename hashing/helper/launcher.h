@@ -26,7 +26,7 @@
 #include "../joins/shj_struct.h"
 
 void
-launch(int nthreads, relation_t *relR, relation_t *relS, t_param param, void *(*thread_fun)(void *), milliseconds *startTS, milliseconds *joinStart);
+launch(int nthreads, relation_t *relR, relation_t *relS, t_param param, void *(*thread_fun)(void *), uint64_t *startTS, uint64_t *joinStart);
 
 #ifndef LAUNCH
 #define LAUNCH(nthreads, relR, relS, param, thread_fun, startTS, joinStart) \

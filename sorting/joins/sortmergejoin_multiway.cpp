@@ -146,7 +146,7 @@ sortmergejoin_multiway_thread(void *param) {
 
 #ifndef NO_TIMING
     if (args->tid == 0)
-        *args->startTS = now();//assign the start timestamp
+        *args->startTS = curtick();//assign the start timestamp
     START_MEASURE((args->timer))
 #endif
 

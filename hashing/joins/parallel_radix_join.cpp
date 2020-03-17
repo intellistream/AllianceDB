@@ -150,7 +150,7 @@ struct arg_t {
     int64_t totalR;
     int64_t totalS;
 
-    milliseconds *startTS;
+    uint64_t *startTS;
 
     task_queue_t **join_queue;
     task_queue_t **part_queue;
@@ -1068,7 +1068,7 @@ prj_thread(void *param) {
 
 #ifndef NO_TIMING
     if (args->tid == 0) {
-        *args->startTS = now();//assign the start timestamp
+        *args->startTS = curtick();//assign the start timestamp
         START_MEASURE((args->timer))
         BEGIN_MEASURE_PARTITION((args->timer))/* partitioning start */
     }
@@ -1528,7 +1528,7 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads,
 
     T_TIMER timer[nthreads];//every thread has its own timer.
 
-    chrono::milliseconds *startTS = new chrono::milliseconds();
+    uint64_t *startTS = new uint64_t();
 
     /* first assign chunks of relR & relS for each thread */
     numperthr[0] = relR->num_tuples / nthreads;
@@ -1548,7 +1548,7 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads,
             || (exp_id >= 54 && exp_id <= 57)) {//dataset=Rovio
             args[i].timer->record_gap = 1000;
         } else {
-            args[i].timer->record_gap = 1;
+            args[i].timer->record_gap = 10;
         }
 #endif
 
@@ -1590,13 +1590,25 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads,
     /* wait for threads to finish */
     for (i = 0; i < nthreads; i++) {
         pthread_join(tid[i], NULL);
+    }
+
+    //compute results.
+    for (i = 0; i < nthreads; i++) {
         result += args[i].result;
+
+        printf("Thread%d, produces %ld outputs\n", i, args[i].result);
 #ifndef NO_TIMING
-        merge(args[i].timer, relR, relS, startTS);
+        merge(args[i].timer, relR, relS, startTS, window_size);
 #endif
     }
     joinresult->totalresults = result;
     joinresult->nthreads = nthreads;
+
+    // TODO: add a timer here, how to minus startTimer? Can I use t_timer.h
+    int64_t processingTime = curtick() - *startTS;
+#ifndef NO_TIMING
+    printf("With timing, Total processing time is: %f\n", processingTime / (2.1 * 1E6));//cycle to ms
+#endif
 
 #ifndef NO_TIMING
 

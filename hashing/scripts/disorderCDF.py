@@ -7,6 +7,7 @@ import matplotlib
 import matplotlib as mpl
 import numpy
 from matplotlib.ticker import LinearLocator
+from numpy import double
 
 mpl.use('Agg')
 
@@ -84,7 +85,7 @@ def ReadFile(S, id):
     read = f.readlines()
     for x in read:
         if cnt % S == 0:
-            value = int(x.strip("\n"))
+            value = double(x.strip("\n"))
             col1.append(value)
             cnt1 += 1
             if (value > maxgap):
@@ -98,7 +99,7 @@ def ReadFile(S, id):
     read = f.readlines()
     for x in read:
         if cnt % S == 0:
-            value = int(x.strip("\n"))
+            value = double(x.strip("\n"))
             col2.append(value)
             cnt2 += 1
             if (value > maxgap):
@@ -112,7 +113,7 @@ def ReadFile(S, id):
     read = f.readlines()
     for x in read:
         if cnt % S == 0:
-            value = int(x.strip("\n"))
+            value = double(x.strip("\n"))
             col3.append(value)
             cnt3 += 1
             if (value > maxgap):
@@ -126,7 +127,7 @@ def ReadFile(S, id):
     read = f.readlines()
     for x in read:
         if cnt % S == 0:
-            value = int(x.strip("\n"))
+            value = double(x.strip("\n"))
             col4.append(value)
             cnt4 += 1
             if (value > maxgap):
@@ -140,7 +141,7 @@ def ReadFile(S, id):
     read = f.readlines()
     for x in read:
         if cnt % S == 0:
-            value = int(x.strip("\n"))
+            value = double(x.strip("\n"))
             col5.append(value)
             cnt5 += 1
             if (value > maxgap):
@@ -154,7 +155,7 @@ def ReadFile(S, id):
     read = f.readlines()
     for x in read:
         if cnt % S == 0:
-            value = int(x.strip("\n"))
+            value = double(x.strip("\n"))
             col6.append(value)
             cnt6 += 1
             if (value > maxgap):
@@ -168,7 +169,7 @@ def ReadFile(S, id):
     read = f.readlines()
     for x in read:
         if cnt % S == 0:
-            value = int(x.strip("\n"))
+            value = double(x.strip("\n"))
             col7.append(value)
             cnt7 += 1
             if (value > maxgap):
@@ -182,7 +183,7 @@ def ReadFile(S, id):
     read = f.readlines()
     for x in read:
         if cnt % S == 0:
-            value = int(x.strip("\n"))
+            value = double(x.strip("\n"))
             col8.append(value)
             cnt8 += 1
             if (value > maxgap):

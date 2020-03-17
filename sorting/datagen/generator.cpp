@@ -25,10 +25,37 @@
 /* return a random number in range [0,N] */
 #define RAND_RANGE(N) ((double)rand() / ((double)RAND_MAX + 1) * (N))
 #define RAND_RANGE48(N, STATE) ((double)nrand48(STATE)/((double)RAND_MAX+1)*(N))
+#define FREE(X, SZ) free(X)
 
+#include <iostream>
+#include <sstream>
+#include <vector>
+#include <chrono>
+#include <assert.h>
+
+using namespace std;
+using namespace std::chrono;
+
+#ifndef BARRIER_ARRIVE
+/** barrier wait macro */
+#define BARRIER_ARRIVE(B, RV)                           \
+    RV = pthread_barrier_wait(B);                       \
+    if(RV !=0 && RV != PTHREAD_BARRIER_SERIAL_THREAD){  \
+        printf("Couldn't wait on barrier\n");           \
+        exit(EXIT_FAILURE);                             \
+    }
+#endif
+
+/* Uncomment the following to persist input relations to disk. */
+//#define PERSIST_RELATIONS 1
+
+/** An experimental feature to allocate input relations numa-local */
+int numalocalize;
+int nthreads;
 
 static int seeded = 0;
 static unsigned int seedValue;
+
 
 void
 seed_generator(unsigned int seed) {
@@ -47,95 +74,6 @@ check_seed() {
     }
 }
 
-inline bool last_thread(int i, int nthreads) {
-    return i == (nthreads - 1);
-}
-
-void
-add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_size, int interval, const int partitions) {
-    int ts = 0;
-
-    int numthr = relation->num_tuples / partitions;//replicate R, partition S.
-
-    int *tid_offsets = new int[partitions];
-    int *tid_start_idx = new int[partitions];
-    int *tid_end_idx = new int[partitions];
-
-    for (auto partition = 0; partition < partitions; partition++) {
-        tid_offsets[partition] = 0;
-        tid_start_idx[partition] = numthr * partition;
-        tid_end_idx[partition] = (last_thread(partition, partitions)) ? relation->num_tuples : numthr * (partition + 1);
-        DEBUGMSG("partition %d start idx: %d end idx: %d\n", partition, tid_start_idx[partition], tid_end_idx[partition]);
-    }
-
-    for (auto i = 0; i < relation->num_tuples; i++) {
-        if (i % (step_size) == 0) {
-            ts += interval;
-        }
-        // round robin to assign ts to each thread.
-        auto partition = i % partitions;
-        if (tid_start_idx[partition] + tid_offsets[partition] == tid_end_idx[partition]) {
-            partition = partitions - 1; // if reach the maximum size, append the tuple to the last partition
-        }
-        // record cur index in partition
-        int cur_index = tid_start_idx[partition] + tid_offsets[partition];
-        relationPayload->ts[cur_index] = (milliseconds) ts;
-        tid_offsets[partition]++;
-    }
-
-#ifdef DEBUG
-    for (auto i = 0; i < relation->num_tuples; i++) {
-        printf("ts: %ld\n", relationPayload->ts[i].count());
-    }
-#endif
-//    assert(interval == 0 || ts == window_size);
-}
-
-
-/**
- * @param numThr
- * @param relation
- * @param relationPayload
- * @param window_size
- * @param zipf_param
- */
-void add_zipf_ts(relation_t *relation, relation_payload_t *relationPayload, int window_size, const double zipf_param,
-                 int partitions) {
-
-    int small = 0;
-    int32_t *timestamps = gen_zipf_ts(relation->num_tuples, window_size, zipf_param);
-
-    int numthr = relation->num_tuples / partitions;//replicate R, partition S.
-
-    int *tid_offsets = new int[partitions];
-    int *tid_start_idx = new int[partitions];
-    int *tid_end_idx = new int[partitions];
-
-    for (auto partition = 0; partition < partitions; partition++) {
-        tid_offsets[partition] = 0;
-        tid_start_idx[partition] = numthr * partition;
-        tid_end_idx[partition] = (last_thread(partition, partitions)) ? relation->num_tuples : numthr * (partition + 1);
-    }
-
-    for (auto i = 0; i < relation->num_tuples; i++) {
-        // round robin to assign ts to each thread.
-        int partition = i % partitions;
-        if (tid_start_idx[partition] + tid_offsets[partition] == tid_end_idx[partition]) {
-            partition = partitions - 1; // if reach the maximum size, append the tuple to the last partition
-        }
-
-        // record cur index in partition
-        int cur_index = tid_start_idx[partition] + tid_offsets[partition];
-        relationPayload->ts[cur_index] = (milliseconds) timestamps[i];
-        tid_offsets[partition]++;
-
-        if (relationPayload->ts[i].count() < 0.25 * window_size) {
-            small++;
-        }
-        DEBUGMSG("%d, %ld\n", relation->tuples[i].key, relationPayload->ts[i].count());
-    }
-    printf("small ts %f\n", (double) small / relation->num_tuples);
-}
 
 /**
  * Shuffle tuples of the relation using Knuth shuffle.
@@ -164,6 +102,135 @@ knuth_shuffle48(relation_t *relation, unsigned short *state) {
     }
 }
 
+inline bool last_thread(int i, int nthreads) {
+    return i == (nthreads - 1);
+}
+
+// TODO: going ot
+void ts_shuffle(relation_t *relation, relation_payload_t *relationPayload, uint32_t partitions) {
+    int numthr = relation->num_tuples / partitions;//replicate R, partition S.
+
+    int *tid_offsets = new int[partitions];
+    int *tid_start_idx = new int[partitions];
+    int *tid_end_idx = new int[partitions];
+
+    for (auto partition = 0; partition < partitions; partition++) {
+        tid_offsets[partition] = 0;
+        tid_start_idx[partition] = numthr * partition;
+        tid_end_idx[partition] = (last_thread(partition, partitions)) ? relation->num_tuples : numthr * (partition + 1);
+
+        printf("partition %d start idx: %d end idx: %d\n", partition, tid_start_idx[partition], tid_end_idx[partition]);
+    }
+
+    for (auto i = 0; i < relation->num_tuples; i++) {
+
+    }
+}
+
+void
+add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_size, int interval, uint32_t partitions) {
+    int ts = 0;
+
+    int numthr = relation->num_tuples / partitions;//replicate R, partition S.
+
+    int *tid_offsets = new int[partitions];
+    int *tid_start_idx = new int[partitions];
+    int *tid_end_idx = new int[partitions];
+
+    for (auto partition = 0; partition < partitions; partition++) {
+        tid_offsets[partition] = 0;
+        tid_start_idx[partition] = numthr * partition;
+        tid_end_idx[partition] = (last_thread(partition, partitions)) ? relation->num_tuples : numthr * (partition + 1);
+
+        DEBUGMSG("partition %d start idx: %d end idx: %d\n", partition, tid_start_idx[partition],
+                 tid_end_idx[partition]);
+    }
+
+    for (auto i = 0; i < relation->num_tuples; i++) {
+        if (i % (step_size) == 0) {
+            ts += interval * 2.1 * 1E6;//2.1GHz, 1 milliseconds to ticks.
+        }
+        // round robin to assign ts to each thread.
+        auto partition = i % partitions;
+        if (tid_start_idx[partition] + tid_offsets[partition] == tid_end_idx[partition]) {
+            partition = partitions - 1; // if reach the maximum size, append the tuple to the last partition
+        }
+        // record cur index in partition
+        int cur_index = tid_start_idx[partition] + tid_offsets[partition];
+        relationPayload->ts[cur_index] = (uint64_t) ts;
+        tid_offsets[partition]++;
+    }
+#ifdef DEBUG
+    for (auto i = 0; i < relation->num_tuples; i++) {
+        printf("ts: %ld\n", relationPayload->ts[i].count());
+    }
+#endif
+//    assert(interval == 0 || ts == window_size);
+}
+
+/**
+ * @param numThr
+ * @param relation
+ * @param relationPayload
+ * @param window_size
+ * @param zipf_param
+ */
+void add_zipf_ts(relation_t *relation, relation_payload_t *relationPayload, int window_size, const double zipf_param,
+                 uint32_t partitions) {
+
+    int small = 0;
+    int32_t *timestamps = gen_zipf_ts(relation->num_tuples, window_size, zipf_param);
+
+    int numthr = relation->num_tuples / partitions;//replicate R, partition S.
+
+    int *tid_offsets = new int[partitions];
+    int *tid_start_idx = new int[partitions];
+    int *tid_end_idx = new int[partitions];
+
+    for (auto partition = 0; partition < partitions; partition++) {
+        tid_offsets[partition] = 0;
+        tid_start_idx[partition] = numthr * partition;
+        tid_end_idx[partition] = (last_thread(partition, partitions)) ? relation->num_tuples : numthr * (partition + 1);
+    }
+
+    for (auto i = 0; i < relation->num_tuples; i++) {
+        // round robin to assign ts to each thread.
+        int partition = i % partitions;
+        if (tid_start_idx[partition] + tid_offsets[partition] == tid_end_idx[partition]) {
+            partition = partitions - 1; // if reach the maximum size, append the tuple to the last partition
+        }
+
+        // record cur index in partition
+        int cur_index = tid_start_idx[partition] + tid_offsets[partition];
+        relationPayload->ts[cur_index] = (uint64_t) timestamps[i] * 2.1 * 1E6;//ms to cycle
+        tid_offsets[partition]++;
+
+        if (relationPayload->ts[i] < 0.25 * window_size) {
+            small++;
+        }
+        DEBUGMSG("%d, %ld\n", relation->tuples[i].key, relationPayload->ts[i].count());
+    }
+    printf("small ts %f\n", (double) small / relation->num_tuples);
+}
+
+/**
+ * @param relation relation
+ * @param step_size number of tuples should be generated each interval
+ * @param interval interval of each timestamp generate step
+ * @param numThr numeber of threads
+ */
+void
+random_gen_with_ts(relation_t *rel, relation_payload_t *relPl, int64_t maxid, int step_size, int interval, int numThr) {
+    uint64_t i;
+
+    for (i = 0; i < rel->num_tuples; i++) {
+        rel->tuples[i].key = RAND_RANGE(maxid);
+        rel->tuples[i].payloadID = i;//payload is simply the id of the tuple.
+    }
+
+    add_ts(rel, relPl, step_size, interval, 0);
+}
+
 /**
  * Generate unique tuple IDs with Knuth shuffling
  * relation must have been allocated
@@ -174,10 +241,14 @@ random_unique_gen(relation_t *rel) {
 
     for (i = 0; i < rel->num_tuples; i++) {
         rel->tuples[i].key = (i + 1);
+        rel->tuples[i].payloadID = i;
     }
 
     /* randomly shuffle elements */
     knuth_shuffle(rel);
+
+    // timestamp append on shuffled data
+
 }
 
 struct create_arg_t {
@@ -189,25 +260,9 @@ struct create_arg_t {
     volatile void *locks;
     pthread_barrier_t *barrier;
     uint64_t offset;
-
 };
 
 typedef struct create_arg_t create_arg_t;
-
-
-/** NaN masks */
-static int64_t NaNExpMask = (0x7FFL << 52U);
-static int64_t NaNlowbitclear = ~(1L << 52U);
-
-/** Avoid NaN in values, since tuples are treated as double for AVX instructions */
-void
-avoid_NaN(int64_t *data) {
-    /* avoid NaN in values */
-    int64_t *bitpattern = (int64_t *) data;
-    if (((*bitpattern) & NaNExpMask) == NaNExpMask) {
-        *bitpattern &= NaNlowbitclear;
-    }
-}
 
 /**
  * Create random unique keys starting from firstkey
@@ -231,9 +286,10 @@ random_unique_gen_thread(void *args) {
 
     for (i = 0; i < rel->num_tuples; i++) {
         rel->tuples[i].key = firstkey;
-//        rel->tuples[i].payload = randstart + i;
         rel->tuples[i].payloadID = firstkey;
-
+        if (rel->tuples[i].payloadID < 0) {
+            printf("Something is wrong.");
+        }
         if (firstkey == maxid)
             firstkey = 0;
 
@@ -285,12 +341,21 @@ numa_localize_thread(void *args) {
     return 0;
 }
 
+
+/**
+ * Read a 2-column relation from a file, rel is already allocated (preferably
+ * NUMA-aware).
+ */
+void
+read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t tsKey, char *filename,
+              uint32_t partitions);
+
 /**
  * Write relation to a file.
  */
 void
 write_relation(relation_t *rel, char *filename) {
-    FILE *fp = fopen(filename, "a");
+    FILE *fp = fopen(filename, "w");
     uint64_t i;
 
     fprintf(fp, "#KEY, VAL\n");
@@ -312,21 +377,20 @@ random_gen(relation_t *rel, const int64_t maxid) {
 
     for (i = 0; i < rel->num_tuples; i++) {
         rel->tuples[i].key = RAND_RANGE(maxid);
-        rel->tuples[i].payloadID = rel->num_tuples - i;
-
-        /* avoid NaN in values */
-        avoid_NaN((int64_t *) &(rel->tuples[i]));
+        rel->tuples[i].payloadID = i;//payload is simply the id of the tuple.
     }
 }
 
 int
 create_relation_pk(relation_t *relation, int64_t num_tuples) {
+
     check_seed();
 
     relation->num_tuples = num_tuples;
+    relation->tuples = (tuple_t *) MALLOC(relation->num_tuples * sizeof(tuple_t));
 
     if (!relation->tuples) {
-        perror("memory must be allocated first");
+        perror("out of memory");
         return -1;
     }
 
@@ -377,7 +441,6 @@ parallel_create_relation(relation_t *relation, uint64_t num_tuples,
         ntuples_perthr = num_tuples / nthreads;
 
     ntuples_lastthr = num_tuples - ntuples_perthr * (nthreads - 1);
-
     pthread_attr_init(&attr);
 
     rv = pthread_barrier_init(&barrier, NULL, nthreads);
@@ -391,11 +454,13 @@ parallel_create_relation(relation_t *relation, uint64_t num_tuples,
 
     for (i = 0; i < nthreads; i++) {
         int cpu_idx = get_cpu_id(i);
-
         CPU_ZERO(&set);
         CPU_SET(cpu_idx, &set);
-        pthread_attr_setaffinity_np(&attr, sizeof(cpu_set_t), &set);
-
+        rv = pthread_attr_setaffinity_np(&attr, sizeof(cpu_set_t), &set);
+        if (rv) {
+            fprintf(stderr, "[ERROR] set affinity error return code is %d\n", rv);
+            exit(-1);
+        }
         args[i].firstkey = (offset + 1) % maxid;
         args[i].maxid = maxid;
         args[i].rel.tuples = relation->tuples + offset;
@@ -408,8 +473,8 @@ parallel_create_relation(relation_t *relation, uint64_t num_tuples,
 
         offset += ntuples_perthr;
 
-        rv = pthread_create(&tid[i], &attr, random_unique_gen_thread,
-                            (void *) &args[i]);
+        rv |= pthread_create(&tid[i], &attr, random_unique_gen_thread,
+                             (void *) &args[i]);
         if (rv) {
             fprintf(stderr, "[ERROR] pthread_create() return code is %d\n", rv);
             exit(-1);
@@ -428,319 +493,11 @@ parallel_create_relation(relation_t *relation, uint64_t num_tuples,
     pthread_barrier_destroy(&barrier);
 
 #ifdef PERSIST_RELATIONS
+    fprintf(stdout, "writing out relations\n");
     char * const tables[] = {"R.tbl", "S.tbl"};
     static int rs = 0;
     write_relation(relation, tables[(rs++)%2]);
 #endif
-
-    return 0;
-}
-
-int
-numa_localize(tuple_t *relation, int64_t num_tuples, uint32_t nthreads) {
-    uint32_t i, rv;
-    uint64_t offset = 0;
-
-    /* we need aligned allocation of items */
-    create_arg_t args[nthreads];
-    pthread_t tid[nthreads];
-    cpu_set_t set;
-    pthread_attr_t attr;
-
-    unsigned int pagesize;
-    unsigned int npages;
-    unsigned int npages_perthr;
-    uint64_t ntuples_perthr;
-    uint64_t ntuples_lastthr;
-
-    pagesize = getpagesize();
-    npages = (num_tuples * sizeof(tuple_t)) / pagesize + 1;
-    npages_perthr = npages / nthreads;
-    ntuples_perthr = npages_perthr * (pagesize / sizeof(tuple_t));
-    ntuples_lastthr = num_tuples - ntuples_perthr * (nthreads - 1);
-
-    pthread_attr_init(&attr);
-
-    for (i = 0; i < nthreads; i++) {
-        int cpu_idx = get_cpu_id(i);
-
-        CPU_ZERO(&set);
-        CPU_SET(cpu_idx, &set);
-        pthread_attr_setaffinity_np(&attr, sizeof(cpu_set_t), &set);
-
-        args[i].firstkey = offset + 1;
-        args[i].rel.tuples = relation + offset;
-        args[i].rel.num_tuples = (i == nthreads - 1) ? ntuples_lastthr
-                                                     : ntuples_perthr;
-        offset += ntuples_perthr;
-
-        rv = pthread_create(&tid[i], &attr, numa_localize_thread,
-                            (void *) &args[i]);
-        if (rv) {
-            fprintf(stderr, "[ERROR] pthread_create() return code is %d\n", rv);
-            exit(-1);
-        }
-    }
-
-    for (i = 0; i < nthreads; i++) {
-        pthread_join(tid[i], NULL);
-    }
-
-    return 0;
-}
-
-
-int
-create_relation_fk(relation_t *relation, int64_t num_tuples, const int64_t maxid) {
-    int32_t i, iters;
-    int64_t remainder;
-    relation_t tmp;
-
-    check_seed();
-
-    relation->num_tuples = num_tuples;
-
-    if (!relation->tuples) {
-        perror("memory must be allocated first");
-        return -1;
-    }
-
-    /* alternative generation method */
-    iters = num_tuples / maxid;
-    for (i = 0; i < iters; i++) {
-        tmp.num_tuples = maxid;
-        tmp.tuples = relation->tuples + maxid * i;
-        random_unique_gen(&tmp);
-    }
-
-    /* if num_tuples is not an exact multiple of maxid */
-    remainder = num_tuples % maxid;
-    if (remainder > 0) {
-        tmp.num_tuples = remainder;
-        tmp.tuples = relation->tuples + maxid * iters;
-        random_unique_gen(&tmp);
-    }
-
-#ifdef PERSIST_RELATIONS
-    write_relation(relation, "S.tbl");
-#endif
-
-    return 0;
-}
-
-/**
- * Create a foreign-key relation using the given primary-key relation and
- * foreign-key relation size. Keys in pkrel is randomly distributed in the full
- * integer range.
- *
- * @param fkrel [output] foreign-key relation
- * @param pkrel [input] primary-key relation
- * @param num_tuples
- *
- * @return
- */
-int
-create_relation_fk_from_pk(relation_t *fkrel, relation_t *pkrel,
-                           int64_t num_tuples) {
-    int i, iters;
-    int64_t remainder;
-
-    if (!fkrel->tuples) {
-        perror("memory must be allocated first");
-        return -1;
-    }
-
-    fkrel->num_tuples = num_tuples;
-
-    /* alternative generation method */
-    iters = num_tuples / pkrel->num_tuples;
-    for (i = 0; i < iters; i++) {
-        memcpy(fkrel->tuples + i * pkrel->num_tuples, pkrel->tuples,
-               pkrel->num_tuples * sizeof(tuple_t));
-    }
-
-    /* if num_tuples is not an exact multiple of pkrel->num_tuples */
-    remainder = num_tuples % pkrel->num_tuples;
-    if (remainder > 0) {
-        memcpy(fkrel->tuples + i * pkrel->num_tuples, pkrel->tuples,
-               remainder * sizeof(tuple_t));
-    }
-
-    knuth_shuffle(fkrel);
-
-    return 0;
-}
-
-int create_relation_nonunique(relation_t *relation, int64_t num_tuples,
-                              const int64_t maxid) {
-    check_seed();
-
-    relation->num_tuples = num_tuples;
-
-    if (!relation->tuples) {
-        perror("memory must be allocated first");
-        return -1;
-    }
-
-    random_gen(relation, maxid);
-
-    return 0;
-}
-
-double
-zipf_ggl(double *seed) {
-    double t, d2 = 0.2147483647e10;
-    t = *seed;
-    t = fmod(0.16807e5 * t, d2);
-    *seed = t;
-    return (t - 1.0e0) / (d2 - 1.0e0);
-}
-
-int
-create_relation_zipf(relation_t *relation, int64_t num_tuples,
-                     const int64_t maxid, const double zipf_param) {
-    check_seed();
-
-    relation->num_tuples = num_tuples;
-
-    if (!relation->tuples) {
-        perror("memory must be allocated first");
-        return -1;
-    }
-
-    gen_zipf(num_tuples, maxid, zipf_param, &relation->tuples);
-
-    /* write_relation(relation, "S128M-skew1.tbl"); */
-    return 0;
-}
-
-// for string delimiter
-vector<string> split(string s, string delimiter) {
-    size_t pos_start = 0, pos_end, delim_len = delimiter.length();
-    string token;
-    vector<string> res;
-
-    while ((pos_end = s.find(delimiter, pos_start)) != string::npos) {
-        token = s.substr(pos_start, pos_end - pos_start);
-        pos_start = pos_end + delim_len;
-        res.push_back(token);
-    }
-
-    res.push_back(s.substr(pos_start));
-    return res;
-}
-
-void
-read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t tsKey, char *filename) {
-    FILE *fp = fopen(filename, "r");
-
-    /* skip the header line */
-    char c;
-//    do {
-//        c = fgetc(fp);
-//    } while (c != '\n');
-
-    /* search for a whitespace for "key payload" format */
-    int fmtspace = 0;
-    int fmtcomma = 0;
-    int fmtbar = 0;
-    do {
-        c = fgetc(fp);
-//        if (c == ' ') {
-//            fmtspace = 1;
-//            break;
-//        }
-        if (c == ',') {
-            fmtcomma = 1;
-            break;
-        }
-        if (c == '|') {
-            fmtbar = 1;
-            break;
-        }
-    } while (c != '\n');
-
-    char *line;
-    size_t len;
-    ssize_t read;
-
-    /* rewind back to the beginning and start parsing again */
-    rewind(fp);
-    /* skip the header line */
-//    do {
-//        c = fgetc(fp);
-//    } while (c != '\n');
-
-    uint64_t ntuples = rel->num_tuples;
-    intkey_t key;
-    table_t row = table_t();
-    milliseconds timestamp = (milliseconds) 0;
-
-    // add a index field, here payload is index field, row is real payload
-    int32_t payload = 0;
-
-    int warn = 1;
-
-    int i = 0;
-
-    while ((read = getline(&line, &len, fp)) != -1 && i < ntuples) {
-//        printf("Retrieved line of length %zu:\n", read);
-//        printf("%s", line);
-        if (fmtcomma) {
-            key = stoi(split(line, ",")[keyby]);
-            strcpy(row.value, line);
-            payload = i;
-            if (tsKey != 0) {
-                timestamp = (milliseconds) stol(split(line, ",")[tsKey]);
-//                printf("%lld \n", timestamp);
-            }
-        } else if (fmtbar) {
-            key = stoi(split(line, "|")[keyby]);
-            strcpy(row.value, line);
-            payload = i;
-            if (tsKey != 0) {
-                timestamp = (milliseconds) stol(split(line, "|")[tsKey]);
-//                printf("%lld \n", timestamp);
-            }
-        } else {
-            printf("error!!\n");
-            return;
-        }
-
-        rel->tuples[i].key = key;
-        rel->tuples[i].payloadID = payload;
-//        relPl->rows[i] = row;
-        relPl->ts[i] = timestamp;
-        i++;
-
-#ifdef DEBUG
-        if(i%1000==0){
-            printf("I have read %d tuples \n", i);
-        }
-#endif
-    }
-    fclose(fp);
-}
-
-int
-load_relation(relation_t *relation, relation_payload_t *relation_payload, int32_t keyby, int32_t tsKey, char *filename,
-              uint64_t num_tuples) {
-    relation->num_tuples = num_tuples;
-
-    /* we need aligned allocation of items */
-    relation->tuples = (tuple_t *) MALLOC(num_tuples * sizeof(tuple_t));
-
-    relation_payload->num_tuples = num_tuples;
-//    relation_payload->rows = (table_t *) MALLOC(num_tuples * sizeof(table_t));
-
-    if (!relation->tuples /*|| !relation_payload->rows*/) {
-//    if (!relation->tuples) {
-        perror("out of memory");
-        return -1;
-    }
-
-    /* load from the given input file */
-    read_relation(relation, relation_payload, keyby, tsKey, filename);
 
     return 0;
 }
@@ -841,9 +598,188 @@ parallel_create_relation_with_ts(relation_t *relation, relation_payload_t *relat
     write_relation(relation, tables[(rs++)%2]);
 #endif
 
-    add_ts(relation, relationPayload, step_size, interval, nthreads);
+    add_ts(relation, relationPayload, step_size, interval, 0);
 
 //    add_zipf_ts(relation, relationPayload, num_tuples/step_size*interval, nthreads, 1);
+
+    return 0;
+}
+
+int
+load_relation(relation_t *relation, relation_payload_t *relation_payload, int32_t keyby, int32_t tsKey, char *filename,
+              uint64_t num_tuples, uint32_t partitions) {
+    relation->num_tuples = num_tuples;
+
+    /* we need aligned allocation of items */
+    relation->tuples = (tuple_t *) MALLOC(num_tuples * sizeof(tuple_t));
+
+    relation_payload->num_tuples = num_tuples;
+//    relation_payload->rows = (table_t *) MALLOC(num_tuples * sizeof(table_t));
+
+    if (!relation->tuples /*|| !relation_payload->rows*/) {
+//    if (!relation->tuples) {
+        perror("out of memory");
+        return -1;
+    }
+
+    /* load from the given input file */
+    read_relation(relation, relation_payload, keyby, tsKey, filename, partitions);
+
+    return 0;
+}
+
+int
+numa_localize(tuple_t *relation, int64_t num_tuples, uint32_t nthreads) {
+    uint32_t i, rv;
+    uint64_t offset = 0;
+
+    /* we need aligned allocation of items */
+    create_arg_t args[nthreads];
+    pthread_t tid[nthreads];
+    cpu_set_t set;
+    pthread_attr_t attr;
+
+    unsigned int pagesize;
+    unsigned int npages;
+    unsigned int npages_perthr;
+    uint64_t ntuples_perthr;
+    uint64_t ntuples_lastthr;
+
+    pagesize = getpagesize();
+    npages = (num_tuples * sizeof(tuple_t)) / pagesize + 1;
+    npages_perthr = npages / nthreads;
+    ntuples_perthr = npages_perthr * (pagesize / sizeof(tuple_t));
+    ntuples_lastthr = num_tuples - ntuples_perthr * (nthreads - 1);
+
+    pthread_attr_init(&attr);
+
+    for (i = 0; i < nthreads; i++) {
+        int cpu_idx = get_cpu_id(i);
+
+        CPU_ZERO(&set);
+        CPU_SET(cpu_idx, &set);
+        pthread_attr_setaffinity_np(&attr, sizeof(cpu_set_t), &set);
+
+        args[i].firstkey = offset + 1;
+        args[i].rel.tuples = relation + offset;
+        args[i].rel.num_tuples = (i == nthreads - 1) ? ntuples_lastthr
+                                                     : ntuples_perthr;
+        offset += ntuples_perthr;
+
+        rv = pthread_create(&tid[i], &attr, numa_localize_thread,
+                            (void *) &args[i]);
+        if (rv) {
+            fprintf(stderr, "[ERROR] pthread_create() return code is %d\n", rv);
+            exit(-1);
+        }
+    }
+
+    for (i = 0; i < nthreads; i++) {
+        pthread_join(tid[i], NULL);
+    }
+
+    return 0;
+}
+
+
+int
+create_relation_fk(relation_t *relation, int64_t num_tuples, const int64_t maxid) {
+    int32_t i, iters;
+    int64_t remainder;
+    relation_t tmp;
+
+    check_seed();
+
+    relation->num_tuples = num_tuples;
+    relation->tuples = (tuple_t *) MALLOC(relation->num_tuples * sizeof(tuple_t));
+
+    if (!relation->tuples) {
+        perror("out of memory");
+        return -1;
+    }
+
+    /* alternative generation method */
+    iters = num_tuples / maxid;
+    for (i = 0; i < iters; i++) {
+        tmp.num_tuples = maxid;
+        tmp.tuples = relation->tuples + maxid * i;
+        random_unique_gen(&tmp);
+    }
+
+    /* if num_tuples is not an exact multiple of maxid */
+    remainder = num_tuples % maxid;
+    if (remainder > 0) {
+        tmp.num_tuples = remainder;
+        tmp.tuples = relation->tuples + maxid * iters;
+        random_unique_gen(&tmp);
+    }
+
+#ifdef PERSIST_RELATIONS
+    write_relation(relation, "S.tbl");
+#endif
+
+    return 0;
+}
+
+
+int
+create_relation_nonunique(relation_t *relation, int64_t num_tuples,
+                          const int64_t maxid) {
+    check_seed();
+
+    relation->num_tuples = num_tuples;
+
+    if (!relation->tuples) {
+        perror("memory must be allocated first");
+        return -1;
+    }
+
+    random_gen(relation, maxid);
+
+    return 0;
+}
+
+int
+create_relation_nonunique_with_ts(relation_t *relation, relation_payload_t *relationPayload, int64_t num_tuples,
+                                  const int numThr,
+                                  const int64_t maxid, const int step_size, const int interval) {
+    check_seed();
+
+    relation->num_tuples = num_tuples;
+
+    if (!relation->tuples) {
+        perror("memory must be allocated first");
+        return -1;
+    }
+
+    random_gen_with_ts(relation, relationPayload, maxid, step_size, interval, numThr);
+
+    return 0;
+}
+
+double
+zipf_ggl(double *seed) {
+    double t, d2 = 0.2147483647e10;
+    t = *seed;
+    t = fmod(0.16807e5 * t, d2);
+    *seed = t;
+    return (t - 1.0e0) / (d2 - 1.0e0);
+}
+
+int
+create_relation_zipf(relation_t *relation, int64_t num_tuples,
+                     const int64_t maxid, const double zipf_param) {
+    check_seed();
+
+    relation->num_tuples = num_tuples;
+    relation->tuples = (tuple_t *) MALLOC(relation->num_tuples * sizeof(tuple_t));
+
+    if (!relation->tuples) {
+        perror("out of memory");
+        return -1;
+    }
+
+    gen_zipf(num_tuples, maxid, zipf_param, &relation->tuples);
 
     return 0;
 }
@@ -859,3 +795,166 @@ delete_relation_payload(relation_payload_t *relPl) {
     /* clean up */
     FREE(relPl->ts, relPl->num_tuples * sizeof(milliseconds));
 }
+
+// for string delimiter
+vector<string> split(string s, string delimiter) {
+    size_t pos_start = 0, pos_end, delim_len = delimiter.length();
+    string token;
+    vector<string> res;
+
+    while ((pos_end = s.find(delimiter, pos_start)) != string::npos) {
+        token = s.substr(pos_start, pos_end - pos_start);
+        pos_start = pos_end + delim_len;
+        res.push_back(token);
+    }
+
+    res.push_back(s.substr(pos_start));
+    return res;
+}
+
+void
+read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t tsKey, char *filename,
+              uint32_t partitions) {
+    FILE *fp = fopen(filename, "r");
+
+    /* skip the header line */
+    char c;
+//    do {
+//        c = fgetc(fp);
+//    } while (c != '\n');
+
+    /* search for a whitespace for "key payload" format */
+    int fmtspace = 0;
+    int fmtcomma = 0;
+    int fmtbar = 0;
+    do {
+        c = fgetc(fp);
+//        if (c == ' ') {
+//            fmtspace = 1;
+//            break;
+//        }
+        if (c == ',') {
+            fmtcomma = 1;
+            break;
+        }
+        if (c == '|') {
+            fmtbar = 1;
+            break;
+        }
+    } while (c != '\n');
+
+    char *line;
+    size_t len;
+    ssize_t read;
+
+    /* rewind back to the beginning and start parsing again */
+    rewind(fp);
+    /* skip the header line */
+//    do {
+//        c = fgetc(fp);
+//    } while (c != '\n');
+
+    uint64_t ntuples = rel->num_tuples;
+    intkey_t key;
+    table_t row = table_t();
+    uint64_t timestamp = (uint64_t) 0;
+
+    // add a index field, here payload is index field, row is real payload
+    int32_t payload = 0;
+
+    int warn = 1;
+    int i = 0;
+
+    int numthr = rel->num_tuples / partitions;//replicate R, partition S.
+
+    int *tid_offsets = new int[partitions];
+    int *tid_start_idx = new int[partitions];
+    int *tid_end_idx = new int[partitions];
+
+    for (auto partition = 0; partition < partitions; partition++) {
+        tid_offsets[partition] = 0;
+        tid_start_idx[partition] = numthr * partition;
+        tid_end_idx[partition] = (last_thread(partition, partitions)) ? rel->num_tuples : numthr * (partition + 1);
+    }
+    int small = 0;
+    u_int64_t maxTS = 0;
+    while ((read = getline(&line, &len, fp)) != -1 && i < ntuples) {
+//        printf("Retrieved line of length %zu:\n", read);
+//        printf("%s", line);
+        if (fmtcomma) {
+            key = stoi(split(line, ",")[keyby]);
+            strcpy(row.value, line);
+            payload = i;
+            if (tsKey != 0) {
+                timestamp = stol(split(line, ",")[tsKey]) * 2.1 * 1E6;
+//                if (timestamp != 0)
+//                    printf("%lld \n", timestamp);
+            }
+        } else if (fmtbar) {
+            key = stoi(split(line, "|")[keyby]);
+            strcpy(row.value, line);
+            payload = i;
+            if (tsKey != 0) {
+                timestamp = stol(split(line, "|")[tsKey]) * 2.1 * 1E6;
+//                if (timestamp != 0)
+//                    printf("%lld \n", timestamp);
+            }
+        } else {
+            printf("error!!\n");
+            return;
+        }
+//        relPl->rows[i] = row;
+//        relPl->ts[i] = timestamp;
+        if (timestamp < 0.5 * 10500000000) {
+            small++;
+        }
+        if (timestamp > maxTS) {
+            maxTS = timestamp;
+        }
+        // round robin to assign ts to each thread.
+        auto partition = i % partitions;
+        int cur_index = tid_start_idx[partition] + tid_offsets[partition];
+
+        if (cur_index == tid_end_idx[partition]) {
+            partition = partitions - 1; // if reach the maximum size, append the tuple to the last partition
+            cur_index = tid_start_idx[partition] + tid_offsets[partition];
+        }
+        // record cur index in partition
+//        if (cur_index == 80049) {
+//            printf("??");
+//        }
+        relPl->ts[cur_index] = timestamp;
+        rel->tuples[cur_index].key = key;
+        rel->tuples[cur_index].payloadID = payload;
+        tid_offsets[partition]++;
+
+        i++;//id of record being read.
+    }
+    printf("small%d, ts %f\n", small, (double) small / rel->num_tuples);
+    printf("maxts:%f\n", maxTS / (2.1 * 1E6));
+    fclose(fp);
+}
+
+void *alloc_aligned(size_t size) {
+    void *ret;
+    int rv;
+    rv = posix_memalign((void **) &ret, CACHE_LINE_SIZE, size);
+
+    if (rv) {
+        perror("[ERROR] alloc_aligned() failed: out of memory");
+        return 0;
+    }
+
+    /** Not an elegant way of passing whether we will numa-localize, but this
+        feature is experimental anyway. */
+    if (numalocalize) {
+        tuple_t *mem = (tuple_t *) ret;
+        uint64_t ntuples = size / sizeof(tuple_t);
+        numa_localize(mem, ntuples, nthreads);
+    }
+
+    return ret;
+}
+
+
+

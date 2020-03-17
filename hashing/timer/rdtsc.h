@@ -32,6 +32,8 @@ extern "C" {
 #warning No supported architecture found -- timers will return junk.
 #endif
 
+
+
 static __inline__ uint64_t curtick() {
     uint64_t tick;
 #if defined(__i386__)

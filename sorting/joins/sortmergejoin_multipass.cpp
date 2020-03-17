@@ -142,7 +142,7 @@ sortmergejoin_multipass_thread(void *param) {
     int lock;
     /* wait at a barrier until each thread started*/
     BARRIER_ARRIVE(args->barrier, lock)
-    *args->startTS = now();
+    *args->startTS = curtick();
 
 #ifdef PERF_COUNTERS
     if(my_tid == 0){

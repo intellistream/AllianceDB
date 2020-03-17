@@ -52,6 +52,7 @@ class baseFetcher {
 public:
     virtual fetch_t *next_tuple();
 
+    virtual fetch_t *_next_tuple(bool b);//helper function to avoid recurrsion
     relation_t *relR;//input relation
     relation_t *relS;//input relation
     bool tryR = true;
@@ -59,7 +60,7 @@ public:
 //    milliseconds *SdataTime;
 //    bool start = true;
 
-    std::chrono::milliseconds fetchStartTime;//initialize
+    uint64_t fetchStartTime;//initialize
     T_TIMER *timer;
     t_state *state;
     int tid;
@@ -68,15 +69,9 @@ public:
     uint64_t cntR = 0;
     uint64_t cntS = 0;
 
-    milliseconds timeGap(milliseconds *arrival_ts) {
-//        if (start) {
-//            fetchStartTime = now();
-//            start = false;
-//        }
-//        return (*arrival_ts - *RdataTime) -
-//               (now() - fetchStartTime);//if it's positive, the tuple is not ready yet.
+    uint64_t timeGap(uint64_t *arrival_ts) {
 
-        return *arrival_ts - (now() - fetchStartTime);
+        return *arrival_ts - (curtick() - fetchStartTime);
     }
 
     virtual bool finish() = 0;
@@ -146,7 +141,7 @@ public:
      * @param relR
      * @param relS
      */
-    HS_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS, int tid, duration<long, ratio<1, 1000>> *startTS,
+    HS_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS, int tid, uint64_t *startTS,
                   T_TIMER *timer)
             : baseFetcher(relR, relS, tid, timer) {
         state = new t_state();
@@ -203,7 +198,7 @@ public:
      * @param relR
      * @param relS
      */
-    JM_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS, int tid, chrono::milliseconds *startTS,
+    JM_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS, int tid, uint64_t *startTS,
                   T_TIMER *timer)
             : baseFetcher(relR, relS, tid, timer) {
         state = new t_state();
@@ -219,21 +214,34 @@ public:
         state->start_index_S = numSthr * tid;
         state->end_index_S = (last_thread(tid, nthreads)) ? relS->num_tuples : numSthr * (tid + 1);
 
+/*
+        int numRthr = relR->num_tuples / nthreads;//replicate S, partition R.
+
+        state->IsTupleR = false;
+        // replicate relS for next thread /
+        state->start_index_S = 0;
+        state->end_index_S = relS->num_tuples;
+
+        // assign part of the relR for next thread /
+        state->start_index_R = numRthr * tid;
+        state->end_index_R = (last_thread(tid, nthreads)) ? relR->num_tuples : numRthr * (tid + 1);
+*/
+
         DEBUGMSG("TID:%d, R: start_index:%d, end_index:%d\n", tid, state->start_index_R, state->end_index_R);
-        DEBUGMSG("TID:%d, S: start_index:%d, end_index:%d\n", tid, state->start_index_S, state->end_index_S);
+        printf("TID:%d, S: start_index:%d, start ts:%d\n", tid, state->start_index_S,
+               relS->payload->ts[state->start_index_S]);
     }
 };
 
 class JB_NP_Fetcher : public baseFetcher {
 public:
 
-
     bool finish() {
         return state->start_index_R == state->end_index_R
                && state->start_index_S == state->end_index_S;
     }
 
-    JB_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS, int tid, duration<long, ratio<1, 1000>> *startTS,
+    JB_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS, int tid, uint64_t *startTS,
                   T_TIMER *timer)
             : baseFetcher(relR, relS, tid, timer) {
         state = new t_state[nthreads];

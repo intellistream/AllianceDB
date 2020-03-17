@@ -220,7 +220,7 @@ gen_zipf_ts(unsigned int stream_size,
 //        printf("LUT%d: %f\n", i, lut[i]);
 //    }
 
-    ret = (int32_t *) malloc(stream_size * sizeof(*ret));
+    ret = (int32_t *) malloc(stream_size * sizeof(int32_t));
 
     assert (ret);
 

@@ -180,7 +180,14 @@ void build_hashtable_single(const hashtable_t *ht, const relation_t *rel, uint32
     build_hashtable_single(ht, &rel->tuples[i], hashmask, skipbits);
 }
 
-
+/**
+ * Used by NPO
+ * @param ht
+ * @param rel
+ * @param output
+ * @param timer
+ * @return
+ */
 int64_t probe_hashtable(hashtable_t *ht, relation_t *rel, void *output, T_TIMER *timer) {
     uint32_t i;
     int64_t matches;
@@ -192,15 +199,15 @@ int64_t probe_hashtable(hashtable_t *ht, relation_t *rel, void *output, T_TIMER 
 #endif
     matches = 0;
     for (i = 0; i < rel->num_tuples; i++) {
-        proble_hashtable_single_measure(ht, rel, i, hashmask, skipbits, &matches, timer, output);
+        probe_hashtable_single_measure(ht, rel, i, hashmask, skipbits, &matches, timer, output);
     }
     return matches;
 }
 
-int64_t proble_hashtable_single_measure(const hashtable_t *ht, const tuple_t *tuple, const uint32_t hashmask,
-                                        const uint32_t skipbits, int64_t *matches,
+int64_t probe_hashtable_single_measure(const hashtable_t *ht, const tuple_t *tuple, const uint32_t hashmask,
+                                       const uint32_t skipbits, int64_t *matches,
         /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/
-                                        T_TIMER *timer, bool ISTupleR, void *output) {
+                                       T_TIMER *timer, bool ISTupleR, void *output) {
     uint32_t index_ht;
 #ifdef PREFETCH_NPJ
     if (prefetch_index < rel->num_tuples) {
@@ -218,7 +225,7 @@ int64_t proble_hashtable_single_measure(const hashtable_t *ht, const tuple_t *tu
     do {
         for (index_ht = 0; index_ht < b->count; index_ht++) {
             if (tuple->key == b->tuples[index_ht].key) {
-                (*matches)++;
+//                (*matches)++;
 //                DUMMY()
 //                this_thread::sleep_for(chrono::microseconds(timer->simulate_compute_time));
 #ifdef JOIN_RESULT_MATERIALIZE
@@ -228,7 +235,7 @@ int64_t proble_hashtable_single_measure(const hashtable_t *ht, const tuple_t *tu
                 joinres->key = tuple->key;
                 joinres->payloadID = tuple->payloadID;
 #endif
-
+                (*matches)++;
 #ifndef NO_TIMING
                 END_PROGRESSIVE_MEASURE(tuple->payloadID, timer, ISTupleR)
 #endif
@@ -239,14 +246,21 @@ int64_t proble_hashtable_single_measure(const hashtable_t *ht, const tuple_t *tu
         }
         b = b->next;/* follow overflow pointer */
     } while (b);
+//    if (!ISTupleR && tuple->payloadID == 7953) {
+//        printf("%d, %f, %ld\n", tuple->payloadID, (*matches) / 786396.0, timer->recordR.begin().operator*());
+//    }
+//    if (!ISTupleR && tuple->payloadID == 152508) {
+//        printf("%d, %f, %ld\n", tuple->payloadID, (*matches) / 786396.0, timer->recordR.begin().operator*());
+//    }
+
     return *matches;
 }
 
-int64_t proble_hashtable_single_measure(const hashtable_t *ht, const relation_t *rel, uint32_t index_rel,
-                                        const uint32_t hashmask, const uint32_t skipbits, int64_t *matches,
+int64_t probe_hashtable_single_measure(const hashtable_t *ht, const relation_t *rel, uint32_t index_rel,
+                                       const uint32_t hashmask, const uint32_t skipbits, int64_t *matches,
         /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/
-                                        T_TIMER *timer, void *output) {
-    return proble_hashtable_single_measure(ht, &rel->tuples[index_rel], hashmask, skipbits, matches,
+                                       T_TIMER *timer, void *output) {
+    return probe_hashtable_single_measure(ht, &rel->tuples[index_rel], hashmask, skipbits, matches,
             /*thread_fun,*/ timer, false, output);
 }
 
@@ -266,7 +280,7 @@ void match_single_tuple(const list<tuple_t *> list, const tuple_t *tuple, int64_
         }*/
         if (tuple->key == it.operator*()->key) {
             (*matches)++;
-            DUMMY()
+//            DUMMY()
 //            this_thread::sleep_for(chrono::microseconds(timer->simulate_compute_time));
 #ifndef NO_TIMING
             END_PROGRESSIVE_MEASURE(tuple->payloadID, (timer), ISTupleR)

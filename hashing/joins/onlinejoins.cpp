@@ -41,27 +41,28 @@ void initialize(int nthreads, const t_param &param) {
     pthread_attr_init(param.attr);
 }
 
-t_param &finishing(int nthreads, t_param &param, milliseconds *startTS, milliseconds *joinStart) {
+t_param &finishing(int nthreads, t_param &param, uint64_t *startTS, uint64_t *joinStart) {
 
     int i;
     for (i = 0; i < nthreads; i++) {
         if (param.tid[i] != -1)
             pthread_join(param.tid[i], NULL);
-        /* sum up results */
-        param.result += *param.args[i].matches;
     }
 
     // TODO: add a timer here, how to minus startTimer? Can I use t_timer.h
-    int64_t processingTime = now().count() - startTS->count();
+    int64_t processingTime = curtick() - *startTS;
 #ifndef NO_TIMING
-    printf("With timing, Total processing time is: %ld\n", processingTime);
+    printf("With timing, Total processing time is: %f\n", processingTime / (2.1 * 1E6));//cycle to ms
 #endif
 #ifdef NO_TIMING
-    printf("No timing, Total processing time is: %ld\n", processingTime);
+    printf("No timing, Total processing time is: %ld\n", processingTime / (2.1 * 1E6));
 #endif
     for (i = 0; i < nthreads; i++) {
+        /* sum up results */
+        printf("Thread%d, produces %ld outputs\n", i, *param.args[i].matches);
+        param.result += *param.args[i].matches;
 #ifndef NO_TIMING
-        merge(param.args[i].timer, param.args[i].fetcher->relR, param.args[i].fetcher->relS, startTS);
+        merge(param.args[i].timer, param.args[i].fetcher->relR, param.args[i].fetcher->relS, startTS, 0);
 #endif
     }
     param.joinresult->totalresults = param.result;
@@ -98,7 +99,7 @@ SHJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_s
 #endif
 
 #ifdef JOIN_RESULT_MATERIALIZE
-    chainedtuplebuffer_t * chainedbuf = chainedtuplebuffer_init();
+    chainedtuplebuffer_t *chainedbuf = chainedtuplebuffer_init();
 #else
     void *chainedbuf = NULL;
 #endif
@@ -108,10 +109,10 @@ SHJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_s
     SHJJoiner joiner = shj(0, relR, relS, chainedbuf);//build and probe at the same time.
 
 #ifdef JOIN_RESULT_MATERIALIZE
-    threadresult_t * thrres = &(resultlist[0]);/* single-thread */
+    threadresult_t *thrres = &(resultlist[0]);/* single-thread */
     thrres->nresults = joiner.matches;
     thrres->threadid = 0;
-    thrres->results  = (void *) chainedbuf;
+    thrres->results = (void *) chainedbuf;
 #endif
     param.args[0].timer = joiner.timer;
     param.args[0].matches = &joiner.matches;
@@ -131,8 +132,8 @@ SHJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int grou
     param.joiner = type_SHJJoiner;//new SHJJoiner();
     param.algo_name = "SHJ_JM_NP";
     param.exp_id = exp_id;
-    chrono::milliseconds *startTS = new chrono::milliseconds();
-    auto joinStart = (milliseconds) 0;
+    uint64_t *startTS = new uint64_t();
+    auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_NOSHUFFLE, startTS, &joinStart)
     param = finishing(nthreads, param, startTS, &joinStart);
     return param.joinresult;
@@ -148,8 +149,8 @@ SHJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int grou
     param.joiner = type_SHJJoiner;//new SHJJoiner();
     param.algo_name = "SHJ_JB_NP";
     param.exp_id = exp_id;
-    chrono::milliseconds *startTS = new chrono::milliseconds();
-    auto joinStart = (milliseconds) 0;
+    uint64_t *startTS = new uint64_t();
+    auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE, startTS, &joinStart)
     param = finishing(nthreads, param, startTS, &joinStart);
     return param.joinresult;
@@ -165,8 +166,8 @@ SHJ_JBCR_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int gr
     param.joiner = type_SHJJoiner;//new SHJJoiner();
     param.algo_name = "SHJ_JBCR_NP";
     param.exp_id = exp_id;
-    chrono::milliseconds *startTS = new chrono::milliseconds();
-    auto joinStart = (milliseconds) 0;
+    uint64_t *startTS = new uint64_t();
+    auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE, startTS, &joinStart)
     param = finishing(nthreads, param, startTS, &joinStart);
     return param.joinresult;
@@ -182,8 +183,8 @@ SHJ_HS_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int grou
     param.joiner = type_SHJJoiner;//new SHJJoiner();
     param.algo_name = "SHJ_HS_NP";
     param.exp_id = exp_id;
-    chrono::milliseconds *startTS = new chrono::milliseconds();
-    auto joinStart = (milliseconds) 0;
+    uint64_t *startTS = new uint64_t();
+    auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE_HS, startTS, &joinStart)
     param = finishing(nthreads, param, startTS, &joinStart);
     return param.joinresult;
@@ -199,7 +200,7 @@ result_t *PMJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, i
 
 
 #ifdef JOIN_RESULT_MATERIALIZE
-    chainedtuplebuffer_t * chainedbuf = chainedtuplebuffer_init();
+    chainedtuplebuffer_t *chainedbuf = chainedtuplebuffer_init();
 #else
     void *chainedbuf = NULL;
 #endif
@@ -210,10 +211,10 @@ result_t *PMJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, i
     PMJJoiner joiner = pmj(0, relR, relS, chainedbuf);//build and probe at the same time.
 
 #ifdef JOIN_RESULT_MATERIALIZE
-    threadresult_t * thrres = &(resultlist[0]);/* single-thread */
+    threadresult_t *thrres = &(resultlist[0]);/* single-thread */
     thrres->nresults = joiner.matches;
     thrres->threadid = 0;
-    thrres->results  = (void *) chainedbuf;
+    thrres->results = (void *) chainedbuf;
 #endif
     param.args[0].timer = joiner.timer;
     param.args[0].matches = &joiner.matches;
@@ -233,7 +234,7 @@ result_t *RPJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, i
 
 
 #ifdef JOIN_RESULT_MATERIALIZE
-    chainedtuplebuffer_t * chainedbuf = chainedtuplebuffer_init();
+    chainedtuplebuffer_t *chainedbuf = chainedtuplebuffer_init();
 #else
     void *chainedbuf = NULL;
 #endif
@@ -243,10 +244,10 @@ result_t *RPJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, i
 //    tParam.result = hrpj(0, relR, relS, chainedbuf, &timer);// hash version.
 
 #ifdef JOIN_RESULT_MATERIALIZE
-    threadresult_t * thrres = &(resultlist[0]);/* single-thread */
+    threadresult_t *thrres = &(resultlist[0]);/* single-thread */
     thrres->nresults = joiner.matches;
     thrres->threadid = 0;
-    thrres->results  = (void *) chainedbuf;
+    thrres->results = (void *) chainedbuf;
 #endif
     param.args[0].timer = joiner.timer;
     param.args[0].matches = &joiner.matches;
@@ -266,8 +267,8 @@ result_t *PMJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id
     param.joiner = type_PMJJoiner;//new PMJJoiner(relR->num_tuples, relS->num_tuples / nthreads, nthreads);
     param.algo_name = "PMJ_JM_NP";
     param.exp_id = exp_id;
-    chrono::milliseconds *startTS = new chrono::milliseconds();
-    auto joinStart = (milliseconds) 0;
+    uint64_t *startTS = new uint64_t();
+    auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_NOSHUFFLE, startTS, &joinStart)
     param = finishing(nthreads, param, startTS, &joinStart);
     return param.joinresult;
@@ -282,8 +283,8 @@ result_t *PMJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id
     param.joiner = type_PMJJoiner;//new PMJJoiner(relR->num_tuples, relS->num_tuples / nthreads, nthreads);
     param.algo_name = "PMJ_JB_NP";
     param.exp_id = exp_id;
-    chrono::milliseconds *startTS = new chrono::milliseconds();
-    auto joinStart = (milliseconds) 0;
+    uint64_t *startTS = new uint64_t();
+    auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE, startTS, &joinStart)
     param = finishing(nthreads, param, startTS, &joinStart);
     return param.joinresult;
@@ -298,8 +299,8 @@ result_t *PMJ_JBCR_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_
     param.joiner = type_PMJJoiner;//new PMJJoiner(relR->num_tuples, relS->num_tuples / nthreads, nthreads);
     param.algo_name = "PMJ_JBCR_NP";
     param.exp_id = exp_id;
-    chrono::milliseconds *startTS = new chrono::milliseconds();
-    auto joinStart = (milliseconds) 0;
+    uint64_t *startTS = new uint64_t();
+    auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE, startTS, &joinStart)
     param = finishing(nthreads, param, startTS, &joinStart);
     return param.joinresult;
@@ -314,8 +315,8 @@ result_t *PMJ_HS_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id
     param.joiner = type_PMJJoiner;//new PMJJoiner(relR->num_tuples, relS->num_tuples / nthreads, nthreads);
     param.algo_name = "PMJ_HS_NP";
     param.exp_id = exp_id;
-    chrono::milliseconds *startTS = new chrono::milliseconds();
-    auto joinStart = (milliseconds) 0;
+    uint64_t *startTS = new uint64_t();
+    auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE_PMJHS, startTS, &joinStart)
     param = finishing(nthreads, param, startTS, &joinStart);
     return param.joinresult;
@@ -333,8 +334,8 @@ RPJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int grou
     param.algo_name = "RPJ_JM_NP";
     param.exp_id = exp_id;
 
-    chrono::milliseconds *startTS = new chrono::milliseconds();
-    auto joinStart = (milliseconds) 0;
+    uint64_t *startTS = new uint64_t();
+    auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_NOSHUFFLE, startTS, &joinStart)
     param = finishing(nthreads, param, startTS, &joinStart);
     return param.joinresult;
@@ -350,8 +351,8 @@ RPJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int grou
     param.joiner = type_RippleJoiner;// new RippleJoiner(relR, relS, nthreads);
     param.algo_name = "RPJ_JB_NP";
     param.exp_id = exp_id;
-    chrono::milliseconds *startTS = new chrono::milliseconds();
-    auto joinStart = (milliseconds) 0;
+    uint64_t *startTS = new uint64_t();
+    auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE, startTS, &joinStart)
     param = finishing(nthreads, param, startTS, &joinStart);
     return param.joinresult;
@@ -368,8 +369,8 @@ RPJ_JBCR_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int gr
     param.algo_name = "RPJ_JBCR_NP";
     param.exp_id = exp_id;
 
-    chrono::milliseconds *startTS = new chrono::milliseconds();
-    auto joinStart = (milliseconds) 0;
+    uint64_t *startTS = new uint64_t();
+    auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE, startTS, &joinStart)
     param = finishing(nthreads, param, startTS, &joinStart);
     return param.joinresult;
@@ -384,8 +385,8 @@ result_t *RPJ_HS_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id
     param.joiner = type_RippleJoiner;//new RippleJoiner(relR, relS, nthreads);
     param.algo_name = "RPJ_HS_NP";
     param.exp_id = exp_id;
-    chrono::milliseconds *startTS = new chrono::milliseconds();
-    auto joinStart = (milliseconds) 0;
+    uint64_t *startTS = new uint64_t();
+    auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE_HS, startTS, &joinStart)
     param = finishing(nthreads, param, startTS, &joinStart);
     return param.joinresult;

@@ -97,7 +97,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
                    prop=LEGEND_FP,
                    ncol=4,
                    loc='upper center',
-                   #                     mode='expand',
+                   #mode='expand',
                    shadow=False,
                    bbox_to_anchor=(0.45, 1.6),
                    columnspacing=0.1,
@@ -144,7 +144,7 @@ def ReadFile():
         if id == 39 or id == 41:
             value = len(read) * 1000 / x  # get throughput (#items/ms)
         else:
-            value = len(read) / x  # get throughput (#items/ms)
+            value = len(read) * 10 / x  # get throughput (#items/ms)
         col1.append(value)
     y.append(col1)
 
@@ -156,7 +156,7 @@ def ReadFile():
         if id == 39 or id == 41:
             value = len(read) * 1000 / x  # get throughput (#items/ms)
         else:
-            value = len(read) / x  # get throughput (#items/ms)
+            value = len(read) * 10 / x  # get throughput (#items/ms)
         col2.append(value)
     y.append(col2)
 
@@ -168,7 +168,7 @@ def ReadFile():
         if id == 39 or id == 41:
             value = len(read) * 1000 / x  # get throughput (#items/ms)
         else:
-            value = len(read) / x  # get throughput (#items/ms)
+            value = len(read) * 10 / x  # get throughput (#items/ms)
         col3.append(value)
     y.append(col3)
 
@@ -180,7 +180,7 @@ def ReadFile():
         if id == 39 or id == 41:
             value = len(read) * 1000 / x  # get throughput (#items/ms)
         else:
-            value = len(read) / x  # get throughput (#items/ms)
+            value = len(read) * 10 / x  # get throughput (#items/ms)
         col4.append(value)
     y.append(col4)
 
@@ -192,7 +192,7 @@ def ReadFile():
         if id == 39 or id == 41:
             value = len(read) * 1000 / x  # get throughput (#items/ms)
         else:
-            value = len(read) / x  # get throughput (#items/ms)
+            value = len(read) * 10 / x  # get throughput (#items/ms)
         col5.append(value)
     y.append(col5)
 
@@ -204,7 +204,7 @@ def ReadFile():
         if id == 39 or id == 41:
             value = len(read) * 1000 / x  # get throughput (#items/ms)
         else:
-            value = len(read) / x  # get throughput (#items/ms)
+            value = len(read) * 10 / x  # get throughput (#items/ms)
         col6.append(value)
     y.append(col6)
 
@@ -216,7 +216,7 @@ def ReadFile():
         if id == 39 or id == 41 or id == 41:
             value = len(read) * 1000 / x  # get throughput (#items/ms)
         else:
-            value = len(read) / x  # get throughput (#items/ms)
+            value = len(read) * 10 / x  # get throughput (#items/ms)
         col7.append(value)
     y.append(col7)
 
@@ -228,7 +228,7 @@ def ReadFile():
         if id == 39 or id == 41:
             value = len(read) * 1000 / x  # get throughput (#items/ms)
         else:
-            value = len(read) / x  # get throughput (#items/ms)
+            value = len(read) * 10 / x  # get throughput (#items/ms)
         col8.append(value)
     y.append(col8)
     return y
@@ -242,7 +242,7 @@ if __name__ == "__main__":
     legend_labels = ['PRJ', 'NPJ', 'M-PASS', 'M-WAY', 'SHJ$^M$', 'SHJ$^B$', 'PMJ$^M$', 'PMJ$^B$']
 
     DrawFigure(x_values, y_values, legend_labels,
-               '', 'Tpt. (#matches/ms)', 0,
+               '', 'Tpt. (#matches/s)', 0,
                400, 'throughput_figure_app', False)
 
     DrawLegend(legend_labels, 'throughput_legend')

@@ -6,7 +6,7 @@
 #define ALLIANCEDB_T_TIMER_H
 
 
-#include "../utils/rdtsc.h"              /* startTimer, stopTimer */
+#include "rdtsc.h"              /* startTimer, stopTimer */
 #include <sys/time.h>           /* gettimeofday */
 #include <stdio.h>              /* printf */
 #include <vector>
@@ -32,25 +32,24 @@ struct T_TIMER {
     uint64_t join_partitiontimer_pre = 0, join_partitiontimer = 0;//join during partition.
     uint64_t join_mergetimer_pre = 0, join_mergetimer = 0;//join during merge.
     uint64_t join_timer_pre = 0, join_timer = 0;//join.
-    std::vector<std::chrono::milliseconds> recordR;
-    std::vector<std::chrono::milliseconds> recordS;
+    uint64_t shuffle_timer_pre = 0, shuffle_timer = 0;//shuffle.
+    std::vector<uint64_t> recordR;
+    std::vector<uint64_t> recordS;
     std::vector<uint64_t> recordRID;
     std::vector<uint64_t> recordSID;
     int record_cnt = 0;
     int record_gap = 1;
-    double sum = 0;
+    int simulate_compute_time = 1;//(microseconds per output).
 #endif
 };
 
-milliseconds now();
-
 /** print out the execution time statistics of the join */
-void breakdown_global(int64_t total_results, int nthreads, T_TIMER *timer, long lastTS, _IO_FILE *pFile);
+void breakdown_global(int64_t result, int nthreads, T_TIMER *timer, long lastTS, _IO_FILE *pFile);
 
 /** print out the execution time statistics of the join */
 void breakdown_thread(int64_t result, T_TIMER *timer, long lastTS, _IO_FILE *pFile);
 
-void merge(T_TIMER *timer, relation_t *relR, relation_t *relS, milliseconds *startTS);
+void merge(T_TIMER *timer, relation_t *relR, relation_t *relS, uint64_t *startTS, long lastTS);
 
 void sortRecords(std::string algo_name, int exp_id, long lastTS);
 
@@ -105,6 +104,15 @@ void sortRecords(std::string algo_name, int exp_id, long lastTS);
      accTimer(&timer->join_partitiontimer_pre, &timer->join_partitiontimer); /* join during partition */
 #endif
 
+#ifndef BEGIN_MEASURE_SHUFFLE_ACC
+#define BEGIN_MEASURE_SHUFFLE_ACC(timer) \
+    startTimer(&timer->shuffle_timer_pre);
+#endif
+
+#ifndef END_MEASURE_SHUFFLE_ACC
+#define END_MEASURE_SHUFFLE_ACC(timer) \
+     accTimer(&timer->shuffle_timer_pre, &timer->shuffle_timer); /* shuffle time */
+#endif
 
 #ifndef BEGIN_MEASURE_JOIN_ACC
 #define BEGIN_MEASURE_JOIN_ACC(timer) \
@@ -130,7 +138,7 @@ void sortRecords(std::string algo_name, int exp_id, long lastTS);
 
 #ifndef BEGIN_MEASURE_WAIT_ACC
 #define BEGIN_MEASURE_WAIT_ACC(timer) \
-      startTimer(&timer->wait_timer_pre); /* wait time */
+        startTimer(&timer->wait_timer_pre); /* wait time */
 #endif
 
 #ifndef END_MEASURE_WAIT_ACC
@@ -177,33 +185,33 @@ void sortRecords(std::string algo_name, int exp_id, long lastTS);
 #endif
 
 
-#ifndef /*START_MEASURE*/NO_TIMING
+#ifndef START_MEASURE
 #define START_MEASURE(timer) \
     gettimeofday(&timer->start, NULL); \
     startTimer(&timer->overall_timer); \
     timer->partition_timer = 0; /* no partitioning */
 #endif
 
-#ifndef /*END_MEASURE*/NO_TIMING
+#ifndef END_MEASURE
 #define END_MEASURE(timer) \
     stopTimer(&timer->overall_timer); /* overall */ \
     gettimeofday(&timer->end, NULL);
 #endif
 
 #ifndef END_PROGRESSIVE_MEASURE
-#define END_PROGRESSIVE_MEASURE(payloadID, timer, IStupleR)                             \
-        timer->record_cnt++;                                                            \
-        if(timer->record_cnt == timer->record_gap){                                     \
-            if(IStupleR){                                                               \
-                auto ts =now();                                                         \
-                timer->recordRID.push_back(payloadID);                                  \
-                timer->recordR.push_back(ts);                                           \
-            }else{                                                                      \
-                auto ts =now();                                                         \
-                timer->recordSID.push_back(payloadID);                                  \
-                timer->recordS.push_back(ts);                                           \
-                }                                                                       \
-            timer->record_cnt=0;                                                        \
+#define END_PROGRESSIVE_MEASURE(payloadID, timer, IStupleR)      \
+        timer->record_cnt++;                                     \
+        if(timer->record_cnt == timer->record_gap){              \
+            if(IStupleR){                                        \
+                auto ts =curtick();                              \
+                timer->recordRID.push_back(payloadID);           \
+                timer->recordR.push_back(ts);                    \
+            }else{                                               \
+                auto ts =curtick();                              \
+                timer->recordSID.push_back(payloadID);           \
+                timer->recordS.push_back(ts);                    \
+                }                                                \
+            timer->record_cnt=0;                                 \
         }
 #endif
 
@@ -211,9 +219,9 @@ void sortRecords(std::string algo_name, int exp_id, long lastTS);
 #pragma GCC push_options
 #pragma GCC optimize ("O0")
 #define DUMMY()                             \
-    double sum=0;                           \
-    for (short d = 0; d < 10000; d++) { \
-         sum+=d; \
+    double sum=0;                              \
+    for (short d = 0; d < 100; d++) { \
+        sum++; \
     }
 #endif
 #pragma GCC pop_options

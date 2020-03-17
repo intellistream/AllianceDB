@@ -149,7 +149,7 @@ add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_size,
 
     for (auto i = 0; i < relation->num_tuples; i++) {
         if (i % (step_size) == 0) {
-            ts += interval;
+            ts += interval * 2.1 * 1E6;//2.1GHz, 1 milliseconds to ticks.
         }
         // round robin to assign ts to each thread.
         auto partition = i % partitions;
@@ -158,7 +158,7 @@ add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_size,
         }
         // record cur index in partition
         int cur_index = tid_start_idx[partition] + tid_offsets[partition];
-        relationPayload->ts[cur_index] = (milliseconds) ts;
+        relationPayload->ts[cur_index] = (uint64_t) ts;
         tid_offsets[partition]++;
     }
 #ifdef DEBUG
@@ -203,10 +203,10 @@ void add_zipf_ts(relation_t *relation, relation_payload_t *relationPayload, int 
 
         // record cur index in partition
         int cur_index = tid_start_idx[partition] + tid_offsets[partition];
-        relationPayload->ts[cur_index] = (milliseconds) timestamps[i];
+        relationPayload->ts[cur_index] = (uint64_t) timestamps[i] * 2.1 * 1E6;//ms to cycle
         tid_offsets[partition]++;
 
-        if (relationPayload->ts[i].count() < 0.25 * window_size) {
+        if (relationPayload->ts[i] < 0.25 * window_size) {
             small++;
         }
         DEBUGMSG("%d, %ld\n", relation->tuples[i].key, relationPayload->ts[i].count());
@@ -348,7 +348,8 @@ numa_localize_thread(void *args) {
  * NUMA-aware).
  */
 void
-read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t tsKey, char *filename, uint32_t partitions);
+read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t tsKey, char *filename,
+              uint32_t partitions);
 
 /**
  * Write relation to a file.
@@ -858,7 +859,8 @@ vector<string> split(string s, string delimiter) {
 }
 
 void
-read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t tsKey, char *filename, uint32_t partitions) {
+read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t tsKey, char *filename,
+              uint32_t partitions) {
     FILE *fp = fopen(filename, "r");
 
     /* skip the header line */
@@ -901,7 +903,7 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t
     uint64_t ntuples = rel->num_tuples;
     intkey_t key;
     table_t row = table_t();
-    milliseconds timestamp = (milliseconds) 0;
+    uint64_t timestamp = (uint64_t) 0;
 
     // add a index field, here payload is index field, row is real payload
     int32_t payload = 0;
@@ -920,7 +922,8 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t
         tid_start_idx[partition] = numthr * partition;
         tid_end_idx[partition] = (last_thread(partition, partitions)) ? rel->num_tuples : numthr * (partition + 1);
     }
-
+    int small = 0;
+    u_int64_t maxTS = 0;
     while ((read = getline(&line, &len, fp)) != -1 && i < ntuples) {
 //        printf("Retrieved line of length %zu:\n", read);
 //        printf("%s", line);
@@ -929,16 +932,18 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t
             strcpy(row.value, line);
             payload = i;
             if (tsKey != 0) {
-                timestamp = (milliseconds) stol(split(line, ",")[tsKey]);
-//                printf("%lld \n", timestamp);
+                timestamp = stol(split(line, ",")[tsKey]) * 2.1 * 1E6;
+//                if (timestamp != 0)
+//                    printf("%lld \n", timestamp);
             }
         } else if (fmtbar) {
             key = stoi(split(line, "|")[keyby]);
             strcpy(row.value, line);
             payload = i;
             if (tsKey != 0) {
-                timestamp = (milliseconds) stol(split(line, "|")[tsKey]);
-//                printf("%lld \n", timestamp);
+                timestamp = stol(split(line, "|")[tsKey]) * 2.1 * 1E6;
+//                if (timestamp != 0)
+//                    printf("%lld \n", timestamp);
             }
         } else {
             printf("error!!\n");
@@ -946,48 +951,33 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t
         }
 //        relPl->rows[i] = row;
 //        relPl->ts[i] = timestamp;
-
+        if (timestamp < 0.5 * 10500000000) {
+            small++;
+        }
+        if (timestamp > maxTS) {
+            maxTS = timestamp;
+        }
         // round robin to assign ts to each thread.
         auto partition = i % partitions;
-        if (tid_start_idx[partition] + tid_offsets[partition] == tid_end_idx[partition]) {
+        int cur_index = tid_start_idx[partition] + tid_offsets[partition];
+
+        if (cur_index == tid_end_idx[partition]) {
             partition = partitions - 1; // if reach the maximum size, append the tuple to the last partition
+            cur_index = tid_start_idx[partition] + tid_offsets[partition];
         }
         // record cur index in partition
-        int cur_index = tid_start_idx[partition] + tid_offsets[partition];
+//        if (cur_index == 80049) {
+//            printf("??");
+//        }
         relPl->ts[cur_index] = timestamp;
         rel->tuples[cur_index].key = key;
         rel->tuples[cur_index].payloadID = payload;
         tid_offsets[partition]++;
 
-        i++;
+        i++;//id of record being read.
     }
-//    for (uint64_t i = 0; i < ntuples; i++) {
-//        if (fmtspace) {
-//            fscanf(fp, "%d %d", &key, &row.value);
-//            payload = i;
-//        } else if (fmtcomma) {
-//            fscanf(fp,"%[^\n]%*c",row.value);
-////            row.value = split(line, "|");
-//            key = stoi(split(row.value, ",")[keyby]);
-//            payload = i;
-//        } else if (fmtbar) {
-//            fscanf(fp,"%[^\n]%*c",row.value);
-////            row.value = split(line, "|");
-//            key = stoi(split(row.value, "|")[keyby]);
-//            payload = i;
-//        } else {
-//            fscanf(fp, "%d", &key);
-//        }
-//
-//        if (warn && key < 0) {
-//            warn = 0;
-//            printf("[WARN ] key=%d, payload=%d\n", key, payload);
-//        }
-//        rel->tuples[i].key = key;
-//        rel->tuples[i].payload = payload;
-//        relPl->rows[i] = row;
-//    }
-
+    printf("small%d, ts %f\n", small, (double) small / rel->num_tuples);
+    printf("maxts:%f\n", maxTS / (2.1 * 1E6));
     fclose(fp);
 }
 

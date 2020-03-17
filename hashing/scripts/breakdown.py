@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pylab
 from matplotlib.font_manager import FontProperties
+from numpy import double
 from numpy.ma import ceil
 
 OPT_FONT_NAME = 'Helvetica'
@@ -79,11 +80,13 @@ def DrawFigure(x_values, y_values, y_max, legend_labels, x_label, y_label, filen
     plt.xticks(index + 0.5 * width, x_values)
     # plt.autofmt_xdate()
     plt.xticks(rotation=30)
-    if id == 38:  # stock: all algorithms are idle most of the time.
-        plt.yscale('log')
+    # if id == 38:  # stock: all algorithms are idle most of the time.
+    #     plt.yscale('log')
+    #     figure.yaxis.set_major_locator(matplotlib.ticker.LogLocator(numticks=5))
+    # else:
+    figure.yaxis.set_major_locator(pylab.LinearLocator(5))
     plt.grid(axis='y', color='gray')
-
-    # figure.yaxis.set_major_locator(pylab.LinearLocator(5))
+    #
 
     # figure.get_xaxis().set_tick_params(direction='in', pad=10)
     # figure.get_yaxis().set_tick_params(direction='in', pad=10)
@@ -150,7 +153,7 @@ def ReadFile(id):
     f = open("/data1/xtra/results/breakdown/PRJ_{}.txt".format(id), "r")
     read = f.readlines()
     for x in read:
-        value = int(x.strip("\n"))
+        value = double(x.strip("\n"))
         if value > max_value:
             max_value = value
         y[cnt][0] = value
@@ -160,7 +163,7 @@ def ReadFile(id):
     f = open("/data1/xtra/results/breakdown/NPJ_{}.txt".format(id), "r")
     read = f.readlines()
     for x in read:
-        value = int(x.strip("\n"))
+        value = double(x.strip("\n"))
         if value > max_value:
             max_value = value
         y[cnt][1] = value
@@ -170,7 +173,7 @@ def ReadFile(id):
     f = open("/data1/xtra/results/breakdown/MPASS_{}.txt".format(id), "r")
     read = f.readlines()
     for x in read:
-        value = int(x.strip("\n"))
+        value = double(x.strip("\n"))
         if value > max_value:
             max_value = value
         y[cnt][2] = value
@@ -180,7 +183,7 @@ def ReadFile(id):
     f = open("/data1/xtra/results/breakdown/MWAY_{}.txt".format(id), "r")
     read = f.readlines()
     for x in read:
-        value = int(x.strip("\n"))
+        value = double(x.strip("\n"))
         if value > max_value:
             max_value = value
         y[cnt][3] = value
@@ -190,7 +193,7 @@ def ReadFile(id):
     f = open("/data1/xtra/results/breakdown/SHJ_JM_NP_{}.txt".format(id), "r")
     read = f.readlines()
     for x in read:
-        value = int(x.strip("\n"))
+        value = double(x.strip("\n"))
         if value > max_value:
             max_value = value
         y[cnt][4] = value
@@ -200,7 +203,7 @@ def ReadFile(id):
     f = open("/data1/xtra/results/breakdown/SHJ_JBCR_NP_{}.txt".format(id), "r")
     read = f.readlines()
     for x in read:
-        value = int(x.strip("\n"))
+        value = double(x.strip("\n"))
         if value > max_value:
             max_value = value
         y[cnt][5] = value
@@ -212,7 +215,7 @@ def ReadFile(id):
     for x in read:
         if x == "===\n":
             break
-        value = int(x.strip("\n"))
+        value = double(x.strip("\n"))
         if value > max_value:
             max_value = value
         y[cnt][6] = value
@@ -222,7 +225,7 @@ def ReadFile(id):
     f = open("/data1/xtra/results/breakdown/PMJ_JBCR_NP_{}.txt".format(id), "r")
     read = f.readlines()
     for x in read:
-        value = int(x.strip("\n"))
+        value = double(x.strip("\n"))
         if value > max_value:
             max_value = value
         y[cnt][7] = value
@@ -250,12 +253,13 @@ if __name__ == "__main__":
 
     y_values, max_value = ReadFile(id)
 
-    # y_norm_values = normalize(y_values)
+    y_norm_values = normalize(y_values)
 
     # break into 4 parts
-    legend_labels = ['wait', 'partition', 'build', 'sort', 'merge', 'join', 'others']
+    legend_labels = ['wait', 'partition', 'build', 'sort', 'merge', 'join', 'others']  #
 
-    DrawFigure(x_values, y_values, int(ceil(max_value / 1000.0)) * 1000, legend_labels, '', 'cycles per output tuple',
+    DrawFigure(x_values, y_norm_values, double(ceil(max_value / 1000.0)) * 1000, legend_labels, '',
+               'cycles per output tuple',
                'breakdown_figure{}'.format(id), id, False)
 
     DrawLegend(legend_labels, 'breakdown_legend')

@@ -239,7 +239,7 @@ cpu-mapping.txt
 #include <zconf.h>
 #include <algorithm>
 #include "benchmark.h"
-
+#include "timer/clock.h"
 
 void
 print_version();

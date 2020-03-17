@@ -39,7 +39,7 @@ struct arg_t {
 
 //#ifndef NO_TIMING
     T_TIMER *timer;
-    milliseconds *startTS;
+    uint64_t *startTS;
 //#endif
 
 };

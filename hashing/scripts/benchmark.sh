@@ -38,7 +38,7 @@ function ResetParameters() {
   STEP_SIZE_S=-1                   # let S has the same arrival rate of R.
   FIXS=0
   ts=1 # stream case
-  Threads=32
+  Threads=16
 }
 
 # Configurable variables
@@ -47,7 +47,7 @@ algo=""
 Threads=16
 timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
-for algo in PRO; do #  NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
+for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #  NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
   RSIZE=1
   SSIZE=1
   RPATH=""
@@ -56,7 +56,7 @@ for algo in PRO; do #  NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
   SKEY=0
   RTS=0
   STS=0
-  for benchmark in "AR" "AD" "KD" "WS" "KD2" "WS2" "RAR" "RAR2" "WS3" "WS4" "Stock" "Rovio" "YSB" "DEBS"; do #"Stock"  "Rovio" "YSB"  "DEBS" # "ScaleStock" "AD" "KD" "WS" "KD2" "WS2" "RAR" "RAR2" "WS3" "WS4"
+  for benchmark in "Stock" "Rovio" "YSB" "DEBS"; do # "AD" "KD" "KD2"  "Stock"  "Rovio" "YSB"  "DEBS" # "ScaleStock" "AD" "KD" "WS" "KD2" "WS2" "RAR" "RAR2" "WS3" "WS4"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "AR") #test arrival rate
@@ -118,7 +118,7 @@ for algo in PRO; do #  NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
       ResetParameters
       TS_DISTRIBUTION=2
       echo test varying timestamp distribution 5 - 9
-      for ZIPF_FACTOR in 0 0.2 0.4 0.8 1; do #
+      for ZIPF_FACTOR in 0 0.4 0.8 1.2 1.6; do #
         KimRun
         let "id++"
       done
@@ -133,7 +133,23 @@ for algo in PRO; do #  NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
       let "id++"
 
       distrbution=2 #varying zipf factor
-      for skew in 0 0.2 0.4 0.8 1; do
+      for skew in 0 0.4 0.8 1.2 1.6; do
+        KimRun
+        let "id++"
+      done
+      ;;
+    "KD2") #test key distribution when data at rest.
+      id=19
+      ## Figure 5
+      ResetParameters
+      ts=0 # data at rest.
+      echo test varying key distribution 19 - 24
+      distrbution=0 #unique
+      KimRun
+      let "id++"
+
+      distrbution=2 #zipf
+      for skew in 0 0.4 0.8 1.2 1.6; do
         KimRun
         let "id++"
       done
@@ -180,29 +196,16 @@ for algo in PRO; do #  NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
         let "id++"
       done
       ;;
-    "KD2") #test key distribution when data at rest.
-      id=19
-      ## Figure 5
-      ResetParameters
-      ts=0 # data at rest.
-      echo test varying key distribution 19 - 24
-      distrbution=0 #unique
-      KimRun
-      let "id++"
-
-      distrbution=2 #zipf
-      for skew in 0 0.2 0.4 0.8 1; do
-        KimRun
-        let "id++"
-      done
-      ;;
     "Stock")
       id=38
       ResetParameters
       ts=1 # stream case
-      WINDOW_SIZE=60000
-      RSIZE=194341
-      SSIZE=240148
+#      WINDOW_SIZE=60000
+#      RSIZE=194341
+#      SSIZE=240148
+      WINDOW_SIZE=5000
+      RSIZE=116941
+      SSIZE=151500
       RPATH=/data1/xtra/datasets/stock/cj_60s_1t.txt
       SPATH=/data1/xtra/datasets/stock/sb_60s_1t.txt
       RKEY=0
@@ -260,8 +263,9 @@ for algo in PRO; do #  NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
       id=42
       ResetParameters
       ts=1 # stream case
-      RSIZE=194341
-      SSIZE=240148
+      WINDOW_SIZE=5000
+      RSIZE=116941
+      SSIZE=151500
       RPATH=/data1/xtra/datasets/stock/cj_60s_1t.txt
       SPATH=/data1/xtra/datasets/stock/sb_60s_1t.txt
       RKEY=0
@@ -278,10 +282,11 @@ for algo in PRO; do #  NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
       id=46
       ResetParameters
       ts=1 # stream case
-      RSIZE=580700
-      SSIZE=580700
-      RPATH=/data1/xtra/datasets/rovio/60s_1t.txt
-      SPATH=/data1/xtra/datasets/rovio/60s_1t.txt
+      WINDOW_SIZE=6000
+      RSIZE=58300
+      SSIZE=58300
+      RPATH=/data1/xtra/datasets/rovio/6s_1t.txt
+      SPATH=/data1/xtra/datasets/rovio/6s_1t.txt
       RKEY=0
       SKEY=0
       RTS=3
@@ -296,10 +301,11 @@ for algo in PRO; do #  NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
       id=50
       ResetParameters
       ts=1 # stream case
+      WINDOW_SIZE=5000
       RSIZE=1000
-      SSIZE=600000
+      SSIZE=5000000
       RPATH=/data1/xtra/datasets/YSB/campaigns_1t.txt
-      SPATH=/data1/xtra/datasets/YSB/ad_60s_1t.txt
+      SPATH=/data1/xtra/datasets/YSB/ad_5s_1t.txt
       RKEY=0
       SKEY=0
       RTS=0
@@ -314,6 +320,7 @@ for algo in PRO; do #  NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
       id=54
       ResetParameters
       ts=1 # stream case
+      WINDOW_SIZE=0
       RSIZE=1000000
       SSIZE=1000000
       RPATH=/data1/xtra/datasets/DEBS/posts_key32_partitioned.csv

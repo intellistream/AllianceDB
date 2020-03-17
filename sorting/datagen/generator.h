@@ -2,28 +2,23 @@
  * @file    generator.h
  * @author  Cagri Balkesen <cagri.balkesen@inf.ethz.ch>
  * @date    Fri May 18 14:05:07 2012
- * @version $Id$ 
- * 
+ * @version $Id: generator.h 4546 2013-12-07 13:56:09Z bcagri $
+ *
  * @brief  Provides methods to generate data sets of various types
- * 
- * (c) 2014, ETH Zurich, Systems Group
  *
  */
 
 #ifndef GENERATOR_H
 #define GENERATOR_H
 
-#include "../utils/types.h" /* relation_t, tuple_t */
-#include <chrono>
-using namespace std::chrono;
+#include "../utils/types.h"
 
 /**
  * @defgroup DataGeneration Data Set Generation
- *
- * @warning all relevant memory must be allocated before calling data generation.
- *
  * @{
  */
+void *
+alloc_aligned(size_t size);
 
 /**
  * Seed the random number generator before calling create_relation_xx. If not
@@ -33,11 +28,20 @@ using namespace std::chrono;
 void
 seed_generator(unsigned int seed);
 
+void
+add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_size, int interval, uint32_t nthreads);
+
+void add_zipf_ts(relation_t *relation, relation_payload_t *relationPayload, int window_size, const double zipf_param, uint32_t partitions);
+
 /**
  * Create relation with non-unique keys uniformly distributed between [0, maxid]
  */
 int
 create_relation_nonunique(relation_t *reln, int64_t ntuples, const int64_t maxid);
+
+int
+create_relation_nonunique_with_ts(relation_t *relation, relation_payload_t *relationPayload, int64_t num_tuples, const int numThr,
+                                  const int64_t maxid, const int step_size, const int interval);
 
 /**
  * Create relation with only primary keys (i.e. keys are unique from 1 to
@@ -68,7 +72,7 @@ create_relation_fk_from_pk(relation_t *fkrel, relation_t *pkrel, int64_t ntuples
  * - maxid is equivalent to the alphabet size
  */
 int
-create_relation_zipf(relation_t * reln, int64_t ntuples,
+create_relation_zipf(relation_t *reln, int64_t ntuples,
                      const int64_t maxid, const double zipfparam);
 
 
@@ -81,6 +85,10 @@ int
 parallel_create_relation(relation_t *reln, uint64_t ntuples,
                          uint32_t nthreads, uint64_t maxid);
 
+int
+parallel_create_relation_with_ts(relation_t *relation, relation_payload_t *relationPayload, uint64_t num_tuples,
+                                 uint32_t nthreads, uint64_t maxid, int step_size, int interval);
+
 /**
  * Create relation with foreign keys (i.e. duplicated keys exist). If ntuples is
  * an exact multiple of maxid, (ntuples/maxid) sub-relations with shuffled keys
@@ -92,18 +100,31 @@ parallel_create_relation_fk(relation_t *reln, int64_t ntuples,
                             const int64_t maxid, uint32_t nthreads);
 
 /**
+ * Free memory allocated for only tuples.
+ */
+void
+delete_relation(relation_t *reln);
+
+void
+delete_relation_payload(relation_payload_t *relPl);
+/**
  * This is just to make sure that chunks of the temporary memory
  * will be numa local to threads. Just initialize memory to 0 for
  * making sure it will be allocated numa-local.
  */
 int
-numa_localize(tuple_t * relation, int64_t num_tuples, uint32_t nthreads);
+numa_localize(tuple_t *relation, int64_t num_tuples, uint32_t nthreads);
 
 /**
  * Write relation to a file.
  */
 void
-write_relation(relation_t * rel, char * filename);
+write_relation(relation_t *rel, char *filename);
+
+/** Load a relation from given file name */
+int
+load_relation(relation_t *relation, relation_payload_t* relation_payload, int32_t keyby, int32_t tsKey, char *filename, uint64_t num_tuples, uint32_t partitions);
+
 
 /**
  * Shuffle tuples of the relation using Knuth shuffle.
@@ -112,30 +133,6 @@ write_relation(relation_t * rel, char * filename);
  */
 void
 knuth_shuffle(relation_t * relation);
-
-/** Load a relation from given file name */
-int
-load_relation(relation_t *relation, relation_payload_t* relation_payload, int32_t keyby, int32_t tsKey, char *filename, uint64_t num_tuples);
-
-int
-parallel_create_relation_with_ts(relation_t *relation, relation_payload_t *relationPayload, uint64_t num_tuples,
-                                 uint32_t nthreads, uint64_t maxid, int step_size, int interval);
-
-/**
- * Free memory allocated for only tuples.
- */
-void
-delete_relation(relation_t *reln);
-
-void
-delete_relation_payload(relation_payload_t *relPl);
-
-void
-add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_size, int interval, const int partitions);
-
-void
-add_zipf_ts(relation_t *relation, relation_payload_t *relationPayload, int window_size, const double zipf_param, int i);
-
 
 /** @} */
 

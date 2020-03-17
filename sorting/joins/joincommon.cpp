@@ -21,7 +21,9 @@
 #include "../affinity/memalloc.h"           /* malloc_aligned() */
 
 #ifdef JOIN_MATERIALIZE
+
 #include "../utils/tuple_buffer.h"
+
 #endif
 
 #define REQUIRED_STACK_SIZE (32*1024*1024)
@@ -44,7 +46,7 @@ sortmergejoin_initrun(relation_t *relR, relation_t *relS, joinconfig_t *joincfg,
 
 //#ifndef NO_TIMING
     T_TIMER timer[nthreads];//every thread has its own timer.
-    chrono::milliseconds *startTS = new chrono::milliseconds();
+    uint64_t *startTS = new uint64_t;
 //#endif
 
     /**** allocate temporary space for partitioning ****/
@@ -141,7 +143,7 @@ sortmergejoin_initrun(relation_t *relR, relation_t *relS, joinconfig_t *joincfg,
                 ) {//dataset=Rovio/DEBS
             args[i].timer->record_gap = 1000;
         } else {
-            args[i].timer->record_gap = 1;
+            args[i].timer->record_gap = 10;
         }
 //        printf("record_gap:%d\n",  args[i].timer ->record_gap);
 
@@ -178,7 +180,7 @@ sortmergejoin_initrun(relation_t *relR, relation_t *relS, joinconfig_t *joincfg,
 #endif
 
 #ifdef JOIN_MATERIALIZE
-        args[i].threadresult        = &(joinresult->resultlist[i]);
+        args[i].threadresult = &(joinresult->resultlist[i]);
 #endif
 
         /* run the selected join algorithm thread */
@@ -190,13 +192,16 @@ sortmergejoin_initrun(relation_t *relR, relation_t *relS, joinconfig_t *joincfg,
         }
 
     }
-
     /* wait for threads to finish */
     for (i = 0; i < nthreads; i++) {
         pthread_join(tid[i], NULL);
+    }
+
+    //compute results.
+    for (i = 0; i < nthreads; i++) {
         result += args[i].result;
 #ifndef NO_TIMING
-        merge(args[i].timer, relR, relS, startTS);
+        merge(args[i].timer, relR, relS, startTS, window_size);
 #endif
     }
 
@@ -281,6 +286,7 @@ print_timing(uint64_t numtuples, struct timeval *start, struct timeval *end,
     fprintf(out, "%.4lf ", (numtuples / (diff_usec / 1000000L)));
     fflush(out);
 }
+
 /**
  * Does merge join on two sorted relations. Just a naive scalar
  * implementation. TODO: consider AVX for this code.
@@ -309,7 +315,7 @@ merge_join(tuple_t *rtuples, tuple_t *stuples,
 #endif
 
 #ifdef JOIN_MATERIALIZE
-    chainedtuplebuffer_t * chainedbuf = (chainedtuplebuffer_t *) output;
+    chainedtuplebuffer_t *chainedbuf = (chainedtuplebuffer_t *) output;
 #endif
 
     while (i < numR && j < numS) {
@@ -327,7 +333,7 @@ merge_join(tuple_t *rtuples, tuple_t *stuples,
                     // join match outpit: <R[i], S[jj]>
 #ifdef JOIN_MATERIALIZE
                     /** We materialize only <S-key, S-RID> */
-                    tuple_t * outtuple = cb_next_writepos(chainedbuf);
+                    tuple_t *outtuple = cb_next_writepos(chainedbuf);
                     outtuple->key = stuples[jj].key;
                     outtuple->payloadID = stuples[jj].payloadID;
 #endif
@@ -393,7 +399,7 @@ merge_join_interpolation(tuple_t *rtuples, tuple_t *stuples,
     uint64_t matches = 0;
 
 #ifdef JOIN_MATERIALIZE
-    chainedtuplebuffer_t * chainedbuf = (chainedtuplebuffer_t *) output;
+    chainedtuplebuffer_t *chainedbuf = (chainedtuplebuffer_t *) output;
 #endif
 
     /* find search start index with interpolation, only 2-steps */
@@ -441,7 +447,7 @@ merge_join_interpolation(tuple_t *rtuples, tuple_t *stuples,
         else {
 
 #ifdef JOIN_MATERIALIZE
-            tuple_t * outtuple = cb_next_writepos(chainedbuf);
+            tuple_t *outtuple = cb_next_writepos(chainedbuf);
             *outtuple = stuples[j];
 #endif
 

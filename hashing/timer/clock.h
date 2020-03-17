@@ -1,37 +1,35 @@
 //
 // Created by Shuhao Zhang on 3/3/20.
-//
+//https://stackoverflow.com/questions/275004/timer-function-to-provide-time-in-nano-seconds-using-c/11485388#11485388
 
 #ifndef ALLIANCEDB_CLOCK_H
 #define ALLIANCEDB_CLOCK_H
 
-
 #include <chrono>
-#include <atomic>
+#include "../utils/machine.h"
 
+namespace x
+{
+    int test_clock();
 
-template<typename Clock = std::chrono::high_resolution_clock>
-class stopwatch {
-    const typename Clock::time_point start_point;
-public:
-    stopwatch() :
-            start_point(Clock::now()) {}
+    struct clock
+    {
+        typedef unsigned long long                 rep;
+        typedef std::ratio<1, machine_frequencey>       period; //
+        typedef std::chrono::duration<rep, period> duration;
+        typedef std::chrono::time_point<clock>     time_point;
+        static const bool is_steady =              true;
+        typedef std::chrono::duration<double, typename x::clock::period> Cycle;
+        typedef std::chrono::duration<unsigned long long, std::pico> picoseconds;
+        static time_point now() noexcept
+        {
+            unsigned lo, hi;
+            asm volatile("rdtsc" : "=a" (lo), "=d" (hi));
+            return time_point(duration(static_cast<rep>(hi) << 32 | lo));
+        }
 
-    template<typename Rep = typename Clock::duration::rep, typename Units = typename Clock::duration>
-    Rep elapsed_time() const {
-        std::atomic_thread_fence(std::memory_order_relaxed);
-        auto counted_time = std::chrono::duration_cast<Units>(Clock::now() - start_point).count();
-        std::atomic_thread_fence(std::memory_order_relaxed);
-        return static_cast<Rep>(counted_time);
-    }
+    };
 
-
-
-};
-
-using precise_stopwatch = stopwatch<>;
-using system_stopwatch = stopwatch<std::chrono::system_clock>;
-using monotonic_stopwatch = stopwatch<std::chrono::steady_clock>;
-
+}  // x
 
 #endif //ALLIANCEDB_CLOCK_H

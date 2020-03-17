@@ -52,7 +52,7 @@ typedef int32_t value_t;
 #endif
 
 typedef struct tuple_t tuple_t;
-typedef struct relation_t relation_t;
+typedef struct relation_t   relation_t;
 typedef struct relation_payload_t relation_payload_t;
 
 typedef struct result_t result_t;
@@ -86,8 +86,7 @@ struct relation_t {
 
 // add a new structure to save real payload, let original payload be index of this struct
 struct relation_payload_t {
-//    time_t *ts;//add timestamp for each tuple in the relation.
-    std::chrono::milliseconds *ts;//add timestamp for each tuple in the relation.
+    uint64_t *ts;//add timestamp for each tuple in the relation.
 //    table_t *rows;
     uint64_t num_tuples;
 };

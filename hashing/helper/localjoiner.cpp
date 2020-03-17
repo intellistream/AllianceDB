@@ -87,8 +87,8 @@ void SHJJoiner::join(int32_t tid, tuple_t *tuple, bool ISTupleR, int64_t *matche
 #ifndef NO_TIMING
         END_MEASURE_BUILD_ACC(timer)//accumulate hash table build time.
 #endif
-        proble_hashtable_single_measure(htS, tuple, hashmask_S, skipbits_S, matches, /*thread_fun,*/ timer, ISTupleR,
-                                        out);//(2)
+        probe_hashtable_single_measure(htS, tuple, hashmask_S, skipbits_S, matches, /*thread_fun,*/ timer, ISTupleR,
+                                       out);//(2)
     } else {
 #ifndef NO_TIMING
         BEGIN_MEASURE_BUILD_ACC(timer)
@@ -97,8 +97,8 @@ void SHJJoiner::join(int32_t tid, tuple_t *tuple, bool ISTupleR, int64_t *matche
 #ifndef NO_TIMING
         END_MEASURE_BUILD_ACC(timer)//accumulate hash table build time.
 #endif
-        proble_hashtable_single_measure(htR, tuple, hashmask_R, skipbits_R, matches, /*thread_fun,*/ timer, ISTupleR,
-                                        out);//(4)
+        probe_hashtable_single_measure(htR, tuple, hashmask_R, skipbits_R, matches, /*thread_fun,*/ timer, ISTupleR,
+                                       out);//(4)
     }
 }
 

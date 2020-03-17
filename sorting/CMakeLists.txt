@@ -32,7 +32,7 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -msse4.2 -mavx2")
 
 add_executable(sorting
         datagen/generator.h datagen/generator.cpp datagen/genzipf.cpp datagen/genzipf.h
-        utils/types.h config.h utils/rdtsc.h
+        utils/types.h config.h timer/rdtsc.h
         affinity/cpu_mapping.cpp affinity/cpu_mapping.h
         joins/sortmergejoin_multipass.h joins/sortmergejoin_multiway.h
         joins/sortmergejoin_multiway_skewhandling.h joins/sortmergejoin_mpsm.h

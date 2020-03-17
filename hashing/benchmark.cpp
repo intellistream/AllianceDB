@@ -71,7 +71,7 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int
 
 //    size_t relTssz = relPl->num_tuples * sizeof(milliseconds)
 //                     + RELATION_PADDING(cmd_params.nthreads, cmd_params.part_fanout);
-    relPl->ts = (milliseconds *) MALLOC(relPl->num_tuples * sizeof(tuple_t));
+    relPl->ts = (uint64_t *) MALLOC(relPl->num_tuples * sizeof(uint64_t));
 
     //    /* NUMA-localize the input: */
     //    if(!nonumalocalize){
@@ -128,7 +128,7 @@ void writefile(relation_payload_t *relPl, const param_t cmd_params) {
     string path = "/data1/xtra/datasets/Kim/data_distribution_zipf" + std::to_string(cmd_params.zipf_param) + ".txt";
     ofstream outputFile(path, std::ios::trunc);
     for (auto i = 0; i < relPl->num_tuples; i++) {
-        outputFile << (std::to_string(relPl->ts[i].count()) + "\n");
+        outputFile << (std::to_string(relPl->ts[i]) + "\n");
     }
     outputFile.close();
 }
@@ -163,7 +163,6 @@ benchmark(const param_t cmd_params) {
                    cmd_params.r_seed, cmd_params.step_sizeR, partitions);
     DEBUGMSG("relR [aligned:%d]: %s", is_aligned(relR.tuples, CACHE_LINE_SIZE),
              print_relation(relR.tuples, min((uint64_t) 1000, cmd_params.r_size)).c_str());
-
 
     /* create relation S */
     if (cmd_params.old_param) {

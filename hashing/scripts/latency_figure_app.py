@@ -139,7 +139,7 @@ def ReadFile():
         file = '/data1/xtra/results/latency/PRJ_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
-        x = float(read.pop(int(len(read) * 0.99)).strip("\n"))  # get the 99th timestamp        
+        x = float(read.pop(int(len(read) * 0.95)).strip("\n"))  # get the 99th timestamp        
         col1.append(x)
     y.append(col1)
 
@@ -147,7 +147,7 @@ def ReadFile():
         file = '/data1/xtra/results/latency/NPJ_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
-        x = float(read.pop(int(len(read) * 0.99)).strip("\n"))  # get the 99th timestamp  
+        x = float(read.pop(int(len(read) * 0.95)).strip("\n"))  # get the 99th timestamp  
         col2.append(x)
     y.append(col2)
 
@@ -155,7 +155,7 @@ def ReadFile():
         file = '/data1/xtra/results/latency/MPASS_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
-        x = float(read.pop(int(len(read) * 0.99)).strip("\n"))  # get the 99th timestamp       
+        x = float(read.pop(int(len(read) * 0.95)).strip("\n"))  # get the 99th timestamp       
         col3.append(x)
     y.append(col3)
 
@@ -163,7 +163,7 @@ def ReadFile():
         file = '/data1/xtra/results/latency/MWAY_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
-        x = float(read.pop(int(len(read) * 0.99)).strip("\n"))  # get the 99th timestamp       
+        x = float(read.pop(int(len(read) * 0.95)).strip("\n"))  # get the 99th timestamp       
         col4.append(x)
     y.append(col4)
 
@@ -171,7 +171,7 @@ def ReadFile():
         file = '/data1/xtra/results/latency/SHJ_JM_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
-        x = float(read.pop(int(len(read) * 0.99)).strip("\n"))  # get last timestamp
+        x = float(read.pop(int(len(read) * 0.95)).strip("\n"))  # get last timestamp
         col5.append(x)
     y.append(col5)
 
@@ -179,7 +179,7 @@ def ReadFile():
         file = '/data1/xtra/results/latency/SHJ_JBCR_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
-        x = float(read.pop(int(len(read) * 0.99)).strip("\n"))  # get last timestamp
+        x = float(read.pop(int(len(read) * 0.95)).strip("\n"))  # get last timestamp
         col6.append(x)
     y.append(col6)
 
@@ -187,7 +187,7 @@ def ReadFile():
         file = '/data1/xtra/results/latency/PMJ_JM_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
-        x = float(read.pop(int(len(read) * 0.99)).strip("\n"))  # get last timestamp
+        x = float(read.pop(int(len(read) * 0.95)).strip("\n"))  # get last timestamp
         col7.append(x)
     y.append(col7)
 
@@ -195,7 +195,7 @@ def ReadFile():
         file = '/data1/xtra/results/latency/PMJ_JBCR_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
-        x = float(read.pop(int(len(read) * 0.99)).strip("\n"))  # get last timestamp
+        x = float(read.pop(int(len(read) * 0.95)).strip("\n"))  # get last timestamp
         col8.append(x)
     y.append(col8)
     return y
@@ -209,7 +209,7 @@ if __name__ == "__main__":
     legend_labels = ['PRJ', 'NPJ', 'M-PASS', 'M-WAY', 'SHJ$^M$', 'SHJ$^B$', 'PMJ$^M$', 'PMJ$^B$']
 
     DrawFigure(x_values, y_values, legend_labels,
-               '', '99$^{th}$ latency (ms)', 0,
+               '', '95$^{th}$ latency (ms)', 0,
                400, 'latency_figure_app', False)
 
     DrawLegend(legend_labels, 'latency_legend')
