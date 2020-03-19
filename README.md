@@ -5,6 +5,12 @@
 
 # Stream Joins on Modern Multicore Processors
 
+
+## Installation
+
+apt-get install libnuma-dev
+
+
 ## Workload Distribution
 
 ### Join-Matrix (JM)
