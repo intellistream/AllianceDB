@@ -92,9 +92,11 @@ dump_timing(vector<double> vector, std::vector<double> vector_latency,
 }
 
 void breakdown_global(int64_t total_results, int nthreads, T_TIMER *timer, long lastTS, _IO_FILE *pFile) {
+
     auto others = (timer->overall_timer -
                    (timer->wait_timer + timer->partition_timer + timer->buildtimer + timer->sorttimer +
                     timer->mergetimer + timer->join_timer));
+
     printf("%f\n%f\n%f\n%f\n%f\n%f\n%lu\n",
            (double) timer->wait_timer / total_results,
            (double) timer->partition_timer / total_results,
@@ -104,6 +106,7 @@ void breakdown_global(int64_t total_results, int nthreads, T_TIMER *timer, long 
            (double) timer->join_timer / total_results,
            others / total_results
     );
+
     fprintf(pFile, "%f\n%f\n%f\n%f\n%f\n%f\n%lu\n",
             (double) timer->wait_timer / total_results,
             (double) timer->partition_timer / total_results,

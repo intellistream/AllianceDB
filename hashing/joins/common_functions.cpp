@@ -209,13 +209,7 @@ int64_t probe_hashtable_single_measure(const hashtable_t *ht, const tuple_t *tup
         /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/
                                        T_TIMER *timer, bool ISTupleR, void *output) {
     uint32_t index_ht;
-#ifdef PREFETCH_NPJ
-    if (prefetch_index < rel->num_tuples) {
-            intkey_t idx_prefetch = HASH(rel->tuples[prefetch_index++].key,
-                                         hashmask, skipbits);
-            __builtin_prefetch(ht->buckets + idx_prefetch, 0, 1);
-        }
-#endif
+
 #ifdef JOIN_RESULT_MATERIALIZE
     chainedtuplebuffer_t *chainedbuf = (chainedtuplebuffer_t *) output;
 #endif
@@ -246,13 +240,6 @@ int64_t probe_hashtable_single_measure(const hashtable_t *ht, const tuple_t *tup
         }
         b = b->next;/* follow overflow pointer */
     } while (b);
-//    if (!ISTupleR && tuple->payloadID == 7953) {
-//        printf("%d, %f, %ld\n", tuple->payloadID, (*matches) / 786396.0, timer->recordR.begin().operator*());
-//    }
-//    if (!ISTupleR && tuple->payloadID == 152508) {
-//        printf("%d, %f, %ld\n", tuple->payloadID, (*matches) / 786396.0, timer->recordR.begin().operator*());
-//    }
-
     return *matches;
 }
 

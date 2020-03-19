@@ -23,8 +23,8 @@ function KimRun() {
   ./sorting -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS
 }
 
-DEFAULT_WINDOW_SIZE=1000 #ms
-DEFAULT_STEP_SIZE=500   # |tuples| per ms.
+DEFAULT_WINDOW_SIZE=2000 #(ms) -- 2 seconds
+DEFAULT_STEP_SIZE=250    # |tuples| per ms. -- 50K per seconds. ## this controls the guranalrity of input stream.
 function ResetParameters() {
   TS_DISTRIBUTION=0                # uniform time distribution
   ZIPF_FACTOR=0                    # uniform time distribution
@@ -36,13 +36,13 @@ function ResetParameters() {
   STEP_SIZE_S=-1                   # let S has the same arrival rate of R.
   FIXS=0
   ts=1 # stream case
-  Threads=16
+  Threads=2
 }
 
 # Configurable variables
 # Generate a timestamp
 algo=""
-Threads=16
+Threads=2
 timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
 for algo in m-way m-pass; do #
@@ -54,7 +54,7 @@ for algo in m-way m-pass; do #
   SKEY=0
   RTS=0
   STS=0
-  for benchmark in "Stock" "Rovio" "YSB" "DEBS"; do #"ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "AR" "AD" "KD" "WS" "KD2" "WS2" "RAR" "RAR2" "WS3" "WS4" "Stock" "Rovio" "YSB" "DEBS"
+  for benchmark in "Stock" "Rovio" "YSB" "DEBS"  "AD" "KD" "WS" "KD2" "WS2" "RAR" "RAR2" "WS3" "WS4"; do #"ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "AR" "AD" "KD" "WS" "KD2" "WS2" "RAR" "RAR2" "WS3" "WS4" "Stock" "Rovio" "YSB" "DEBS"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "AR") #test arrival rate
@@ -268,7 +268,7 @@ for algo in m-way m-pass; do #
       RTS=1
       STS=1
       echo test scalability of Stock 42 - 45
-      for Threads in 1 8 16 32; do
+      for Threads in 1 2 4 8; do
         benchmarkRun
         let "id++"
       done
@@ -286,7 +286,7 @@ for algo in m-way m-pass; do #
       RTS=3
       STS=3
       echo test scalability 46 - 49
-      for Threads in 1 8 16 32; do
+      for Threads in 1 2 4 8; do
         benchmarkRun
         let "id++"
       done
@@ -305,7 +305,7 @@ for algo in m-way m-pass; do #
       RTS=0
       STS=1
       echo test scalability 50 - 53
-      for Threads in 1 8 16 32; do
+      for Threads in 1 2 4 8; do
         benchmarkRun
         let "id++"
       done
@@ -324,7 +324,7 @@ for algo in m-way m-pass; do #
       RTS=0
       STS=0
       echo test scalability 54 - 57
-      for Threads in 1 8 16 32; do
+      for Threads in 1 2 4 8; do
         benchmarkRun
         let "id++"
       done

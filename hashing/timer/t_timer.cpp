@@ -191,17 +191,20 @@ void merge(T_TIMER *timer, relation_t *relR, relation_t *relS, uint64_t *startTS
     //For latency and disorder measurement
     uint64_t latency = -1;
     int32_t gap = 0;
-    for (auto i = 0; i < timer->recordRID.size(); i++) {
+    auto Rrecord_size=timer->recordRID.size();
+    for (auto i = 0; i < Rrecord_size; i++) {
         latency =
                 timer->recordR.at(i) - actual_start_timestamp
-                - relR->payload->ts[timer->recordRID.at(i)]
-                + (uint64_t) (lastTS * 2.1 * 1E6);//latency of one tuple.
+                - relR->payload->ts[timer->recordRID.at(i)]//12537240 ~ 9205048
+                + (uint64_t) (lastTS * 2.1 * 1E6);//waiting for the last tuple.
         global_record_latency.push_back(latency / (2.1 * 1E6));//cycle to ms
 
         gap = (int32_t) timer->recordRID.at(i) - i;//if it's sequentially processed, gap should be zero.
         global_record_gap.push_back(gap);
     }
-    for (auto i = 0; i < timer->recordSID.size(); i++) {
+
+    auto Srecord_size=timer->recordSID.size();
+    for (auto i = 0; i < Srecord_size; i++) {
         latency =
                 timer->recordS.at(i) - actual_start_timestamp
                 - relS->payload->ts[timer->recordSID.at(i)]

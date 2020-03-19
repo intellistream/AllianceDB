@@ -23,7 +23,7 @@ item_t *gen_zipf(unsigned int stream_size,
                  double zipf_factor,
                  item_t **output);
 
-int32_t *
+uint64_t *
 gen_zipf_ts(unsigned int stream_size,
             unsigned int alphabet_size,
             double zipf_factor);

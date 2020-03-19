@@ -209,7 +209,6 @@ sortmergejoin_initrun(relation_t *relR, relation_t *relS, joinconfig_t *joincfg,
     joinresult->totalresults = result;
     joinresult->nthreads = nthreads;
 
-
 //    /* stats */
 //    uint64_t total = args[0].join;
 //    fprintf(stdout, "Total, Partitioning, Sort, First-Merge, Merge, Join\n");
@@ -239,11 +238,6 @@ sortmergejoin_initrun(relation_t *relR, relation_t *relS, joinconfig_t *joincfg,
 //           "lastTS is:%ld\n", ts_R, ts_S, lastTS);
     std::string name = algoName + "_" + std::to_string(exp_id);
     string path = "/data1/xtra/results/breakdown/" + name.append(".txt");
-
-//    boost::filesystem::path dir(path);
-//    if(boost::filesystem::create_directories(dir)) {
-//        std::cout << "create directory" << "\n";
-//    }
 
     auto fp = fopen(path.c_str(), "w");
     for (i = 0; i < nthreads; i++) {
@@ -338,13 +332,7 @@ merge_join(tuple_t *rtuples, tuple_t *stuples,
                     outtuple->payloadID = stuples[jj].payloadID;
 #endif
                     matches++;
-//                    this_thread::sleep_for(chrono::nanoseconds (timer->simulate_compute_time));
-//                    timespec tim;
-//                    tim.tv_nsec = 1;
-//                    nanosleep(&tim, NULL);
 
-                    //call a dummy function that simulates the aggregation.
-//                    DUMMY()
 #ifndef NO_TIMING
                     END_PROGRESSIVE_MEASURE(stuples[j].payloadID, timer, false)
 #endif

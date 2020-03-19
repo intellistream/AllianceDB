@@ -48,6 +48,6 @@ add_executable(sorting
         main.cpp utils/tuple_buffer.h)
 
 target_link_libraries(sorting numa)
-target_link_libraries(sorting check)
+#target_link_libraries(sorting check)
 target_link_libraries(sorting rt)
 #target_link_libraries(sorting boost_system)

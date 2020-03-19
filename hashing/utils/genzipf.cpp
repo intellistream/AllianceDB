@@ -16,6 +16,7 @@
 #include <algorithm>
 
 #include "genzipf.h"
+#include "generator.h"
 
 /**
  * Create an alphabet, an array of size @a size with randomly
@@ -201,11 +202,11 @@ gen_zipf(unsigned int stream_size,
 /**
  * Generate a sorted timestamp table with Zipf-distributed content.
  */
-int32_t *
+uint64_t *
 gen_zipf_ts(unsigned int stream_size,
             unsigned int alphabet_size,
             double zipf_factor) {
-    int32_t *ret;
+    uint64_t *ret;
 
     /* prepare stuff for Zipf generation */
 //    uint32_t *alphabet = gen_alphabet(alphabet_size);
@@ -220,7 +221,7 @@ gen_zipf_ts(unsigned int stream_size,
 //        printf("LUT%d: %f\n", i, lut[i]);
 //    }
 
-    ret = (int32_t *) malloc(stream_size * sizeof(int32_t));
+    ret = (uint64_t *) malloc(stream_size * sizeof(uint64_t));
 
     assert (ret);
 
@@ -248,7 +249,7 @@ gen_zipf_ts(unsigned int stream_size,
 
             pos = right;
         }
-        ret[i] = (int) alphabet[pos];
+        ret[i] = (uint64_t) alphabet[pos] * 2.1 * 1E6;
     }
 
     free(lut);
@@ -257,6 +258,8 @@ gen_zipf_ts(unsigned int stream_size,
     // sort ret
     std::sort(ret, ret + stream_size);
 
+    //smooth timestamp.
+    smooth(ret, stream_size);
     return ret;
 }
 

@@ -1,5 +1,7 @@
 /* @version $Id: generator.c 4546 2013-12-07 13:56:09Z bcagri $ */
 
+#include <algorithm>
+
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif
@@ -130,9 +132,10 @@ void ts_shuffle(relation_t *relation, relation_payload_t *relationPayload, uint3
 
 void
 add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_size, int interval, uint32_t partitions) {
-    int ts = 0;
+    uint64_t *ret;
+    ret = (uint64_t *) malloc(relation->num_tuples * sizeof(uint64_t));
 
-    int numthr = relation->num_tuples / partitions;//replicate R, partition S.
+    int numthr = relation->num_tuples / partitions;
 
     int *tid_offsets = new int[partitions];
     int *tid_start_idx = new int[partitions];
@@ -147,10 +150,20 @@ add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_size,
                  tid_end_idx[partition]);
     }
 
+    //create ts.
+    uint64_t ts = 0;
     for (auto i = 0; i < relation->num_tuples; i++) {
         if (i % (step_size) == 0) {
             ts += interval * 2.1 * 1E6;//2.1GHz, 1 milliseconds to ticks.
         }
+        ret[i] = ts;
+    }
+
+    //smooth ts.
+    smooth(ret, relation->num_tuples);
+
+    //shuffle assign ts
+    for (auto i = 0; i < relation->num_tuples; i++) {
         // round robin to assign ts to each thread.
         auto partition = i % partitions;
         if (tid_start_idx[partition] + tid_offsets[partition] == tid_end_idx[partition]) {
@@ -158,9 +171,10 @@ add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_size,
         }
         // record cur index in partition
         int cur_index = tid_start_idx[partition] + tid_offsets[partition];
-        relationPayload->ts[cur_index] = (uint64_t) ts;
+        relationPayload->ts[cur_index] = ret[i];
         tid_offsets[partition]++;
     }
+
 #ifdef DEBUG
     for (auto i = 0; i < relation->num_tuples; i++) {
         printf("ts: %ld\n", relationPayload->ts[i].count());
@@ -180,7 +194,7 @@ void add_zipf_ts(relation_t *relation, relation_payload_t *relationPayload, int 
                  uint32_t partitions) {
 
     int small = 0;
-    int32_t *timestamps = gen_zipf_ts(relation->num_tuples, window_size, zipf_param);
+    uint64_t *timestamps = gen_zipf_ts(relation->num_tuples, window_size, zipf_param);
 
     int numthr = relation->num_tuples / partitions;//replicate R, partition S.
 
@@ -203,7 +217,7 @@ void add_zipf_ts(relation_t *relation, relation_payload_t *relationPayload, int 
 
         // record cur index in partition
         int cur_index = tid_start_idx[partition] + tid_offsets[partition];
-        relationPayload->ts[cur_index] = (uint64_t) timestamps[i] * 2.1 * 1E6;//ms to cycle
+        relationPayload->ts[cur_index] = (uint64_t) timestamps[i];
         tid_offsets[partition]++;
 
         if (relationPayload->ts[i] < 0.25 * window_size) {
@@ -350,6 +364,7 @@ numa_localize_thread(void *args) {
 void
 read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t tsKey, char *filename,
               uint32_t partitions);
+
 
 /**
  * Write relation to a file.
@@ -901,12 +916,8 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t
 //    } while (c != '\n');
 
     uint64_t ntuples = rel->num_tuples;
-    intkey_t key;
-    table_t row = table_t();
-    uint64_t timestamp = (uint64_t) 0;
 
-    // add a index field, here payload is index field, row is real payload
-    int32_t payload = 0;
+    table_t row = table_t();
 
     int warn = 1;
     int i = 0;
@@ -922,26 +933,31 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t
         tid_start_idx[partition] = numthr * partition;
         tid_end_idx[partition] = (last_thread(partition, partitions)) ? rel->num_tuples : numthr * (partition + 1);
     }
-    int small = 0;
-    u_int64_t maxTS = 0;
+
+    uint64_t *ret;
+    ret = (uint64_t *) malloc(rel->num_tuples * sizeof(uint64_t));
+    intkey_t *key;
+    key = (intkey_t *) malloc(rel->num_tuples * sizeof(intkey_t));
+
+    //load ts and key
     while ((read = getline(&line, &len, fp)) != -1 && i < ntuples) {
 //        printf("Retrieved line of length %zu:\n", read);
 //        printf("%s", line);
         if (fmtcomma) {
-            key = stoi(split(line, ",")[keyby]);
+            key[i] = stoi(split(line, ",")[keyby]);
             strcpy(row.value, line);
-            payload = i;
+
             if (tsKey != 0) {
-                timestamp = stol(split(line, ",")[tsKey]) * 2.1 * 1E6;
+                ret[i] = stol(split(line, ",")[tsKey]) * 2.1 * 1E6;
 //                if (timestamp != 0)
 //                    printf("%lld \n", timestamp);
             }
         } else if (fmtbar) {
-            key = stoi(split(line, "|")[keyby]);
+            key[i] = stoi(split(line, "|")[keyby]);
             strcpy(row.value, line);
-            payload = i;
+
             if (tsKey != 0) {
-                timestamp = stol(split(line, "|")[tsKey]) * 2.1 * 1E6;
+                ret[i] = stol(split(line, "|")[tsKey]) * 2.1 * 1E6;
 //                if (timestamp != 0)
 //                    printf("%lld \n", timestamp);
             }
@@ -949,36 +965,30 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t
             printf("error!!\n");
             return;
         }
-//        relPl->rows[i] = row;
-//        relPl->ts[i] = timestamp;
-        if (timestamp < 0.5 * 10500000000) {
-            small++;
-        }
-        if (timestamp > maxTS) {
-            maxTS = timestamp;
-        }
-        // round robin to assign ts to each thread.
-        auto partition = i % partitions;
-        int cur_index = tid_start_idx[partition] + tid_offsets[partition];
-
-        if (cur_index == tid_end_idx[partition]) {
-            partition = partitions - 1; // if reach the maximum size, append the tuple to the last partition
-            cur_index = tid_start_idx[partition] + tid_offsets[partition];
-        }
-        // record cur index in partition
-//        if (cur_index == 80049) {
-//            printf("??");
-//        }
-        relPl->ts[cur_index] = timestamp;
-        rel->tuples[cur_index].key = key;
-        rel->tuples[cur_index].payloadID = payload;
-        tid_offsets[partition]++;
-
         i++;//id of record being read.
     }
-    printf("small%d, ts %f\n", small, (double) small / rel->num_tuples);
-    printf("maxts:%f\n", maxTS / (2.1 * 1E6));
-    fclose(fp);
+
+    //smooth ts.
+
+    smooth(ret, rel->num_tuples);
+
+    //shuffle assign ts
+    for (auto i = 0; i < rel->num_tuples; i++) {
+        // round robin to assign ts to each thread.
+        auto partition = i % partitions;
+        if (tid_start_idx[partition] + tid_offsets[partition] == tid_end_idx[partition]) {
+            partition = partitions - 1; // if reach the maximum size, append the tuple to the last partition
+        }
+        // record cur index in partition
+        int cur_index = tid_start_idx[partition] + tid_offsets[partition];
+        relPl->ts[cur_index] = ret[i];
+        rel->tuples[cur_index].key = key[i];
+        rel->tuples[cur_index].payloadID = i;
+        tid_offsets[partition]++;
+    }
+//    printf("small%d, ts %f\n", small, (double) small / rel->num_tuples);
+//    printf("maxts:%f\n", maxTS / (2.1 * 1E6));
+//    fclose(fp);
 }
 
 void *alloc_aligned(size_t size) {
@@ -1003,4 +1013,22 @@ void *alloc_aligned(size_t size) {
 }
 
 
-
+void smooth(uint64_t *ret, unsigned int stream_size) {
+    printf("smoothing timestamp...");
+    auto step_size = 0;
+    auto current_index = 0;
+    auto head_ts = ret[0];
+    for (auto i = 0; i < stream_size; i++) {
+        if (head_ts == ret[i]) {//record the step size.
+            step_size++;
+        } else {//smooth timestamp from current index
+            auto inner_add = (ret[i] - ret[current_index]) / (double) (step_size);
+            for (auto j = 0; j < step_size; j++) {
+                ret[current_index + j] += j * inner_add;
+            }
+            head_ts = ret[i];
+            current_index = i;
+            step_size = 1;
+        }
+    }
+}

@@ -25,8 +25,8 @@ function KimRun() {
   ./hashing -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS
 }
 
-DEFAULT_WINDOW_SIZE=1000 #(ms) -- 2 seconds
-DEFAULT_STEP_SIZE=500    # |tuples| per ms. -- 50K per seconds.
+DEFAULT_WINDOW_SIZE=2000 #(ms) -- 2 seconds
+DEFAULT_STEP_SIZE=250    # |tuples| per ms. -- 50K per seconds. ## this controls the guranalrity of input stream.
 function ResetParameters() {
   TS_DISTRIBUTION=0                # uniform time distribution
   ZIPF_FACTOR=0                    # uniform time distribution
@@ -38,16 +38,16 @@ function ResetParameters() {
   STEP_SIZE_S=-1                   # let S has the same arrival rate of R.
   FIXS=0
   ts=1 # stream case
-  Threads=16
+  Threads=2
 }
 
 # Configurable variables
 # Generate a timestamp
 algo=""
-Threads=16
+Threads=2
 timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
-for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #  NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
+for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do # NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
   RSIZE=1
   SSIZE=1
   RPATH=""
@@ -56,7 +56,7 @@ for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #  NPO PRO S
   SKEY=0
   RTS=0
   STS=0
-  for benchmark in "Stock" "Rovio" "YSB" "DEBS"; do # "AD" "KD" "KD2"  "Stock"  "Rovio" "YSB"  "DEBS" # "ScaleStock" "AD" "KD" "WS" "KD2" "WS2" "RAR" "RAR2" "WS3" "WS4"
+  for benchmark in "Stock" "Rovio" "YSB" "DEBS"  "AD" "KD" "WS" "KD2" "WS2" "RAR" "RAR2" "WS3" "WS4"; do # "Stock"  "Rovio" "YSB"  "DEBS" # "ScaleStock" "AD" "KD" "WS" "KD2" "WS2" "RAR" "RAR2" "WS3" "WS4"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "AR") #test arrival rate
@@ -89,7 +89,7 @@ for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #  NPO PRO S
       # step size should be bigger than nthreads
       STEP_SIZE_S=250
       for STEP_SIZE in 250 500 750 1000; do
-#        WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
+        #        WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
         echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
         KimRun
         let "id++"
@@ -106,7 +106,7 @@ for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #  NPO PRO S
       # remember to fix the relation size of S.
       STEP_SIZE_S=1000
       for STEP_SIZE in 250 500 750 1000; do
-#        WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
+        #        WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
         echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
         KimRun
         let "id++"
@@ -200,9 +200,9 @@ for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #  NPO PRO S
       id=38
       ResetParameters
       ts=1 # stream case
-#      WINDOW_SIZE=60000
-#      RSIZE=194341
-#      SSIZE=240148
+      #      WINDOW_SIZE=60000
+      #      RSIZE=194341
+      #      SSIZE=240148
       WINDOW_SIZE=5000
       RSIZE=116941
       SSIZE=151500

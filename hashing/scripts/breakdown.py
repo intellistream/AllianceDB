@@ -259,7 +259,7 @@ if __name__ == "__main__":
     legend_labels = ['wait', 'partition', 'build', 'sort', 'merge', 'join', 'others']  #
 
     DrawFigure(x_values, y_norm_values, double(ceil(max_value / 1000.0)) * 1000, legend_labels, '',
-               'cycles per output tuple',
+               '',
                'breakdown_figure{}'.format(id), id, False)
 
     DrawLegend(legend_labels, 'breakdown_legend')
