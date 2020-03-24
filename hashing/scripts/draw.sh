@@ -1,21 +1,21 @@
 #!/bin/bash
 
 #### APP
-python3 latency_figure_app.py
-python3 throughput_figure_app.py
+#python3 latency_figure_app.py
+#python3 throughput_figure_app.py
+#
+#for id in {38..41}; do
+#  python3 progressive_figure.py -i $id
+#done
 
-for id in {38..41}; do
-  python3 progressive_figure.py -i $id
-done
-
-for id in {38..41}; do
+for id in 42 46 50 54 ; do
   python3 breakdown.py -i $id
 done
-
+#
 #for id in {38..41}; do
 #  python3 disorderCDF.py -i $id
 #done
-
+#
 ### KIM
 #for idx in {1..8} ; do #
 #  python3 latency_figure$idx.py

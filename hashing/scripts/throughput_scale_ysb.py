@@ -111,23 +111,23 @@ def ReadFile():
         col6.append(value)
     y.append(col6)
 
-    for id in it.chain(range(50,54)):
-        file = '/data1/xtra/results/timestamps/PMJ_JM_NP_{}.txt'.format(id)
-        f = open(file, "r")
-        read = f.readlines()
-        x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
-        value = len(read) / x  # get throughput (#items/ms)
-        col7.append(value)
-    y.append(col7)
-
-    for id in it.chain(range(50,54)):
-        file = '/data1/xtra/results/timestamps/PMJ_JBCR_NP_{}.txt'.format(id)
-        f = open(file, "r")
-        read = f.readlines()
-        x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
-        value = len(read) / x  # get throughput (#items/ms)
-        col8.append(value)
-    y.append(col8)
+    # for id in it.chain(range(50,54)):
+    #     file = '/data1/xtra/results/timestamps/PMJ_JM_NP_{}.txt'.format(id)
+    #     f = open(file, "r")
+    #     read = f.readlines()
+    #     x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
+    #     value = len(read) / x  # get throughput (#items/ms)
+    #     col7.append(value)
+    # y.append(col7)
+    #
+    # for id in it.chain(range(50,54)):
+    #     file = '/data1/xtra/results/timestamps/PMJ_JBCR_NP_{}.txt'.format(id)
+    #     f = open(file, "r")
+    #     read = f.readlines()
+    #     x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
+    #     value = len(read) / x  # get throughput (#items/ms)
+    #     col8.append(value)
+    # y.append(col8)
     return y
 
 
@@ -221,9 +221,9 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
 
 
 if __name__ == "__main__":
-    legend_labels = ['PRJ', 'NPJ', 'M-PASS', 'M-WAY', 'SHJ$^M$', 'SHJ$^B$', 'PMJ$^M$', 'PMJ$^B$']
+    legend_labels = ['PRJ', 'NPJ', 'MPASS', 'MWAY', 'JM_SHJ', 'JB_SHJ']
     y = ReadFile()
-    x = [1, 8, 16, 32]
+    x = [1, 2, 4, 8]
 
     DrawFigure(x, y, legend_labels,
                'Number of threads', 'Tpt. (#matches/ms)',

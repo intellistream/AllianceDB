@@ -47,7 +47,7 @@ algo=""
 Threads=2
 timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
-for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do # NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
+for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP; do #PMJ_JM_NP PMJ_JBCR_NP
   RSIZE=1
   SSIZE=1
   RPATH=""
@@ -56,7 +56,7 @@ for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do # NPO PRO SH
   SKEY=0
   RTS=0
   STS=0
-  for benchmark in "Stock" "Rovio" "YSB" "DEBS"  "AD" "KD" "WS" "KD2" "WS2" "RAR" "RAR2" "WS3" "WS4"; do # "Stock"  "Rovio" "YSB"  "DEBS" # "ScaleStock" "AD" "KD" "WS" "KD2" "WS2" "RAR" "RAR2" "WS3" "WS4"
+  for benchmark in "Stock" "Rovio" "YSB" "DEBS"; do # "Stock"  "Rovio" "YSB"  "DEBS" # "Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "RAR2" "AD" "KD" "WS" "KD2" "WS2"  "WS3" "WS4"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "AR") #test arrival rate
@@ -249,8 +249,8 @@ for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do # NPO PRO SH
       ResetParameters
       ts=1 # stream case
       WINDOW_SIZE=0
-      RSIZE=1000000
-      SSIZE=1000000
+      RSIZE=100000 #64 MB
+      SSIZE=100000 #64 MB
       RPATH=/data1/xtra/datasets/DEBS/posts_key32_partitioned.csv
       SPATH=/data1/xtra/datasets/DEBS/comments_key32_partitioned.csv
       RKEY=0
@@ -273,7 +273,7 @@ for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do # NPO PRO SH
       RTS=1
       STS=1
       echo test scalability of Stock 42 - 45
-      for Threads in 1 8 16 32; do
+      for Threads in 1 2 4 8; do
         benchmarkRun
         let "id++"
       done
@@ -292,7 +292,7 @@ for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do # NPO PRO SH
       RTS=3
       STS=3
       echo test scalability 46 - 49
-      for Threads in 1 8 16 32; do
+      for Threads in 1 2 4 8; do
         benchmarkRun
         let "id++"
       done
@@ -311,7 +311,7 @@ for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do # NPO PRO SH
       RTS=0
       STS=1
       echo test scalability 50 - 53
-      for Threads in 1 8 16 32; do
+      for Threads in 1 2 4 8; do
         benchmarkRun
         let "id++"
       done
@@ -330,7 +330,7 @@ for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do # NPO PRO SH
       RTS=0
       STS=0
       echo test scalability 54 - 57
-      for Threads in 1 8 16 32; do
+      for Threads in 1 2 4 8; do
         benchmarkRun
         let "id++"
       done

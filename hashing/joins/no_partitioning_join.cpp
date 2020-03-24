@@ -112,7 +112,7 @@ init_bucket_buffer(bucket_buffer_t **ppbuf) {
 
 /** \copydoc NPO_st */
 result_t *
-NPO_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size) {
+NPO_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size, int record_gap) {
     hashtable_t *ht;
     int64_t result = 0;
     result_t *joinresult;
@@ -299,7 +299,7 @@ void
 np_distribute(const relation_t *relR, const relation_t *relS, int nthreads, hashtable_t *ht, int32_t numR, int32_t numS,
               int32_t numRthr, int32_t numSthr, int i, int rv, cpu_set_t &set, arg_t *args, pthread_t *tid,
               pthread_attr_t &attr, barrier_t &barrier, const result_t *joinresult, T_TIMER *timer, int exp_id,
-              int group_size, uint64_t *startTS) {
+              int group_size, uint64_t *startTS, int record_gap) {
     for (i = 0; i < nthreads; i++) {
         int cpu_idx = get_cpu_id(i);
 
@@ -320,13 +320,8 @@ np_distribute(const relation_t *relR, const relation_t *relS, int nthreads, hash
         numR -= numRthr;
 
 #ifndef NO_TIMING
-        if (exp_id == 39 || exp_id == 41 || (exp_id >= 46 && exp_id <= 49)
-            || (exp_id >= 54 && exp_id <= 57)) {//dataset=Rovio
-            args[i].timer->record_gap = 1000;
-        } else {
-            args[i].timer->record_gap = 10;
-        }
-//         printf(" record_gap:%d\n", args[i].timer->record_gap);
+        args[i].timer->record_gap = record_gap;
+        DEBUGMSG(" record_gap:%d\n", args[i].timer->record_gap);
 #endif
 
         DEBUGMSG("Assigning #R=%d to thread %d\n", args[i].relR.num_tuples, i)
@@ -351,7 +346,7 @@ np_distribute(const relation_t *relR, const relation_t *relS, int nthreads, hash
 
 /** \copydoc NPO */
 result_t *
-NPO(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size) {
+NPO(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size, int record_gap) {
     hashtable_t *ht;
     int64_t result = 0;
     int32_t numR, numS, numRthr, numSthr; /* total and per thread num */
@@ -392,7 +387,7 @@ NPO(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size
     pthread_attr_init(&attr);
     np_distribute(relR, relS, nthreads, ht, numR, numS, numRthr, numSthr,
                   i, rv, set, args, tid, attr, barrier,
-                  joinresult, timer, exp_id, group_size, startTS);
+                  joinresult, timer, exp_id, group_size, startTS, record_gap);
     /* wait for threads to finish */
     for (i = 0; i < nthreads; i++) {
         pthread_join(tid[i], NULL);

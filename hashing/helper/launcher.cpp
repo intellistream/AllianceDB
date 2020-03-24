@@ -13,7 +13,7 @@ launch(int nthreads, relation_t *relR, relation_t *relS, t_param param, void *(*
     cpu_set_t set;
 #ifdef JOIN_RESULT_MATERIALIZE
     param.joinresult->resultlist = (threadresult_t *) malloc(sizeof(threadresult_t)
-                                                       * nthreads);
+                                                             * nthreads);
 #endif
     for (i = 0; i < nthreads; i++) {
         int cpu_idx = get_cpu_id(i);
@@ -40,15 +40,8 @@ launch(int nthreads, relation_t *relR, relation_t *relS, t_param param, void *(*
         }
 
 #ifndef NO_TIMING
-        if (param.exp_id == 39 || param.exp_id == 41
-            || (param.exp_id >= 46 && param.exp_id <= 49)
-            || (param.exp_id >= 54 && param.exp_id <= 57)
-                ) {//dataset=Rovio/DEBS
-            param.args[i].joiner->timer->record_gap = 1000;
-        } else {
-            param.args[i].joiner->timer->record_gap = 10;
-        }
-//        printf("record_gap:%d\n", param.args[i].joiner->timer->record_gap);
+        param.args[i].joiner->timer->record_gap = param.record_gap;
+        DEBUGMSG("record_gap:%d\n", param.args[i].joiner->timer->record_gap);
 #endif
 
         param.args[i].nthreads = nthreads;

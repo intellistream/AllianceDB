@@ -48,6 +48,7 @@ struct t_param {
     string algo_name;
 
     int exp_id;
+    int record_gap;
 
     int64_t result;
     result_t *joinresult;

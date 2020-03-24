@@ -30,7 +30,7 @@
  * @return number of result tuples
  */
 result_t *
-NPO(relation_t *relR, relation_t *relS, int nthreads,int exp_id, int group_size, int window_size);
+NPO(relation_t *relR, relation_t *relS, int nthreads,int exp_id, int group_size, int window_size,  int record_gap);
 
 /**
  * The No Partitioning Join Optimized (NPO) as a single-threaded
@@ -42,7 +42,7 @@ NPO(relation_t *relR, relation_t *relS, int nthreads,int exp_id, int group_size,
  * @return number of result tuples
  */
 result_t *
-NPO_st(relation_t *relR, relation_t *relS, int nthreads,int exp_id, int group_size, int window_size);
+NPO_st(relation_t *relR, relation_t *relS, int nthreads,int exp_id, int group_size, int window_size,  int record_gap);
 
 
 #endif /* NO_PARTITIONING_JOIN_H */

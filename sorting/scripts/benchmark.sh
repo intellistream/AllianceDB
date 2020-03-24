@@ -36,13 +36,13 @@ function ResetParameters() {
   STEP_SIZE_S=-1                   # let S has the same arrival rate of R.
   FIXS=0
   ts=1 # stream case
-  Threads=2
+  Threads=1
 }
 
 # Configurable variables
 # Generate a timestamp
 algo=""
-Threads=2
+Threads=1
 timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
 for algo in m-way m-pass; do #
@@ -54,7 +54,7 @@ for algo in m-way m-pass; do #
   SKEY=0
   RTS=0
   STS=0
-  for benchmark in "Stock" "Rovio" "YSB" "DEBS"  "AD" "KD" "WS" "KD2" "WS2" "RAR" "RAR2" "WS3" "WS4"; do #"ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "AR" "AD" "KD" "WS" "KD2" "WS2" "RAR" "RAR2" "WS3" "WS4" "Stock" "Rovio" "YSB" "DEBS"
+  for benchmark in "Stock" "Rovio" "YSB" "DEBS"; do #"ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "Stock" "Rovio" "YSB" "DEBS" "AR" "AD" "KD" "WS" "KD2" "WS2" "RAR" "RAR2" "WS3" "WS4"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "AR") #test arrival rate
@@ -87,7 +87,7 @@ for algo in m-way m-pass; do #
       # step size should be bigger than nthreads
       STEP_SIZE_S=250
       for STEP_SIZE in 10 100 1000 10000; do
-#        WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
+        #        WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
         echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
         KimRun
         let "id++"
@@ -104,7 +104,7 @@ for algo in m-way m-pass; do #
       # remember to fix the relation size of S.
       STEP_SIZE_S=1000
       for STEP_SIZE in 250 500 750 1000; do
-#        WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
+        #        WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
         echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
         KimRun
         let "id++"
@@ -244,8 +244,8 @@ for algo in m-way m-pass; do #
       ResetParameters
       ts=1 # stream case
       WINDOW_SIZE=0
-      RSIZE=1000000
-      SSIZE=1000000
+      RSIZE=100000
+      SSIZE=100000
       RPATH=/data1/xtra/datasets/DEBS/posts_key32_partitioned.csv
       SPATH=/data1/xtra/datasets/DEBS/comments_key32_partitioned.csv
       RKEY=0

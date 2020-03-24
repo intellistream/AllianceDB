@@ -1449,7 +1449,7 @@ prj_thread(void *param) {
  */
 result_t *
 join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads, int exp_id, int group_size,
-              int window_size) {
+              int window_size, int record_gap) {
     int i, rv;
     pthread_t tid[nthreads];
     pthread_attr_t attr;
@@ -1544,12 +1544,7 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads,
         args[i].timer = &timer[i];
 
 #ifndef NO_TIMING
-        if (exp_id == 39 || exp_id == 41 || (exp_id >= 46 && exp_id <= 49)
-            || (exp_id >= 54 && exp_id <= 57)) {//dataset=Rovio
-            args[i].timer->record_gap = 1000;
-        } else {
-            args[i].timer->record_gap = 10;
-        }
+        args[i].timer->record_gap = record_gap;
 #endif
 
         args[i].relR = relR->tuples + i * numperthr[0];
@@ -1675,25 +1670,25 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads,
 
 /** \copydoc PRO */
 result_t *
-PRO(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size) {
-    return join_init_run(relR, relS, bucket_chaining_join, nthreads, exp_id, group_size, window_size);
+PRO(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size, int record_gap) {
+    return join_init_run(relR, relS, bucket_chaining_join, nthreads, exp_id, group_size, window_size, record_gap);
 }
 
 /** \copydoc PRH */
 result_t *
-PRH(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size) {
-    return join_init_run(relR, relS, histogram_join, nthreads, exp_id, group_size, window_size);
+PRH(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size, int record_gap) {
+    return join_init_run(relR, relS, histogram_join, nthreads, exp_id, group_size, window_size, record_gap);
 }
 
 /** \copydoc PRHO */
 result_t *
-PRHO(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size) {
-    return join_init_run(relR, relS, histogram_optimized_join, nthreads, exp_id, group_size, window_size);
+PRHO(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size, int record_gap) {
+    return join_init_run(relR, relS, histogram_optimized_join, nthreads, exp_id, group_size, window_size, record_gap);
 }
 
 /** \copydoc RJ */
 result_t *
-RJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size) {
+RJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size, int record_gap) {
     int64_t result = 0;
     result_t *joinresult;
     uint32_t i;
