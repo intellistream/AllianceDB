@@ -143,7 +143,7 @@ def normalize(y_values):
 
 # example for reading csv file
 def ReadFile(id):
-    # Creates a list containing 6 lists, each of 8 items, all set to 0
+    # Creates a list containing 8 lists, each of 7 items, all set to 0
     w, h = 8, 7
     y = [[0 for x in range(w)] for y in range(h)]
     # print(matches)
@@ -248,8 +248,7 @@ if __name__ == "__main__":
             print('Test ID:', opt_value)
             id = (int)(opt_value)
 
-    x_values = ['PRJ', 'NPJ', 'M-PASS', 'M-WAY', 'SHJ$^M$', 'SHJ$^B$', 'PMJ$^M$',
-                'PMJ$^B$']  # join time is getting from total - others.
+    x_values = ['PRJ$^l$', 'NPJ$^l$', 'MPASS$^l$', 'MWAY$^l$', 'JM_SHJ$^e$', 'JB_SHJ$^e$', 'JM_PMJ$^e$', 'JB_PMJ$^e$']  # join time is getting from total - others.
 
     y_values, max_value = ReadFile(id)
 

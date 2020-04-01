@@ -38,7 +38,7 @@ struct T_TIMER {
     std::vector<uint64_t> recordRID;
     std::vector<uint64_t> recordSID;
     int record_cnt = 0;
-    int record_gap = 1;
+    int record_gap = 2000;//TODO: make it consistent with hashing directory.
     int simulate_compute_time = 1;//(microseconds per output).
 #endif
 };

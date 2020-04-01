@@ -51,14 +51,14 @@ def ConvertEpsToPdf(dir_filename):
 
 # example for reading csv file
 def ReadFile(S, id):
-    col1 = []
-    col2 = []
-    col3 = []
-    col4 = []
-    col5 = []
-    col6 = []
-    col7 = []
-    col8 = []
+    col1 = [0]
+    col2 = [0]
+    col3 = [0]
+    col4 = [0]
+    col5 = [0]
+    col6 = [0]
+    col7 = [0]
+    col8 = [0]
 
     cnt1 = 0
     cnt2 = 0
@@ -71,7 +71,7 @@ def ReadFile(S, id):
     maxts = 0
 
     f = open("/data1/xtra/results/timestamps/PRJ_{}.txt".format(id), "r")
-    cnt = 0
+    cnt = 1
     read = f.readlines()
     for x in read:
         if cnt % S == 0:
@@ -83,7 +83,7 @@ def ReadFile(S, id):
         cnt += 1
     print(cnt1)
     f = open("/data1/xtra/results/timestamps/NPJ_{}.txt".format(id), "r")
-    cnt = 0
+    cnt = 1
     read = f.readlines()
     for x in read:
         if cnt % S == 0:
@@ -95,7 +95,7 @@ def ReadFile(S, id):
         cnt += 1
     print(cnt2)
     f = open("/data1/xtra/results/timestamps/MPASS_{}.txt".format(id), "r")
-    cnt = 0
+    cnt = 1
     read = f.readlines()
     for x in read:
         if cnt % S == 0:
@@ -107,7 +107,7 @@ def ReadFile(S, id):
         cnt += 1
     print(cnt3)
     f = open("/data1/xtra/results/timestamps/MWAY_{}.txt".format(id), "r")
-    cnt = 0
+    cnt = 1
     read = f.readlines()
     for x in read:
         if cnt % S == 0:
@@ -119,7 +119,7 @@ def ReadFile(S, id):
         cnt += 1
     print(cnt4)
     f = open("/data1/xtra/results/timestamps/SHJ_JM_NP_{}.txt".format(id), "r")
-    cnt = 0
+    cnt = 1
     read = f.readlines()
     for x in read:
         if cnt % S == 0:
@@ -131,7 +131,7 @@ def ReadFile(S, id):
         cnt += 1
     print(cnt5)
     f = open("/data1/xtra/results/timestamps/SHJ_JBCR_NP_{}.txt".format(id), "r")
-    cnt = 0
+    cnt = 1
     read = f.readlines()
     for x in read:
         if cnt % S == 0:
@@ -143,7 +143,7 @@ def ReadFile(S, id):
         cnt += 1
     print(cnt6)
     f = open("/data1/xtra/results/timestamps/PMJ_JM_NP_{}.txt".format(id), "r")
-    cnt = 0
+    cnt = 1
     read = f.readlines()
     for x in read:
         if cnt % S == 0:
@@ -156,7 +156,7 @@ def ReadFile(S, id):
 
     print(cnt7)
     f = open("/data1/xtra/results/timestamps/PMJ_JBCR_NP_{}.txt".format(id), "r")
-    cnt = 0
+    cnt = 1
     read = f.readlines()
     for x in read:
         if cnt % S == 0:
@@ -280,7 +280,8 @@ if __name__ == "__main__":
             print('Test ID:', opt_value)
             id = (int)(opt_value)
 
-    legend_labels = ['PRJ', 'NPJ', 'M-PASS', 'M-WAY', 'SHJ$^M$', 'SHJ$^B$', 'PMJ$^M$', 'PMJ$^B$']
+    legend_labels = ['PRJ$^l$', 'NPJ$^l$', 'MPASS$^l$', 'MWAY$^l$', 'JM_SHJ$^e$', 'JB_SHJ$^e$', 'JM_PMJ$^e$',
+                     'JB_PMJ$^e$']
 
     # S = #matches / 50
     # if id == 39:
@@ -299,7 +300,7 @@ if __name__ == "__main__":
     col0 = []
     for x in range(0, N):
         col0.append(x / N)
-        # print("fraction :", x / N)
+        print("fraction :", x / N)
 
     # print(len(col1), len(col2), len(col3), len(col4), len(col5))
     # alignment
@@ -315,7 +316,8 @@ if __name__ == "__main__":
         col7[0:N],
         col8[0:N]
     ]
-
+    print(lines[0])
+    print(lines[4])
     legend = False
     # if id == 8:
     #     legend = True

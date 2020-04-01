@@ -365,7 +365,7 @@ param_t defaultParam() {/* Command line parameters */
     cmd_params.step_sizeR = 40;
     cmd_params.step_sizeS = -1;
     cmd_params.interval = 1000;
-    cmd_params.kim = 1;
+    cmd_params.ts = 1;
     cmd_params.key_distribution = 0;
     cmd_params.ts_distribution = 0;
     cmd_params.zipf_param = 0.0;
@@ -494,7 +494,7 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
         /* getopt_long stores the option index here. */
         int option_index = 0;
 
-        c = getopt_long(argc, argv, "J:K:L:M:t:w:e:q:l:I:d:Z:D:g:G:B:W:a:n:p:r:s:o:x:y:z:R:S:hv",
+        c = getopt_long(argc, argv, "J:K:L:M:t:w:e:q:l:I:d:Z:D:g:G:B:W:a:n:p:r:s:o:x:y:z:R:S:hv[:]:",
                         long_options, &option_index);
 
         /* Detect the end of the options. */
@@ -527,7 +527,7 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
                     printf("[ERROR] Join algorithm named `%s' does not exist!\n",
                            optarg);
                     print_help(argv[0]);
-                    exit(EXIT_SUCCESS);
+                    exit(EXIT_FAILURE);
                 }
                 break;
 
@@ -621,7 +621,7 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
                 cmd_params->sts = atoi(mystrdup(optarg));
                 break;
             case 't':
-                cmd_params->kim = atoi(mystrdup(optarg));
+                cmd_params->ts = atoi(mystrdup(optarg));
                 break;
             case 'w':
                 cmd_params->window_size = atoi(mystrdup(optarg));
@@ -658,6 +658,12 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
                 break;
             case 'W':
                 cmd_params->fixS = atoi(mystrdup(optarg));
+                break;
+            case '[':
+                cmd_params->progressive_step = atoi(mystrdup(optarg));
+                break;
+            case ']':
+                cmd_params->merge_step = atoi(mystrdup(optarg));
                 break;
             default:
                 break;

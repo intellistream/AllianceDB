@@ -23,7 +23,7 @@
 #include <string.h>             /* memset */
 #include <pthread.h>            /* pthread_* */
 #include <sched.h>              /* CPU_ZERO, CPU_SET */
-#include "../joins/shj_struct.h"
+#include "../joins/eagerjoin_struct.h"
 
 void
 launch(int nthreads, relation_t *relR, relation_t *relS, t_param param, void *(*thread_fun)(void *), uint64_t *startTS, uint64_t *joinStart);

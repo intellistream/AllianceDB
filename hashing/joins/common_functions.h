@@ -11,7 +11,7 @@
 #include "npj_types.h"
 #include "../timer/t_timer.h"
 
-#define JOIN_RESULT_MATERIALIZE
+//#define JOIN_RESULT_MATERIALIZE
 //#define NO_TIMING
 
 #ifndef PTHREAD_BARRIER_SERIAL_THREAD

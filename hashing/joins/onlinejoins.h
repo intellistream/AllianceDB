@@ -14,6 +14,7 @@
 #define ONLINE_JOIN_H
 
 #include "../utils/types.h" /* relation_t */
+#include "../benchmark.h"
 
 /**
  * Join-Matrix Model SHJ.
@@ -29,10 +30,10 @@
  * @return number of result tuples
  */
 result_t *
-SHJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size,  int record_gap);      
+SHJ_JM_NP(relation_t *relR, relation_t *relS,  param_t cmd_params);      
 
 result_t *
-SHJ_JM_P(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size,  int record_gap);      
+SHJ_JM_P(relation_t *relR, relation_t *relS,  param_t cmd_params);      
 
 /**
  * Join-Biclique Model SHJ.
@@ -48,7 +49,7 @@ SHJ_JM_P(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group
  * @return number of result tuples
  */
 result_t *
-SHJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size,  int record_gap);      
+SHJ_JB_NP(relation_t *relR, relation_t *relS,  param_t cmd_params);      
 
 /**
  * Join-Biclique Model SHJ with CountRand Algorithm
@@ -58,7 +59,7 @@ SHJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int grou
  * @return
  */
 result_t *
-SHJ_JBCR_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size,  int record_gap);      
+SHJ_JBCR_NP(relation_t *relR, relation_t *relS,  param_t cmd_params);      
 
 
 /**
@@ -75,7 +76,7 @@ SHJ_JBCR_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int gr
  * @return number of result tuples
  */
 result_t *
-SHJ_HS_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size,  int record_gap);      
+SHJ_HS_NP(relation_t *relR, relation_t *relS,  param_t cmd_params);      
 
 
 /**
@@ -88,7 +89,7 @@ SHJ_HS_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int grou
  * @return number of result tuples
  */
 result_t *
-SHJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size,  int record_gap);      
+SHJ_st(relation_t *relR, relation_t *relS,  param_t cmd_params);      
 
 
 /**
@@ -99,7 +100,7 @@ SHJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_s
  * @return
  */
 result_t *
-PMJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size,  int record_gap);      
+PMJ_st(relation_t *relR, relation_t *relS,  param_t cmd_params);      
 
 /**
  * PMJ JM NP
@@ -109,7 +110,7 @@ PMJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_s
  * @return
  */
 result_t *
-PMJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size,  int record_gap);      
+PMJ_JM_NP(relation_t *relR, relation_t *relS,  param_t cmd_params);      
 
 /**
  * PMJ JB NP
@@ -119,7 +120,7 @@ PMJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int grou
  * @return
  */
 result_t *
-PMJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size,  int record_gap);      
+PMJ_JB_NP(relation_t *relR, relation_t *relS,  param_t cmd_params);      
 
 
 /**
@@ -130,7 +131,7 @@ PMJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int grou
  * @return
  */
 result_t *
-PMJ_JBCR_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size,  int record_gap);      
+PMJ_JBCR_NP(relation_t *relR, relation_t *relS,  param_t cmd_params);      
 
 /**
  * PMJ HS NP
@@ -140,7 +141,7 @@ PMJ_JBCR_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int gr
  * @return
  */
 result_t *
-PMJ_HS_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size,  int record_gap);      
+PMJ_HS_NP(relation_t *relR, relation_t *relS,  param_t cmd_params);      
 
 /**
  * Single thread Ripple Join
@@ -150,7 +151,7 @@ PMJ_HS_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int grou
  * @return
  */
 result_t *
-RPJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size,  int record_gap);      
+RPJ_st(relation_t *relR, relation_t *relS,  param_t cmd_params);      
 
 /**
  * Join-Matrix Model RPJ.
@@ -166,7 +167,7 @@ RPJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_s
  * @return number of result tuples
  */
 result_t *
-RPJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size,  int record_gap);      
+RPJ_JM_NP(relation_t *relR, relation_t *relS,  param_t cmd_params);      
 
 /**
  * Join-Matrix Model RPJ.
@@ -182,7 +183,7 @@ RPJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int grou
  * @return number of result tuples
  */
 result_t *
-RPJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size,  int record_gap);      
+RPJ_JB_NP(relation_t *relR, relation_t *relS,  param_t cmd_params);      
 
 /**
  * Join-Matrix Model RPJ.
@@ -198,9 +199,9 @@ RPJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int grou
  * @return number of result tuples
  */
 result_t *
-RPJ_JBCR_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size,  int record_gap);      
+RPJ_JBCR_NP(relation_t *relR, relation_t *relS,  param_t cmd_params);      
 
 result_t *
-RPJ_HS_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size,  int record_gap);      
+RPJ_HS_NP(relation_t *relR, relation_t *relS,  param_t cmd_params);      
 
 #endif /* NO_PARTITIONING_JOIN_H */

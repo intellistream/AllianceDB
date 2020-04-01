@@ -37,13 +37,13 @@ dump_timing(vector<double> vector, std::vector<double> vector_latency,
 
     //print progressive
     int n = vector.size() - 1;
-    int check01 = ceil(n * 0.001);
-    int check1 = ceil(n * 0.01);
-    int check5 = ceil(n * 0.05);
-    int check50 = ceil(n * 0.50);
-    int check75 = ceil(n * 0.75);
-    int check95 = ceil(n * 0.95);
-    int check99 = ceil(n * 0.99);
+    int check01 = floor(n * 0.001);
+    int check1 = floor(n * 0.01);
+    int check5 = floor(n * 0.05);
+    int check50 = floor(n * 0.50);
+    int check75 = floor(n * 0.75);
+    int check95 = floor(n * 0.95);
+    int check99 = floor(n * 0.99);
 
     //dump timestmap.
     std::string name = arg_name + "_" + std::to_string(exp_id);

@@ -13,7 +13,10 @@
 #ifndef NO_PARTITIONING_JOIN_H
 #define NO_PARTITIONING_JOIN_H
 
+typedef struct param_t param_t;
+
 #include "../utils/types.h" /* relation_t */
+#include "../benchmark.h"
 
 /**
  * NPO: No Partitioning Join Optimized.
@@ -30,7 +33,7 @@
  * @return number of result tuples
  */
 result_t *
-NPO(relation_t *relR, relation_t *relS, int nthreads,int exp_id, int group_size, int window_size,  int record_gap);
+NPO(relation_t *relR, relation_t *relS, param_t cmd_params);
 
 /**
  * The No Partitioning Join Optimized (NPO) as a single-threaded
@@ -42,7 +45,7 @@ NPO(relation_t *relR, relation_t *relS, int nthreads,int exp_id, int group_size,
  * @return number of result tuples
  */
 result_t *
-NPO_st(relation_t *relR, relation_t *relS, int nthreads,int exp_id, int group_size, int window_size,  int record_gap);
+NPO_st(relation_t *relR, relation_t *relS, param_t cmd_params);
 
 
 #endif /* NO_PARTITIONING_JOIN_H */

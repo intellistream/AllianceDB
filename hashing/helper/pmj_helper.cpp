@@ -39,7 +39,7 @@ earlyJoinInitialRuns(tuple_t *tupleR, tuple_t *tupleS, int lengthR, int lengthS,
  * @param matches
  */
 void earlyJoinMergedRuns(std::vector<run> *Q, int64_t *matches, run *newRun, T_TIMER *timer,
-                         chainedtuplebuffer_t *chainedbuf) {
+                         chainedtuplebuffer_t *chainedbuf, int merge_step) {
     bool findI;
     bool findJ;
     //following PMJ vldb'02 implementation.
@@ -63,7 +63,7 @@ void earlyJoinMergedRuns(std::vector<run> *Q, int64_t *matches, run *newRun, T_T
         int m = 0;
 
         int actual_merge_step = std::min((int) Q->size(), merge_step);
-
+//        printf("actual_merge_step:%d\n", actual_merge_step);
         for (auto run_itr = Q->begin();
              run_itr < Q->begin() + actual_merge_step; ++run_itr) {//iterate through several runs.
 
@@ -78,12 +78,21 @@ void earlyJoinMergedRuns(std::vector<run> *Q, int64_t *matches, run *newRun, T_T
                 if (posR < lengthR) {
                     //the left most of each subsequence is the smallest item of the subsequence.
                     readR = runR.at(posR);
+
+//                    if (readR->payloadID < 0) {
+//                        printf("wrong");
+//                    }
+
                 }
             } else {
                 tuple_t *runR = (run_itr).operator*().R;//get Rs in each run.
                 if (posR < lengthR) {
                     //the left most of each subsequence is the smallest item of the subsequence.
                     readR = &runR[posR];
+
+//                    if (readR->payloadID < 0) {
+//                        printf("wrong");
+//                    }
                 }
             }
             if (readR && (!minR || minR->key > readR->key)) {
@@ -102,12 +111,20 @@ void earlyJoinMergedRuns(std::vector<run> *Q, int64_t *matches, run *newRun, T_T
                 if (posS < lengthS) {
                     //the left most of each subsequence is the smallest item of the subsequence.
                     readS = runS.at(posS);
+
+//                    if (readS->payloadID < 0) {
+//                        printf("wrong");
+//                    }
                 }
             } else {
                 tuple_t *runS = (run_itr).operator*().S;//get Rs in each run.
                 if (posS < lengthS) {
                     //the left most of each subsequence is the smallest item of the subsequence.
                     readS = &runS[posS];
+
+//                    if (readS->payloadID < 0) {
+//                        printf("wrong");
+//                    }
                 }
             }
             if (readS && (!minS || minS->key > readS->key)) {
@@ -180,16 +197,24 @@ void earlyJoinMergedRuns(std::vector<run> *Q, int64_t *matches, run *newRun, T_T
 }
 
 void insert(std::vector<run> *Q, tuple_t *run_R, int lengthR, tuple_t *run_S, int lengthS) {
+//    if (run_R->payloadID < 0) {
+//        printf("wrong");
+//    }
+//    if (run_S->payloadID < 0) {
+//        printf("wrong");
+//    }
+
     Q->push_back(run(run_R, run_S, lengthR, lengthS));
 }
 
-void merging_phase(int64_t *matches, std::vector<run> *Q, T_TIMER *timer, chainedtuplebuffer_t *chainedbuf) {
+void
+merging_phase(int64_t *matches, std::vector<run> *Q, T_TIMER *timer, chainedtuplebuffer_t *chainedbuf, int merge_step) {
 #ifndef NO_TIMING
     BEGIN_MEASURE_MERGE_ACC(timer)
 #endif
     do {
         run *newRun = new run();//empty run
-        earlyJoinMergedRuns(Q, matches, newRun, timer, chainedbuf);
+        earlyJoinMergedRuns(Q, matches, newRun, timer, chainedbuf, merge_step);
         Q->push_back(*newRun);
     } while (Q->size() > 1);
 #ifndef NO_TIMING

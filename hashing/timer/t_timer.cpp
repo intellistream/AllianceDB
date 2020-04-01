@@ -191,7 +191,7 @@ void merge(T_TIMER *timer, relation_t *relR, relation_t *relS, uint64_t *startTS
     //For latency and disorder measurement
     uint64_t latency = -1;
     int32_t gap = 0;
-    auto Rrecord_size=timer->recordRID.size();
+    auto Rrecord_size = timer->recordRID.size();
     for (auto i = 0; i < Rrecord_size; i++) {
         latency =
                 timer->recordR.at(i) - actual_start_timestamp
@@ -203,11 +203,11 @@ void merge(T_TIMER *timer, relation_t *relR, relation_t *relS, uint64_t *startTS
         global_record_gap.push_back(gap);
     }
 
-    auto Srecord_size=timer->recordSID.size();
+    auto Srecord_size = timer->recordSID.size();
     for (auto i = 0; i < Srecord_size; i++) {
         latency =
-                timer->recordS.at(i) - actual_start_timestamp
-                - relS->payload->ts[timer->recordSID.at(i)]
+                timer->recordS.at(i) - actual_start_timestamp //cycles
+                - relS->payload->ts[timer->recordSID.at(i)]//cycles
                 + (uint64_t) (lastTS * 2.1 * 1E6);//latency of one tuple.
         global_record_latency.push_back(latency / (2.1 * 1E6));
         gap = (int32_t) timer->recordSID.at(i) - i;//if it's sequentially processed, gap should be zero.

@@ -35,8 +35,8 @@ struct T_TIMER {
     uint64_t shuffle_timer_pre = 0, shuffle_timer = 0;//shuffle.
     std::vector<uint64_t> recordR;
     std::vector<uint64_t> recordS;
-    std::vector<uint64_t> recordRID;
-    std::vector<uint64_t> recordSID;
+    std::vector<int32_t> recordRID;
+    std::vector<int32_t> recordSID;
     int record_cnt = 0;
     int record_gap = 10;
     int simulate_compute_time = 1;//(microseconds per output).

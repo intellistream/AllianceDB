@@ -11,17 +11,17 @@
 #include <utility>
 #include <set>
 #include <iostream>
-#include "pmj_helper.h"
 #include "../utils/types.h"
 #include "../utils/params.h"
 #include "../joins/common_functions.h"
 #include "avxsort.h"
+#include "../utils/tuple_buffer.h"
 
 
-#define progressive_step 0.05 //percentile, 0.01 ~ 0.2.
-#define progressive_step_tupleR ALIGN_NUMTUPLES(100) //progressive #tuples.
-#define progressive_step_tupleS ALIGN_NUMTUPLES(100) //progressive #tuples.
-#define merge_step 200 // number of ``runs" to merge in each round.
+//#define progressive_step 0.05 //percentile, 0.01 ~ 0.2.
+//#define progressive_step_tupleR 640 //progressive #tuples. must be multiple cacheline size (64).
+//#define progressive_step_tupleS 640 //progressive #tuples.
+//#define merge_step 1000000 // number of ``runs" to merge in each round.
 
 
 inline struct tuple_t *read(tuple_t *tuple, int length, int idx) {
@@ -103,7 +103,12 @@ struct sweepArea {
                     joinres->payloadID = tuple->payloadID;
 #endif
 #ifndef NO_TIMING
-                    END_PROGRESSIVE_MEASURE(tuple->payloadID, (timer), ISTupleR)
+//                    if (tuple->payloadID > 100000 || tuple->payloadID < 0) {
+//                        printf("wrong.");
+//                    }
+//                    else
+//                        printf("payloadID:%d\n", tuple->payloadID);
+                    END_PROGRESSIVE_MEASURE(tuple->payloadID, timer, ISTupleR)
 #endif
                 }
                 ++it;
@@ -114,14 +119,16 @@ struct sweepArea {
 
 
 void sorting_phase(int32_t tid, tuple_t *inptrR, int sizeR, tuple_t *inptrS, int sizeS, int64_t *matches,
-                   std::vector<run> *Q, tuple_t *outputR, tuple_t *outputS, T_TIMER *timer, chainedtuplebuffer_t *chainedbuf);
+                   std::vector<run> *Q, tuple_t *outputR, tuple_t *outputS, T_TIMER *timer,
+                   chainedtuplebuffer_t *chainedbuf);
 
 void sorting_phase(int32_t tid, const relation_t *rel_R, const relation_t *rel_S, int sizeR, int sizeS,
                    int progressive_stepR, int progressive_stepS, int *i, int *j, int64_t *matches, std::vector<run> *Q,
                    tuple_t *outptrR, tuple_t *outptrS,
                    T_TIMER *timer, chainedtuplebuffer_t *chainedbuf);
 
-void merging_phase(int64_t *matches, std::vector<run> *Q, T_TIMER *timer, chainedtuplebuffer_t *chainedbuf);
+void
+merging_phase(int64_t *matches, std::vector<run> *Q, T_TIMER *timer, chainedtuplebuffer_t *chainedbuf, int merge_step);
 
 
 #endif //ALLIANCEDB_PMJ_HELPER_H

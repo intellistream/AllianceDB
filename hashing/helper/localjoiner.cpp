@@ -10,7 +10,7 @@
 #include "sort_common.h"
 #include "localjoiner.h"
 #include "pmj_helper.h"
-#include "../joins/shj_struct.h"
+#include "../joins/eagerjoin_struct.h"
 
 /**
  * As an example of join execution, consider a join with join predicate T1.attr1 = T2.attr2.
@@ -171,6 +171,8 @@ pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *output) {
 
 #ifdef JOIN_RESULT_MATERIALIZE
     chainedtuplebuffer_t *chainedbuf = (chainedtuplebuffer_t *) output;
+#else
+    chainedtuplebuffer_t *chainedbuf = nullptr;
 #endif
 
 #ifndef NO_TIMING
@@ -182,8 +184,8 @@ pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *output) {
     int i = 0;
     int j = 0;
 
-    int progressive_stepR = ALIGN_NUMTUPLES((int) (progressive_step * sizeR));//cacheline aligned.
-    int progressive_stepS = ALIGN_NUMTUPLES((int) (progressive_step * sizeS));
+    int progressive_stepR = joiner.progressive_step;//ALIGN_NUMTUPLES((int) (progressive_step * sizeR));//cacheline aligned.
+    int progressive_stepS = joiner.progressive_step;//ALIGN_NUMTUPLES((int) (progressive_step * sizeS));
 
     assert(progressive_stepR > 0 && progressive_stepS > 0);
 
@@ -220,7 +222,7 @@ pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *output) {
 
     DEBUGMSG("Join during run creation:%d", joiner.matches)
 
-    merging_phase(&joiner.matches, &Q, joiner.timer, chainedbuf);
+    merging_phase(&joiner.matches, &Q, joiner.timer, chainedbuf, joiner.merge_step);
 
     DEBUGMSG("Join during run merge matches:%d", joiner.matches)
 #ifndef NO_TIMING
@@ -314,6 +316,8 @@ join(int32_t tid, tuple_t *tuple, int fat_tuple_size, bool IStuple_R, int64_t *m
 
 #ifdef JOIN_RESULT_MATERIALIZE
     chainedtuplebuffer_t *chainedbuf = (chainedtuplebuffer_t *) output;
+#else
+    chainedtuplebuffer_t *chainedbuf = nullptr;
 #endif
 
     //store tuples.
@@ -510,6 +514,8 @@ merge(int32_t tid, int64_t *matches,
 
 #ifdef JOIN_RESULT_MATERIALIZE
     chainedtuplebuffer_t *chainedbuf = (chainedtuplebuffer_t *) output;
+#else
+    chainedtuplebuffer_t *chainedbuf = nullptr;
 #endif
 
     sorting_phase(tid, arg->tmp_relR + arg->outerPtrR, stepR,
@@ -522,7 +528,7 @@ merge(int32_t tid, int64_t *matches,
                   timer, chainedbuf);
     DEBUGMSG("TID:%d Clean up stage: Join during run creation:%d, arg->Q %d", tid, *matches, arg->Q.size())
 
-    merging_phase(matches, &arg->Q, timer, chainedbuf);
+    merging_phase(matches, &arg->Q, timer, chainedbuf, merge_step);
     DEBUGMSG("TID:%d Clean up stage: Join during run merge matches:%d", tid, *matches)
     return *matches;
 }
@@ -547,13 +553,15 @@ void PMJJoiner::join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *match
         arg->tmp_relS[arg->outerPtrS + arg->innerPtrS] = *tuple;
         arg->innerPtrS++;
     }
-    int stepR = progressive_step_tupleR;
-    int stepS = progressive_step_tupleS;
+    int stepR = progressive_step;
+    int stepS = progressive_step;
 
     tuple_t *out_relR;
     tuple_t *out_relS;
 #ifdef JOIN_RESULT_MATERIALIZE
     chainedtuplebuffer_t *chainedbuf = (chainedtuplebuffer_t *) output;
+#else
+    chainedtuplebuffer_t *chainedbuf = nullptr;
 #endif
     if (arg->outerPtrR < arg->sizeR - stepR && arg->outerPtrS < arg->sizeS - stepS) {//normal process
         //check if it is ready to start process.
@@ -611,7 +619,7 @@ void PMJJoiner::join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *match
                       out_relS,
                       timer, chainedbuf);
         DEBUGMSG("Join during run creation:%d", *matches)
-        merging_phase(matches, &arg->Q, timer, chainedbuf);
+        merging_phase(matches, &arg->Q, timer, chainedbuf, merge_step);
         DEBUGMSG("Join during run merge matches:%d", *matches)
 
         delete out_relR;

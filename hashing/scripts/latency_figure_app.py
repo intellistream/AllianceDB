@@ -206,7 +206,7 @@ if __name__ == "__main__":
 
     y_values = ReadFile()
 
-    legend_labels = ['PRJ', 'NPJ', 'M-PASS', 'M-WAY', 'SHJ$^M$', 'SHJ$^B$', 'PMJ$^M$', 'PMJ$^B$']
+    legend_labels = ['PRJ$^l$', 'NPJ$^l$', 'MPASS$^l$', 'MWAY$^l$', 'JM_SHJ$^e$', 'JB_SHJ$^e$', 'JM_PMJ$^e$', 'JB_PMJ$^e$']
 
     DrawFigure(x_values, y_values, legend_labels,
                '', '95$^{th}$ latency (ms)', 0,

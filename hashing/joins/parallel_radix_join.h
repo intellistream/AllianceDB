@@ -13,8 +13,11 @@
 #ifndef PARALLEL_RADIX_JOIN_H
 #define PARALLEL_RADIX_JOIN_H
 
+
 #include "../utils/types.h" /* relation_t */
 #include "common_functions.h"
+#include "../benchmark.h"
+
 /**
  * PRO: Parallel Radix Join Optimized.
  *
@@ -31,7 +34,7 @@
  * @return number of result tuples
  */
 result_t *
-PRO(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size,  int record_gap);
+PRO(relation_t *relR, relation_t *relS, param_t cmd_params);
 
 /**
  * RJ: Radix Join.
@@ -47,7 +50,7 @@ PRO(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size
  * @return number of result tuples
  */
 result_t *
-RJ_st(relation_t *relR, relation_t *relS, int nthreads,int exp_id, int group_size, int window_size,  int record_gap);
+RJ_st(relation_t *relR, relation_t *relS, param_t cmd_params);
 
 /**
  * PRH: Parallel Radix Join Histogram-based.
@@ -63,7 +66,7 @@ RJ_st(relation_t *relR, relation_t *relS, int nthreads,int exp_id, int group_siz
  * @return number of result tuples
  */
 result_t *
-PRH(relation_t *relR, relation_t *relS, int nthreads,int exp_id, int group_size, int window_size,  int record_gap);
+PRH(relation_t *relR, relation_t *relS, param_t cmd_params);
 
 /**
  * PRHO: Parallel Radix Join Histogram-based Optimized.
@@ -79,6 +82,6 @@ PRH(relation_t *relR, relation_t *relS, int nthreads,int exp_id, int group_size,
  * @return number of result tuples
  */
 result_t *
-PRHO(relation_t *relR, relation_t *relS, int nthreads,int exp_id, int group_size, int window_size,  int record_gap);
+PRHO(relation_t *relR, relation_t *relS, param_t cmd_params);
 
 #endif /* PARALLEL_RADIX_JOIN_H */

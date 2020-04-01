@@ -316,7 +316,7 @@ bucket_chaining_join(const relation_t *const R,
 
         /* Enable the following tO avoid the code elimination
            when running probe only for the time break-down experiment */
-        /* matches += idx; */
+        /*matches += idx;*/
     }
 
     const tuple_t *const Stuples = S->tuples;
@@ -1387,6 +1387,7 @@ prj_thread(void *param) {
     void *chainedbuf = NULL;
 #endif
 
+
 #ifndef NO_TIMING
     if (args->tid == 0) {
         BEGIN_MEASURE_JOIN_ACC(args->timer)
@@ -1410,7 +1411,7 @@ prj_thread(void *param) {
 
     /* global finish time */
     SYNC_GLOBAL_STOP(&args->globaltimer->finish_time, my_tid);
-
+    BARRIER_ARRIVE(args->barrier, rv)
 #ifndef NO_TIMING
     /* Actually with this setup we're not timing build */
     if (my_tid == 0) {
@@ -1420,19 +1421,16 @@ prj_thread(void *param) {
 #endif
 
 #ifdef PERF_COUNTERS
-        if(my_tid == 0) {
-            PCM_stop();
-            PCM_log("=========== Build+Probe profiling results =========\n");
-            PCM_printResults();
-            PCM_log("===================================================\n");
-            PCM_cleanup();
-        }
-        /* Just to make sure we get consistent performance numbers */
-        BARRIER_ARRIVE(args->barrier, rv);
+    if(my_tid == 0) {
+        PCM_stop();
+        PCM_log("=========== Build+Probe profiling results =========\n");
+        PCM_printResults();
+        PCM_log("===================================================\n");
+        PCM_cleanup();
+    }
+    /* Just to make sure we get consistent performance numbers */
+    BARRIER_ARRIVE(args->barrier, rv);
 #endif
-
-    DEBUGMSG("Thread %d exit, I have finished processing %ld\n", args->my_tid, args->result)
-
     return 0;
 }
 
@@ -1448,8 +1446,7 @@ prj_thread(void *param) {
  * - PRHO, Parallel Radix Histogram-based Optimized -> histogram_optimized_join()
  */
 result_t *
-join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads, int exp_id, int group_size,
-              int window_size, int record_gap) {
+join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, param_t cmd_params) {
     int i, rv;
     pthread_t tid[nthreads];
     pthread_attr_t attr;
@@ -1544,7 +1541,7 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads,
         args[i].timer = &timer[i];
 
 #ifndef NO_TIMING
-        args[i].timer->record_gap = record_gap;
+        args[i].timer->record_gap = cmd_params.gap;
 #endif
 
         args[i].relR = relR->tuples + i * numperthr[0];
@@ -1593,7 +1590,7 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads,
 
         printf("Thread%d, produces %ld outputs\n", i, args[i].result);
 #ifndef NO_TIMING
-        merge(args[i].timer, relR, relS, startTS, window_size);
+        merge(args[i].timer, relR, relS, startTS, cmd_params.ts == 0 ? 0 : cmd_params.window_size);
 #endif
     }
     joinresult->totalresults = result;
@@ -1607,16 +1604,16 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads,
 
 #ifndef NO_TIMING
 
-    std::string name = "PRJ_" + std::to_string(exp_id);
+    std::string name = "PRJ_" + std::to_string(cmd_params.exp_id);
     string path = "/data1/xtra/results/breakdown/" + name.append(".txt");
     auto fp = fopen(path.c_str(), "w");
     /* now print the timing results: */
     for (i = 0; i < nthreads; i++) {
-        breakdown_thread(args[i].result, args[i].timer, window_size, fp);
+            breakdown_thread(args[i].result, args[i].timer, cmd_params.ts == 0 ? 0 : cmd_params.window_size, fp);
     }
-    breakdown_global(result, nthreads, args[0].timer, 0, fp);
+    breakdown_global(result, nthreads, args[0].timer, cmd_params.ts == 0 ? 0 : cmd_params.window_size, fp);
     fclose(fp);
-    sortRecords("PRJ", exp_id, window_size);
+    sortRecords("PRJ", cmd_params.exp_id, cmd_params.ts == 0 ? 0 : cmd_params.window_size);
 #endif
 
 
@@ -1670,25 +1667,25 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, int nthreads,
 
 /** \copydoc PRO */
 result_t *
-PRO(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size, int record_gap) {
-    return join_init_run(relR, relS, bucket_chaining_join, nthreads, exp_id, group_size, window_size, record_gap);
+PRO(relation_t *relR, relation_t *relS, param_t cmd_params) {
+    return join_init_run(relR, relS, bucket_chaining_join, cmd_params);
 }
 
 /** \copydoc PRH */
 result_t *
-PRH(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size, int record_gap) {
-    return join_init_run(relR, relS, histogram_join, nthreads, exp_id, group_size, window_size, record_gap);
+PRH(relation_t *relR, relation_t *relS, param_t cmd_params) {
+    return join_init_run(relR, relS, histogram_join, cmd_params);
 }
 
 /** \copydoc PRHO */
 result_t *
-PRHO(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size, int record_gap) {
-    return join_init_run(relR, relS, histogram_optimized_join, nthreads, exp_id, group_size, window_size, record_gap);
+PRHO(relation_t *relR, relation_t *relS, param_t cmd_params) {
+    return join_init_run(relR, relS, histogram_optimized_join, cmd_params);
 }
 
 /** \copydoc RJ */
 result_t *
-RJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size, int record_gap) {
+RJ_st(relation_t *relR, relation_t *relS, param_t cmd_params) {
     int64_t result = 0;
     result_t *joinresult;
     uint32_t i;

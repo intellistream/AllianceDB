@@ -87,7 +87,7 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int
         create_relation_nonunique(rel, rel_size, rel_size);
     } /*else if (cmd_params.gen_with_ts) {
         parallel_create_relation_with_ts(rel, relPl, rel->num_tuples, nthreads, rel->num_tuples, cmd_params.step_size, cmd_params.interval);
-    } */ else if (cmd_params.kim) {
+    } */ else if (cmd_params.ts) {
         // check params 1, window_size, 2. step_size, 3. interval, 4. distribution, 5. zipf factor, 6. nthreads
         switch (cmd_params.key_distribution) {
             case 0: // unique
@@ -185,12 +185,10 @@ benchmark(const param_t cmd_params) {
     /* Run the selected join algorithm */
     printf("[INFO ] Running join algorithm %s ...\n", cmd_params.algo->name);
 
-    if (cmd_params.kim == 0)
-        results = cmd_params.algo->joinAlgo(&relR, &relS, cmd_params.nthreads, cmd_params.exp_id, cmd_params.group_size,
-                                            0, cmd_params.gap);//no window to wait.
+    if (cmd_params.ts == 0)
+        results = cmd_params.algo->joinAlgo(&relR, &relS, cmd_params);//no window to wait.
     else
-        results = cmd_params.algo->joinAlgo(&relR, &relS, cmd_params.nthreads, cmd_params.exp_id, cmd_params.group_size,
-                                            cmd_params.window_size, cmd_params.gap);
+        results = cmd_params.algo->joinAlgo(&relR, &relS, cmd_params);
 
     printf("[INFO ] Results = %ld. DONE.\n", results->totalresults);
 

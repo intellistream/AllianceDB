@@ -90,7 +90,7 @@ t_param &finishing(int nthreads, t_param &param, uint64_t *startTS, uint64_t *jo
  * @return
  */
 result_t *
-SHJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size, int record_gap) {
+SHJ_st(relation_t *relR, relation_t *relS, param_t cmd_params) {
 
     t_param param(1);
 
@@ -124,15 +124,15 @@ SHJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_s
 
 //1st online algorithm
 result_t *
-SHJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size,
-          int record_gap) {
+SHJ_JM_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
     t_param param(nthreads);
     initialize(nthreads, param);
     param.fetcher = type_JM_NP_Fetcher;//new JM_NP_Fetcher(nthreads, relR, relS);
     //no shuffler is required for JM mode.
     param.joiner = type_SHJJoiner;//new SHJJoiner();
     param.algo_name = "SHJ_JM_NP";
-    param.exp_id = exp_id;
+    param.exp_id = cmd_params.exp_id;
+    param.record_gap = cmd_params.gap;
     uint64_t *startTS = new uint64_t();
     auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_NOSHUFFLE, startTS, &joinStart)
@@ -142,15 +142,15 @@ SHJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int grou
 
 //2nd online algorithm
 result_t *
-SHJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size,
-          int record_gap) {
+SHJ_JB_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
     t_param param(nthreads);
     initialize(nthreads, param);
     param.fetcher = type_JB_NP_Fetcher;//new JB_NP_Fetcher(nthreads, relR, relS);
     param.shuffler = new HashShuffler(nthreads, relR, relS);
     param.joiner = type_SHJJoiner;//new SHJJoiner();
     param.algo_name = "SHJ_JB_NP";
-    param.exp_id = exp_id;
+    param.exp_id = cmd_params.exp_id;
+    param.record_gap = cmd_params.gap;
     uint64_t *startTS = new uint64_t();
     auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE, startTS, &joinStart)
@@ -160,15 +160,15 @@ SHJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int grou
 
 //3rd online algorithm
 result_t *
-SHJ_JBCR_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size,
-            int record_gap) {
+SHJ_JBCR_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
     t_param param(nthreads);
     initialize(nthreads, param);
     param.fetcher = type_JB_NP_Fetcher;//new JB_NP_Fetcher(nthreads, relR, relS);
-    param.shuffler = new ContRandShuffler(nthreads, relR, relS, group_size);
+    param.shuffler = new ContRandShuffler(nthreads, relR, relS, cmd_params.group_size);
     param.joiner = type_SHJJoiner;//new SHJJoiner();
     param.algo_name = "SHJ_JBCR_NP";
-    param.exp_id = exp_id;
+    param.exp_id = cmd_params.exp_id;
+    param.record_gap = cmd_params.gap;
     uint64_t *startTS = new uint64_t();
     auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE, startTS, &joinStart)
@@ -178,15 +178,15 @@ SHJ_JBCR_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int gr
 
 //4th
 result_t *
-SHJ_HS_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size,
-          int record_gap) {
+SHJ_HS_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
     t_param param(nthreads);
     initialize(nthreads, param);
     param.fetcher = type_HS_NP_Fetcher;//new HS_NP_Fetcher(nthreads, relR, relS);
     param.shuffler = new HSShuffler(nthreads, relR, relS);
     param.joiner = type_SHJJoiner;//new SHJJoiner();
     param.algo_name = "SHJ_HS_NP";
-    param.exp_id = exp_id;
+    param.exp_id = cmd_params.exp_id;
+    param.record_gap = cmd_params.gap;
     uint64_t *startTS = new uint64_t();
     auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE_HS, startTS, &joinStart)
@@ -195,7 +195,7 @@ SHJ_HS_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int grou
 }
 
 result_t *
-PMJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size, int record_gap) {
+PMJ_st(relation_t *relR, relation_t *relS, param_t cmd_params) {
 
     t_param param(1);
 
@@ -231,7 +231,7 @@ PMJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_s
 }
 
 result_t *
-RPJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size, int record_gap) {
+RPJ_st(relation_t *relR, relation_t *relS, param_t cmd_params) {
 
     t_param param(1);
 #ifdef JOIN_RESULT_MATERIALIZE
@@ -265,15 +265,18 @@ RPJ_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_s
 }
 
 //5th
-result_t *PMJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size,
-                    int record_gap) {
+result_t *PMJ_JM_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
     t_param param(nthreads);
     initialize(nthreads, param);
     param.fetcher = type_JM_NP_Fetcher;//new JM_NP_Fetcher(nthreads, relR, relS);
     //no shuffler is required for JM mode.
     param.joiner = type_PMJJoiner;//new PMJJoiner(relR->num_tuples, relS->num_tuples / nthreads, nthreads);
     param.algo_name = "PMJ_JM_NP";
-    param.exp_id = exp_id;
+    param.exp_id = cmd_params.exp_id;
+    param.record_gap = cmd_params.gap;
+
+    param.progressive_step = cmd_params.progressive_step;
+    param.merge_step = cmd_params.merge_step;
     uint64_t *startTS = new uint64_t();
     auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_NOSHUFFLE, startTS, &joinStart)
@@ -282,15 +285,19 @@ result_t *PMJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id
 }
 
 //6th
-result_t *PMJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size,
-                    int record_gap) {
+result_t *PMJ_JB_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
     t_param param(nthreads);
     initialize(nthreads, param);
     param.fetcher = type_JB_NP_Fetcher;//new JM_NP_Fetcher(nthreads, relR, relS);
     param.shuffler = new HashShuffler(nthreads, relR, relS);
     param.joiner = type_PMJJoiner;//new PMJJoiner(relR->num_tuples, relS->num_tuples / nthreads, nthreads);
     param.algo_name = "PMJ_JB_NP";
-    param.exp_id = exp_id;
+    param.exp_id = cmd_params.exp_id;
+    param.record_gap = cmd_params.gap;
+
+    param.progressive_step = cmd_params.progressive_step;
+    param.merge_step = cmd_params.merge_step;
+
     uint64_t *startTS = new uint64_t();
     auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE, startTS, &joinStart)
@@ -299,15 +306,17 @@ result_t *PMJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id
 }
 
 //7th
-result_t *PMJ_JBCR_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size,
-                      int record_gap) {
+result_t *PMJ_JBCR_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
     t_param param(nthreads);
     initialize(nthreads, param);
     param.fetcher = type_JB_NP_Fetcher;//new JM_NP_Fetcher(nthreads, relR, relS);
-    param.shuffler = new ContRandShuffler(nthreads, relR, relS, group_size);
+    param.shuffler = new ContRandShuffler(nthreads, relR, relS, cmd_params.group_size);
     param.joiner = type_PMJJoiner;//new PMJJoiner(relR->num_tuples, relS->num_tuples / nthreads, nthreads);
     param.algo_name = "PMJ_JBCR_NP";
-    param.exp_id = exp_id;
+    param.exp_id = cmd_params.exp_id;
+    param.record_gap = cmd_params.gap;
+    param.progressive_step = cmd_params.progressive_step;
+    param.merge_step = cmd_params.merge_step;
     uint64_t *startTS = new uint64_t();
     auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE, startTS, &joinStart)
@@ -316,16 +325,15 @@ result_t *PMJ_JBCR_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_
 }
 
 //8th
-result_t *PMJ_HS_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size,
-                    int record_gap) {
+result_t *PMJ_HS_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
     t_param param(nthreads);
     initialize(nthreads, param);
     param.fetcher = type_PMJ_HS_NP_Fetcher;//new JM_NP_Fetcher(nthreads, relR, relS);
     param.shuffler = new HSShuffler(nthreads, relR, relS);
     param.joiner = type_PMJJoiner;//new PMJJoiner(relR->num_tuples, relS->num_tuples / nthreads, nthreads);
     param.algo_name = "PMJ_HS_NP";
-    param.exp_id = exp_id;
-    param.record_gap = record_gap;
+    param.exp_id = cmd_params.exp_id;
+    param.record_gap = cmd_params.gap;
     uint64_t *startTS = new uint64_t();
     auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE_PMJHS, startTS, &joinStart)
@@ -336,16 +344,15 @@ result_t *PMJ_HS_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id
 
 //9th
 result_t *
-RPJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size,
-          int record_gap) {
+RPJ_JM_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
     t_param param(nthreads);
     initialize(nthreads, param);
     param.fetcher = type_JM_NP_Fetcher;//new JM_NP_Fetcher(nthreads, relR, relS);
     //no shuffler is required for JM mode.
     param.joiner = type_RippleJoiner;//new RippleJoiner(relR, relS, nthreads);
     param.algo_name = "RPJ_JM_NP";
-    param.exp_id = exp_id;
-
+    param.exp_id = cmd_params.exp_id;
+    param.record_gap = cmd_params.gap;
     uint64_t *startTS = new uint64_t();
     auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_NOSHUFFLE, startTS, &joinStart)
@@ -355,15 +362,15 @@ RPJ_JM_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int grou
 
 //10th
 result_t *
-RPJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size,
-          int record_gap) {
+RPJ_JB_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
     t_param param(nthreads);
     initialize(nthreads, param);
     param.fetcher = type_JB_NP_Fetcher;//new JB_NP_Fetcher(nthreads, relR, relS);
     param.shuffler = new HashShuffler(nthreads, relR, relS);
     param.joiner = type_RippleJoiner;// new RippleJoiner(relR, relS, nthreads);
     param.algo_name = "RPJ_JB_NP";
-    param.exp_id = exp_id;
+    param.exp_id = cmd_params.exp_id;
+    param.record_gap = cmd_params.gap;
     uint64_t *startTS = new uint64_t();
     auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE, startTS, &joinStart)
@@ -373,16 +380,15 @@ RPJ_JB_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int grou
 
 //11th
 result_t *
-RPJ_JBCR_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size,
-            int record_gap) {
+RPJ_JBCR_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
     t_param param(nthreads);
     initialize(nthreads, param);
     param.fetcher = type_JB_NP_Fetcher;//new JB_NP_Fetcher(nthreads, relR, relS);
     param.shuffler = new ContRandShuffler(nthreads, relR, relS, 0);
     param.joiner = type_RippleJoiner;// new RippleJoiner(relR, relS, nthreads);
     param.algo_name = "RPJ_JBCR_NP";
-    param.exp_id = exp_id;
-
+    param.exp_id = cmd_params.exp_id;
+    param.record_gap = cmd_params.gap;
     uint64_t *startTS = new uint64_t();
     auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE, startTS, &joinStart)
@@ -391,15 +397,15 @@ RPJ_JBCR_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int gr
 }
 
 //12th
-result_t *RPJ_HS_NP(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size,
-                    int record_gap) {
+result_t *RPJ_HS_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
     t_param param(nthreads);
     initialize(nthreads, param);
     param.fetcher = type_HS_NP_Fetcher;//new HS_NP_Fetcher(nthreads, relR, relS);
     param.shuffler = new HSShuffler(nthreads, relR, relS);
     param.joiner = type_RippleJoiner;//new RippleJoiner(relR, relS, nthreads);
     param.algo_name = "RPJ_HS_NP";
-    param.exp_id = exp_id;
+    param.exp_id = cmd_params.exp_id;
+    param.record_gap = cmd_params.gap;
     uint64_t *startTS = new uint64_t();
     auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE_HS, startTS, &joinStart)

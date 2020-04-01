@@ -112,7 +112,7 @@ init_bucket_buffer(bucket_buffer_t **ppbuf) {
 
 /** \copydoc NPO_st */
 result_t *
-NPO_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size, int record_gap) {
+NPO_st(relation_t *relR, relation_t *relS, param_t cmd_params) {
     hashtable_t *ht;
     int64_t result = 0;
     result_t *joinresult;
@@ -155,7 +155,7 @@ NPO_st(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_s
 #ifndef NO_TIMING
     END_MEASURE(timer)
 
-    std::string name = "NPJ_ST_" + std::to_string(exp_id);
+    std::string name = "NPJ_ST_" + std::to_string(cmd_params.exp_id);
     string path = "/data1/xtra/results/breakdown/" + name.append(".txt");
     auto fp = fopen(path.c_str(), "w");
     /* now print the timing results: */
@@ -207,8 +207,7 @@ npo_thread(void *param) {
     /* insert tuples from the assigned part of relR to the ht */
     build_hashtable_mt(args->ht, &args->relR, &overflowbuf);
 
-    /* wait at a barrier until each thread completes build phase */
-    BARRIER_ARRIVE(args->barrier, rv)
+
 #ifdef PERF_COUNTERS
     if(args->tid == 0){
       PCM_stop();
@@ -221,6 +220,8 @@ npo_thread(void *param) {
 #endif
 
 #ifndef NO_TIMING
+    /* wait at a barrier until each thread completes build phase */
+    BARRIER_ARRIVE(args->barrier, rv)
     if (args->tid == 0) {
         END_MEASURE_BUILD((args->timer))
     }
@@ -234,6 +235,7 @@ npo_thread(void *param) {
 #endif
 
 #ifndef NO_TIMING
+    BARRIER_ARRIVE(args->barrier, rv)
     if (args->tid == 0) {
         BEGIN_MEASURE_JOIN_ACC(args->timer)
     }
@@ -249,9 +251,6 @@ npo_thread(void *param) {
     args->threadresult->results = (void *) chainedbuf;
 #endif
 
-    /* wait at a barrier until each thread completes join phase */
-    BARRIER_ARRIVE(args->barrier, rv)
-
 #ifdef PERF_COUNTERS
     if(args->tid == 0) {
         PCM_stop();
@@ -265,6 +264,8 @@ npo_thread(void *param) {
 #endif
 
 #ifndef NO_TIMING
+    /* wait at a barrier until each thread completes join phase */
+    BARRIER_ARRIVE(args->barrier, rv)
     if (args->tid == 0) {
         END_MEASURE_JOIN_ACC(args->timer)
         END_MEASURE(args->timer)
@@ -346,7 +347,7 @@ np_distribute(const relation_t *relR, const relation_t *relS, int nthreads, hash
 
 /** \copydoc NPO */
 result_t *
-NPO(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size, int window_size, int record_gap) {
+NPO(relation_t *relR, relation_t *relS, param_t cmd_params) {
     hashtable_t *ht;
     int64_t result = 0;
     int32_t numR, numS, numRthr, numSthr; /* total and per thread num */
@@ -387,7 +388,7 @@ NPO(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size
     pthread_attr_init(&attr);
     np_distribute(relR, relS, nthreads, ht, numR, numS, numRthr, numSthr,
                   i, rv, set, args, tid, attr, barrier,
-                  joinresult, timer, exp_id, group_size, startTS, record_gap);
+                  joinresult, timer, cmd_params.exp_id, cmd_params.group_size, startTS, cmd_params.gap);
     /* wait for threads to finish */
     for (i = 0; i < nthreads; i++) {
         pthread_join(tid[i], NULL);
@@ -398,7 +399,7 @@ NPO(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size
         result += args[i].result;
         printf("Thread[%d], produces %ld outputs\n", i, args[i].result);
 #ifndef NO_TIMING
-        merge(args[i].timer, relR, relS, startTS, window_size);
+        merge(args[i].timer, relR, relS, startTS, cmd_params.ts == 0 ? 0 : cmd_params.window_size);
 #endif
     }
     joinresult->totalresults = result;
@@ -411,15 +412,15 @@ NPO(relation_t *relR, relation_t *relS, int nthreads, int exp_id, int group_size
 #ifndef NO_TIMING
     /* now print the timing results: */
 
-    std::string name = "NPJ_" + std::to_string(exp_id);
+    std::string name = "NPJ_" + std::to_string(cmd_params.exp_id);
     string path = "/data1/xtra/results/breakdown/" + name.append(".txt");
     auto fp = fopen(path.c_str(), "w");
     for (i = 0; i < nthreads; i++) {
-        breakdown_thread(args[i].result, args[i].timer, window_size, fp);
+        breakdown_thread(args[i].result, args[i].timer, cmd_params.ts == 0 ? 0 : cmd_params.window_size, fp);
     }
-    breakdown_global(result, nthreads, args[0].timer, 0, fp);
+    breakdown_global(result, nthreads, args[0].timer, cmd_params.ts == 0 ? 0 : cmd_params.window_size, fp);
     fclose(fp);
-    sortRecords("NPJ", exp_id, window_size);
+    sortRecords("NPJ", cmd_params.exp_id, cmd_params.ts == 0 ? 0 : cmd_params.window_size);
 #endif
 //    for (i = 0; i < nthreads; i++) {
 //        pthread_join(tid[i], NULL);

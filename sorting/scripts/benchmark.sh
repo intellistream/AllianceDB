@@ -1,26 +1,87 @@
 #!/bin/bash
+#set -e
 
-cd ..
-cmake .
-make -j4
+function compile() {
+  cd ..
+  cmake .
+  cd scripts
+  make -C .. clean
+  make -C .. -j4
+}
 
 function benchmarkRun() {
   #####native execution
-  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t $ts -I $id=="
-  ./sorting -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t $ts -I $id
+  echo "==benchmark:$benchmark -a $algo -n $Threads -I $id== "
+  #echo 3 >/proc/sys/vm/drop_caches
+  ../sorting -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id
+  if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit 1; fi
 }
 
 function Run() {
   #####native execution
   echo "==benchmark:$benchmark -a $algo -n $Threads=="
-  ./sorting -a $algo -r $RSIZE -s $SSIZE -n $Threads
+  #echo 3 >/proc/sys/vm/drop_caches
+  ../sorting -a $algo -r $RSIZE -s $SSIZE -n $Threads
 }
 
 function KimRun() {
   #####native execution
   echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS=="
-  echo 3 >/proc/sys/vm/drop_caches
-  ./sorting -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS
+  #echo 3 >/proc/sys/vm/drop_caches
+  ../sorting -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS
+}
+
+
+function SetStockParameters() {
+  ts=1 # stream case
+  WINDOW_SIZE=5000
+  RSIZE=116941
+  SSIZE=151500
+  RPATH=/data1/xtra/datasets/stock/cj_60s_1t.txt
+  SPATH=/data1/xtra/datasets/stock/sb_60s_1t.txt
+  RKEY=0
+  SKEY=0
+  RTS=1
+  STS=1
+}
+
+function SetRovioParameters() {
+  ts=1 # stream case
+  WINDOW_SIZE=50
+  RSIZE=48826
+  SSIZE=48826
+  RPATH=/data1/xtra/datasets/rovio/50ms_1t.txt
+  SPATH=/data1/xtra/datasets/rovio/50ms_1t.txt
+  RKEY=0
+  SKEY=0
+  RTS=3
+  STS=3
+}
+
+function SetYSBParameters() {
+  ts=1 # stream case
+  WINDOW_SIZE=500
+  RSIZE=1000
+  SSIZE=50000000
+  RPATH=/data1/xtra/datasets/YSB/campaigns_id.txt
+  SPATH=/data1/xtra/datasets/YSB/ad_events.txt
+  RKEY=0
+  SKEY=0
+  RTS=0
+  STS=1
+}
+
+function SetDEBSParameters() {
+  ts=1 # stream case
+  WINDOW_SIZE=0
+  RSIZE=1000000 #640 MB
+  SSIZE=1000000 #640 MB
+  RPATH=/data1/xtra/datasets/DEBS/posts_key32_partitioned.csv
+  SPATH=/data1/xtra/datasets/DEBS/comments_key32_partitioned.csv
+  RKEY=0
+  SKEY=0
+  RTS=0
+  STS=0
 }
 
 DEFAULT_WINDOW_SIZE=2000 #(ms) -- 2 seconds
@@ -32,29 +93,28 @@ function ResetParameters() {
   skew=0                           # uniform key distribution
   INTERVAL=1                       # interval of 1. always..
   STEP_SIZE=$DEFAULT_STEP_SIZE     # arrival rate = 1000 / ms
-  WINDOW_SIZE=$DEFAULT_WINDOW_SIZE #MS rel size = window_size / interval * step_size.
+  WINDOW_SIZE=$DEFAULT_WINDOW_SIZE # MS rel size = window_size / interval * step_size.
   STEP_SIZE_S=-1                   # let S has the same arrival rate of R.
   FIXS=0
   ts=1 # stream case
-  Threads=1
+  Threads=8
+  progress_step=1024
+  merge_step=4
+  group_size=2
+  gap=2000
 }
 
 # Configurable variables
 # Generate a timestamp
-algo=""
-Threads=1
 timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
-for algo in m-way m-pass; do #
-  RSIZE=1
-  SSIZE=1
-  RPATH=""
-  SPATH=""
-  RKEY=0
-  SKEY=0
-  RTS=0
-  STS=0
-  for benchmark in "Stock" "Rovio" "YSB" "DEBS"; do #"ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "Stock" "Rovio" "YSB" "DEBS" "AR" "AD" "KD" "WS" "KD2" "WS2" "RAR" "RAR2" "WS3" "WS4"
+
+#general benchmark.
+
+#recompile by default.
+compile
+for algo in m-way m-pass; do
+  for benchmark in "Stock" "Rovio" "YSB" "DEBS" "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "AR" "RAR" "RAR2" "AD" "KD" "WS" "KD2" "WS2"  "WS3" "WS4"; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "Stock"  "Rovio" "YSB"  "DEBS" # "Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "RAR2" "AD" "KD" "WS" "KD2" "WS2"  "WS3" "WS4"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "AR") #test arrival rate
@@ -86,7 +146,7 @@ for algo in m-way m-pass; do #
       ts=1 # stream case
       # step size should be bigger than nthreads
       STEP_SIZE_S=250
-      for STEP_SIZE in 10 100 1000 10000; do
+      for STEP_SIZE in 250 500 750 1000; do
         #        WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
         echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
         KimRun
@@ -197,76 +257,31 @@ for algo in m-way m-pass; do #
     "Stock")
       id=38
       ResetParameters
-      ts=1 # stream case
-      WINDOW_SIZE=5000
-      RSIZE=116941
-      SSIZE=151500
-      RPATH=/data1/xtra/datasets/stock/cj_60s_1t.txt
-      SPATH=/data1/xtra/datasets/stock/sb_60s_1t.txt
-      RKEY=0
-      SKEY=0
-      RTS=1
-      STS=1
+      SetStockParameters
       benchmarkRun
       ;;
     "Rovio") #matches:
       id=39
       ResetParameters
-      ts=1 # stream case
-      WINDOW_SIZE=6000
-      RSIZE=58300
-      SSIZE=58300
-      RPATH=/data1/xtra/datasets/rovio/6s_1t.txt
-      SPATH=/data1/xtra/datasets/rovio/6s_1t.txt
-      RKEY=0
-      SKEY=0
-      RTS=3
-      STS=3
+      SetRovioParameters
       benchmarkRun
       ;;
     "YSB")
       id=40
       ResetParameters
-      ts=1 # stream case
-      WINDOW_SIZE=5000
-      RSIZE=1000
-      SSIZE=5000000
-      RPATH=/data1/xtra/datasets/YSB/campaigns_1t.txt
-      SPATH=/data1/xtra/datasets/YSB/ad_5s_1t.txt
-      RKEY=0
-      SKEY=0
-      RTS=0
-      STS=1
+      SetYSBParameters
       benchmarkRun
       ;;
     "DEBS")
       id=41
       ResetParameters
-      ts=1 # stream case
-      WINDOW_SIZE=0
-      RSIZE=100000
-      SSIZE=100000
-      RPATH=/data1/xtra/datasets/DEBS/posts_key32_partitioned.csv
-      SPATH=/data1/xtra/datasets/DEBS/comments_key32_partitioned.csv
-      RKEY=0
-      SKEY=0
-      RTS=0
-      STS=0
+      SetYSBParameters
       benchmarkRun
       ;;
     "ScaleStock")
       id=42
       ResetParameters
-      ts=1 # stream case
-      WINDOW_SIZE=5000
-      RSIZE=116941
-      SSIZE=151500
-      RPATH=/data1/xtra/datasets/stock/cj_60s_1t.txt
-      SPATH=/data1/xtra/datasets/stock/sb_60s_1t.txt
-      RKEY=0
-      SKEY=0
-      RTS=1
-      STS=1
+      SetStockParameters
       echo test scalability of Stock 42 - 45
       for Threads in 1 2 4 8; do
         benchmarkRun
@@ -276,15 +291,7 @@ for algo in m-way m-pass; do #
     "ScaleRovio")
       id=46
       ResetParameters
-      ts=1 # stream case
-      RSIZE=580700
-      SSIZE=58070
-      RPATH=/data1/xtra/datasets/rovio/60s_1t.txt
-      SPATH=/data1/xtra/datasets/rovio/60s_1t.txt
-      RKEY=0
-      SKEY=0
-      RTS=3
-      STS=3
+      SetRovioParameters
       echo test scalability 46 - 49
       for Threads in 1 2 4 8; do
         benchmarkRun
@@ -294,16 +301,7 @@ for algo in m-way m-pass; do #
     "ScaleYSB")
       id=50
       ResetParameters
-      ts=1 # stream case
-      WINDOW_SIZE=5000
-      RSIZE=1000
-      SSIZE=5000000
-      RPATH=/data1/xtra/datasets/YSB/campaigns_1t.txt
-      SPATH=/data1/xtra/datasets/YSB/ad_5s_1t.txt
-      RKEY=0
-      SKEY=0
-      RTS=0
-      STS=1
+      SetYSBParameters
       echo test scalability 50 - 53
       for Threads in 1 2 4 8; do
         benchmarkRun
@@ -313,16 +311,6 @@ for algo in m-way m-pass; do #
     "ScaleDEBS")
       id=54
       ResetParameters
-      ts=1 # stream case
-      WINDOW_SIZE=0
-      RSIZE=1000000
-      SSIZE=1000000
-      RPATH=/data1/xtra/datasets/DEBS/posts_key32_partitioned.csv
-      SPATH=/data1/xtra/datasets/DEBS/comments_key32_partitioned.csv
-      RKEY=0
-      SKEY=0
-      RTS=0
-      STS=0
       echo test scalability 54 - 57
       for Threads in 1 2 4 8; do
         benchmarkRun

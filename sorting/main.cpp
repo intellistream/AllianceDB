@@ -875,7 +875,7 @@ parse_args(int argc, char **argv, cmdparam_t *cmd_params) {
                     printf("[ERROR] Join algorithm named `%s' does not exist!\n",
                            optarg);
                     print_help(argv[0]);
-                    exit(EXIT_SUCCESS);
+                    exit(EXIT_FAILURE);
                 }
                 break;
 
@@ -1010,7 +1010,7 @@ parse_args(int argc, char **argv, cmdparam_t *cmd_params) {
     /* make sure part fanout is greater the num-threads */
     if (part_fanout < cmd_params->nthreads) {
         fprintf(stdout, "[ERROR] Partitioning fan-out must be >= num-threads.\n");
-        exit(0);
+        exit(-1);
     }
 
     /* make sure we're running only scalar when KEY_8B */

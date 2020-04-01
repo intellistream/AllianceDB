@@ -26,10 +26,13 @@
 #include "utils/params.h"
 
 #include <chrono>
+
 using namespace std::chrono;
 
 #ifdef JOIN_RESULT_MATERIALIZE
+
 #include "utils/tuple_buffer.h"       /* for materialization */
+
 #endif
 
 #if !defined(__cplusplus)
@@ -50,7 +53,7 @@ typedef struct param_t param_t;
 struct algo_t {
     char name[128];
 
-    result_t *(*joinAlgo)(relation_t *, relation_t *, int, int, int, int, int);
+    result_t *(*joinAlgo)(relation_t *, relation_t *, const param_t cmd_params);
 };
 
 struct param_t {
@@ -89,7 +92,7 @@ struct param_t {
 
     int old_param; /* whether to use old parameters */
     int fixS;
-    int kim;
+    int ts;
     int key_distribution;
     int ts_distribution;
     double skew;
@@ -103,6 +106,8 @@ struct param_t {
     int group_size;
     int exp_id;
     int gap;
+    int progressive_step = 640;
+    int merge_step = 10000;
 };
 
 

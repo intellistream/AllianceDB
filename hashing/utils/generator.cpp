@@ -175,11 +175,11 @@ add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_size,
         tid_offsets[partition]++;
     }
 
-#ifdef DEBUG
-    for (auto i = 0; i < relation->num_tuples; i++) {
-        printf("ts: %ld\n", relationPayload->ts[i].count());
-    }
-#endif
+//#ifdef DEBUG
+//    for (auto i = 0; i < relation->num_tuples; i++) {
+//        printf("ts: %ld\n", relationPayload->ts[i]);
+//    }
+//#endif
 //    assert(interval == 0 || ts == window_size);
 }
 
@@ -223,7 +223,7 @@ void add_zipf_ts(relation_t *relation, relation_payload_t *relationPayload, int 
         if (relationPayload->ts[i] < 0.25 * window_size) {
             small++;
         }
-        DEBUGMSG("%d, %ld\n", relation->tuples[i].key, relationPayload->ts[i].count());
+        DEBUGMSG("%d, %ld\n", relation->tuples[i].key, relationPayload->ts[i])
     }
     printf("small ts %f\n", (double) small / relation->num_tuples);
 }

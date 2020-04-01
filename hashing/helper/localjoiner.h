@@ -31,7 +31,7 @@ class baseJoiner {
 public:
 
     virtual void join(int32_t tid, tuple_t *tuple, bool tuple_R, int64_t *matches,
-                      /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ void *pVoid) = 0;
+            /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ void *pVoid) = 0;
 
     virtual void clean(int32_t tid, tuple_t *tuple, bool cleanR) = 0;
 
@@ -46,7 +46,7 @@ public:
     }
 
     virtual void join(int32_t tid, tuple_t *fat_tuple, int fat_tuple_size, bool IStuple_R, int64_t *matches,
-                      /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ void *pVoid) {
+            /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ void *pVoid) {
         //only supported by PMJ.
     }
 
@@ -70,7 +70,7 @@ private:
 public:
     void
     join(int32_t tid, tuple_t *tuple, bool ISTupleR, int64_t *matches,
-         /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ void *pVoid) override;
+            /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ void *pVoid) override;
 
     RippleJoiner(relation_t *relR, relation_t *relS, int nthreads);
 
@@ -124,16 +124,19 @@ struct t_pmj {
 class PMJJoiner : public baseJoiner {
 private:
     t_pmj *t_arg;
+
 public:
+    int progressive_step = 640;//#number of tuples to sort at each iteration. It must be multiple cacheline size (64).
+    int merge_step = 10000;//#runs to merge at each iteration.
 
     PMJJoiner(int sizeR, int sizeS, int nthreads);
 
     void
     join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *matches,
-         /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ void *pVoid);
+            /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ void *pVoid);
 
     void join(int32_t tid, tuple_t *fat_tuple, int fat_tuple_size, bool IStuple_R, int64_t *matches,
-              /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ void *pVoid);
+            /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ void *pVoid);
 
     long
     merge(int32_t tid, int64_t *matches, /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/
@@ -163,7 +166,7 @@ public:
 
     void
     join(int32_t tid, tuple_t *tuple, bool ISTupleR, int64_t *matches,
-         /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ void *pVoid) override;
+            /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ void *pVoid) override;
 
     void clean(int32_t tid, tuple_t *tuple, bool cleanR) override;
 };

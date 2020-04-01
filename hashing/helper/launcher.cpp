@@ -33,6 +33,11 @@ launch(int nthreads, relation_t *relR, relation_t *relS, t_param param, void *(*
                 param.args[i].joiner = new PMJJoiner(relR->num_tuples,
                                                      relS->num_tuples,
                                                      nthreads);//have to allocate max size of tmp window in each joiner.
+
+                /** configure parameters for PMJ. */
+                ((PMJJoiner *) param.args[i].joiner)->progressive_step = param.progressive_step;
+                ((PMJJoiner *) param.args[i].joiner)->merge_step = param.merge_step;
+
                 break;
             case type_RippleJoiner:
                 param.args[i].joiner = new RippleJoiner(relR, relS, nthreads);

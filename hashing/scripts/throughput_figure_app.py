@@ -142,7 +142,7 @@ def ReadFile():
         read = f.readlines()
         x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
         if id == 39 or id == 41:
-            value = len(read) * 1000 / x  # get throughput (#items/ms)
+            value = len(read) * 10 / x  # get throughput (#items/ms)
         else:
             value = len(read) * 10 / x  # get throughput (#items/ms)
         col1.append(value)
@@ -154,7 +154,7 @@ def ReadFile():
         read = f.readlines()
         x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
         if id == 39 or id == 41:
-            value = len(read) * 1000 / x  # get throughput (#items/ms)
+            value = len(read) * 10 / x  # get throughput (#items/ms)
         else:
             value = len(read) * 10 / x  # get throughput (#items/ms)
         col2.append(value)
@@ -166,7 +166,7 @@ def ReadFile():
         read = f.readlines()
         x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
         if id == 39 or id == 41:
-            value = len(read) * 1000 / x  # get throughput (#items/ms)
+            value = len(read) * 10 / x  # get throughput (#items/ms)
         else:
             value = len(read) * 10 / x  # get throughput (#items/ms)
         col3.append(value)
@@ -178,7 +178,7 @@ def ReadFile():
         read = f.readlines()
         x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
         if id == 39 or id == 41:
-            value = len(read) * 1000 / x  # get throughput (#items/ms)
+            value = len(read) * 10 / x  # get throughput (#items/ms)
         else:
             value = len(read) * 10 / x  # get throughput (#items/ms)
         col4.append(value)
@@ -190,7 +190,7 @@ def ReadFile():
         read = f.readlines()
         x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
         if id == 39 or id == 41:
-            value = len(read) * 1000 / x  # get throughput (#items/ms)
+            value = len(read) * 10 / x  # get throughput (#items/ms)
         else:
             value = len(read) * 10 / x  # get throughput (#items/ms)
         col5.append(value)
@@ -202,7 +202,7 @@ def ReadFile():
         read = f.readlines()
         x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
         if id == 39 or id == 41:
-            value = len(read) * 1000 / x  # get throughput (#items/ms)
+            value = len(read) * 10 / x  # get throughput (#items/ms)
         else:
             value = len(read) * 10 / x  # get throughput (#items/ms)
         col6.append(value)
@@ -214,7 +214,7 @@ def ReadFile():
         read = f.readlines()
         x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
         if id == 39 or id == 41 or id == 41:
-            value = len(read) * 1000 / x  # get throughput (#items/ms)
+            value = len(read) * 10 / x  # get throughput (#items/ms)
         else:
             value = len(read) * 10 / x  # get throughput (#items/ms)
         col7.append(value)
@@ -226,7 +226,7 @@ def ReadFile():
         read = f.readlines()
         x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
         if id == 39 or id == 41:
-            value = len(read) * 1000 / x  # get throughput (#items/ms)
+            value = len(read) * 10 / x  # get throughput (#items/ms)
         else:
             value = len(read) * 10 / x  # get throughput (#items/ms)
         col8.append(value)
@@ -239,7 +239,7 @@ if __name__ == "__main__":
 
     y_values = ReadFile()
 
-    legend_labels = ['PRJ', 'NPJ', 'M-PASS', 'M-WAY', 'SHJ$^M$', 'SHJ$^B$', 'PMJ$^M$', 'PMJ$^B$']
+    legend_labels = ['PRJ$^l$', 'NPJ$^l$', 'MPASS$^l$', 'MWAY$^l$', 'JM_SHJ$^e$', 'JB_SHJ$^e$', 'JM_PMJ$^e$', 'JB_PMJ$^e$']
 
     DrawFigure(x_values, y_values, legend_labels,
                '', 'Tpt. (#matches/s)', 0,

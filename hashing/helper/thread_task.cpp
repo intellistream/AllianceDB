@@ -9,7 +9,7 @@
 #include "fetcher.h"
 #include "shuffler.h"
 #include "../utils/perf_counters.h"
-#include "../joins/shj_struct.h"
+#include "../joins/eagerjoin_struct.h"
 
 /**
  * a JOIN function that a joiner should apply
@@ -48,11 +48,11 @@ THREAD_TASK_NOSHUFFLE(void *param) {
     int lock;
     /* wait at a barrier until each thread started*/
     BARRIER_ARRIVE(args->barrier, lock)
-    if (args->tid == 0)
-        *args->startTS = curtick();
-    BARRIER_ARRIVE(args->barrier, lock)
 #ifndef NO_TIMING
-    START_MEASURE((args->timer))
+    if (args->tid == 0) {
+        *args->startTS = curtick();
+        START_MEASURE((args->timer))
+    }
 #endif
 
 #ifdef PERF_COUNTERS
@@ -67,7 +67,7 @@ THREAD_TASK_NOSHUFFLE(void *param) {
 #endif
 
 #ifdef JOIN_RESULT_MATERIALIZE
-    chainedtuplebuffer_t * chainedbuf = chainedtuplebuffer_init();
+    chainedtuplebuffer_t *chainedbuf = chainedtuplebuffer_init();
 #else
     void *chainedbuf = NULL;
 #endif
@@ -76,12 +76,14 @@ THREAD_TASK_NOSHUFFLE(void *param) {
     baseFetcher *fetcher = args->fetcher;
     fetcher->fetchStartTime = *args->startTS;//set the fetch starting time.
 #ifndef NO_TIMING
-    BEGIN_MEASURE_PARTITION(args->timer)
+    if (args->tid == 0)
+        BEGIN_MEASURE_PARTITION_ACC(args->timer)
 #endif
     do {
         fetch_t *fetch = fetcher->next_tuple();/*time to fetch, waiting time*/
         if (fetch != nullptr) {
-            BEGIN_MEASURE_JOIN_ACC(args->timer)
+            if (args->tid == 0)
+                BEGIN_MEASURE_JOIN_ACC(args->timer)
             args->joiner->join(/*time to join for one tuple*/
                     args->tid,
                     fetch->tuple,
@@ -89,18 +91,23 @@ THREAD_TASK_NOSHUFFLE(void *param) {
                     args->matches,
 //                    AGGFUNCTION,
                     chainedbuf);//build and probe at the same time.
-            END_MEASURE_JOIN_ACC(args->timer)
+            if (args->tid == 0)
+                END_MEASURE_JOIN_ACC(args->timer)
         }
 
     } while (!fetcher->finish());
 
+    /* wait at a barrier until each thread finishes*/
+    BARRIER_ARRIVE(args->barrier, lock)
 #ifndef NO_TIMING
-    END_MEASURE_PARTITION(args->timer)
-    args->timer->partition_timer -= args->timer->wait_timer;//exclude waiting time.
-    args->timer->partition_timer -= args->timer->join_timer;//exclude joining time.
-    args->timer->join_timer -= args->timer->buildtimer;
-    args->timer->join_timer -= args->timer->sorttimer;
-    args->timer->join_timer -= args->timer->mergetimer;
+    if (args->tid == 0) {
+        BEGIN_MEASURE_PARTITION_ACC(args->timer)
+        args->timer->partition_timer -= args->timer->wait_timer;//exclude waiting time.
+        args->timer->partition_timer -= args->timer->join_timer;//exclude joining time.
+        args->timer->join_timer -= args->timer->buildtimer;
+        args->timer->join_timer -= args->timer->sorttimer;
+        args->timer->join_timer -= args->timer->mergetimer;
+    }
 #endif
 
 //other overheads.
@@ -114,10 +121,13 @@ THREAD_TASK_NOSHUFFLE(void *param) {
 #ifdef JOIN_RESULT_MATERIALIZE
     args->threadresult->nresults = *args->matches;
     args->threadresult->threadid = args->tid;
-    args->threadresult->results  = (void *) chainedbuf;
+    args->threadresult->results = (void *) chainedbuf;
 #endif
 
 #ifndef NO_TIMING
+    /* wait at a barrier until each thread finishes*/
+    BARRIER_ARRIVE(args->barrier, lock)
+    if (args->tid == 0)
     END_MEASURE(args->timer)
 #endif
 
@@ -143,16 +153,15 @@ void
     int lock;
     /* wait at a barrier until each thread started*/
     BARRIER_ARRIVE(args->barrier, lock)
-    if (args->tid == 0)
-        *args->startTS = curtick();
-    BARRIER_ARRIVE(args->barrier, lock)
-
 #ifndef NO_TIMING
-    START_MEASURE((args->timer))
+    if (args->tid == 0) {
+        *args->startTS = curtick();
+        START_MEASURE((args->timer))
+    }
 #endif
 
 #ifdef JOIN_RESULT_MATERIALIZE
-    chainedtuplebuffer_t * chainedbuf = chainedtuplebuffer_init();
+    chainedtuplebuffer_t *chainedbuf = chainedtuplebuffer_init();
 #else
     void *chainedbuf = NULL;
 #endif
@@ -164,7 +173,8 @@ void
     //fetch: pointer points to state.fetch (*fetch = &(state->fetch))
     fetch_t *fetch;
 #ifndef NO_TIMING
-    BEGIN_MEASURE_PARTITION_ACC((args->timer))
+    if (args->tid == 0)
+        BEGIN_MEASURE_PARTITION_ACC((args->timer))
 #endif
 
 #ifdef PERF_COUNTERS
@@ -190,7 +200,8 @@ void
         fetch = shuffler->pull(args->tid, false);//re-fetch from its shuffler.
         if (fetch != nullptr) {
 #ifndef NO_TIMING
-            BEGIN_MEASURE_JOIN_ACC(args->timer)
+            if (args->tid == 0)
+                BEGIN_MEASURE_JOIN_ACC(args->timer)
 #endif
             args->joiner->join(
                     args->tid,
@@ -200,27 +211,22 @@ void
 //                    AGGFUNCTION,
                     chainedbuf);//build and probe at the same time.
 #ifndef NO_TIMING
-            END_MEASURE_JOIN_ACC(args->timer)
+            if (args->tid == 0)
+                END_MEASURE_JOIN_ACC(args->timer)
 #endif
         }
 #endif
     } while (!fetcher->finish());
 
-#ifndef NO_TIMING
-    END_MEASURE_PARTITION_ACC((args->timer))
-#endif
-
     /* wait at a barrier until each thread finishes fetch*/
     BARRIER_ARRIVE(args->barrier, lock)
 
-#ifndef NO_TIMING
-    BEGIN_MEASURE_PARTITION_ACC((args->timer))
-#endif
     do {
         fetch = shuffler->pull(args->tid, false);//re-fetch from its shuffler.
         if (fetch != nullptr) {
 #ifndef NO_TIMING
-            BEGIN_MEASURE_JOIN_ACC(args->timer)
+            if (args->tid == 0)
+                BEGIN_MEASURE_JOIN_ACC(args->timer)
 #endif
             args->joiner->join(
                     args->tid,
@@ -230,18 +236,27 @@ void
 //                    AGGFUNCTION,
                     chainedbuf);
 #ifndef NO_TIMING
-            END_MEASURE_JOIN_ACC(args->timer)
+            if (args->tid == 0)
+                END_MEASURE_JOIN_ACC(args->timer)
 #endif
         }
     } while (fetch != nullptr);
+
+    /* wait at a barrier until each thread finishes*/
+    BARRIER_ARRIVE(args->barrier, lock)
 #ifndef NO_TIMING
-    END_MEASURE_PARTITION_ACC((args->timer))
-    args->timer->partition_timer -= args->timer->wait_timer;//exclude waiting time.
-    args->timer->partition_timer -= args->timer->join_timer;//exclude joining time.
+    if (args->tid == 0) {
+        END_MEASURE_PARTITION_ACC((args->timer))
+//        printf("args->timer->partition_timer:%lu\n", args->timer->partition_timer);
+        args->timer->partition_timer -= args->timer->wait_timer;//exclude waiting time.
+//        printf("after wait, args->timer->partition_timer:%lu\n", args->timer->partition_timer);
+        args->timer->partition_timer -= args->timer->join_timer;//exclude joining time.
+//        printf("after join, args->timer->partition_timer:%lu\n", args->timer->partition_timer);
 //    args->timer->partition_timer -= args->timer->shuffle_timer;//exclude shuffle time.
-    args->timer->join_timer -= args->timer->buildtimer;//build time for SHJ; sort and merge time for PMJ.
-    args->timer->join_timer -= args->timer->sorttimer;
-    args->timer->join_timer -= args->timer->mergetimer;
+        args->timer->join_timer -= args->timer->buildtimer;//build time for SHJ; sort and merge time for PMJ.
+        args->timer->join_timer -= args->timer->sorttimer;
+        args->timer->join_timer -= args->timer->mergetimer;
+    }
 #endif
 
 //group into other overheads.
@@ -255,10 +270,13 @@ void
 #ifdef JOIN_RESULT_MATERIALIZE
     args->threadresult->nresults = *args->matches;
     args->threadresult->threadid = args->tid;
-    args->threadresult->results  = (void *) chainedbuf;
+    args->threadresult->results = (void *) chainedbuf;
 #endif
 
 #ifndef NO_TIMING
+    /* wait at a barrier until each thread finishes*/
+    BARRIER_ARRIVE(args->barrier, lock)
+    if (args->tid == 0)
     END_MEASURE(args->timer)
 #endif
 
@@ -503,7 +521,7 @@ void
 #endif
 
 #ifdef JOIN_RESULT_MATERIALIZE
-    chainedtuplebuffer_t * chainedbuf = chainedtuplebuffer_init();
+    chainedtuplebuffer_t *chainedbuf = chainedtuplebuffer_init();
 #else
     void *chainedbuf = NULL;
 #endif
@@ -583,7 +601,7 @@ void
 #ifdef JOIN_RESULT_MATERIALIZE
     args->threadresult->nresults = *args->matches;
     args->threadresult->threadid = args->tid;
-    args->threadresult->results  = (void *) chainedbuf;
+    args->threadresult->results = (void *) chainedbuf;
 #endif
 
 #ifndef NO_TIMING
@@ -637,7 +655,7 @@ void
 #endif
 
 #ifdef JOIN_RESULT_MATERIALIZE
-    chainedtuplebuffer_t * chainedbuf = chainedtuplebuffer_init();
+    chainedtuplebuffer_t *chainedbuf = chainedtuplebuffer_init();
 #else
     void *chainedbuf = NULL;
 #endif
@@ -691,7 +709,7 @@ void
 #ifdef JOIN_RESULT_MATERIALIZE
     args->threadresult->nresults = *args->matches;
     args->threadresult->threadid = args->tid;
-    args->threadresult->results  = (void *) chainedbuf;
+    args->threadresult->results = (void *) chainedbuf;
 #endif
 
 #ifndef NO_TIMING

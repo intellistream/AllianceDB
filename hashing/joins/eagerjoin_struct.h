@@ -2,8 +2,8 @@
 // Created by Shuhao Zhang on 1/11/19.
 //
 
-#ifndef ALLIANCEDB_SHJ_STRUCT_H
-#define ALLIANCEDB_SHJ_STRUCT_H
+#ifndef ALLIANCEDB_EAGERJOIN_STRUCT_H
+#define ALLIANCEDB_EAGERJOIN_STRUCT_H
 
 #include "npj_types.h"
 #include "../timer/t_timer.h"
@@ -14,11 +14,6 @@
 /**
  * \ingroup arguments to the threads
  */
-
-//struct list {
-//    std::list<int> *relR_list;
-//    std::list<int> *relS_list;
-//};
 
 /**
  * Thread-Local Structure.
@@ -65,6 +60,9 @@ struct t_param {
     enum joiner_type joiner;
 
 
+    //parameters of PMJ
+    int progressive_step = 640;//#number of tuples to sort at each iteration. It must be multiple cacheline size (64).
+    int merge_step = 10000;//#runs to merge at each iteration.
 
     t_param(int nthreads) {
         result = 0;
@@ -82,4 +80,4 @@ struct t_param {
 
 };
 
-#endif //ALLIANCEDB_SHJ_STRUCT_H
+#endif //ALLIANCEDB_EAGERJOIN_STRUCT_H

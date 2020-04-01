@@ -69,7 +69,8 @@
 #define TUPLESPERCACHELINE (CACHE_LINE_SIZE/sizeof(tuple_t))
 
 /** Align N to number of tuples that is a multiple of cache lines */
-#define ALIGN_NUMTUPLES(N) (((N)+TUPLESPERCACHELINE-1) & ~(TUPLESPERCACHELINE-1))
+/** TONY: Not working.*/
+//#define ALIGN_NUMTUPLES(N) (((N)+TUPLESPERCACHELINE-1) & ~(TUPLESPERCACHELINE-1))
 
 
 #endif /* PARAMS_H_ */

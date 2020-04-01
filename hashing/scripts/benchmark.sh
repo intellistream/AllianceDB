@@ -1,28 +1,86 @@
 #!/bin/bash
+#set -e
 
-cd ..
-cmake .
-make -j4
+function compile() {
+  cd ..
+  cmake .
+  cd scripts
+  make -C .. clean
+  make -C .. -j4
+}
 
 function benchmarkRun() {
   #####native execution
-  echo "==benchmark:$benchmark -a $algo -n $Threads=="
+  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group_size -g $gap=="
   echo 3 >/proc/sys/vm/drop_caches
-  ./hashing -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id
+  ../hashing -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group_size -g $gap
+  if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit -1; fi
 }
 
 function Run() {
   #####native execution
   echo "==benchmark:$benchmark -a $algo -n $Threads=="
   echo 3 >/proc/sys/vm/drop_caches
-  ./hashing -a $algo -r $RSIZE -s $SSIZE -n $Threads
+  ../hashing -a $algo -r $RSIZE -s $SSIZE -n $Threads
 }
 
 function KimRun() {
   #####native execution
   echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS=="
   echo 3 >/proc/sys/vm/drop_caches
-  ./hashing -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS
+  ../hashing -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS
+}
+
+function SetStockParameters() {
+  ts=1 # stream case
+  WINDOW_SIZE=5000
+  RSIZE=116941
+  SSIZE=151500
+  RPATH=/data1/xtra/datasets/stock/cj_60s_1t.txt
+  SPATH=/data1/xtra/datasets/stock/sb_60s_1t.txt
+  RKEY=0
+  SKEY=0
+  RTS=1
+  STS=1
+}
+
+function SetRovioParameters() {
+  ts=1 # stream case
+  WINDOW_SIZE=50
+  RSIZE=48826
+  SSIZE=48826
+  RPATH=/data1/xtra/datasets/rovio/50ms_1t.txt
+  SPATH=/data1/xtra/datasets/rovio/50ms_1t.txt
+  RKEY=0
+  SKEY=0
+  RTS=3
+  STS=3
+}
+
+function SetYSBParameters() {
+  ts=1 # stream case
+  WINDOW_SIZE=500
+  RSIZE=1000
+  SSIZE=50000000
+  RPATH=/data1/xtra/datasets/YSB/campaigns_id.txt
+  SPATH=/data1/xtra/datasets/YSB/ad_events.txt
+  RKEY=0
+  SKEY=0
+  RTS=0
+  STS=1
+}
+
+function SetDEBSParameters() {
+  ts=1 # stream case
+  WINDOW_SIZE=0
+  RSIZE=5000000 #40 MB
+  SSIZE=5000000 #40 MB
+  RPATH=/data1/xtra/datasets/DEBS/posts_key32_partitioned.csv
+  SPATH=/data1/xtra/datasets/DEBS/comments_key32_partitioned.csv
+  RKEY=0
+  SKEY=0
+  RTS=0
+  STS=0
 }
 
 DEFAULT_WINDOW_SIZE=2000 #(ms) -- 2 seconds
@@ -38,25 +96,159 @@ function ResetParameters() {
   STEP_SIZE_S=-1                   # let S has the same arrival rate of R.
   FIXS=0
   ts=1 # stream case
-  Threads=2
+  Threads=8
+  progress_step=1024
+  merge_step=4
+  group_size=2
+  gap=2000
 }
 
+#recompile by default.
+compile
 # Configurable variables
 # Generate a timestamp
-algo=""
-Threads=2
 timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
-for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP; do #PMJ_JM_NP PMJ_JBCR_NP
-  RSIZE=1
-  SSIZE=1
-  RPATH=""
-  SPATH=""
-  RKEY=0
-  SKEY=0
-  RTS=0
-  STS=0
-  for benchmark in "Stock" "Rovio" "YSB" "DEBS"; do # "Stock"  "Rovio" "YSB"  "DEBS" # "Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "RAR2" "AD" "KD" "WS" "KD2" "WS2"  "WS3" "WS4"
+#benchmark experiment only apply for hashing directory.
+for benchmark in "PRJ_RADIX_BITS_STUDY"; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "PMJ_MERGE_STEP_STUDY" "GROUP_SIZE_STUDY"
+  case "$benchmark" in
+  "PRJ_RADIX_BITS_STUDY")
+    algo="PRO"
+    echo RADIX BITS STUDY 55 - 74
+    id=55
+    ResetParameters
+    for b in 8 9 10 11 12; do
+      sed -i -e "s/NUM_RADIX_BITS [[:alnum:]]*/NUM_RADIX_BITS $b/g" ../joins/prj_params.h
+      compile
+      ts=0   # batch data.
+      KimRun #55, 59, 63, 67, 71
+
+      #      SetStockParameters
+      #      benchmarkRun
+      let "id++"
+
+      #      SetRovioParameters
+      #      benchmarkRun
+      let "id++"
+
+      #      SetYSBParameters
+      #      benchmarkRun
+      let "id++"
+
+      #      SetDEBSParameters
+      #      benchmarkRun
+      let "id++"
+    done
+    python3 breakdown_radix.py -i 55
+    #    python3 breakdown_radix.py -i 56
+    #    python3 breakdown_radix.py -i 57
+    #    python3 breakdown_radix.py -i 58
+    ;;
+  "PMJ_SORT_STEP_STUDY")
+    id=75
+    algo="PMJ_JBCR_NP"
+    echo PMJ_SORT_STEP_STUDY 75 - 90
+    ResetParameters
+    for progress_step in 64 256 1024 2056; do
+      SetStockParameters #75, 79, 83, 87
+      benchmarkRun
+      let "id++"
+
+      SetRovioParameters
+      benchmarkRun
+      let "id++"
+
+      SetYSBParameters
+      benchmarkRun
+      let "id++"
+
+      SetDEBSParameters
+      benchmarkRun
+      let "id++"
+    done
+    ;;
+  "PMJ_MERGE_STEP_STUDY")
+    id=91
+    algo="PMJ_JBCR_NP"
+    ResetParameters
+    echo PMJ_MERGE_STEP_STUDY 91-106
+    for merge_step in 2 4 8 10; do
+      ResetParameters
+      SetStockParameters #91, 95, 99, 103
+      benchmarkRun
+      let "id++"
+
+      SetRovioParameters
+      benchmarkRun
+      let "id++"
+
+      SetYSBParameters
+      benchmarkRun
+      let "id++"
+
+      SetDEBSParameters
+      benchmarkRun
+      let "id++"
+    done
+    ;;
+  "GROUP_SIZE_STUDY")
+    id=79
+    algo="SHJ_JBCR_NP"
+    ResetParameters
+    echo GROUP_SIZE_STUDY SHJ 79 - 82
+    for group in 1 2 4 8; do
+      ResetParameters
+      SetStockParameters #91, 95, 99, 103
+      benchmarkRun
+      let "id++"
+
+      ResetParameters
+      SetRovioParameters
+      benchmarkRun
+      let "id++"
+
+      ResetParameters
+      SetYSBParameters
+      benchmarkRun
+      let "id++"
+
+      ResetParameters
+      SetDEBSParameters
+      benchmarkRun
+      let "id++"
+    done
+
+    algo="PMJ_JBCR_NP"
+    ResetParameters
+    echo GROUP_SIZE_STUDY SHJ 83 - 86
+    for group in 1 2 4 8; do
+      ResetParameters
+      SetStockParameters #91, 95, 99, 103
+      benchmarkRun
+      let "id++"
+
+      ResetParameters
+      SetRovioParameters
+      benchmarkRun
+      let "id++"
+
+      ResetParameters
+      SetYSBParameters
+      benchmarkRun
+      let "id++"
+
+      ResetParameters
+      SetDEBSParameters
+      benchmarkRun
+      let "id++"
+    done
+    ;;
+  esac
+done
+
+#general benchmark.
+for algo in PMJ_JBCR_NP; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
+  for benchmark in ""; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "Stock"  "Rovio" "YSB"  "DEBS" # "Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "RAR2" "AD" "KD" "WS" "KD2" "WS2"  "WS3" "WS4"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "AR") #test arrival rate
@@ -199,79 +391,31 @@ for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP; do #PMJ_JM_NP PMJ_JBCR_NP
     "Stock")
       id=38
       ResetParameters
-      ts=1 # stream case
-      #      WINDOW_SIZE=60000
-      #      RSIZE=194341
-      #      SSIZE=240148
-      WINDOW_SIZE=5000
-      RSIZE=116941
-      SSIZE=151500
-      RPATH=/data1/xtra/datasets/stock/cj_60s_1t.txt
-      SPATH=/data1/xtra/datasets/stock/sb_60s_1t.txt
-      RKEY=0
-      SKEY=0
-      RTS=1
-      STS=1
+      SetStockParameters
       benchmarkRun
       ;;
     "Rovio") #matches:
       id=39
       ResetParameters
-      ts=1 # stream case
-      WINDOW_SIZE=6000
-      RSIZE=58300
-      SSIZE=58300
-      RPATH=/data1/xtra/datasets/rovio/6s_1t.txt
-      SPATH=/data1/xtra/datasets/rovio/6s_1t.txt
-      RKEY=0
-      SKEY=0
-      RTS=3
-      STS=3
+      SetRovioParameters
       benchmarkRun
       ;;
     "YSB")
       id=40
       ResetParameters
-      ts=1 # stream case
-      WINDOW_SIZE=5000
-      RSIZE=1000
-      SSIZE=5000000
-      RPATH=/data1/xtra/datasets/YSB/campaigns_1t.txt
-      SPATH=/data1/xtra/datasets/YSB/ad_5s_1t.txt
-      RKEY=0
-      SKEY=0
-      RTS=0
-      STS=1
+      SetYSBParameters
       benchmarkRun
       ;;
     "DEBS")
       id=41
       ResetParameters
-      ts=1 # stream case
-      WINDOW_SIZE=0
-      RSIZE=100000 #64 MB
-      SSIZE=100000 #64 MB
-      RPATH=/data1/xtra/datasets/DEBS/posts_key32_partitioned.csv
-      SPATH=/data1/xtra/datasets/DEBS/comments_key32_partitioned.csv
-      RKEY=0
-      SKEY=0
-      RTS=0
-      STS=0
+      SetYSBParameters
       benchmarkRun
       ;;
     "ScaleStock")
       id=42
       ResetParameters
-      ts=1 # stream case
-      WINDOW_SIZE=5000
-      RSIZE=116941
-      SSIZE=151500
-      RPATH=/data1/xtra/datasets/stock/cj_60s_1t.txt
-      SPATH=/data1/xtra/datasets/stock/sb_60s_1t.txt
-      RKEY=0
-      SKEY=0
-      RTS=1
-      STS=1
+      SetStockParameters
       echo test scalability of Stock 42 - 45
       for Threads in 1 2 4 8; do
         benchmarkRun
@@ -281,16 +425,7 @@ for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP; do #PMJ_JM_NP PMJ_JBCR_NP
     "ScaleRovio")
       id=46
       ResetParameters
-      ts=1 # stream case
-      WINDOW_SIZE=6000
-      RSIZE=58300
-      SSIZE=58300
-      RPATH=/data1/xtra/datasets/rovio/6s_1t.txt
-      SPATH=/data1/xtra/datasets/rovio/6s_1t.txt
-      RKEY=0
-      SKEY=0
-      RTS=3
-      STS=3
+      SetRovioParameters
       echo test scalability 46 - 49
       for Threads in 1 2 4 8; do
         benchmarkRun
@@ -300,16 +435,7 @@ for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP; do #PMJ_JM_NP PMJ_JBCR_NP
     "ScaleYSB")
       id=50
       ResetParameters
-      ts=1 # stream case
-      WINDOW_SIZE=5000
-      RSIZE=1000
-      SSIZE=5000000
-      RPATH=/data1/xtra/datasets/YSB/campaigns_1t.txt
-      SPATH=/data1/xtra/datasets/YSB/ad_5s_1t.txt
-      RKEY=0
-      SKEY=0
-      RTS=0
-      STS=1
+      SetYSBParameters
       echo test scalability 50 - 53
       for Threads in 1 2 4 8; do
         benchmarkRun
@@ -319,16 +445,6 @@ for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP; do #PMJ_JM_NP PMJ_JBCR_NP
     "ScaleDEBS")
       id=54
       ResetParameters
-      ts=1 # stream case
-      WINDOW_SIZE=0
-      RSIZE=1000000
-      SSIZE=1000000
-      RPATH=/data1/xtra/datasets/DEBS/posts_key32_partitioned.csv
-      SPATH=/data1/xtra/datasets/DEBS/comments_key32_partitioned.csv
-      RKEY=0
-      SKEY=0
-      RTS=0
-      STS=0
       echo test scalability 54 - 57
       for Threads in 1 2 4 8; do
         benchmarkRun
