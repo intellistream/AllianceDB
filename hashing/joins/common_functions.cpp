@@ -80,10 +80,11 @@ allocate_hashtable(hashtable_t **ppht, uint32_t nbuckets) {
     NEXT_POW_2((ht->num_buckets));
 
     /* allocate hashtable buckets cache line aligned */
-    if (posix_memalign((void **) &ht->buckets, CACHE_LINE_SIZE,
-                       ht->num_buckets * sizeof(bucket_t))) {
+    auto rt = posix_memalign((void **) &ht->buckets, CACHE_LINE_SIZE,
+                             ht->num_buckets * sizeof(bucket_t));
+    if (rt) {
         perror("Aligned allocation failed!\n");
-        exit(EXIT_FAILURE);
+        exit(rt);
     }
 
     /** Not an elegant way of passing whether we will numa-localize, but this

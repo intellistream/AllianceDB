@@ -132,7 +132,7 @@ def ReadFile(id):
     col1 = []  # 90
     col2 = []  # 95
     col3 = []  # 99
-    w = 5
+    w = 4
     bound = id + 1 * w
     for i in range(id, bound, 1):
         file = '/data1/xtra/results/latency/PMJ_JBCR_NP_{}.txt'.format(i)
@@ -165,14 +165,14 @@ if __name__ == "__main__":
             print('Test ID:', opt_value)
             id = (int)(opt_value)
 
-    x_values = [8, 10, 12, 14, 16]  # merging step size
+    x_values = [1, 2, 4, 8]  # merging step size
 
     y_values = ReadFile(id)
 
     legend_labels = ['90$^{th}$', '95$^{th}$', '99$^{th}$']
 
     DrawFigure(x_values, y_values, legend_labels,
-               'merging step size', 'event latency (ms)', 0,
-               400, 'latency_merge_figure', True)
+               'group size', 'event latency (ms)', 0,
+               400, 'latency_group_figure', True)
 
     # DrawLegend(legend_labels, 'latency_radix_legend')

@@ -53,7 +53,7 @@ struct bucket_t {
 /** Hashtable structure for NPO. */
 struct hashtable_t {
     bucket_t *buckets;
-    int32_t num_buckets;
+    int64_t num_buckets;
     uint32_t hash_mask;
     uint32_t skip_bits;
 };

@@ -87,15 +87,12 @@ def ReadFile(S, id):
                 if i == 69:
                     col4.append(value)
                     cnt4 += 1
-                if i == 70:
-                    col5.append(value)
-                    cnt5 += 1
                 if (value > maxts):
                     maxts = value
             cnt += 1
 
-    minvalue = min(cnt1, cnt2, cnt3, cnt4, cnt5)
-    return maxts, minvalue, col1, col2, col3, col4, col5
+    minvalue = min(cnt1, cnt2, cnt3, cnt4 )
+    return maxts, minvalue, col1, col2, col3, col4
 
 
 def DrawLegend(legend_labels, filename):
@@ -159,7 +156,7 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
                    loc='upper right',
                    ncol=1,
                    #                     mode='expand',
-                   bbox_to_anchor=(1.4, 1), shadow=False,
+                   bbox_to_anchor=(1.3, 1), shadow=False,
                    columnspacing=0.1,
                    frameon=True, borderaxespad=0.0, handlelength=1.5,
                    handletextpad=0.1,
@@ -206,14 +203,14 @@ if __name__ == "__main__":
             print('Test ID:', opt_value)
             id = (int)(opt_value)
 
-    legend_labels = [8, 10, 12, 14, 16]
+    legend_labels = [1, 2, 4, 8]
 
     S = 1  #
-    maxts, N, col1, col2, col3, col4, col5 = ReadFile(S, id)
+    maxts, N, col1, col2, col3, col4  = ReadFile(S, id)
     S = floor(N / 50)
     # S = 255999
     print("S:", S)
-    maxts, N, col1, col2, col3, col4, col5 = ReadFile(S, id)
+    maxts, N, col1, col2, col3, col4  = ReadFile(S, id)
     N = (int)(N / 2)
     print("Number of points:", N)
     col0 = []
@@ -226,7 +223,7 @@ if __name__ == "__main__":
         col2[0:N],
         col3[0:N],
         col4[0:N],
-        col5[0:N],
+        # col5[0:N],
         # col6[0:N],
     ]
     # print(lines[0])
@@ -234,5 +231,5 @@ if __name__ == "__main__":
     DrawFigure(col0, lines, legend_labels,
                'fraction of matched results', 'time (msec)', 0, 0.5,
                1, double(ceil(maxts / 100.0)) * 100,
-               'progressive_merge_figure',
+               'progressive_group_figure',
                True)

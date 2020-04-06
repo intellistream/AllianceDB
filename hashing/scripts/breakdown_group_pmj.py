@@ -159,7 +159,7 @@ def normalize(y_values):
 # example for reading csv file
 def ReadFile(id):
     # Creates a list containing w lists, each of h items, all set to 0
-    w, h = 5, 4
+    w, h = 4, 4
     y = [[0 for x in range(w)] for y in range(h)]
     # print(matches)
     max_value = 0
@@ -208,7 +208,7 @@ if __name__ == "__main__":
             print('Test ID:', opt_value)
             id = (int)(opt_value)
 
-    x_values = [8, 10, 12, 14, 16]  # merging step size
+    x_values = [1, 2, 4, 8]  # merging step size
 
     y_values, max_value = ReadFile(id)  # 55
 
@@ -218,7 +218,7 @@ if __name__ == "__main__":
     legend_labels = ['partition', 'sort', 'merge', 'join']  # , 'others'
 
     DrawFigure(x_values, y_values, legend_labels,
-               'merging step size', 'cycles per output tuple',
-               'breakdown_merge_figure', True)
+               'group size', 'cycles per output tuple',
+               'breakdown_group_pmj_figure', True)
 
     # DrawLegend(legend_labels, 'breakdown_radix_legend')

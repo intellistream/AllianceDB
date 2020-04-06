@@ -25,14 +25,15 @@ launch(int nthreads, relation_t *relR, relation_t *relS, t_param param, void *(*
          */
         switch (param.joiner) {
             case type_SHJJoiner:
+                //have to allocate max size of hash table in each joiner.
                 param.args[i].joiner = new SHJJoiner(relR->num_tuples,
-                                                     relS->num_tuples);//have to allocate max size of hash table in each joiner.
+                                                     relS->num_tuples / nthreads);
                 break;
             case type_PMJJoiner:
+                //have to allocate max size of tmp window in each joiner.
                 param.args[i].joiner = new PMJJoiner(relR->num_tuples,
                                                      relS->num_tuples,
-                                                     nthreads);//have to allocate max size of tmp window in each joiner.
-
+                                                     nthreads);
                 /** configure parameters for PMJ. */
                 ((PMJJoiner *) param.args[i].joiner)->progressive_step_R = (int)
                         (relR->num_tuples / nthreads / 100.0 * param.progressive_step);

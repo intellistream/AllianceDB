@@ -96,11 +96,9 @@ THREAD_TASK_NOSHUFFLE(void *param) {
     } while (!fetcher->finish());
 #ifndef NO_TIMING
     END_MEASURE_PARTITION_ACC(args->timer)
+    //time calibration
     args->timer->partition_timer -= args->timer->wait_timer;//exclude waiting time.
     args->timer->partition_timer -= args->timer->join_timer;//exclude joining time.
-    args->timer->join_timer -= args->timer->buildtimer;
-    args->timer->join_timer -= args->timer->sorttimer;
-    args->timer->join_timer -= args->timer->mergetimer;
 #endif
     BEGIN_GARBAGE(args->timer)
     /* wait at a barrier until each thread finishes*/
@@ -127,6 +125,7 @@ THREAD_TASK_NOSHUFFLE(void *param) {
 #endif
 #ifndef NO_TIMING
     END_MEASURE(args->timer)
+    //time calibration
     args->timer->overall_timer -= args->timer->garbage_time;
     args->timer->join_timer -= args->timer->buildtimer;
     args->timer->join_timer -= args->timer->sorttimer;
@@ -209,18 +208,13 @@ void
 
 #ifndef NO_TIMING
     END_MEASURE_PARTITION_ACC((args->timer))
-    //time calibration
-    args->timer->partition_timer -= args->timer->wait_timer;//exclude waiting time.
-    args->timer->partition_timer -= args->timer->join_timer;//exclude joining time.
-    args->timer->join_timer -= args->timer->buildtimer;//build time for SHJ; sort and merge time for PMJ.
-    args->timer->join_timer -= args->timer->sorttimer;
-    args->timer->join_timer -= args->timer->mergetimer;
 #endif
 
     BEGIN_GARBAGE(args->timer)
     /* wait at a barrier until each thread finishes fetch*/
     BARRIER_ARRIVE(args->barrier, lock)
     END_GARBAGE(args->timer)
+
 #ifndef NO_TIMING
     BEGIN_MEASURE_PARTITION_ACC((args->timer))
 #endif
@@ -247,9 +241,6 @@ void
     //time calibration
     args->timer->partition_timer -= args->timer->wait_timer;//exclude waiting time.
     args->timer->partition_timer -= args->timer->join_timer;//exclude joining time.
-    args->timer->join_timer -= args->timer->buildtimer;//build time for SHJ; sort and merge time for PMJ.
-    args->timer->join_timer -= args->timer->sorttimer;
-    args->timer->join_timer -= args->timer->mergetimer;
 #endif
 
 #ifndef NO_TIMING

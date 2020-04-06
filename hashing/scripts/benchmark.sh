@@ -11,9 +11,9 @@ function compile() {
 
 function benchmarkRun() {
   #####native execution
-  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group_size -g $gap=="
+  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap=="
   echo 3 >/proc/sys/vm/drop_caches
-  ../hashing -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group_size -g $gap
+  ../hashing -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap
   if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit -1; fi
 }
 
@@ -26,9 +26,9 @@ function Run() {
 
 function KimRun() {
   #####native execution
-  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS -[ $progress_step -] $merge_step -G $group_size -g $gap=="
+  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS -[ $progress_step -] $merge_step -G $group -g $gap=="
   echo 3 >/proc/sys/vm/drop_caches
-  ../hashing -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS -[ $progress_step -] $merge_step -G $group_size -g $gap
+  ../hashing -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS -[ $progress_step -] $merge_step -G $group -g $gap
   if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit -1; fi
 }
 
@@ -85,7 +85,7 @@ function SetDEBSParameters() {
 }
 
 DEFAULT_WINDOW_SIZE=1000 #(ms) -- 2 seconds
-DEFAULT_STEP_SIZE=128000   # |tuples| per ms. -- 128K per seconds. ## this controls the guranalrity of input stream.
+DEFAULT_STEP_SIZE=1280   # |tuples| per ms. -- 128K per seconds. ## this controls the guranalrity of input stream.
 function ResetParameters() {
   TS_DISTRIBUTION=0                # uniform time distribution
   ZIPF_FACTOR=0                    # uniform time distribution
@@ -94,13 +94,13 @@ function ResetParameters() {
   INTERVAL=1                       # interval of 1. always..
   STEP_SIZE=$DEFAULT_STEP_SIZE     # arrival rate = 1000 / ms
   WINDOW_SIZE=$DEFAULT_WINDOW_SIZE # MS rel size = window_size / interval * step_size.
-  STEP_SIZE_S=-1                   # let S has the same arrival rate of R.
-  FIXS=0
+  STEP_SIZE_S=128000                   # let S has the same arrival rate of R.
+  FIXS=1
   ts=1 # stream case
   Threads=8
   progress_step=2
   merge_step=16
-  group_size=2
+  group=2
   gap=2000
 }
 
@@ -111,7 +111,7 @@ compile
 timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
 #benchmark experiment only apply for hashing directory.
-for benchmark in "PRJ_RADIX_BITS_STUDY"; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY"
+for benchmark in "GROUP_SIZE_STUDY"; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY"
   case "$benchmark" in
   "PRJ_RADIX_BITS_STUDY")
     algo="PRO"
@@ -158,56 +158,27 @@ for benchmark in "PRJ_RADIX_BITS_STUDY"; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_ST
 #    python3 progressive_merge.py
 #    ;;
   "GROUP_SIZE_STUDY")
-    id=79
-    algo="SHJ_JBCR_NP"
-    ResetParameters
-    echo GROUP_SIZE_STUDY SHJ 79 - 82
-    for group in 1 2 4 8; do
-      ResetParameters
-      SetStockParameters #91, 95, 99, 103
-      benchmarkRun
-      let "id++"
-
-      ResetParameters
-      SetRovioParameters
-      benchmarkRun
-      let "id++"
-
-      ResetParameters
-      SetYSBParameters
-      benchmarkRun
-      let "id++"
-
-      ResetParameters
-      SetDEBSParameters
-      benchmarkRun
-      let "id++"
-    done
-
+    id=66
     algo="PMJ_JBCR_NP"
     ResetParameters
-    echo GROUP_SIZE_STUDY SHJ 83 - 86
+    echo GROUP_SIZE_STUDY PMJ 66 - 69
     for group in 1 2 4 8; do
-      ResetParameters
-      SetStockParameters #91, 95, 99, 103
-      benchmarkRun
-      let "id++"
-
-      ResetParameters
-      SetRovioParameters
-      benchmarkRun
-      let "id++"
-
-      ResetParameters
-      SetYSBParameters
-      benchmarkRun
-      let "id++"
-
-      ResetParameters
-      SetDEBSParameters
-      benchmarkRun
+      ts=0   # batch data.
+      KimRun #
       let "id++"
     done
+    algo="SHJ_JBCR_NP"
+    ResetParameters
+    echo GROUP_SIZE_STUDY SHJ 70 - 73
+    for group in 1 2 4 8; do
+      ts=0   # batch data.
+      KimRun #
+      let "id++"
+    done
+    python3 breakdown_group_pmj.py
+    python3 breakdown_group_shj.py
+#    python3 latency_group.py
+#    python3 progressive_group.py
     ;;
   esac
 done
