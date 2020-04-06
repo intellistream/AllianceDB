@@ -159,7 +159,7 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
                    loc='upper right',
                    ncol=1,
                    #                     mode='expand',
-                   bbox_to_anchor=(1.4, 1), shadow=False,
+                   bbox_to_anchor=(1.3, 1), shadow=False,
                    columnspacing=0.1,
                    frameon=True, borderaxespad=0.0, handlelength=1.5,
                    handletextpad=0.1,
@@ -206,7 +206,7 @@ if __name__ == "__main__":
             print('Test ID:', opt_value)
             id = (int)(opt_value)
 
-    legend_labels = ['1%', '2%', '3%', '4%', '5%']
+    legend_labels = ['10%', '20%', '30%', '40%', '50%']
 
     S = 1  #
     maxts, N, col1, col2, col3, col4, col5 = ReadFile(S, id)

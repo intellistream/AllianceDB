@@ -56,7 +56,6 @@ dump_timing(vector<double> vector, std::vector<double> vector_latency,
     }
     outputFile.close();
 
-
     fprintf(stdout, "Time to obtain 0.1%%, 1%%, 5%%, 50%%, 75%% of results (MSECS): \n");
     fprintf(stdout, "(%.2f) \t (%.2f) \t (%.2f) \t (%.2f) \t (%.2f)",
             vector.at(check01) + lastTS - begin,

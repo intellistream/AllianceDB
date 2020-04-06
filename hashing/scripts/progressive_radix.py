@@ -1,7 +1,7 @@
 import getopt
 import os
 import sys
-from math import ceil
+from math import ceil, floor
 
 import matplotlib
 import matplotlib as mpl
@@ -78,19 +78,19 @@ def ReadFile(S, id):
                 if i == 55:
                     col1.append(value)
                     cnt1 += 1
-                if i == 59:
+                if i == 56:
                     col2.append(value)
                     cnt2 += 1
-                if i == 63:
+                if i == 57:
                     col3.append(value)
                     cnt3 += 1
-                if i == 67:
+                if i == 58:
                     col4.append(value)
                     cnt4 += 1
-                if i == 71:
+                if i == 59:
                     col5.append(value)
                     cnt5 += 1
-                if i == 75:
+                if i == 60:
                     col6.append(value)
                     cnt6 += 1
                 if (value > maxts):
@@ -162,7 +162,7 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
                    loc='upper right',
                    ncol=1,
                    #                     mode='expand',
-                   bbox_to_anchor=(1.4, 1), shadow=False,
+                   bbox_to_anchor=(1.3, 1), shadow=False,
                    columnspacing=0.1,
                    frameon=True, borderaxespad=0.0, handlelength=1.5,
                    handletextpad=0.1,
@@ -211,10 +211,10 @@ if __name__ == "__main__":
 
     legend_labels = ['$\sharp r$=8', '$\sharp r$=10', '$\sharp r$=12', '$\sharp r$=14', '$\sharp r$=16', '$\sharp r$=18']
 
-    # S = 1  #
-    # maxts, N, col1, col2, col3, col4, col5, col6 = ReadFile(S, id)
-    # S = floor(N / 50)
-    S = 255999
+    S = 1  #
+    maxts, N, col1, col2, col3, col4, col5, col6 = ReadFile(S, id)
+    S = floor(N / 50)
+    # S = 255999
     print("S:", S)
     maxts, N, col1, col2, col3, col4, col5, col6 = ReadFile(S, id)
     N = (int)(N / 2)

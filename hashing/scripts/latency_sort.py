@@ -167,7 +167,7 @@ if __name__ == "__main__":
             id = (int)(opt_value)
 
 
-    x_values = ['1%', '2%', '3%', '4%', '5%'] # sorting step size
+    x_values = ['10%', '20%', '30%', '40%', '50%'] # sorting step size
 
     y_values = ReadFile(id)
 
