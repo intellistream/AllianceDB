@@ -61,8 +61,8 @@ struct t_param {
 
 
     //parameters of PMJ
-    int progressive_step = 640;//#number of tuples to sort at each iteration. It must be multiple cacheline size (64).
-    int merge_step = 10000;//#runs to merge at each iteration.
+    int progressive_step = 1;//percentile of tuples to sort at each iteration. It must be multiple cacheline size (64).
+    int merge_step = 2;//#runs to merge at each iteration.
 
     t_param(int nthreads) {
         result = 0;

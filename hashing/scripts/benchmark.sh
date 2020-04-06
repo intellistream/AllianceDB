@@ -26,9 +26,10 @@ function Run() {
 
 function KimRun() {
   #####native execution
-  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS=="
+  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS -[ $progress_step -] $merge_step -G $group_size -g $gap=="
   echo 3 >/proc/sys/vm/drop_caches
-  ../hashing -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS
+  ../hashing -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS -[ $progress_step -] $merge_step -G $group_size -g $gap
+  if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit -1; fi
 }
 
 function SetStockParameters() {
@@ -83,8 +84,8 @@ function SetDEBSParameters() {
   STS=0
 }
 
-DEFAULT_WINDOW_SIZE=2000 #(ms) -- 2 seconds
-DEFAULT_STEP_SIZE=250    # |tuples| per ms. -- 50K per seconds. ## this controls the guranalrity of input stream.
+DEFAULT_WINDOW_SIZE=1000 #(ms) -- 2 seconds
+DEFAULT_STEP_SIZE=128000   # |tuples| per ms. -- 128K per seconds. ## this controls the guranalrity of input stream.
 function ResetParameters() {
   TS_DISTRIBUTION=0                # uniform time distribution
   ZIPF_FACTOR=0                    # uniform time distribution
@@ -97,8 +98,8 @@ function ResetParameters() {
   FIXS=0
   ts=1 # stream case
   Threads=8
-  progress_step=1024
-  merge_step=4
+  progress_step=2
+  merge_step=16
   group_size=2
   gap=2000
 }
@@ -110,87 +111,51 @@ compile
 timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
 #benchmark experiment only apply for hashing directory.
-for benchmark in "PRJ_RADIX_BITS_STUDY"; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "PMJ_MERGE_STEP_STUDY" "GROUP_SIZE_STUDY"
+for benchmark in "PMJ_SORT_STEP_STUDY"; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY"
   case "$benchmark" in
   "PRJ_RADIX_BITS_STUDY")
     algo="PRO"
-    echo RADIX BITS STUDY 55 - 74
+    echo RADIX BITS STUDY 55 - 60
     id=55
     ResetParameters
-    for b in 8 9 10 11 12; do
+    for b in 8 10 12 14 16 18; do
       sed -i -e "s/NUM_RADIX_BITS [[:alnum:]]*/NUM_RADIX_BITS $b/g" ../joins/prj_params.h
       compile
       ts=0   # batch data.
-      KimRun #55, 59, 63, 67, 71
-
-      #      SetStockParameters
-      #      benchmarkRun
-      let "id++"
-
-      #      SetRovioParameters
-      #      benchmarkRun
-      let "id++"
-
-      #      SetYSBParameters
-      #      benchmarkRun
-      let "id++"
-
-      #      SetDEBSParameters
-      #      benchmarkRun
-      let "id++"
+      KimRun #55 - 60
     done
-    python3 breakdown_radix.py -i 55
-    #    python3 breakdown_radix.py -i 56
-    #    python3 breakdown_radix.py -i 57
-    #    python3 breakdown_radix.py -i 58
+    python3 breakdown_radix.py
+    python3 latency_radix.py
+    python3 progressive_radix.py
     ;;
   "PMJ_SORT_STEP_STUDY")
-    id=75
+    id=61
     algo="PMJ_JBCR_NP"
-    echo PMJ_SORT_STEP_STUDY 75 - 90
+    echo PMJ_SORT_STEP_STUDY 61 - 65
     ResetParameters
-    for progress_step in 64 256 1024 2056; do
-      SetStockParameters #75, 79, 83, 87
-      benchmarkRun
-      let "id++"
-
-      SetRovioParameters
-      benchmarkRun
-      let "id++"
-
-      SetYSBParameters
-      benchmarkRun
-      let "id++"
-
-      SetDEBSParameters
-      benchmarkRun
+    for progress_step in 10 20 30 40 50; do #%
+      ts=0   # batch data.
+      KimRun #
       let "id++"
     done
+    python3 breakdown_sort.py
+    python3 latency_sort.py
+    python3 progressive_sort.py
     ;;
-  "PMJ_MERGE_STEP_STUDY")
-    id=91
-    algo="PMJ_JBCR_NP"
-    ResetParameters
-    echo PMJ_MERGE_STEP_STUDY 91-106
-    for merge_step in 2 4 8 10; do
-      ResetParameters
-      SetStockParameters #91, 95, 99, 103
-      benchmarkRun
-      let "id++"
-
-      SetRovioParameters
-      benchmarkRun
-      let "id++"
-
-      SetYSBParameters
-      benchmarkRun
-      let "id++"
-
-      SetDEBSParameters
-      benchmarkRun
-      let "id++"
-    done
-    ;;
+#  "PMJ_MERGE_STEP_STUDY")
+#    id=66
+#    algo="PMJ_JBCR_NP"
+#    ResetParameters
+#    echo PMJ_MERGE_STEP_STUDY 66-70
+#    for merge_step in 8 10 12 14 16; do
+#      ts=0   # batch data.
+#      KimRun #
+#      let "id++"
+#    done
+#    python3 breakdown_merge.py
+#    python3 latency_merge.py
+#    python3 progressive_merge.py
+#    ;;
   "GROUP_SIZE_STUDY")
     id=79
     algo="SHJ_JBCR_NP"

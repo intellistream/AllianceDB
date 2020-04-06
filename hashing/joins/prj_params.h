@@ -13,7 +13,7 @@
 
 /** number of total radix bits used for partitioning. */
 #ifndef NUM_RADIX_BITS
-#define NUM_RADIX_BITS 12
+#define NUM_RADIX_BITS 16
 #endif
 
 /** number of passes in multipass partitioning, currently fixed at 2. */

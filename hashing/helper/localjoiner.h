@@ -126,7 +126,8 @@ private:
     t_pmj *t_arg;
 
 public:
-    int progressive_step = 640;//#number of tuples to sort at each iteration. It must be multiple cacheline size (64).
+    int progressive_step_R = 640;//#number of tuples to sort at each iteration. It must be multiple cacheline size (64).
+    int progressive_step_S = 640;//#number of tuples to sort at each iteration. It must be multiple cacheline size (64).
     int merge_step = 10000;//#runs to merge at each iteration.
 
     PMJJoiner(int sizeR, int sizeS, int nthreads);

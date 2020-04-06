@@ -184,8 +184,8 @@ pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *output) {
     int i = 0;
     int j = 0;
 
-    int progressive_stepR = joiner.progressive_step;//ALIGN_NUMTUPLES((int) (progressive_step * sizeR));//cacheline aligned.
-    int progressive_stepS = joiner.progressive_step;//ALIGN_NUMTUPLES((int) (progressive_step * sizeS));
+    int progressive_stepR = joiner.progressive_step_R;//ALIGN_NUMTUPLES((int) (progressive_step * sizeR));//cacheline aligned.
+    int progressive_stepS = joiner.progressive_step_S;//ALIGN_NUMTUPLES((int) (progressive_step * sizeS));
 
     assert(progressive_stepR > 0 && progressive_stepS > 0);
 
@@ -220,14 +220,14 @@ pmj(int32_t tid, relation_t *rel_R, relation_t *rel_S, void *output) {
     sorting_phase(tid, rel_R, rel_S, sizeR, sizeS, progressive_stepR, progressive_stepS, &i, &j, &joiner.matches, &Q,
                   outptrR + i, outptrS + j, joiner.timer, chainedbuf);
 
-    DEBUGMSG("Join during run creation:%d", joiner.matches)
+    printf("Join during run creation:%ld, Q size:%ld\n", joiner.matches, Q.size());
 
     merging_phase(&joiner.matches, &Q, joiner.timer, chainedbuf, joiner.merge_step);
 
-    DEBUGMSG("Join during run merge matches:%d", joiner.matches)
 #ifndef NO_TIMING
     END_MEASURE(joiner.timer)
 #endif
+    printf("Join during run merge matches:%ld\n", joiner.matches);
     return joiner;
 }
 
@@ -526,10 +526,10 @@ merge(int32_t tid, int64_t *matches,
 //                  arg->out_relR + arg->outerPtrR,
 //                  arg->out_relS + arg->outerPtrS,
                   timer, chainedbuf);
-    DEBUGMSG("TID:%d Clean up stage: Join during run creation:%d, arg->Q %d", tid, *matches, arg->Q.size())
-
-    merging_phase(matches, &arg->Q, timer, chainedbuf, merge_step);
-    DEBUGMSG("TID:%d Clean up stage: Join during run merge matches:%d", tid, *matches)
+    timer->matches_in_sort = *matches;
+//    printf("left over phase: Join during run sort matches:%ld, Q size: %ld\n", *matches, arg->Q.size());
+    merging_phase(matches, &arg->Q, timer, chainedbuf, arg->Q.size());
+//    printf("left over phase: Clean up stage: Join during run merge matches:%ld\n", *matches);
     return *matches;
 }
 
@@ -553,8 +553,8 @@ void PMJJoiner::join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *match
         arg->tmp_relS[arg->outerPtrS + arg->innerPtrS] = *tuple;
         arg->innerPtrS++;
     }
-    int stepR = progressive_step;
-    int stepS = progressive_step;
+    int stepR = progressive_step_R;
+    int stepS = progressive_step_S;
 
     tuple_t *out_relR;
     tuple_t *out_relS;
@@ -618,9 +618,8 @@ void PMJJoiner::join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *match
                       out_relR,
                       out_relS,
                       timer, chainedbuf);
-        DEBUGMSG("Join during run creation:%d", *matches)
+
         merging_phase(matches, &arg->Q, timer, chainedbuf, merge_step);
-        DEBUGMSG("Join during run merge matches:%d", *matches)
 
         delete out_relR;
         delete out_relS;

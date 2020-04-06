@@ -4,7 +4,6 @@
 
 #include "launcher.h"
 
-
 void
 launch(int nthreads, relation_t *relR, relation_t *relS, t_param param, void *(*thread_fun)(void *),
        uint64_t *startTS, uint64_t *joinStart) {
@@ -35,7 +34,10 @@ launch(int nthreads, relation_t *relR, relation_t *relS, t_param param, void *(*
                                                      nthreads);//have to allocate max size of tmp window in each joiner.
 
                 /** configure parameters for PMJ. */
-                ((PMJJoiner *) param.args[i].joiner)->progressive_step = param.progressive_step;
+                ((PMJJoiner *) param.args[i].joiner)->progressive_step_R = (int)
+                        (relR->num_tuples / nthreads / 100.0 * param.progressive_step);
+                ((PMJJoiner *) param.args[i].joiner)->progressive_step_S =
+                        (int) (relS->num_tuples / nthreads / 100.0 * param.progressive_step);
                 ((PMJJoiner *) param.args[i].joiner)->merge_step = param.merge_step;
 
                 break;

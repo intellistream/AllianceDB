@@ -88,7 +88,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, al
             plt.legend(handles[::-1], labels[::-1],
                        loc='center',
                        prop=LEGEND_FP,
-                       ncol=2,
+                       ncol=4,
                        bbox_to_anchor=(0.5, 1.15),
                        handletextpad=0.1,
                        borderaxespad=0.0,
@@ -158,8 +158,8 @@ def normalize(y_values):
 
 # example for reading csv file
 def ReadFile(id):
-    # Creates a list containing 5 lists, each of 2 items, all set to 0
-    w, h = 6, 2
+    # Creates a list containing w lists, each of h items, all set to 0
+    w, h = 5, 4
     y = [[0 for x in range(w)] for y in range(h)]
     # print(matches)
     max_value = 0
@@ -168,17 +168,21 @@ def ReadFile(id):
     for i in range(id, bound, 1):
         cnt = 0
         print(i)
-        f = open("/data1/xtra/results/breakdown/PRJ_{}.txt".format(i), "r")
+        f = open("/data1/xtra/results/breakdown/PMJ_JBCR_NP_{}.txt".format(i), "r")
         read = f.readlines()
         others = 0
         for x in read:
             value = double(x.strip("\n"))
             if value > max_value:
                 max_value = value
-            if cnt == 1:
+            if cnt == 1:  # partition
                 y[0][j] = value
-            elif cnt == 5:
+            elif cnt == 3:  # sort
                 y[1][j] = value
+            elif cnt == 4:  # merge
+                y[2][j] = value
+            elif cnt == 5:  # join
+                y[3][j] = value
             else:
                 others += value
             # if cnt == 6:
@@ -190,7 +194,7 @@ def ReadFile(id):
 
 
 if __name__ == "__main__":
-    id = 55
+    id = 61
     try:
         opts, args = getopt.getopt(sys.argv[1:], '-i:h', ['test id', 'help'])
     except getopt.GetoptError:
@@ -204,16 +208,17 @@ if __name__ == "__main__":
             print('Test ID:', opt_value)
             id = (int)(opt_value)
 
-    x_values = [8, 10, 12, 14, 16, 18]  # number of radix bits.
+    x_values = ['1%', '2%', '3%', '4%', '5%']  # sorting step size
 
     y_values, max_value = ReadFile(id)  # 55
 
     # y_norm_values = normalize(y_values)
 
-    # break into 3 parts
-    legend_labels = ['partition', 'join']  # , 'others'
+    # break into 4 parts
+    legend_labels = ['partition', 'sort', 'merge', 'join']  # , 'others'
 
-    DrawFigure(x_values, y_values, legend_labels, 'number of radix bits', 'cycles per output tuple',
-               'breakdown_radix_figure', True)
+    DrawFigure(x_values, y_values, legend_labels,
+               'sorting step size', 'cycles per output tuple',
+               'breakdown_sort_figure', True)
 
     # DrawLegend(legend_labels, 'breakdown_radix_legend')

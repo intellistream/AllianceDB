@@ -42,7 +42,7 @@ dump_timing(vector<double> vector, std::vector<double> vector_latency,
     int check50 = ceil(n * 0.50);
     int check75 = ceil(n * 0.75);
     int check95 = ceil(n * 0.95);
-    int check99 = ceil(n * 0.99);
+    int check99 = ceil(n * 0.99) - 1;
 
     //dump timestmap.
     std::string name = arg_name + "_" + std::to_string(exp_id);
@@ -90,7 +90,60 @@ dump_timing(vector<double> vector, std::vector<double> vector_latency,
     outputFile_gap.close();
 }
 
+int matches_in_sort_total = 0;
 
+double wait_time = 0;
+double partition_time = 0;
+double build_time = 0;
+double sort_time = 0;
+double merge_time = 0;
+double join_time = 0;
+double others_time = 0;
+
+/**
+ * Used by eager joiners.
+ * We can't synchrnoze steps in eager join algorithm.
+ * We hence measure each and then averaging the results.
+ * @param total_results
+ * @param nthreads
+ * @param lastTS
+ * @param pFile
+ */
+void breakdown_global(int64_t total_results, int nthreads, long lastTS, _IO_FILE *pFile) {
+
+    printf("%f\n%f\n%f\n%f\n%f\n%f\n%f\n",
+           (double) wait_time / nthreads,
+           (double) partition_time/ nthreads,
+           (double) build_time / nthreads,
+           (double) sort_time / nthreads,
+           (double) merge_time / nthreads,
+           (double) join_time / nthreads,
+           others_time / nthreads
+    );
+    printf("matches_in_sort_total: %d\n", matches_in_sort_total);
+    fprintf(pFile, "%f\n%f\n%f\n%f\n%f\n%f\n%f\n",
+            (double) wait_time / nthreads,
+            (double) partition_time/ nthreads,
+            (double) build_time / nthreads,
+            (double) sort_time / nthreads,
+            (double) merge_time / nthreads,
+            (double) join_time / nthreads,
+            others_time / nthreads
+    );
+
+    fprintf(pFile, "%d\n", matches_in_sort_total);
+    fflush(pFile);
+}
+
+/**
+ * Used by lazy joiners.
+ * Only need to reference to thread-0 as all steps are synchronized.
+ * @param total_results
+ * @param nthreads
+ * @param timer
+ * @param lastTS
+ * @param pFile
+ */
 void breakdown_global(int64_t total_results, int nthreads, T_TIMER *timer, long lastTS, _IO_FILE *pFile) {
     auto others = (timer->overall_timer -
                    (timer->wait_timer + timer->partition_timer + timer->buildtimer + timer->sorttimer +
@@ -104,6 +157,7 @@ void breakdown_global(int64_t total_results, int nthreads, T_TIMER *timer, long 
            (double) timer->join_timer / total_results,
            others / total_results
     );
+    printf("matches_in_sort_total: %d\n", matches_in_sort_total);
     fprintf(pFile, "%f\n%f\n%f\n%f\n%f\n%f\n%lu\n",
             (double) timer->wait_timer / total_results,
             (double) timer->partition_timer / total_results,
@@ -113,8 +167,11 @@ void breakdown_global(int64_t total_results, int nthreads, T_TIMER *timer, long 
             (double) timer->join_timer / total_results,
             others / total_results
     );
+
+    fprintf(pFile, "%d\n", matches_in_sort_total);
     fflush(pFile);
 }
+
 
 /**
  *
@@ -140,18 +197,20 @@ void breakdown_thread(int64_t result, T_TIMER *timer, long lastTS, _IO_FILE *pFi
         auto others = (timer->overall_timer -
                        (timer->wait_timer + timer->partition_timer + timer->buildtimer + timer->sorttimer +
                         timer->mergetimer + timer->join_timer));
+
+        matches_in_sort_total += timer->matches_in_sort;
 //
-//        wait_time += timer->wait_timer / result;
-//        partition_time += timer->partition_timer / result;
-//        build_time += timer->buildtimer / result;
-//        sort_time += timer->sorttimer / result;
-//        merge_time += timer->mergetimer / result;
-//        join_time += timer->join_timer / result;
-//        others_time += others / result;
+        wait_time += timer->wait_timer / result;
+        partition_time += timer->partition_timer / result;
+        build_time += timer->buildtimer / result;
+        sort_time += timer->sorttimer / result;
+        merge_time += timer->mergetimer / result;
+        join_time += timer->join_timer / result;
+        others_time += others / result;
 
         //for user to read.
-        DEBUGMSG("[Info] RUNTIME TOTAL, WAIT, PART, BUILD, SORT, MERGE, JOIN, others (cycles): \n");
-        DEBUGMSG("%llu \t %llu (%.2f%%) \t %llu (%.2f%%) \t %llu (%.2f%%)  "
+        printf("[Info] RUNTIME TOTAL, WAIT, PART, BUILD, SORT, MERGE, JOIN, others (cycles): \n");
+        printf("%llu \t %llu (%.2f%%) \t %llu (%.2f%%) \t %llu (%.2f%%)  "
                  "\t %llu (%.2f%%)  \t %llu (%.2f%%) \t %llu (%.2f%%) \t %llu (%.2f%%)",
                  timer->overall_timer / result,
                  timer->wait_timer / result, (timer->wait_timer * 100 / (double) timer->overall_timer),
@@ -162,11 +221,11 @@ void breakdown_thread(int64_t result, T_TIMER *timer, long lastTS, _IO_FILE *pFi
                  timer->join_timer / result, (timer->join_timer * 100 / (double) timer->overall_timer),
                  others / result, (others * 100 / (double) timer->overall_timer)
         );
-        DEBUGMSG("\n");
-        DEBUGMSG("TOTAL-TIME-USECS, NUM-TUPLES, CYCLES-PER-TUPLE: \n");
-        DEBUGMSG("%.4lf \t %ld \t %.4lf", diff_usec, result, cyclestuple);
-        DEBUGMSG("\n");
-        DEBUGMSG("\n");
+        printf("\n");
+        printf("TOTAL-TIME-USECS, NUM-TUPLES, CYCLES-PER-TUPLE: \n");
+        printf("%.4lf \t %ld \t %.4lf", diff_usec, result, cyclestuple);
+        printf("\n");
+        printf("\n");
     } else {
         DEBUGMSG("[Warning] This thread does not matches any tuple.\n\n");
     }

@@ -7,7 +7,7 @@ for id in {55..58} ; do
 done
 
 for id in {75..78} ; do
-  python3 breakdown_sort_step.py -i $id
+  python3 breakdown_sort_step.py.old -i $id
 done
 
 for id in {91..94} ; do

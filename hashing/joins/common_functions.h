@@ -182,4 +182,5 @@ free_bucket_buffer(bucket_buffer_t *buf);
 
 std::string print_relation(tuple_t *tuple, int length);
 
+
 #endif //ALLIANCEDB_COMMON_FUNCTIONS_H

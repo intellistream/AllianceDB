@@ -75,7 +75,7 @@ t_param &finishing(int nthreads, t_param &param, uint64_t *startTS, uint64_t *jo
     for (i = 0; i < nthreads; i++) {
         breakdown_thread(*param.args[i].matches, param.args[i].timer, 0, fp);
     }
-    breakdown_global(param.result, nthreads, param.args[0].timer, 0, fp);
+    breakdown_global(param.result, nthreads, 0, fp);
     fclose(fp);
     sortRecords(param.algo_name, param.exp_id, 0);
 #endif

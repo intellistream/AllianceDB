@@ -106,8 +106,8 @@ struct param_t {
     int group_size;
     int exp_id;
     int gap;
-    int progressive_step = 640;
-    int merge_step = 10000;
+    int progressive_step = 1;//percentile of tuples to sort at each iteration.
+    int merge_step = 2;
 };
 
 

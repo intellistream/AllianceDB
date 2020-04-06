@@ -7,8 +7,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pylab
 from matplotlib.font_manager import FontProperties
+from matplotlib.ticker import LinearLocator
 from numpy import double
-from numpy.ma import ceil
 
 OPT_FONT_NAME = 'Helvetica'
 TICK_FONT_SIZE = 20
@@ -46,9 +46,9 @@ def ConvertEpsToPdf(dir_filename):
 
 
 # draw a line chart
-def DrawFigure(x_values, y_values, y_max, legend_labels, x_label, y_label, filename, id, allow_legend):
+def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, allow_legend):
     # you may change the figure size on your own.
-    fig = plt.figure(figsize=(9, 4))
+    fig = plt.figure(figsize=(8, 3.5))
     figure = fig.add_subplot(111)
 
     FIGURE_LABEL = legend_labels
@@ -71,25 +71,43 @@ def DrawFigure(x_values, y_values, y_max, legend_labels, x_label, y_label, filen
 
     # sometimes you may not want to draw legends.
     if allow_legend == True:
-        plt.legend(bars, FIGURE_LABEL, prop=LEGEND_FP,
-                   loc='upper center', ncol=len(legend_labels), mode='expand', bbox_to_anchor=(0.45, 1.2), shadow=False,
-                   frameon=False, borderaxespad=0.0, handlelength=2, labelspacing=0.2)
+        plt.legend(bars, FIGURE_LABEL
+                   #                     mode='expand',
+                   #                     shadow=False,
+                   #                     columnspacing=0.25,
+                   #                     labelspacing=-2.2,
+                   #                     borderpad=5,
+                   #                     bbox_transform=ax.transAxes,
+                   #                     frameon=False,
+                   #                     columnspacing=5.5,
+                   #                     handlelength=2,
+                   )
+        if allow_legend == True:
+            handles, labels = figure.get_legend_handles_labels()
+        if allow_legend == True:
+            plt.legend(handles[::-1], labels[::-1],
+                       loc='center',
+                       prop=LEGEND_FP,
+                       ncol=4,
+                       bbox_to_anchor=(0.5, 1.15),
+                       handletextpad=0.1,
+                       borderaxespad=0.0,
+                       handlelength=1.8,
+                       labelspacing=0.3,
+                       columnspacing=0.3,
+                       )
 
-    # plt.ylim(0, y_max)
     # you may need to tune the xticks position to get the best figure.
-    plt.xticks(index + 0.5 * width, x_values)
-    # plt.autofmt_xdate()
-    # plt.xticks(rotation=30)
-    # if id == 38:  # stock: all algorithms are idle most of the time.
-    #     plt.yscale('log')
-    #     figure.yaxis.set_major_locator(matplotlib.ticker.LogLocator(numticks=5))
-    # else:
-    figure.yaxis.set_major_locator(pylab.LinearLocator(5))
-    plt.grid(axis='y', color='gray')
-    #
+    plt.xticks(index + 1 * width, x_values)
 
-    # figure.get_xaxis().set_tick_params(direction='in', pad=10)
-    # figure.get_yaxis().set_tick_params(direction='in', pad=10)
+    # plt.xlim(0,)
+    # plt.ylim(0,1)
+
+    plt.grid(axis='y', color='gray')
+    figure.yaxis.set_major_locator(LinearLocator(6))
+
+    figure.get_xaxis().set_tick_params(direction='in', pad=10)
+    figure.get_yaxis().set_tick_params(direction='in', pad=10)
 
     plt.xlabel(x_label, fontproperties=LABEL_FP)
     plt.ylabel(y_label, fontproperties=LABEL_FP)
@@ -97,10 +115,7 @@ def DrawFigure(x_values, y_values, y_max, legend_labels, x_label, y_label, filen
     size = fig.get_size_inches()
     dpi = fig.get_dpi()
 
-    plt.tight_layout()
-    plt.savefig(FIGURE_FOLDER + '/' + filename + '.pdf')
-    # plt.savefig(FIGURE_FOLDER + "/" + filename + ".eps", bbox_inches='tight', format='eps')
-    # ConvertEpsToPdf(FIGURE_FOLDER + "/" + filename)
+    plt.savefig(FIGURE_FOLDER + "/" + filename + ".pdf", bbox_inches='tight', format='pdf')
 
 
 def DrawLegend(legend_labels, filename):
@@ -143,14 +158,14 @@ def normalize(y_values):
 
 # example for reading csv file
 def ReadFile(id):
-    # Creates a list containing 4 lists, each of 7 items, all set to 0
-    w, h = 4, 3
+    # Creates a list containing w lists, each of h items, all set to 0
+    w, h = 5, 4
     y = [[0 for x in range(w)] for y in range(h)]
     # print(matches)
     max_value = 0
-    bound = id + 12
     j = 0
-    for i in range(id, bound + 4, 4):
+    bound = id + 1 * w
+    for i in range(id, bound, 1):
         cnt = 0
         print(i)
         f = open("/data1/xtra/results/breakdown/PMJ_JBCR_NP_{}.txt".format(i), "r")
@@ -160,28 +175,26 @@ def ReadFile(id):
             value = double(x.strip("\n"))
             if value > max_value:
                 max_value = value
-
-            if cnt == 0:  # wait
-                print(value)
-            elif cnt == 1:  # partition
+            if cnt == 1:  # partition
                 y[0][j] = value
-            elif cnt == 2:  # build
-                print(value)
             elif cnt == 3:  # sort
                 y[1][j] = value
             elif cnt == 4:  # merge
                 y[2][j] = value
             elif cnt == 5:  # join
-                print(value)
-            elif cnt == 6:  # others
-                print(value)
+                y[3][j] = value
+            else:
+                others += value
+            # if cnt == 6:
+            #     y[2][j] = others
             cnt += 1
         j += 1
     print(y)
     return y, max_value
 
+
 if __name__ == "__main__":
-    id = 0
+    id = 66
     try:
         opts, args = getopt.getopt(sys.argv[1:], '-i:h', ['test id', 'help'])
     except getopt.GetoptError:
@@ -195,17 +208,17 @@ if __name__ == "__main__":
             print('Test ID:', opt_value)
             id = (int)(opt_value)
 
-    x_values = [2, 4, 8, 10]  # number of radix bits.
+    x_values = [8, 10, 12, 14, 16]  # merging step size
 
-    y_values, max_value = ReadFile(id)  # 91: stock, 92: Rovio, 93: YSB, 94: DEBS.
+    y_values, max_value = ReadFile(id)  # 55
 
     # y_norm_values = normalize(y_values)
 
-    # break into 3 parts
-    legend_labels = ['partition', 'sort', 'merge']  # , 'others'
+    # break into 4 parts
+    legend_labels = ['partition', 'sort', 'merge', 'join']  # , 'others'
 
-    DrawFigure(x_values, y_values, double(ceil(max_value / 1000.0)) * 1000, legend_labels, '',
-               '',
-               'breakdown_merge_step_figure{}'.format(id), id, False)
+    DrawFigure(x_values, y_values, legend_labels,
+               'merging step size', 'cycles per output tuple',
+               'breakdown_merge_figure', True)
 
-    DrawLegend(legend_labels, 'breakdown_merge_step_legend')
+    # DrawLegend(legend_labels, 'breakdown_radix_legend')

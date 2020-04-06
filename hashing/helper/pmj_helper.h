@@ -108,6 +108,9 @@ struct sweepArea {
 //                    }
 //                    else
 //                        printf("payloadID:%d\n", tuple->payloadID);
+//                    if (tuple->payloadID < 0) {
+//                        printf("???");
+//                    }
                     END_PROGRESSIVE_MEASURE(tuple->payloadID, timer, ISTupleR)
 #endif
                 }
@@ -118,10 +121,41 @@ struct sweepArea {
 };
 
 
+/**
+ * Actually used in online join algorithm.
+ * @param tid
+ * @param inptrR
+ * @param sizeR
+ * @param inptrS
+ * @param sizeS
+ * @param matches
+ * @param Q
+ * @param outputR
+ * @param outputS
+ * @param timer
+ * @param chainedbuf
+ */
 void sorting_phase(int32_t tid, tuple_t *inptrR, int sizeR, tuple_t *inptrS, int sizeS, int64_t *matches,
                    std::vector<run> *Q, tuple_t *outputR, tuple_t *outputS, T_TIMER *timer,
                    chainedtuplebuffer_t *chainedbuf);
-
+/**
+ * Testing purpose: pass in entire relation.
+ * @param tid
+ * @param rel_R
+ * @param rel_S
+ * @param sizeR
+ * @param sizeS
+ * @param progressive_stepR
+ * @param progressive_stepS
+ * @param i
+ * @param j
+ * @param matches
+ * @param Q
+ * @param outptrR
+ * @param outptrS
+ * @param timer
+ * @param chainedbuf
+ */
 void sorting_phase(int32_t tid, const relation_t *rel_R, const relation_t *rel_S, int sizeR, int sizeS,
                    int progressive_stepR, int progressive_stepS, int *i, int *j, int64_t *matches, std::vector<run> *Q,
                    tuple_t *outptrR, tuple_t *outptrS,

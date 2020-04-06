@@ -33,6 +33,7 @@ struct T_TIMER {
     uint64_t join_mergetimer_pre = 0, join_mergetimer = 0;//join during merge.
     uint64_t join_timer_pre = 0, join_timer = 0;//join.
     uint64_t shuffle_timer_pre = 0, shuffle_timer = 0;//shuffle.
+    uint64_t garbage_time = 0;//garbage.
     std::vector<uint64_t> recordR;
     std::vector<uint64_t> recordS;
     std::vector<int32_t> recordRID;
@@ -40,10 +41,13 @@ struct T_TIMER {
     int record_cnt = 0;
     int record_gap = 10;
     int simulate_compute_time = 1;//(microseconds per output).
+    int matches_in_sort = 0;
 #endif
 };
+/** print out the execution time statistics of the join, used by eager ones */
+void breakdown_global(int64_t total_results, int nthreads, long lastTS, _IO_FILE *pFile);
 
-/** print out the execution time statistics of the join */
+/** print out the execution time statistics of the join, used by lazy ones */
 void breakdown_global(int64_t result, int nthreads, T_TIMER *timer, long lastTS, _IO_FILE *pFile);
 
 /** print out the execution time statistics of the join */
@@ -169,7 +173,7 @@ void sortRecords(std::string algo_name, int exp_id, long lastTS);
    accTimer(&timer->partition_timer_pre, &timer->partition_timer); /* partition time */
 #endif
 
-#ifndef /*BEGIN_MEASURE_PARTITION*/NO_TIMING
+#ifndef BEGIN_MEASURE_PARTITION
 #define BEGIN_MEASURE_PARTITION(timer) \
    startTimer(&timer->partition_timer);
 #endif
@@ -179,10 +183,16 @@ void sortRecords(std::string algo_name, int exp_id, long lastTS);
    stopTimer(&timer->partition_timer);
 #endif
 
-#ifndef REFINE_MEASURE_PARTITION
-#define REFINE_MEASURE_PARTITION(timer) \
-
+#ifndef BEGIN_GARBAGE
+#define BEGIN_GARBAGE(timer) \
+   startTimer(&timer->garbage_time);
 #endif
+
+#ifndef END_GARBAGE
+#define END_GARBAGE(timer) \
+   stopTimer(&timer->garbage_time);
+#endif
+
 
 
 #ifndef START_MEASURE
