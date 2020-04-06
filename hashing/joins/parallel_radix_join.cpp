@@ -1543,7 +1543,6 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, param_t cmd_p
 #ifndef NO_TIMING
         args[i].timer->record_gap = cmd_params.gap;
 #endif
-
         args[i].relR = relR->tuples + i * numperthr[0];
         args[i].tmpR = tmpRelR;
         args[i].histR = histR;
@@ -1587,7 +1586,6 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, param_t cmd_p
     //compute results.
     for (i = 0; i < nthreads; i++) {
         result += args[i].result;
-
         printf("Thread%d, produces %ld outputs\n", i, args[i].result);
 #ifndef NO_TIMING
         merge(args[i].timer, relR, relS, startTS, cmd_params.ts == 0 ? 0 : cmd_params.window_size);

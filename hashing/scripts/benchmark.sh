@@ -123,6 +123,7 @@ for benchmark in "PRJ_RADIX_BITS_STUDY"; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_ST
       compile
       ts=0   # batch data.
       KimRun #55 - 60
+      let "id++"
     done
     python3 breakdown_radix.py
     python3 latency_radix.py
