@@ -159,7 +159,7 @@ def normalize(y_values):
 # example for reading csv file
 def ReadFile(id):
     # Creates a list containing w lists, each of h items, all set to 0
-    w, h = 4, 3
+    w, h = 4, 2
     y = [[0 for x in range(w)] for y in range(h)]
     # print(matches)
     max_value = 0
@@ -175,12 +175,10 @@ def ReadFile(id):
             value = double(x.strip("\n"))
             if value > max_value:
                 max_value = value
-            if cnt == 1:  # partition
-                y[0][j] = value
             elif cnt == 2:  # build
-                y[1][j] = value
+                y[0][j] = value
             elif cnt == 5:  # join
-                y[2][j] = value
+                y[1][j] = value
             else:
                 others += value
             # if cnt == 6:
@@ -213,7 +211,7 @@ if __name__ == "__main__":
     # y_norm_values = normalize(y_values)
 
     # break into 4 parts
-    legend_labels = ['partition', 'build', 'join']  # , 'others'
+    legend_labels = ['build', 'join']  # , 'others'
 
     DrawFigure(x_values, y_values, legend_labels,
                'group size', 'cycles per output tuple',

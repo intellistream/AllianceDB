@@ -98,7 +98,7 @@ function ResetParameters() {
   FIXS=1
   ts=1 # stream case
   Threads=8
-  progress_step=2
+  progress_step=20
   merge_step=16
   group=2
   gap=2000
@@ -111,7 +111,7 @@ compile
 timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
 #benchmark experiment only apply for hashing directory.
-for benchmark in "GROUP_SIZE_STUDY"; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY"
+for benchmark in  "PMJ_SORT_STEP_STUDY"; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY"
   case "$benchmark" in
   "PRJ_RADIX_BITS_STUDY")
     algo="PRO"
@@ -172,7 +172,7 @@ for benchmark in "GROUP_SIZE_STUDY"; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_S
     echo GROUP_SIZE_STUDY SHJ 70 - 73
     for group in 1 2 4 8; do
       ts=0   # batch data.
-      KimRun #
+#      KimRun #
       let "id++"
     done
     python3 breakdown_group_pmj.py

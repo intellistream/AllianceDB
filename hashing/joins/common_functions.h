@@ -13,6 +13,13 @@
 
 //#define JOIN_RESULT_MATERIALIZE
 //#define NO_TIMING
+//#define DEBUG
+
+#define JOIN //ifndefined, it is partition only.
+#define MERGE_PROBE //ifndefined, //build/sort only
+#define MATCH
+
+#define EAGER
 
 #ifndef PTHREAD_BARRIER_SERIAL_THREAD
 #define PTHREAD_BARRIER_SERIAL_THREAD 1
@@ -38,8 +45,6 @@
 #define HASH(X, MASK, SKIP) (((X) & MASK) >> SKIP)
 #endif
 
-//#define DEBUG
-
 /** Debug msg logging method */
 #ifdef DEBUG
 #define DEBUGMSG(MSG, ...)                                                        \
@@ -57,7 +62,8 @@
         fprintf(stdout, "\n");                                                          \
     }
 
-#define EAGER
+
+
 #define expected_results 1280000.0
 
 ///** To keep track of the input relation pairs fitting into L2 cache */

@@ -59,7 +59,6 @@ t_param &finishing(int nthreads, t_param &param, uint64_t *startTS, uint64_t *jo
 #endif
     for (i = 0; i < nthreads; i++) {
         /* sum up results */
-        printf("Thread%d, produces %ld outputs\n", i, *param.args[i].matches);
         param.result += *param.args[i].matches;
 #ifndef NO_TIMING
         merge(param.args[i].timer, param.args[i].fetcher->relR, param.args[i].fetcher->relS, startTS, 0);
@@ -68,17 +67,51 @@ t_param &finishing(int nthreads, t_param &param, uint64_t *startTS, uint64_t *jo
     param.joinresult->totalresults = param.result;
     param.joinresult->nthreads = nthreads;
 #ifndef NO_TIMING
+#ifndef JOIN //partition-only.
     std::string name = param.algo_name + "_" + std::to_string(param.exp_id);
-    string path = "/data1/xtra/results/breakdown/" + name.append(".txt");
+    string path = "/data1/xtra/results/breakdown/partition_only/" + name.append(".txt");
     auto fp = fopen(path.c_str(), "w");
     /* now print the timing results: */
     for (i = 0; i < nthreads; i++) {
-        breakdown_thread(*param.args[i].matches, param.args[i].timer, 0, fp);
+        dump_partition_cost(param.args[i].timer, fp);//partition_only
     }
+#else
+#ifndef MERGE_PROBE //build/sort only
+    std::string name = param.algo_name + "_" + std::to_string(param.exp_id);
+    string path = "/data1/xtra/results/breakdown/partition_buildsort_only/" + name.append(".txt");
+    auto fp = fopen(path.c_str(), "w");
+    /* now print the timing results: */
+    for (i = 0; i < nthreads; i++) {
+        dump_partition_cost(param.args[i].timer, fp);//partition + sort/build
+    }
+#else
+#ifndef MATCH //build/sort + probe/merge only
+    std::string name = param.algo_name + "_" + std::to_string(param.exp_id);
+    string path = "/data1/xtra/results/breakdown/partition_buildsort_probemerge_only/" + name.append(".txt");
+    auto fp = fopen(path.c_str(), "w");
+    /* now print the timing results: */
+    for (i = 0; i < nthreads; i++) {
+        dump_partition_cost(param.args[i].timer, fp);//partition + sort/build
+    }
+#else //everything is defined.
+    std::string name = param.algo_name + "_" + std::to_string(param.exp_id);
+    /* now print the timing results: */
+    for (i = 0; i < nthreads; i++) {
+        printf("partition cost: %lu, inputs:%d\n",
+               param.args[i].timer->partition_timer / param.args[i].timer->joiner_cnt, param.args[i].timer->joiner_cnt);
+    }
+    for (i = 0; i < nthreads; i++) {
+        breakdown_thread(*param.args[i].matches, param.args[i].timer, i, name);
+    }
+    string path = "/data1/xtra/results/breakdown/" + name.append(".txt");
+    auto fp = fopen(path.c_str(), "w");
     breakdown_global(param.result, nthreads, 0, fp);
     fclose(fp);
     sortRecords(param.algo_name, param.exp_id, 0);
-#endif
+#endif //
+#endif // partition with sort/build only
+#endif // partition-only
+#endif //no_timing flag
     return param;
 }
 

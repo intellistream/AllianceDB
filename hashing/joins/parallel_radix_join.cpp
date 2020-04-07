@@ -1605,10 +1605,6 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, param_t cmd_p
     std::string name = "PRJ_" + std::to_string(cmd_params.exp_id);
     string path = "/data1/xtra/results/breakdown/" + name.append(".txt");
     auto fp = fopen(path.c_str(), "w");
-    /* now print the timing results: */
-    for (i = 0; i < nthreads; i++) {
-            breakdown_thread(args[i].result, args[i].timer, cmd_params.ts == 0 ? 0 : cmd_params.window_size, fp);
-    }
     breakdown_global(result, nthreads, args[0].timer, cmd_params.ts == 0 ? 0 : cmd_params.window_size, fp);
     fclose(fp);
     sortRecords("PRJ", cmd_params.exp_id, cmd_params.ts == 0 ? 0 : cmd_params.window_size);
@@ -1708,12 +1704,6 @@ RJ_st(relation_t *relR, relation_t *relS, param_t cmd_params) {
     outRelS->tuples = (tuple_t *) malloc(sz);
     outRelS->num_tuples = relS->num_tuples;
 
-    T_TIMER *timer = new T_TIMER();
-#ifndef NO_TIMING
-    START_MEASURE(timer)
-    BEGIN_MEASURE_PARTITION(timer)
-#endif
-
     /***** do the multi-pass partitioning *****/
 #if NUM_PASSES == 1
     /* apply radix-clustering on relation R for pass-1 */
@@ -1752,10 +1742,6 @@ RJ_st(relation_t *relR, relation_t *relS, param_t cmd_params) {
 #endif
 
 
-#ifndef NO_TIMING
-    END_MEASURE_PARTITION(timer)
-#endif
-
     int *R_count_per_cluster = (int *) calloc((1 << NUM_RADIX_BITS), sizeof(int));
     int *S_count_per_cluster = (int *) calloc((1 << NUM_RADIX_BITS), sizeof(int));
 
@@ -1774,11 +1760,8 @@ RJ_st(relation_t *relR, relation_t *relS, param_t cmd_params) {
 #else
     void *chainedbuf = NULL;
 #endif
-#ifndef NO_TIMING
-    BEGIN_MEASURE_BUILD(timer)
-#endif
-    /* build hashtable on inner */
 
+    /* build hashtable on inner */
     int r, s; /* start index of next clusters */
     r = s = 0;
     for (i = 0; i < (1 << NUM_RADIX_BITS); i++) {
@@ -1794,7 +1777,7 @@ RJ_st(relation_t *relR, relation_t *relS, param_t cmd_params) {
             tmpS.tuples = relS->tuples + s;
             s += S_count_per_cluster[i];
 
-            result += bucket_chaining_join(&tmpR, &tmpS, NULL, chainedbuf, timer);
+            result += bucket_chaining_join(&tmpR, &tmpS, NULL, chainedbuf, nullptr);
         } else {
             r += R_count_per_cluster[i];
             s += S_count_per_cluster[i];
@@ -1806,14 +1789,6 @@ RJ_st(relation_t *relR, relation_t *relS, param_t cmd_params) {
     thrres->nresults = result;
     thrres->threadid = 0;
     thrres->results = (void *) chainedbuf;
-#endif
-
-#ifndef NO_TIMING
-    /* TODO: actually we're not timing build, but radix pre */
-    END_MEASURE_BUILD(timer)
-    END_MEASURE(timer)
-    /* now print the timing results: */
-    breakdown_thread(result, timer, 0, nullptr);
 #endif
 
     /* clean-up temporary buffers */

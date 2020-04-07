@@ -78,10 +78,6 @@ void earlyJoinMergedRuns(std::vector<run> *Q, int64_t *matches, run *newRun, T_T
                     //the left most of each subsequence is the smallest item of the subsequence.
                     readR = runR.at(posR);
 
-//                    if (readR->payloadID < 0) {
-//                        printf("wrong");
-//                    }
-
                 }
             } else {
                 tuple_t *runR = (run_itr).operator*().R;//get Rs in each run.
@@ -89,9 +85,6 @@ void earlyJoinMergedRuns(std::vector<run> *Q, int64_t *matches, run *newRun, T_T
                     //the left most of each subsequence is the smallest item of the subsequence.
                     readR = &runR[posR];
 
-//                    if (readR->payloadID < 0) {
-//                        printf("wrong");
-//                    }
                 }
             }
             if (readR && (!minR || minR->key > readR->key)) {
@@ -111,9 +104,6 @@ void earlyJoinMergedRuns(std::vector<run> *Q, int64_t *matches, run *newRun, T_T
                     //the left most of each subsequence is the smallest item of the subsequence.
                     readS = runS.at(posS);
 
-//                    if (readS->payloadID < 0) {
-//                        printf("wrong");
-//                    }
                 }
             } else {
                 tuple_t *runS = (run_itr).operator*().S;//get Rs in each run.
@@ -121,9 +111,6 @@ void earlyJoinMergedRuns(std::vector<run> *Q, int64_t *matches, run *newRun, T_T
                     //the left most of each subsequence is the smallest item of the subsequence.
                     readS = &runS[posS];
 
-//                    if (readS->payloadID < 0) {
-//                        printf("wrong");
-//                    }
                 }
             }
             if (readS && (!minS || minS->key > readS->key)) {
@@ -147,18 +134,13 @@ void earlyJoinMergedRuns(std::vector<run> *Q, int64_t *matches, run *newRun, T_T
         }
         if (!findJ || (findI && LessEqualPredicate(minR, minS))) {
             RM[run_i].insert(minR);
-#ifndef NO_TIMING
-            BEGIN_MEASURE_JOIN_MERGE_ACC(timer)
-#endif
+#ifdef MATCH
             for (auto run_itr = 0; run_itr < actual_merge_step; run_itr++) {
                 if (run_itr != run_i) {// except (r,x)| x belong to Si.
                     SM[run_itr].query(minR, matches, timer, false, chainedbuf);
                 }
             }
-#ifndef NO_TIMING
-            END_MEASURE_JOIN_MERGE_ACC(timer)
 #endif
-
             if (i.operator*().merged) {
                 newRun->mergedR.push_back(
                         i.operator*().mergedR.at(mark_pi));//merge multiple subsequences into a longer sorted one.
@@ -171,16 +153,12 @@ void earlyJoinMergedRuns(std::vector<run> *Q, int64_t *matches, run *newRun, T_T
             // remove the smallest element from subsequence.
         } else {
             SM[run_j].insert(minS);
-#ifndef NO_TIMING
-            BEGIN_MEASURE_JOIN_MERGE_ACC(timer)
-#endif
+#ifdef MATCH
             for (auto run_itr = 0; run_itr < actual_merge_step; run_itr++) {
                 if (run_itr != run_j) {// except (x,r)| x belong to Rj.
                     RM[run_itr].query(minS, matches, timer, false, chainedbuf);
                 }
             }
-#ifndef NO_TIMING
-            END_MEASURE_JOIN_MERGE_ACC(timer)
 #endif
             if (j.operator*().merged) {
                 newRun->mergedS.push_back(
@@ -208,16 +186,12 @@ void insert(std::vector<run> *Q, tuple_t *run_R, int lengthR, tuple_t *run_S, in
 
 void
 merging_phase(int64_t *matches, std::vector<run> *Q, T_TIMER *timer, chainedtuplebuffer_t *chainedbuf, int merge_step) {
-#ifndef NO_TIMING
-    BEGIN_MEASURE_MERGE_ACC(timer)
-#endif
+#ifdef MERGE_PROBE
     do {
         run *newRun = new run();//empty run
         earlyJoinMergedRuns(Q, matches, newRun, timer, chainedbuf, merge_step);
         Q->push_back(*newRun);
     } while (Q->size() > 1);
-#ifndef NO_TIMING
-    END_MEASURE_MERGE_ACC(timer)
 #endif
 }
 
@@ -227,9 +201,6 @@ void sorting_phase(int32_t tid, tuple_t *inptrR, int sizeR, tuple_t *inptrS, int
 
     DEBUGMSG("TID:%d, Initial R [aligned:%d]: %s", tid, is_aligned(inptrR, CACHE_LINE_SIZE),
              print_relation(inptrR, sizeR).c_str())
-#ifndef NO_TIMING
-    BEGIN_MEASURE_SORT_ACC(timer)
-#endif
     if (scalarflag)
         scalarsort_tuples(&inptrR, &outputR, sizeR);
     else
@@ -248,9 +219,7 @@ void sorting_phase(int32_t tid, tuple_t *inptrR, int sizeR, tuple_t *inptrS, int
         scalarsort_tuples(&inptrS, &outputS, sizeS);
     else
         avxsort_tuples(&inptrS, &outputS, sizeS);// the method will swap input and output pointers.
-#ifndef NO_TIMING
-    END_MEASURE_SORT_ACC(timer)
-#endif
+
     DEBUGMSG("Sorted S: %s", print_relation(outputS, sizeS).c_str())
 
 #ifdef DEBUG
@@ -258,20 +227,36 @@ void sorting_phase(int32_t tid, tuple_t *inptrR, int sizeR, tuple_t *inptrS, int
         DEBUGMSG("===> %d-thread -> S is NOT sorted, size = %d\n", tid, sizeS)
     }
 #endif
-#ifndef NO_TIMING
-    BEGIN_MEASURE_JOIN_ACC(timer)
-#endif
+
+#ifdef MATCH
     earlyJoinInitialRuns(outputR, outputS, sizeR, sizeS, matches, timer, chainedbuf);
-
-#ifndef NO_TIMING
-    END_MEASURE_JOIN_ACC(timer)
 #endif
 
-//this is considered as part of ``others" overhead.
+#ifdef MERGE_PROBE
+    //this is considered as part of ``others" overhead.
     DEBUGMSG("Insert Q.")
     insert(Q, outputR, sizeR, outputS, sizeS);
+#endif
 }
 
+/**
+ * This is used for debug-only.
+ * @param tid
+ * @param rel_R
+ * @param rel_S
+ * @param sizeR
+ * @param sizeS
+ * @param progressive_stepR
+ * @param progressive_stepS
+ * @param i
+ * @param j
+ * @param matches
+ * @param Q
+ * @param outptrR
+ * @param outptrS
+ * @param timer
+ * @param chainedbuf
+ */
 void sorting_phase(int32_t tid, const relation_t *rel_R, const relation_t *rel_S, int sizeR, int sizeS,
                    int progressive_stepR, int progressive_stepS, int *i, int *j, int64_t *matches, std::vector<run> *Q,
                    tuple_t *outptrR, tuple_t *outptrS,

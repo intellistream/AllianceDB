@@ -38,24 +38,34 @@ struct T_TIMER {
     std::vector<uint64_t> recordS;
     std::vector<int32_t> recordRID;
     std::vector<int32_t> recordSID;
-    int record_cnt = 0;
+    int match_cnt = 0;
+    int joiner_cnt = 0;
     int record_gap = 10;
-    int simulate_compute_time = 1;//(microseconds per output).
     int matches_in_sort = 0;
 #endif
 };
+
 /** print out the execution time statistics of the join, used by eager ones */
 void breakdown_global(int64_t total_results, int nthreads, long lastTS, _IO_FILE *pFile);
 
 /** print out the execution time statistics of the join, used by lazy ones */
 void breakdown_global(int64_t result, int nthreads, T_TIMER *timer, long lastTS, _IO_FILE *pFile);
 
+void dump_partition_cost(T_TIMER *timer, _IO_FILE *pFile);
+
 /** print out the execution time statistics of the join */
-void breakdown_thread(int64_t result, T_TIMER *timer, long lastTS, _IO_FILE *pFile);
+void breakdown_thread(int64_t result, T_TIMER *timer, long tid, string name);
 
 void merge(T_TIMER *timer, relation_t *relR, relation_t *relS, uint64_t *startTS, long lastTS);
 
 void sortRecords(std::string algo_name, int exp_id, long lastTS);
+
+#ifndef JOIN_COUNT
+#define JOIN_COUNT(timer) \
+    timer->joiner_cnt++;
+#endif
+
+
 
 #ifndef BEGIN_MEASURE_BUILD
 #define BEGIN_MEASURE_BUILD(timer) \
@@ -67,87 +77,64 @@ void sortRecords(std::string algo_name, int exp_id, long lastTS);
     stopTimer(&timer->buildtimer);
 #endif
 
-#ifndef /*BEGIN_MEASURE_BUILD_ACC*/NO_TIMING
+#ifndef BEGIN_MEASURE_BUILD_ACC
 #define BEGIN_MEASURE_BUILD_ACC(timer) \
     startTimer(&timer->buildtimer_pre);
 #endif
 
-#ifndef /*END_MEASURE_BUILD_ACC*/NO_TIMING
+#ifndef END_MEASURE_BUILD_ACC
 #define END_MEASURE_BUILD_ACC(timer) \
      accTimer(&timer->buildtimer_pre, &timer->buildtimer); /* build time */
 #endif
 
-#ifndef /*BEGIN_MEASURE_SORT_ACC*/NO_TIMING
+#ifndef BEGIN_MEASURE_SORT_ACC
 #define BEGIN_MEASURE_SORT_ACC(timer) \
     startTimer(&timer->sorttimer_pre);
 #endif
 
-#ifndef /*END_MEASURE_SORT_ACC*/NO_TIMING
+#ifndef END_MEASURE_SORT_ACC
 #define END_MEASURE_SORT_ACC(timer) \
-     accTimer(&timer->sorttimer_pre, &timer->sorttimer); /* sort time */
+    accTimer(&timer->sorttimer_pre, &timer->sorttimer); /* sort time */
 #endif
 
-#ifndef /*BEGIN_MEASURE_JOIN_MERGE_ACC*/NO_TIMING
-#define BEGIN_MEASURE_JOIN_MERGE_ACC(timer) \
-    startTimer(&timer->join_mergetimer_pre);
-#endif
-
-#ifndef /*END_MEASURE_JOIN_MERGE_ACC*/NO_TIMING
-#define END_MEASURE_JOIN_MERGE_ACC(timer) \
-     accTimer(&timer->join_mergetimer_pre, &timer->join_mergetimer); /* merge time */
-#endif
-
-
-#ifndef /*BEGIN_MEASURE_JOIN_PARTITION_ACC*/NO_TIMING
-#define BEGIN_MEASURE_JOIN_PARTITION_ACC(timer) \
-    startTimer(&timer->join_partitiontimer_pre);
-#endif
-
-#ifndef /*END_MEASURE_JOIN_PARTITION_ACC*/NO_TIMING
-#define END_MEASURE_JOIN_PARTITION_ACC(timer) \
-     accTimer(&timer->join_partitiontimer_pre, &timer->join_partitiontimer); /* join during partition */
-#endif
-
-#ifndef BEGIN_MEASURE_SHUFFLE_ACC
-#define BEGIN_MEASURE_SHUFFLE_ACC(timer) \
-    startTimer(&timer->shuffle_timer_pre);
-#endif
-
-#ifndef END_MEASURE_SHUFFLE_ACC
-#define END_MEASURE_SHUFFLE_ACC(timer) \
-     accTimer(&timer->shuffle_timer_pre, &timer->shuffle_timer); /* shuffle time */
-#endif
-
-#ifndef BEGIN_MEASURE_JOIN_ACC
-#define BEGIN_MEASURE_JOIN_ACC(timer) \
-    startTimer(&timer->join_timer_pre);
-#endif
-
-#ifndef /*END_MEASURE_JOIN_ACC*/NO_TIMING
-#define END_MEASURE_JOIN_ACC(timer) \
-     accTimer(&timer->join_timer_pre, &timer->join_timer); /* join time */
-#endif
-
-#ifndef /*BEGIN_MEASURE_MERGE_ACC*/NO_TIMING
+#ifndef BEGIN_MEASURE_MERGE_ACC
 #define BEGIN_MEASURE_MERGE_ACC(timer) \
     startTimer(&timer->mergetimer_pre);
 #endif
 
-#ifndef /*END_MEASURE_MERGE_ACC*/NO_TIMING
+#ifndef END_MEASURE_MERGE_ACC
 #define END_MEASURE_MERGE_ACC(timer) \
-     accTimer(&timer->mergetimer_pre, &timer->mergetimer); /* merge time */ \
-     timer->mergetimer-=timer->join_mergetimer;/*except the join time happen during merge.*/ \
-     timer->join_mergetimer=0;
+    accTimer(&timer->mergetimer_pre, &timer->mergetimer); /* merge time */
+#endif
+
+#ifndef BEGIN_MEASURE_JOIN_MERGE_ACC
+#define BEGIN_MEASURE_JOIN_MERGE_ACC(timer) \
+    startTimer(&timer->join_mergetimer_pre);
+#endif
+
+#ifndef END_MEASURE_JOIN_MERGE_ACC
+#define END_MEASURE_JOIN_MERGE_ACC(timer) \
+     accTimer(&timer->join_mergetimer_pre, &timer->join_mergetimer); /* merge time */
+#endif
+
+#ifndef BEGIN_MEASURE_JOIN_ACC
+#define BEGIN_MEASURE_JOIN_ACC(timer) \
+     startTimer(&timer->join_timer_pre);
+#endif
+
+#ifndef END_MEASURE_JOIN_ACC
+#define END_MEASURE_JOIN_ACC(timer) \
+    accTimer(&timer->join_timer_pre, &timer->join_timer );  /* join time */
 #endif
 
 #ifndef BEGIN_MEASURE_WAIT_ACC
 #define BEGIN_MEASURE_WAIT_ACC(timer) \
-        startTimer(&timer->wait_timer_pre); /* wait time */
+    startTimer(&timer->wait_timer_pre); /* wait time */
 #endif
 
 #ifndef END_MEASURE_WAIT_ACC
 #define END_MEASURE_WAIT_ACC(timer) \
-      accTimer(&timer->wait_timer_pre, &timer->wait_timer); /* wait time */
+    accTimer(&timer->wait_timer_pre, &timer->wait_timer); /* wait time */
 #endif
 
 #ifndef SET_WAIT_ACC
@@ -163,12 +150,12 @@ void sortRecords(std::string algo_name, int exp_id, long lastTS);
 #define END_MEASURE_DEBUILD_ACC(timer) \
      accTimer(&timer->debuildtimer_pre, &timer->debuildtimer); /* clean time */
 #endif
-#ifndef /*BEGIN_MEASURE_PARTITION_ACC*/NO_TIMING
+#ifndef BEGIN_MEASURE_PARTITION_ACC
 #define BEGIN_MEASURE_PARTITION_ACC(timer) \
    startTimer(&timer->partition_timer_pre);
 #endif
 
-#ifndef /*END_MEASURE_PARTITION_ACC*/NO_TIMING
+#ifndef END_MEASURE_PARTITION_ACC
 #define END_MEASURE_PARTITION_ACC(timer) \
    accTimer(&timer->partition_timer_pre, &timer->partition_timer); /* partition time */
 #endif
@@ -194,7 +181,6 @@ void sortRecords(std::string algo_name, int exp_id, long lastTS);
 #endif
 
 
-
 #ifndef START_MEASURE
 #define START_MEASURE(timer) \
     gettimeofday(&timer->start, NULL); \
@@ -210,8 +196,8 @@ void sortRecords(std::string algo_name, int exp_id, long lastTS);
 
 #ifndef END_PROGRESSIVE_MEASURE
 #define END_PROGRESSIVE_MEASURE(payloadID, timer, IStupleR)      \
-        timer->record_cnt++;                                     \
-        if(timer->record_cnt == timer->record_gap){              \
+        timer->match_cnt++;                                     \
+        if(timer->match_cnt == timer->record_gap){              \
             if(IStupleR){                                        \
                 auto ts =curtick();                              \
                 timer->recordRID.push_back(payloadID);           \
@@ -221,7 +207,7 @@ void sortRecords(std::string algo_name, int exp_id, long lastTS);
                 timer->recordSID.push_back(payloadID);           \
                 timer->recordS.push_back(ts);                    \
                 }                                                \
-            timer->record_cnt=0;                                 \
+            timer->match_cnt=0;                                 \
         }
 #endif
 

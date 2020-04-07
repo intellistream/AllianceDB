@@ -125,17 +125,7 @@ NPO_st(relation_t *relR, relation_t *relS, param_t cmd_params) {
     joinresult->resultlist = (threadresult_t *) malloc(sizeof(threadresult_t));
 #endif
 
-    T_TIMER *timer = new T_TIMER();
-#ifndef NO_TIMING
-    START_MEASURE(timer)
-    BEGIN_MEASURE_BUILD(timer)
-#endif
-
     build_hashtable_st(ht, relR);
-
-#ifndef NO_TIMING
-    END_MEASURE_BUILD(timer)
-#endif
 
 #ifdef JOIN_RESULT_MATERIALIZE
     chainedtuplebuffer_t *chainedbuf = chainedtuplebuffer_init();
@@ -143,7 +133,7 @@ NPO_st(relation_t *relR, relation_t *relS, param_t cmd_params) {
     void *chainedbuf = NULL;
 #endif
 
-    result = probe_hashtable(ht, relS, chainedbuf, timer);
+    result = probe_hashtable(ht, relS, chainedbuf, nullptr);
 
 #ifdef JOIN_RESULT_MATERIALIZE
     threadresult_t *thrres = &(joinresult->resultlist[0]);/* single-thread */
@@ -152,19 +142,7 @@ NPO_st(relation_t *relR, relation_t *relS, param_t cmd_params) {
     thrres->results = (void *) chainedbuf;
 #endif
 
-#ifndef NO_TIMING
-    END_MEASURE(timer)
-
-    std::string name = "NPJ_ST_" + std::to_string(cmd_params.exp_id);
-    string path = "/data1/xtra/results/breakdown/" + name.append(".txt");
-    auto fp = fopen(path.c_str(), "w");
-    /* now print the timing results: */
-    breakdown_thread(result, timer, 0, fp);
-    fclose(fp);
-#endif
-
     destroy_hashtable(ht);
-
     joinresult->totalresults = result;
     joinresult->nthreads = 1;
 
@@ -415,9 +393,6 @@ NPO(relation_t *relR, relation_t *relS, param_t cmd_params) {
     std::string name = "NPJ_" + std::to_string(cmd_params.exp_id);
     string path = "/data1/xtra/results/breakdown/" + name.append(".txt");
     auto fp = fopen(path.c_str(), "w");
-    for (i = 0; i < nthreads; i++) {
-        breakdown_thread(args[i].result, args[i].timer, cmd_params.ts == 0 ? 0 : cmd_params.window_size, fp);
-    }
     breakdown_global(result, nthreads, args[0].timer, cmd_params.ts == 0 ? 0 : cmd_params.window_size, fp);
     fclose(fp);
     sortRecords("NPJ", cmd_params.exp_id, cmd_params.ts == 0 ? 0 : cmd_params.window_size);

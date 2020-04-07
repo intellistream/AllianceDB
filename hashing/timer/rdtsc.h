@@ -33,7 +33,6 @@ extern "C" {
 #endif
 
 
-
 static __inline__ uint64_t curtick() {
     uint64_t tick;
 #if defined(__i386__)
@@ -62,6 +61,9 @@ static __inline__ void accTimer(uint64_t *pretimer, uint64_t *acctimer) {
     *acctimer += curtick() - *pretimer;
 }
 
+static __inline__ void accTimerMulti(uint64_t *pretimer, uint64_t *acctimer, int multiplier) {
+    *acctimer += (curtick() - *pretimer) * multiplier;
+}
 #ifdef __cplusplus
 }
 #endif

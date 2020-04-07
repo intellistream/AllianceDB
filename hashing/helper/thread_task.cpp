@@ -164,7 +164,6 @@ void
 #else
     void *chainedbuf = NULL;
 #endif
-
     //call different BaseFetcher.
     baseFetcher *fetcher = args->fetcher;
     baseShuffler *shuffler = args->shuffler;
@@ -178,9 +177,6 @@ void
     }
 #endif
 
-#ifndef NO_TIMING
-    BEGIN_MEASURE_PARTITION_ACC((args->timer))
-#endif
     do {
         fetch = fetcher->next_tuple();
         if (fetch != nullptr) {
@@ -189,9 +185,8 @@ void
 #ifdef EAGER
         fetch = shuffler->pull(args->tid, false);//re-fetch from its shuffler.
         if (fetch != nullptr) {
-#ifndef NO_TIMING
-            BEGIN_MEASURE_JOIN_ACC(args->timer)
-#endif
+            JOIN_COUNT((args->timer))
+#ifdef JOIN
             args->joiner->join(
                     args->tid,
                     fetch->tuple,
@@ -199,31 +194,21 @@ void
                     args->matches,
 //                    AGGFUNCTION,
                     chainedbuf);//build and probe at the same time.
-#ifndef NO_TIMING
-            END_MEASURE_JOIN_ACC(args->timer)
 #endif
         }
 #endif
     } while (!fetcher->finish());
-
-#ifndef NO_TIMING
-    END_MEASURE_PARTITION_ACC((args->timer))
-#endif
 
     BEGIN_GARBAGE(args->timer)
     /* wait at a barrier until each thread finishes fetch*/
     BARRIER_ARRIVE(args->barrier, lock)
     END_GARBAGE(args->timer)
 
-#ifndef NO_TIMING
-    BEGIN_MEASURE_PARTITION_ACC((args->timer))
-#endif
     do {
         fetch = shuffler->pull(args->tid, false);//re-fetch from its shuffler.
         if (fetch != nullptr) {
-#ifndef NO_TIMING
-            BEGIN_MEASURE_JOIN_ACC(args->timer)
-#endif
+            JOIN_COUNT((args->timer))
+#ifdef JOIN
             args->joiner->join(
                     args->tid,
                     fetch->tuple,
@@ -231,29 +216,17 @@ void
                     args->matches,
 //                    AGGFUNCTION,
                     chainedbuf);
-#ifndef NO_TIMING
-            END_MEASURE_JOIN_ACC(args->timer)
 #endif
         }
     } while (fetch != nullptr);
-#ifndef NO_TIMING
-    END_MEASURE_PARTITION_ACC((args->timer))
-    //time calibration
-    args->timer->partition_timer -= args->timer->wait_timer;//exclude waiting time.
-    args->timer->partition_timer -= args->timer->join_timer;//exclude joining time.
-#endif
 
-#ifndef NO_TIMING
-    BEGIN_MEASURE_JOIN_ACC(args->timer)
-#endif
+#ifdef JOIN
 //only PMJ needs this.
     args->joiner->merge(//merge the left-over.
             args->tid,
             args->matches,
 //                    AGGFUNCTION,
             chainedbuf);
-#ifndef NO_TIMING
-    END_MEASURE_JOIN_ACC(args->timer)
 #endif
 
 #ifdef JOIN_RESULT_MATERIALIZE
@@ -266,9 +239,7 @@ void
     END_MEASURE(args->timer)
     //time calibration
     args->timer->overall_timer -= args->timer->garbage_time;
-    args->timer->join_timer -= args->timer->buildtimer;//build time for SHJ; sort and merge time for PMJ.
-    args->timer->join_timer -= args->timer->sorttimer;
-    args->timer->join_timer -= args->timer->mergetimer;
+    args->timer->partition_timer = args->timer->overall_timer - args->timer->wait_timer;
 #endif
 
 #ifdef PERF_COUNTERS
