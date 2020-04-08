@@ -213,7 +213,7 @@ if __name__ == "__main__":
     # break into 3 parts
     legend_labels = ['partition', 'join']  # , 'others'
 
-    DrawFigure(x_values, y_values, legend_labels, 'number of radix bits', 'cycles per output tuple',
+    DrawFigure(x_values, y_values, legend_labels, 'number of radix bits', 'cycles per input tuple',
                'breakdown_radix_figure', True)
 
     # DrawLegend(legend_labels, 'breakdown_radix_legend')

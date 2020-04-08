@@ -153,23 +153,23 @@ double others_time = 0;
 void breakdown_global(int64_t total_results, int nthreads, long lastTS, _IO_FILE *pFile) {
 
     printf("%f\n%f\n%f\n%f\n%f\n%f\n%f\n",
-           (double) wait_time / nthreads,
-           (double) partition_time / nthreads,
-           (double) build_time / nthreads,
-           (double) sort_time / nthreads,
-           (double) merge_time / nthreads,
-           (double) join_time / nthreads,
-           others_time / nthreads
+           (double) wait_time / total_results / nthreads,
+           (double) partition_time / total_results / nthreads,
+           (double) build_time / total_results / nthreads,
+           (double) sort_time / total_results / nthreads,
+           (double) merge_time / total_results / nthreads,
+           (double) join_time / total_results / nthreads,
+           others_time / total_results / nthreads
     );
     printf("matches_in_sort_total: %d\n", matches_in_sort_total);
     fprintf(pFile, "%f\n%f\n%f\n%f\n%f\n%f\n%f\n",
-            (double) wait_time / nthreads,
-            (double) partition_time / nthreads,
-            (double) build_time / nthreads,
-            (double) sort_time / nthreads,
-            (double) merge_time / nthreads,
-            (double) join_time / nthreads,
-            others_time / nthreads
+            (double) wait_time / total_results / nthreads,
+            (double) partition_time / total_results / nthreads,
+            (double) build_time / total_results / nthreads,
+            (double) sort_time / total_results / nthreads,
+            (double) merge_time / total_results / nthreads,
+            (double) join_time / total_results / nthreads,
+            others_time / total_results / nthreads
     );
 
     fprintf(pFile, "%d\n", matches_in_sort_total);
@@ -178,12 +178,13 @@ void breakdown_global(int64_t total_results, int nthreads, long lastTS, _IO_FILE
 
 void dump_partition_cost(T_TIMER *timer, _IO_FILE *pFile) {
 
-    printf("partition cost: %lu, #inputs:%d\n", timer->partition_timer / timer->joiner_cnt, timer->joiner_cnt);
-    fprintf(pFile, "%lu\n", timer->partition_timer / timer->joiner_cnt);
+    printf("partition cost: %lu\n", timer->partition_timer);
+    fprintf(pFile, "%lu\n", timer->partition_timer);
     fflush(pFile);
 }
 
 /**
+ * TODO: The assumption here is that everythread has similar workloads in different runs.
  * used only by eager joins.
  * @param result
  * @param timer
@@ -193,41 +194,68 @@ void breakdown_thread(int64_t result, T_TIMER *timer, long tid, string name) {
 #ifndef NO_TIMING
 
     if (result != 0) {
-        timer->wait_timer = timer->wait_timer / timer->joiner_cnt;//per input
-        timer->partition_timer = timer->partition_timer / timer->joiner_cnt;//per input
-        timer->overall_timer = timer->overall_timer / timer->joiner_cnt;
+        timer->wait_timer = timer->wait_timer;
+        timer->partition_timer = timer->partition_timer;
+        timer->overall_timer = timer->overall_timer;
         //time measurement correction
         auto file_name = name.append(".txt");
-        string path = "/data1/xtra/results/breakdown/partition_buildsort_probemerge_only/" + file_name;
-        std::ifstream infile(path);
+        string path;
         int lineid = 0;
         std::string line;
-        while (std::getline(infile, line)) {
-            if (lineid == tid) {
-                std::regex newlines_re("\n+");
-                auto resultstr = std::regex_replace(line, newlines_re, "");
-                timer->join_timer = timer->partition_timer - std::stol(resultstr);
-                DEBUGMSG("joine_timer:%ld\n", timer->join_timer);
+
+        if (name.find("PMJ") != std::string::npos) {
+            path = "/data1/xtra/results/breakdown/partition_buildsort_probemerge_only/" + file_name;
+            printf("Reading%s\n", path.c_str());
+            std::ifstream infile(path);
+            while (std::getline(infile, line)) {
+                if (lineid == tid) {
+                    std::regex newlines_re("\n+");
+                    auto resultstr = std::regex_replace(line, newlines_re, "");
+                    if (timer->partition_timer > std::stol(resultstr)) {
+                        timer->join_timer = timer->partition_timer - std::stol(resultstr);
+                    } else {
+                        printf("This is strange: it is faster when join is enabled!\n");
+                    }
+                    DEBUGMSG("joine_timer:%ld\n", timer->join_timer);
+                }
+                lineid++;
             }
-            lineid++;
-        }
 
-        path = "/data1/xtra/results/breakdown/partition_buildsort_only/" + file_name;
-        std::ifstream infile2(path);
-        lineid = 0;
-        while (std::getline(infile2, line)) {
-            if (lineid == tid) {
-                DEBUGMSG("Partition 2:%s\n", line.c_str());
-                std::regex newlines_re("\n+");
-                auto resultstr = std::regex_replace(line, newlines_re, "");
-                timer->mergetimer = timer->partition_timer - timer->join_timer -
-                                    std::stol(resultstr);//corrects for buildtimer for PMJ.
-                DEBUGMSG("merge_timer:%ld\n", timer->mergetimer);
-
+            path = "/data1/xtra/results/breakdown/partition_buildsort_only/" + file_name;
+            std::ifstream infile2(path);
+            lineid = 0;
+            while (std::getline(infile2, line)) {
+                if (lineid == tid) {
+                    DEBUGMSG("Partition 2:%s\n", line.c_str());
+                    std::regex newlines_re("\n+");
+                    auto resultstr = std::regex_replace(line, newlines_re, "");
+                    timer->mergetimer = timer->partition_timer - timer->join_timer -
+                                        std::stol(resultstr);//corrects for merge for PMJ.
+                    DEBUGMSG("merge_timer:%ld\n", timer->mergetimer);
+                }
+                lineid++;
             }
-            lineid++;
-        }
+        } else {//shj
+            path = "/data1/xtra/results/breakdown/partition_buildsort_only/" + file_name;
+            std::ifstream infile2(path);
+            lineid = 0;
+            while (std::getline(infile2, line)) {
+                if (lineid == tid) {
+                    DEBUGMSG("Partition 2:%s\n", line.c_str());
+                    std::regex newlines_re("\n+");
+                    auto resultstr = std::regex_replace(line, newlines_re, "");
+                    if (timer->partition_timer > std::stol(resultstr)) {
+                        timer->join_timer = timer->partition_timer -
+                                            std::stol(resultstr);//corrects for joiner for SHJ.
+                    } else {
+                        printf("This is strange: it is faster when join is enabled!\n");
+                    }
+                    DEBUGMSG("merge_timer:%ld\n", timer->mergetimer);
 
+                }
+                lineid++;
+            }
+        }
         path = "/data1/xtra/results/breakdown/partition_only/" + file_name;
         std::ifstream infile3(path);
         lineid = 0;

@@ -85,7 +85,7 @@ function SetDEBSParameters() {
 }
 
 DEFAULT_WINDOW_SIZE=1000 #(ms) -- 2 seconds
-DEFAULT_STEP_SIZE=1280   # |tuples| per ms. -- 128K per seconds. ## this controls the guranalrity of input stream.
+DEFAULT_STEP_SIZE=12800   # |tuples| per ms. -- 128K per seconds. ## this controls the guranalrity of input stream.
 function ResetParameters() {
   TS_DISTRIBUTION=0                # uniform time distribution
   ZIPF_FACTOR=0                    # uniform time distribution
@@ -94,7 +94,7 @@ function ResetParameters() {
   INTERVAL=1                       # interval of 1. always..
   STEP_SIZE=$DEFAULT_STEP_SIZE     # arrival rate = 1000 / ms
   WINDOW_SIZE=$DEFAULT_WINDOW_SIZE # MS rel size = window_size / interval * step_size.
-  STEP_SIZE_S=128000                   # let S has the same arrival rate of R.
+  STEP_SIZE_S=128000               # let S has the same arrival rate of R.
   FIXS=1
   ts=1 # stream case
   Threads=8
@@ -104,6 +104,61 @@ function ResetParameters() {
   gap=2000
 }
 
+function PARTITION_ONLY() {
+  sed -i -e "s/#define JOIN/#define NO_JOIN/g" ../joins/common_functions.h
+  sed -i -e "s/#define MERGE/#define NO_MERGE/g" ../joins/common_functions.h
+  sed -i -e "s/#define MATCH/#define NO_MATCH/g" ../joins/common_functions.h
+}
+
+function PARTITION_BUILD_SORT() {
+  sed -i -e "s/#define NO_JOIN/#define JOIN/g" ../joins/common_functions.h
+  sed -i -e "s/#define MERGE/#define NO_MERGE/g" ../joins/common_functions.h
+  sed -i -e "s/#define MATCH/#define NO_MATCH/g" ../joins/common_functions.h
+}
+
+function PARTITION_BUILD_SORT_MERGE() {
+  sed -i -e "s/#define NO_JOIN/#define JOIN/g" ../joins/common_functions.h
+  sed -i -e "s/#define NO_MERGE/#define MERGE/g" ../joins/common_functions.h
+  sed -i -e "s/#define MATCH/#define NO_MATCH/g" ../joins/common_functions.h
+}
+
+function PARTITION_BUILD_SORT_MERGE_JOIN() {
+  sed -i -e "s/#define NO_JOIN/#define JOIN/g" ../joins/common_functions.h
+  sed -i -e "s/#define NO_MERGE/#define MERGE/g" ../joins/common_functions.h
+  sed -i -e "s/#define NO_MATCH/#define MATCH/g" ../joins/common_functions.h
+}
+
+function FULLKIMRUN() {
+  PARTITION_ONLY
+  compile
+  KimRun
+
+  PARTITION_BUILD_SORT
+  compile
+  KimRun
+
+  PARTITION_BUILD_SORT_MERGE
+  compile
+  KimRun
+
+  PARTITION_BUILD_SORT_MERGE_JOIN
+  compile
+  KimRun
+}
+
+function SHJKIMRUN() {
+  PARTITION_ONLY
+  compile
+  KimRun
+
+  PARTITION_BUILD_SORT
+  compile
+  KimRun
+
+  PARTITION_BUILD_SORT_MERGE_JOIN
+  compile
+  KimRun
+}
 #recompile by default.
 compile
 # Configurable variables
@@ -111,7 +166,7 @@ compile
 timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
 #benchmark experiment only apply for hashing directory.
-for benchmark in  "PMJ_SORT_STEP_STUDY"; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY"
+for benchmark in "PMJ_SORT_STEP_STUDY" ; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY"
   case "$benchmark" in
   "PRJ_RADIX_BITS_STUDY")
     algo="PRO"
@@ -134,56 +189,39 @@ for benchmark in  "PMJ_SORT_STEP_STUDY"; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_ST
     algo="PMJ_JBCR_NP"
     echo PMJ_SORT_STEP_STUDY 61 - 65
     ResetParameters
+    ts=0   # batch data.
     for progress_step in 10 20 30 40 50; do #%
-      ts=0   # batch data.
-      KimRun #
+      FULLKIMRUN
       let "id++"
     done
     python3 breakdown_sort.py
     python3 latency_sort.py
     python3 progressive_sort.py
     ;;
-#  "PMJ_MERGE_STEP_STUDY")
-#    id=66
-#    algo="PMJ_JBCR_NP"
-#    ResetParameters
-#    echo PMJ_MERGE_STEP_STUDY 66-70
-#    for merge_step in 8 10 12 14 16; do
-#      ts=0   # batch data.
-#      KimRun #
-#      let "id++"
-#    done
-#    python3 breakdown_merge.py
-#    python3 latency_merge.py
-#    python3 progressive_merge.py
-#    ;;
   "GROUP_SIZE_STUDY")
     id=66
     algo="PMJ_JBCR_NP"
     ResetParameters
+    ts=0   # batch data.
     echo GROUP_SIZE_STUDY PMJ 66 - 69
     for group in 1 2 4 8; do
-      ts=0   # batch data.
-      KimRun #
+      FULLKIMRUN
       let "id++"
     done
     algo="SHJ_JBCR_NP"
     ResetParameters
     echo GROUP_SIZE_STUDY SHJ 70 - 73
     for group in 1 2 4 8; do
-      ts=0   # batch data.
-#      KimRun #
+      SHJKIMRUN
       let "id++"
     done
     python3 breakdown_group_pmj.py
     python3 breakdown_group_shj.py
-#    python3 latency_group.py
-#    python3 progressive_group.py
     ;;
   esac
 done
 
-#general benchmark.
+# general benchmark.
 for algo in PMJ_JBCR_NP; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
   for benchmark in ""; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "Stock"  "Rovio" "YSB"  "DEBS" # "Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "RAR2" "AD" "KD" "WS" "KD2" "WS2"  "WS3" "WS4"
     case "$benchmark" in
@@ -409,3 +447,19 @@ for algo in PMJ_JBCR_NP; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
     esac
   done
 done
+
+##back up.
+    #  "PMJ_MERGE_STEP_STUDY")
+    #    id=66
+    #    algo="PMJ_JBCR_NP"
+    #    ResetParameters
+    #    echo PMJ_MERGE_STEP_STUDY 66-70
+    #    for merge_step in 8 10 12 14 16; do
+    #      ts=0   # batch data.
+    #      KimRun #
+    #      let "id++"
+    #    done
+    #    python3 breakdown_merge.py
+    #    python3 latency_merge.py
+    #    python3 progressive_merge.py
+    #    ;;

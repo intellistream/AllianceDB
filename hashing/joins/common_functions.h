@@ -15,8 +15,8 @@
 //#define NO_TIMING
 //#define DEBUG
 
-#define JOIN //ifndefined, it is partition only.
-#define MERGE_PROBE //ifndefined, //build/sort only
+#define JOIN
+#define MERGE
 #define MATCH
 
 #define EAGER

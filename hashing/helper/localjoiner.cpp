@@ -80,25 +80,17 @@ void SHJJoiner::join(int32_t tid, tuple_t *tuple, bool ISTupleR, int64_t *matche
 
 //    DEBUGMSG(1, "JOINING: tid: %d, tuple: %d, R?%d\n", tid, tuple->key, tuple_R)
     if (ISTupleR) {
-#ifndef NO_TIMING
-        BEGIN_MEASURE_BUILD_ACC(timer)
-#endif
         build_hashtable_single(htR, tuple, hashmask_R, skipbits_R);//(1)
-#ifndef NO_TIMING
-        END_MEASURE_BUILD_ACC(timer)//accumulate hash table build time.
-#endif
+#ifdef MATCH
         probe_hashtable_single_measure(htS, tuple, hashmask_S, skipbits_S, matches, /*thread_fun,*/ timer, ISTupleR,
                                        out);//(2)
+#endif
     } else {
-#ifndef NO_TIMING
-        BEGIN_MEASURE_BUILD_ACC(timer)
-#endif
         build_hashtable_single(htS, tuple, hashmask_S, skipbits_S);//(3)
-#ifndef NO_TIMING
-        END_MEASURE_BUILD_ACC(timer)//accumulate hash table build time.
-#endif
+#ifdef MATCH
         probe_hashtable_single_measure(htR, tuple, hashmask_R, skipbits_R, matches, /*thread_fun,*/ timer, ISTupleR,
                                        out);//(4)
+#endif
     }
 }
 
@@ -299,6 +291,7 @@ PMJJoiner::join_tuple_single(int32_t tid, tuple_t *tmp_rel, int *outerPtr, tuple
 /**
  * PMJ algorithm to be used in each thread.
  * First store enough tuples from R and S, then call PMJ algorithm.
+ * This is outdated and previously used in HS scheme.
  * @param tid
  * @param tuple
  * @param IStuple_R
@@ -309,7 +302,7 @@ PMJJoiner::join_tuple_single(int32_t tid, tuple_t *tmp_rel, int *outerPtr, tuple
  * @param timer
  * @return
  */
-void PMJJoiner:: //0x7fff08000c70
+void PMJJoiner::
 join(int32_t tid, tuple_t *tuple, int fat_tuple_size, bool IStuple_R, int64_t *matches,
         /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ void *output) {
     auto *arg = (t_pmj *) t_arg;
@@ -324,14 +317,10 @@ join(int32_t tid, tuple_t *tuple, int fat_tuple_size, bool IStuple_R, int64_t *m
     if (IStuple_R) {
         DEBUGMSG("TID %d: before store R is %s.", tid,
                  print_tuples(arg->tmp_relR, arg->outerPtrR).c_str())
-#ifndef NO_TIMING
-        BEGIN_MEASURE_BUILD_ACC(timer)
-#endif
+
         keep_tuple_single(arg->tmp_relR, arg->outerPtrR, tuple, fat_tuple_size);
         arg->outerPtrR += fat_tuple_size;
-#ifndef NO_TIMING
-        END_MEASURE_BUILD_ACC(timer)//accumulate hash table build time.
-#endif
+
         DEBUGMSG("TID %d: after store R is %s.", tid,
                  print_tuples(arg->tmp_relR, arg->outerPtrR).c_str())
 

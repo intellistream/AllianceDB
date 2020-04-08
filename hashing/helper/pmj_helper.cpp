@@ -133,8 +133,8 @@ void earlyJoinMergedRuns(std::vector<run> *Q, int64_t *matches, run *newRun, T_T
             return;
         }
         if (!findJ || (findI && LessEqualPredicate(minR, minS))) {
-            RM[run_i].insert(minR);
 #ifdef MATCH
+            RM[run_i].insert(minR);
             for (auto run_itr = 0; run_itr < actual_merge_step; run_itr++) {
                 if (run_itr != run_i) {// except (r,x)| x belong to Si.
                     SM[run_itr].query(minR, matches, timer, false, chainedbuf);
@@ -152,8 +152,8 @@ void earlyJoinMergedRuns(std::vector<run> *Q, int64_t *matches, run *newRun, T_T
             i.operator*().posR++;//i->posR.erase(i->posR.begin());
             // remove the smallest element from subsequence.
         } else {
-            SM[run_j].insert(minS);
 #ifdef MATCH
+            SM[run_j].insert(minS);
             for (auto run_itr = 0; run_itr < actual_merge_step; run_itr++) {
                 if (run_itr != run_j) {// except (x,r)| x belong to Rj.
                     RM[run_itr].query(minS, matches, timer, false, chainedbuf);
@@ -186,7 +186,7 @@ void insert(std::vector<run> *Q, tuple_t *run_R, int lengthR, tuple_t *run_S, in
 
 void
 merging_phase(int64_t *matches, std::vector<run> *Q, T_TIMER *timer, chainedtuplebuffer_t *chainedbuf, int merge_step) {
-#ifdef MERGE_PROBE
+#ifdef MERGE
     do {
         run *newRun = new run();//empty run
         earlyJoinMergedRuns(Q, matches, newRun, timer, chainedbuf, merge_step);
@@ -232,7 +232,7 @@ void sorting_phase(int32_t tid, tuple_t *inptrR, int sizeR, tuple_t *inptrS, int
     earlyJoinInitialRuns(outputR, outputS, sizeR, sizeS, matches, timer, chainedbuf);
 #endif
 
-#ifdef MERGE_PROBE
+#ifdef MERGE
     //this is considered as part of ``others" overhead.
     DEBUGMSG("Insert Q.")
     insert(Q, outputR, sizeR, outputS, sizeS);
@@ -270,9 +270,7 @@ void sorting_phase(int32_t tid, const relation_t *rel_R, const relation_t *rel_S
         inptrR = rel_R->tuples + *i;
         DEBUGMSG("Initial R [aligned:%d]: %s", is_aligned(inptrR, CACHE_LINE_SIZE),
                  print_relation(rel_R->tuples + *i, progressive_stepR).c_str())
-#ifndef NO_TIMING
-        BEGIN_MEASURE_SORT_ACC(timer)
-#endif
+
 
         if (scalarflag)
             scalarsort_tuples(&inptrR, &outptrR, progressive_stepR);
@@ -280,9 +278,6 @@ void sorting_phase(int32_t tid, const relation_t *rel_R, const relation_t *rel_S
             avxsort_tuples(&inptrR, &outptrR, progressive_stepR);// the method will swap input and output pointers.
 
 
-#ifndef NO_TIMING
-        END_MEASURE_SORT_ACC(timer)
-#endif
         DEBUGMSG("Sorted R: %s",
                  print_relation(outptrR, progressive_stepR).c_str())
 #ifdef DEBUG
@@ -294,16 +289,12 @@ void sorting_phase(int32_t tid, const relation_t *rel_R, const relation_t *rel_S
     }
     if (*j < sizeS) {
         inptrS = (rel_S->tuples) + *j;
-#ifndef NO_TIMING
-        BEGIN_MEASURE_SORT_ACC(timer)
-#endif
+
         if (scalarflag)
             scalarsort_tuples(&inptrS, &outptrS, progressive_stepS);
         else
             avxsort_tuples(&inptrS, &outptrS, progressive_stepS);
-#ifndef NO_TIMING
-        END_MEASURE_SORT_ACC(timer)
-#endif
+
         DEBUGMSG("Sorted S: %s",
                  print_relation(outptrS, progressive_stepS).c_str())
 #ifdef DEBUG

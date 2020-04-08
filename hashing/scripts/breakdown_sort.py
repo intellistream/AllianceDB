@@ -216,7 +216,7 @@ if __name__ == "__main__":
     legend_labels = ['sort', 'merge', 'join']  # , 'others'
 
     DrawFigure(x_values, y_values, legend_labels,
-               'sorting step size', 'cycles per output tuple',
+               'sorting step size', 'cycles per input tuple',
                'breakdown_sort_figure', True)
 
     # DrawLegend(legend_labels, 'breakdown_radix_legend')

@@ -157,40 +157,31 @@ fetch_t *baseFetcher::_next_tuple(bool retry) {
 
 fetch_t *baseFetcher::next_tuple() {
     if (tryR) {
+//        if (state->start_index_S < state->end_index_S)
         tryR = false;
         auto rt = next_tuple_R_first(state, &fetchStartTime, relR, false);
-        if(rt!= nullptr)
+        if (rt != nullptr)
             return rt;
-#ifndef NO_TIMING
-        BEGIN_MEASURE_WAIT_ACC(timer)
-#endif
+
         bool retry = true;
         while (rt == nullptr &&
                !finish()) {
             rt = _next_tuple(retry);
             retry = false;
         }
-#ifndef NO_TIMING
-        END_MEASURE_WAIT_ACC(timer)
-#endif
         return rt;
     } else {
+//        if (state->start_index_R < state->end_index_R)
         tryR = true;
         auto rt = next_tuple_S_first(state, &fetchStartTime, relS, false);
-        if(rt!= nullptr)
+        if (rt != nullptr)
             return rt;
-#ifndef NO_TIMING
-        BEGIN_MEASURE_WAIT_ACC(timer)
-#endif
         bool retry = true;
         while (rt == nullptr &&
                !finish()) {
             rt = _next_tuple(retry);
             retry = false;
         }
-#ifndef NO_TIMING
-        END_MEASURE_WAIT_ACC(timer)
-#endif
         return rt;
     }
 }
