@@ -94,21 +94,19 @@ t_param &finishing(int nthreads, t_param &param, uint64_t *startTS, uint64_t *jo
         dump_partition_cost(param.args[i].timer, fp);//partition + sort/build
     }
 #else //everything is defined.
-    std::string name = param.algo_name + "_" + std::to_string(param.exp_id);
+    std::string name = param.algo_name + "_" + std::to_string(param.exp_id).append(".txt");
     /* now print the timing results: */
     string path = "/data1/xtra/results/breakdown/allIncludes/" + name;
-    auto fp = fopen(path.append(".txt").c_str(), "w");
+    auto fp = fopen(path.c_str(), "w");
+    double average_partition_timer = 0.0;
     for (i = 0; i < nthreads; i++) {
         dump_partition_cost(param.args[i].timer, fp);//partition + sort/build
+        average_partition_timer += param.args[i].timer->partition_timer;
     }
-    for (i = 0; i < nthreads; i++) {
-        breakdown_thread(*param.args[i].matches, param.args[i].timer, i, name);
-    }
-    path = "/data1/xtra/results/breakdown/" + name;
-    fp = fopen(path.append(".txt").c_str(), "w");
-    breakdown_global((param.args[0].fetcher->relR->num_tuples
-                      + param.args[0].fetcher->relS->num_tuples), nthreads, 0,
-                     fp);
+    average_partition_timer /= nthreads;
+    breakdown_global(
+            (param.args[0].fetcher->relR->num_tuples + param.args[0].fetcher->relS->num_tuples), nthreads,
+            average_partition_timer, name);
     fclose(fp);
     sortRecords(param.algo_name, param.exp_id, 0);
 #endif //

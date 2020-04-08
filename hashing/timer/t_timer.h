@@ -46,7 +46,7 @@ struct T_TIMER {
 };
 
 /** print out the execution time statistics of the join, used by eager ones */
-void breakdown_global(int64_t total_results, int nthreads, long lastTS, _IO_FILE *pFile);
+void breakdown_global(int64_t total_results, int nthreads, double average_partition_timer, std::string txtFile);
 
 /** print out the execution time statistics of the join, used by lazy ones */
 void breakdown_global(int64_t result, int nthreads, T_TIMER *timer, long lastTS, _IO_FILE *pFile);
