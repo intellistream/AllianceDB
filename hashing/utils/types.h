@@ -52,7 +52,7 @@ typedef int32_t value_t;
 #endif
 
 typedef struct tuple_t tuple_t;
-typedef struct relation_t   relation_t;
+typedef struct relation_t relation_t;
 typedef struct relation_payload_t relation_payload_t;
 
 typedef struct result_t result_t;
@@ -64,7 +64,7 @@ typedef struct joinconfig_t joinconfig_t;
  * Type definition for a tuple, depending on KEY_8B a tuple can be 16B or 8B
  * @note this layout is chosen as a work-around for AVX double operations.
  */
-struct tuple_t {
+struct tuple_t {//8bytes.
 //    value_t *payload;
     value_t payloadID;//TODO: make sure payload is simply the id of the tuple.
     intkey_t key;//little end, lowest is the most significant bit.

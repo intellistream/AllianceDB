@@ -92,8 +92,8 @@ struct t_pmj {
     std::vector<run> Q;//let Q be an empty set;
 
     size_t relRsz;
-//    tuple_t *out_relR;
-//    tuple_t *out_relS;
+    tuple_t *out_relR;
+    tuple_t *out_relS;
 
     /***Initialize***/
     t_pmj(int sizeR, int sizeS) {
@@ -104,13 +104,14 @@ struct t_pmj {
                  + RELATION_PADDING(1, CACHELINEPADDING(1));//TODO: think why we need to patch this.
 
         tmp_relR = (tuple_t *) malloc_aligned(relRsz);
-//        out_relR = (tuple_t *) malloc_aligned(relRsz * 100);
+
 
         relRsz = sizeS * sizeof(tuple_t)
                  + RELATION_PADDING(1, CACHELINEPADDING(1));//TODO: think why we need to patch this.
 
         tmp_relS = (tuple_t *) malloc_aligned(relRsz);
-//        out_relS = (tuple_t *) malloc_aligned(relRsz * 100);
+        out_relR = (tuple_t *) malloc_aligned(relRsz);
+        out_relS = (tuple_t *) malloc_aligned(relRsz);
 
         innerPtrR = 0;
         outerPtrR = 0;

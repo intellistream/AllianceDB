@@ -486,7 +486,7 @@ merge(int32_t tid, int64_t *matches,
     int stepR;
     int stepS;
     /***Handling Left-Over***/
-    DEBUGMSG("TID:%d in Clean up stage, current matches:", tid, *matches)
+    DEBUGMSG("TID:%d in Clean up stage, current matches:%ld", tid, *matches)
     stepR = arg->innerPtrR;
     stepS = arg->innerPtrS;
 
@@ -556,33 +556,35 @@ void PMJJoiner::join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *match
         //check if it is ready to start process.
         if (arg->innerPtrR >= stepR
             && arg->innerPtrS >= stepS) {//start process and reset inner pointer.
-            auto relRsz = stepR * sizeof(tuple_t)
-                          + RELATION_PADDING(1, CACHELINEPADDING(1));//TODO: think why we need to patch this.
-            out_relR = (tuple_t *) malloc_aligned(relRsz);
-
-            relRsz = stepS * sizeof(tuple_t)
-                     + RELATION_PADDING(1, CACHELINEPADDING(1));//TODO: think why we need to patch this.
-            out_relS = (tuple_t *) malloc_aligned(relRsz);
+//            auto relRsz = stepR * sizeof(tuple_t)
+//                          + RELATION_PADDING(1, CACHELINEPADDING(1));//TODO: think why we need to patch this.
+//            out_relR = (tuple_t *) malloc_aligned(relRsz);
+//
+//            relRsz = stepS * sizeof(tuple_t)
+//                     + RELATION_PADDING(1, CACHELINEPADDING(1));//TODO: think why we need to patch this.
+//            out_relS = (tuple_t *) malloc_aligned(relRsz);
 
 
             /***Sorting***/
-            sorting_phase(tid, arg->tmp_relR + arg->outerPtrR, stepR, arg->tmp_relS + arg->outerPtrS, stepS,
+            sorting_phase(tid, arg->tmp_relR
+                               + arg->outerPtrR, stepR,
+                          arg->tmp_relS + arg->outerPtrS, stepS,
                           matches, &arg->Q,
-                          out_relR,
-                          out_relS,
-//                          arg->out_relR + arg->outerPtrR,
-//                          arg->out_relS + arg->outerPtrS,
+//                          out_relR,
+//                          out_relS,
+                          arg->out_relR + arg->outerPtrR,
+                          arg->out_relS + arg->outerPtrS,
                           timer, chainedbuf);
             arg->outerPtrR += stepR;
             arg->outerPtrS += stepS;
-            DEBUGMSG("Join during run creation:%d", *matches)
+            DEBUGMSG("Join during run creation:%ld", *matches)
 
             /***Reset Inner Pointer***/
             arg->innerPtrR -= stepR;
             arg->innerPtrS -= stepS;
 
-            delete out_relR;
-            delete out_relS;
+//            delete out_relR;
+//            delete out_relS;
         }
     } else if (arg->outerPtrR + arg->innerPtrR == arg->sizeR &&
                arg->outerPtrS + arg->innerPtrS == arg->sizeS) {//received everything
@@ -591,27 +593,29 @@ void PMJJoiner::join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *match
         stepR = arg->sizeR - arg->outerPtrR;
         stepS = arg->sizeS - arg->outerPtrS;
 
-        auto relRsz = stepR * sizeof(tuple_t)
-                      + RELATION_PADDING(1, CACHELINEPADDING(1));//TODO: think why we need to patch this.
-        out_relR = (tuple_t *) malloc_aligned(relRsz);
+//        auto relRsz = stepR * sizeof(tuple_t)
+//                      + RELATION_PADDING(1, CACHELINEPADDING(1));//TODO: think why we need to patch this.
+//        out_relR = (tuple_t *) malloc_aligned(relRsz);
+//
+//        relRsz = stepS * sizeof(tuple_t)
+//                 + RELATION_PADDING(1, CACHELINEPADDING(1));//TODO: think why we need to patch this.
+//        out_relS = (tuple_t *) malloc_aligned(relRsz);
 
-        relRsz = stepS * sizeof(tuple_t)
-                 + RELATION_PADDING(1, CACHELINEPADDING(1));//TODO: think why we need to patch this.
-        out_relS = (tuple_t *) malloc_aligned(relRsz);
 
-
-        sorting_phase(tid, arg->tmp_relR + arg->outerPtrR, stepR, arg->tmp_relS + arg->outerPtrS, stepS,
+        sorting_phase(tid,
+                      arg->tmp_relR + arg->outerPtrR,
+                      stepR,
+                      arg->tmp_relS + arg->outerPtrS,
+                      stepS,
                       matches, &arg->Q,
-//                      arg->out_relR + arg->outerPtrR,
-//                      arg->out_relS + arg->outerPtrS,
-                      out_relR,
-                      out_relS,
+                      arg->out_relR + arg->outerPtrR,
+                      arg->out_relS + arg->outerPtrS,
                       timer, chainedbuf);
 
         merging_phase(matches, &arg->Q, timer, chainedbuf, merge_step);
 
-        delete out_relR;
-        delete out_relS;
+//        delete out_relR;
+//        delete out_relS;
     }
 
 

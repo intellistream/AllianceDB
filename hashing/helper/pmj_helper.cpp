@@ -103,6 +103,7 @@ void earlyJoinMergedRuns(std::vector<run> *Q, int64_t *matches, run *newRun, T_T
                 if (posS < lengthS) {
                     //the left most of each subsequence is the smallest item of the subsequence.
                     readS = runS.at(posS);
+                    assert(readS->key > 0);
 
                 }
             } else {
@@ -110,6 +111,7 @@ void earlyJoinMergedRuns(std::vector<run> *Q, int64_t *matches, run *newRun, T_T
                 if (posS < lengthS) {
                     //the left most of each subsequence is the smallest item of the subsequence.
                     readS = &runS[posS];
+                    assert(readS->key > 0);
 
                 }
             }
@@ -174,13 +176,14 @@ void earlyJoinMergedRuns(std::vector<run> *Q, int64_t *matches, run *newRun, T_T
 }
 
 void insert(std::vector<run> *Q, tuple_t *run_R, int lengthR, tuple_t *run_S, int lengthS) {
-//    if (run_R->payloadID < 0) {
-//        printf("wrong");
-//    }
-//    if (run_S->payloadID < 0) {
-//        printf("wrong");
-//    }
-
+#ifdef DEBUG
+    if (run_R->payloadID < 0) {
+        printf("wrong");
+    }
+    if (run_S->payloadID < 0) {
+        printf("wrong");
+    }
+#endif
     Q->push_back(run(run_R, run_S, lengthR, lengthS));
 }
 
@@ -199,28 +202,28 @@ void sorting_phase(int32_t tid, tuple_t *inptrR, int sizeR, tuple_t *inptrS, int
                    std::vector<run> *Q, tuple_t *outputR, tuple_t *outputS, T_TIMER *timer,
                    chainedtuplebuffer_t *chainedbuf) {
 
-    DEBUGMSG("TID:%d, Initial R [aligned:%d]: %s", tid, is_aligned(inptrR, CACHE_LINE_SIZE),
-             print_relation(inptrR, sizeR).c_str())
+//    DEBUGMSG("TID:%d, Initial R [aligned:%d]: %s", tid, is_aligned(inptrR, CACHE_LINE_SIZE),
+//             print_relation(inptrR, sizeR).c_str())
     if (scalarflag)
         scalarsort_tuples(&inptrR, &outputR, sizeR);
     else
         avxsort_tuples(&inptrR, &outputR, sizeR);// the method will swap input and output pointers.
-    DEBUGMSG("TID:%d, Sorted R: %s", tid, print_relation(outputR, sizeR).c_str())
+//    DEBUGMSG("TID:%d, Sorted R: %s", tid, print_relation(outputR, sizeR).c_str())
 
 #ifdef DEBUG
     if (!is_sorted_helper((int64_t *) outputR, sizeR)) {
         DEBUGMSG("===> %d-thread -> R is NOT sorted, size = %d\n", tid, sizeR)
     }
 #endif
-    DEBUGMSG("%d-thread Initial S [aligned:%d]: %s", tid, is_aligned(inptrS, CACHE_LINE_SIZE),
-             print_relation(inptrS, sizeS).c_str())
+//    DEBUGMSG("%d-thread Initial S [aligned:%d]: %s", tid, is_aligned(inptrS, CACHE_LINE_SIZE),
+//             print_relation(inptrS, sizeS).c_str())
 
     if (scalarflag)
         scalarsort_tuples(&inptrS, &outputS, sizeS);
     else
         avxsort_tuples(&inptrS, &outputS, sizeS);// the method will swap input and output pointers.
 
-    DEBUGMSG("Sorted S: %s", print_relation(outputS, sizeS).c_str())
+//    DEBUGMSG("Sorted S: %s", print_relation(outputS, sizeS).c_str())
 
 #ifdef DEBUG
     if (!is_sorted_helper((int64_t *) outputS, sizeS)) {
@@ -234,7 +237,7 @@ void sorting_phase(int32_t tid, tuple_t *inptrR, int sizeR, tuple_t *inptrS, int
 
 #ifdef MERGE
     //this is considered as part of ``others" overhead.
-    DEBUGMSG("Insert Q.")
+//    DEBUGMSG("Insert Q.")
     insert(Q, outputR, sizeR, outputS, sizeS);
 #endif
 }

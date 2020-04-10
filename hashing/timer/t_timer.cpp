@@ -213,7 +213,7 @@ void breakdown_global(int64_t total_results, int nthreads,
         printf("sort timer: %f\n", sort_time);
     }
     partition_time = t1 / nthreads;//corrects for partition_timer.
-    DEBUGMSG("partition timer: %ld\n", timer->partition_timer);
+    DEBUGMSG("partition timer: %f\n", partition_time);
 
 
     path = "/data1/xtra/results/breakdown/" + txtFile;
