@@ -129,6 +129,12 @@ gen_zipf_lut(double zipf_factor, unsigned int alphabet_size) {
     return lut;
 }
 
+struct less_than_key {
+    inline bool operator()(const tuple_t &struct1, const tuple_t &struct2) {
+        return (struct1.key < struct2.key);
+    }
+};
+
 /**
  * Generate a stream with Zipf-distributed content.
  */
@@ -195,7 +201,8 @@ gen_zipf(unsigned int stream_size,
     *output = ret;
 
     // sort ret
-    std::sort(ret, ret + stream_size);
+    std::sort(ret, ret + stream_size, less_than_key());
+
     return ret;
 }
 

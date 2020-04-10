@@ -68,10 +68,6 @@ struct tuple_t {
 //    value_t *payload;
     value_t payloadID;//TODO: make sure payload is simply the id of the tuple.
     intkey_t key;//little end, lowest is the most significant bit.
-    bool operator < (const tuple_t& str) const
-    {
-        return (key < str.key);
-    }
 };
 
 /**
