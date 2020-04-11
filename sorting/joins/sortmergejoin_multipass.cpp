@@ -31,9 +31,6 @@
 #include "../utils/tuple_buffer.h"
 #endif
 
-#ifdef PERF_COUNTERS
-#include "perf_counters.h"      /* PCM_x */
-#endif
 
 /**
  * Main thread of First Sort-Merge Join variant with partitioning and complete
@@ -157,16 +154,13 @@ sortmergejoin_multipass_thread(void *param) {
     START_MEASURE(args->timer)
 #endif
 
-//    if (my_tid == 0) {
-//        gettimeofday(&args->start, NULL);
-//        startTimer(&args->part);
-//        startTimer(&args->sort);
-//        startTimer(&args->mergedelta);
-//        startTimer(&args->merge);
-//        startTimer(&args->join);
-//    }
-
-
+#ifdef PERF_COUNTERS
+    if(my_tid == 0){
+        PCM_initPerformanceMonitor(NULL, NULL);
+        PCM_start();
+    }
+    BARRIER_ARRIVE(args->barrier, rv);
+#endif
 #ifndef NO_TIMING
     BEGIN_MEASURE_PARTITION(args->timer)/* partitioning start */
 #endif
@@ -180,9 +174,14 @@ sortmergejoin_multipass_thread(void *param) {
     mpass_partitioning_phase(&partsR, &partsS, args);
 
     BARRIER_ARRIVE(args->barrier, rv);
-//    if (my_tid == 0) {
-//        stopTimer(&args->part);
-//    }
+#ifdef PERF_COUNTERS
+    BARRIER_ARRIVE(args->barrier, rv);
+    if(my_tid == 0) {
+        PCM_stop();
+        PCM_log("========= 1) Profiling results of Partitioning Phase =========\n");
+        PCM_printResults();
+    }
+#endif
 
 #ifndef NO_TIMING
     END_MEASURE_PARTITION(args->timer)/* partition end */
@@ -192,6 +191,13 @@ sortmergejoin_multipass_thread(void *param) {
     BEGIN_MEASURE_SORT_ACC(args->timer)/* sort start */
 #endif
 
+
+#ifdef PERF_COUNTERS
+    if(my_tid == 0){
+        PCM_start();
+    }
+    BARRIER_ARRIVE(args->barrier, rv);
+#endif
     /*************************************************************************
      *
      *   Phase.2) NUMA-local sorting of cache-sized chunks
@@ -204,6 +210,16 @@ sortmergejoin_multipass_thread(void *param) {
 #ifndef NO_TIMING
     END_MEASURE_SORT_ACC(args->timer)/* sort end */
 #endif
+
+#ifdef PERF_COUNTERS
+    BARRIER_ARRIVE(args->barrier, rv);
+    if(my_tid == 0) {
+        PCM_stop();
+        PCM_log("========= 2) Profiling results of Sorting Phase =========\n");
+        PCM_printResults();
+    }
+#endif
+
 
 #ifdef PERF_COUNTERS
     if(my_tid == 0){
@@ -251,7 +267,7 @@ sortmergejoin_multipass_thread(void *param) {
     BARRIER_ARRIVE(args->barrier, rv);
     if(my_tid == 0) {
         PCM_stop();
-        PCM_log("========== Profiling results of First NUMA-Merge Phase ==========\n");
+        PCM_log("========== 3) Profiling results of First NUMA-Merge Phase ==========\n");
         PCM_printResults();
         PCM_start();
     }
@@ -278,9 +294,8 @@ sortmergejoin_multipass_thread(void *param) {
     BARRIER_ARRIVE(args->barrier, rv);
     if(my_tid == 0) {
         PCM_stop();
-        PCM_log("========== Profiling results of Rest of the Local Merge Phase ==========\n");
+        PCM_log("========== 3.1) Profiling results of Rest of the Local Merge Phase ==========\n");
         PCM_printResults();
-        PCM_cleanup();
     }
 #endif
 
@@ -291,6 +306,12 @@ sortmergejoin_multipass_thread(void *param) {
 #ifndef NO_TIMING
     BEGIN_MEASURE_JOIN_ACC(args->timer)
 #endif
+#ifdef PERF_COUNTERS
+    if (my_tid == 0) {
+        PCM_start();
+    }
+    BARRIER_ARRIVE(args->barrier, rv);
+#endif
     /*************************************************************************
      *
      *   Phase.4) NUMA-local merge-join on local sorted runs.
@@ -298,17 +319,20 @@ sortmergejoin_multipass_thread(void *param) {
      *************************************************************************/
     mpass_mergejoin_phase(&mergedRelR, &mergedRelS, args);
 
-#ifndef NO_TIMING
-    END_MEASURE_JOIN_ACC(args->timer)
+#ifdef PERF_COUNTERS
+    BARRIER_ARRIVE(args->barrier, rv);
+    if (my_tid == 0) {
+        PCM_stop();
+        PCM_log("========= 4) results of Multi-pass Joining Phase =========\n");
+        PCM_printResults();
+        PCM_cleanup();
+    }
+    BARRIER_ARRIVE(args->barrier, rv);
 #endif
 
-    /* for proper timing */
-//    BARRIER_ARRIVE(args->barrier, rv);
-//    if (my_tid == 0) {
-//        stopTimer(&args->join);
-//        gettimeofday(&args->end, NULL);
-//    }
+
 #ifndef NO_TIMING
+    END_MEASURE_JOIN_ACC(args->timer)
     END_MEASURE(args->timer)/* end overall*/
 #endif
 
@@ -704,7 +728,7 @@ mpass_fullmultipassmerge_phase(arg_t *args, int numrunstomerge,
             uint64_t len1 = mergerunsS[i].num_tuples;
             uint64_t len2 = mergerunsS[i + 1].num_tuples;
 
-            if (scalarmergeflag)
+            if (scalarflag)
                 scalar_merge_tuples(inpA, inpB, out, len1, len2);
             else
                 avx_merge_tuples(inpA, inpB, out, len1, len2);

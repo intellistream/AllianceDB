@@ -20,10 +20,10 @@
 
 #include "../utils/barrier.h"            /* pthread_barrier_* */
 #include "../affinity/cpu_mapping.h"        /* cpu_id NUMA related methods */
-
+#include "joincommon.h"
 #include "sortmergejoin_multiway.h" /* partitioning&sorting phases are same. */
 #include "sortmergejoin_multiway_skewhandling.h"
-#include "joincommon.h"
+
 #include "partition.h"  /* partition_relation_optimized() */
 #include "avxsort.h"    /* avxsort_tuples() */
 #include "scalarsort.h" /* scalarsort_tuples() */
@@ -31,10 +31,10 @@
 #include "scalar_multiwaymerge.h"      /* scalar_multiway_merge() */
 #include "../affinity/memalloc.h"           /* malloc_aligned() */
 #include "../affinity/numa_shuffle.h"       /* get_numa_shuffle_strategy() */
-
 #ifdef JOIN_MATERIALIZE
 #include "../utils/tuple_buffer.h"
 #endif
+
 
 /** For skew handling code that has C++ STL usage. */
 #include <iostream>
@@ -647,7 +647,7 @@ multiwaymerge_phase_withskewhandling(int numaregionid,
                 }
                 else {
                     /* Now do the multi-way merging */
-                    if(scalarmergeflag)
+                    if(scalarflag)
                     {
                         /* do normal scalar multi-way merge */
                         scalar_multiway_merge(mwtask->output,

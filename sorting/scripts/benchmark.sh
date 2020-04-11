@@ -2,16 +2,14 @@
 #set -e
 
 function compile() {
-  cd ..
-  cmake .
-  cd scripts
-  make -C .. clean
-  make -C .. -j4
+  cmake .. | tail -n +90
+  make -C .. clean -s
+  make -C .. -j4 -s
 }
 
 function benchmarkRun() {
   #####native execution
-  echo "==benchmark:$benchmark -a $algo -n $Threads -I $id== "
+  echo "==benchmark:$benchmark -a $algo -n $Threads -I $id -G $group -g $gap== "
   #echo 3 >/proc/sys/vm/drop_caches
   ../sorting -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id
   if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit 1; fi
@@ -26,7 +24,7 @@ function Run() {
 
 function KimRun() {
   #####native execution
-  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS=="
+  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS =="
   #echo 3 >/proc/sys/vm/drop_caches
   ../sorting -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS
 }
@@ -83,8 +81,8 @@ function SetDEBSParameters() {
   STS=0
 }
 
-DEFAULT_WINDOW_SIZE=2000 #(ms) -- 2 seconds
-DEFAULT_STEP_SIZE=250    # |tuples| per ms. -- 50K per seconds. ## this controls the guranalrity of input stream.
+DEFAULT_WINDOW_SIZE=1000 #(ms) -- 2 seconds
+DEFAULT_STEP_SIZE=12800   # |tuples| per ms. -- 128K per seconds. ## this controls the guranalrity of input stream.
 function ResetParameters() {
   TS_DISTRIBUTION=0                # uniform time distribution
   ZIPF_FACTOR=0                    # uniform time distribution
@@ -93,13 +91,13 @@ function ResetParameters() {
   INTERVAL=1                       # interval of 1. always..
   STEP_SIZE=$DEFAULT_STEP_SIZE     # arrival rate = 1000 / ms
   WINDOW_SIZE=$DEFAULT_WINDOW_SIZE # MS rel size = window_size / interval * step_size.
-  STEP_SIZE_S=-1                   # let S has the same arrival rate of R.
-  FIXS=0
+  STEP_SIZE_S=128000               # let S has the same arrival rate of R.
+  FIXS=1
   ts=1 # stream case
   Threads=8
-  progress_step=1024
-  merge_step=4
-  group_size=2
+  progress_step=20
+  merge_step=16
+  group=2
   gap=2000
 }
 
@@ -110,7 +108,7 @@ compile
 timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
 #benchmark experiment only apply for hashing directory.
-for benchmark in "SIMD_STUDY"; do #
+for benchmark in ""; do #
   case "$benchmark" in
   "SIMD_STUDY")
     id=74
@@ -118,14 +116,14 @@ for benchmark in "SIMD_STUDY"; do #
     ts=0 # batch data.
     echo SIMD 74-77
     algo="m-way"
-    for scalar in 0 1; do
-      sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scalar/g" ../joins/joincommon.h
-      compile
-      KimRun
+    for scalar in 1; do
+#      sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scalar/g" ../joins/joincommon.h
+#      compile
+#      KimRun
       let "id++"
     done
     algo="m-pass"
-    for scalar in 0 1; do
+    for scalar in 1; do
       sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scalar/g" ../joins/joincommon.h
       compile
       KimRun
@@ -137,7 +135,7 @@ done
 
 #general benchmark.
 for algo in m-way m-pass; do
-  for benchmark in "Stock" "Rovio" "YSB" "DEBS" "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "AR" "RAR" "RAR2" "AD" "KD" "WS" "KD2" "WS2" "WS3" "WS4"; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "Stock"  "Rovio" "YSB"  "DEBS" # "Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "RAR2" "AD" "KD" "WS" "KD2" "WS2"  "WS3" "WS4"
+  for benchmark in "Stock" "Rovio" "YSB" "DEBS" ; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "Stock" "Rovio" "YSB" "DEBS" "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "AR" "RAR" "RAR2" "AD" "KD" "WS" "KD2" "WS2" "WS3" "WS4"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "AR") #test arrival rate

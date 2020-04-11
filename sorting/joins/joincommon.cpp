@@ -234,7 +234,7 @@ sortmergejoin_initrun(relation_t *relR, relation_t *relS, joinconfig_t *joincfg,
     for (i = 0; i < nthreads; i++) {
         breakdown_thread(args[i].result, args[i].timer, window_size, fp);
     }
-    breakdown_global(result, nthreads, args[0].timer, 0, fp);
+    breakdown_global(relR->num_tuples + relS->num_tuples, nthreads, args[0].timer, 0, fp);
     fclose(fp);
     sortRecords(algoName, exp_id, window_size);
 #endif

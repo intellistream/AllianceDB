@@ -35,6 +35,11 @@
 #ifdef JOIN_MATERIALIZE
 #include "../utils/tuple_buffer.h"
 #endif
+#ifdef PERF_COUNTERS
+
+#include "../utils/perf_counters.h"      /* PCM_x */
+
+#endif
 
 /**
  * Main thread of First Sort-Merge Join variant with partitioning and complete
@@ -49,7 +54,7 @@ void *
 sortmergejoin_multiway_thread(void *param);
 
 result_t *
- sortmergejoin_multiway(relation_t *relR, relation_t *relS, joinconfig_t *joincfg, int exp_id, int window_size) {
+sortmergejoin_multiway(relation_t *relR, relation_t *relS, joinconfig_t *joincfg, int exp_id, int window_size) {
     /* check whether nr. of threads is a power of 2 */
     if ((joincfg->NTHREADS & (joincfg->NTHREADS - 1)) != 0) {
         fprintf(stdout, "[ERROR] m-way sort-merge join runs with a power of 2 #threads.\n");
@@ -57,7 +62,7 @@ result_t *
     }
 
     return sortmergejoin_initrun(relR, relS, joincfg,
-                                 sortmergejoin_multiway_thread, exp_id,  window_size, "MWAY");
+                                 sortmergejoin_multiway_thread, exp_id, window_size, "MWAY");
 }
 
 
@@ -135,7 +140,7 @@ sortmergejoin_multiway_thread(void *param) {
 
 
 #ifdef PERF_COUNTERS
-    if(my_tid == 0){
+    if (my_tid == 0) {
         PCM_initPerformanceMonitor(NULL, NULL);
         PCM_start();
     }
@@ -148,19 +153,9 @@ sortmergejoin_multiway_thread(void *param) {
     if (args->tid == 0)
         *args->startTS = curtick();//assign the start timestamp
     START_MEASURE((args->timer))
-#endif
-
-//    if (my_tid == 0) {
-//        gettimeofday(&args->start, NULL);
-//        startTimer(&args->part);
-//        startTimer(&args->sort);
-//        startTimer(&args->mergedelta);
-//        startTimer(&args->merge);
-//        startTimer(&args->join);
-//    }
-#ifndef NO_TIMING
     BEGIN_MEASURE_PARTITION(args->timer)/* partitioning start */
 #endif
+
     /*************************************************************************
      *
      *   Phase.1) NUMA-local partitioning.
@@ -173,7 +168,7 @@ sortmergejoin_multiway_thread(void *param) {
 
 #ifdef PERF_COUNTERS
     BARRIER_ARRIVE(args->barrier, rv);
-    if(my_tid == 0) {
+    if (my_tid == 0) {
         PCM_stop();
         PCM_log("========= 1) Profiling results of Partitioning Phase =========\n");
         PCM_printResults();
@@ -187,7 +182,7 @@ sortmergejoin_multiway_thread(void *param) {
 #endif
 
 #ifdef PERF_COUNTERS
-    if(my_tid == 0){
+    if (my_tid == 0) {
         PCM_start();
     }
     BARRIER_ARRIVE(args->barrier, rv);
@@ -224,8 +219,8 @@ sortmergejoin_multiway_thread(void *param) {
     }
 
 #ifdef PERF_COUNTERS
-        BARRIER_ARRIVE(args->barrier, rv);
-    if(my_tid == 0) {
+    BARRIER_ARRIVE(args->barrier, rv);
+    if (my_tid == 0) {
         PCM_stop();
         PCM_log("========= 2) Profiling results of Sorting Phase =========\n");
         PCM_printResults();
@@ -269,15 +264,15 @@ sortmergejoin_multiway_thread(void *param) {
 #endif
 
 #ifdef PERF_COUNTERS
-    if(my_tid == 0){
+    if (my_tid == 0) {
         PCM_start();
     }
     BARRIER_ARRIVE(args->barrier, rv);
 #endif
 
 #ifndef NO_TIMING
-//    BEGIN_MEASURE_MERGEDELTA(args->timer)/* mergedelta start */
-    BEGIN_MEASURE_MERGE_ACC(args->timer)/* merge start */
+    //    BEGIN_MEASURE_MERGEDELTA(args->timer)/* mergedelta start */
+        BEGIN_MEASURE_MERGE_ACC(args->timer)/* merge start */
 #endif
 //    BEGIN_MEASURE_JOIN(args->timer)/* join start */
     /*************************************************************************
@@ -291,7 +286,7 @@ sortmergejoin_multiway_thread(void *param) {
 
     BARRIER_ARRIVE(args->barrier, rv);
 #ifndef NO_TIMING
-//    END_MEASURE_MERGEDELTA(args->timer)/* mergedeleta end */
+    //    END_MEASURE_MERGEDELTA(args->timer)/* mergedeleta end */
 #endif
 
     if (my_tid == 0) {
@@ -307,11 +302,10 @@ sortmergejoin_multiway_thread(void *param) {
 
 #ifdef PERF_COUNTERS
     BARRIER_ARRIVE(args->barrier, rv);
-    if(my_tid == 0) {
+    if (my_tid == 0) {
         PCM_stop();
         PCM_log("========= 3) Profiling results of Multi-Way NUMA-Merge Phase =========\n");
         PCM_printResults();
-        PCM_cleanup();
     }
     BARRIER_ARRIVE(args->barrier, rv);
 #endif
@@ -329,22 +323,35 @@ sortmergejoin_multiway_thread(void *param) {
 #ifndef NO_TIMING
     BEGIN_MEASURE_JOIN_ACC(args->timer)
 #endif
+#ifdef PERF_COUNTERS
+    if (my_tid == 0) {
+        PCM_start();
+    }
+    BARRIER_ARRIVE(args->barrier, rv);
+#endif
     /*************************************************************************
      *
      *   Phase.4) NUMA-local merge-join on local sorted runs.
      *
      *************************************************************************/
     mergejoin_phase(partsR, partsS, &mergedRelR, &mergedRelS, args);
-#ifndef NO_TIMING
-    END_MEASURE_JOIN_ACC(args->timer)
-#endif
-//    /* for proper timing */
-//    BARRIER_ARRIVE(args->barrier, rv);
 
 #ifndef NO_TIMING
-//    END_MEASURE_JOIN(args->timer)/* join end */
-    END_MEASURE(args->timer)/* end overall*/
+    //     END_MEASURE_JOIN_ACC(args->timer)/* join end */
+        END_MEASURE(args->timer)/* end overall*/
 #endif
+
+#ifdef PERF_COUNTERS
+    BARRIER_ARRIVE(args->barrier, rv);
+    if (my_tid == 0) {
+        PCM_stop();
+        PCM_log("========= 4) results of Multi-Way Joining Phase =========\n");
+        PCM_printResults();
+        PCM_cleanup();
+    }
+    BARRIER_ARRIVE(args->barrier, rv);
+#endif
+
 
     /* clean-up */
     partitioning_cleanup(partsR, partsS);

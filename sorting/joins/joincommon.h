@@ -20,7 +20,9 @@
 #define ALLIANCEDB_JOINCOMMON_H
 
 //#define DEBUG
-#define JOIN_MATERIALIZE
+//#define JOIN_MATERIALIZE
+//#define NO_TIMING
+
 #include <stdint.h>
 #include <stdlib.h>             /* posix_memalign, EXIT_FAILURE */
 #include <sys/time.h>           /* gettimeofday */
@@ -33,11 +35,9 @@
 #include "../utils/params.h"             /* macro parameters */
 #include "../timer/t_timer.h"
 
-#ifdef PERF_COUNTERS
-#include "perf_counters.h"      /* PCM_x */
-#endif
+#include "../utils/perf_counters.h"      /* PCM_x */
 
-#define scalarflag 1
+#define scalarflag 0
 
 #define SKEW_HANDLING 1
 #define SKEW_DECOMPOSE_MARGIN (1.10) /* 10% margin */
@@ -169,7 +169,7 @@ struct arg_t {
 
 #ifdef JOIN_MATERIALIZE
     /* results of the thread */
-    threadresult_t * threadresult;
+    threadresult_t *threadresult;
 #endif
 
     /* timing stats */
@@ -186,8 +186,6 @@ struct relationpair_t {
     relation_t R;
     relation_t S;
 };
-
-
 
 
 #endif //ALLIANCEDB_JOINCOMMON_H

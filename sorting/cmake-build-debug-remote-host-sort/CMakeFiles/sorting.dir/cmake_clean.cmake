@@ -1,6 +1,7 @@
 file(REMOVE_RECURSE
   "CMakeFiles/sorting.dir/datagen/generator.cpp.o"
   "CMakeFiles/sorting.dir/datagen/genzipf.cpp.o"
+  "CMakeFiles/sorting.dir/utils/perf_counters.cpp.o"
   "CMakeFiles/sorting.dir/affinity/cpu_mapping.cpp.o"
   "CMakeFiles/sorting.dir/affinity/memalloc.cpp.o"
   "CMakeFiles/sorting.dir/affinity/numa_shuffle.cpp.o"
