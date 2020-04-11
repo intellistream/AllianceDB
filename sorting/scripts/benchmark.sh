@@ -118,15 +118,15 @@ for benchmark in "SIMD_STUDY"; do #
     ts=0 # batch data.
     echo SIMD 74-77
     algo="m-way"
-    for scala in 0 1; do
-      sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scala/g" ../joins/joincommon.h
+    for scalar in 0 1; do
+      sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scalar/g" ../joins/joincommon.h
       compile
       KimRun
       let "id++"
     done
     algo="m-pass"
-    for scala in 0 1; do
-      sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scala/g" ../joins/joincommon.h
+    for scalar in 0 1; do
+      sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scalar/g" ../joins/joincommon.h
       compile
       KimRun
       let "id++"
