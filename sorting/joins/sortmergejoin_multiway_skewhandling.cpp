@@ -459,7 +459,6 @@ multiwaymerge_phase_withskewhandling(int numaregionid,
                                      relation_t * mergedRelR, relation_t * mergedRelS)
 {
     const int PARTFANOUT = args->joincfg->PARTFANOUT;
-    const int scalarmergeflag = args->joincfg->SCALARMERGE;
 
     int32_t my_tid = args->tid;
     uint64_t mergeRtotal = 0, mergeStotal = 0;
@@ -604,7 +603,7 @@ multiwaymerge_phase_withskewhandling(int numaregionid,
         BARRIER_ARRIVE(args->barrier, rv);
 
         /* Now do the multi-way merging for the relation R. */
-        if(scalarmergeflag){
+        if(scalarflag){
             scalar_multiway_merge(tmpoutR, Rparts, PARTFANOUT,
                                   mergebuf, bufsz_thr);
         }

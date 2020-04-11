@@ -31,7 +31,6 @@ function KimRun() {
   ../sorting -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS
 }
 
-
 function SetStockParameters() {
   ts=1 # stream case
   WINDOW_SIZE=5000
@@ -104,17 +103,41 @@ function ResetParameters() {
   gap=2000
 }
 
+#recompile by default.
+compile
 # Configurable variables
 # Generate a timestamp
 timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
+#benchmark experiment only apply for hashing directory.
+for benchmark in "SIMD_STUDY"; do #
+  case "$benchmark" in
+  "SIMD_STUDY")
+    id=74
+    ResetParameters
+    ts=0 # batch data.
+    echo SIMD 74-77
+    algo="m-way"
+    for scala in 0 1; do
+      sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scala/g" ../joins/joincommon.h
+      compile
+      KimRun
+      let "id++"
+    done
+    algo="m-pass"
+    for scala in 0 1; do
+      sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scala/g" ../joins/joincommon.h
+      compile
+      KimRun
+      let "id++"
+    done
+    ;;
+  esac
+done
 
 #general benchmark.
-
-#recompile by default.
-compile
 for algo in m-way m-pass; do
-  for benchmark in "Stock" "Rovio" "YSB" "DEBS" "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "AR" "RAR" "RAR2" "AD" "KD" "WS" "KD2" "WS2"  "WS3" "WS4"; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "Stock"  "Rovio" "YSB"  "DEBS" # "Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "RAR2" "AD" "KD" "WS" "KD2" "WS2"  "WS3" "WS4"
+  for benchmark in "Stock" "Rovio" "YSB" "DEBS" "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "AR" "RAR" "RAR2" "AD" "KD" "WS" "KD2" "WS2" "WS3" "WS4"; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "Stock"  "Rovio" "YSB"  "DEBS" # "Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "RAR2" "AD" "KD" "WS" "KD2" "WS2"  "WS3" "WS4"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "AR") #test arrival rate

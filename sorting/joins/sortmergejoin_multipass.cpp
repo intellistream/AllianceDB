@@ -368,7 +368,6 @@ mpass_partitioning_phase(relation_t ***relRparts, relation_t ***relSparts, arg_t
 void
 mpass_sorting_phase(relation_t **relRparts, relation_t **relSparts, arg_t *args) {
     const int PARTFANOUT = args->joincfg->PARTFANOUT;//how many partitions to handle in one thread.
-    const int scalarsortflag = args->joincfg->SCALARSORT;
 
     int32_t my_tid = args->tid;
 
@@ -389,7 +388,7 @@ mpass_sorting_phase(relation_t **relRparts, relation_t **relSparts, arg_t *args)
                 PRIu64
                 "\n", i, relRparts[i]->num_tuples);
 
-        if (scalarsortflag)
+        if (scalarflag)
             scalarsort_tuples(&inptr, &outptr, ntuples_per_part);
         else
             avxsort_tuples(&inptr, &outptr, ntuples_per_part);
@@ -417,7 +416,7 @@ mpass_sorting_phase(relation_t **relRparts, relation_t **relSparts, arg_t *args)
         if(my_tid==0)
              fprintf(stdout, "PART-%d-SIZE: %d\n", i, relSparts[i]->num_tuples);
         */
-        if (scalarsortflag)
+        if (scalarflag)
             scalarsort_tuples(&inptr, &outptr, ntuples_per_part);
         else
             avxsort_tuples(&inptr, &outptr, ntuples_per_part);
@@ -444,7 +443,6 @@ mpass_firstnumamerge_phase(arg_t *args,
                            relation_t *mergedRelR, relation_t *mergedRelS, int *numrunstomerge,
                            relation_t **mergerunsR, relation_t **mergerunsS) {
     const int PARTFANOUT = args->joincfg->PARTFANOUT;
-    const int scalarmergeflag = args->joincfg->SCALARMERGE;
 
     int32_t my_tid = args->tid;
 
@@ -544,7 +542,7 @@ mpass_firstnumamerge_phase(arg_t *args,
             }
                  */
 
-                if (scalarmergeflag)
+                if (scalarflag)
                     scalar_merge_tuples(rels1->R.tuples,
                                         rels2->R.tuples,
                                         Rmergeout,
@@ -606,7 +604,7 @@ mpass_firstnumamerge_phase(arg_t *args,
 
 
 
-                if (scalarmergeflag)
+                if (scalarflag)
                     scalar_merge_tuples(rels1->S.tuples, rels2->S.tuples,
                                         Smergeout,
                                         rels1->S.num_tuples,
@@ -653,7 +651,6 @@ mpass_fullmultipassmerge_phase(arg_t *args, int numrunstomerge,
                                relation_t *mergerunsR, relation_t *mergerunsS,
                                relation_t *mergedRelR, relation_t *mergedRelS) {
     int32_t my_tid = args->tid;
-    const int scalarmergeflag = args->joincfg->SCALARMERGE;
 
     /* Full-merge of relation R */
     tuple_t *tmpoutR = mergedRelR->tuples;
@@ -670,7 +667,7 @@ mpass_fullmultipassmerge_phase(arg_t *args, int numrunstomerge,
             uint64_t len1 = mergerunsR[i].num_tuples;
             uint64_t len2 = mergerunsR[i + 1].num_tuples;
 
-            if (scalarmergeflag)
+            if (scalarflag)
                 scalar_merge_tuples(inpA, inpB, out, len1, len2);
             else
                 avx_merge_tuples(inpA, inpB, out, len1, len2);

@@ -37,6 +37,8 @@
 #include "perf_counters.h"      /* PCM_x */
 #endif
 
+#define scalarflag 1
+
 #define SKEW_HANDLING 1
 #define SKEW_DECOMPOSE_MARGIN (1.10) /* 10% margin */
 #define SKEW_DECOMPOSE_SAMPLES 64 /* nr. of samples for range partitioning. */
