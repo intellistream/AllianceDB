@@ -1431,7 +1431,7 @@ swap(int64_t **A, int64_t **B) {
  * Sorts the last chunk of the input, which is less than BLOCKSIZE tuples.
  * @note This function assumes a hard-coded BLOCKSIZE of 16384 and nitems must
  * be less than 16384.
- *
+ * Tony: We can't make this assumption, hence we sort the rest using standard sort.
  * @param inputptr
  * @param outputptr
  * @param nitems
@@ -1441,7 +1441,7 @@ avxsort_rem(int64_t **inputptr, int64_t **outputptr, uint32_t nitems) {
     int64_t *inp = *inputptr;
     int64_t *out = *outputptr;
 
-#if 1 /* sort using AVX */
+#if 0 /* sort using AVX */
     /* each chunk keeps track of its temporary memory offset */
     int64_t *ptrs[8][2];/* [chunk-in, chunk-out-tmp] */
 

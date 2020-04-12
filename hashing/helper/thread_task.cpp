@@ -8,7 +8,6 @@
 #include "thread_task.h"
 #include "fetcher.h"
 #include "shuffler.h"
-#include "../utils/perf_counters.h"
 #include "../joins/eagerjoin_struct.h"
 
 /**
@@ -65,6 +64,7 @@ THREAD_TASK_NOSHUFFLE(void *param) {
     do {
         fetch_t *fetch = fetcher->next_tuple();/*time to fetch, waiting time*/
         if (fetch != nullptr) {
+#ifdef JOIN
             args->joiner->join(/*time to join for one tuple*/
                     args->tid,
                     fetch->tuple,
@@ -72,6 +72,7 @@ THREAD_TASK_NOSHUFFLE(void *param) {
                     args->matches,
 //                    AGGFUNCTION,
                     chainedbuf);//build and probe at the same time.
+#endif
         }
     } while (!fetcher->finish());
 
@@ -176,6 +177,16 @@ void
     BARRIER_ARRIVE(args->barrier, lock)
 //    END_GARBAGE(args->timer)
 
+#ifdef PERF_COUNTERS
+    BARRIER_ARRIVE(args->barrier, lock);
+    if (args->tid == 0) {
+        PCM_stop();
+        PCM_log("========== Profiling results of Partition Phase ==========\n");
+        PCM_printResults();
+        PCM_start();
+    }
+    BARRIER_ARRIVE(args->barrier, lock);
+#endif
     do {
         fetch = shuffler->pull(args->tid, false);//re-fetch from its shuffler.
         if (fetch != nullptr) {

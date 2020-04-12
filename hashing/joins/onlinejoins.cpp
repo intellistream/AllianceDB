@@ -24,11 +24,7 @@
 #include "../helper/launcher.h"
 #include "../helper/thread_task.h"
 
-
-#ifdef PERF_COUNTERS
-#include "perf_counters.h"      /* PCM_x */
-#endif
-
+ 
 /** @} */
 
 void initialize(int nthreads, const t_param &param) {

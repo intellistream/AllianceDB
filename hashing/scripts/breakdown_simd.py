@@ -1,4 +1,3 @@
-import getopt
 import os
 
 import matplotlib
@@ -47,7 +46,7 @@ def ConvertEpsToPdf(dir_filename):
 # draw a line chart
 def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, allow_legend):
     # you may change the figure size on your own.
-    fig = plt.figure(figsize=(8, 3.5))
+    fig = plt.figure(figsize=(12, 3.5))
     figure = fig.add_subplot(111)
 
     FIGURE_LABEL = legend_labels
@@ -59,7 +58,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, al
     index = np.arange(len(x_values))
     # the bar width.
     # you may need to tune it to get the best figure.
-    width = 0.5
+    width = 0.6
     # draw the bars
     bottom_base = np.zeros(len(y_values[0]))
     bars = [None] * (len(FIGURE_LABEL))
@@ -97,7 +96,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, al
                        )
 
     # you may need to tune the xticks position to get the best figure.
-    plt.xticks(index + 1 * width, x_values)
+    plt.xticks(index - 0.7 * width, x_values)
 
     # plt.xlim(0,)
     # plt.ylim(0,1)
@@ -110,6 +109,8 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, al
 
     plt.xlabel(x_label, fontproperties=LABEL_FP)
     plt.ylabel(y_label, fontproperties=LABEL_FP)
+
+    plt.xticks(rotation=30)
 
     size = fig.get_size_inches()
     dpi = fig.get_dpi()
@@ -158,138 +159,120 @@ def normalize(y_values):
 # example for reading csv file
 def ReadFile():
     # Creates a list containing w lists, each of h items, all set to 0
-    w, h = 6, 3
+    w, h = 6, 2
     y = [[0 for x in range(w)] for y in range(h)]
 
     cnt = 0
-    j=0
-    f = open("/data1/xtra/results/breakdown/MPASS_76.txt", "r")
-    read = f.readlines()
-    others = 0
-    for x in read:
-        value = double(x.strip("\n"))
-        if value > max_value:
-            max_value = value
-        elif cnt == 3:  # sort
-            y[0][j] = value
-        elif cnt == 4:  # merge
-            y[1][j] = value
-        elif cnt == 5:  # join
-            y[2][j] = value
-        else:
-            others += value
-        cnt += 1
-    j += 1
-
-    cnt = 0
-    j=0
-    f = open("/data1/xtra/results/breakdown/MPASS_77.txt", "r")
-    read = f.readlines()
-    others = 0
-    for x in read:
-        value = double(x.strip("\n"))
-        if value > max_value:
-            max_value = value
-        elif cnt == 3:  # sort
-            y[0][j] = value
-        elif cnt == 4:  # merge
-            y[1][j] = value
-        elif cnt == 5:  # join
-            y[2][j] = value
-        else:
-            others += value
-        cnt += 1
-    j += 1
-
-    cnt = 0
-    j=0
+    j = 0
     f = open("/data1/xtra/results/breakdown/MWAY_74.txt", "r")
     read = f.readlines()
     others = 0
     for x in read:
         value = double(x.strip("\n"))
-        if value > max_value:
-            max_value = value
-        elif cnt == 3:  # sort
+        if cnt == 3:  # sort
             y[0][j] = value
         elif cnt == 4:  # merge
             y[1][j] = value
-        elif cnt == 5:  # join
-            y[2][j] = value
+        # elif cnt == 5:  # join
+        #     y[2][j] = value
         else:
             others += value
         cnt += 1
     j += 1
 
     cnt = 0
-    j=0
     f = open("/data1/xtra/results/breakdown/MWAY_75.txt", "r")
     read = f.readlines()
     others = 0
     for x in read:
         value = double(x.strip("\n"))
-        if value > max_value:
-            max_value = value
-        elif cnt == 3:  # sort
+        if cnt == 3:  # sort
             y[0][j] = value
         elif cnt == 4:  # merge
             y[1][j] = value
-        elif cnt == 5:  # join
-            y[2][j] = value
+        # elif cnt == 5:  # join
+        #     y[2][j] = value
         else:
             others += value
         cnt += 1
     j += 1
 
     cnt = 0
-    j=0
+    f = open("/data1/xtra/results/breakdown/MPASS_76.txt", "r")
+    read = f.readlines()
+    others = 0
+    for x in read:
+        value = double(x.strip("\n"))
+        if cnt == 3:  # sort
+            y[0][j] = value
+        elif cnt == 4:  # merge
+            y[1][j] = value
+        # elif cnt == 5:  # join
+        #     y[2][j] = value
+        else:
+            others += value
+        cnt += 1
+    j += 1
+
+    cnt = 0
+    f = open("/data1/xtra/results/breakdown/MPASS_77.txt", "r")
+    read = f.readlines()
+    others = 0
+    for x in read:
+        value = double(x.strip("\n"))
+        if cnt == 3:  # sort
+            y[0][j] = value
+        elif cnt == 4:  # merge
+            y[1][j] = value
+        # elif cnt == 5:  # join
+        #     y[2][j] = value
+        else:
+            others += value
+        cnt += 1
+    j += 1
+
+    cnt = 0
     f = open("/data1/xtra/results/breakdown/PMJ_JBCR_NP_78.txt", "r")
     read = f.readlines()
     others = 0
     for x in read:
         value = double(x.strip("\n"))
-        if value > max_value:
-            max_value = value
-        elif cnt == 3:  # sort
+        if cnt == 3:  # sort
             y[0][j] = value
         elif cnt == 4:  # merge
             y[1][j] = value
-        elif cnt == 5:  # join
-            y[2][j] = value
+        # elif cnt == 5:  # join
+        #     y[2][j] = value
         else:
             others += value
         cnt += 1
     j += 1
 
     cnt = 0
-    j=0
     f = open("/data1/xtra/results/breakdown/PMJ_JBCR_NP_79.txt", "r")
     read = f.readlines()
     others = 0
     for x in read:
         value = double(x.strip("\n"))
-        if value > max_value:
-            max_value = value
-        elif cnt == 3:  # sort
+        if cnt == 3:  # sort
             y[0][j] = value
         elif cnt == 4:  # merge
             y[1][j] = value
-        elif cnt == 5:  # join
-            y[2][j] = value
+        # elif cnt == 5:  # join
+        #     y[2][j] = value
         else:
             others += value
         cnt += 1
     j += 1
 
     print(y)
-    return y, max_value
+    return y
 
 
 if __name__ == "__main__":
-
-    x_values = ['MPASS$^l$ (AVX)', 'MPASS$^l$ (C++ STL)',
-                'MWAY$^l$ (AVX)', 'MWAY$^l$ (C++ STL)',
-                'JB_PMJ$^e$ (AVX)', 'JB_PMJ$^e$ (C++ STL)'
+    x_values = ['MWAY$^l$ (AVX)', 'MWAY$^l$ (C++ STL)'
+        , 'MPASS$^l$ (AVX)', 'MPASS$^l$ (C++ STL)'
+        , 'JB_PMJ$^e$ (AVX)', 'JB_PMJ$^e$ (C++ STL)'
                 ]  # different algorithms.
 
     y_values = ReadFile()  #
@@ -297,10 +280,10 @@ if __name__ == "__main__":
     # y_norm_values = normalize(y_values)
 
     # break into 4 parts
-    legend_labels = ['sort', 'merge', 'join']  # , 'others'
+    legend_labels = ['sort', 'merge']  # , 'others'
 
     DrawFigure(x_values, y_values, legend_labels,
-               'varying sorting-based algorithms', 'cycles per input tuple',
+               '', 'cycles per input tuple',
                'breakdown_simd_figure', True)
 
     # DrawLegend(legend_labels, 'breakdown_radix_legend')

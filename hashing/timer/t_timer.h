@@ -65,8 +65,6 @@ void sortRecords(std::string algo_name, int exp_id, long lastTS);
     timer->joiner_cnt++;
 #endif
 
-
-
 #ifndef BEGIN_MEASURE_BUILD
 #define BEGIN_MEASURE_BUILD(timer) \
     startTimer(&timer->buildtimer);

@@ -2,11 +2,9 @@
 #set -e
 
 function compile() {
-  cd ..
-  cmake .
-  cd scripts
-  make -C .. clean
-  make -C .. -j4
+  cmake .. | tail -n +90
+  make -C .. clean -s
+  make -C .. -j4 -s
 }
 
 function benchmarkRun() {
@@ -85,7 +83,7 @@ function SetDEBSParameters() {
 }
 
 DEFAULT_WINDOW_SIZE=1000 #(ms) -- 2 seconds
-DEFAULT_STEP_SIZE=12800   # |tuples| per ms. -- 128K per seconds. ## this controls the guranalrity of input stream.
+DEFAULT_STEP_SIZE=12800  # |tuples| per ms. -- 128K per seconds. ## this controls the guranalrity of input stream.
 function ResetParameters() {
   TS_DISTRIBUTION=0                # uniform time distribution
   ZIPF_FACTOR=0                    # uniform time distribution
@@ -99,9 +97,10 @@ function ResetParameters() {
   ts=1 # stream case
   Threads=8
   progress_step=20
-  merge_step=16
+  merge_step=16 #not in use.
   group=2
   gap=2000
+  sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag 0/g" ../helper/sort_common.h
 }
 
 function PARTITION_ONLY() {
@@ -127,7 +126,37 @@ function PARTITION_BUILD_SORT_MERGE_JOIN() {
   sed -i -e "s/#define NO_MERGE/#define MERGE/g" ../joins/common_functions.h
   sed -i -e "s/#define NO_MATCH/#define MATCH/g" ../joins/common_functions.h
 }
+function FULLBENCHRUN() {
+  PARTITION_ONLY
+  compile
+  benchmarkRun
 
+  PARTITION_BUILD_SORT
+  compile
+  benchmarkRun
+
+  PARTITION_BUILD_SORT_MERGE
+  compile
+  benchmarkRun
+
+  PARTITION_BUILD_SORT_MERGE_JOIN
+  compile
+  benchmarkRun
+}
+
+function SHJBENCHRUN() {
+  PARTITION_ONLY
+  compile
+  benchmarkRun
+
+  PARTITION_BUILD_SORT
+  compile
+  benchmarkRun
+
+  PARTITION_BUILD_SORT_MERGE_JOIN
+  compile
+  benchmarkRun
+}
 function FULLKIMRUN() {
   PARTITION_ONLY
   compile
@@ -159,6 +188,19 @@ function SHJKIMRUN() {
   compile
   KimRun
 }
+
+function RUNALL() {
+  if [ $algo == SHJ_JM_NP ] || [ $algo == SHJ_JBCR_NP ]; then
+    SHJBENCHRUN
+  else
+    if [ $algo == PMJ_JM_NP ] || [ $algo == PMJ_JBCR_NP ]; then
+      FULLBENCHRUN
+    else
+      benchmarkRun
+    fi
+  fi
+}
+
 #recompile by default.
 compile
 # Configurable variables
@@ -166,7 +208,7 @@ compile
 timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
 #benchmark experiment only apply for hashing directory.
-for benchmark in "PMJ_SORT_STEP_STUDY" ; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY"
+for benchmark in ""; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY"
   case "$benchmark" in
   "PRJ_RADIX_BITS_STUDY")
     algo="PRO"
@@ -189,7 +231,7 @@ for benchmark in "PMJ_SORT_STEP_STUDY" ; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_ST
     algo="PMJ_JBCR_NP"
     echo PMJ_SORT_STEP_STUDY 61 - 65
     ResetParameters
-    ts=0   # batch data.
+    ts=0 # batch data.
     for progress_step in 10 20 30 40 50; do #%
       FULLKIMRUN
       let "id++"
@@ -202,7 +244,7 @@ for benchmark in "PMJ_SORT_STEP_STUDY" ; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_ST
     id=66
     algo="PMJ_JBCR_NP"
     ResetParameters
-    ts=0   # batch data.
+    ts=0 # batch data.
     echo GROUP_SIZE_STUDY PMJ 66 - 69
     for group in 1 2 4 8; do
       FULLKIMRUN
@@ -218,12 +260,29 @@ for benchmark in "PMJ_SORT_STEP_STUDY" ; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_ST
     python3 breakdown_group_pmj.py
     python3 breakdown_group_shj.py
     ;;
+  "SIMD_STUDY")
+    id=78
+    algo="PMJ_JBCR_NP"
+    ResetParameters
+    ts=0 # batch data.
+    echo SIMD PMJ 78 - 79
+    for scalar in 0; do
+      sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scalar/g" ../helper/sort_common.h
+      #      compile
+      #      FULLKIMRUN
+      PARTITION_BUILD_SORT
+      compile
+      KimRun
+      let "id++"
+    done
+    #    python3 breakdown_simd.py
+    ;;
   esac
 done
 
 # general benchmark.
-for algo in PMJ_JBCR_NP; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
-  for benchmark in ""; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "Stock"  "Rovio" "YSB"  "DEBS" # "Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "RAR2" "AD" "KD" "WS" "KD2" "WS2"  "WS3" "WS4"
+for algo in PMJ_JM_NP PMJ_JBCR_NP SHJ_JM_NP; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
+  for benchmark in "Stock" "Rovio" "YSB" "DEBS"; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "Stock"  "Rovio" "YSB"  "DEBS" # "Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "RAR2" "AD" "KD" "WS" "KD2" "WS2"  "WS3" "WS4"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "AR") #test arrival rate
@@ -367,25 +426,25 @@ for algo in PMJ_JBCR_NP; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
       id=38
       ResetParameters
       SetStockParameters
-      benchmarkRun
+      RUNALL
       ;;
     "Rovio") #matches:
       id=39
       ResetParameters
       SetRovioParameters
-      benchmarkRun
+      RUNALL
       ;;
     "YSB")
       id=40
       ResetParameters
       SetYSBParameters
-      benchmarkRun
+      RUNALL
       ;;
     "DEBS")
       id=41
       ResetParameters
       SetYSBParameters
-      benchmarkRun
+      RUNALL
       ;;
     "ScaleStock")
       id=42
@@ -426,40 +485,22 @@ for algo in PMJ_JBCR_NP; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
         let "id++"
       done
       ;;
-      #    "Google") #Error yet.
-      #      RSIZE=3747939
-      #      SSIZE=11931801
-      #      RPATH=/data1/xtra/datasets/google/users_key32_partitioned.csv
-      #      SPATH=/data1/xtra/datasets/google/reviews_key32_partitioned.csv
-      #      RKEY=1
-      #      SKEY=1
-      #      benchmarkRun
-      #      ;;
-      #    "Amazon") #Error yet.
-      #      RSIZE=10
-      #      SSIZE=10
-      #      RPATH=/data1/xtra/datasets/amazon/amazon_question_partitioned.csv
-      #      SPATH=/data1/xtra/datasets/amazon/amazon_answer_partitioned.csv
-      #      RKEY=0
-      #      SKEY=0
-      #      benchmarkRun
-      #      ;;
     esac
   done
 done
 
 ##back up.
-    #  "PMJ_MERGE_STEP_STUDY")
-    #    id=66
-    #    algo="PMJ_JBCR_NP"
-    #    ResetParameters
-    #    echo PMJ_MERGE_STEP_STUDY 66-70
-    #    for merge_step in 8 10 12 14 16; do
-    #      ts=0   # batch data.
-    #      KimRun #
-    #      let "id++"
-    #    done
-    #    python3 breakdown_merge.py
-    #    python3 latency_merge.py
-    #    python3 progressive_merge.py
-    #    ;;
+#  "PMJ_MERGE_STEP_STUDY")
+#    id=66
+#    algo="PMJ_JBCR_NP"
+#    ResetParameters
+#    echo PMJ_MERGE_STEP_STUDY 66-70
+#    for merge_step in 8 10 12 14 16; do
+#      ts=0   # batch data.
+#      KimRun #
+#      let "id++"
+#    done
+#    python3 breakdown_merge.py
+#    python3 latency_merge.py
+#    python3 progressive_merge.py
+#    ;;

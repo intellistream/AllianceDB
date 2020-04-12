@@ -60,8 +60,8 @@ struct run {//a pair of runs
     bool merged = false;
 
     run(tuple_t *run_R, tuple_t *run_S, int lengthR, int lengthS) {
-        assert(run_R->key>0);
-        assert(run_S->key>0);
+        assert(run_R->key>=0);
+        assert(run_S->key>=0);
         R = run_R;//only one pair initially.
         S = run_S;//only one pair initially.
         posR = 0;

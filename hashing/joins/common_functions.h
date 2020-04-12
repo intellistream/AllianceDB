@@ -11,6 +11,7 @@
 #include "npj_types.h"
 #include "../timer/t_timer.h"
 
+
 //#define JOIN_RESULT_MATERIALIZE
 //#define NO_TIMING
 //#define DEBUG
@@ -19,7 +20,7 @@
 #define MERGE
 #define MATCH
 
-#define EAGER
+#define EAGER //disable when profiling.
 
 #ifndef PTHREAD_BARRIER_SERIAL_THREAD
 #define PTHREAD_BARRIER_SERIAL_THREAD 1
