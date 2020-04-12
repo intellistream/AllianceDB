@@ -38,23 +38,23 @@ void *
 THREAD_TASK_NOSHUFFLE(void *param) {
     arg_t *args = (arg_t *) param;
     int lock;
-    /* wait at a barrier until each thread started*/
-    BARRIER_ARRIVE(args->barrier, lock)
-#ifndef NO_TIMING
-    *args->startTS = curtick();
-    START_MEASURE((args->timer))
-#endif
-
 
 #ifdef JOIN_RESULT_MATERIALIZE
     chainedtuplebuffer_t *chainedbuf = chainedtuplebuffer_init();
 #else
     void *chainedbuf = NULL;
 #endif
-
     //call different data BaseFetcher.
     baseFetcher *fetcher = args->fetcher;
-    fetcher->fetchStartTime = *args->startTS;//set the fetch starting time.
+    /* wait at a barrier until each thread started*/
+    BARRIER_ARRIVE(args->barrier, lock)
+#ifndef NO_TIMING
+    *args->startTS = curtick();
+//        printf(" *args->startTS :%lu\n", *args->startTS);
+    START_MEASURE((args->timer))
+#endif
+    fetcher->fetchStartTime = args->startTS;//set the fetch starting time.
+
 #ifdef PERF_COUNTERS
     if (args->tid == 0) {
         PCM_initPerformanceMonitor(NULL, NULL);
@@ -127,12 +127,6 @@ void
 *THREAD_TASK_SHUFFLE(void *param) {
     arg_t *args = (arg_t *) param;
     int lock;
-    /* wait at a barrier until each thread started*/
-    BARRIER_ARRIVE(args->barrier, lock)
-#ifndef NO_TIMING
-    *args->startTS = curtick();
-    START_MEASURE((args->timer))
-#endif
 
 #ifdef JOIN_RESULT_MATERIALIZE
     chainedtuplebuffer_t *chainedbuf = chainedtuplebuffer_init();
@@ -142,9 +136,16 @@ void
     //call different BaseFetcher.
     baseFetcher *fetcher = args->fetcher;
     baseShuffler *shuffler = args->shuffler;
-    fetcher->fetchStartTime = *args->startTS;//set the fetch starting time.
+    *args->startTS = curtick();
+    fetcher->fetchStartTime = args->startTS;//set the fetch starting time.
     //fetch: pointer points to state.fetch (*fetch = &(state->fetch))
     fetch_t *fetch;
+
+    /* wait at a barrier until each thread started*/
+    BARRIER_ARRIVE(args->barrier, lock)
+#ifndef NO_TIMING
+    START_MEASURE((args->timer))
+#endif
 #ifdef PERF_COUNTERS
     if (args->tid == 0) {
         PCM_initPerformanceMonitor(NULL, NULL);
@@ -476,7 +477,7 @@ void
     baseFetcher *fetcher = args->fetcher;
     baseShuffler *shuffler = args->shuffler;
 
-    fetcher->fetchStartTime = *args->startTS;//set the fetch starting time.
+    fetcher->fetchStartTime = args->startTS;//set the fetch starting time.
 
     fetch_t *fetchR;
     fetch_t *fetchS;

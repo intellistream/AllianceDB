@@ -60,7 +60,7 @@ public:
 //    milliseconds *SdataTime;
 //    bool start = true;
 
-    uint64_t fetchStartTime;//initialize
+    uint64_t *fetchStartTime;//initialize
     T_TIMER *timer;
     t_state *state;
     int tid;
@@ -68,11 +68,6 @@ public:
     //used by HS.
     uint64_t cntR = 0;
     uint64_t cntS = 0;
-
-    uint64_t timeGap(uint64_t *arrival_ts) {
-
-        return *arrival_ts - (curtick() - fetchStartTime);
-    }
 
     virtual bool finish() = 0;
 
@@ -141,8 +136,7 @@ public:
      * @param relR
      * @param relS
      */
-    HS_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS, int tid, uint64_t *startTS,
-                  T_TIMER *timer)
+    HS_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS, int tid, T_TIMER *timer)
             : baseFetcher(relR, relS, tid, timer) {
         state = new t_state();
 
@@ -198,8 +192,7 @@ public:
      * @param relR
      * @param relS
      */
-    JM_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS, int tid, uint64_t *startTS,
-                  T_TIMER *timer)
+    JM_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS, int tid, T_TIMER *timer)
             : baseFetcher(relR, relS, tid, timer) {
         state = new t_state();
 
@@ -241,8 +234,7 @@ public:
                && state->start_index_S == state->end_index_S;
     }
 
-    JB_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS, int tid, uint64_t *startTS,
-                  T_TIMER *timer)
+    JB_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS, int tid, T_TIMER *timer)
             : baseFetcher(relR, relS, tid, timer) {
         state = new t_state[nthreads];
         int numRthr = relR->num_tuples / nthreads;// partition R,

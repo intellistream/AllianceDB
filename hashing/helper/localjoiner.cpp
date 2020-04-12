@@ -78,7 +78,6 @@ void SHJJoiner::join(int32_t tid, tuple_t *tuple, bool ISTupleR, int64_t *matche
     const uint32_t hashmask_S = htS->hash_mask;
     const uint32_t skipbits_S = htS->skip_bits;
 
-//    DEBUGMSG(1, "JOINING: tid: %d, tuple: %d, R?%d\n", tid, tuple->key, tuple_R)
     if (ISTupleR) {
         build_hashtable_single(htR, tuple, hashmask_R, skipbits_R);//(1)
 #ifdef MATCH
@@ -105,22 +104,9 @@ void SHJJoiner::join(int32_t tid, tuple_t *tuple, bool ISTupleR, int64_t *matche
 void SHJJoiner::clean(int32_t tid, tuple_t *tuple, bool cleanR) {
     if (cleanR) {
         //if SHJ is used, we need to clean up hashtable of R.
-#ifndef NO_TIMING
-        BEGIN_MEASURE_DEBUILD_ACC(timer)
-#endif
         debuild_hashtable_single(htR, tuple, htR->hash_mask, htR->skip_bits);
-#ifndef NO_TIMING
-        END_MEASURE_DEBUILD_ACC(timer)
-#endif
-
     } else {
-#ifndef NO_TIMING
-        BEGIN_MEASURE_DEBUILD_ACC(timer)
-#endif
         debuild_hashtable_single(htS, tuple, htS->hash_mask, htS->skip_bits);
-#ifndef NO_TIMING
-        END_MEASURE_DEBUILD_ACC(timer)
-#endif
 
     }
 }

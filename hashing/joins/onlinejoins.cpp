@@ -87,7 +87,16 @@ t_param &finishing(int nthreads, t_param &param, uint64_t *startTS, uint64_t *jo
     auto fp = fopen(path.c_str(), "w");
     /* now print the timing results: */
     for (i = 0; i < nthreads; i++) {
-        dump_partition_cost(param.args[i].timer, fp);//partition + sort/build
+        dump_partition_cost(param.args[i].timer, fp);//partition + sort/build + probe/merge
+    }
+#else
+#ifndef WAIT //everything except wait.
+    std::string name = param.algo_name + "_" + std::to_string(param.exp_id);
+    string path = "/data1/xtra/results/breakdown/partition_buildsort_probemerge_join/" + name.append(".txt");
+    auto fp = fopen(path.c_str(), "w");
+    /* now print the timing results: */
+    for (i = 0; i < nthreads; i++) {
+        dump_partition_cost(param.args[i].timer, fp);//partition + sort/build + probe/merge + match (no wait)
     }
 #else //everything is defined.
     std::string name = param.algo_name + "_" + std::to_string(param.exp_id).append(".txt");
@@ -105,7 +114,8 @@ t_param &finishing(int nthreads, t_param &param, uint64_t *startTS, uint64_t *jo
             average_partition_timer, name);
     fclose(fp);
     sortRecords(param.algo_name, param.exp_id, 0);
-#endif //
+#endif // except wait.
+#endif // partition with sort/build, probe/merge
 #endif // partition with sort/build only
 #endif // partition-only
 #endif //no_timing flag

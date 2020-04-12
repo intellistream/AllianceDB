@@ -152,11 +152,23 @@ double others_time = 0;
  */
 void breakdown_global(int64_t total_results, int nthreads,
                       double average_partition_timer, std::string txtFile) {
-    DEBUGMSG("average_partition_timer:%f\n",  average_partition_timer);
-    DEBUGMSG("txtFile:%s\n",txtFile.c_str());
+    DEBUGMSG("average_partition_timer:%f\n", average_partition_timer);
+    DEBUGMSG("txtFile:%s\n", txtFile.c_str());
     //time measurement correction
     string path;
     std::string line;
+
+    path = "/data1/xtra/results/breakdown/partition_buildsort_probemerge_join/" + txtFile;
+    std::ifstream infile0(path);
+    auto t0 = 0.0;
+    while (std::getline(infile0, line)) {
+        std::regex newlines_re("\n+");
+        auto resultstr = std::regex_replace(line, newlines_re, "");
+        t0 += std::stod(resultstr);
+    }
+
+    wait_time = t0 / nthreads;//corrects for wait_time.
+
     if (txtFile.find("PMJ") != std::string::npos) {
         auto t1 = 0.0;
         path = "/data1/xtra/results/breakdown/partition_buildsort_probemerge_only/" + txtFile;
@@ -165,7 +177,7 @@ void breakdown_global(int64_t total_results, int nthreads,
             std::regex newlines_re("\n+");
             auto resultstr = std::regex_replace(line, newlines_re, "");
             t1 += std::stod(resultstr);
-            DEBUGMSG("t1:%f\n",  t1 / nthreads);
+            DEBUGMSG("t1:%f\n", t1 / nthreads);
         }
 
         join_time = average_partition_timer - t1 / nthreads;
@@ -192,7 +204,7 @@ void breakdown_global(int64_t total_results, int nthreads,
             t1 += std::stod(resultstr);//corrects for joiner for SHJ.
 
         }
-        DEBUGMSG("t1:%f\n",  t1 / nthreads);
+        DEBUGMSG("t1:%f\n", t1 / nthreads);
         join_time = average_partition_timer - t1 / nthreads;
     }
 
@@ -251,124 +263,124 @@ void dump_partition_cost(T_TIMER *timer, _IO_FILE *pFile) {
     fflush(pFile);
 }
 
-
-void breakdown_thread(int64_t result, T_TIMER *timer, long tid, string file_name) {
-#ifndef NO_TIMING
-
-    if (result != 0) {
-        //time measurement correction
-        string path;
-        int lineid = 0;
-        std::string line;
-
-        if (file_name.find("PMJ") != std::string::npos) {
-            path = "/data1/xtra/results/breakdown/partition_buildsort_probemerge_only/" + file_name;
-            printf("Reading%s\n", path.c_str());
-            std::ifstream infile(path);
-            while (std::getline(infile, line)) {
-                if (lineid == tid) {
-                    std::regex newlines_re("\n+");
-                    auto resultstr = std::regex_replace(line, newlines_re, "");
-                    if (timer->partition_timer > std::stol(resultstr)) {
-                        timer->join_timer = timer->partition_timer - std::stol(resultstr);
-                    } else {
-                        printf("This is strange: it is faster when join is enabled!\n");
-                    }
-                    DEBUGMSG("joine_timer:%ld\n", timer->join_timer);
-                }
-                lineid++;
-            }
-
-            path = "/data1/xtra/results/breakdown/partition_buildsort_only/" + file_name;
-            std::ifstream infile2(path);
-            lineid = 0;
-            while (std::getline(infile2, line)) {
-                if (lineid == tid) {
-                    DEBUGMSG("Partition 2:%s\n", line.c_str());
-                    std::regex newlines_re("\n+");
-                    auto resultstr = std::regex_replace(line, newlines_re, "");
-                    timer->mergetimer = timer->partition_timer - timer->join_timer -
-                                        std::stol(resultstr);//corrects for merge for PMJ.
-                    DEBUGMSG("merge_timer:%ld\n", timer->mergetimer);
-                }
-                lineid++;
-            }
-        } else {//shj
-            path = "/data1/xtra/results/breakdown/partition_buildsort_only/" + file_name;
-            std::ifstream infile2(path);
-            lineid = 0;
-            while (std::getline(infile2, line)) {
-                if (lineid == tid) {
-                    DEBUGMSG("Partition 2:%s\n", line.c_str());
-                    std::regex newlines_re("\n+");
-                    auto resultstr = std::regex_replace(line, newlines_re, "");
-                    if (timer->partition_timer > std::stol(resultstr)) {
-                        timer->join_timer = timer->partition_timer -
-                                            std::stol(resultstr);//corrects for joiner for SHJ.
-                    } else {
-                        printf("This is strange: it is faster when join is enabled!\n");
-                    }
-                    DEBUGMSG("merge_timer:%ld\n", timer->mergetimer);
-
-                }
-                lineid++;
-            }
-        }
-        path = "/data1/xtra/results/breakdown/partition_only/" + file_name;
-        std::ifstream infile3(path);
-        lineid = 0;
-        while (std::getline(infile3, line)) {
-            if (lineid == tid) {
-                std::regex newlines_re("\n+");
-                auto resultstr = std::regex_replace(line, newlines_re, "");
-                if (file_name.find("SHJ") != std::string::npos) {
-                    timer->buildtimer = timer->partition_timer - timer->join_timer - timer->mergetimer -
-                                        std::stol(resultstr);//corrects for buildtimer for SHJ.
-                    printf("build timer: %ld\n", timer->buildtimer);
-                } else {
-                    timer->sorttimer = timer->partition_timer - timer->join_timer - timer->mergetimer -
-                                       std::stol(resultstr);//corrects for buildtimer for PMJ.
-                    DEBUGMSG("sort timer: %ld\n", timer->sorttimer);
-                }
-                timer->partition_timer = std::stol(resultstr);//corrects for partition_timer.
-                DEBUGMSG("partition timer: %ld\n", timer->partition_timer);
-            }
-            lineid++;
-        }
-
-        //WAIT, PART, BUILD, SORT, MERGE, JOIN, OTHERS
-        auto others = (timer->overall_timer -
-                       (timer->wait_timer + timer->partition_timer + timer->buildtimer + timer->sorttimer +
-                        timer->mergetimer + timer->join_timer));
-
-        matches_in_sort_total += timer->matches_in_sort;
 //
-        wait_time += timer->wait_timer;
-        partition_time += timer->partition_timer;
-        build_time += timer->buildtimer;
-        sort_time += timer->sorttimer;
-        merge_time += timer->mergetimer;
-        join_time += timer->join_timer;
-        others_time += others;
-
-        //for user to read.
-        printf("[Info] RUNTIME TOTAL, WAIT, PART, BUILD, SORT, MERGE, JOIN, others (cycles): \n");
-        printf("%llu \t %llu (%.2f%%) \t %llu (%.2f%%) \t %llu (%.2f%%)  "
-               "\t %llu (%.2f%%)  \t %llu (%.2f%%) \t %llu (%.2f%%) \t %llu (%.2f%%)\n",
-               timer->overall_timer,
-               timer->wait_timer, (timer->wait_timer * 100 / (double) timer->overall_timer),
-               timer->partition_timer, (timer->partition_timer * 100 / (double) timer->overall_timer),
-               timer->buildtimer, (timer->buildtimer * 100 / (double) timer->overall_timer),
-               timer->sorttimer, (timer->sorttimer * 100 / (double) timer->overall_timer),
-               timer->mergetimer, (timer->mergetimer * 100 / (double) timer->overall_timer),
-               timer->join_timer, (timer->join_timer * 100 / (double) timer->overall_timer),
-               others, (others * 100 / (double) timer->overall_timer)
-        );
-    } else {
-        DEBUGMSG("[Warning] This thread does not matches any tuple.\n\n");
-    }
-#endif
-}
+//void breakdown_thread(int64_t result, T_TIMER *timer, long tid, string file_name) {
+//#ifndef NO_TIMING
+//
+//    if (result != 0) {
+//        //time measurement correction
+//        string path;
+//        int lineid = 0;
+//        std::string line;
+//
+//        if (file_name.find("PMJ") != std::string::npos) {
+//            path = "/data1/xtra/results/breakdown/partition_buildsort_probemerge_only/" + file_name;
+//            printf("Reading%s\n", path.c_str());
+//            std::ifstream infile(path);
+//            while (std::getline(infile, line)) {
+//                if (lineid == tid) {
+//                    std::regex newlines_re("\n+");
+//                    auto resultstr = std::regex_replace(line, newlines_re, "");
+//                    if (timer->partition_timer > std::stol(resultstr)) {
+//                        timer->join_timer = timer->partition_timer - std::stol(resultstr);
+//                    } else {
+//                        printf("This is strange: it is faster when join is enabled!\n");
+//                    }
+//                    DEBUGMSG("joine_timer:%ld\n", timer->join_timer);
+//                }
+//                lineid++;
+//            }
+//
+//            path = "/data1/xtra/results/breakdown/partition_buildsort_only/" + file_name;
+//            std::ifstream infile2(path);
+//            lineid = 0;
+//            while (std::getline(infile2, line)) {
+//                if (lineid == tid) {
+//                    DEBUGMSG("Partition 2:%s\n", line.c_str());
+//                    std::regex newlines_re("\n+");
+//                    auto resultstr = std::regex_replace(line, newlines_re, "");
+//                    timer->mergetimer = timer->partition_timer - timer->join_timer -
+//                                        std::stol(resultstr);//corrects for merge for PMJ.
+//                    DEBUGMSG("merge_timer:%ld\n", timer->mergetimer);
+//                }
+//                lineid++;
+//            }
+//        } else {//shj
+//            path = "/data1/xtra/results/breakdown/partition_buildsort_only/" + file_name;
+//            std::ifstream infile2(path);
+//            lineid = 0;
+//            while (std::getline(infile2, line)) {
+//                if (lineid == tid) {
+//                    DEBUGMSG("Partition 2:%s\n", line.c_str());
+//                    std::regex newlines_re("\n+");
+//                    auto resultstr = std::regex_replace(line, newlines_re, "");
+//                    if (timer->partition_timer > std::stol(resultstr)) {
+//                        timer->join_timer = timer->partition_timer -
+//                                            std::stol(resultstr);//corrects for joiner for SHJ.
+//                    } else {
+//                        printf("This is strange: it is faster when join is enabled!\n");
+//                    }
+//                    DEBUGMSG("merge_timer:%ld\n", timer->mergetimer);
+//
+//                }
+//                lineid++;
+//            }
+//        }
+//        path = "/data1/xtra/results/breakdown/partition_only/" + file_name;
+//        std::ifstream infile3(path);
+//        lineid = 0;
+//        while (std::getline(infile3, line)) {
+//            if (lineid == tid) {
+//                std::regex newlines_re("\n+");
+//                auto resultstr = std::regex_replace(line, newlines_re, "");
+//                if (file_name.find("SHJ") != std::string::npos) {
+//                    timer->buildtimer = timer->partition_timer - timer->join_timer - timer->mergetimer -
+//                                        std::stol(resultstr);//corrects for buildtimer for SHJ.
+//                    printf("build timer: %ld\n", timer->buildtimer);
+//                } else {
+//                    timer->sorttimer = timer->partition_timer - timer->join_timer - timer->mergetimer -
+//                                       std::stol(resultstr);//corrects for buildtimer for PMJ.
+//                    DEBUGMSG("sort timer: %ld\n", timer->sorttimer);
+//                }
+//                timer->partition_timer = std::stol(resultstr);//corrects for partition_timer.
+//                DEBUGMSG("partition timer: %ld\n", timer->partition_timer);
+//            }
+//            lineid++;
+//        }
+//
+//        //WAIT, PART, BUILD, SORT, MERGE, JOIN, OTHERS
+//        auto others = (timer->overall_timer -
+//                       (timer->wait_timer + timer->partition_timer + timer->buildtimer + timer->sorttimer +
+//                        timer->mergetimer + timer->join_timer));
+//
+//        matches_in_sort_total += timer->matches_in_sort;
+////
+//        wait_time += timer->wait_timer;
+//        partition_time += timer->partition_timer;
+//        build_time += timer->buildtimer;
+//        sort_time += timer->sorttimer;
+//        merge_time += timer->mergetimer;
+//        join_time += timer->join_timer;
+//        others_time += others;
+//
+//        //for user to read.
+//        printf("[Info] RUNTIME TOTAL, WAIT, PART, BUILD, SORT, MERGE, JOIN, others (cycles): \n");
+//        printf("%llu \t %llu (%.2f%%) \t %llu (%.2f%%) \t %llu (%.2f%%)  "
+//               "\t %llu (%.2f%%)  \t %llu (%.2f%%) \t %llu (%.2f%%) \t %llu (%.2f%%)\n",
+//               timer->overall_timer,
+//               timer->wait_timer, (timer->wait_timer * 100 / (double) timer->overall_timer),
+//               timer->partition_timer, (timer->partition_timer * 100 / (double) timer->overall_timer),
+//               timer->buildtimer, (timer->buildtimer * 100 / (double) timer->overall_timer),
+//               timer->sorttimer, (timer->sorttimer * 100 / (double) timer->overall_timer),
+//               timer->mergetimer, (timer->mergetimer * 100 / (double) timer->overall_timer),
+//               timer->join_timer, (timer->join_timer * 100 / (double) timer->overall_timer),
+//               others, (others * 100 / (double) timer->overall_timer)
+//        );
+//    } else {
+//        DEBUGMSG("[Warning] This thread does not matches any tuple.\n\n");
+//    }
+//#endif
+//}
 
 uint64_t actual_start_timestamp;
 std::vector<double> global_record;
@@ -386,7 +398,7 @@ void merge(T_TIMER *timer, relation_t *relR, relation_t *relS, uint64_t *startTS
         global_record.push_back(timer->recordS.at(i) / (2.1 * 1E6));
     }
     //For latency and disorder measurement
-    uint64_t latency = -1;
+    int64_t latency = -1;
     int32_t gap = 0;
     auto Rrecord_size = timer->recordRID.size();
     for (auto i = 0; i < Rrecord_size; i++) {
@@ -394,6 +406,8 @@ void merge(T_TIMER *timer, relation_t *relR, relation_t *relS, uint64_t *startTS
                 timer->recordR.at(i) - actual_start_timestamp
                 - relR->payload->ts[timer->recordRID.at(i)]//12537240 ~ 9205048
                 + (uint64_t) (lastTS * 2.1 * 1E6);//waiting for the last tuple.
+        if (latency < 0)
+            latency = 0;
         global_record_latency.push_back(latency / (2.1 * 1E6));//cycle to ms
 
         gap = (int32_t) timer->recordRID.at(i) - i;//if it's sequentially processed, gap should be zero.
@@ -406,6 +420,8 @@ void merge(T_TIMER *timer, relation_t *relR, relation_t *relS, uint64_t *startTS
                 timer->recordS.at(i) - actual_start_timestamp //cycles
                 - relS->payload->ts[timer->recordSID.at(i)]//cycles
                 + (uint64_t) (lastTS * 2.1 * 1E6);//latency of one tuple.
+        if (latency < 0)
+            latency = 0;
         global_record_latency.push_back(latency / (2.1 * 1E6));
         gap = (int32_t) timer->recordSID.at(i) - i;//if it's sequentially processed, gap should be zero.
         global_record_gap.push_back(gap);

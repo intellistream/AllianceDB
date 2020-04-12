@@ -16,6 +16,7 @@
 //#define NO_TIMING
 //#define DEBUG
 
+#define WAIT
 #define JOIN
 #define MERGE
 #define MATCH

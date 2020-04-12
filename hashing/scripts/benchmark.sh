@@ -107,25 +107,37 @@ function PARTITION_ONLY() {
   sed -i -e "s/#define JOIN/#define NO_JOIN/g" ../joins/common_functions.h
   sed -i -e "s/#define MERGE/#define NO_MERGE/g" ../joins/common_functions.h
   sed -i -e "s/#define MATCH/#define NO_MATCH/g" ../joins/common_functions.h
+  sed -i -e "s/#define WAIT/#define NO_WAIT/g" ../joins/common_functions.h
 }
 
 function PARTITION_BUILD_SORT() {
   sed -i -e "s/#define NO_JOIN/#define JOIN/g" ../joins/common_functions.h
   sed -i -e "s/#define MERGE/#define NO_MERGE/g" ../joins/common_functions.h
   sed -i -e "s/#define MATCH/#define NO_MATCH/g" ../joins/common_functions.h
+  sed -i -e "s/#define WAIT/#define NO_WAIT/g" ../joins/common_functions.h
 }
 
 function PARTITION_BUILD_SORT_MERGE() {
   sed -i -e "s/#define NO_JOIN/#define JOIN/g" ../joins/common_functions.h
   sed -i -e "s/#define NO_MERGE/#define MERGE/g" ../joins/common_functions.h
   sed -i -e "s/#define MATCH/#define NO_MATCH/g" ../joins/common_functions.h
+  sed -i -e "s/#define WAIT/#define NO_WAIT/g" ../joins/common_functions.h
 }
 
 function PARTITION_BUILD_SORT_MERGE_JOIN() {
   sed -i -e "s/#define NO_JOIN/#define JOIN/g" ../joins/common_functions.h
   sed -i -e "s/#define NO_MERGE/#define MERGE/g" ../joins/common_functions.h
   sed -i -e "s/#define NO_MATCH/#define MATCH/g" ../joins/common_functions.h
+  sed -i -e "s/#define WAIT/#define NO_WAIT/g" ../joins/common_functions.h
 }
+
+function ALL_ON() {
+  sed -i -e "s/#define NO_JOIN/#define JOIN/g" ../joins/common_functions.h
+  sed -i -e "s/#define NO_MERGE/#define MERGE/g" ../joins/common_functions.h
+  sed -i -e "s/#define NO_MATCH/#define MATCH/g" ../joins/common_functions.h
+  sed -i -e "s/#define NO_WAIT/#define WAIT/g" ../joins/common_functions.h
+}
+
 function FULLBENCHRUN() {
   PARTITION_ONLY
   compile
@@ -142,6 +154,10 @@ function FULLBENCHRUN() {
   PARTITION_BUILD_SORT_MERGE_JOIN
   compile
   benchmarkRun
+
+  ALL_ON
+  compile
+  benchmarkRun
 }
 
 function SHJBENCHRUN() {
@@ -154,6 +170,10 @@ function SHJBENCHRUN() {
   benchmarkRun
 
   PARTITION_BUILD_SORT_MERGE_JOIN
+  compile
+  benchmarkRun
+
+  ALL_ON
   compile
   benchmarkRun
 }
@@ -281,7 +301,7 @@ for benchmark in ""; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZ
 done
 
 # general benchmark.
-for algo in PMJ_JM_NP PMJ_JBCR_NP SHJ_JM_NP; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
+for algo in SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
   for benchmark in "Stock" "Rovio" "YSB" "DEBS"; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "Stock"  "Rovio" "YSB"  "DEBS" # "Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "RAR2" "AD" "KD" "WS" "KD2" "WS2"  "WS3" "WS4"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1

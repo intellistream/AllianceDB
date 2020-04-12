@@ -220,9 +220,6 @@ int64_t probe_hashtable_single_measure(const hashtable_t *ht, const tuple_t *tup
     do {
         for (index_ht = 0; index_ht < b->count; index_ht++) {
             if (tuple->key == b->tuples[index_ht].key) {
-//                (*matches)++;
-//                DUMMY()
-//                this_thread::sleep_for(chrono::microseconds(timer->simulate_compute_time));
 #ifdef JOIN_RESULT_MATERIALIZE
                 /* copy to the result buffer */
                 /** We materialize only <S-key, S-RID> */
@@ -234,9 +231,6 @@ int64_t probe_hashtable_single_measure(const hashtable_t *ht, const tuple_t *tup
 #ifndef NO_TIMING
                 END_PROGRESSIVE_MEASURE(tuple->payloadID, timer, ISTupleR)
 #endif
-                /*if (thread_fun) {
-                    thread_fun(tuple, &b->tuples[index_ht], matches);
-                }*/
             }
         }
         b = b->next;/* follow overflow pointer */

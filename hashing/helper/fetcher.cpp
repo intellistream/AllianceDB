@@ -102,18 +102,21 @@ next_tuple_S_first(t_state *state, uint64_t *fetchStartTime, relation_t *relS, b
     uint64_t arrivalTsS;
 
     //try to read S first.
-    auto readTS = curtick() - *fetchStartTime;
     if (state->start_index_S < state->end_index_S) {
         readS = &relS->tuples[state->start_index_S];
+#ifdef WAIT
         //check the timestamp whether the tuple is ``ready" to be fetched.
         arrivalTsS = relS->payload->ts[readS->payloadID];
-        int64_t timegap = arrivalTsS - (readTS);
+        int64_t timegap = arrivalTsS - (curtick() - *fetchStartTime);
         if (timegap <= 0) {//if it's negative means our fetch is too slow.
             state->fetch.tuple = readS;
             state->fetch.ISTuple_R = false;
             state->start_index_S++;
             return &(state->fetch);
         }
+#else
+        return &(state->fetch);//return without checking for timestamp.
+#endif
 //        if (retry)
 //            printf("sid[%d], arrivalTsS:%ld, readTS:%ld\n", state->start_index_S, arrivalTsS, readTS);
     }
@@ -126,18 +129,21 @@ next_tuple_R_first(t_state *state, uint64_t *fetchStartTime, relation_t *relR, b
     tuple_t *readR = nullptr;
     uint64_t arrivalTsR;
     //try to read R first.
-    auto readTS = curtick() - *fetchStartTime;
     if (state->start_index_R < state->end_index_R) {
         readR = &relR->tuples[state->start_index_R];
+#ifdef WAIT
         //check the timestamp whether the tuple is ``ready" to be fetched.
         arrivalTsR = relR->payload->ts[readR->payloadID];
-        int64_t timegap = arrivalTsR - (readTS);
+        int64_t timegap = arrivalTsR - (curtick() - *fetchStartTime);
         if (timegap <= 0) {//if it's negative means our fetch is too slow.
             state->fetch.tuple = readR;
             state->fetch.ISTuple_R = true;
             state->start_index_R++;
             return &(state->fetch);
         }
+#else
+        return &(state->fetch);//return without checking for timestamp.
+#endif
 //        if (retry)
 //            printf("rid[%d] (%%d), arrivalTsR:%ld, readTS:%ld\n", state->start_index_R, arrivalTsR, readTS);
     }
@@ -148,10 +154,10 @@ next_tuple_R_first(t_state *state, uint64_t *fetchStartTime, relation_t *relR, b
 fetch_t *baseFetcher::_next_tuple(bool retry) {
     if (tryR) {
         tryR = false;
-        return next_tuple_R_first(state, &fetchStartTime, relR, retry);
+        return next_tuple_R_first(state, fetchStartTime, relR, retry);
     } else {
         tryR = true;
-        return next_tuple_S_first(state, &fetchStartTime, relS, retry);
+        return next_tuple_S_first(state, fetchStartTime, relS, retry);
     }
 }
 
@@ -159,10 +165,9 @@ fetch_t *baseFetcher::next_tuple() {
     if (tryR) {
 //        if (state->start_index_S < state->end_index_S)
         tryR = false;
-        auto rt = next_tuple_R_first(state, &fetchStartTime, relR, false);
+        auto rt = next_tuple_R_first(state, fetchStartTime, relR, false);
         if (rt != nullptr)
             return rt;
-
         bool retry = true;
         while (rt == nullptr &&
                !finish()) {
@@ -173,7 +178,7 @@ fetch_t *baseFetcher::next_tuple() {
     } else {
 //        if (state->start_index_R < state->end_index_R)
         tryR = true;
-        auto rt = next_tuple_S_first(state, &fetchStartTime, relS, false);
+        auto rt = next_tuple_S_first(state, fetchStartTime, relS, false);
         if (rt != nullptr)
             return rt;
         bool retry = true;
