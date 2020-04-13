@@ -141,57 +141,70 @@ function ALL_ON() {
 function FULLBENCHRUN() {
   PARTITION_ONLY
   compile
+  echo "PARTITION_ONLY"
   benchmarkRun
 
   PARTITION_BUILD_SORT
   compile
+  echo "PARTITION_BUILD_SORT"
   benchmarkRun
 
   PARTITION_BUILD_SORT_MERGE
   compile
+  echo "PARTITION_BUILD_SORT_MERGE"
   benchmarkRun
 
   PARTITION_BUILD_SORT_MERGE_JOIN
   compile
+  echo "PARTITION_BUILD_SORT_MERGE_JOIN"
   benchmarkRun
 
   ALL_ON
   compile
+  echo "ALL_ON"
   benchmarkRun
 }
 
 function SHJBENCHRUN() {
   PARTITION_ONLY
   compile
+  echo "PARTITION_ONLY"
   benchmarkRun
 
   PARTITION_BUILD_SORT
   compile
+  echo "PARTITION_BUILD_SORT"
   benchmarkRun
 
   PARTITION_BUILD_SORT_MERGE_JOIN
   compile
+  echo "PARTITION_BUILD_SORT_MERGE_JOIN"
   benchmarkRun
 
   ALL_ON
   compile
+  echo "ALL_ON"
   benchmarkRun
 }
 function FULLKIMRUN() {
   PARTITION_ONLY
   compile
+  echo "PARTITION_ONLY"
   KimRun
 
   PARTITION_BUILD_SORT
   compile
+  echo "PARTITION_BUILD_SORT"
   KimRun
 
   PARTITION_BUILD_SORT_MERGE
   compile
+  echo "PARTITION_BUILD_SORT_MERGE"
   KimRun
 
   PARTITION_BUILD_SORT_MERGE_JOIN
   compile
+  echo "PARTITION_BUILD_SORT_MERGE_JOIN"
   KimRun
 }
 

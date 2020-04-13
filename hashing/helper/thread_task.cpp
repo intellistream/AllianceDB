@@ -136,16 +136,15 @@ void
     //call different BaseFetcher.
     baseFetcher *fetcher = args->fetcher;
     baseShuffler *shuffler = args->shuffler;
-    *args->startTS = curtick();
-    fetcher->fetchStartTime = args->startTS;//set the fetch starting time.
     //fetch: pointer points to state.fetch (*fetch = &(state->fetch))
     fetch_t *fetch;
-
     /* wait at a barrier until each thread started*/
     BARRIER_ARRIVE(args->barrier, lock)
 #ifndef NO_TIMING
+    *args->startTS = curtick();
     START_MEASURE((args->timer))
 #endif
+    fetcher->fetchStartTime = args->startTS;//set the fetch starting time.
 #ifdef PERF_COUNTERS
     if (args->tid == 0) {
         PCM_initPerformanceMonitor(NULL, NULL);

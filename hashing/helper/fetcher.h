@@ -219,9 +219,7 @@ public:
         state->start_index_R = numRthr * tid;
         state->end_index_R = (last_thread(tid, nthreads)) ? relR->num_tuples : numRthr * (tid + 1);
 */
-
-        DEBUGMSG("TID:%d, R: start_index:%d, end_index:%d\n", tid, state->start_index_R, state->end_index_R);
-        printf("TID:%d, S: start_index:%d, start ts:%d\n", tid, state->start_index_S,
+     DEBUGMSG("TID:%d, S: start_index:%d, start ts:%d\n", tid, state->start_index_S,
                relS->payload->ts[state->start_index_S]);
     }
 };

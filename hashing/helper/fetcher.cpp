@@ -114,8 +114,11 @@ next_tuple_S_first(t_state *state, uint64_t *fetchStartTime, relation_t *relS, b
             state->start_index_S++;
             return &(state->fetch);
         }
-#else
-        return &(state->fetch);//return without checking for timestamp.
+#else//return without checking for timestamp.
+        state->fetch.tuple = readS;
+        state->fetch.ISTuple_R = false;
+        state->start_index_S++;
+        return &(state->fetch);
 #endif
 //        if (retry)
 //            printf("sid[%d], arrivalTsS:%ld, readTS:%ld\n", state->start_index_S, arrivalTsS, readTS);
@@ -141,8 +144,11 @@ next_tuple_R_first(t_state *state, uint64_t *fetchStartTime, relation_t *relR, b
             state->start_index_R++;
             return &(state->fetch);
         }
-#else
-        return &(state->fetch);//return without checking for timestamp.
+#else//return without checking for timestamp.
+        state->fetch.tuple = readR;
+        state->fetch.ISTuple_R = true;
+        state->start_index_R++;
+        return &(state->fetch);
 #endif
 //        if (retry)
 //            printf("rid[%d] (%%d), arrivalTsR:%ld, readTS:%ld\n", state->start_index_R, arrivalTsR, readTS);
