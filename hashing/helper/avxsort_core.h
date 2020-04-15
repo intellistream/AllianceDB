@@ -2191,7 +2191,7 @@ avxsort_rem_aligned(int64_t **inputptr, int64_t **outputptr, uint32_t nitems) {
     int64_t *inp = *inputptr;
     int64_t *out = *outputptr;
 
-#if 1 /* sort using AVX */
+#if 0 /* sort using AVX */
     /* each chunk keeps track of its temporary memory offset */
     int64_t *ptrs[8][2];/* [chunk-in, chunk-out-tmp] */
 

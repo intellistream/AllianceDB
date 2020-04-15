@@ -91,12 +91,23 @@ dump_timing(vector<double> vector, std::vector<double> vector_latency,
     outputFile_gap.close();
 }
 
+/**
+ * Used by lazy joiners.
+ * Only need to reference to thread-0 as all steps are synchronized.
+ * @param total_results
+ * @param nthreads
+ * @param timer
+ * @param lastTS
+ * @param pFile
+ */
 void breakdown_global(int64_t total_results, int nthreads, T_TIMER *timer, long lastTS, _IO_FILE *pFile) {
-
+    if (lastTS != 0) {//lazy join algorithms.
+        SET_WAIT_ACC(timer, lastTS * 2.1 * 1E6)
+        timer->overall_timer += timer->wait_timer;
+    }
     auto others = (timer->overall_timer -
                    (timer->wait_timer + timer->partition_timer + timer->buildtimer + timer->sorttimer +
                     timer->mergetimer + timer->join_timer));
-
     printf("%f\n%f\n%f\n%f\n%f\n%f\n%lu\n",
            (double) timer->wait_timer / total_results,
            (double) timer->partition_timer / total_results,
@@ -118,7 +129,6 @@ void breakdown_global(int64_t total_results, int nthreads, T_TIMER *timer, long 
     );
     fflush(pFile);
 }
-
 /**
  *
  * @param result
@@ -131,10 +141,6 @@ void breakdown_thread(int64_t result, T_TIMER *timer, long lastTS, _IO_FILE *pFi
         double diff_usec = (((timer->end).tv_sec * 1000000L + (timer->end).tv_usec)
                             - ((timer->start).tv_sec * 1000000L + (timer->start).tv_usec)) + lastTS * 1000L;
 
-        if (lastTS != 0) {//lazy join algorithms.
-            SET_WAIT_ACC(timer, lastTS * 2.1 * 1E6)
-            timer->overall_timer += timer->wait_timer;
-        }
         double cyclestuple = (timer->overall_timer) / result;
 
         //for system to read.
@@ -165,13 +171,13 @@ void breakdown_thread(int64_t result, T_TIMER *timer, long lastTS, _IO_FILE *pFi
                  timer->join_timer / result, (timer->join_timer * 100 / (double) timer->overall_timer),
                  others / result, (others * 100 / (double) timer->overall_timer)
         );
-        DEBUGMSG(0, "\n");
-        DEBUGMSG(0, "TOTAL-TIME-USECS, NUM-TUPLES, CYCLES-PER-TUPLE: \n");
-        DEBUGMSG("%.4lf \t %ld \t %.4lf", diff_usec, result, cyclestuple);
-        DEBUGMSG(0, "\n");
-        DEBUGMSG(0, "\n");
+        DEBUGMSG(1, "\n");
+        DEBUGMSG(1, "TOTAL-TIME-USECS, NUM-TUPLES, CYCLES-PER-TUPLE: \n");
+        DEBUGMSG(1, "%.4lf \t %ld \t %.4lf", diff_usec, result, cyclestuple);
+        DEBUGMSG(1, "\n");
+        DEBUGMSG(1, "\n");
     } else {
-        DEBUGMSG(0, "[Warning] This thread does not matches any tuple.\n\n");
+        DEBUGMSG(1, "[Warning] This thread does not matches any tuple.\n\n");
     }
 #endif
 }

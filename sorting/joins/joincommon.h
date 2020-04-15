@@ -18,11 +18,6 @@
 
 #ifndef ALLIANCEDB_JOINCOMMON_H
 #define ALLIANCEDB_JOINCOMMON_H
-
-//#define DEBUG
-//#define JOIN_MATERIALIZE
-//#define NO_TIMING
-
 #include <stdint.h>
 #include <stdlib.h>             /* posix_memalign, EXIT_FAILURE */
 #include <sys/time.h>           /* gettimeofday */
@@ -37,6 +32,11 @@
 
 #include "../utils/perf_counters.h"      /* PCM_x */
 
+//#define DEBUG
+//#define JOIN_MATERIALIZE
+//#define NO_TIMING
+
+#define DEBUG_SORT_CHECK 0
 #define scalarflag 0
 
 #define SKEW_HANDLING 1

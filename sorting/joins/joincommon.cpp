@@ -28,6 +28,15 @@
 
 #define REQUIRED_STACK_SIZE (32*1024*1024)
 
+std::string print_relation(tuple_t *tuple, int length) {
+    std::string tmp = "";
+    tmp.append("[");
+
+    for (int i = 0; i < length; i++)
+        tmp.append(std::to_string(tuple[i].key)).append(",");
+    tmp.append("]\n");
+    return tmp;
+}
 
 result_t *
 sortmergejoin_initrun(relation_t *relR, relation_t *relS, joinconfig_t *joincfg, void *(*jointhread)(void *),
@@ -231,10 +240,10 @@ sortmergejoin_initrun(relation_t *relR, relation_t *relS, joinconfig_t *joincfg,
     string path = "/data1/xtra/results/breakdown/" + name.append(".txt");
 
     auto fp = fopen(path.c_str(), "w");
-    for (i = 0; i < nthreads; i++) {
-        breakdown_thread(args[i].result, args[i].timer, window_size, fp);
-    }
-    breakdown_global(relR->num_tuples + relS->num_tuples, nthreads, args[0].timer, 0, fp);
+//    for (i = 0; i < nthreads; i++) {
+//        breakdown_thread(args[i].result, args[i].timer, window_size, fp);
+//    }
+    breakdown_global(relR->num_tuples + relS->num_tuples, nthreads, args[0].timer, window_size, fp);
     fclose(fp);
     sortRecords(algoName, exp_id, window_size);
 #endif

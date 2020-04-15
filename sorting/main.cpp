@@ -339,6 +339,7 @@ $ cat cpu-mapping.txt
 #include "joins/sortmergejoin_multiway.h"
 #include "joins/sortmergejoin_multiway_skewhandling.h"
 #include "joins/sortmergejoin_mpsm.h"
+#include "joins/joincommon.h"
 
 #ifdef JOIN_MATERIALIZE
 #include "tuple_buffer.h"       /* for materialization */
@@ -353,18 +354,6 @@ $ cat cpu-mapping.txt
 #include <chrono>
 
 using namespace std::chrono;
-
-/** Debug msg logging method */
-#ifdef DEBUG
-#define DEBUGMSG(COND, MSG, ...)                                        \
-    if(COND) {                                                          \
-        fprintf(stdout,                                                 \
-                "[DEBUG @ %s:%d\] "MSG, __FILE__, __LINE__, ## __VA_ARGS__); \
-    }
-#else
-#define DEBUGMSG(COND, MSG, ...)
-#endif
-
 
 /** Print out timing stats for the given start and end timestamps */
 extern void
@@ -642,8 +631,7 @@ main(int argc, char *argv[]) {
 
     createRelation(&relR, relR.payload, cmd_params.rkey, cmd_params.rts, cmd_params, cmd_params.loadfileR,
                    cmd_params.r_seed, cmd_params.step_sizeR, partitions);
-    DEBUGMSG("relR [aligned:%d]: %s", is_aligned(relR.tuples, CACHE_LINE_SIZE),
-             print_relation(relR.tuples, min((uint64_t) 1000, cmd_params.r_size)).c_str());
+    DEBUGMSG(1, "relR: %s", print_relation(relR.tuples, min((uint64_t) 1000, cmd_params.r_size)).c_str());
 
 
     /* create relation S */
@@ -658,6 +646,7 @@ main(int argc, char *argv[]) {
 
     createRelation(&relS, relS.payload, cmd_params.skey, cmd_params.sts, cmd_params, cmd_params.loadfileS,
                    cmd_params.s_seed, cmd_params.step_sizeS, cmd_params.nthreads);
+    DEBUGMSG(1, "relS: %s", print_relation(relS.tuples, min((uint64_t) 1000, cmd_params.s_size)).c_str());
 
     /* setup join configuration parameters */
     joinconfig_t joincfg;

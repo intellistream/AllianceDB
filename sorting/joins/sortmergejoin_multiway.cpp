@@ -150,10 +150,11 @@ sortmergejoin_multiway_thread(void *param) {
     BARRIER_ARRIVE(args->barrier, rv);
 
 #ifndef NO_TIMING
-    if (args->tid == 0)
+    if (args->tid == 0) {
         *args->startTS = curtick();//assign the start timestamp
-    START_MEASURE((args->timer))
-    BEGIN_MEASURE_PARTITION(args->timer)/* partitioning start */
+        START_MEASURE((args->timer))
+        BEGIN_MEASURE_PARTITION(args->timer)/* partitioning start */
+    }
 #endif
 
     /*************************************************************************
@@ -178,7 +179,8 @@ sortmergejoin_multiway_thread(void *param) {
     BARRIER_ARRIVE(args->barrier, rv);
 
 #ifndef NO_TIMING
-    END_MEASURE_PARTITION(args->timer)/* sort end */
+    if (args->tid == 0)
+        END_MEASURE_PARTITION(args->timer)/* sort end */
 #endif
 
 #ifdef PERF_COUNTERS
@@ -189,7 +191,8 @@ sortmergejoin_multiway_thread(void *param) {
 #endif
 
 #ifndef NO_TIMING
-    BEGIN_MEASURE_SORT_ACC(args->timer)/* sort start */
+    if (args->tid == 0)
+        BEGIN_MEASURE_SORT_ACC(args->timer)/* sort start */
 #endif
 
     /*************************************************************************
@@ -219,17 +222,18 @@ sortmergejoin_multiway_thread(void *param) {
     }
 
 #ifdef PERF_COUNTERS
-    BARRIER_ARRIVE(args->barrier, rv);
-    if (my_tid == 0) {
-        PCM_stop();
-        PCM_log("========= 2) Profiling results of Sorting Phase =========\n");
-        PCM_printResults();
-    }
+        BARRIER_ARRIVE(args->barrier, rv);
+        if (my_tid == 0) {
+            PCM_stop();
+            PCM_log("========= 2) Profiling results of Sorting Phase =========\n");
+            PCM_printResults();
+        }
 #endif
 
     BARRIER_ARRIVE(args->barrier, rv);
 #ifndef NO_TIMING
-    END_MEASURE_SORT_ACC(args->timer)/* sort end */
+    if (args->tid == 0)
+        END_MEASURE_SORT_ACC(args->timer)/* sort end */
 #endif
 
     /* check whether local relations are sorted? */
@@ -272,6 +276,7 @@ sortmergejoin_multiway_thread(void *param) {
 
 #ifndef NO_TIMING
     //    BEGIN_MEASURE_MERGEDELTA(args->timer)/* mergedelta start */
+    if (args->tid == 0)
         BEGIN_MEASURE_MERGE_ACC(args->timer)/* merge start */
 #endif
 //    BEGIN_MEASURE_JOIN(args->timer)/* join start */
@@ -312,7 +317,8 @@ sortmergejoin_multiway_thread(void *param) {
 
 
 #ifndef NO_TIMING
-    END_MEASURE_MERGE_ACC(args->timer)/* merge end */
+    if (args->tid == 0)
+        END_MEASURE_MERGE_ACC(args->timer)/* merge end */
 #endif
 
     /* To check whether sorted? */
@@ -321,7 +327,9 @@ sortmergejoin_multiway_thread(void *param) {
                  mergeRtotal, mergeStotal, my_tid);
      */
 #ifndef NO_TIMING
-    BEGIN_MEASURE_JOIN_ACC(args->timer)
+    if (args->tid == 0) {
+        BEGIN_MEASURE_JOIN_ACC(args->timer)
+    }
 #endif
 #ifdef PERF_COUNTERS
     if (my_tid == 0) {
@@ -337,8 +345,11 @@ sortmergejoin_multiway_thread(void *param) {
     mergejoin_phase(partsR, partsS, &mergedRelR, &mergedRelS, args);
 
 #ifndef NO_TIMING
-    //     END_MEASURE_JOIN_ACC(args->timer)/* join end */
+    BARRIER_ARRIVE(args->barrier, rv);
+    if (args->tid == 0) {
+        END_MEASURE_JOIN_ACC(args->timer)/* join end */
         END_MEASURE(args->timer)/* end overall*/
+    }
 #endif
 
 #ifdef PERF_COUNTERS

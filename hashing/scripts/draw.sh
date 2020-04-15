@@ -1,10 +1,10 @@
 #!/bin/bash
 
 
-## APP
-#python3 latency_figure_app.py
-#python3 throughput_figure_app.py
-#
+# APP
+python3 latency_figure_app.py
+python3 throughput_figure_app.py
+
 for id in {38..41}; do
   python3 progressive_figure.py -i $id
 done

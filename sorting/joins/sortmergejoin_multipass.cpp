@@ -53,7 +53,7 @@ sortmergejoin_multipass(relation_t *relR, relation_t *relS, joinconfig_t *joincf
     }
 
     return sortmergejoin_initrun(relR, relS, joincfg,
-                                 sortmergejoin_multipass_thread, exp_id,   window_size, "MPASS");
+                                 sortmergejoin_multipass_thread, exp_id, window_size, "MPASS");
 }
 
 
@@ -301,8 +301,9 @@ sortmergejoin_multipass_thread(void *param) {
 
     /* To check whether sorted? */
 
-//    check_sorted((int64_t *)tmpoutR, (int64_t *)tmpoutS,
-//                 mergeRtotal, mergeStotal, my_tid);
+//    check_sorted((int64_t *) mergerunsR, (int64_t *) mergerunsS, mergerunsR->num_tuples, mergerunsS->num_tuples,
+//                 my_tid);
+
 #ifndef NO_TIMING
     BEGIN_MEASURE_JOIN_ACC(args->timer)
 #endif
@@ -330,8 +331,9 @@ sortmergejoin_multipass_thread(void *param) {
     BARRIER_ARRIVE(args->barrier, rv);
 #endif
 
-
 #ifndef NO_TIMING
+    /* wait at a barrier until each thread completes join phase */
+    BARRIER_ARRIVE(args->barrier, rv)
     END_MEASURE_JOIN_ACC(args->timer)
     END_MEASURE(args->timer)/* end overall*/
 #endif
