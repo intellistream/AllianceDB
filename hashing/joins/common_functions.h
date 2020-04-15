@@ -16,12 +16,12 @@
 //#define NO_TIMING
 //#define DEBUG
 
-//#define WAIT
-//#define JOIN
-//#define MERGE
-//#define MATCH
+#define WAIT
+#define JOIN
+#define MERGE
+#define MATCH
 
-#define EAGER //disable when profiling.
+//#define EAGER //disable when profiling.
 
 #ifndef PTHREAD_BARRIER_SERIAL_THREAD
 #define PTHREAD_BARRIER_SERIAL_THREAD 1

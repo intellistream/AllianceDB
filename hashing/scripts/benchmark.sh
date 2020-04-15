@@ -1,6 +1,9 @@
 #!/bin/bash
 #set -e
 
+profile_breakdown=1 # set to 1 if we want to measure time breakdown! and also dedefine eager in common_function.h
+
+
 function compile() {
   cmake .. | tail -n +90
   make -C .. clean -s
@@ -60,7 +63,7 @@ function SetYSBParameters() {
   ts=1 # stream case
   WINDOW_SIZE=500
   RSIZE=1000
-  SSIZE=50000000
+  SSIZE=5000000
   RPATH=/data1/xtra/datasets/YSB/campaigns_id.txt
   SPATH=/data1/xtra/datasets/YSB/ad_events.txt
   RKEY=0
@@ -82,7 +85,7 @@ function SetDEBSParameters() {
   STS=0
 }
 
-DEFAULT_WINDOW_SIZE=1000 #(ms) -- 2 seconds
+DEFAULT_WINDOW_SIZE=1000 #(ms) -- 1 seconds
 DEFAULT_STEP_SIZE=12800  # |tuples| per ms. -- 128K per seconds. ## this controls the guranalrity of input stream.
 function ResetParameters() {
   TS_DISTRIBUTION=0                # uniform time distribution
@@ -223,14 +226,38 @@ function SHJKIMRUN() {
 }
 
 function RUNALL() {
-  if [ $algo == SHJ_JM_NP ] || [ $algo == SHJ_JBCR_NP ]; then
-    SHJBENCHRUN
-  else
-    if [ $algo == PMJ_JM_NP ] || [ $algo == PMJ_JBCR_NP ]; then
-      FULLBENCHRUN
+  if [ $profile_breakdown == 1 ]; then
+    if [ $algo == SHJ_JM_NP ] || [ $algo == SHJ_JBCR_NP ]; then
+      SHJBENCHRUN
     else
-      benchmarkRun
+      if [ $algo == PMJ_JM_NP ] || [ $algo == PMJ_JBCR_NP ]; then
+        FULLBENCHRUN
+      else
+        benchmarkRun
+      fi
     fi
+  else
+    ALL_ON
+    compile
+    benchmarkRun
+  fi
+}
+
+function RUNALLKIM() {
+  if [ $profile_breakdown == 1 ]; then
+    if [ $algo == SHJ_JM_NP ] || [ $algo == SHJ_JBCR_NP ]; then
+      SHJKIMRUN
+    else
+      if [ $algo == PMJ_JM_NP ] || [ $algo == PMJ_JBCR_NP ]; then
+        FULLKIMRUN
+      else
+        KimRun
+      fi
+    fi
+  else
+    ALL_ON
+    compile
+    KimRun
   fi
 }
 
@@ -314,27 +341,28 @@ for benchmark in ""; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZ
 done
 
 # general benchmark.
-for algo in SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
-  for benchmark in "Stock" "Rovio" "YSB" "DEBS"; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "Stock"  "Rovio" "YSB"  "DEBS" # "Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "RAR2" "AD" "KD" "WS" "KD2" "WS2"  "WS3" "WS4"
+for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
+  for benchmark in "YSB"; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "Stock"  "Rovio" "YSB"  "DEBS" # "Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "RAR2" "AD" "KD" "WS" "KD2" "WS2" "WS3" "WS4"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
-    "AR") #test arrival rate
+    "AR") #test arrival rate and assume both inputs have same arrival rate.
       id=0
       ## Figure 1
       ResetParameters
-      STEP_SIZE=500
+      FIXS=0 #varying both.
+      STEP_SIZE=12800
       echo test varying input arrival rate 0 - 4 # test (1) means infinite arrival rate (batch).
       ts=0                                       # batch case
       echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
-      KimRun
+      RUNALLKIM
       let "id++"
 
       ts=1 # stream case
       # step size should be bigger than nthreads
-      for STEP_SIZE in 250 500 750 1000; do #
+      for STEP_SIZE in 1600 3200 6400 12800; do #128000
         #WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
         echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
-        KimRun
+        RUNALLKIM
         let "id++"
       done
       ;;
@@ -346,11 +374,11 @@ for algo in SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #NPO PRO SHJ_JM_NP S
       echo test relative arrival rate 28 - 31
       ts=1 # stream case
       # step size should be bigger than nthreads
-      STEP_SIZE_S=250
-      for STEP_SIZE in 250 500 750 1000; do
+      STEP_SIZE_S=128000
+      for STEP_SIZE in 1600 3200 6400 12800; do
         #        WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
         echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
-        KimRun
+        RUNALLKIM
         let "id++"
       done
       ;;
@@ -363,11 +391,11 @@ for algo in SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #NPO PRO SHJ_JM_NP S
       ts=1 # stream case
       # step size should be bigger than nthreads
       # remember to fix the relation size of S.
-      STEP_SIZE_S=1000
-      for STEP_SIZE in 250 500 750 1000; do
+      STEP_SIZE_S=12800
+      for STEP_SIZE in 1600 3200 6400 12800; do
         #        WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
         echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
-        KimRun
+        RUNALLKIM
         let "id++"
       done
       ;;
@@ -378,7 +406,7 @@ for algo in SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #NPO PRO SHJ_JM_NP S
       TS_DISTRIBUTION=2
       echo test varying timestamp distribution 5 - 9
       for ZIPF_FACTOR in 0 0.4 0.8 1.2 1.6; do #
-        KimRun
+        RUNALLKIM
         let "id++"
       done
       ;;
@@ -388,12 +416,12 @@ for algo in SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #NPO PRO SHJ_JM_NP S
       ResetParameters
       echo test varying key distribution 10 - 15
       distrbution=0 #unique
-      KimRun
+      RUNALLKIM
       let "id++"
 
       distrbution=2 #varying zipf factor
       for skew in 0 0.4 0.8 1.2 1.6; do
-        KimRun
+        RUNALLKIM
         let "id++"
       done
       ;;
@@ -404,12 +432,12 @@ for algo in SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #NPO PRO SHJ_JM_NP S
       ts=0 # data at rest.
       echo test varying key distribution 19 - 24
       distrbution=0 #unique
-      KimRun
+      RUNALLKIM
       let "id++"
 
       distrbution=2 #zipf
       for skew in 0 0.4 0.8 1.2 1.6; do
-        KimRun
+        RUNALLKIM
         let "id++"
       done
       ;;
@@ -419,7 +447,7 @@ for algo in SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #NPO PRO SHJ_JM_NP S
       ResetParameters
       echo test varying window size 16 - 18
       for WINDOW_SIZE in 500 750 1000; do
-        KimRun
+        RUNALLKIM
         let "id++"
       done
       ;;
@@ -430,7 +458,7 @@ for algo in SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #NPO PRO SHJ_JM_NP S
       ts=0 # data at rest.
       echo test varying window size 25 - 27
       for WINDOW_SIZE in 500 750 1000; do
-        KimRun
+        RUNALLKIM
         let "id++"
       done
       ;;
@@ -440,7 +468,7 @@ for algo in SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #NPO PRO SHJ_JM_NP S
       ResetParameters
       echo test varying window size 36
       for WINDOW_SIZE in 1500; do
-        KimRun
+        RUNALLKIM
         let "id++"
       done
       ;;
@@ -451,7 +479,7 @@ for algo in SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #NPO PRO SHJ_JM_NP S
       ts=0 # data at rest.
       echo test varying window size 37
       for WINDOW_SIZE in 1500; do
-        KimRun
+        RUNALLKIM
         let "id++"
       done
       ;;
@@ -476,7 +504,7 @@ for algo in SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #NPO PRO SHJ_JM_NP S
     "DEBS")
       id=41
       ResetParameters
-      SetYSBParameters
+      SetDEBSParameters
       RUNALL
       ;;
     "ScaleStock")
@@ -512,6 +540,7 @@ for algo in SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #NPO PRO SHJ_JM_NP S
     "ScaleDEBS")
       id=54
       ResetParameters
+      SetDEBSParameters
       echo test scalability 54 - 57
       for Threads in 1 2 4 8; do
         benchmarkRun
@@ -521,7 +550,6 @@ for algo in SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #NPO PRO SHJ_JM_NP S
     esac
   done
 done
-
 ##back up.
 #  "PMJ_MERGE_STEP_STUDY")
 #    id=66

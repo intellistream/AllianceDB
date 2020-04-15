@@ -9,7 +9,7 @@ function compile() {
 
 function benchmarkRun() {
   #####native execution
-  echo "==benchmark:$benchmark -a $algo -n $Threads -I $id -G $group -g $gap== "
+  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id== "
   #echo 3 >/proc/sys/vm/drop_caches
   ../sorting -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id
   if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit 1; fi
@@ -59,7 +59,7 @@ function SetYSBParameters() {
   ts=1 # stream case
   WINDOW_SIZE=500
   RSIZE=1000
-  SSIZE=50000000
+  SSIZE=5000000
   RPATH=/data1/xtra/datasets/YSB/campaigns_id.txt
   SPATH=/data1/xtra/datasets/YSB/ad_events.txt
   RKEY=0
@@ -71,8 +71,8 @@ function SetYSBParameters() {
 function SetDEBSParameters() {
   ts=1 # stream case
   WINDOW_SIZE=0
-  RSIZE=1000000 #640 MB
-  SSIZE=1000000 #640 MB
+  RSIZE=5000000 #40 MB
+  SSIZE=5000000 #40 MB
   RPATH=/data1/xtra/datasets/DEBS/posts_key32_partitioned.csv
   SPATH=/data1/xtra/datasets/DEBS/comments_key32_partitioned.csv
   RKEY=0
@@ -81,7 +81,7 @@ function SetDEBSParameters() {
   STS=0
 }
 
-DEFAULT_WINDOW_SIZE=1000 #(ms) -- 2 seconds
+DEFAULT_WINDOW_SIZE=1000 #(ms) -- 1 seconds
 DEFAULT_STEP_SIZE=12800   # |tuples| per ms. -- 128K per seconds. ## this controls the guranalrity of input stream.
 function ResetParameters() {
   TS_DISTRIBUTION=0                # uniform time distribution
@@ -95,8 +95,6 @@ function ResetParameters() {
   FIXS=1
   ts=1 # stream case
   Threads=8
-  progress_step=20
-  merge_step=16
   group=2
   gap=2000
 }
@@ -138,11 +136,12 @@ for algo in m-way m-pass; do
   for benchmark in "Stock" "Rovio" "YSB" "DEBS" ; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "Stock" "Rovio" "YSB" "DEBS" "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "AR" "RAR" "RAR2" "AD" "KD" "WS" "KD2" "WS2" "WS3" "WS4"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
-    "AR") #test arrival rate
+    "AR") #test arrival rate and assume both inputs have same arrival rate.
       id=0
       ## Figure 1
       ResetParameters
-      STEP_SIZE=500
+      FIXS=0 #varying both.
+      STEP_SIZE=12800
       echo test varying input arrival rate 0 - 4 # test (1) means infinite arrival rate (batch).
       ts=0                                       # batch case
       echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
@@ -151,7 +150,7 @@ for algo in m-way m-pass; do
 
       ts=1 # stream case
       # step size should be bigger than nthreads
-      for STEP_SIZE in 250 500 750 1000; do #
+      for STEP_SIZE in 1600 3200 6400 12800; do #128000
         #WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
         echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
         KimRun
@@ -166,8 +165,8 @@ for algo in m-way m-pass; do
       echo test relative arrival rate 28 - 31
       ts=1 # stream case
       # step size should be bigger than nthreads
-      STEP_SIZE_S=250
-      for STEP_SIZE in 250 500 750 1000; do
+      STEP_SIZE_S=128000
+      for STEP_SIZE in 1600 3200 6400 12800; do
         #        WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
         echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
         KimRun
@@ -183,8 +182,8 @@ for algo in m-way m-pass; do
       ts=1 # stream case
       # step size should be bigger than nthreads
       # remember to fix the relation size of S.
-      STEP_SIZE_S=1000
-      for STEP_SIZE in 250 500 750 1000; do
+      STEP_SIZE_S=12800
+      for STEP_SIZE in 1600 3200 6400 12800; do
         #        WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
         echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
         KimRun
@@ -296,7 +295,7 @@ for algo in m-way m-pass; do
     "DEBS")
       id=41
       ResetParameters
-      SetYSBParameters
+      SetDEBSParameters
       benchmarkRun
       ;;
     "ScaleStock")
@@ -332,6 +331,7 @@ for algo in m-way m-pass; do
     "ScaleDEBS")
       id=54
       ResetParameters
+      SetDEBSParameters
       echo test scalability 54 - 57
       for Threads in 1 2 4 8; do
         benchmarkRun

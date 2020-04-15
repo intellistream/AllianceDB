@@ -128,8 +128,6 @@ void breakdown_global(int64_t total_results, int nthreads, T_TIMER *timer, long 
             (double) timer->join_timer / total_results,
             others / total_results
     );
-
-    fprintf(pFile, "%d\n", matches_in_sort_total);
     fflush(pFile);
 }
 
@@ -167,7 +165,7 @@ void breakdown_global(int64_t total_results, int nthreads,
         t0 += std::stod(resultstr);
     }
 
-    wait_time = t0 / nthreads;//corrects for wait_time.
+    wait_time = average_partition_timer - t0 / nthreads;//corrects for wait_time.
 
     if (txtFile.find("PMJ") != std::string::npos) {
         auto t1 = 0.0;
@@ -180,7 +178,7 @@ void breakdown_global(int64_t total_results, int nthreads,
             DEBUGMSG("t1:%f\n", t1 / nthreads);
         }
 
-        join_time = average_partition_timer - t1 / nthreads;
+        join_time = average_partition_timer - wait_time - t1 / nthreads;
 
         auto t2 = 0.0;
         path = "/data1/xtra/results/breakdown/partition_buildsort_only/" + txtFile;
@@ -191,7 +189,7 @@ void breakdown_global(int64_t total_results, int nthreads,
             auto resultstr = std::regex_replace(line, newlines_re, "");
             t2 += std::stod(resultstr);//corrects for merge for PMJ.
         }
-        merge_time = average_partition_timer - join_time - t2 / nthreads;//corrects for merge for PMJ.
+        merge_time = average_partition_timer - wait_time - join_time - t2 / nthreads;//corrects for merge for PMJ.
 
     } else {
         path = "/data1/xtra/results/breakdown/partition_buildsort_only/" + txtFile;
@@ -205,7 +203,7 @@ void breakdown_global(int64_t total_results, int nthreads,
 
         }
         DEBUGMSG("t1:%f\n", t1 / nthreads);
-        join_time = average_partition_timer - t1 / nthreads;
+        join_time = average_partition_timer - wait_time - t1 / nthreads;
     }
 
     path = "/data1/xtra/results/breakdown/partition_only/" + txtFile;
@@ -218,11 +216,13 @@ void breakdown_global(int64_t total_results, int nthreads,
     }
 
     if (txtFile.find("SHJ") != std::string::npos) {
-        build_time = average_partition_timer - join_time - merge_time - t1 / nthreads;//corrects for buildtimer for SHJ.
-        printf("build timer: %f\n", build_time);
+        build_time = average_partition_timer - wait_time - join_time - merge_time -
+                     t1 / nthreads;//corrects for buildtimer for SHJ.
+        DEBUGMSG("build timer: %f\n", build_time);
     } else {
-        sort_time = average_partition_timer - join_time - merge_time - t1 / nthreads;//corrects for buildtimer for PMJ.
-        printf("sort timer: %f\n", sort_time);
+        sort_time = average_partition_timer - wait_time - join_time - merge_time -
+                    t1 / nthreads;//corrects for buildtimer for PMJ.
+        DEBUGMSG("sort timer: %f\n", sort_time);
     }
     partition_time = t1 / nthreads;//corrects for partition_timer.
     DEBUGMSG("partition timer: %f\n", partition_time);
@@ -251,8 +251,6 @@ void breakdown_global(int64_t total_results, int nthreads,
             (double) join_time / total_results,
             others_time / total_results
     );
-
-    fprintf(fp, "%d\n", matches_in_sort_total);
     fflush(fp);
 }
 
@@ -406,8 +404,8 @@ void merge(T_TIMER *timer, relation_t *relR, relation_t *relS, uint64_t *startTS
                 timer->recordR.at(i) - actual_start_timestamp
                 - relR->payload->ts[timer->recordRID.at(i)]//12537240 ~ 9205048
                 + (uint64_t) (lastTS * 2.1 * 1E6);//waiting for the last tuple.
-        if (latency < 0)
-            latency = 0;
+//        if (latency < 0)
+//            latency = 0;
         global_record_latency.push_back(latency / (2.1 * 1E6));//cycle to ms
 
         gap = (int32_t) timer->recordRID.at(i) - i;//if it's sequentially processed, gap should be zero.
@@ -420,8 +418,8 @@ void merge(T_TIMER *timer, relation_t *relR, relation_t *relS, uint64_t *startTS
                 timer->recordS.at(i) - actual_start_timestamp //cycles
                 - relS->payload->ts[timer->recordSID.at(i)]//cycles
                 + (uint64_t) (lastTS * 2.1 * 1E6);//latency of one tuple.
-        if (latency < 0)
-            latency = 0;
+//        if (latency < 0)
+//            latency = 0;
         global_record_latency.push_back(latency / (2.1 * 1E6));
         gap = (int32_t) timer->recordSID.at(i) - i;//if it's sequentially processed, gap should be zero.
         global_record_gap.push_back(gap);
