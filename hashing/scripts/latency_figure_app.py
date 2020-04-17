@@ -20,7 +20,7 @@ MARKERS = (['o', 's', 'v', "^", "h", "v", ">", "x", "d", "<", "|", "", "+", "_"]
 # you may want to change the color map for different figures
 COLOR_MAP = ('#F15854', '#5DA5DA', '#60BD68', '#B276B2', '#DECF3F', '#F17CB0', '#B2912F', '#FAA43A', '#AFAFAF')
 # you may want to change the patterns for different figures
-PATTERNS = (["|", "\\", "/", "+", "-", ".", "*", "x", "o", "O", "////", ".", "|||", "o", "---", "+", "\\\\", "*"])
+PATTERNS = (["|", "\\", "/", "-", " ", ".", "..", "o", "o", "O", "////", ".", "|||", "o", "---", "+", "\\\\", "*"])
 LABEL_WEIGHT = 'bold'
 LINE_COLORS = COLOR_MAP
 LINE_WIDTH = 3.0
@@ -34,14 +34,6 @@ matplotlib.rcParams['ytick.labelsize'] = TICK_FONT_SIZE
 matplotlib.rcParams['font.family'] = OPT_FONT_NAME
 
 FIGURE_FOLDER = '/data1/xtra/results/figure'
-
-
-# there are some embedding problems if directly exporting the pdf figure using matplotlib.
-# so we generate the eps format first and convert it to pdf.
-def ConvertEpsToPdf(dir_filename):
-    os.system("epstopdf --outfile " + dir_filename + ".pdf " + dir_filename + ".eps")
-    os.system("rm -rf " + dir_filename + ".eps")
-
 
 def DrawLegend(legend_labels, filename):
     fig = pylab.figure()
@@ -108,7 +100,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
                    )
 
     # you may need to tune the xticks position to get the best figure.
-    plt.xticks(index + 2.4 * width, x_values)
+    plt.xticks(index + 2.5 * width, x_values)
     plt.yscale('log')
 
     plt.grid(axis='y', color='gray')
@@ -121,7 +113,6 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
     plt.ylabel(y_label, fontproperties=LABEL_FP)
 
     plt.savefig(FIGURE_FOLDER + "/" + filename + ".pdf", bbox_inches='tight')
-
 
 # example for reading csv file
 def ReadFile():
@@ -200,16 +191,16 @@ def ReadFile():
     y.append(col8)
     return y
 
-
 if __name__ == "__main__":
     x_values = ["Stock", "Rovio", "YSB", "DEBS"]
 
     y_values = ReadFile()
 
-    legend_labels = ['PRJ$^l$', 'NPJ$^l$', 'MPASS$^l$', 'MWAY$^l$', 'JM_SHJ$^e$', 'JB_SHJ$^e$', 'JM_PMJ$^e$', 'JB_PMJ$^e$']
+    legend_labels = ['PRJ', 'NPJ', 'MPASS', 'MWAY', 'SHJ$^{JM}$', 'SHJ$^{JB}$', 'PMJ$^{JM}$',
+                     'PMJ$^{JB}$']
 
     DrawFigure(x_values, y_values, legend_labels,
                '', '95$^{th}$ latency (ms)', 0,
                400, 'latency_figure_app', False)
 
-    DrawLegend(legend_labels, 'latency_legend')
+    # DrawLegend(legend_labels, 'latency_legend')

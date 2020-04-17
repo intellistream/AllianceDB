@@ -1,0 +1,111 @@
+[  3%] Building CXX object CMakeFiles/sorting.dir/datagen/genzipf.cpp.o
+[  6%] Building CXX object CMakeFiles/sorting.dir/lib/msr.cpp.o
+[ 10%] Building CXX object CMakeFiles/sorting.dir/lib/cpucounters.cpp.o
+[ 13%] Building CXX object CMakeFiles/sorting.dir/datagen/generator.cpp.o
+[ 16%] Building CXX object CMakeFiles/sorting.dir/lib/utils.cpp.o
+[ 20%] Building CXX object CMakeFiles/sorting.dir/lib/client_bw.cpp.o
+[ 23%] Building CXX object CMakeFiles/sorting.dir/lib/mmio.cpp.o
+[ 26%] Building CXX object CMakeFiles/sorting.dir/lib/pci.cpp.o
+[ 30%] Building CXX object CMakeFiles/sorting.dir/utils/perf_counters.cpp.o
+[ 33%] Building CXX object CMakeFiles/sorting.dir/affinity/cpu_mapping.cpp.o
+[ 36%] Building CXX object CMakeFiles/sorting.dir/affinity/memalloc.cpp.o
+[ 40%] Building CXX object CMakeFiles/sorting.dir/affinity/numa_shuffle.cpp.o
+[ 43%] Building CXX object CMakeFiles/sorting.dir/joins/joincommon.cpp.o
+[ 46%] Building CXX object CMakeFiles/sorting.dir/utils/generic_task_queue.cpp.o
+[ 50%] Building CXX object CMakeFiles/sorting.dir/joins/merge.cpp.o
+[ 53%] Building CXX object CMakeFiles/sorting.dir/joins/scalar_multiwaymerge.cpp.o
+[ 56%] Building CXX object CMakeFiles/sorting.dir/joins/partition.cpp.o
+[ 60%] Building CXX object CMakeFiles/sorting.dir/joins/avxsort.cpp.o
+[ 63%] Building CXX object CMakeFiles/sorting.dir/joins/scalarsort.cpp.o
+[ 66%] Building CXX object CMakeFiles/sorting.dir/joins/avx_multiwaymerge.cpp.o
+[ 70%] Building CXX object CMakeFiles/sorting.dir/joins/avxsort_multiway.cpp.o
+[ 73%] Building CXX object CMakeFiles/sorting.dir/joins/sortmergejoin_multiway.cpp.o
+[ 76%] Building CXX object CMakeFiles/sorting.dir/joins/sortmergejoin_multipass.cpp.o
+[ 80%] Building CXX object CMakeFiles/sorting.dir/joins/sortmergejoin_mpsm.cpp.o
+[ 83%] Building CXX object CMakeFiles/sorting.dir/test/check_avxsort.cpp.o
+[ 86%] Building CXX object CMakeFiles/sorting.dir/joins/sortmergejoin_multiway_skewhandling.cpp.o
+[ 90%] Building CXX object CMakeFiles/sorting.dir/test/testutil.cpp.o
+[ 93%] Building CXX object CMakeFiles/sorting.dir/timer/t_timer.cpp.o
+[ 96%] Building CXX object CMakeFiles/sorting.dir/main.cpp.o
+[100%] Linking CXX executable sorting
+[100%] Built target sorting
+SIMD 74-77
+Scanning dependencies of target sorting
+[  3%] Building CXX object CMakeFiles/sorting.dir/lib/msr.cpp.o
+[  6%] Building CXX object CMakeFiles/sorting.dir/datagen/genzipf.cpp.o
+[ 10%] Building CXX object CMakeFiles/sorting.dir/datagen/generator.cpp.o
+[ 13%] Building CXX object CMakeFiles/sorting.dir/lib/cpucounters.cpp.o
+[ 16%] Building CXX object CMakeFiles/sorting.dir/lib/utils.cpp.o
+[ 20%] Building CXX object CMakeFiles/sorting.dir/lib/client_bw.cpp.o
+[ 23%] Building CXX object CMakeFiles/sorting.dir/lib/mmio.cpp.o
+[ 26%] Building CXX object CMakeFiles/sorting.dir/lib/pci.cpp.o
+[ 30%] Building CXX object CMakeFiles/sorting.dir/utils/perf_counters.cpp.o
+[ 33%] Building CXX object CMakeFiles/sorting.dir/affinity/cpu_mapping.cpp.o
+[ 36%] Building CXX object CMakeFiles/sorting.dir/affinity/memalloc.cpp.o
+[ 40%] Building CXX object CMakeFiles/sorting.dir/affinity/numa_shuffle.cpp.o
+[ 43%] Building CXX object CMakeFiles/sorting.dir/joins/joincommon.cpp.o
+[ 46%] Building CXX object CMakeFiles/sorting.dir/utils/generic_task_queue.cpp.o
+[ 50%] Building CXX object CMakeFiles/sorting.dir/joins/merge.cpp.o
+[ 53%] Building CXX object CMakeFiles/sorting.dir/joins/scalar_multiwaymerge.cpp.o
+[ 56%] Building CXX object CMakeFiles/sorting.dir/joins/partition.cpp.o
+[ 60%] Building CXX object CMakeFiles/sorting.dir/joins/avxsort.cpp.o
+[ 63%] Building CXX object CMakeFiles/sorting.dir/joins/scalarsort.cpp.o
+[ 66%] Building CXX object CMakeFiles/sorting.dir/joins/avx_multiwaymerge.cpp.o
+[ 70%] Building CXX object CMakeFiles/sorting.dir/joins/avxsort_multiway.cpp.o
+[ 73%] Building CXX object CMakeFiles/sorting.dir/joins/sortmergejoin_multiway.cpp.o
+[ 76%] Building CXX object CMakeFiles/sorting.dir/joins/sortmergejoin_multipass.cpp.o
+[ 80%] Building CXX object CMakeFiles/sorting.dir/joins/sortmergejoin_mpsm.cpp.o
+[ 83%] Building CXX object CMakeFiles/sorting.dir/joins/sortmergejoin_multiway_skewhandling.cpp.o
+[ 86%] Building CXX object CMakeFiles/sorting.dir/test/check_avxsort.cpp.o
+[ 90%] Building CXX object CMakeFiles/sorting.dir/test/testutil.cpp.o
+[ 93%] Building CXX object CMakeFiles/sorting.dir/timer/t_timer.cpp.o
+[ 96%] Building CXX object CMakeFiles/sorting.dir/main.cpp.o
+[100%] Linking CXX executable sorting
+[100%] Built target sorting
+==benchmark:SIMD_STUDY -a m-way -t 0 -w 1000 -e 12800 -q 128000 -l 1 -d 0 -z 0 -D 0 -Z 0 -n 8 -I 74 -W 1 ==
+[INFO ] Initializing logical <-> physical thread/CPU mappings...
+[WARN ] NUMA is not available, using single NUMA-region as default.
+[WARN ] Using a default L3-cache size of 20480.000 MiB for the multi-way merge buffer.
+[WARN ] Change it based on your machine using -m/--mwaybufsize cmd-options.
+[INFO ] Creating relation with size = 97.656 MiB, #tuples = 12800000 : OK 
+[INFO ] Creating relation with size = 976.562 MiB, #tuples = 128000000 : OK 
+[INFO ] Running join algorithm m-way ...
+========= 1) Profiling results of Partitioning Phase =========
+
+Instructions-retired 607850735
+Active-cycles 392521661
+IPC 1.54858
+L2Hit 46979
+L2Misses 4036979
+L3Misses 4011124
+L2HitRatio 0.0115033
+L3HitRatio 0.00640454
+CyclesLostDueL2CacheMisses 0.00234675
+CyclesLostDueL3CacheMisses 1.83939
+========= 2) Profiling results of Sorting Phase =========
+
+Instructions-retired 1487261818
+Active-cycles 18446462599780768190
+IPC -5.28384e-06
+L2Hit 15957314
+L2Misses 2235413
+L3Misses 2054767
+L2HitRatio 0.877126
+L3HitRatio 0.080811
+CyclesLostDueL2CacheMisses -2.25774e-08
+CyclesLostDueL3CacheMisses -1.314e-06
+========= 3) Profiling results of Multi-Way NUMA-Merge Phase =========
+
+Instructions-retired 879519731
+Active-cycles 664306170
+IPC 1.32397
+L2Hit 7689394
+L2Misses 3024210
+L3Misses 2651139
+L2HitRatio 0.717722
+L3HitRatio 0.123361
+CyclesLostDueL2CacheMisses 0.0205177
+CyclesLostDueL3CacheMisses 0.718351
+[INFO] join finished
+
+[INFO ] Results = 12800000. DONE.

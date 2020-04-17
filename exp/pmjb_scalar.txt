@@ -1,0 +1,92 @@
+Scanning dependencies of target common
+[  3%] Building CXX object CMakeFiles/common.dir/timer/t_timer.cpp.o
+[  7%] Building CXX object CMakeFiles/common.dir/benchmark.cpp.o
+[ 11%] Building CXX object CMakeFiles/common.dir/utils/generator.cpp.o
+[ 15%] Building CXX object CMakeFiles/common.dir/utils/perf_counters.cpp.o
+[ 19%] Building CXX object CMakeFiles/common.dir/utils/cpu_mapping.cpp.o
+[ 23%] Building CXX object CMakeFiles/common.dir/utils/genzipf.cpp.o
+[ 26%] Building CXX object CMakeFiles/common.dir/joins/no_partitioning_join.cpp.o
+[ 30%] Building CXX object CMakeFiles/common.dir/joins/onlinejoins.cpp.o
+[ 34%] Building CXX object CMakeFiles/common.dir/joins/parallel_radix_join.cpp.o
+[ 38%] Building CXX object CMakeFiles/common.dir/joins/common_functions.cpp.o
+[ 42%] Building CXX object CMakeFiles/common.dir/helper/launcher.cpp.o
+[ 46%] Building CXX object CMakeFiles/common.dir/helper/thread_task.cpp.o
+[ 50%] Building CXX object CMakeFiles/common.dir/helper/localjoiner.cpp.o
+[ 53%] Building CXX object CMakeFiles/common.dir/helper/shuffler.cpp.o
+[ 57%] Building CXX object CMakeFiles/common.dir/helper/fetcher.cpp.o
+[ 61%] Building CXX object CMakeFiles/common.dir/lib/msr.cpp.o
+[ 65%] Building CXX object CMakeFiles/common.dir/lib/cpucounters.cpp.o
+[ 69%] Building CXX object CMakeFiles/common.dir/lib/utils.cpp.o
+[ 73%] Building CXX object CMakeFiles/common.dir/lib/client_bw.cpp.o
+[ 76%] Building CXX object CMakeFiles/common.dir/lib/mmio.cpp.o
+[ 80%] Building CXX object CMakeFiles/common.dir/lib/pci.cpp.o
+[ 84%] Building CXX object CMakeFiles/common.dir/helper/avxsort.cpp.o
+[ 88%] Building CXX object CMakeFiles/common.dir/helper/sort_common.cpp.o
+[ 92%] Building CXX object CMakeFiles/common.dir/helper/pmj_helper.cpp.o
+[ 92%] Built target common
+[ 96%] Building CXX object CMakeFiles/hashing.dir/main.cpp.o
+[100%] Linking CXX executable hashing
+[100%] Built target hashing
+SIMD PMJ 78 - 79
+Scanning dependencies of target common
+[  3%] Building CXX object CMakeFiles/common.dir/utils/perf_counters.cpp.o
+[  7%] Building CXX object CMakeFiles/common.dir/utils/generator.cpp.o
+[ 15%] Building CXX object CMakeFiles/common.dir/timer/t_timer.cpp.o
+[ 15%] Building CXX object CMakeFiles/common.dir/benchmark.cpp.o
+[ 19%] Building CXX object CMakeFiles/common.dir/utils/cpu_mapping.cpp.o
+[ 23%] Building CXX object CMakeFiles/common.dir/utils/genzipf.cpp.o
+[ 26%] Building CXX object CMakeFiles/common.dir/joins/no_partitioning_join.cpp.o
+[ 30%] Building CXX object CMakeFiles/common.dir/joins/onlinejoins.cpp.o
+[ 34%] Building CXX object CMakeFiles/common.dir/joins/parallel_radix_join.cpp.o
+[ 38%] Building CXX object CMakeFiles/common.dir/joins/common_functions.cpp.o
+[ 42%] Building CXX object CMakeFiles/common.dir/helper/launcher.cpp.o
+[ 46%] Building CXX object CMakeFiles/common.dir/helper/thread_task.cpp.o
+[ 50%] Building CXX object CMakeFiles/common.dir/helper/localjoiner.cpp.o
+[ 53%] Building CXX object CMakeFiles/common.dir/helper/shuffler.cpp.o
+[ 57%] Building CXX object CMakeFiles/common.dir/helper/fetcher.cpp.o
+[ 61%] Building CXX object CMakeFiles/common.dir/lib/msr.cpp.o
+[ 65%] Building CXX object CMakeFiles/common.dir/lib/cpucounters.cpp.o
+[ 69%] Building CXX object CMakeFiles/common.dir/lib/utils.cpp.o
+[ 73%] Building CXX object CMakeFiles/common.dir/lib/client_bw.cpp.o
+[ 76%] Building CXX object CMakeFiles/common.dir/lib/mmio.cpp.o
+[ 80%] Building CXX object CMakeFiles/common.dir/lib/pci.cpp.o
+[ 84%] Building CXX object CMakeFiles/common.dir/helper/avxsort.cpp.o
+[ 88%] Building CXX object CMakeFiles/common.dir/helper/sort_common.cpp.o
+[ 92%] Building CXX object CMakeFiles/common.dir/helper/pmj_helper.cpp.o
+[ 92%] Built target common
+Scanning dependencies of target hashing
+[ 96%] Building CXX object CMakeFiles/hashing.dir/main.cpp.o
+[100%] Linking CXX executable hashing
+[100%] Built target hashing
+==benchmark:SIMD_STUDY -a PMJ_JBCR_NP -t 0 -w 1000 -e 12800 -q 128000 -l 1 -d 0 -z 0 -D 0 -Z 0 -n 8 -I 78 -W 1 -[ 20 -] 16 -G 2 -g 2000==
+[INFO ] Creating relation with size = 97.656 MiB, #tuples = 12800000 : smoothing timestamp...OK 
+[INFO ] Creating relation with size = 976.562 MiB, #tuples = 128000000 : smoothing timestamp...OK 
+[INFO ] Running join algorithm PMJ_JBCR_NP ...
+========== Profiling results of Partition Phase ==========
+
+Instructions-retired 14422310364
+Active-cycles 18446462617625063870
+IPC -5.12418e-05
+L2Hit 16854004
+L2Misses 27780899
+L3Misses 4909245
+L2HitRatio 0.377597
+L3HitRatio 0.823287
+CyclesLostDueL2CacheMisses -4.60118e-06
+CyclesLostDueL3CacheMisses -3.13962e-06
+========== Joining phase profiling results ==========
+
+Instructions-retired 8452319713
+Active-cycles 9493040893
+IPC 0.89037
+L2Hit 21533172
+L2Misses 71261130
+L3Misses 68048186
+L2HitRatio 0.232053
+L3HitRatio 0.0450869
+CyclesLostDueL2CacheMisses 0.021286
+CyclesLostDueL3CacheMisses 1.29028
+===================================================
+
+No timing, Total processing time is: 28761050929168384
+[INFO ] Results = 0. DONE.

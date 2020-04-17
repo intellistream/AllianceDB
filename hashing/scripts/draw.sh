@@ -17,7 +17,6 @@ done
 #  python3 disorderCDF.py -i $id
 #done
 
-
 ##### APP Scale.
 ### KIM
 #for idx in {1..8} ; do #
