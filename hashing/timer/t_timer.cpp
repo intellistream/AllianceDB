@@ -40,6 +40,9 @@ dump_timing(vector<double> vector, std::vector<double> vector_latency,
     int check01 = ceil(n * 0.001);
     int check1 = ceil(n * 0.01);
     int check5 = ceil(n * 0.05);
+    int check10 = ceil(n * 0.1);
+    int check15 = ceil(n * 0.15);
+    int check25 = ceil(n * 0.25);
     int check50 = ceil(n * 0.50);
     int check75 = ceil(n * 0.75);
     int check95 = ceil(n * 0.95);
@@ -52,18 +55,18 @@ dump_timing(vector<double> vector, std::vector<double> vector_latency,
     auto begin = vector.begin().operator*();
     vector.erase(vector.begin());
     for (auto &element : vector) {
-//        printf("timestamp:%f\n", element - begin + lastTS);
-        outputFile << (std::to_string(element - begin + lastTS) + "\n");
+//        printf("timestamp:%f\n", (element + lastTS - begin));
+        outputFile << (std::to_string(element + lastTS - begin) + "\n");
     }
     outputFile.close();
-
-    fprintf(stdout, "Time to obtain 0.1%%, 1%%, 50%%, 75%%, 95%% of results (MSECS): \n");
+    fprintf(stdout, "check50:%d\n", check50);
+    fprintf(stdout, "Time to obtain 1%%, 5%%, 10%%, 25%%, 50%% of results (MSECS): \n");
     fprintf(stdout, "(%.2f) \t (%.2f) \t (%.2f) \t (%.2f) \t (%.2f)",
-            vector.at(check01) + lastTS - begin,
             vector.at(check1) + lastTS - begin,
             vector.at(check5) + lastTS - begin,
-            vector.at(check50) + lastTS - begin,
-            vector.at(check95) + lastTS - begin
+            vector.at(check10) + lastTS - begin,
+            vector.at(check25) + lastTS - begin,
+            vector.at(check50) + lastTS - begin
     );
     fprintf(stdout, "\n");
     fprintf(stdout, "\n");

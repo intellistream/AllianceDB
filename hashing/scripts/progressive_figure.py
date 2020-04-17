@@ -335,7 +335,6 @@ if __name__ == "__main__":
                      'PMJ$^{JB}$']
 
     ts = ceil(getmaxts(id) / 100) * 100
-    dvid = 15
     print("maximum timestamp:", ts)
     x_axis, y_axis = ReadFile(id)
 

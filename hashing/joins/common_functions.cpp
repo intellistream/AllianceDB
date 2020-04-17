@@ -235,6 +235,8 @@ int64_t probe_hashtable_single_measure(const hashtable_t *ht, const tuple_t *tup
         }
         b = b->next;/* follow overflow pointer */
     } while (b);
+
+
     return *matches;
 }
 
