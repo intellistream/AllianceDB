@@ -31,11 +31,11 @@ function KimRun() {
 
 function SetStockParameters() {
   ts=1 # stream case
-  WINDOW_SIZE=5000
-  RSIZE=116941
-  SSIZE=151505
-  RPATH=/data1/xtra/datasets/stock/cj_60s_1t.txt
-  SPATH=/data1/xtra/datasets/stock/sb_60s_1t.txt
+  WINDOW_SIZE=3000
+  RSIZE=108016
+  SSIZE=143553
+  RPATH=/data1/xtra/datasets/stock/cj_3s_1t.txt
+  SPATH=/data1/xtra/datasets/stock/sb_3s_1t.txt
   RKEY=0
   SKEY=0
   RTS=1
@@ -133,7 +133,7 @@ done
 
 #general benchmark.
 for algo in m-way m-pass; do
-  for benchmark in "Stock" "Rovio" "YSB" "DEBS" ; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "Stock" "Rovio" "YSB" "DEBS" "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "AR" "RAR" "RAR2" "AD" "KD" "WS" "KD2" "WS2" "WS3" "WS4"
+  for benchmark in "Stock"; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "Stock" "Rovio" "YSB" "DEBS" "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "AR" "RAR" "RAR2" "AD" "KD" "WS" "KD2" "WS2" "WS3" "WS4"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "AR") #test arrival rate and assume both inputs have same arrival rate.

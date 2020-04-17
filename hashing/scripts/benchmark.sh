@@ -1,7 +1,7 @@
 #!/bin/bash
 #set -e
 
-profile_breakdown=1 # set to 1 if we want to measure time breakdown! and also dedefine eager in common_function.h
+profile_breakdown=0 # set to 1 if we want to measure time breakdown! and also dedefine eager in common_function.h
 
 function compile() {
   cmake .. | tail -n +90
@@ -34,11 +34,11 @@ function KimRun() {
 
 function SetStockParameters() {
   ts=1 # stream case
-  WINDOW_SIZE=5000
-  RSIZE=116941
-  SSIZE=151505
-  RPATH=/data1/xtra/datasets/stock/cj_60s_1t.txt
-  SPATH=/data1/xtra/datasets/stock/sb_60s_1t.txt
+  WINDOW_SIZE=3000
+  RSIZE=108016
+  SSIZE=143553
+  RPATH=/data1/xtra/datasets/stock/cj_3s_1t.txt
+  SPATH=/data1/xtra/datasets/stock/sb_3s_1t.txt
   RKEY=0
   SKEY=0
   RTS=1
