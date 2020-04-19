@@ -151,19 +151,6 @@ def ReadFile(id):
 
     cnt = 0
     linecnt = 0
-    f = open("/data1/xtra/results/breakdown/PRJ_{}.txt".format(id), "r")
-    read = f.readlines()
-    for x in read:
-        value = double(x.strip("\n"))
-        if (linecnt != 3):  ##skip sort.
-            if value > max_value:
-                max_value = value
-            y[cnt][0] = value
-            cnt += 1
-        linecnt += 1
-
-    cnt = 0
-    linecnt = 0
     f = open("/data1/xtra/results/breakdown/NPJ_{}.txt".format(id), "r")
     read = f.readlines()
     for x in read:
@@ -177,14 +164,14 @@ def ReadFile(id):
 
     cnt = 0
     linecnt = 0
-    f = open("/data1/xtra/results/breakdown/MPASS_{}.txt".format(id), "r")
+    f = open("/data1/xtra/results/breakdown/PRJ_{}.txt".format(id), "r")
     read = f.readlines()
     for x in read:
         value = double(x.strip("\n"))
-        if (linecnt != 2):  ##skip build.
+        if (linecnt != 3):  ##skip sort.
             if value > max_value:
                 max_value = value
-            y[cnt][2] = value
+            y[cnt][0] = value
             cnt += 1
         linecnt += 1
 
@@ -198,6 +185,19 @@ def ReadFile(id):
             if value > max_value:
                 max_value = value
             y[cnt][3] = value
+            cnt += 1
+        linecnt += 1
+
+    cnt = 0
+    linecnt = 0
+    f = open("/data1/xtra/results/breakdown/MPASS_{}.txt".format(id), "r")
+    read = f.readlines()
+    for x in read:
+        value = double(x.strip("\n"))
+        if (linecnt != 2):  ##skip build.
+            if value > max_value:
+                max_value = value
+            y[cnt][2] = value
             cnt += 1
         linecnt += 1
 
@@ -254,7 +254,6 @@ def ReadFile(id):
         linecnt += 1
     return y, max_value
 
-
 if __name__ == "__main__":
     id = 0
     try:
@@ -270,7 +269,7 @@ if __name__ == "__main__":
             print('Test ID:', opt_value)
             id = (int)(opt_value)
 
-    x_values = ['PRJ', 'NPJ', 'MPASS', 'MWAY', 'SHJ$^{JM}$', 'SHJ$^{JB}$', 'PMJ$^{JM}$',
+    x_values = ['NPJ', 'PRJ', 'MWAY', 'MPASS', 'SHJ$^{JM}$', 'SHJ$^{JB}$', 'PMJ$^{JM}$',
                 'PMJ$^{JB}$']  # join time is getting from total - others.
 
     y_values, max_value = ReadFile(id)
@@ -281,7 +280,7 @@ if __name__ == "__main__":
     legend_labels = ['wait', 'partition', 'build/sort', 'merge', 'probe', 'others']  #
     print(y_values)
     DrawFigure(x_values, y_values, double(ceil(max_value / 1000.0)) * 1000, legend_labels, '',
-               'cycles per input tuple',
+               'cycles per input',
                'breakdown_figure{}'.format(id), id, False)
 
     DrawLegend(legend_labels, 'breakdown_legend')

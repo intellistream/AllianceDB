@@ -35,6 +35,7 @@ matplotlib.rcParams['font.family'] = OPT_FONT_NAME
 
 FIGURE_FOLDER = '/data1/xtra/results/figure'
 
+
 def DrawLegend(legend_labels, filename):
     fig = pylab.figure()
     ax1 = fig.add_subplot(111)
@@ -56,6 +57,7 @@ def DrawLegend(legend_labels, filename):
                      loc=1, ncol=len(FIGURE_LABEL), mode="expand", shadow=False, \
                      frameon=False, handlelength=1.5, handletextpad=0.2, columnspacing=0.1)
     figlegend.savefig(FIGURE_FOLDER + '/' + filename + '.pdf')
+
 
 # draw a line chart
 def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max, filename, allow_legend):
@@ -88,7 +90,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
                    prop=LEGEND_FP,
                    ncol=4,
                    loc='upper center',
-                   #mode='expand',
+                   # mode='expand',
                    shadow=False,
                    bbox_to_anchor=(0.45, 1.6),
                    columnspacing=0.1,
@@ -128,7 +130,7 @@ def ReadFile():
     col8 = []
 
     for id in it.chain(range(38, 42)):
-        file = '/data1/xtra/results/timestamps/PRJ_{}.txt'.format(id)
+        file = '/data1/xtra/results/timestamps/NPJ_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
@@ -140,7 +142,7 @@ def ReadFile():
     y.append(col1)
 
     for id in it.chain(range(38, 42)):
-        file = '/data1/xtra/results/timestamps/NPJ_{}.txt'.format(id)
+        file = '/data1/xtra/results/timestamps/PRJ_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
@@ -152,7 +154,7 @@ def ReadFile():
     y.append(col2)
 
     for id in it.chain(range(38, 42)):
-        file = '/data1/xtra/results/timestamps/MPASS_{}.txt'.format(id)
+        file = '/data1/xtra/results/timestamps/MWAY_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
@@ -164,7 +166,7 @@ def ReadFile():
     y.append(col3)
 
     for id in it.chain(range(38, 42)):
-        file = '/data1/xtra/results/timestamps/MWAY_{}.txt'.format(id)
+        file = '/data1/xtra/results/timestamps/MPASS_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
@@ -230,7 +232,7 @@ if __name__ == "__main__":
 
     y_values = ReadFile()
 
-    legend_labels = ['PRJ', 'NPJ', 'MPASS', 'MWAY', 'SHJ$^{JM}$', 'SHJ$^{JB}$', 'PMJ$^{JM}$',
+    legend_labels = ['NPJ', 'PRJ', 'MWAY', 'MPASS', 'SHJ$^{JM}$', 'SHJ$^{JB}$', 'PMJ$^{JM}$',
                      'PMJ$^{JB}$']
 
     DrawFigure(x_values, y_values, legend_labels,

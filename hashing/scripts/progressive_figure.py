@@ -122,18 +122,6 @@ def ReadFile(id):
     y_axis = []
 
     col = []
-    f = open("/data1/xtra/results/timestamps/PRJ_{}.txt".format(id), "r")
-    read = f.readlines()
-    for r in read:
-        value = double(r.strip("\n"))  # timestamp.
-        col.append(value)
-
-    # calculate the proportional values of samples
-    coly = 1. * arange(len(col)) / (len(col) - 1)
-    x_axis.append(col)
-    y_axis.append(coly)
-
-    col = []
     f = open("/data1/xtra/results/timestamps/NPJ_{}.txt".format(id), "r")
     read = f.readlines()
     for r in read:
@@ -146,7 +134,7 @@ def ReadFile(id):
     y_axis.append(coly)
 
     col = []
-    f = open("/data1/xtra/results/timestamps/MPASS_{}.txt".format(id), "r")
+    f = open("/data1/xtra/results/timestamps/PRJ_{}.txt".format(id), "r")
     read = f.readlines()
     for r in read:
         value = double(r.strip("\n"))  # timestamp.
@@ -159,6 +147,18 @@ def ReadFile(id):
 
     col = []
     f = open("/data1/xtra/results/timestamps/MWAY_{}.txt".format(id), "r")
+    read = f.readlines()
+    for r in read:
+        value = double(r.strip("\n"))  # timestamp.
+        col.append(value)
+
+    # calculate the proportional values of samples
+    coly = 1. * arange(len(col)) / (len(col) - 1)
+    x_axis.append(col)
+    y_axis.append(coly)
+
+    col = []
+    f = open("/data1/xtra/results/timestamps/MPASS_{}.txt".format(id), "r")
     read = f.readlines()
     for r in read:
         value = double(r.strip("\n"))  # timestamp.
@@ -331,7 +331,7 @@ if __name__ == "__main__":
             print('Test ID:', opt_value)
             id = (int)(opt_value)
 
-    legend_labels = ['PRJ', 'NPJ', 'MPASS', 'MWAY', 'SHJ$^{JM}$', 'SHJ$^{JB}$', 'PMJ$^{JM}$',
+    legend_labels = ['NPJ', 'PRJ', 'MWAY', 'MPASS', 'SHJ$^{JM}$', 'SHJ$^{JB}$', 'PMJ$^{JM}$',
                      'PMJ$^{JB}$']
 
     ts = ceil(getmaxts(id) / 100) * 100

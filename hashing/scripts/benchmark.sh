@@ -3,117 +3,6 @@
 
 profile_breakdown=1 # set to 1 if we want to measure time breakdown! and also dedefine eager in common_function.h
 
-function compile() {
-  cmake .. | tail -n +90
-  make -C .. clean -s
-  make -C .. -j4 -s
-}
-
-function benchmarkRun() {
-  #####native execution
-  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap=="
-  echo 3 >/proc/sys/vm/drop_caches
-  ../hashing -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap
-  if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit -1; fi
-}
-
-function Run() {
-  #####native execution
-  echo "==benchmark:$benchmark -a $algo -n $Threads=="
-  echo 3 >/proc/sys/vm/drop_caches
-  ../hashing -a $algo -r $RSIZE -s $SSIZE -n $Threads
-}
-
-function KimRun() {
-  #####native execution
-  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS -[ $progress_step -] $merge_step -G $group -g $gap=="
-  echo 3 >/proc/sys/vm/drop_caches
-  ../hashing -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS -[ $progress_step -] $merge_step -G $group -g $gap
-  if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit -1; fi
-}
-
-function SetStockParameters() { #matches: 229517.
-  ts=1 # stream case
-  #  WINDOW_SIZE=1000
-  #  RSIZE=60257
-  #  SSIZE=77227
-  #  RPATH=/data1/xtra/datasets/stock/cj_3s_1t.txt
-  #  SPATH=/data1/xtra/datasets/stock/sb_3s_1t.txt
-  WINDOW_SIZE=5000
-  RSIZE=116941
-  SSIZE=151500
-  RPATH=/data1/xtra/datasets/stock/cj_60s_1t.txt
-  SPATH=/data1/xtra/datasets/stock/sb_60s_1t.txt
-  RKEY=0
-  SKEY=0
-  RTS=1
-  STS=1
-  gap=229
-}
-
-function SetRovioParameters() { #matches: 27660233
-  ts=1 # stream case
-  WINDOW_SIZE=50
-  RSIZE=51001
-  SSIZE=51001
-  RPATH=/data1/xtra/datasets/rovio/500ms_1t.txt
-  SPATH=/data1/xtra/datasets/rovio/500ms_1t.txt
-  RKEY=0
-  SKEY=0
-  RTS=3
-  STS=3
-  gap=27660
-}
-
-function SetYSBParameters() { #matches: 40100000.
-  ts=1 # stream case
-  WINDOW_SIZE=400
-  RSIZE=1000
-  SSIZE=40100000
-  RPATH=/data1/xtra/datasets/YSB/campaigns_id.txt
-  SPATH=/data1/xtra/datasets/YSB/ad_events.txt
-  RKEY=0
-  SKEY=0
-  RTS=0
-  STS=1
-  gap=40100
-}
-
-function SetDEBSParameters() { #matches: 251033140
-  ts=1 # stream case
-  WINDOW_SIZE=0
-  RSIZE=1000000 #1000000
-  SSIZE=1000000 #1000000
-  RPATH=/data1/xtra/datasets/DEBS/posts_key32_partitioned.csv
-  SPATH=/data1/xtra/datasets/DEBS/comments_key32_partitioned.csv
-  RKEY=0
-  SKEY=0
-  RTS=0
-  STS=0
-  gap=251033
-}
-
-DEFAULT_WINDOW_SIZE=1000 #(ms) -- 1 seconds
-DEFAULT_STEP_SIZE=12800  # |tuples| per ms. -- 128K per seconds. ## this controls the guranalrity of input stream.
-function ResetParameters() {
-  TS_DISTRIBUTION=0                # uniform time distribution
-  ZIPF_FACTOR=0                    # uniform time distribution
-  distrbution=0                    # unique
-  skew=0                           # uniform key distribution
-  INTERVAL=1                       # interval of 1. always..
-  STEP_SIZE=$DEFAULT_STEP_SIZE     # arrival rate = 1000 / ms
-  WINDOW_SIZE=$DEFAULT_WINDOW_SIZE # MS rel size = window_size / interval * step_size.
-  STEP_SIZE_S=128000               # let S has the same arrival rate of R.
-  FIXS=1
-  ts=1 # stream case
-  Threads=8
-  progress_step=20
-  merge_step=16 #not in use.
-  group=2
-  gap=128000
-  sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag 0/g" ../helper/sort_common.h
-}
-
 function PARTITION_ONLY() {
   sed -i -e "s/#define JOIN/#define NO_JOIN/g" ../joins/common_functions.h
   sed -i -e "s/#define MERGE/#define NO_MERGE/g" ../joins/common_functions.h
@@ -268,6 +157,117 @@ function RUNALLKIM() {
     compile
     KimRun
   fi
+}
+
+function compile() {
+  cmake .. | tail -n +90
+  make -C .. clean -s
+  make -C .. -j4 -s
+}
+
+function benchmarkRun() {
+  #####native execution
+  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap=="
+  echo 3 >/proc/sys/vm/drop_caches
+  ../hashing -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap
+  if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit -1; fi
+}
+
+function Run() {
+  #####native execution
+  echo "==benchmark:$benchmark -a $algo -n $Threads=="
+  echo 3 >/proc/sys/vm/drop_caches
+  ../hashing -a $algo -r $RSIZE -s $SSIZE -n $Threads
+}
+
+function KimRun() {
+  #####native execution
+  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS -[ $progress_step -] $merge_step -G $group -g $gap=="
+  echo 3 >/proc/sys/vm/drop_caches
+  ../hashing -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS -[ $progress_step -] $merge_step -G $group -g $gap
+  if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit -1; fi
+}
+
+function SetStockParameters() { #matches: 229517.
+  ts=1 # stream case
+  #  WINDOW_SIZE=1000
+  #  RSIZE=60257
+  #  SSIZE=77227
+  #  RPATH=/data1/xtra/datasets/stock/cj_3s_1t.txt
+  #  SPATH=/data1/xtra/datasets/stock/sb_3s_1t.txt
+  WINDOW_SIZE=5000
+  RSIZE=116941
+  SSIZE=151500
+  RPATH=/data1/xtra/datasets/stock/cj_60s_1t.txt
+  SPATH=/data1/xtra/datasets/stock/sb_60s_1t.txt
+  RKEY=0
+  SKEY=0
+  RTS=1
+  STS=1
+  gap=229
+}
+
+function SetRovioParameters() { #matches: 27660233
+  ts=1 # stream case
+  WINDOW_SIZE=50
+  RSIZE=51001
+  SSIZE=51001
+  RPATH=/data1/xtra/datasets/rovio/500ms_1t.txt
+  SPATH=/data1/xtra/datasets/rovio/500ms_1t.txt
+  RKEY=0
+  SKEY=0
+  RTS=3
+  STS=3
+  gap=27660
+}
+
+function SetYSBParameters() { #matches: 40100000.
+  ts=1 # stream case
+  WINDOW_SIZE=400
+  RSIZE=1000
+  SSIZE=40100000
+  RPATH=/data1/xtra/datasets/YSB/campaigns_id.txt
+  SPATH=/data1/xtra/datasets/YSB/ad_events.txt
+  RKEY=0
+  SKEY=0
+  RTS=0
+  STS=1
+  gap=40100
+}
+
+function SetDEBSParameters() { #matches: 251033140
+  ts=1 # stream case
+  WINDOW_SIZE=0
+  RSIZE=1000000 #1000000
+  SSIZE=1000000 #1000000
+  RPATH=/data1/xtra/datasets/DEBS/posts_key32_partitioned.csv
+  SPATH=/data1/xtra/datasets/DEBS/comments_key32_partitioned.csv
+  RKEY=0
+  SKEY=0
+  RTS=0
+  STS=0
+  gap=251033
+}
+
+DEFAULT_WINDOW_SIZE=1000 #(ms) -- 1 seconds
+DEFAULT_STEP_SIZE=12800  # |tuples| per ms. -- 128K per seconds. ## this controls the guranalrity of input stream.
+function ResetParameters() {
+  TS_DISTRIBUTION=0                # uniform time distribution
+  ZIPF_FACTOR=0                    # uniform time distribution
+  distrbution=0                    # unique
+  skew=0                           # uniform key distribution
+  INTERVAL=1                       # interval of 1. always..
+  STEP_SIZE=$DEFAULT_STEP_SIZE     # arrival rate = 1000 / ms
+  WINDOW_SIZE=$DEFAULT_WINDOW_SIZE # MS rel size = window_size / interval * step_size.
+  STEP_SIZE_S=128000               # let S has the same arrival rate of R.
+  FIXS=1
+  ts=1 # stream case
+  Threads=8
+  progress_step=20
+  merge_step=16 #not in use.
+  group=2
+  gap=128000
+  sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag 0/g" ../helper/sort_common.h
 }
 
 #recompile by default.

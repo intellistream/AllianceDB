@@ -127,23 +127,23 @@ def ReadFile():
     col8 = []
 
     for id in it.chain(range(38, 42)):
-        file = '/data1/xtra/results/latency/PRJ_{}.txt'.format(id)
+        file = '/data1/xtra/results/latency/NPJ_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
-        x = float(read.pop(int(len(read) * 0.95)).strip("\n"))  # get the 99th timestamp        
+        x = float(read.pop(int(len(read) * 0.95)).strip("\n"))  # get the 99th timestamp
         col1.append(x)
     y.append(col1)
 
     for id in it.chain(range(38, 42)):
-        file = '/data1/xtra/results/latency/NPJ_{}.txt'.format(id)
+        file = '/data1/xtra/results/latency/PRJ_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
-        x = float(read.pop(int(len(read) * 0.95)).strip("\n"))  # get the 99th timestamp  
+        x = float(read.pop(int(len(read) * 0.95)).strip("\n"))  # get the 99th timestamp        
         col2.append(x)
     y.append(col2)
 
     for id in it.chain(range(38, 42)):
-        file = '/data1/xtra/results/latency/MPASS_{}.txt'.format(id)
+        file = '/data1/xtra/results/latency/MWAY_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(int(len(read) * 0.95)).strip("\n"))  # get the 99th timestamp       
@@ -151,10 +151,10 @@ def ReadFile():
     y.append(col3)
 
     for id in it.chain(range(38, 42)):
-        file = '/data1/xtra/results/latency/MWAY_{}.txt'.format(id)
+        file = '/data1/xtra/results/latency/MPASS_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
-        x = float(read.pop(int(len(read) * 0.95)).strip("\n"))  # get the 99th timestamp       
+        x = float(read.pop(int(len(read) * 0.95)).strip("\n"))  # get the 99th timestamp
         col4.append(x)
     y.append(col4)
 
@@ -196,7 +196,7 @@ if __name__ == "__main__":
 
     y_values = ReadFile()
 
-    legend_labels = ['PRJ', 'NPJ', 'MPASS', 'MWAY', 'SHJ$^{JM}$', 'SHJ$^{JB}$', 'PMJ$^{JM}$',
+    legend_labels = [ 'NPJ', 'PRJ',  'MWAY', 'MPASS', 'SHJ$^{JM}$', 'SHJ$^{JB}$', 'PMJ$^{JM}$',
                      'PMJ$^{JB}$']
 
     DrawFigure(x_values, y_values, legend_labels,

@@ -198,40 +198,6 @@ def ReadFile():
     j += 1
 
     cnt = 0
-    f = open("/data1/xtra/results/breakdown/MPASS_76.txt", "r")
-    read = f.readlines()
-    others = 0
-    for x in read:
-        value = double(x.strip("\n"))
-        if cnt == 3:  # sort
-            y[0][j] = value
-        elif cnt == 4:  # merge
-            y[1][j] = value
-        # elif cnt == 5:  # join
-        #     y[2][j] = value
-        else:
-            others += value
-        cnt += 1
-    j += 1
-
-    cnt = 0
-    f = open("/data1/xtra/results/breakdown/MPASS_77.txt", "r")
-    read = f.readlines()
-    others = 0
-    for x in read:
-        value = double(x.strip("\n"))
-        if cnt == 3:  # sort
-            y[0][j] = value
-        elif cnt == 4:  # merge
-            y[1][j] = value
-        # elif cnt == 5:  # join
-        #     y[2][j] = value
-        else:
-            others += value
-        cnt += 1
-    j += 1
-
-    cnt = 0
     f = open("/data1/xtra/results/breakdown/PMJ_JBCR_NP_78.txt", "r")
     read = f.readlines()
     others = 0
@@ -270,10 +236,11 @@ def ReadFile():
 
 
 if __name__ == "__main__":
-    x_values = ['MWAY$^l$ (AVX)', 'MWAY$^l$ (C++ STL)'
-        , 'MPASS$^l$ (AVX)', 'MPASS$^l$ (C++ STL)'
-        , 'JB_PMJ$^e$ (AVX)', 'JB_PMJ$^e$ (C++ STL)'
-                ]  # different algorithms.
+    x_values = [
+        'MPASS (AVX)', 'MPASS (C++ STL)',
+        'MWAY (AVX)', 'MWAY (C++ STL)',
+        'PMJ$^{JB}$ (AVX)','PMJ$^{JB}$ (C++ STL)'
+        ]  # different algorithms.
 
     y_values = ReadFile()  #
 
@@ -283,7 +250,7 @@ if __name__ == "__main__":
     legend_labels = ['sort', 'merge']  # , 'others'
 
     DrawFigure(x_values, y_values, legend_labels,
-               '', 'cycles per input tuple',
+               '', 'cycles per input',
                'breakdown_simd_figure', True)
 
     # DrawLegend(legend_labels, 'breakdown_radix_legend')
