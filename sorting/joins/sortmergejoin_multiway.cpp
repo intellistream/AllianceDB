@@ -54,7 +54,8 @@ void *
 sortmergejoin_multiway_thread(void *param);
 
 result_t *
-sortmergejoin_multiway(relation_t *relR, relation_t *relS, joinconfig_t *joincfg, int exp_id, int window_size) {
+sortmergejoin_multiway(relation_t *relR, relation_t *relS, joinconfig_t *joincfg, int exp_id, int window_size,
+                       int gap) {
     /* check whether nr. of threads is a power of 2 */
     if ((joincfg->NTHREADS & (joincfg->NTHREADS - 1)) != 0) {
         fprintf(stdout, "[ERROR] m-way sort-merge join runs with a power of 2 #threads.\n");
@@ -62,7 +63,7 @@ sortmergejoin_multiway(relation_t *relR, relation_t *relS, joinconfig_t *joincfg
     }
 
     return sortmergejoin_initrun(relR, relS, joincfg,
-                                 sortmergejoin_multiway_thread, exp_id, window_size, "MWAY");
+                                 sortmergejoin_multiway_thread, exp_id, window_size, gap, "MWAY");
 }
 
 

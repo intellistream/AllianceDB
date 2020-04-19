@@ -329,10 +329,10 @@ if __name__ == "__main__":
     # y_norm_values = normalize(y_values)
 
     # break into 4 parts
-    legend_labels = ['wait', 'partition', 'build/sort', 'merge', 'join', 'others']  #
+    legend_labels = ['wait', 'partition', 'build/sort', 'merge', 'probe', 'others']  #
 
     DrawFigure(x_values, y_values, double(ceil(max_value / 1000.0)) * 1000, legend_labels, '',
-               'cycles per input tuple',
+               'cycles per input',
                'breakdown_figure{}'.format(id), id, False)
 
     DrawLegend(legend_labels, 'breakdown_legend')

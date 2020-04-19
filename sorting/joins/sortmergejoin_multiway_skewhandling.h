@@ -23,7 +23,8 @@
  * \ingroup Joins
  */
 result_t *
-sortmergejoin_multiway_skewhandling(relation_t * relR, relation_t * relS, joinconfig_t * joincfg, int exp_id, int window_size);
+sortmergejoin_multiway_skewhandling(relation_t *relR, relation_t *relS, joinconfig_t *joincfg, int exp_id,
+                                    int window_size, int gap);
 
 
 #endif //ALLIANCEDB_SORTMERGEJOIN_MULTIWAY_SKEWHANDLING_H

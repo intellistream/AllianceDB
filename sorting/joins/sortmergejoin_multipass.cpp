@@ -45,7 +45,8 @@ void *
 sortmergejoin_multipass_thread(void *param);
 
 result_t *
-sortmergejoin_multipass(relation_t *relR, relation_t *relS, joinconfig_t *joincfg, int exp_id, int window_size) {
+sortmergejoin_multipass(relation_t *relR, relation_t *relS, joinconfig_t *joincfg, int exp_id, int window_size,
+                        int gap) {
     /* check whether nr. of threads is a power of 2 */
     if ((joincfg->NTHREADS & (joincfg->NTHREADS - 1)) != 0) {
         fprintf(stdout, "[ERROR] m-pass sort-merge join runs with a power of 2 #threads.\n");
@@ -53,7 +54,7 @@ sortmergejoin_multipass(relation_t *relR, relation_t *relS, joinconfig_t *joincf
     }
 
     return sortmergejoin_initrun(relR, relS, joincfg,
-                                 sortmergejoin_multipass_thread, exp_id, window_size, "MPASS");
+                                 sortmergejoin_multipass_thread, exp_id, window_size, gap, "MPASS");
 }
 
 

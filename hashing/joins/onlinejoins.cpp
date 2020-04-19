@@ -24,7 +24,7 @@
 #include "../helper/launcher.h"
 #include "../helper/thread_task.h"
 
- 
+
 /** @} */
 
 void initialize(int nthreads, const t_param &param) {
@@ -36,9 +36,7 @@ void initialize(int nthreads, const t_param &param) {
     }
     pthread_attr_init(param.attr);
 }
-
-t_param &finishing(int nthreads, t_param &param, uint64_t *startTS, uint64_t *joinStart) {
-
+t_param &finishing(int nthreads, t_param &param, uint64_t *startTS, param_t *cmd_params){
     int i;
     for (i = 0; i < nthreads; i++) {
         if (param.tid[i] != -1)
@@ -111,7 +109,8 @@ t_param &finishing(int nthreads, t_param &param, uint64_t *startTS, uint64_t *jo
     average_partition_timer /= nthreads;
     breakdown_global(
             (param.args[0].fetcher->relR->num_tuples + param.args[0].fetcher->relS->num_tuples), nthreads,
-            average_partition_timer, name);
+            average_partition_timer,
+            name, cmd_params->window_size);
     fclose(fp);
     sortRecords(param.algo_name, param.exp_id, 0);
 #endif // except wait.
@@ -121,6 +120,7 @@ t_param &finishing(int nthreads, t_param &param, uint64_t *startTS, uint64_t *jo
 #endif //no_timing flag
     return param;
 }
+
 
 /**
  * Single thread SHJ
@@ -156,7 +156,7 @@ SHJ_st(relation_t *relR, relation_t *relS, param_t cmd_params) {
 #endif
     param.args[0].timer = joiner.timer;
     param.args[0].matches = &joiner.matches;
-    finishing(1, param, nullptr, nullptr);
+    finishing(1, param, NULL, NULL);
     param.joinresult->totalresults = param.result;
     param.joinresult->nthreads = 1;
     return param.joinresult;
@@ -176,7 +176,7 @@ SHJ_JM_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
     uint64_t *startTS = new uint64_t();
     auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_NOSHUFFLE, startTS, &joinStart)
-    param = finishing(nthreads, param, startTS, &joinStart);
+    param = finishing(nthreads, param, startTS, &cmd_params);
     return param.joinresult;
 }
 
@@ -194,7 +194,7 @@ SHJ_JB_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
     uint64_t *startTS = new uint64_t();
     auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE, startTS, &joinStart)
-    param = finishing(nthreads, param, startTS, &joinStart);
+    param = finishing(nthreads, param, startTS, &cmd_params);
     return param.joinresult;
 }
 
@@ -212,7 +212,7 @@ SHJ_JBCR_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
     uint64_t *startTS = new uint64_t();
     auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE, startTS, &joinStart)
-    param = finishing(nthreads, param, startTS, &joinStart);
+    param = finishing(nthreads, param, startTS,  &cmd_params);
     return param.joinresult;
 }
 
@@ -230,7 +230,7 @@ SHJ_HS_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
     uint64_t *startTS = new uint64_t();
     auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE_HS, startTS, &joinStart)
-    param = finishing(nthreads, param, startTS, &joinStart);
+    param = finishing(nthreads, param, startTS,  &cmd_params);
     return param.joinresult;
 }
 
@@ -320,7 +320,7 @@ result_t *PMJ_JM_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
     uint64_t *startTS = new uint64_t();
     auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_NOSHUFFLE, startTS, &joinStart)
-    param = finishing(nthreads, param, startTS, &joinStart);
+    param = finishing(nthreads, param, startTS, &cmd_params);
     return param.joinresult;
 }
 
@@ -341,7 +341,7 @@ result_t *PMJ_JB_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
     uint64_t *startTS = new uint64_t();
     auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE, startTS, &joinStart)
-    param = finishing(nthreads, param, startTS, &joinStart);
+    param = finishing(nthreads, param, startTS, &cmd_params);
     return param.joinresult;
 }
 
@@ -360,7 +360,7 @@ result_t *PMJ_JBCR_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
     uint64_t *startTS = new uint64_t();
     auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE, startTS, &joinStart)
-    param = finishing(nthreads, param, startTS, &joinStart);
+    param = finishing(nthreads, param, startTS, &cmd_params);
     return param.joinresult;
 }
 
@@ -377,7 +377,7 @@ result_t *PMJ_HS_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
     uint64_t *startTS = new uint64_t();
     auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE_PMJHS, startTS, &joinStart)
-    param = finishing(nthreads, param, startTS, &joinStart);
+    param = finishing(nthreads, param, startTS, &cmd_params);
     return param.joinresult;
 }
 
@@ -396,7 +396,7 @@ RPJ_JM_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
     uint64_t *startTS = new uint64_t();
     auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_NOSHUFFLE, startTS, &joinStart)
-    param = finishing(nthreads, param, startTS, &joinStart);
+    param = finishing(nthreads, param, startTS, &cmd_params);
     return param.joinresult;
 }
 
@@ -414,7 +414,7 @@ RPJ_JB_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
     uint64_t *startTS = new uint64_t();
     auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE, startTS, &joinStart)
-    param = finishing(nthreads, param, startTS, &joinStart);
+    param = finishing(nthreads, param, startTS, &cmd_params);
     return param.joinresult;
 }
 
@@ -432,7 +432,7 @@ RPJ_JBCR_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
     uint64_t *startTS = new uint64_t();
     auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE, startTS, &joinStart)
-    param = finishing(nthreads, param, startTS, &joinStart);
+    param = finishing(nthreads, param, startTS, &cmd_params);
     return param.joinresult;
 }
 
@@ -449,7 +449,7 @@ result_t *RPJ_HS_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
     uint64_t *startTS = new uint64_t();
     auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE_HS, startTS, &joinStart)
-    param = finishing(nthreads, param, startTS, &joinStart);
+    param = finishing(nthreads, param, startTS, &cmd_params);
     return param.joinresult;
 }
 

@@ -151,8 +151,9 @@ double others_time = 0;
  * @param average_partition_timer
  * @param txtFile
  */
-void breakdown_global(int64_t total_results, int nthreads,
-                      double average_partition_timer, std::string txtFile) {
+void
+breakdown_global(int64_t total_results, int nthreads, double average_partition_timer, std::string txtFile,
+                 int window_size) {
     DEBUGMSG("average_partition_timer:%f\n", average_partition_timer);
     DEBUGMSG("txtFile:%s\n", txtFile.c_str());
     //time measurement correction
@@ -169,6 +170,10 @@ void breakdown_global(int64_t total_results, int nthreads,
     }
 
     wait_time = average_partition_timer - t0 / nthreads;//corrects for wait_time.
+    if (window_size == 0) {
+        //there is no waiting time for this dataset anyway.
+        wait_time = 0;
+    }
 
     if (txtFile.find("PMJ") != std::string::npos) {
         auto t1 = 0.0;

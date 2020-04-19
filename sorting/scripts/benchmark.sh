@@ -9,9 +9,9 @@ function compile() {
 
 function benchmarkRun() {
   #####native execution
-  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id== "
+  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -g $gap -I $id== "
   #echo 3 >/proc/sys/vm/drop_caches
-  ../sorting -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id
+  ../sorting -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -g $gap -I $id
   if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit 1; fi
 }
 
@@ -24,18 +24,18 @@ function Run() {
 
 function KimRun() {
   #####native execution
-  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS =="
+  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -g $gap  -W $FIXS -I $id =="
   #echo 3 >/proc/sys/vm/drop_caches
-  ../sorting -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS
+  ../sorting -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -W $FIXS -g $gap -I $id
 }
 
-function SetStockParameters() {
+function SetStockParameters() { #matches: 229517.
   ts=1 # stream case
-#  WINDOW_SIZE=1000
-#  RSIZE=60257
-#  SSIZE=77227
-#  RPATH=/data1/xtra/datasets/stock/cj_3s_1t.txt
-#  SPATH=/data1/xtra/datasets/stock/sb_3s_1t.txt
+  #  WINDOW_SIZE=1000
+  #  RSIZE=60257
+  #  SSIZE=77227
+  #  RPATH=/data1/xtra/datasets/stock/cj_3s_1t.txt
+  #  SPATH=/data1/xtra/datasets/stock/sb_3s_1t.txt
   WINDOW_SIZE=5000
   RSIZE=116941
   SSIZE=151500
@@ -45,9 +45,10 @@ function SetStockParameters() {
   SKEY=0
   RTS=1
   STS=1
+  gap=229
 }
 
-function SetRovioParameters() {
+function SetRovioParameters() { #matches: 27660233
   ts=1 # stream case
   WINDOW_SIZE=50
   RSIZE=51001
@@ -58,9 +59,10 @@ function SetRovioParameters() {
   SKEY=0
   RTS=3
   STS=3
+  gap=27660
 }
 
-function SetYSBParameters() {
+function SetYSBParameters() { #matches: 40100000.
   ts=1 # stream case
   WINDOW_SIZE=400
   RSIZE=1000
@@ -71,9 +73,10 @@ function SetYSBParameters() {
   SKEY=0
   RTS=0
   STS=1
+  gap=40100
 }
 
-function SetDEBSParameters() {
+function SetDEBSParameters() { #matches: 251033140
   ts=1 # stream case
   WINDOW_SIZE=0
   RSIZE=1000000 #1000000
@@ -84,10 +87,11 @@ function SetDEBSParameters() {
   SKEY=0
   RTS=0
   STS=0
+  gap=251033
 }
 
 DEFAULT_WINDOW_SIZE=1000 #(ms) -- 1 seconds
-DEFAULT_STEP_SIZE=12800   # |tuples| per ms. -- 128K per seconds. ## this controls the guranalrity of input stream.
+DEFAULT_STEP_SIZE=12800  # |tuples| per ms. -- 128K per seconds. ## this controls the guranalrity of input stream.
 function ResetParameters() {
   TS_DISTRIBUTION=0                # uniform time distribution
   ZIPF_FACTOR=0                    # uniform time distribution
@@ -100,8 +104,7 @@ function ResetParameters() {
   FIXS=1
   ts=1 # stream case
   Threads=8
-  group=2
-  gap=1000
+  gap=128000
 }
 
 #recompile by default.
@@ -120,9 +123,9 @@ for benchmark in ""; do #
     echo SIMD 74-77
     algo="m-way"
     for scalar in 1; do
-#      sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scalar/g" ../joins/joincommon.h
-#      compile
-#      KimRun
+      #      sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scalar/g" ../joins/joincommon.h
+      #      compile
+      #      KimRun
       let "id++"
     done
     algo="m-pass"
@@ -138,7 +141,7 @@ done
 
 #general benchmark.
 for algo in m-way m-pass; do
-  for benchmark in "Stock"; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "Stock" "Rovio" "YSB" "DEBS" "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "AR" "RAR" "RAR2" "AD" "KD" "WS" "KD2" "WS2" "WS3" "WS4"
+  for benchmark in "Stock" "Rovio" "YSB" "DEBS" ; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "Stock" "Rovio" "YSB" "DEBS" "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "AR" "RAR" "RAR2" "AD" "KD" "WS" "KD2" "WS2" "WS3" "WS4"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "AR") #test arrival rate and assume both inputs have same arrival rate.

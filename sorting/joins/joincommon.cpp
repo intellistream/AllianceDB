@@ -40,7 +40,7 @@ std::string print_relation(tuple_t *tuple, int length) {
 
 result_t *
 sortmergejoin_initrun(relation_t *relR, relation_t *relS, joinconfig_t *joincfg, void *(*jointhread)(void *),
-                      int exp_id, int window_size, const string algoName) {
+                      int exp_id, int window_size, int gap, const string algoName) {
     int i, rv;
     int nthreads = joincfg->NTHREADS;
     int PARTFANOUT = joincfg->PARTFANOUT;
@@ -53,10 +53,10 @@ sortmergejoin_initrun(relation_t *relR, relation_t *relS, joinconfig_t *joincfg,
     int32_t numperthr[2];
     int64_t result = 0;
 
-//#ifndef NO_TIMING
+#ifndef NO_TIMING
     T_TIMER timer[nthreads];//every thread has its own timer.
     uint64_t *startTS = new uint64_t;
-//#endif
+#endif
 
     /**** allocate temporary space for partitioning ****/
     tuple_t *tmpRelpartR = NULL, *tmpRelpartS = NULL;
@@ -173,6 +173,8 @@ sortmergejoin_initrun(relation_t *relR, relation_t *relS, joinconfig_t *joincfg,
         args[i].tmpRglobal = tmpRelpartR;
         args[i].totalR = relR->num_tuples;
         args[i].startTS = startTS;
+
+        args[i].timer->record_gap = gap;
 
 #ifdef SKEW_HANDLING
         /** skew handling task queue ptrs. */

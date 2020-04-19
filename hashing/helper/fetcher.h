@@ -52,7 +52,7 @@ class baseFetcher {
 public:
     virtual fetch_t *next_tuple();
 
-    virtual fetch_t *_next_tuple(bool b);//helper function to avoid recurrsion
+    virtual fetch_t *_next_tuple();//helper function to avoid recurrsion
     relation_t *relR;//input relation
     relation_t *relS;//input relation
     bool tryR = true;

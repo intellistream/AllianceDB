@@ -1,7 +1,7 @@
 #!/bin/bash
 #set -e
 
-profile_breakdown=0 # set to 1 if we want to measure time breakdown! and also dedefine eager in common_function.h
+profile_breakdown=1 # set to 1 if we want to measure time breakdown! and also dedefine eager in common_function.h
 
 function compile() {
   cmake .. | tail -n +90
@@ -32,13 +32,13 @@ function KimRun() {
   if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit -1; fi
 }
 
-function SetStockParameters() {
+function SetStockParameters() { #matches: 229517.
   ts=1 # stream case
-#  WINDOW_SIZE=1000
-#  RSIZE=60257
-#  SSIZE=77227
-#  RPATH=/data1/xtra/datasets/stock/cj_3s_1t.txt
-#  SPATH=/data1/xtra/datasets/stock/sb_3s_1t.txt
+  #  WINDOW_SIZE=1000
+  #  RSIZE=60257
+  #  SSIZE=77227
+  #  RPATH=/data1/xtra/datasets/stock/cj_3s_1t.txt
+  #  SPATH=/data1/xtra/datasets/stock/sb_3s_1t.txt
   WINDOW_SIZE=5000
   RSIZE=116941
   SSIZE=151500
@@ -48,9 +48,10 @@ function SetStockParameters() {
   SKEY=0
   RTS=1
   STS=1
+  gap=229
 }
 
-function SetRovioParameters() {
+function SetRovioParameters() { #matches: 27660233
   ts=1 # stream case
   WINDOW_SIZE=50
   RSIZE=51001
@@ -61,9 +62,10 @@ function SetRovioParameters() {
   SKEY=0
   RTS=3
   STS=3
+  gap=27660
 }
 
-function SetYSBParameters() {
+function SetYSBParameters() { #matches: 40100000.
   ts=1 # stream case
   WINDOW_SIZE=400
   RSIZE=1000
@@ -74,9 +76,10 @@ function SetYSBParameters() {
   SKEY=0
   RTS=0
   STS=1
+  gap=40100
 }
 
-function SetDEBSParameters() {
+function SetDEBSParameters() { #matches: 251033140
   ts=1 # stream case
   WINDOW_SIZE=0
   RSIZE=1000000 #1000000
@@ -87,6 +90,7 @@ function SetDEBSParameters() {
   SKEY=0
   RTS=0
   STS=0
+  gap=251033
 }
 
 DEFAULT_WINDOW_SIZE=1000 #(ms) -- 1 seconds
@@ -106,7 +110,7 @@ function ResetParameters() {
   progress_step=20
   merge_step=16 #not in use.
   group=2
-  gap=1000
+  gap=128000
   sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag 0/g" ../helper/sort_common.h
 }
 
@@ -346,8 +350,8 @@ for benchmark in ""; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZ
 done
 
 # general benchmark.
-for algo in SHJ_JM_NP; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
-  for benchmark in "Stock"; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "Stock"  "Rovio" "YSB"  "DEBS" # "Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "RAR2" "AD" "KD" "WS" "KD2" "WS2" "WS3" "WS4"
+for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP ; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
+  for benchmark in "Stock"  "Rovio" "YSB"  "DEBS"; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "Stock"  "Rovio" "YSB"  "DEBS" # "Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "RAR2" "AD" "KD" "WS" "KD2" "WS2" "WS3" "WS4"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "AR") #test arrival rate and assume both inputs have same arrival rate.

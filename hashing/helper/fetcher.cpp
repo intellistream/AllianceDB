@@ -97,7 +97,7 @@ fetch_t *PMJ_HS_NP_Fetcher::next_tuple() {
 
 __always_inline
 fetch_t *
-next_tuple_S_first(t_state *state, uint64_t *fetchStartTime, relation_t *relS, bool retry) {
+next_tuple_S_first(t_state *state, const uint64_t *fetchStartTime, relation_t *relS) {
     tuple_t *readS = nullptr;
     uint64_t arrivalTsS;
 
@@ -128,7 +128,7 @@ next_tuple_S_first(t_state *state, uint64_t *fetchStartTime, relation_t *relS, b
 
 __always_inline
 fetch_t *
-next_tuple_R_first(t_state *state, uint64_t *fetchStartTime, relation_t *relR, bool retry) {
+next_tuple_R_first(t_state *state, const uint64_t *fetchStartTime, relation_t *relR) {
     tuple_t *readR = nullptr;
     uint64_t arrivalTsR;
     //try to read R first.
@@ -157,13 +157,13 @@ next_tuple_R_first(t_state *state, uint64_t *fetchStartTime, relation_t *relR, b
 }
 
 
-fetch_t *baseFetcher::_next_tuple(bool retry) {
+fetch_t *baseFetcher::_next_tuple() {
     if (tryR) {
         tryR = false;
-        return next_tuple_R_first(state, fetchStartTime, relR, retry);
+        return next_tuple_R_first(state, fetchStartTime, relR);
     } else {
         tryR = true;
-        return next_tuple_S_first(state, fetchStartTime, relS, retry);
+        return next_tuple_S_first(state, fetchStartTime, relS);
     }
 }
 
@@ -171,27 +171,23 @@ fetch_t *baseFetcher::next_tuple() {
     if (tryR) {
 //        if (state->start_index_S < state->end_index_S)
         tryR = false;
-        auto rt = next_tuple_R_first(state, fetchStartTime, relR, false);
+        auto rt = next_tuple_R_first(state, fetchStartTime, relR);
         if (rt != nullptr)
             return rt;
-        bool retry = true;
         while (rt == nullptr &&
                !finish()) {
-            rt = _next_tuple(retry);
-            retry = false;
+            rt = _next_tuple();
         }
         return rt;
     } else {
 //        if (state->start_index_R < state->end_index_R)
         tryR = true;
-        auto rt = next_tuple_S_first(state, fetchStartTime, relS, false);
+        auto rt = next_tuple_S_first(state, fetchStartTime, relS);
         if (rt != nullptr)
             return rt;
-        bool retry = true;
         while (rt == nullptr &&
                !finish()) {
-            rt = _next_tuple(retry);
-            retry = false;
+            rt = _next_tuple();
         }
         return rt;
     }

@@ -377,7 +377,7 @@ typedef struct cmdparam_t cmdparam_t;
 struct algo_t {
     char name[128];
 
-    result_t *(*joinalgorithm)(relation_t *, relation_t *, joinconfig_t *, int exp_id, int window_size);
+    result_t *(*joinalgorithm)(relation_t *, relation_t *, joinconfig_t *, int exp_id, int window_size, int gap);
 };
 
 struct cmdparam_t {
@@ -426,7 +426,7 @@ struct cmdparam_t {
     int interval;
 
     int exp_id;
-
+    int gap;
 };
 
 extern char *optarg;
@@ -580,7 +580,7 @@ main(int argc, char *argv[]) {
     cmd_params.loadfileS = NULL;
     cmd_params.rkey = 0;
     cmd_params.skey = 0;
-
+    cmd_params.gap = 10;
     cmd_params.old_param = 0;
     cmd_params.window_size = 10000;
     cmd_params.step_sizeR = 40;
@@ -663,10 +663,10 @@ main(int argc, char *argv[]) {
     result_t *result;
     if (cmd_params.kim == 0)
         result = cmd_params.algo->joinalgorithm(&relR, &relS, &joincfg, cmd_params.exp_id,
-                                                0);
+                                                0, cmd_params.gap);
     else
         result = cmd_params.algo->joinalgorithm(&relR, &relS, &joincfg, cmd_params.exp_id,
-                                                cmd_params.window_size);
+                                                cmd_params.window_size, cmd_params.gap);
     if (result != NULL) {
         fprintf(stdout, "\n[INFO ] Results = %ld. DONE.\n", result->totalresults);
     }
@@ -831,7 +831,7 @@ parse_args(int argc, char **argv, cmdparam_t *cmd_params) {
         int option_index = 0;
 
 //        c = getopt_long(argc, argv, "a:n:p:r:s:o:x:y:z:hvf:m:S:",
-        c = getopt_long(argc, argv, "R:S:J:K:L:M:t:w:e:q:l:I:d:Z:D:a:B:W:n:p:r:s:o:x:y:z:hvf:m:N:",
+        c = getopt_long(argc, argv, "g:R:S:J:K:L:M:t:w:e:q:l:I:d:Z:D:a:B:W:n:p:r:s:o:x:y:z:hvf:m:N:",
                         long_options, &option_index);
 
         /* Detect the end of the options. */
@@ -942,7 +942,9 @@ parse_args(int argc, char **argv, cmdparam_t *cmd_params) {
             case 'R':
                 cmd_params->loadfileR = mystrdup(optarg);
                 break;
-
+            case 'g':
+                cmd_params->gap = atoi(mystrdup(optarg));
+                break;
             case 'S':
                 cmd_params->loadfileS = mystrdup(optarg);
                 break;

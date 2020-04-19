@@ -2,14 +2,15 @@
 
 
 # APP
-python3 latency_figure_app.py
+#python3 latency_figure_app.py
 python3 throughput_figure_app.py
+#
+#for id in {38..41}; do
+#  python3 progressive_figure.py -i $id
+#done
 
-for id in {38..41}; do
-  python3 progressive_figure.py -i $id
-done
-
-for id in {38..41} ; do
+#python3 breakdown_broken.py -i 38
+for id in {39..41} ; do
   python3 breakdown.py -i $id
 done
 
