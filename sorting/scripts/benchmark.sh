@@ -117,10 +117,10 @@ output=test$timestamp.txt
 for benchmark in "SIMD_STUDY"; do #
   case "$benchmark" in
   "SIMD_STUDY")
-    id=104
+    id=100
     ResetParameters
     ts=0 # batch data.
-    echo SIMD 104-107
+    echo SIMD 100-103
    for algo in "m-way" "m-pass"; do
       for scalar in 0 1; do
         sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scalar/g" ../joins/joincommon.h

@@ -15,7 +15,7 @@
 
 #include "../utils/types.h" /* relation_t */
 #include "../benchmark.h"
-
+#include "common_functions.h"
 /**
  * Join-Matrix Model SHJ.
  *

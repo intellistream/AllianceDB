@@ -3,6 +3,25 @@
 
 profile_breakdown=1 # set to 1 if we want to measure time breakdown! and also dedefine eager in common_function.h
 
+function compile() {
+  cmake .. | tail -n +90
+  make -C .. clean -s
+  make -C .. -j4 -s
+}
+function Run() {
+  #####native execution
+  echo "==benchmark:$benchmark -a $algo -n $Threads=="
+  echo 3 >/proc/sys/vm/drop_caches
+  ../hashing -a $algo -r $RSIZE -s $SSIZE -n $Threads
+}
+
+function KimRun() {
+  #####native execution
+  echo "==KIM benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS -[ $progress_step -] $merge_step -G $group -g $gap=="
+  echo 3 >/proc/sys/vm/drop_caches
+  ../hashing -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS -[ $progress_step -] $merge_step -G $group -g $gap
+  if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit -1; fi
+}
 function PARTITION_ONLY() {
   sed -i -e "s/#define JOIN/#define NO_JOIN/g" ../joins/common_functions.h
   sed -i -e "s/#define MERGE/#define NO_MERGE/g" ../joins/common_functions.h
@@ -159,32 +178,12 @@ function RUNALLKIM() {
   fi
 }
 
-function compile() {
-  cmake .. | tail -n +90
-  make -C .. clean -s
-  make -C .. -j4 -s
-}
 
 function benchmarkRun() {
   #####native execution
   echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap=="
   echo 3 >/proc/sys/vm/drop_caches
   ../hashing -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap
-  if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit -1; fi
-}
-
-function Run() {
-  #####native execution
-  echo "==benchmark:$benchmark -a $algo -n $Threads=="
-  echo 3 >/proc/sys/vm/drop_caches
-  ../hashing -a $algo -r $RSIZE -s $SSIZE -n $Threads
-}
-
-function KimRun() {
-  #####native execution
-  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS -[ $progress_step -] $merge_step -G $group -g $gap=="
-  echo 3 >/proc/sys/vm/drop_caches
-  ../hashing -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS -[ $progress_step -] $merge_step -G $group -g $gap
   if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit -1; fi
 }
 
@@ -280,17 +279,28 @@ output=test$timestamp.txt
 for benchmark in "SIMD_STUDY"; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY"
   case "$benchmark" in
   "SIMD_STUDY")
-    id=100
+    id=104
     ResetParameters
     ts=0 # batch data.
-    echo SIMD PMJ 100 - 103
+    echo SIMD PMJ 104 - 107
     for algo in "PMJ_JM_NP" "PMJ_JBCR_NP"; do
       for scalar in 0 1; do
         sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scalar/g" ../helper/sort_common.h
-        FULLKIMRUN
-        PARTITION_BUILD_SORT
-        compile
-        KimRun
+        RUNALLKIM
+        let "id++"
+      done
+    done
+    python3 breakdown_simd.py
+    ;;
+  "BUCKET_SIZE_STUDY")
+    id=108
+    ResetParameters
+    ts=0 # batch data.
+    echo BUCKET_SIZE_STUDY 108 - 122
+    for algo in "NPO" "SHJ_JM_NP" "SHJ_JBCR_NP"; do
+      for size in 2 16 64 512 4096; do
+        sed -i -e "s/#define BUCKET_SIZE [[:alnum:]]*/#define BUCKET_SIZE $size/g" ../joins/npj_params.h
+        RUNALLKIM
         let "id++"
       done
     done
@@ -351,7 +361,7 @@ done
 
 # general benchmark.
 for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP ; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
-  for benchmark in "Stock"  "Rovio" "YSB"  "DEBS"; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "Stock"  "Rovio" "YSB"  "DEBS" # "Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "RAR2" "AD" "KD" "WS" "KD2" "WS2" "WS3" "WS4"
+  for benchmark in ""; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "Stock"  "Rovio" "YSB"  "DEBS" # "Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "RAR2" "AD" "KD" "WS" "KD2" "WS2" "WS3" "WS4"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "AR") #test arrival rate and assume both inputs have same arrival rate.
@@ -559,7 +569,9 @@ for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP ; do #NPO PRO SH
     esac
   done
 done
-##back up.
+python3 jobdone.py
+
+## back up.
 #  "PMJ_MERGE_STEP_STUDY")
 #    id=66
 #    algo="PMJ_JBCR_NP"

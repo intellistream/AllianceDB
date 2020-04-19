@@ -129,7 +129,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
 
 if __name__ == "__main__":
     x_values = [
-        'MWAY$^l$', 'MPASS$^l$', 'JB_PMJ$^e$'
+        'MWAY', 'MPASS', 'PMJ$^{JM}$', 'PMJ$^{JB}$'
     ]
     y_values = []
     inputs = 128000000 + 12800000
@@ -137,16 +137,19 @@ if __name__ == "__main__":
         1317834 / inputs,
         15957314 / inputs,
         40463792 / inputs,
+        40463792 / inputs,
     ])
     y_values.append([  # L2
         2506275 / inputs,
         2235413 / inputs,
         79280326 / inputs,
+        40463792 / inputs,
     ])
     y_values.append([  # L3
         2054767 / inputs,
         1961379 / inputs,
         75164090 / inputs,
+        40463792 / inputs,
     ])
     legend_labels = ['L1 miss', 'L2 miss', 'L3 miss']
 
