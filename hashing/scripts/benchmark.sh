@@ -277,8 +277,25 @@ compile
 timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
 #benchmark experiment only apply for hashing directory.
-for benchmark in ""; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY"
+for benchmark in "SIMD_STUDY"; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY"
   case "$benchmark" in
+  "SIMD_STUDY")
+    id=100
+    ResetParameters
+    ts=0 # batch data.
+    echo SIMD PMJ 100 - 103
+    for algo in "PMJ_JM_NP" "PMJ_JBCR_NP"; do
+      for scalar in 0 1; do
+        sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scalar/g" ../helper/sort_common.h
+        FULLKIMRUN
+        PARTITION_BUILD_SORT
+        compile
+        KimRun
+        let "id++"
+      done
+    done
+    python3 breakdown_simd.py
+    ;;
   "PRJ_RADIX_BITS_STUDY")
     algo="PRO"
     echo RADIX BITS STUDY 55 - 60
@@ -328,23 +345,6 @@ for benchmark in ""; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZ
     done
     python3 breakdown_group_pmj.py
     python3 breakdown_group_shj.py
-    ;;
-  "SIMD_STUDY")
-    id=78
-    algo="PMJ_JBCR_NP"
-    ResetParameters
-    ts=0 # batch data.
-    echo SIMD PMJ 78 - 79
-    for scalar in 0; do
-      sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scalar/g" ../helper/sort_common.h
-      #      compile
-      #      FULLKIMRUN
-      PARTITION_BUILD_SORT
-      compile
-      KimRun
-      let "id++"
-    done
-    #    python3 breakdown_simd.py
     ;;
   esac
 done

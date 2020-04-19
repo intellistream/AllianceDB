@@ -161,10 +161,11 @@ def ReadFile():
     # Creates a list containing w lists, each of h items, all set to 0
     w, h = 6, 2
     y = [[0 for x in range(w)] for y in range(h)]
-
-    cnt = 0
     j = 0
-    f = open("/data1/xtra/results/breakdown/MWAY_74.txt", "r")
+    id = 100
+
+    cnt = 0
+    f = open("/data1/xtra/results/breakdown/PMJ_JM_NP_{}.txt".format(id), "r")
     read = f.readlines()
     others = 0
     for x in read:
@@ -179,9 +180,10 @@ def ReadFile():
             others += value
         cnt += 1
     j += 1
+    id += 1
 
     cnt = 0
-    f = open("/data1/xtra/results/breakdown/MWAY_75.txt", "r")
+    f = open("/data1/xtra/results/breakdown/PMJ_JM_NP_{}.txt".format(id), "r")
     read = f.readlines()
     others = 0
     for x in read:
@@ -196,9 +198,10 @@ def ReadFile():
             others += value
         cnt += 1
     j += 1
+    id += 1
 
     cnt = 0
-    f = open("/data1/xtra/results/breakdown/PMJ_JBCR_NP_78.txt", "r")
+    f = open("/data1/xtra/results/breakdown/PMJ_JBCR_NP_{}.txt".format(id), "r")
     read = f.readlines()
     others = 0
     for x in read:
@@ -213,9 +216,82 @@ def ReadFile():
             others += value
         cnt += 1
     j += 1
+    id += 1
 
     cnt = 0
-    f = open("/data1/xtra/results/breakdown/PMJ_JBCR_NP_79.txt", "r")
+    f = open("/data1/xtra/results/breakdown/PMJ_JBCR_NP_{}.txt".format(id), "r")
+    read = f.readlines()
+    others = 0
+    for x in read:
+        value = double(x.strip("\n"))
+        if cnt == 3:  # sort
+            y[0][j] = value
+        elif cnt == 4:  # merge
+            y[1][j] = value
+        # elif cnt == 5:  # join
+        #     y[2][j] = value
+        else:
+            others += value
+        cnt += 1
+    j += 1
+    id += 1
+
+    cnt = 0
+    f = open("/data1/xtra/results/breakdown/MWAY_{}.txt".format(id), "r")
+    read = f.readlines()
+    others = 0
+    for x in read:
+        value = double(x.strip("\n"))
+        if cnt == 3:  # sort
+            y[0][j] = value
+        elif cnt == 4:  # merge
+            y[1][j] = value
+        # elif cnt == 5:  # join
+        #     y[2][j] = value
+        else:
+            others += value
+        cnt += 1
+    j += 1
+    id += 1
+
+    cnt = 0
+    f = open("/data1/xtra/results/breakdown/MWAY_{}.txt".format(id), "r")
+    read = f.readlines()
+    others = 0
+    for x in read:
+        value = double(x.strip("\n"))
+        if cnt == 3:  # sort
+            y[0][j] = value
+        elif cnt == 4:  # merge
+            y[1][j] = value
+        # elif cnt == 5:  # join
+        #     y[2][j] = value
+        else:
+            others += value
+        cnt += 1
+    j += 1
+    id += 1
+
+    cnt = 0
+    f = open("/data1/xtra/results/breakdown/MPASS_{}.txt".format(id), "r")
+    read = f.readlines()
+    others = 0
+    for x in read:
+        value = double(x.strip("\n"))
+        if cnt == 3:  # sort
+            y[0][j] = value
+        elif cnt == 4:  # merge
+            y[1][j] = value
+        # elif cnt == 5:  # join
+        #     y[2][j] = value
+        else:
+            others += value
+        cnt += 1
+    j += 1
+    id += 1
+
+    cnt = 0
+    f = open("/data1/xtra/results/breakdown/MPASS_{}.txt".format(id), "r")
     read = f.readlines()
     others = 0
     for x in read:
@@ -237,10 +313,11 @@ def ReadFile():
 
 if __name__ == "__main__":
     x_values = [
-        'MPASS (AVX)', 'MPASS (C++ STL)',
         'MWAY (AVX)', 'MWAY (C++ STL)',
-        'PMJ$^{JB}$ (AVX)','PMJ$^{JB}$ (C++ STL)'
-        ]  # different algorithms.
+        'MPASS (AVX)', 'MPASS (C++ STL)',
+        'PMJ$^{JM}$ (AVX)', 'PMJ$^{JM}$ (C++ STL)',
+        'PMJ$^{JB}$ (AVX)', 'PMJ$^{JB}$ (C++ STL)'
+    ]  # different algorithms.
 
     y_values = ReadFile()  #
 

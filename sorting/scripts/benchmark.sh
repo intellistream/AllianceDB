@@ -114,26 +114,20 @@ compile
 timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
 #benchmark experiment only apply for hashing directory.
-for benchmark in ""; do #
+for benchmark in "SIMD_STUDY"; do #
   case "$benchmark" in
   "SIMD_STUDY")
-    id=74
+    id=104
     ResetParameters
     ts=0 # batch data.
-    echo SIMD 74-77
-    algo="m-way"
-    for scalar in 1; do
-      #      sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scalar/g" ../joins/joincommon.h
-      #      compile
-      #      KimRun
-      let "id++"
-    done
-    algo="m-pass"
-    for scalar in 1; do
-      sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scalar/g" ../joins/joincommon.h
-      compile
-      KimRun
-      let "id++"
+    echo SIMD 104-107
+   for algo in "m-way" "m-pass"; do
+      for scalar in 0 1; do
+        sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scalar/g" ../joins/joincommon.h
+        compile
+        KimRun
+        let "id++"
+      done
     done
     ;;
   esac
@@ -141,7 +135,7 @@ done
 
 #general benchmark.
 for algo in m-way m-pass; do
-  for benchmark in "Stock" "Rovio" "YSB" "DEBS" ; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "Stock" "Rovio" "YSB" "DEBS" "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "AR" "RAR" "RAR2" "AD" "KD" "WS" "KD2" "WS2" "WS3" "WS4"
+  for benchmark in "" ; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "Stock" "Rovio" "YSB" "DEBS" "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "AR" "RAR" "RAR2" "AD" "KD" "WS" "KD2" "WS2" "WS3" "WS4"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "AR") #test arrival rate and assume both inputs have same arrival rate.
