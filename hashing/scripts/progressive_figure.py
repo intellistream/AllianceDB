@@ -108,7 +108,6 @@ def getmaxts(id):
         ts = x
     return ts
 
-
 def getCount(id):
     file = '/data1/xtra/results/timestamps/PRJ_{}.txt'.format(id)
     f = open(file, "r")

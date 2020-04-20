@@ -50,7 +50,7 @@ def send_email():
         message = message_template.substitute()
 
         # Prints out the message body for our sake
-        # print(message)
+        print(message)
 
         # setup the parameters of the message
         msg['From']=MY_ADDRESS
@@ -58,12 +58,12 @@ def send_email():
         msg['Subject']="job finished"
 
 
-        s.set_debuglevel(0)
+        s.set_debuglevel(1)
         # add in the message body
         msg.attach(MIMEText(message, 'plain'))
         # send the message via the server set up earlier.
         s.sendmail(MY_ADDRESS, email, msg.as_string())
-        # print(datetime.datetime.now())
+        print(datetime.datetime.now())
         del msg
 
     # Terminate the SMTP session and close the connection

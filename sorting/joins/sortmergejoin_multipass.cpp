@@ -142,15 +142,6 @@ sortmergejoin_multipass_thread(void *param) {
     BARRIER_ARRIVE(args->barrier, lock)
     *args->startTS = curtick();
 
-#ifdef PERF_COUNTERS
-    if(my_tid == 0){
-        PCM_initPerformanceMonitor(NULL, NULL);
-    }
-    BARRIER_ARRIVE(args->barrier, rv);
-#endif
-
-    BARRIER_ARRIVE(args->barrier, rv)
-
 #ifndef NO_TIMING
     START_MEASURE(args->timer)
 #endif
@@ -176,7 +167,6 @@ sortmergejoin_multipass_thread(void *param) {
 
     BARRIER_ARRIVE(args->barrier, rv);
 #ifdef PERF_COUNTERS
-    BARRIER_ARRIVE(args->barrier, rv);
     if(my_tid == 0) {
         PCM_stop();
         PCM_log("========= 1) Profiling results of Partitioning Phase =========\n");
@@ -213,7 +203,6 @@ sortmergejoin_multipass_thread(void *param) {
 #endif
 
 #ifdef PERF_COUNTERS
-    BARRIER_ARRIVE(args->barrier, rv);
     if(my_tid == 0) {
         PCM_stop();
         PCM_log("========= 2) Profiling results of Sorting Phase =========\n");
@@ -223,10 +212,10 @@ sortmergejoin_multipass_thread(void *param) {
 
 
 #ifdef PERF_COUNTERS
+    BARRIER_ARRIVE(args->barrier, rv);
     if(my_tid == 0){
         PCM_start();
     }
-    BARRIER_ARRIVE(args->barrier, rv);
 #endif
 
 #ifndef NO_TIMING
@@ -309,6 +298,7 @@ sortmergejoin_multipass_thread(void *param) {
     BEGIN_MEASURE_JOIN_ACC(args->timer)
 #endif
 #ifdef PERF_COUNTERS
+    BARRIER_ARRIVE(args->barrier, rv);
     if (my_tid == 0) {
         PCM_start();
     }

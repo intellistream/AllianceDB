@@ -162,7 +162,7 @@ add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_size,
     }
 #ifdef DEBUG
     for (auto i = 0; i < relation->num_tuples; i++) {
-        printf("ts: %ld\n", relationPayload->ts[i]);
+        DEBUGMSG(0,"ts: %ld\n", relationPayload->ts[i]);
     }
 #endif
 //    assert(interval == 0 || ts == window_size);

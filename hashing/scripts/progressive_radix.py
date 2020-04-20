@@ -7,6 +7,7 @@ import matplotlib
 import matplotlib as mpl
 from matplotlib.ticker import FuncFormatter, LinearLocator, LogLocator
 from numpy import double
+from numpy.ma import arange
 
 mpl.use('Agg')
 
@@ -48,57 +49,46 @@ def ConvertEpsToPdf(dir_filename):
     os.system("epstopdf --outfile " + dir_filename + ".pdf " + dir_filename + ".eps")
     os.system("rm -rf " + dir_filename + ".eps")
 
+def getmaxts(id):
+    ts = 0
+    w = 6
+    bound = id + 1 * w
+    for i in range(id, bound, 1):
+        file = '/data1/xtra/results/timestamps/PRJ_{}.txt'.format(i)
+        f = open(file, "r")
+        read = f.readlines()
+        x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
+        if (x > ts):
+            ts = x
+
+    return ts
+
+def getCount(id):
+    file = '/data1/xtra/results/timestamps/PRJ_{}.txt'.format(id)
+    f = open(file, "r")
+    read = f.readlines()
+    return len(read)
 
 # example for reading csv file
-def ReadFile(S, id):
-    col1 = [0]
-    col2 = [0]
-    col3 = [0]
-    col4 = [0]
-    col5 = [0]
-    col6 = [0]
-
-    cnt1 = 0
-    cnt2 = 0
-    cnt3 = 0
-    cnt4 = 0
-    cnt5 = 0
-    cnt6 = 0
-    maxts = 0
+def ReadFile(id):
+    x_axis = []
+    y_axis = []
 
     w = 6
     bound = id + 1 * w
     for i in range(id, bound, 1):
+        col = []
         f = open("/data1/xtra/results/timestamps/PRJ_{}.txt".format(i), "r")
-        cnt = 1
         read = f.readlines()
-        for x in read:
-            if cnt % S == 0:
-                value = double(x.strip("\n"))
-                if i == 55:
-                    col1.append(value)
-                    cnt1 += 1
-                if i == 56:
-                    col2.append(value)
-                    cnt2 += 1
-                if i == 57:
-                    col3.append(value)
-                    cnt3 += 1
-                if i == 58:
-                    col4.append(value)
-                    cnt4 += 1
-                if i == 59:
-                    col5.append(value)
-                    cnt5 += 1
-                if i == 60:
-                    col6.append(value)
-                    cnt6 += 1
-                if (value > maxts):
-                    maxts = value
-            cnt += 1
+        for r in read:
+            value = double(r.strip("\n"))  # timestamp.
+            col.append(value)
+        # calculate the proportional values of samples
+        coly = 1. * arange(len(col)) / (len(col) - 1)
+        x_axis.append(col)
+        y_axis.append(coly)
 
-    minvalue = min(cnt1, cnt2, cnt3, cnt4, cnt5, cnt6)
-    return maxts, minvalue, col1, col2, col3, col4, col5, col6
+    return x_axis, y_axis
 
 
 def DrawLegend(legend_labels, filename):
@@ -106,7 +96,7 @@ def DrawLegend(legend_labels, filename):
     ax1 = fig.add_subplot(111)
     FIGURE_LABEL = legend_labels
     LINE_WIDTH = 8.0
-    MARKER_SIZE = 12.0
+    MARKER_SIZE = 15.0
     LEGEND_FP = FontProperties(style='normal', size=26)
 
     figlegend = pylab.figure(figsize=(16, 0.3))
@@ -137,7 +127,7 @@ def DrawLegend(legend_labels, filename):
 # draw a line chart
 def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, y_min, y_max, filename, allow_legend):
     # you may change the figure size on your own.
-    fig = plt.figure(figsize=(8, 3))
+    fig = plt.figure(figsize=(6, 3))
     figure = fig.add_subplot(111)
 
     FIGURE_LABEL = legend_labels
@@ -147,38 +137,41 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
 
     x_values = xvalues
     y_values = yvalues
-
+    print("mark gap:", ceil(x_max / 6))
     lines = [None] * (len(FIGURE_LABEL))
     for i in range(len(y_values)):
-        lines[i], = figure.plot(x_values, y_values[i], color=LINE_COLORS[i], \
+        lines[i], = figure.plot(x_values[i], y_values[i], color=LINE_COLORS[i], \
                                 linewidth=LINE_WIDTH, marker=MARKERS[i], \
-                                markersize=MARKER_SIZE, label=FIGURE_LABEL[i])
+                                markersize=MARKER_SIZE, label=FIGURE_LABEL[i],
+                                markevery=ceil(x_max / 6)
+                                )
 
     # sometimes you may not want to draw legends.
     if allow_legend == True:
         plt.legend(lines,
                    FIGURE_LABEL,
                    prop=LEGEND_FP,
-                   loc='upper right',
-                   ncol=1,
+                   loc='upper center',
+                   ncol=3,
                    #                     mode='expand',
-                   bbox_to_anchor=(1.3, 1), shadow=False,
+                   bbox_to_anchor=(0.55, 1.5), shadow=False,
                    columnspacing=0.1,
                    frameon=True, borderaxespad=0.0, handlelength=1.5,
                    handletextpad=0.1,
                    labelspacing=0.1)
 
-    # plt.yscale('log', basey=2)
-    plt.xticks(x_values)
+    # plt.yscale('log')
+    # plt.xticks(x_values)
     # you may control the limits on your own.
-    plt.xlim(x_min, x_max)
+    # plt.xlim(x_min, x_max)
     # plt.ylim(y_min, y_max)
 
     plt.grid(axis='y', color='gray')
+
     # figure.yaxis.set_major_locator(LogLocator(base=10))
     # figure.xaxis.set_major_locator(matplotlib.ticker.FixedFormatter(["0.25", "0.5", "0.75", "1"]))
-    figure.xaxis.set_major_formatter(matplotlib.ticker.PercentFormatter(1.0))
-    figure.xaxis.set_major_locator(LinearLocator(5))
+    # figure.xaxis.set_major_formatter(matplotlib.ticker.PercentFormatter(1.0))
+    # figure.xaxis.set_major_locator(LinearLocator(5))
 
     figure.get_xaxis().set_tick_params(direction='in', pad=5)
     figure.get_yaxis().set_tick_params(direction='in', pad=10)
@@ -192,10 +185,9 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
     plt.savefig(FIGURE_FOLDER + "/" + filename + ".pdf", bbox_inches='tight')
     # ConvertEpsToPdf(FIGURE_FOLDER + "/" + filename)
 
-
 if __name__ == "__main__":
 
-    id = 55
+    id = 113
     try:
         opts, args = getopt.getopt(sys.argv[1:], '-i:h', ['test id', 'help'])
     except getopt.GetoptError:
@@ -211,31 +203,15 @@ if __name__ == "__main__":
 
     legend_labels = ['$\sharp r$=8', '$\sharp r$=10', '$\sharp r$=12', '$\sharp r$=14', '$\sharp r$=16', '$\sharp r$=18']
 
-    S = 1  #
-    maxts, N, col1, col2, col3, col4, col5, col6 = ReadFile(S, id)
-    S = floor(N / 50)
-    # S = 255999
-    print("S:", S)
-    maxts, N, col1, col2, col3, col4, col5, col6 = ReadFile(S, id)
-    N = (int)(N / 2)
-    print("Number of points:", N)
-    col0 = []
-    for x in range(0, N):
-        col0.append(x / N)
-        # print("fraction :", x / N)
+    ts = ceil(getmaxts(id) / 100) * 100
+    print("maximum timestamp:", ts)
+    x_axis, y_axis = ReadFile(id)
 
-    lines = [
-        col1[0:N],
-        col2[0:N],
-        col3[0:N],
-        col4[0:N],
-        col5[0:N],
-        col6[0:N],
-    ]
-    # print(lines[0])
-    # print(lines[1])
-    DrawFigure(col0, lines, legend_labels,
-               'fraction of matched results', 'time (msec)', 0, 0.5,
-               1, double(ceil(maxts / 100.0)) * 100,
+    legend = True
+    DrawFigure(x_axis, y_axis, legend_labels,
+               'elapsed time (msec)', 'cumulative percent', 0, getCount(id),
+               1, 0,
                'progressive_radix_figure',
-               True)
+               legend)
+
+    # DrawLegend(legend_labels, 'progressive_radix_legend')

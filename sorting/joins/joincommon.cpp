@@ -53,10 +53,9 @@ sortmergejoin_initrun(relation_t *relR, relation_t *relS, joinconfig_t *joincfg,
     int32_t numperthr[2];
     int64_t result = 0;
 
-#ifndef NO_TIMING
+
     T_TIMER timer[nthreads];//every thread has its own timer.
     uint64_t *startTS = new uint64_t;
-#endif
 
     /**** allocate temporary space for partitioning ****/
     tuple_t *tmpRelpartR = NULL, *tmpRelpartS = NULL;

@@ -48,7 +48,7 @@ def ConvertEpsToPdf(dir_filename):
 # draw a line chart
 def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, allow_legend):
     # you may change the figure size on your own.
-    fig = plt.figure(figsize=(8, 3.5))
+    fig = plt.figure(figsize=(12, 3.5))
     figure = fig.add_subplot(111)
 
     FIGURE_LABEL = legend_labels
@@ -190,7 +190,7 @@ def ReadFile(id):
 
 
 if __name__ == "__main__":
-    id = 55
+    id = 113
     try:
         opts, args = getopt.getopt(sys.argv[1:], '-i:h', ['test id', 'help'])
     except getopt.GetoptError:
@@ -211,7 +211,7 @@ if __name__ == "__main__":
     # y_norm_values = normalize(y_values)
 
     # break into 3 parts
-    legend_labels = ['partition', 'join']  # , 'others'
+    legend_labels = ['partition', 'probe']  # , 'others'
 
     DrawFigure(x_values, y_values, legend_labels, 'number of radix bits', 'cycles per input tuple',
                'breakdown_radix_figure', True)

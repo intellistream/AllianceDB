@@ -134,22 +134,22 @@ if __name__ == "__main__":
     y_values = []
     inputs = 128000000 + 12800000
     y_values.append([  # L1
-        1317834 / inputs,
-        15957314 / inputs,
-        40463792 / inputs,
-        40463792 / inputs,
+        14326962 / inputs,
+        14282306 / inputs,
+        (29597976-603) / inputs,
+        (39357920-19709686) / inputs,
     ])
     y_values.append([  # L2
-        2506275 / inputs,
-        2235413 / inputs,
-        79280326 / inputs,
-        40463792 / inputs,
+        2569761 / inputs,
+        4067798 / inputs,
+        (40295530-746) / inputs,
+        (77455174-27345069) / inputs,
     ])
     y_values.append([  # L3
-        2054767 / inputs,
-        1961379 / inputs,
-        75164090 / inputs,
-        40463792 / inputs,
+        2263150 / inputs,
+        4041460 / inputs,
+        (35687990-165) / inputs,
+        (71058883-2786917) / inputs,
     ])
     legend_labels = ['L1 miss', 'L2 miss', 'L3 miss']
 

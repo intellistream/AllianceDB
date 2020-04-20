@@ -126,6 +126,11 @@ function FULLKIMRUN() {
   compile
   echo "PARTITION_BUILD_SORT_MERGE_JOIN"
   KimRun
+
+  ALL_ON
+  compile
+  echo "ALL_ON"
+  KimRun
 }
 
 function SHJKIMRUN() {
@@ -139,6 +144,11 @@ function SHJKIMRUN() {
 
   PARTITION_BUILD_SORT_MERGE_JOIN
   compile
+  KimRun
+
+  ALL_ON
+  compile
+  echo "ALL_ON"
   KimRun
 }
 
@@ -276,7 +286,7 @@ compile
 timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
 #benchmark experiment only apply for hashing directory.
-for benchmark in "SIMD_STUDY"; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY"
+for benchmark in ""; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY"
   case "$benchmark" in
   "SIMD_STUDY")
     id=104
@@ -296,26 +306,27 @@ for benchmark in "SIMD_STUDY"; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" 
     id=108
     ResetParameters
     ts=0 # batch data.
-    echo BUCKET_SIZE_STUDY 108 - 122
-    for algo in "NPO" "SHJ_JM_NP" "SHJ_JBCR_NP"; do
-      for size in 2 16 64 512 4096; do
+    for algo in "NPO"; do
+      for size in 1 2 4 8 16; do
+        echo BUCKET_SIZE_STUDY $id
         sed -i -e "s/#define BUCKET_SIZE [[:alnum:]]*/#define BUCKET_SIZE $size/g" ../joins/npj_params.h
-        RUNALLKIM
+        compile
+        KimRun
         let "id++"
       done
     done
-    python3 breakdown_simd.py
+    python3 breakdown_bucket.py
     ;;
   "PRJ_RADIX_BITS_STUDY")
     algo="PRO"
-    echo RADIX BITS STUDY 55 - 60
-    id=55
+    id=113
     ResetParameters
+    ts=0   # batch data.
     for b in 8 10 12 14 16 18; do
+      echo RADIX BITS STUDY $id
       sed -i -e "s/NUM_RADIX_BITS [[:alnum:]]*/NUM_RADIX_BITS $b/g" ../joins/prj_params.h
       compile
-      ts=0   # batch data.
-      KimRun #55 - 60
+      KimRun
       let "id++"
     done
     python3 breakdown_radix.py
@@ -323,12 +334,12 @@ for benchmark in "SIMD_STUDY"; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" 
     python3 progressive_radix.py
     ;;
   "PMJ_SORT_STEP_STUDY")
-    id=61
+    id=119
     algo="PMJ_JBCR_NP"
-    echo PMJ_SORT_STEP_STUDY 61 - 65
     ResetParameters
     ts=0 # batch data.
     for progress_step in 10 20 30 40 50; do #%
+      echo PMJ_SORT_STEP_STUDY $id
       FULLKIMRUN
       let "id++"
     done
@@ -337,18 +348,19 @@ for benchmark in "SIMD_STUDY"; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" 
     python3 progressive_sort.py
     ;;
   "GROUP_SIZE_STUDY")
-    id=66
+    id=124
     algo="PMJ_JBCR_NP"
     ResetParameters
     ts=0 # batch data.
-    echo GROUP_SIZE_STUDY PMJ 66 - 69
+    echo GROUP_SIZE_STUDY PMJ 124 - 127
     for group in 1 2 4 8; do
       FULLKIMRUN
       let "id++"
     done
+
     algo="SHJ_JBCR_NP"
     ResetParameters
-    echo GROUP_SIZE_STUDY SHJ 70 - 73
+    echo GROUP_SIZE_STUDY SHJ 128 - 131
     for group in 1 2 4 8; do
       SHJKIMRUN
       let "id++"
@@ -361,7 +373,7 @@ done
 
 # general benchmark.
 for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP ; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
-  for benchmark in ""; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "Stock"  "Rovio" "YSB"  "DEBS" # "Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "RAR2" "AD" "KD" "WS" "KD2" "WS2" "WS3" "WS4"
+  for benchmark in "AR" "RAR" "RAR2" "AD" "KD" "WS" "KD2" "WS2" "WS3" "WS4" ; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" # "Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "RAR2" "AD" "KD" "WS" "KD2" "WS2" "WS3" "WS4"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "AR") #test arrival rate and assume both inputs have same arrival rate.

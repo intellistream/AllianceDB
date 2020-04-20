@@ -1,6 +1,4 @@
-import getopt
 import os
-import sys
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -48,7 +46,7 @@ def ConvertEpsToPdf(dir_filename):
 # draw a line chart
 def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, allow_legend):
     # you may change the figure size on your own.
-    fig = plt.figure(figsize=(8, 3.5))
+    fig = plt.figure(figsize=(12, 3.5))
     figure = fig.add_subplot(111)
 
     FIGURE_LABEL = legend_labels
@@ -60,7 +58,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, al
     index = np.arange(len(x_values))
     # the bar width.
     # you may need to tune it to get the best figure.
-    width = 0.5
+    width = 0.6
     # draw the bars
     bottom_base = np.zeros(len(y_values[0]))
     bars = [None] * (len(FIGURE_LABEL))
@@ -98,7 +96,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, al
                        )
 
     # you may need to tune the xticks position to get the best figure.
-    plt.xticks(index + 1 * width, x_values)
+    plt.xticks(index + 0.5 * width, x_values)
 
     # plt.xlim(0,)
     # plt.ylim(0,1)
@@ -111,6 +109,8 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, al
 
     plt.xlabel(x_label, fontproperties=LABEL_FP)
     plt.ylabel(y_label, fontproperties=LABEL_FP)
+
+    # plt.xticks(rotation=30)
 
     size = fig.get_size_inches()
     dpi = fig.get_dpi()
@@ -157,64 +157,50 @@ def normalize(y_values):
 
 
 # example for reading csv file
-def ReadFile(id):
+def ReadFile():
     # Creates a list containing w lists, each of h items, all set to 0
-    w, h = 4, 3
+    w, h = 5, 2
     y = [[0 for x in range(w)] for y in range(h)]
-    # print(matches)
-    max_value = 0
     j = 0
+    id = 108
+
     bound = id + 1 * w
     for i in range(id, bound, 1):
         cnt = 0
         print(i)
-        f = open("/data1/xtra/results/breakdown/SHJ_JBCR_NP_{}.txt".format(i), "r")
+        f = open("/data1/xtra/results/breakdown/NPJ_{}.txt".format(i), "r")
         read = f.readlines()
         others = 0
         for x in read:
             value = double(x.strip("\n"))
-            if cnt == 1: #partition
+            # if cnt == 1:
+                # y[0][j] = value
+            if cnt == 2:
                 y[0][j] = value
-            elif cnt == 2:  # build
+            elif cnt == 5:
                 y[1][j] = value
-            elif cnt == 5:  # join
-                y[2][j] = value
             else:
                 others += value
-            # if cnt == 6:
-            #     y[2][j] = others
             cnt += 1
         j += 1
     print(y)
-    return y, max_value
+    return y
 
 
 if __name__ == "__main__":
-    id = 128
-    try:
-        opts, args = getopt.getopt(sys.argv[1:], '-i:h', ['test id', 'help'])
-    except getopt.GetoptError:
-        print('breakdown.py -id testid')
-        sys.exit(2)
-    for opt, opt_value in opts:
-        if opt in ('-h', '--help'):
-            print("[*] Help info")
-            exit()
-        elif opt == '-i':
-            print('Test ID:', opt_value)
-            id = (int)(opt_value)
+    x_values = [
+        1, 2, 4, 8, 16
+    ]  # different bucket size.
 
-    x_values = [1, 2, 4, 8]  # merging step size
-
-    y_values, max_value = ReadFile(id)  # 55
+    y_values = ReadFile()  #
 
     # y_norm_values = normalize(y_values)
 
     # break into 4 parts
-    legend_labels = ['partition', 'build', 'probe']  # , 'others'
+    legend_labels = ['build', 'probe']  # , 'others'
 
     DrawFigure(x_values, y_values, legend_labels,
-               'group size', 'cycles per output tuple',
-               'breakdown_group_shj_figure', True)
+               '', 'cycles per input',
+               'breakdown_bucket_figure', True)
 
     # DrawLegend(legend_labels, 'breakdown_radix_legend')

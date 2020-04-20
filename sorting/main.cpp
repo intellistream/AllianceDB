@@ -345,9 +345,9 @@ $ cat cpu-mapping.txt
 #include "tuple_buffer.h"       /* for materialization */
 #endif
 
-#ifdef PERF_COUNTERS
-#include "perf_counters.h"      /* PCM_x */
-#endif
+
+#include "utils/perf_counters.h"      /* PCM_x */
+
 
 #include "config.h"          /* autoconf header */
 #include "utils/types.h"
