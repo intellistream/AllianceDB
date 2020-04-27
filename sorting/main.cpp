@@ -1015,7 +1015,7 @@ parse_args(int argc, char **argv, cmdparam_t *cmd_params) {
     /* give a warning about the size of merge buffer */
     if (cmd_params->algo->joinalgorithm == sortmergejoin_multiway) {
         if (cmd_params->mwaymerge_bufsize == MWAY_MERGE_BUFFER_SIZE_DEFAULT) {
-            fprintf(stdout, "[WARN ] Using a default L3-cache size of %.3lf MiB for the multi-way merge buffer.\n",
+            fprintf(stdout, "[WARN ] Using a default L3-cache size of %.3lf KiB for the multi-way merge buffer.\n",
                     (double) (MWAY_MERGE_BUFFER_SIZE_DEFAULT / 1024.0));
             fprintf(stdout, "[WARN ] Change it based on your machine using -m/--mwaybufsize cmd-options.\n");
         }

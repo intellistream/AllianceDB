@@ -194,7 +194,7 @@ void add_zipf_ts(relation_t *relation, relation_payload_t *relationPayload, int 
                  uint32_t partitions) {
 
     int small = 0;
-    uint64_t *timestamps = gen_zipf_ts(relation->num_tuples, window_size, zipf_param);
+    int32_t *timestamps = gen_zipf_ts(relation->num_tuples, window_size, zipf_param);
 
     int numthr = relation->num_tuples / partitions;//replicate R, partition S.
 
@@ -217,13 +217,15 @@ void add_zipf_ts(relation_t *relation, relation_payload_t *relationPayload, int 
 
         // record cur index in partition
         int cur_index = tid_start_idx[partition] + tid_offsets[partition];
-        relationPayload->ts[cur_index] = (uint64_t) timestamps[i];
+        relationPayload->ts[cur_index] = (uint64_t) timestamps[i] * 2.1 * 1E6;//ms to cycle
         tid_offsets[partition]++;
 
-        if (relationPayload->ts[i] < 0.25 * window_size) {
+        DEBUGMSG(1,"%d, %ld\n", relation->tuples[i].key, relationPayload->ts[i]);
+    }
+    for (auto i = 0; i < relation->num_tuples; i++) {
+        if (relationPayload->ts[i] < 0.25 * window_size* 2.1 * 1E6) {
             small++;
         }
-        DEBUGMSG("%d, %ld\n", relation->tuples[i].key, relationPayload->ts[i])
     }
     printf("small ts %f\n", (double) small / relation->num_tuples);
 }

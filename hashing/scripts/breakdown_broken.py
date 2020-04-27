@@ -23,7 +23,7 @@ MARKERS = (['o', 's', 'v', "^", "h", "v", ">", "x", "d", "<", "|", "", "|", "_"]
 # you may want to change the color map for different figures
 COLOR_MAP = (['#000000', '#5DA5DA', '#60BD68', '#B276B2', '#DECF3F', '#F17CB0', '#B2912F', '#FAA43A', '#AFAFAF'])
 # you may want to change the patterns for different figures
-PATTERNS = (["////", "\\\\", "//////", "o", "o", "\\\\", "\\\\", "//////", "//////", ".", "\\\\\\", "\\\\\\"])
+PATTERNS = (["", "\\\\", "//////", "o", "||", "\\\\", "\\\\", "//////", "//////", ".", "\\\\\\", "\\\\\\"])
 LABEL_WEIGHT = 'bold'
 LINE_COLORS = COLOR_MAP
 LINE_WIDTH = 3.0
@@ -84,9 +84,9 @@ def DrawFigure(x_values, y_values, y_max, legend_labels, x_label, y_label, filen
     for i in range(len(y_values)):
         # plot the same data on both axes
         bars[i] = ax1.bar(index + width / 2, y_values[i], width, hatch=PATTERNS[i], color=LINE_COLORS[i],
-                          label=FIGURE_LABEL[i], bottom=bottom_base)
+                          label=FIGURE_LABEL[i], bottom=bottom_base,edgecolor='black', linewidth=3)
         ax2.bar(index + width / 2, y_values[i], width, hatch=PATTERNS[i], color=LINE_COLORS[i],
-               label=FIGURE_LABEL[i], bottom=bottom_base)
+               label=FIGURE_LABEL[i], bottom=bottom_base,edgecolor='black', linewidth=3)
         bottom_base = np.array(y_values[i]) + bottom_base
 
     # zoom-in / limit the view to different portions of the data
@@ -202,7 +202,7 @@ def ReadFile(id):
 
     cnt = 0
     linecnt = 0
-    f = open("/data1/xtra/results/breakdown/PRJ_{}.txt".format(id), "r")
+    f = open("/data1/xtra/results/breakdown/NPJ_{}.txt".format(id), "r")
     read = f.readlines()
     for x in read:
         value = double(x.strip("\n"))
@@ -215,7 +215,7 @@ def ReadFile(id):
 
     cnt = 0
     linecnt = 0
-    f = open("/data1/xtra/results/breakdown/NPJ_{}.txt".format(id), "r")
+    f = open("/data1/xtra/results/breakdown/PRJ_{}.txt".format(id), "r")
     read = f.readlines()
     for x in read:
         value = double(x.strip("\n"))
@@ -228,7 +228,7 @@ def ReadFile(id):
 
     cnt = 0
     linecnt = 0
-    f = open("/data1/xtra/results/breakdown/MPASS_{}.txt".format(id), "r")
+    f = open("/data1/xtra/results/breakdown/MWAY_{}.txt".format(id), "r")
     read = f.readlines()
     for x in read:
         value = double(x.strip("\n"))
@@ -241,7 +241,7 @@ def ReadFile(id):
 
     cnt = 0
     linecnt = 0
-    f = open("/data1/xtra/results/breakdown/MWAY_{}.txt".format(id), "r")
+    f = open("/data1/xtra/results/breakdown/MPASS_{}.txt".format(id), "r")
     read = f.readlines()
     for x in read:
         value = double(x.strip("\n"))
@@ -307,7 +307,7 @@ def ReadFile(id):
 
 
 if __name__ == "__main__":
-    id = 0
+    id = 38
     try:
         opts, args = getopt.getopt(sys.argv[1:], '-i:h', ['test id', 'help'])
     except getopt.GetoptError:
@@ -321,7 +321,7 @@ if __name__ == "__main__":
             print('Test ID:', opt_value)
             id = (int)(opt_value)
 
-    x_values = ['PRJ', 'NPJ', 'MPASS', 'MWAY', 'SHJ$^{JM}$', 'SHJ$^{JB}$', 'PMJ$^{JM}$',
+    x_values = ['NPJ', 'PRJ', 'MWAY', 'MPASS',  'SHJ$^{JM}$', 'SHJ$^{JB}$', 'PMJ$^{JM}$',
                 'PMJ$^{JB}$']  # join time is getting from total - others.
 
     y_values, max_value = ReadFile(id)

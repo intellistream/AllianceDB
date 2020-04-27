@@ -34,7 +34,7 @@
 
 //#define DEBUG
 //#define JOIN_MATERIALIZE
-#define NO_TIMING
+//#define NO_TIMING
 
 #define DEBUG_SORT_CHECK 0
 #define scalarflag 0

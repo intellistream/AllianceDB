@@ -1,3 +1,0 @@
-/tmp/tmp.9lzsC6DcWB/cmake-build-release-remote-host-sort/CMakeFiles/edit_cache.dir
-/tmp/tmp.9lzsC6DcWB/cmake-build-release-remote-host-sort/CMakeFiles/rebuild_cache.dir
-/tmp/tmp.9lzsC6DcWB/cmake-build-release-remote-host-sort/CMakeFiles/sorting.dir

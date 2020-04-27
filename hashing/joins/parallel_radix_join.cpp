@@ -1608,7 +1608,8 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, param_t cmd_p
     breakdown_global((relR->num_tuples + relS->num_tuples), nthreads, args[0].timer,
                      cmd_params.ts == 0 ? 0 : cmd_params.window_size, fp);
     fclose(fp);
-    sortRecords("PRJ", cmd_params.exp_id, cmd_params.ts == 0 ? 0 : cmd_params.window_size);
+    sortRecords("PRJ", cmd_params.exp_id, cmd_params.ts == 0 ? 0 : cmd_params.window_size,
+                (relR->num_tuples + relS->num_tuples), joinresult->totalresults);
 #endif
 
 

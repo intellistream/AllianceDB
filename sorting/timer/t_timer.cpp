@@ -33,8 +33,9 @@ void
 dump_timing(vector<double> vector, std::vector<double> vector_latency,
             std::vector<double> global_record_gap,
             std::string arg_name,
-            int exp_id, long lastTS) {
+            int exp_id, long lastTS,unsigned long inputs, int64_t matches) {
 
+    std::string name = arg_name + "_" + std::to_string(exp_id);
     //print progressive
     int n = vector.size() - 1;
     int check01 = floor(n * 0.001);
@@ -45,17 +46,24 @@ dump_timing(vector<double> vector, std::vector<double> vector_latency,
     int check95 = floor(n * 0.95);
     int check99 = floor(n * 0.99);
 
-    //dump timestmap.
-    std::string name = arg_name + "_" + std::to_string(exp_id);
-    string path = "/data1/xtra/results/timestamps/" + name + ".txt";
+
+    string path = "/data1/xtra/results/records/" + name + ".txt";
     ofstream outputFile(path, std::ios::trunc);
+    outputFile << (std::to_string(inputs) + "\n");
+    outputFile << (std::to_string(matches) + "\n");
+    outputFile.close();
+
+    //dump timestmap.
+
+    string path_ts = "/data1/xtra/results/timestamps/" + name + ".txt";
+    ofstream outputFile_ts(path_ts, std::ios::trunc);
     auto begin = vector.begin().operator*();
     vector.erase(vector.begin());
     for (auto &element : vector) {
 //        printf("timestamp:%f\n", element - begin + lastTS);
-        outputFile << (std::to_string(element - begin + lastTS) + "\n");
+        outputFile_ts << (std::to_string(element - begin + lastTS) + "\n");
     }
-    outputFile.close();
+    outputFile_ts.close();
 
 
     fprintf(stdout, "Time to obtain 0.1%%, 1%%, 5%%, 50%%, 75%% of results (MSECS): \n");
@@ -69,6 +77,7 @@ dump_timing(vector<double> vector, std::vector<double> vector_latency,
     fprintf(stdout, "\n");
     fprintf(stdout, "\n");
     fflush(stdout);
+
 
     //dump latency
     string path_latency = "/data1/xtra/results/latency/" + name + ".txt";
@@ -129,6 +138,7 @@ void breakdown_global(int64_t total_results, int nthreads, T_TIMER *timer, long 
     );
     fflush(pFile);
 }
+
 /**
  *
  * @param result
@@ -228,7 +238,7 @@ void merge(T_TIMER *timer, relation_t *relR, relation_t *relS, uint64_t *startTS
  * "Conditional jump or move depends on uninitialised value(s)"
  * @param algo_name
  */
-void sortRecords(std::string algo_name, int exp_id, long lastTS) {
+void sortRecords(string algo_name, int exp_id, long lastTS, unsigned long inputs, int64_t matches) {
 
     //sort the global record to get to know the actual time when each match success.
     global_record.push_back(actual_start_timestamp / (2.1 * 1E6));//cycles to ms.
@@ -236,6 +246,6 @@ void sortRecords(std::string algo_name, int exp_id, long lastTS) {
     sort(global_record_latency.begin(), global_record_latency.end());
     sort(global_record_gap.begin(), global_record_gap.end());
     /* now print the progressive results: */
-    dump_timing(global_record, global_record_latency, global_record_gap, algo_name, exp_id, lastTS);
+    dump_timing(global_record, global_record_latency, global_record_gap, algo_name, exp_id, lastTS, inputs, matches);
 
 }

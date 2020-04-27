@@ -209,11 +209,11 @@ gen_zipf(unsigned int stream_size,
 /**
  * Generate a sorted timestamp table with Zipf-distributed content.
  */
-uint64_t *
+int32_t *
 gen_zipf_ts(unsigned int stream_size,
             unsigned int alphabet_size,
             double zipf_factor) {
-    uint64_t *ret;
+    int32_t *ret;
 
     /* prepare stuff for Zipf generation */
 //    uint32_t *alphabet = gen_alphabet(alphabet_size);
@@ -224,11 +224,7 @@ gen_zipf_ts(unsigned int stream_size,
 
     assert (lut);
 
-//    for (int i = 0; i < alphabet_size; i++) {
-//        printf("LUT%d: %f\n", i, lut[i]);
-//    }
-
-    ret = (uint64_t *) malloc(stream_size * sizeof(uint64_t));
+    ret = (int32_t *) malloc(stream_size * sizeof(*ret));
 
     assert (ret);
 
@@ -256,17 +252,20 @@ gen_zipf_ts(unsigned int stream_size,
 
             pos = right;
         }
-        ret[i] = (uint64_t) alphabet[pos] * 2.1 * 1E6;
+        ret[i] = (int) alphabet[pos];
     }
 
     free(lut);
     free(alphabet);
 
     // sort ret
-    std::sort(ret, ret + stream_size);
+    std::sort(ret, ret+stream_size);
 
-    //smooth timestamp.
-    smooth(ret, stream_size);
+//    for (int i=0; i < stream_size; i++) {
+//        printf("%d\n", ret[i]);
+//    }
+
     return ret;
 }
+
 

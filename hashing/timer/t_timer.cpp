@@ -33,8 +33,9 @@ void
 dump_timing(vector<double> vector, std::vector<double> vector_latency,
             std::vector<double> global_record_gap,
             std::string arg_name,
-            int exp_id, long lastTS) {
-
+            int exp_id, long lastTS, unsigned long inputs, int64_t matches
+) {
+    std::string name = arg_name + "_" + std::to_string(exp_id);
     //print progressive
     int n = vector.size() - 1;
     int check01 = ceil(n * 0.001);
@@ -48,17 +49,25 @@ dump_timing(vector<double> vector, std::vector<double> vector_latency,
     int check95 = ceil(n * 0.95);
     int check99 = ceil(n * 0.99) - 1;
 
-    //dump timestmap.
-    std::string name = arg_name + "_" + std::to_string(exp_id);
-    string path = "/data1/xtra/results/timestamps/" + name + ".txt";
+    //dump matches and inputs.
+
+    string path = "/data1/xtra/results/records/" + name + ".txt";
     ofstream outputFile(path, std::ios::trunc);
+    outputFile << (std::to_string(inputs) + "\n");
+    outputFile << (std::to_string(matches) + "\n");
+    outputFile.close();
+
+
+    //dump timestmap.
+    string path_ts = "/data1/xtra/results/timestamps/" + name + ".txt";
+    ofstream outputFile_ts(path_ts, std::ios::trunc);
     auto begin = vector.begin().operator*();
     vector.erase(vector.begin());
     for (auto &element : vector) {
 //        printf("timestamp:%f\n", (element + lastTS - begin));
-        outputFile << (std::to_string(element + lastTS - begin) + "\n");
+        outputFile_ts << (std::to_string(element + lastTS - begin) + "\n");
     }
-    outputFile.close();
+    outputFile_ts.close();
     fprintf(stdout, "check50:%d\n", check50);
     fprintf(stdout, "Time to obtain 1%%, 5%%, 10%%, 25%%, 50%% of results (MSECS): \n");
     fprintf(stdout, "(%.2f) \t (%.2f) \t (%.2f) \t (%.2f) \t (%.2f)",
@@ -440,7 +449,7 @@ void merge(T_TIMER *timer, relation_t *relR, relation_t *relS, uint64_t *startTS
  * "Conditional jump or move depends on uninitialised value(s)"
  * @param algo_name
  */
-void sortRecords(std::string algo_name, int exp_id, long lastTS) {
+void sortRecords(string algo_name, int exp_id, long lastTS, unsigned long inputs, int64_t matches) {
 
     //sort the global record to get to know the actual time when each match success.
     global_record.push_back(actual_start_timestamp / (2.1 * 1E6));//cycles to ms.
@@ -448,7 +457,7 @@ void sortRecords(std::string algo_name, int exp_id, long lastTS) {
     sort(global_record_latency.begin(), global_record_latency.end());
     sort(global_record_gap.begin(), global_record_gap.end());
     /* now print the progressive results: */
-    dump_timing(global_record, global_record_latency, global_record_gap, algo_name, exp_id, lastTS);
+    dump_timing(global_record, global_record_latency, global_record_gap, algo_name, exp_id, lastTS, inputs, matches);
 
 }
 

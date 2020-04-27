@@ -51,7 +51,7 @@ void breakdown_thread(int64_t result, T_TIMER *timer, long lastTS, _IO_FILE *pFi
 
 void merge(T_TIMER *timer, relation_t *relR, relation_t *relS, uint64_t *startTS, long lastTS);
 
-void sortRecords(std::string algo_name, int exp_id, long lastTS);
+void sortRecords(string algo_name, int exp_id, long lastTS, unsigned long inputs, int64_t matches);
 
 #ifndef BEGIN_MEASURE_BUILD
 #define BEGIN_MEASURE_BUILD(timer) \

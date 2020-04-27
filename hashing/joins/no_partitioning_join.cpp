@@ -395,7 +395,7 @@ NPO(relation_t *relR, relation_t *relS, param_t cmd_params) {
     auto fp = fopen(path.c_str(), "w");
     breakdown_global((numR+numS), nthreads, args[0].timer, cmd_params.ts == 0 ? 0 : cmd_params.window_size, fp);
     fclose(fp);
-    sortRecords("NPJ", cmd_params.exp_id, cmd_params.ts == 0 ? 0 : cmd_params.window_size);
+    sortRecords("NPJ", cmd_params.exp_id, cmd_params.ts == 0 ? 0 : cmd_params.window_size, (numR+numS),  joinresult->totalresults );
 #endif
 //    for (i = 0; i < nthreads; i++) {
 //        pthread_join(tid[i], NULL);

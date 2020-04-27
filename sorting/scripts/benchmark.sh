@@ -2,7 +2,9 @@
 #set -e
 
 function compile() {
-  cmake .. | tail -n +90
+  cd ..
+  cmake . | tail -n +90
+  cd scripts
   make -C .. clean -s
   make -C .. -j4 -s
 }
@@ -104,7 +106,8 @@ function ResetParameters() {
   FIXS=1
   ts=1 # stream case
   Threads=8
-  gap=128000
+  gap=12800
+  sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag 0/g" ../joins/joincommon.h
 }
 
 #recompile by default.
@@ -114,14 +117,14 @@ compile
 timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
 #benchmark experiment only apply for hashing directory.
-for benchmark in "SIMD_STUDY"; do #
+for benchmark in ""; do #
   case "$benchmark" in
   "SIMD_STUDY")
     id=100
     ResetParameters
     ts=0 # batch data.
     echo SIMD 100-103
-   for algo in "m-way" "m-pass"; do
+    for algo in "m-way" "m-pass"; do
       for scalar in 0 1; do
         sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scalar/g" ../joins/joincommon.h
         compile
@@ -135,7 +138,7 @@ done
 
 #general benchmark.
 for algo in m-way m-pass; do
-  for benchmark in "Stock" "Rovio" "YSB" "DEBS" ; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "AR" "RAR" "RAR2" "AD" "KD" "WS" "KD2" "WS2" "WS3" "WS4"
+  for benchmark in "AD"; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "AR" "RAR" "RAR2" "AD" "KD" "WS" "KD2" "WS2" "WS3" "WS4"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "AR") #test arrival rate and assume both inputs have same arrival rate.
@@ -143,61 +146,40 @@ for algo in m-way m-pass; do
       ## Figure 1
       ResetParameters
       FIXS=0 #varying both.
-      STEP_SIZE=12800
-      echo test varying input arrival rate 0 - 4 # test (1) means infinite arrival rate (batch).
-      ts=0                                       # batch case
-      echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
-      KimRun
-      let "id++"
-
       ts=1 # stream case
       # step size should be bigger than nthreads
-      for STEP_SIZE in 1600 3200 6400 12800; do #128000
+      for STEP_SIZE in 1600 3200 6400 12800 25600; do #128000
         #WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
         echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
+        gap=$STEP_SIZE
         KimRun
         let "id++"
       done
       ;;
-    "RAR") #test relative arrival rate when S is large
-      id=28
-      ## Figure 7
+    "RAR") #test relative arrival rate when R is small
+      id=5
+      ## Figure 2
       ResetParameters
       FIXS=1
-      echo test relative arrival rate 28 - 31
-      ts=1 # stream case
-      # step size should be bigger than nthreads
-      STEP_SIZE_S=128000
-      for STEP_SIZE in 1600 3200 6400 12800; do
-        #        WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
-        echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
-        KimRun
-        let "id++"
-      done
-      ;;
-    "RAR2") #test relative arrival rate when S is small
-      id=32
-      ## Figure 8
-      ResetParameters
-      FIXS=1
-      echo test relative arrival rate 32 - 35
+      echo test relative arrival rate 5 - 9
       ts=1 # stream case
       # step size should be bigger than nthreads
       # remember to fix the relation size of S.
-      STEP_SIZE_S=12800
-      for STEP_SIZE in 1600 3200 6400 12800; do
+      STEP_SIZE=1600
+      for STEP_SIZE_S in 1600 3200 6400 12800 25600; do
         #        WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
         echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
+        gap=$STEP_SIZE
         KimRun
         let "id++"
       done
       ;;
     "AD") #test arrival distribution
-      id=5
+      id=10
       ## Figure 2
       ResetParameters
       TS_DISTRIBUTION=2
-      echo test varying timestamp distribution 5 - 9
+      echo test varying timestamp distribution 10 - 14
       for ZIPF_FACTOR in 0 0.4 0.8 1.2 1.6; do #
         KimRun
         let "id++"
@@ -240,6 +222,7 @@ for algo in m-way m-pass; do
       ResetParameters
       echo test varying window size 16 - 18
       for WINDOW_SIZE in 500 750 1000; do
+        gap=$(($STEP_SIZE / 1000 * $WINDOW_SIZE))
         KimRun
         let "id++"
       done
@@ -251,6 +234,7 @@ for algo in m-way m-pass; do
       ts=0 # data at rest.
       echo test varying window size 25 - 27
       for WINDOW_SIZE in 500 750 1000; do
+        gap=$(($STEP_SIZE / 1000 * $WINDOW_SIZE))
         KimRun
         let "id++"
       done
@@ -261,6 +245,7 @@ for algo in m-way m-pass; do
       ResetParameters
       echo test varying window size 36
       for WINDOW_SIZE in 1500; do
+        gap=$(($STEP_SIZE / 1000 * $WINDOW_SIZE))
         KimRun
         let "id++"
       done
@@ -272,6 +257,7 @@ for algo in m-way m-pass; do
       ts=0 # data at rest.
       echo test varying window size 37
       for WINDOW_SIZE in 1500; do
+        gap=$(($STEP_SIZE / 1000 * $WINDOW_SIZE))
         KimRun
         let "id++"
       done
@@ -361,4 +347,3 @@ for algo in m-way m-pass; do
     esac
   done
 done
-python3 jobdone.py

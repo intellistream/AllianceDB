@@ -58,7 +58,7 @@ void breakdown_thread(int64_t result, T_TIMER *timer, long tid, string name);
 
 void merge(T_TIMER *timer, relation_t *relR, relation_t *relS, uint64_t *startTS, long lastTS);
 
-void sortRecords(std::string algo_name, int exp_id, long lastTS);
+void sortRecords(string algo_name, int exp_id, long lastTS, unsigned long inputs, int64_t matches);
 
 #ifndef JOIN_COUNT
 #define JOIN_COUNT(timer) \

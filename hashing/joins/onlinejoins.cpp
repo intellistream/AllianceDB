@@ -36,7 +36,8 @@ void initialize(int nthreads, const t_param &param) {
     }
     pthread_attr_init(param.attr);
 }
-t_param &finishing(int nthreads, t_param &param, uint64_t *startTS, param_t *cmd_params){
+
+t_param &finishing(int nthreads, t_param &param, uint64_t *startTS, param_t *cmd_params) {
     int i;
     for (i = 0; i < nthreads; i++) {
         if (param.tid[i] != -1)
@@ -112,7 +113,9 @@ t_param &finishing(int nthreads, t_param &param, uint64_t *startTS, param_t *cmd
             average_partition_timer,
             name, cmd_params->window_size);
     fclose(fp);
-    sortRecords(param.algo_name, param.exp_id, 0);
+    sortRecords(param.algo_name, param.exp_id, 0,
+                (param.args[0].fetcher->relR->num_tuples + param.args[0].fetcher->relS->num_tuples),
+                param.joinresult->totalresults);
 #endif // except wait.
 #endif // partition with sort/build, probe/merge
 #endif // partition with sort/build only
@@ -212,7 +215,7 @@ SHJ_JBCR_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
     uint64_t *startTS = new uint64_t();
     auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE, startTS, &joinStart)
-    param = finishing(nthreads, param, startTS,  &cmd_params);
+    param = finishing(nthreads, param, startTS, &cmd_params);
     return param.joinresult;
 }
 
@@ -230,7 +233,7 @@ SHJ_HS_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
     uint64_t *startTS = new uint64_t();
     auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE_HS, startTS, &joinStart)
-    param = finishing(nthreads, param, startTS,  &cmd_params);
+    param = finishing(nthreads, param, startTS, &cmd_params);
     return param.joinresult;
 }
 

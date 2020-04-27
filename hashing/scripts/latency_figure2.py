@@ -3,9 +3,10 @@ import os
 
 import matplotlib
 import matplotlib.pyplot as plt
-import numpy as np
+import pylab
 from matplotlib.font_manager import FontProperties
-from matplotlib.ticker import LogLocator
+from matplotlib.ticker import MaxNLocator, LinearLocator
+
 OPT_FONT_NAME = 'Helvetica'
 TICK_FONT_SIZE = 20
 LABEL_FONT_SIZE = 22
@@ -14,11 +15,11 @@ LABEL_FP = FontProperties(style='normal', size=LABEL_FONT_SIZE)
 LEGEND_FP = FontProperties(style='normal', size=LEGEND_FONT_SIZE)
 TICK_FP = FontProperties(style='normal', size=TICK_FONT_SIZE)
 
-MARKERS = (['o', 's', 'v', "^", "h", "v", ">", "x", "d", "<", "|", "", "+", "_"])
+MARKERS = (['^', 'v', '<', ">", "8", "s", "p", "P", "d", "<", "|", "", "+", "_"])
 # you may want to change the color map for different figures
-COLOR_MAP = ('#F15854', '#5DA5DA', '#60BD68', '#B276B2', '#DECF3F', '#F17CB0', '#B2912F', '#FAA43A', '#AFAFAF')
+COLOR_MAP = ('#ABB2B9', '#2E4053', '#8D6E63', '#000000', '#CD6155', '#52BE80', '#FFFF00', '#5499C7', '#BB8FCE')
 # you may want to change the patterns for different figures
-PATTERNS = (["|", "\\", "/", "+", "-", ".", "*", "x", "o", "O", "////", ".", "|||", "o", "---", "+", "\\\\", "*"])
+PATTERNS = (["", "", "", "", "/", "\\", "||", "-", "o", "O", "////", ".", "|||", "o", "---", "+", "\\\\", "*"])
 LABEL_WEIGHT = 'bold'
 LINE_COLORS = COLOR_MAP
 LINE_WIDTH = 3.0
@@ -34,10 +35,52 @@ matplotlib.rcParams['font.family'] = OPT_FONT_NAME
 FIGURE_FOLDER = '/data1/xtra/results/figure'
 
 
-# draw a bar chart
-def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max, filename, allow_legend):
+# there are some embedding problems if directly exporting the pdf figure using matplotlib.
+# so we generate the eps format first and convert it to pdf.
+def ConvertEpsToPdf(dir_filename):
+    os.system("epstopdf --outfile " + dir_filename + ".pdf " + dir_filename + ".eps")
+    os.system("rm -rf " + dir_filename + ".eps")
+
+
+def DrawLegend(legend_labels, filename):
+    fig = pylab.figure()
+    ax1 = fig.add_subplot(111)
+    FIGURE_LABEL = legend_labels
+    LINE_WIDTH = 8.0
+    MARKER_SIZE = 20.0
+    LEGEND_FP = FontProperties(style='normal', size=26)
+
+    figlegend = pylab.figure(figsize=(16, 0.4))
+    idx = 0
+    lines = [None] * (len(FIGURE_LABEL))
+    data = [1]
+    x_values = [1]
+
+    idx = 0
+    for group in range(len(FIGURE_LABEL)):
+        lines[idx], = ax1.plot(x_values, data,
+                               color=LINE_COLORS[idx], linewidth=LINE_WIDTH,
+                               marker=MARKERS[idx], markersize=MARKER_SIZE, label=str(group),
+                               markeredgewidth=2, markeredgecolor='k'
+                               )
+
+        idx = idx + 1
+
+    # LEGEND
+    figlegend.legend(lines, FIGURE_LABEL, prop=LEGEND_FP,
+                     loc=1, ncol=len(FIGURE_LABEL), mode="expand", shadow=False,
+                     frameon=False, borderaxespad=-0.2, handlelength=1.2)
+
+    if not os.path.exists(FIGURE_FOLDER):
+        os.makedirs(FIGURE_FOLDER)
+    # no need to export eps in this case.
+    figlegend.savefig(FIGURE_FOLDER + '/' + filename + '.pdf')
+
+
+# draw a line chart
+def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, filename, allow_legend):
     # you may change the figure size on your own.
-    fig = plt.figure(figsize=(8, 3))
+    fig = plt.figure(figsize=(7, 3))
     figure = fig.add_subplot(111)
 
     FIGURE_LABEL = legend_labels
@@ -45,50 +88,49 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
     if not os.path.exists(FIGURE_FOLDER):
         os.makedirs(FIGURE_FOLDER)
 
-    # values in the x_xis
-    index = np.arange(len(x_values))
-    # the bar width.
-    # you may need to tune it to get the best figure.
-    width = 0.1
-    # draw the bars
-    bars = [None] * (len(FIGURE_LABEL))
+    x_values = xvalues
+    y_values = yvalues
+
+    lines = [None] * (len(FIGURE_LABEL))
     for i in range(len(y_values)):
-        bars[i] = plt.bar(index + i * width + width / 2,
-                          y_values[i], width,
-                          hatch=PATTERNS[i],
-                          color=LINE_COLORS[i],
-                          label=FIGURE_LABEL[i])
+        lines[i], = figure.plot(x_values, y_values[i], color=LINE_COLORS[i], \
+                                linewidth=LINE_WIDTH, marker=MARKERS[i], \
+                                markersize=MARKER_SIZE, label=FIGURE_LABEL[i],
+                                markeredgewidth=2, markeredgecolor='k')
 
     # sometimes you may not want to draw legends.
     if allow_legend == True:
-        plt.legend(bars, FIGURE_LABEL,
+        plt.legend(lines,
+                   FIGURE_LABEL,
                    prop=LEGEND_FP,
-                   ncol=4,
                    loc='upper center',
+                   ncol=3,
                    #                     mode='expand',
-                   shadow=False,
-                   bbox_to_anchor=(0.45, 1.6),
+                   bbox_to_anchor=(0.55, 1.5), shadow=False,
                    columnspacing=0.1,
-                   handletextpad=0.2,
-                   #                     bbox_transform=ax.transAxes,
-                   #                     frameon=True,
-                   #                     columnspacing=5.5,
-                   #                     handlelength=2,
-                   )
-
-    # you may need to tune the xticks position to get the best figure.
-    plt.xticks(index + 2.4 * width, x_values)
-    plt.yscale('log')
-
+                   frameon=True, borderaxespad=0.0, handlelength=1.5,
+                   handletextpad=0.1,
+                   labelspacing=0.1)
+    plt.xscale('log')
+    # plt.yscale('log')
+    plt.xticks(x_values)
+    # you may control the limits on your own.
+    plt.xlim(x_min, x_max)
+    plt.ylim(0, 4000)
+    plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
     plt.grid(axis='y', color='gray')
-    figure.yaxis.set_major_locator(LogLocator(base=10))
-    # figure.xaxis.set_major_locator(LinearLocator(5))
-    figure.get_xaxis().set_tick_params(direction='in', pad=10)
-    figure.get_yaxis().set_tick_params(direction='in', pad=10)
+    figure.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
+    figure.yaxis.set_major_locator(LinearLocator(3))
+    # figure.xaxis.set_major_locator(FixedLocator(x_values, nbins=len(x_values)))
+    # figure.yaxis.set_major_locator(LogLocator(base=10))
+    # figure.xaxis.set_major_locator(LogLocator(base=10))
+    # figure.xaxis.set_major_locator(MaxNLocator(integer=True))
+
+    # figure.get_xaxis().set_tick_params(direction='in', pad=10)
+    # figure.get_yaxis().set_tick_params(direction='in', pad=10)
 
     plt.xlabel(x_label, fontproperties=LABEL_FP)
     plt.ylabel(y_label, fontproperties=LABEL_FP)
-
     plt.savefig(FIGURE_FOLDER + "/" + filename + ".pdf", bbox_inches='tight')
 
 
@@ -108,7 +150,7 @@ def ReadFile():
         file = '/data1/xtra/results/latency/PRJ_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
-        x = float(read.pop(int(len(read) * 0.99)).strip("\n"))  # get last timestamp
+        x = float(read.pop(int(len(read) * 0.95)).strip("\n"))  # get the 99th timestamp
         col1.append(x)
     y.append(col1)
 
@@ -116,8 +158,7 @@ def ReadFile():
         file = '/data1/xtra/results/latency/NPJ_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
-        x = float(read.pop(int(len(read) * 0.99)).strip("\n"))  # get last timestamp
-        
+        x = float(read.pop(int(len(read) * 0.95)).strip("\n"))  # get the 99th timestamp
         col2.append(x)
     y.append(col2)
 
@@ -125,8 +166,7 @@ def ReadFile():
         file = '/data1/xtra/results/latency/MPASS_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
-        x = float(read.pop(int(len(read) * 0.99)).strip("\n"))  # get last timestamp
-
+        x = float(read.pop(int(len(read) * 0.95)).strip("\n"))  # get the 99th timestamp
         col3.append(x)
     y.append(col3)
 
@@ -134,8 +174,7 @@ def ReadFile():
         file = '/data1/xtra/results/latency/MWAY_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
-        x = float(read.pop(int(len(read) * 0.99)).strip("\n"))  # get last timestamp
-
+        x = float(read.pop(int(len(read) * 0.95)).strip("\n"))  # get the 99th timestamp
         col4.append(x)
     y.append(col4)
 
@@ -143,8 +182,7 @@ def ReadFile():
         file = '/data1/xtra/results/latency/SHJ_JM_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
-        x = float(read.pop(int(len(read) * 0.99)).strip("\n"))  # get last timestamp
-
+        x = float(read.pop(int(len(read) * 0.95)).strip("\n"))  # get last timestamp
         col5.append(x)
     y.append(col5)
 
@@ -152,8 +190,7 @@ def ReadFile():
         file = '/data1/xtra/results/latency/SHJ_JBCR_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
-        x = float(read.pop(int(len(read) * 0.99)).strip("\n"))  # get last timestamp
-
+        x = float(read.pop(int(len(read) * 0.95)).strip("\n"))  # get last timestamp
         col6.append(x)
     y.append(col6)
 
@@ -161,8 +198,7 @@ def ReadFile():
         file = '/data1/xtra/results/latency/PMJ_JM_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
-        x = float(read.pop(int(len(read) * 0.99)).strip("\n"))  # get last timestamp
-
+        x = float(read.pop(int(len(read) * 0.95)).strip("\n"))  # get last timestamp
         col7.append(x)
     y.append(col7)
 
@@ -170,22 +206,20 @@ def ReadFile():
         file = '/data1/xtra/results/latency/PMJ_JBCR_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
-        x = float(read.pop(int(len(read) * 0.99)).strip("\n"))  # get last timestamp
-
+        x = float(read.pop(int(len(read) * 0.95)).strip("\n"))  # get last timestamp
         col8.append(x)
     y.append(col8)
     return y
 
 
 if __name__ == "__main__":
-    x_values = [0, 0.2, 0.4, 0.8, 1]
+    x_values = [1600, 3200, 6400, 12800, 25600]
 
     y_values = ReadFile()
 
-    legend_labels = ['PRJ', 'NPJ', 'M-PASS', 'M-WAY', 'SHJ$^M$', 'SHJ$^B$', 'PMJ$^M$', 'PMJ$^B$']
-
+    legend_labels = ['NPJ', 'PRJ', 'MWAY', 'MPASS', 'SHJ$^{JM}$', 'SHJ$^{JB}$', 'PMJ$^{JM}$',
+                     'PMJ$^{JB}$']
+    # print(y_values)
     DrawFigure(x_values, y_values, legend_labels,
-               '$Skew_{ts}$ (zipf)', '$99^{th}$ latency (ms)', 0,
-               400, 'latency_figure2', False)
-
-#  DrawLegend(legend_labels, 'factor_legend')
+               'Input arrival rate (e/ms)', '95$^{th}$ latency (ms)', 1400,
+               x_values[4], 'latency_figure2', False)
