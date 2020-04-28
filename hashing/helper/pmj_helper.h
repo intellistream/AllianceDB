@@ -164,7 +164,7 @@ void sorting_phase(int32_t tid, const relation_t *rel_R, const relation_t *rel_S
                    T_TIMER *timer, chainedtuplebuffer_t *chainedbuf);
 
 void
-merging_phase(int64_t *matches, std::vector<run> *Q, T_TIMER *timer, chainedtuplebuffer_t *chainedbuf, int merge_step);
+merging_phase(int64_t *matches, std::vector<run> *Q, T_TIMER *timer, chainedtuplebuffer_t *chainedbuf);
 
 
 #endif //ALLIANCEDB_PMJ_HELPER_H

@@ -1,6 +1,4 @@
 #!/bin/bash
-
-
 ### APP
 #python3 latency_figure_app.py
 #python3 throughput_figure_app.py
@@ -49,29 +47,29 @@
 #done
 
 ### Impact of relative arrival rate
-python3 throughput_figure2.py
-python3 latency_figure2.py
+#python3 throughput_figure2.py
+#python3 latency_figure2.py
 #for id in 5 9; do
 #  python3 progressive_figure.py -i $id
 #done
 
-### Impact of arrival distribution
-#python3 throughput_figure2.py
-#python3 latency_figure2.py
-#for id in {5..9}; do
-#  python3 progressive_figure.py -i $id
-#done
-
-### Impact of key distribution
+## Impact of arrival distribution
 #python3 throughput_figure3.py
 #python3 latency_figure3.py
-#for id in {10..15}; do
+#for id in {10..14}; do
 #  python3 progressive_figure.py -i $id
 #done
 
-### Impact of window size
+## Impact of key distribution
 #python3 throughput_figure4.py
 #python3 latency_figure4.py
-#for id in {16..18}; do
+#for id in {15..19}; do
 #  python3 progressive_figure.py -i $id
 #done
+
+## Impact of window size
+python3 throughput_figure5.py
+python3 latency_figure5.py
+for id in {20..24}; do
+  python3 progressive_figure.py -i $id
+done

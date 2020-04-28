@@ -220,7 +220,7 @@ void add_zipf_ts(relation_t *relation, relation_payload_t *relationPayload, int 
         relationPayload->ts[cur_index] = (uint64_t) timestamps[i] * 2.1 * 1E6;//ms to cycle
         tid_offsets[partition]++;
 
-        DEBUGMSG(1,"%d, %ld\n", relation->tuples[i].key, relationPayload->ts[i]);
+        DEBUGMSG("%d, %ld\n", relation->tuples[i].key, relationPayload->ts[i]);
     }
     for (auto i = 0; i < relation->num_tuples; i++) {
         if (relationPayload->ts[i] < 0.25 * window_size* 2.1 * 1E6) {

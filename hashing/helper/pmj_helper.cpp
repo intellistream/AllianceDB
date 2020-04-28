@@ -39,14 +39,15 @@ earlyJoinInitialRuns(tuple_t *tupleR, tuple_t *tupleS, int lengthR, int lengthS,
  * @param matches
  */
 void earlyJoinMergedRuns(std::vector<run> *Q, int64_t *matches, run *newRun, T_TIMER *timer,
-                         chainedtuplebuffer_t *chainedbuf, int merge_step) {
+                         chainedtuplebuffer_t *chainedbuf) {
     bool findI;
     bool findJ;
-    //following PMJ vldb'02 implementation.
-    auto RM = new sweepArea[merge_step];
-    auto SM = new sweepArea[merge_step];
 
     do {
+        //following PMJ vldb'02 implementation.
+        auto RM = new sweepArea[Q->size()];
+        auto SM = new sweepArea[Q->size()];
+
         const tuple_t *minR = nullptr;
         const tuple_t *minS = nullptr;
         __gnu_cxx::__normal_iterator<run *, std::vector<run>> i;
@@ -188,11 +189,11 @@ void insert(std::vector<run> *Q, tuple_t *run_R, int lengthR, tuple_t *run_S, in
 }
 
 void
-merging_phase(int64_t *matches, std::vector<run> *Q, T_TIMER *timer, chainedtuplebuffer_t *chainedbuf, int merge_step) {
+merging_phase(int64_t *matches, std::vector<run> *Q, T_TIMER *timer, chainedtuplebuffer_t *chainedbuf) {
 #ifdef MERGE
     do {
         run *newRun = new run();//empty run
-        earlyJoinMergedRuns(Q, matches, newRun, timer, chainedbuf, merge_step);
+        earlyJoinMergedRuns(Q, matches, newRun, timer, chainedbuf);
         Q->push_back(*newRun);
     } while (Q->size() > 1);
 #endif

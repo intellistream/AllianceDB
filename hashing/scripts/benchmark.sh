@@ -2,13 +2,15 @@
 #set -e
 
 profile_breakdown=0 # set to 1 if we want to measure time breakdown! and also dedefine eager in common_function.h
-
+comple=0            #disable compiling.
 function compile() {
-  cd ..
-  cmake . | tail -n +90
-  cd scripts
-  make -C .. clean -s
-  make -C .. -j4 -s
+  if [ $comple != 0 ]; then
+    cd ..
+    cmake . | tail -n +90
+    cd scripts
+    make -C .. clean -s
+    make -C .. -j4 -s
+  fi
 }
 function Run() {
   #####native execution
@@ -190,7 +192,6 @@ function RUNALLKIM() {
   fi
 }
 
-
 function benchmarkRun() {
   #####native execution
   echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap=="
@@ -323,7 +324,7 @@ for benchmark in ""; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZ
     algo="PRO"
     id=113
     ResetParameters
-    ts=0   # batch data.
+    ts=0 # batch data.
     for b in 8 10 12 14 16 18; do
       echo RADIX BITS STUDY $id
       sed -i -e "s/NUM_RADIX_BITS [[:alnum:]]*/NUM_RADIX_BITS $b/g" ../joins/prj_params.h
@@ -374,8 +375,8 @@ for benchmark in ""; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZ
 done
 
 # general benchmark.
-for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
-  for benchmark in "RAR"; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" # "Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "RAR2" "AD" "KD" "WS" "KD2" "WS2" "WS3" "WS4"
+for algo in PMJ_JM_NP PMJ_JBCR_NP; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
+  for benchmark in "KD"; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" # "Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "RAR2" "AD" "KD" "WS" "KD2" "WS2" "WS3" "WS4"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "AR") #test arrival rate and assume both inputs have same arrival rate.
@@ -383,7 +384,7 @@ for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #NPO PRO SHJ
       ## Figure 1
       ResetParameters
       FIXS=0 #varying both.
-      ts=1 # stream case
+      ts=1   # stream case
       # step size should be bigger than nthreads
       for STEP_SIZE in 1600 3200 6400 12800 25600; do #128000
         #WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
@@ -413,9 +414,13 @@ for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #NPO PRO SHJ
       ;;
     "AD") #test arrival distribution
       id=10
-      ## Figure 2
+      ## Figure 3
       ResetParameters
+      FIXS=1
+      STEP_SIZE=1600
+      STEP_SIZE_S=1600
       TS_DISTRIBUTION=2
+      gap=$(($STEP_SIZE / 1000 * $WINDOW_SIZE))
       echo test varying timestamp distribution 10 - 14
       for ZIPF_FACTOR in 0 0.4 0.8 1.2 1.6; do #
         RUNALLKIM
@@ -423,77 +428,29 @@ for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #NPO PRO SHJ
       done
       ;;
     "KD") #test key distribution
-      id=10
-      ## Figure 3
+      id=15
+      ## Figure 4
       ResetParameters
-      echo test varying key distribution 10 - 15
-      distrbution=0 #unique
-      RUNALLKIM
-      let "id++"
-
+      FIXS=1
+      STEP_SIZE=12800
+      STEP_SIZE_S=12800
+      gap=1
+      echo test varying key distribution 15 - 19
       distrbution=2 #varying zipf factor
       for skew in 0 0.4 0.8 1.2 1.6; do
         RUNALLKIM
         let "id++"
       done
       ;;
-    "KD2") #test key distribution when data at rest.
-      id=19
+    "WS") #test window size
+      id=20
       ## Figure 5
       ResetParameters
-      ts=0 # data at rest.
-      echo test varying key distribution 19 - 24
-      distrbution=0 #unique
-      RUNALLKIM
-      let "id++"
-
-      distrbution=2 #zipf
-      for skew in 0 0.4 0.8 1.2 1.6; do
-        RUNALLKIM
-        let "id++"
-      done
-      ;;
-    "WS") #test window size
-      id=16
-      ## Figure 4
-      ResetParameters
-      echo test varying window size 16 - 18
-      for WINDOW_SIZE in 500 750 1000; do
-        gap=$(($STEP_SIZE / 1000 * $WINDOW_SIZE))
-        RUNALLKIM
-        let "id++"
-      done
-      ;;
-    "WS2") #test window size when data at rest.
-      id=25
-      ## Figure 6
-      ResetParameters
-      ts=0 # data at rest.
-      echo test varying window size 25 - 27
-      for WINDOW_SIZE in 500 750 1000; do
-        gap=$(($STEP_SIZE / 1000 * $WINDOW_SIZE))
-        RUNALLKIM
-        let "id++"
-      done
-      ;;
-    "WS3") #test window size for extra large size of window
-      id=36
-      ## Figure 4 extra
-      ResetParameters
-      echo test varying window size 36
-      for WINDOW_SIZE in 1500; do
-        gap=$(($STEP_SIZE / 1000 * $WINDOW_SIZE))
-        RUNALLKIM
-        let "id++"
-      done
-      ;;
-    "WS4") #test window size for extra large size of window when data at rest
-      id=37
-      ## Figure 6 extra
-      ResetParameters
-      ts=0 # data at rest.
-      echo test varying window size 37
-      for WINDOW_SIZE in 1500; do
+      FIXS=1
+      STEP_SIZE=12800
+      STEP_SIZE_S=12800
+      echo test varying window size 20 - 24
+      for WINDOW_SIZE in 500 1000 1500 2000 2500; do
         gap=$(($STEP_SIZE / 1000 * $WINDOW_SIZE))
         RUNALLKIM
         let "id++"
@@ -515,7 +472,7 @@ for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #NPO PRO SHJ
       id=40
       ResetParameters
       SetYSBParameters
-#      RUNALL
+      #      RUNALL
       benchmarkRun # use this when profiling.
       ;;
     "DEBS")

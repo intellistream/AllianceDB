@@ -57,7 +57,6 @@ dump_timing(vector<double> vector, std::vector<double> vector_latency,
     outputFile << (std::to_string(matches) + "\n");
     outputFile.close();
 
-
     //dump timestmap.
     string path_ts = "/data1/xtra/results/timestamps/" + name + ".txt";
     ofstream outputFile_ts(path_ts, std::ios::trunc);

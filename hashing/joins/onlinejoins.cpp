@@ -120,7 +120,7 @@ t_param &finishing(int nthreads, t_param &param, uint64_t *startTS, param_t *cmd
 #endif // partition with sort/build, probe/merge
 #endif // partition with sort/build only
 #endif // partition-only
-#endif //no_timing flag
+#endif // no_timing flag
     return param;
 }
 

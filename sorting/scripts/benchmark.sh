@@ -1,12 +1,14 @@
 #!/bin/bash
 #set -e
-
+compile=0
 function compile() {
-  cd ..
-  cmake . | tail -n +90
-  cd scripts
-  make -C .. clean -s
-  make -C .. -j4 -s
+  if [ $comple != 0 ]; then
+    cd ..
+    cmake . | tail -n +90
+    cd scripts
+    make -C .. clean -s
+    make -C .. -j4 -s
+  fi
 }
 
 function benchmarkRun() {
@@ -138,7 +140,7 @@ done
 
 #general benchmark.
 for algo in m-way m-pass; do
-  for benchmark in "AD"; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "AR" "RAR" "RAR2" "AD" "KD" "WS" "KD2" "WS2" "WS3" "WS4"
+  for benchmark in  "KD"; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "AR" "RAR" "RAR2" "AD" "KD" "WS" "KD2" "WS2" "WS3" "WS4"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "AR") #test arrival rate and assume both inputs have same arrival rate.
@@ -176,8 +178,11 @@ for algo in m-way m-pass; do
       ;;
     "AD") #test arrival distribution
       id=10
-      ## Figure 2
+      ## Figure 3
       ResetParameters
+      FIXS=1
+      STEP_SIZE=1600
+      STEP_SIZE_S=1600
       TS_DISTRIBUTION=2
       echo test varying timestamp distribution 10 - 14
       for ZIPF_FACTOR in 0 0.4 0.8 1.2 1.6; do #
@@ -186,77 +191,30 @@ for algo in m-way m-pass; do
       done
       ;;
     "KD") #test key distribution
-      id=10
-      ## Figure 3
+      id=15
+      ## Figure 4
       ResetParameters
-      echo test varying key distribution 10 - 15
-      distrbution=0 #unique
-      KimRun
-      let "id++"
-
+      FIXS=1
+      STEP_SIZE=12800
+      STEP_SIZE_S=12800
+      gap=1
+      echo test varying key distribution 15 - 19
       distrbution=2 #varying zipf factor
       for skew in 0 0.4 0.8 1.2 1.6; do
         KimRun
         let "id++"
       done
       ;;
-    "KD2") #test key distribution when data at rest.
-      id=19
+    "WS") #test window size
+      id=20
       ## Figure 5
       ResetParameters
-      ts=0 # data at rest.
-      echo test varying key distribution 19 - 24
-      distrbution=0 #unique
-      KimRun
-      let "id++"
-
-      distrbution=2 #zipf
-      for skew in 0 0.4 0.8 1.2 1.6; do
-        KimRun
-        let "id++"
-      done
-      ;;
-    "WS") #test window size
-      id=16
-      ## Figure 4
-      ResetParameters
-      echo test varying window size 16 - 18
-      for WINDOW_SIZE in 500 750 1000; do
-        gap=$(($STEP_SIZE / 1000 * $WINDOW_SIZE))
-        KimRun
-        let "id++"
-      done
-      ;;
-    "WS2") #test window size when data at rest.
-      id=25
-      ## Figure 6
-      ResetParameters
-      ts=0 # data at rest.
-      echo test varying window size 25 - 27
-      for WINDOW_SIZE in 500 750 1000; do
-        gap=$(($STEP_SIZE / 1000 * $WINDOW_SIZE))
-        KimRun
-        let "id++"
-      done
-      ;;
-    "WS3") #test window size for extra large size of window
-      id=36
-      ## Figure 4 extra
-      ResetParameters
-      echo test varying window size 36
-      for WINDOW_SIZE in 1500; do
-        gap=$(($STEP_SIZE / 1000 * $WINDOW_SIZE))
-        KimRun
-        let "id++"
-      done
-      ;;
-    "WS4") #test window size for extra large size of window when data at rest
-      id=37
-      ## Figure 6 extra
-      ResetParameters
-      ts=0 # data at rest.
-      echo test varying window size 37
-      for WINDOW_SIZE in 1500; do
+      FIXS=1
+      STEP_SIZE=12800
+      STEP_SIZE_S=12800
+      gap=1
+      echo test varying window size 20 - 24
+      for WINDOW_SIZE in 500 1000 1500 2000 2500; do
         gap=$(($STEP_SIZE / 1000 * $WINDOW_SIZE))
         KimRun
         let "id++"
