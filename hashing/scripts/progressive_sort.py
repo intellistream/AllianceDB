@@ -21,11 +21,11 @@ LABEL_FP = FontProperties(style='normal', size=LABEL_FONT_SIZE)
 LEGEND_FP = FontProperties(style='normal', size=LEGEND_FONT_SIZE)
 TICK_FP = FontProperties(style='normal', size=TICK_FONT_SIZE)
 
-MARKERS = (['o', 's', 'v', "^", "h", "v", ">", "x", "d", "<", "|", "", "+", "_"])
+MARKERS = (['^', 'v', '<', ">", "8", "s", "p", "P", "d", "<", "|", "", "+", "_"])
 # you may want to change the color map for different figures
-COLOR_MAP = ('#F15854', '#5DA5DA', '#60BD68', '#B276B2', '#DECF3F', '#F17CB0', '#B2912F', '#FAA43A', '#AFAFAF')
+COLOR_MAP = ('#ABB2B9', '#2E4053', '#8D6E63', '#000000', '#CD6155', '#52BE80', '#FFFF00', '#5499C7', '#BB8FCE')
 # you may want to change the patterns for different figures
-PATTERNS = (["////", "\\\\", "//////", "o", "o", "\\\\", "\\\\", "//////", "//////", ".", "\\\\\\", "\\\\\\"])
+PATTERNS = (["", "", "", "", "/", "\\", "||", "-", "o", "O", "////", ".", "|||", "o", "---", "+", "\\\\", "*"])
 LABEL_WEIGHT = 'bold'
 LINE_COLORS = COLOR_MAP
 LINE_WIDTH = 3.0
@@ -149,17 +149,19 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
 
     # sometimes you may not want to draw legends.
     if allow_legend == True:
-        plt.legend(lines,
-                   FIGURE_LABEL,
-                   prop=LEGEND_FP,
-                   loc='upper center',
-                   ncol=3,
-                   #                     mode='expand',
-                   bbox_to_anchor=(0.55, 1.5), shadow=False,
-                   columnspacing=0.1,
-                   frameon=True, borderaxespad=0.0, handlelength=1.5,
-                   handletextpad=0.1,
-                   labelspacing=0.1)
+        leg = plt.legend(lines,
+                         FIGURE_LABEL,
+                         prop=LEGEND_FP,
+                         loc='upper center',
+                         ncol=3,
+                         #                     mode='expand',
+                         bbox_to_anchor=(0.55, 1.5), shadow=False,
+                         columnspacing=0.1,
+                         frameon=True, borderaxespad=0.0, handlelength=1.5,
+                         handletextpad=0.1,
+                         labelspacing=0.1)
+        leg.get_frame().set_linewidth(2)
+        leg.get_frame().set_edgecolor("black")
 
     # plt.yscale('log')
     # plt.xticks(x_values)

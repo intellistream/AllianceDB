@@ -116,7 +116,7 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
     plt.xticks(x_values)
     # you may control the limits on your own.
     plt.xlim(x_min, x_max)
-    plt.ylim(1000, 10000)
+    plt.ylim(1000, 7000)
     # plt.ylim(y_min, y_max)
     plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
     plt.grid(axis='y', color='gray')
@@ -155,56 +155,56 @@ def ReadFile():
     col7 = []
     col8 = []
 
-    for id in it.chain(range(10,15)):
+    for id in it.chain(range(10, 15)):
         file = '/data1/xtra/results/timestamps/PRJ_{}.txt'.format(id)
         file2 = '/data1/xtra/results/records/PRJ_{}.txt'.format(id)
         value = GetThroughput(file, file2)
         col1.append(value)
     y.append(col1)
 
-    for id in it.chain(range(10,15)):
+    for id in it.chain(range(10, 15)):
         file = '/data1/xtra/results/timestamps/NPJ_{}.txt'.format(id)
         file2 = '/data1/xtra/results/records/NPJ_{}.txt'.format(id)
         value = GetThroughput(file, file2)
         col2.append(value)
     y.append(col2)
 
-    for id in it.chain(range(10,15)):
+    for id in it.chain(range(10, 15)):
         file = '/data1/xtra/results/timestamps/MPASS_{}.txt'.format(id)
         file2 = '/data1/xtra/results/records/MPASS_{}.txt'.format(id)
         value = GetThroughput(file, file2)
         col3.append(value)
     y.append(col3)
 
-    for id in it.chain(range(10,15)):
+    for id in it.chain(range(10, 15)):
         file = '/data1/xtra/results/timestamps/MWAY_{}.txt'.format(id)
         file2 = '/data1/xtra/results/records/MWAY_{}.txt'.format(id)
         value = GetThroughput(file, file2)
         col4.append(value)
     y.append(col4)
 
-    for id in it.chain(range(10,15)):
+    for id in it.chain(range(10, 15)):
         file = '/data1/xtra/results/timestamps/SHJ_JM_NP_{}.txt'.format(id)
         file2 = '/data1/xtra/results/records/SHJ_JM_NP_{}.txt'.format(id)
         value = GetThroughput(file, file2)
         col5.append(value)
     y.append(col5)
 
-    for id in it.chain(range(10,15)):
+    for id in it.chain(range(10, 15)):
         file = '/data1/xtra/results/timestamps/SHJ_JBCR_NP_{}.txt'.format(id)
         file2 = '/data1/xtra/results/records/SHJ_JBCR_NP_{}.txt'.format(id)
         value = GetThroughput(file, file2)
         col6.append(value)
     y.append(col6)
 
-    for id in it.chain(range(10,15)):
+    for id in it.chain(range(10, 15)):
         file = '/data1/xtra/results/timestamps/PMJ_JM_NP_{}.txt'.format(id)
         file2 = '/data1/xtra/results/records/PMJ_JM_NP_{}.txt'.format(id)
         value = GetThroughput(file, file2)
         col7.append(value)
     y.append(col7)
 
-    for id in it.chain(range(10,15)):
+    for id in it.chain(range(10, 15)):
         file = '/data1/xtra/results/timestamps/PMJ_JBCR_NP_{}.txt'.format(id)
         file2 = '/data1/xtra/results/records/PMJ_JBCR_NP_{}.txt'.format(id)
         value = GetThroughput(file, file2)

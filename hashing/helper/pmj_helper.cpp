@@ -43,11 +43,10 @@ void earlyJoinMergedRuns(std::vector<run> *Q, int64_t *matches, run *newRun, T_T
     bool findI;
     bool findJ;
 
+    auto RM = new sweepArea[Q->size()];
+    auto SM = new sweepArea[Q->size()];
     do {
         //following PMJ vldb'02 implementation.
-        auto RM = new sweepArea[Q->size()];
-        auto SM = new sweepArea[Q->size()];
-
         const tuple_t *minR = nullptr;
         const tuple_t *minS = nullptr;
         __gnu_cxx::__normal_iterator<run *, std::vector<run>> i;
@@ -128,8 +127,9 @@ void earlyJoinMergedRuns(std::vector<run> *Q, int64_t *matches, run *newRun, T_T
 
         if (!findI && !findJ) {
             if (Q->size() < 2) { return; }
-//            printf("Q SIZE: %d, actual_merge_step %d\n", Q->size(), actual_merge_step);
+//            printf("[before] Q SIZE: %zu, actual_merge_step %d\n", Q->size(), actual_merge_step);
             Q->erase(Q->begin(), Q->begin() + actual_merge_step);//clean Q.
+//            printf("[after] Q SIZE: %zu, actual_merge_step %d\n", Q->size(), actual_merge_step);
             newRun->merged = true;
             delete[](RM);
             delete[](SM);

@@ -116,7 +116,7 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
     plt.xticks(x_values)
     # you may control the limits on your own.
     plt.xlim(x_min, x_max)
-    plt.ylim(100, 2500)
+    plt.ylim(100, 5000)
     plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
     plt.grid(axis='y', color='gray')
     figure.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
@@ -221,5 +221,5 @@ if __name__ == "__main__":
                      'PMJ$^{JB}$']
     # print(y_values)
     DrawFigure(x_values, y_values, legend_labels,
-               'Key distribution', '95$^{th}$ latency (ms)', 0,
-               1.6, 'latency_figure4', False)
+               'Key distribution', '95$^{th}$ latency (ms)', -0.1,
+               1.7, 'latency_figure4', False)

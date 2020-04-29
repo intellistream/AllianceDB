@@ -116,7 +116,7 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
     plt.xticks(x_values)
     # you may control the limits on your own.
     plt.xlim(x_min, x_max)
-    plt.ylim(1, 2500)
+    plt.ylim(1, 2400)
     plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
     plt.grid(axis='y', color='gray')
     figure.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
@@ -146,7 +146,7 @@ def ReadFile():
     col7 = []
     col8 = []
 
-    for id in it.chain(range(10,15)):
+    for id in it.chain(range(10, 15)):
         file = '/data1/xtra/results/latency/PRJ_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -154,7 +154,7 @@ def ReadFile():
         col1.append(x)
     y.append(col1)
 
-    for id in it.chain(range(10,15)):
+    for id in it.chain(range(10, 15)):
         file = '/data1/xtra/results/latency/NPJ_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -162,7 +162,7 @@ def ReadFile():
         col2.append(x)
     y.append(col2)
 
-    for id in it.chain(range(10,15)):
+    for id in it.chain(range(10, 15)):
         file = '/data1/xtra/results/latency/MPASS_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -170,7 +170,7 @@ def ReadFile():
         col3.append(x)
     y.append(col3)
 
-    for id in it.chain(range(10,15)):
+    for id in it.chain(range(10, 15)):
         file = '/data1/xtra/results/latency/MWAY_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -178,7 +178,7 @@ def ReadFile():
         col4.append(x)
     y.append(col4)
 
-    for id in it.chain(range(10,15)):
+    for id in it.chain(range(10, 15)):
         file = '/data1/xtra/results/latency/SHJ_JM_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -186,7 +186,7 @@ def ReadFile():
         col5.append(x)
     y.append(col5)
 
-    for id in it.chain(range(10,15)):
+    for id in it.chain(range(10, 15)):
         file = '/data1/xtra/results/latency/SHJ_JBCR_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -194,7 +194,7 @@ def ReadFile():
         col6.append(x)
     y.append(col6)
 
-    for id in it.chain(range(10,15)):
+    for id in it.chain(range(10, 15)):
         file = '/data1/xtra/results/latency/PMJ_JM_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -202,7 +202,7 @@ def ReadFile():
         col7.append(x)
     y.append(col7)
 
-    for id in it.chain(range(10,15)):
+    for id in it.chain(range(10, 15)):
         file = '/data1/xtra/results/latency/PMJ_JBCR_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()

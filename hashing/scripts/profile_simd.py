@@ -88,15 +88,16 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
     bars = [None] * (len(FIGURE_LABEL))
     for i in range(len(y_values)):
         bars[i] = plt.bar(index + i * width + width / 2, y_values[i], width, hatch=PATTERNS[i], color=LINE_COLORS[i],
-                          label=FIGURE_LABEL[i])
+                          label=FIGURE_LABEL[i],
+                          edgecolor='black', linewidth=3)
 
     # sometimes you may not want to draw legends.
     if allow_legend == True:
-        plt.legend(bars, FIGURE_LABEL, prop=LEGEND_FP,
+        leg=plt.legend(bars, FIGURE_LABEL, prop=LEGEND_FP,
                    ncol=3,
                    #                     mode='expand',
                    #                     shadow=False,
-                   bbox_to_anchor=(0.5, 1.6),
+                   bbox_to_anchor=(0.5, 1.4),
                    columnspacing=0.25,
                    handletextpad=0.2,
                    #                     bbox_transform=ax.transAxes,
@@ -105,6 +106,8 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
                    #                     handlelength=2,
                    loc='upper center'
                    )
+        leg.get_frame().set_linewidth(2)
+        leg.get_frame().set_edgecolor("black")
     #    plt.xticks(rotation=35)
 
     # you may need to tune the xticks position to get the best figure.
@@ -121,9 +124,6 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
 
     plt.xlabel(x_label, fontproperties=LABEL_FP)
     plt.ylabel(y_label, fontproperties=LABEL_FP)
-
-    size = fig.get_size_inches()
-    dpi = fig.get_dpi()
 
     plt.savefig(FIGURE_FOLDER + "/" + filename + ".pdf", bbox_inches='tight')
 

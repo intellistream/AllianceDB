@@ -2,9 +2,9 @@
 #set -e
 
 profile_breakdown=0 # set to 1 if we want to measure time breakdown! and also dedefine eager in common_function.h
-comple=0            #disable compiling.
+compile=1            #enable compiling.
 function compile() {
-  if [ $comple != 0 ]; then
+  if [ $compile != 0 ]; then
     cd ..
     cmake . | tail -n +90
     cd scripts
@@ -288,8 +288,194 @@ compile
 # Generate a timestamp
 timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
+
+compile=0            #disable compiling.
+# general benchmark.
+for algo in PMJ_JBCR_NP; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
+  for benchmark in "ScaleDEBS"; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" # "Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "AD" "KD" "WS"
+    case "$benchmark" in
+    # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
+    "AR") #test arrival rate and assume both inputs have same arrival rate.
+      id=0
+      ## Figure 1
+      ResetParameters
+      FIXS=0 #varying both.
+      ts=1   # stream case
+      # step size should be bigger than nthreads
+      for STEP_SIZE in 1600 3200 6400 12800 25600; do #128000
+        #WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
+        echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
+        gap=$(($STEP_SIZE / 500 * $WINDOW_SIZE))
+        RUNALLKIM
+        let "id++"
+      done
+      ;;
+    "RAR") #test relative arrival rate when R is small
+      id=5
+      ## Figure 2
+      ResetParameters
+      FIXS=1
+      echo test relative arrival rate 5 - 9
+      ts=1 # stream case
+      # step size should be bigger than nthreads
+      # remember to fix the relation size of S.
+      STEP_SIZE=1600
+      for STEP_SIZE_S in 1600 3200 6400 12800 25600; do
+        #        WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
+        echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
+        gap=$(($STEP_SIZE / 500 * $WINDOW_SIZE))
+        RUNALLKIM
+        let "id++"
+      done
+      ;;
+    "AD") #test arrival distribution
+      id=10
+      ## Figure 3
+      ResetParameters
+      FIXS=1
+      STEP_SIZE=1600
+      STEP_SIZE_S=1600
+      TS_DISTRIBUTION=2
+      echo test varying timestamp distribution 10 - 14
+      for ZIPF_FACTOR in 0 0.4 0.8 1.2 1.6; do #
+        gap=$(($STEP_SIZE / 500 * $WINDOW_SIZE))
+        RUNALLKIM
+        let "id++"
+      done
+      ;;
+    "KD") #test key distribution
+      id=15
+      ## Figure 4
+      ResetParameters
+      FIXS=1
+      STEP_SIZE=12800
+      STEP_SIZE_S=12800
+      gap=$(($STEP_SIZE / 500 * $WINDOW_SIZE))
+      echo test varying key distribution 15 - 19
+      distrbution=2 #varying zipf factor
+      for skew in 0 0.4 0.8 1.2 1.6; do
+        if [ $skew == 1.2 ]; then
+          gap=100
+        fi
+        if [ $skew == 1.6 ]; then
+          gap=1
+        fi
+        RUNALLKIM
+        let "id++"
+      done
+      ;;
+    "WS") #test window size
+      id=20
+      ## Figure 5
+      ResetParameters
+      FIXS=1
+      STEP_SIZE=6400
+      STEP_SIZE_S=6400
+      echo test varying window size 20 - 24
+      for WINDOW_SIZE in 500 1000 1500 2000 2500; do
+        gap=$(($STEP_SIZE / 500 * $WINDOW_SIZE))
+        RUNALLKIM
+        let "id++"
+      done
+      ;;
+    "Stock")
+      id=38
+      ResetParameters
+      SetStockParameters
+      RUNALL
+      ;;
+    "Rovio") #matches:
+      id=39
+      ResetParameters
+      SetRovioParameters
+      RUNALL
+      ;;
+    "YSB")
+      id=40
+      ResetParameters
+      SetYSBParameters
+      #      RUNALL
+      benchmarkRun # use this when profiling.
+      ;;
+    "DEBS")
+      id=41
+      ResetParameters
+      SetDEBSParameters
+      RUNALL
+      ;;
+    "ScaleStock")
+      id=42
+      ResetParameters
+      SetStockParameters
+      echo test scalability of Stock 42 - 45
+      for Threads in 1 2 4 8; do
+        RUNALL
+        let "id++"
+      done
+      ;;
+    "ScaleRovio")
+      id=46
+      ResetParameters
+      SetRovioParameters
+      echo test scalability 46 - 49
+      for Threads in 1 2 4 8; do
+        RUNALL
+        let "id++"
+      done
+      ;;
+    "ScaleYSB")
+      id=50
+      ResetParameters
+      SetYSBParameters
+      echo test scalability 50 - 53
+      for Threads in 1 2 4 8; do
+        RUNALL
+        let "id++"
+      done
+      ;;
+    "ScaleDEBS")
+      id=54
+      ResetParameters
+      SetDEBSParameters
+      echo test scalability 54 - 57
+      for Threads in 1 2 4 8; do
+        RUNALL
+        let "id++"
+      done
+      ;;
+    "ScaleMC")
+      id=58
+      ResetParameters
+      echo test scalability 58 - 61
+      for Threads in 1 2 4 8; do
+        RUNALLKIM
+        let "id++"
+      done
+      ;;
+    esac
+  done
+done
+
+
+## back up.
+#  "PMJ_MERGE_STEP_STUDY")
+#    id=66
+#    algo="PMJ_JBCR_NP"
+#    ResetParameters
+#    echo PMJ_MERGE_STEP_STUDY 66-70
+#    for merge_step in 8 10 12 14 16; do
+#      ts=0   # batch data.
+#      KimRun #
+#      let "id++"
+#    done
+#    python3 breakdown_merge.py
+#    python3 latency_merge.py
+#    python3 progressive_merge.py
+#    ;;
+
+compile=1            #enable compiling.
 #benchmark experiment only apply for hashing directory.
-for benchmark in ""; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY"
+for benchmark in "" ; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY"
   case "$benchmark" in
   "SIMD_STUDY")
     id=104
@@ -304,6 +490,7 @@ for benchmark in ""; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZ
       done
     done
     python3 breakdown_simd.py
+    python3 profile_simd.py
     ;;
   "BUCKET_SIZE_STUDY")
     id=108
@@ -374,170 +561,5 @@ for benchmark in ""; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZ
   esac
 done
 
-# general benchmark.
-for algo in PMJ_JM_NP PMJ_JBCR_NP; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
-  for benchmark in "KD"; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" # "Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "RAR2" "AD" "KD" "WS" "KD2" "WS2" "WS3" "WS4"
-    case "$benchmark" in
-    # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
-    "AR") #test arrival rate and assume both inputs have same arrival rate.
-      id=0
-      ## Figure 1
-      ResetParameters
-      FIXS=0 #varying both.
-      ts=1   # stream case
-      # step size should be bigger than nthreads
-      for STEP_SIZE in 1600 3200 6400 12800 25600; do #128000
-        #WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
-        echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
-        gap=$STEP_SIZE
-        RUNALLKIM
-        let "id++"
-      done
-      ;;
-    "RAR") #test relative arrival rate when R is small
-      id=5
-      ## Figure 2
-      ResetParameters
-      FIXS=1
-      echo test relative arrival rate 5 - 9
-      ts=1 # stream case
-      # step size should be bigger than nthreads
-      # remember to fix the relation size of S.
-      STEP_SIZE=1600
-      for STEP_SIZE_S in 1600 3200 6400 12800 25600; do
-        #        WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
-        echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
-        gap=$STEP_SIZE
-        RUNALLKIM
-        let "id++"
-      done
-      ;;
-    "AD") #test arrival distribution
-      id=10
-      ## Figure 3
-      ResetParameters
-      FIXS=1
-      STEP_SIZE=1600
-      STEP_SIZE_S=1600
-      TS_DISTRIBUTION=2
-      gap=$(($STEP_SIZE / 1000 * $WINDOW_SIZE))
-      echo test varying timestamp distribution 10 - 14
-      for ZIPF_FACTOR in 0 0.4 0.8 1.2 1.6; do #
-        RUNALLKIM
-        let "id++"
-      done
-      ;;
-    "KD") #test key distribution
-      id=15
-      ## Figure 4
-      ResetParameters
-      FIXS=1
-      STEP_SIZE=12800
-      STEP_SIZE_S=12800
-      gap=1
-      echo test varying key distribution 15 - 19
-      distrbution=2 #varying zipf factor
-      for skew in 0 0.4 0.8 1.2 1.6; do
-        RUNALLKIM
-        let "id++"
-      done
-      ;;
-    "WS") #test window size
-      id=20
-      ## Figure 5
-      ResetParameters
-      FIXS=1
-      STEP_SIZE=12800
-      STEP_SIZE_S=12800
-      echo test varying window size 20 - 24
-      for WINDOW_SIZE in 500 1000 1500 2000 2500; do
-        gap=$(($STEP_SIZE / 1000 * $WINDOW_SIZE))
-        RUNALLKIM
-        let "id++"
-      done
-      ;;
-    "Stock")
-      id=38
-      ResetParameters
-      SetStockParameters
-      RUNALL
-      ;;
-    "Rovio") #matches:
-      id=39
-      ResetParameters
-      SetRovioParameters
-      RUNALL
-      ;;
-    "YSB")
-      id=40
-      ResetParameters
-      SetYSBParameters
-      #      RUNALL
-      benchmarkRun # use this when profiling.
-      ;;
-    "DEBS")
-      id=41
-      ResetParameters
-      SetDEBSParameters
-      RUNALL
-      ;;
-    "ScaleStock")
-      id=42
-      ResetParameters
-      SetStockParameters
-      echo test scalability of Stock 42 - 45
-      for Threads in 1 2 4 8; do
-        RUNALL
-        let "id++"
-      done
-      ;;
-    "ScaleRovio")
-      id=46
-      ResetParameters
-      SetRovioParameters
-      echo test scalability 46 - 49
-      for Threads in 1 2 4 8; do
-        RUNALL
-        let "id++"
-      done
-      ;;
-    "ScaleYSB")
-      id=50
-      ResetParameters
-      SetYSBParameters
-      echo test scalability 50 - 53
-      for Threads in 1 2 4 8; do
-        RUNALL
-        let "id++"
-      done
-      ;;
-    "ScaleDEBS")
-      id=54
-      ResetParameters
-      SetDEBSParameters
-      echo test scalability 54 - 57
-      for Threads in 1 2 4 8; do
-        RUNALL
-        let "id++"
-      done
-      ;;
-    esac
-  done
-done
+#./draw.sh
 python3 jobdone.py
-
-## back up.
-#  "PMJ_MERGE_STEP_STUDY")
-#    id=66
-#    algo="PMJ_JBCR_NP"
-#    ResetParameters
-#    echo PMJ_MERGE_STEP_STUDY 66-70
-#    for merge_step in 8 10 12 14 16; do
-#      ts=0   # batch data.
-#      KimRun #
-#      let "id++"
-#    done
-#    python3 breakdown_merge.py
-#    python3 latency_merge.py
-#    python3 progressive_merge.py
-#    ;;

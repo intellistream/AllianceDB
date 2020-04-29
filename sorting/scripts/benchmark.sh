@@ -1,8 +1,8 @@
 #!/bin/bash
 #set -e
-compile=0
+compile=1
 function compile() {
-  if [ $comple != 0 ]; then
+  if [ $compile != 0 ]; then
     cd ..
     cmake . | tail -n +90
     cd scripts
@@ -118,29 +118,11 @@ compile
 # Generate a timestamp
 timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
-#benchmark experiment only apply for hashing directory.
-for benchmark in ""; do #
-  case "$benchmark" in
-  "SIMD_STUDY")
-    id=100
-    ResetParameters
-    ts=0 # batch data.
-    echo SIMD 100-103
-    for algo in "m-way" "m-pass"; do
-      for scalar in 0 1; do
-        sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scalar/g" ../joins/joincommon.h
-        compile
-        KimRun
-        let "id++"
-      done
-    done
-    ;;
-  esac
-done
 
 #general benchmark.
+compile=0
 for algo in m-way m-pass; do
-  for benchmark in  "KD"; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "AR" "RAR" "RAR2" "AD" "KD" "WS" "KD2" "WS2" "WS3" "WS4"
+  for benchmark in "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" ; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "AR" "RAR" "AD" "KD" "WS"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "AR") #test arrival rate and assume both inputs have same arrival rate.
@@ -153,7 +135,7 @@ for algo in m-way m-pass; do
       for STEP_SIZE in 1600 3200 6400 12800 25600; do #128000
         #WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
         echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
-        gap=$STEP_SIZE
+        gap=$(($STEP_SIZE / 500 * $WINDOW_SIZE))
         KimRun
         let "id++"
       done
@@ -171,7 +153,7 @@ for algo in m-way m-pass; do
       for STEP_SIZE_S in 1600 3200 6400 12800 25600; do
         #        WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
         echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
-        gap=$STEP_SIZE
+        gap=$(($STEP_SIZE / 500 * $WINDOW_SIZE))
         KimRun
         let "id++"
       done
@@ -186,6 +168,7 @@ for algo in m-way m-pass; do
       TS_DISTRIBUTION=2
       echo test varying timestamp distribution 10 - 14
       for ZIPF_FACTOR in 0 0.4 0.8 1.2 1.6; do #
+        gap=$(($STEP_SIZE / 500 * $WINDOW_SIZE))
         KimRun
         let "id++"
       done
@@ -197,10 +180,16 @@ for algo in m-way m-pass; do
       FIXS=1
       STEP_SIZE=12800
       STEP_SIZE_S=12800
-      gap=1
+      gap=$(($STEP_SIZE / 500 * $WINDOW_SIZE))
       echo test varying key distribution 15 - 19
       distrbution=2 #varying zipf factor
       for skew in 0 0.4 0.8 1.2 1.6; do
+        if [ $skew == 1.2 ]; then
+          gap=100
+        fi
+        if [ $skew == 1.6 ]; then
+          gap=1
+        fi
         KimRun
         let "id++"
       done
@@ -210,9 +199,8 @@ for algo in m-way m-pass; do
       ## Figure 5
       ResetParameters
       FIXS=1
-      STEP_SIZE=12800
-      STEP_SIZE_S=12800
-      gap=1
+      STEP_SIZE=6400
+      STEP_SIZE_S=6400
       echo test varying window size 20 - 24
       for WINDOW_SIZE in 500 1000 1500 2000 2500; do
         gap=$(($STEP_SIZE / 1000 * $WINDOW_SIZE))
@@ -304,4 +292,24 @@ for algo in m-way m-pass; do
       #      ;;
     esac
   done
+done
+
+compile=1
+for benchmark in ""; do #
+  case "$benchmark" in
+  "SIMD_STUDY")
+    id=100
+    ResetParameters
+    ts=0 # batch data.
+    echo SIMD 100-103
+    for algo in "m-way" "m-pass"; do
+      for scalar in 0 1; do
+        sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scalar/g" ../joins/joincommon.h
+        compile
+        KimRun
+        let "id++"
+      done
+    done
+    ;;
+  esac
 done

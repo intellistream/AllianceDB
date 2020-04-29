@@ -2,6 +2,10 @@ import itertools as it
 import os
 
 import matplotlib
+import matplotlib as mpl
+
+mpl.use('Agg')
+
 import matplotlib.pyplot as plt
 import pylab
 from matplotlib.font_manager import FontProperties
@@ -14,7 +18,6 @@ LEGEND_FONT_SIZE = 24
 LABEL_FP = FontProperties(style='normal', size=LABEL_FONT_SIZE)
 LEGEND_FP = FontProperties(style='normal', size=LEGEND_FONT_SIZE)
 TICK_FP = FontProperties(style='normal', size=TICK_FONT_SIZE)
-
 MARKERS = (['^', 'v', '<', ">", "8", "s", "p", "P", "d", "<", "|", "", "+", "_"])
 # you may want to change the color map for different figures
 COLOR_MAP = ('#ABB2B9', '#2E4053', '#8D6E63', '#000000', '#CD6155', '#52BE80', '#FFFF00', '#5499C7', '#BB8FCE')
@@ -26,11 +29,11 @@ LINE_WIDTH = 3.0
 MARKER_SIZE = 13.0
 MARKER_FREQUENCY = 1000
 
-matplotlib.rcParams['ps.useafm'] = True
-matplotlib.rcParams['pdf.use14corefonts'] = True
-matplotlib.rcParams['xtick.labelsize'] = TICK_FONT_SIZE
-matplotlib.rcParams['ytick.labelsize'] = TICK_FONT_SIZE
-matplotlib.rcParams['font.family'] = OPT_FONT_NAME
+mpl.rcParams['ps.useafm'] = True
+mpl.rcParams['pdf.use14corefonts'] = True
+mpl.rcParams['xtick.labelsize'] = TICK_FONT_SIZE
+mpl.rcParams['ytick.labelsize'] = TICK_FONT_SIZE
+mpl.rcParams['font.family'] = OPT_FONT_NAME
 
 FIGURE_FOLDER = '/data1/xtra/results/figure'
 
@@ -40,6 +43,86 @@ FIGURE_FOLDER = '/data1/xtra/results/figure'
 def ConvertEpsToPdf(dir_filename):
     os.system("epstopdf --outfile " + dir_filename + ".pdf " + dir_filename + ".eps")
     os.system("rm -rf " + dir_filename + ".eps")
+
+
+def getThroughput(id, x):
+    if id == 38:
+        value = (116941 + 151500) / x  # get throughput (#items/ms)
+    elif id == 39:
+        value = (51001 + 51001) / x  # get throughput (#items/ms)
+    elif id == 40:
+        value = (1000 + 40100000) / x  # get throughput (#items/ms)
+    elif id == 41:
+        value = (1000000 + 1000000) / x  # get throughput (#items/ms)
+    else:
+        value = (12800000 + 128000000) / x
+    return value
+
+
+def normalize(value):
+    norm = []
+    base = value[0]
+
+    for i in value:
+        norm.append(i / base * 1.0)
+    return norm
+
+
+# example for reading csv file
+#     'PRJ (Stock)',
+#     'SHJ$^{JM}$ (Stock)',
+#     'PRJ (Rovio)',
+#     'SHJ$^{JM}$ (Rovio)',
+#     'PRJ (YSB)',
+#     'SHJ$^{JM}$ (YSB)',
+#     'PRJ (DEBS)',
+#     'SHJ$^{JM}$ (DEBS)',
+def ReadFile():
+    y = []
+    col1 = []
+    col2 = []
+    col3 = []
+    col4 = []
+    # col5 = []
+    # col6 = []
+    # col7 = []
+    # col8 = []
+    # col9 = []
+    # col10 = []
+
+    for id in it.chain(range(42, 46)):
+        file = '/data1/xtra/results/timestamps/PRJ_{}.txt'.format(id)
+        f = open(file, "r")
+        read = f.readlines()
+        x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
+        col1.append(getThroughput(id, x))
+    y.append(normalize(col1))
+
+    for id in it.chain(range(46, 50)):
+        file = '/data1/xtra/results/timestamps/MPASS_{}.txt'.format(id)
+        f = open(file, "r")
+        read = f.readlines()
+        x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
+        col2.append(getThroughput(id, x))
+    y.append(normalize(col2))
+
+    for id in it.chain(range(50, 54)):
+        file = '/data1/xtra/results/timestamps/NPJ_{}.txt'.format(id)
+        f = open(file, "r")
+        read = f.readlines()
+        x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
+        col3.append(getThroughput(id, x))
+    y.append(normalize(col3))
+
+    for id in it.chain(range(54, 58)):
+        file = '/data1/xtra/results/timestamps/MPASS_{}.txt'.format(id)
+        f = open(file, "r")
+        read = f.readlines()
+        x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
+        col4.append(getThroughput(id, x))
+    y.append(normalize(col4))
+
+    return y
 
 
 def DrawLegend(legend_labels, filename):
@@ -76,7 +159,6 @@ def DrawLegend(legend_labels, filename):
     # no need to export eps in this case.
     figlegend.savefig(FIGURE_FOLDER + '/' + filename + '.pdf')
 
-
 # draw a line chart
 def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, filename, allow_legend):
     # you may change the figure size on your own.
@@ -103,10 +185,10 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
         plt.legend(lines,
                    FIGURE_LABEL,
                    prop=LEGEND_FP,
-                   loc='upper center',
-                   ncol=3,
+                   loc='right',
+                   ncol=1,
                    #                     mode='expand',
-                   bbox_to_anchor=(0.55, 1.5), shadow=False,
+                   bbox_to_anchor=(1.6, 0.5), shadow=False,
                    columnspacing=0.1,
                    frameon=True, borderaxespad=0.0, handlelength=1.5,
                    handletextpad=0.1,
@@ -115,11 +197,12 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
     # plt.yscale('log')
     plt.xticks(x_values)
     # you may control the limits on your own.
-    # plt.xlim(x_min, x_max)
-    plt.ylim(0, 13000)
-    # plt.ylim(y_min, y_max)
+    plt.xlim(x_min, x_max)
+    # plt.ylim(0, 41000)
+    plt.ylim(0, 5)
     plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
     plt.grid(axis='y', color='gray')
+
     figure.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
     figure.yaxis.set_major_locator(LinearLocator(3))
     # figure.xaxis.set_major_locator(MaxNLocator(integer=True))
@@ -133,96 +216,20 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
     plt.savefig(FIGURE_FOLDER + "/" + filename + ".pdf", bbox_inches='tight')
 
 
-def GetThroughput(file, file2):
-    f = open(file, "r")
-    f2 = open(file2, "r")
-    read = f.readlines()
-    read2 = f2.readlines()
-    x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
-    i = float(read2.pop(0).strip("\n"))  # get number of inputs
-    return i / x  # get throughput (#items/ms)
-
-
-# example for reading csv file
-def ReadFile():
-    y = []
-    col1 = []
-    col2 = []
-    col3 = []
-    col4 = []
-    col5 = []
-    col6 = []
-    col7 = []
-    col8 = []
-
-    for id in it.chain(range(20,25)):
-        file = '/data1/xtra/results/timestamps/PRJ_{}.txt'.format(id)
-        file2 = '/data1/xtra/results/records/PRJ_{}.txt'.format(id)
-        value = GetThroughput(file, file2)
-        col1.append(value)
-    y.append(col1)
-
-    for id in it.chain(range(20,25)):
-        file = '/data1/xtra/results/timestamps/NPJ_{}.txt'.format(id)
-        file2 = '/data1/xtra/results/records/NPJ_{}.txt'.format(id)
-        value = GetThroughput(file, file2)
-        col2.append(value)
-    y.append(col2)
-
-    for id in it.chain(range(20,25)):
-        file = '/data1/xtra/results/timestamps/MPASS_{}.txt'.format(id)
-        file2 = '/data1/xtra/results/records/MPASS_{}.txt'.format(id)
-        value = GetThroughput(file, file2)
-        col3.append(value)
-    y.append(col3)
-
-    for id in it.chain(range(20,25)):
-        file = '/data1/xtra/results/timestamps/MWAY_{}.txt'.format(id)
-        file2 = '/data1/xtra/results/records/MWAY_{}.txt'.format(id)
-        value = GetThroughput(file, file2)
-        col4.append(value)
-    y.append(col4)
-
-    for id in it.chain(range(20,25)):
-        file = '/data1/xtra/results/timestamps/SHJ_JM_NP_{}.txt'.format(id)
-        file2 = '/data1/xtra/results/records/SHJ_JM_NP_{}.txt'.format(id)
-        value = GetThroughput(file, file2)
-        col5.append(value)
-    y.append(col5)
-
-    for id in it.chain(range(20,25)):
-        file = '/data1/xtra/results/timestamps/SHJ_JBCR_NP_{}.txt'.format(id)
-        file2 = '/data1/xtra/results/records/SHJ_JBCR_NP_{}.txt'.format(id)
-        value = GetThroughput(file, file2)
-        col6.append(value)
-    y.append(col6)
-
-    for id in it.chain(range(20,25)):
-        file = '/data1/xtra/results/timestamps/PMJ_JM_NP_{}.txt'.format(id)
-        file2 = '/data1/xtra/results/records/PMJ_JM_NP_{}.txt'.format(id)
-        value = GetThroughput(file, file2)
-        col7.append(value)
-    y.append(col7)
-
-    for id in it.chain(range(20,25)):
-        file = '/data1/xtra/results/timestamps/PMJ_JBCR_NP_{}.txt'.format(id)
-        file2 = '/data1/xtra/results/records/PMJ_JBCR_NP_{}.txt'.format(id)
-        value = GetThroughput(file, file2)
-        col8.append(value)
-    y.append(col8)
-    return y
-
-
 if __name__ == "__main__":
-    x_values = [500, 750, 1000, 1250, 1500]
+    legend_labels = [
+        'Stock',
+        'Rovio',
+        'YSB',
+        'DEBS',
+    ]
+    y = ReadFile()
+    print(y)
+    x = [1, 2, 4, 8]
 
-    y_values = ReadFile()
-
-    legend_labels = ['NPJ', 'PRJ', 'MWAY', 'MPASS', 'SHJ$^{JM}$', 'SHJ$^{JB}$', 'PMJ$^{JM}$',
-                     'PMJ$^{JB}$']
-
-    DrawFigure(x_values, y_values, legend_labels,
-               'Window sizes (ms)', 'Tpt. (#inputs/ms)', 0,
-               1.6, 'throughput_figure5', False)
-    # print(y_values)
-    DrawLegend(legend_labels, 'throughput_line_legend')
+    DrawFigure(x, y, legend_labels,
+               'Number of threads', 'Normalized Tpt.',
+               0, 10,
+               'throughput_scale_lazy',
+               False)
+    # DrawLegend(legend_labels, 'throughput_scale_legend')

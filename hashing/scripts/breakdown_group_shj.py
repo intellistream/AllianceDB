@@ -22,7 +22,7 @@ MARKERS = (['o', 's', 'v', "^", "h", "v", ">", "x", "d", "<", "|", "", "|", "_"]
 # you may want to change the color map for different figures
 COLOR_MAP = (['#000000', '#5DA5DA', '#60BD68', '#B276B2', '#DECF3F', '#F17CB0', '#B2912F', '#FAA43A', '#AFAFAF'])
 # you may want to change the patterns for different figures
-PATTERNS = (["////", "\\\\", "//////", "o", "o", "\\\\", "\\\\", "//////", "//////", ".", "\\\\\\", "\\\\\\"])
+PATTERNS = (["", "\\\\", "//////", "o", "||", "\\\\", "\\\\", "//////", "//////", ".", "\\\\\\", "\\\\\\"])
 LABEL_WEIGHT = 'bold'
 LINE_COLORS = COLOR_MAP
 LINE_WIDTH = 3.0
@@ -66,7 +66,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, al
     bars = [None] * (len(FIGURE_LABEL))
     for i in range(len(y_values)):
         bars[i] = plt.bar(index + width / 2, y_values[i], width, hatch=PATTERNS[i], color=LINE_COLORS[i],
-                          label=FIGURE_LABEL[i], bottom=bottom_base)
+                          label=FIGURE_LABEL[i], bottom=bottom_base, edgecolor='black', linewidth=3)
         bottom_base = np.array(y_values[i]) + bottom_base
 
     # sometimes you may not want to draw legends.
@@ -85,7 +85,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, al
         if allow_legend == True:
             handles, labels = figure.get_legend_handles_labels()
         if allow_legend == True:
-            plt.legend(handles[::-1], labels[::-1],
+            leg=plt.legend(handles[::-1], labels[::-1],
                        loc='center',
                        prop=LEGEND_FP,
                        ncol=4,
@@ -94,8 +94,10 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, al
                        borderaxespad=0.0,
                        handlelength=1.8,
                        labelspacing=0.3,
-                       columnspacing=0.3,
+                       columnspacing=0.4,
                        )
+            leg.get_frame().set_linewidth(2)
+            leg.get_frame().set_edgecolor("black")
 
     # you may need to tune the xticks position to get the best figure.
     plt.xticks(index + 1 * width, x_values)

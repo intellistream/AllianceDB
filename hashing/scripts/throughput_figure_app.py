@@ -64,7 +64,7 @@ def DrawLegend(legend_labels, filename):
     figlegend.savefig(FIGURE_FOLDER + '/' + filename + '.pdf')
 
 
-# draw a line chart
+# draw a bar chart
 def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max, filename, allow_legend):
     # you may change the figure size on your own.
     fig = plt.figure(figsize=(8, 3))
