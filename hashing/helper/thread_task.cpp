@@ -536,7 +536,7 @@ void
         usleep(rand() % 100);
 #endif
 
-    } while (!fetcher->finish());
+    } while ( fetcher->cntR < sizeR ||  fetcher->cntS < sizeS);
 
     args->joiner->merge(
             args->tid,

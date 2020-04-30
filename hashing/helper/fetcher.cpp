@@ -18,6 +18,27 @@ fetch_t::fetch_t(fetch_t *fetch) {
 fetch_t::fetch_t() {}
 
 
+fetch_t *HS_NP_Fetcher::next_tuple() {
+    if (tid == 0) {//thread 0 fetches R.
+        if (state->start_index_R < state->end_index_R) {
+            state->fetch.tuple = &relR->tuples[state->start_index_R++];
+            state->fetch.ISTuple_R = true;
+            return &(state->fetch);
+        } else {
+            return nullptr;
+        }
+    } else {//thread n-1 fetches S.
+        if (state->start_index_S < state->end_index_S) {
+            state->fetch.tuple = &relS->tuples[state->start_index_S++];
+            state->fetch.ISTuple_R = false;
+            return &(state->fetch);
+        } else {
+            return nullptr;
+        }
+    }
+    return nullptr;
+}
+
 /**
  * outdated.
  * @return
@@ -166,6 +187,7 @@ fetch_t *baseFetcher::_next_tuple() {
         return next_tuple_S_first(state, fetchStartTime, relS);
     }
 }
+
 
 fetch_t *baseFetcher::next_tuple() {
     if (tryR) {

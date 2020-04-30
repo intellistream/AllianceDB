@@ -100,8 +100,8 @@ HashShuffler::HashShuffler(int nthreads, relation_t *relR, relation_t *relS)
 //        queues[i] = new moodycamel::ConcurrentQueue<fetch_t *>();
 //    }
 }
-uint64_t s[2];
 
+uint64_t s[2];
 void myseed(const uint64_t s0, const uint64_t s1) {
     s[0] = s0;
     s[1] = s1;

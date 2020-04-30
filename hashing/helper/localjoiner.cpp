@@ -114,10 +114,10 @@ void SHJJoiner::clean(int32_t tid, tuple_t *tuple, bool cleanR) {
 SHJJoiner::SHJJoiner(int sizeR, int sizeS) {
     //allocate two hashtables.
 
-    uint32_t nbucketsR = (sizeR / BUCKET_SIZE);
+    int nbucketsR = sizeR / BUCKET_SIZE;
     allocate_hashtable(&htR, nbucketsR);
 
-    uint32_t nbucketsS = (sizeS / BUCKET_SIZE);
+    int nbucketsS = sizeS / BUCKET_SIZE;
     allocate_hashtable(&htS, nbucketsS);
 }
 

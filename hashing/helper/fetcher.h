@@ -69,7 +69,7 @@ public:
     uint64_t cntR = 0;
     uint64_t cntS = 0;
 
-    virtual bool finish() = 0;
+    bool finish() { return false; };
 
     baseFetcher(relation_t *relR, relation_t *relS, int tid, T_TIMER *timer) {
         this->tid = tid;
@@ -85,12 +85,6 @@ inline bool last_thread(int i, int nthreads) {
 
 class PMJ_HS_NP_Fetcher : public baseFetcher {
 public:
-
-
-    bool finish() {
-
-        return cntR == relR->num_tuples && cntS == relS->num_tuples;
-    }
 
     fetch_t *next_tuple() override;
 
@@ -116,7 +110,6 @@ public:
             state->start_index_S = 0;
             state->end_index_S = relS->num_tuples;
         }
-
         DEBUGMSG("TID:%d, R: start_index:%d, end_index:%d\n", tid, state->start_index_R, state->end_index_R);
         DEBUGMSG("TID:%d, S: start_index:%d, end_index:%d\n", tid, state->start_index_S, state->end_index_S);
     }
@@ -124,11 +117,7 @@ public:
 
 class HS_NP_Fetcher : public baseFetcher {
 public:
-
-    bool finish() {
-        return cntR == relR->num_tuples && cntS == relS->num_tuples;
-    }
-
+    fetch_t *next_tuple() override;
 
     /**
      * Initialization
@@ -219,8 +208,8 @@ public:
         state->start_index_R = numRthr * tid;
         state->end_index_R = (last_thread(tid, nthreads)) ? relR->num_tuples : numRthr * (tid + 1);
 */
-     DEBUGMSG("TID:%d, S: start_index:%d, start ts:%d\n", tid, state->start_index_S,
-               relS->payload->ts[state->start_index_S]);
+        DEBUGMSG("TID:%d, S: start_index:%d, start ts:%d\n", tid, state->start_index_S,
+                 relS->payload->ts[state->start_index_S]);
     }
 };
 

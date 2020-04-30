@@ -162,7 +162,7 @@ benchmark(const param_t cmd_params) {
     createRelation(&relR, relR.payload, cmd_params.rkey, cmd_params.rts, cmd_params, cmd_params.loadfileR,
                    cmd_params.r_seed, cmd_params.step_sizeR, partitions);
     DEBUGMSG("relR [aligned:%d]: %s", is_aligned(relR.tuples, CACHE_LINE_SIZE),
-             print_relation(relR.tuples, min((uint64_t) 1000, cmd_params.r_size)).c_str());
+             print_relation(relR.tuples, min((uint64_t) 1000, relR.num_tuples)).c_str());
 
     /* create relation S */
     if (cmd_params.old_param) {
@@ -177,7 +177,7 @@ benchmark(const param_t cmd_params) {
     createRelation(&relS, relS.payload, cmd_params.skey, cmd_params.sts, cmd_params, cmd_params.loadfileS,
                    cmd_params.s_seed, cmd_params.step_sizeS, cmd_params.nthreads);
     DEBUGMSG("relS [aligned:%d]: %s", is_aligned(relS.tuples, CACHE_LINE_SIZE),
-             print_relation(relS.tuples, min((uint64_t) 1000, cmd_params.s_size)).c_str());
+             print_relation(relS.tuples, min((uint64_t) 1000, relS.num_tuples)).c_str());
 
 //    string path = "/data1/xtra/datasets/Kim/data_distribution_zipf" + std::to_string(cmd_params.zipf_param) + ".txt";
 //    writefile(relR.payload, cmd_params);
