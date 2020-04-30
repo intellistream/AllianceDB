@@ -322,14 +322,10 @@ join(int32_t tid, tuple_t *tuple, int fat_tuple_size, bool IStuple_R, int64_t *m
     } else {
         DEBUGMSG("TID %d: before store S is %s.", tid,
                  print_tuples(arg->tmp_relS, arg->outerPtrS).c_str())
-#ifndef NO_TIMING
-        BEGIN_MEASURE_BUILD_ACC(timer)
-#endif
+
         keep_tuple_single(arg->tmp_relS, arg->outerPtrS, tuple, fat_tuple_size);
         arg->outerPtrS += fat_tuple_size;
-#ifndef NO_TIMING
-        END_MEASURE_BUILD_ACC(timer)//accumulate hash table build time.
-#endif
+
         DEBUGMSG("TID %d: after store S is %s.", tid,
                  print_tuples(arg->tmp_relS, arg->outerPtrS).c_str())
 

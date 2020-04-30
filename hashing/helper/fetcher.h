@@ -69,7 +69,7 @@ public:
     uint64_t cntR = 0;
     uint64_t cntS = 0;
 
-    bool finish() { return false; };
+    virtual bool finish() = 0;
 
     baseFetcher(relation_t *relR, relation_t *relS, int tid, T_TIMER *timer) {
         this->tid = tid;
@@ -87,7 +87,7 @@ class PMJ_HS_NP_Fetcher : public baseFetcher {
 public:
 
     fetch_t *next_tuple() override;
-
+    bool finish() { return false; };
     /**
      * Initialization
      * @param nthreads
@@ -118,7 +118,7 @@ public:
 class HS_NP_Fetcher : public baseFetcher {
 public:
     fetch_t *next_tuple() override;
-
+    bool finish() { return false; };
     /**
      * Initialization
      * @param nthreads

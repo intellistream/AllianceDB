@@ -257,7 +257,9 @@ processLeft(arg_t *args, fetch_t *fetch, int64_t *matches, void *chainedbuf) {
         //remove oldest tuple from S-window
         DEBUGMSG("remove s %d from S-window.", fetch->tuple->key)
 //        clean(args, fetch, RIGHT);
+#ifdef JOIN
         args->joiner->clean(args->tid, fetch->tuple, RIGHT);
+#endif
     } else if (fetch->tuple) { //if msg contains a new tuple then
 #ifdef DEBUG
         if (!fetch->ISTuple_R)//right must be tuple R.
@@ -269,6 +271,7 @@ processLeft(arg_t *args, fetch_t *fetch, int64_t *matches, void *chainedbuf) {
 #endif
         //scan S-window to find tuples that match ri ;
         //insert ri into R-window ;
+#ifdef JOIN
         args->joiner->join(
                 args->tid,
                 fetch->tuple,
@@ -276,6 +279,7 @@ processLeft(arg_t *args, fetch_t *fetch, int64_t *matches, void *chainedbuf) {
                 matches,
 //                AGGFUNCTION,
                 chainedbuf);
+#endif
     }
 }
 
@@ -290,7 +294,9 @@ processLeft_PMJ(arg_t *args, fetch_t *fetch, int64_t *matches, void *chainedbuf)
         //remove oldest tuple from S-window
         DEBUGMSG("TID %d:remove S %s from S-window.", args->tid,
                  print_tuples(fetch->fat_tuple, fetch->fat_tuple_size).c_str())
+#ifdef JOIN
         args->joiner->clean(args->tid, fetch->fat_tuple, fetch->fat_tuple_size, RIGHT);
+#endif
     } else if (fetch->fat_tuple) { //if msg contains a new tuple then
 #ifdef DEBUG
         if (!fetch->ISTuple_R)//right must be tuple R.
@@ -302,6 +308,7 @@ processLeft_PMJ(arg_t *args, fetch_t *fetch, int64_t *matches, void *chainedbuf)
 #endif
         //scan S-window to find tuples that match ri ;
         //insert ri into R-window ;
+#ifdef JOIN
         args->joiner->join(
                 args->tid,
                 fetch->fat_tuple,
@@ -310,6 +317,7 @@ processLeft_PMJ(arg_t *args, fetch_t *fetch, int64_t *matches, void *chainedbuf)
                 matches,
 //                AGGFUNCTION,
                 chainedbuf);
+#endif
     }
 }
 
@@ -444,28 +452,7 @@ void forward_tuples_PMJ(baseShuffler *shuffler, arg_t *args, fetch_t *fetchR, fe
 void
 *THREAD_TASK_SHUFFLE_HS(void *param) {
     arg_t *args = (arg_t *) param;
-#ifdef PERF_COUNTERS
-    if (args->tid == 0) {
-        PCM_initPerformanceMonitor(NULL, NULL);
-        PCM_start();
-    }
-#endif
-
-#ifndef NO_TIMING
-    START_MEASURE((args->timer))
-#endif
-    int rv;
-#ifdef PERF_COUNTERS
-    if (args->tid == 0) {
-        PCM_stop();
-        PCM_log("========== Build phase profiling results ==========\n");
-        PCM_printResults();
-        PCM_start();
-    }
-    /* Just to make sure we get consistent performance numbers */
-    BARRIER_ARRIVE(args->barrier, rv);
-#endif
-
+    int lock;
 #ifdef JOIN_RESULT_MATERIALIZE
     chainedtuplebuffer_t *chainedbuf = chainedtuplebuffer_init();
 #else
@@ -484,9 +471,22 @@ void
     int sizeR = args->fetcher->relR->num_tuples;
     int sizeS = args->fetcher->relS->num_tuples;
 
+    /* wait at a barrier until each thread started*/
+    BARRIER_ARRIVE(args->barrier, lock)
+
+#ifndef NO_TIMING
+    *args->startTS = curtick();
+    START_MEASURE((args->timer))
+#endif
+    fetcher->fetchStartTime = args->startTS;//set the fetch starting time.
+#ifdef PERF_COUNTERS
+    if (args->tid == 0) {
+        PCM_initPerformanceMonitor(NULL, NULL);
+        PCM_start();
+    }
+#endif
 
     do {
-
         //pull left queue.
         if (args->tid == 0) {
             fetchR = fetcher->next_tuple();//
@@ -536,14 +536,14 @@ void
         usleep(rand() % 100);
 #endif
 
-    } while ( fetcher->cntR < sizeR ||  fetcher->cntS < sizeS);
-
+    } while (fetcher->cntR < sizeR || fetcher->cntS < sizeS);
+#ifdef JOIN
     args->joiner->merge(
             args->tid,
             args->matches,
 //            AGGFUNCTION,
             chainedbuf);
-
+#endif
 #ifdef JOIN_RESULT_MATERIALIZE
     args->threadresult->nresults = *args->matches;
     args->threadresult->threadid = args->tid;
@@ -551,8 +551,10 @@ void
 #endif
 
 #ifndef NO_TIMING
-    stopTimer(&args->timer->overall_timer); /* overall */ \
-    gettimeofday(&args->timer->end, NULL);
+    END_MEASURE(args->timer)
+    //time calibration
+//    args->timer->overall_timer -= args->timer->garbage_time;
+    args->timer->partition_timer = args->timer->overall_timer - args->timer->wait_timer;
 #endif
 
 #ifdef PERF_COUNTERS
@@ -566,6 +568,10 @@ void
     /* Just to make sure we get consistent performance numbers */
     BARRIER_ARRIVE(args->barrier, rv);
 #endif
+    /* wait at a barrier until each thread finishes*/
+    BARRIER_ARRIVE(args->barrier, lock)
+    DEBUGMSG("args->num_results (%d): %ld\n", args->tid, *args->matches);
+    fflush(stdout);
     pthread_exit(NULL);
 }
 
