@@ -88,17 +88,20 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int
     } /*else if (cmd_params.gen_with_ts) {
         parallel_create_relation_with_ts(rel, relPl, rel->num_tuples, nthreads, rel->num_tuples, cmd_params.step_size, cmd_params.interval);
     } */ else if (cmd_params.ts) {
+        // TODO: add a key duplicate function
+        // idea: 1. generate a size = rel_size/duplicate_num key set. 2. duplicate key set to rel_size. 3. this generation is nothing to do with ts.
+
         // check params 1, window_size, 2. step_size, 3. interval, 4. distribution, 5. zipf factor, 6. nthreads
         switch (cmd_params.key_distribution) {
             case 0: // unique
                 parallel_create_relation(rel, rel_size,
                                          nthreads,
-                                         rel_size);
+                                         rel_size, cmd_params.duplicate_num);
 //                parallel_create_relation_with_ts(rel, relPl, rel->num_tuples, nthreads, rel->num_tuples,
 //                                                 cmd_params.step_size, cmd_params.interval);
                 break;
             case 2: // zipf with zipf factor
-                create_relation_zipf(rel, rel_size, rel_size, cmd_params.skew);
+                create_relation_zipf(rel, rel_size, rel_size, cmd_params.skew, cmd_params.duplicate_num);
                 break;
             default:
                 break;
@@ -118,7 +121,7 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int
         //create_relation_pk(&rel, rel_size);
         parallel_create_relation(rel, rel_size,
                                  nthreads,
-                                 rel_size);
+                                 rel_size, cmd_params.duplicate_num);
         add_ts(rel, relPl, step_size, 0, partitions);
     }
     printf("OK \n");

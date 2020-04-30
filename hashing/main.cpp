@@ -488,13 +488,14 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
                         {"zipf_param",       required_argument, 0,               'Z'},
                         {"exp_id",           required_argument, 0,               'I'},
                         {"ts_distribution",  required_argument, 0,               'D'},
+                        {"duplicate_num",    required_argument, 0,               'P'}, // represent num of Partitions
                         {0, 0,                                  0,               0}
 
                 };
         /* getopt_long stores the option index here. */
         int option_index = 0;
 
-        c = getopt_long(argc, argv, "J:K:L:M:t:w:e:q:l:I:d:Z:D:g:G:B:W:a:n:p:r:s:o:x:y:z:R:S:hv[:]:",
+        c = getopt_long(argc, argv, "J:K:L:M:t:w:e:q:l:I:d:Z:D:g:G:B:W:a:n:p:r:s:o:x:y:z:R:S:hv[:]:P:",
                         long_options, &option_index);
 
         /* Detect the end of the options. */
@@ -664,6 +665,9 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
                 break;
             case ']':
                 cmd_params->merge_step = atoi(mystrdup(optarg));
+                break;
+            case 'P':
+                cmd_params->duplicate_num = atoi(mystrdup(optarg));
                 break;
             default:
                 break;

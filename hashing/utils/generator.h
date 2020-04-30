@@ -72,8 +72,7 @@ create_relation_fk_from_pk(relation_t *fkrel, relation_t *pkrel, int64_t ntuples
  * - maxid is equivalent to the alphabet size
  */
 int
-create_relation_zipf(relation_t *reln, int64_t ntuples,
-                     const int64_t maxid, const double zipfparam);
+create_relation_zipf(relation_t *reln, int64_t ntuples, const int64_t maxid, const double zipfparam, const int duplicate_num);
 
 
 /**
@@ -82,8 +81,7 @@ create_relation_zipf(relation_t *reln, int64_t ntuples,
  * nthreads in parallel, where each memory is initialized thread local.
  */
 int
-parallel_create_relation(relation_t *reln, uint64_t ntuples,
-                         uint32_t nthreads, uint64_t maxid);
+parallel_create_relation(relation_t *reln, uint64_t ntuples, uint32_t nthreads, uint64_t maxid, const int duplicate_num);
 
 int
 parallel_create_relation_with_ts(relation_t *relation, relation_payload_t *relationPayload, uint64_t num_tuples,

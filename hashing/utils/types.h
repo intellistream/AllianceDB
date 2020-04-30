@@ -66,7 +66,7 @@ typedef struct joinconfig_t joinconfig_t;
  */
 struct tuple_t {//8bytes.
 //    value_t *payload;
-    value_t payloadID;//TODO: make sure payload is simply the id of the tuple.
+    value_t payloadID;//record the index of payload of this tuple.
     intkey_t key;//little end, lowest is the most significant bit.
 };
 
