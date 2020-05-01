@@ -60,8 +60,8 @@ struct run {//a pair of runs
     bool merged = false;
 
     run(tuple_t *run_R, tuple_t *run_S, int lengthR, int lengthS) {
-        assert(run_R->key>=0);
-        assert(run_S->key>=0);
+        assert(run_R->key >= 0);
+        assert(run_S->key >= 0);
         R = run_R;//only one pair initially.
         S = run_S;//only one pair initially.
         posR = 0;
@@ -113,6 +113,13 @@ struct sweepArea {
 //                    if (tuple->payloadID < 0) {
 //                        printf("???");
 //                    }
+#ifdef DEBUG
+                    if (ISTupleR) {
+                        DEBUGMSG("Join R:%d  with S:%d\n",  tuple->key, it.operator*()->key)
+                    } else {
+                        DEBUGMSG("Join S:%d  with R:%d\n", it.operator*()->key, tuple->key);
+                    }
+#endif
                     END_PROGRESSIVE_MEASURE(tuple->payloadID, timer, ISTupleR)
 #endif
                 }
@@ -140,6 +147,7 @@ struct sweepArea {
 void sorting_phase(int32_t tid, tuple_t *inptrR, int sizeR, tuple_t *inptrS, int sizeS, int64_t *matches,
                    std::vector<run> *Q, tuple_t *outputR, tuple_t *outputS, T_TIMER *timer,
                    chainedtuplebuffer_t *chainedbuf);
+
 /**
  * Testing purpose: pass in entire relation.
  * @param tid

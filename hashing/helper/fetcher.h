@@ -152,7 +152,6 @@ public:
 class JM_NP_Fetcher : public baseFetcher {
 public:
 
-
     bool finish() {
 /*
  *      if (cntR == relR->num_tuples / 4) {

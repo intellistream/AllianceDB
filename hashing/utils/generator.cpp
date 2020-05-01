@@ -146,8 +146,8 @@ add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_size,
         tid_start_idx[partition] = numthr * partition;
         tid_end_idx[partition] = (last_thread(partition, partitions)) ? relation->num_tuples : numthr * (partition + 1);
 
-        DEBUGMSG("partition %d start idx: %d end idx: %d\n", partition, tid_start_idx[partition],
-                 tid_end_idx[partition]);
+//        DEBUGMSG("partition %d start idx: %d end idx: %d\n", partition, tid_start_idx[partition],
+//                 tid_end_idx[partition]);
     }
 
     //create ts.
@@ -535,9 +535,9 @@ void duplicate(relation_t *reln, uint64_t ntuples, const int duplicate_num) {// 
     }
     reln->num_tuples = ntuples;
 
-    for (auto i=0; i < reln->num_tuples; i++) {
-        printf("%dth: %d\n", i, reln->tuples[i].key);
-    }
+//    for (auto i=0; i < reln->num_tuples; i++) {
+//        DEBUGMSG("%dth: %d\n", i, reln->tuples[i].key);
+//    }
 }
 
 int

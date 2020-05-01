@@ -255,13 +255,13 @@ void
 processLeft(arg_t *args, fetch_t *fetch, int64_t *matches, void *chainedbuf) {
     if (fetch->ack) {/* msg is an acknowledgment message */
         //remove oldest tuple from S-window
-        DEBUGMSG("remove s %d from S-window.", fetch->tuple->key)
-//        clean(args, fetch, RIGHT);
+        DEBUGMSG("TID %d: remove s %d from S-window because of ack.", args->tid, fetch->tuple->key)
 #ifdef JOIN
         args->joiner->clean(args->tid, fetch->tuple, RIGHT);
 #endif
     } else if (fetch->tuple) { //if msg contains a new tuple then
 #ifdef DEBUG
+
         if (!fetch->ISTuple_R)//right must be tuple R.
         {
             DEBUGMSG("right must be tuple R. something is wrong \n");
@@ -497,11 +497,12 @@ void
             fetcher->cntR++;
             if (fetchR->ack) {/* msg is an acknowledgment message */
                 fetcher->cntR--;
-            }
+            } else {
 #ifdef DEBUG
-            printf("tid:%d, fetch R:%d, cntR:%d\n", args->tid, fetchR->tuple->key, fetcher->cntR);
-            fflush(stdout); // Will now print everything in the stdout buffer
+                printf("tid:%d, fetch R:%d, cntR:%lu\n", args->tid, fetchR->tuple->key, fetcher->cntR);
+                fflush(stdout); // Will now print%luverything in the stdout buffer
 #endif
+            }
             processLeft(args, fetchR, args->matches, chainedbuf);
         }
 

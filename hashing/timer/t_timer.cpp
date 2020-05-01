@@ -46,8 +46,8 @@ dump_timing(vector<double> vector, std::vector<double> vector_latency,
     int check25 = ceil(n * 0.25);
     int check50 = ceil(n * 0.50);
     int check75 = ceil(n * 0.75);
-    int check95 = ceil(n * 0.95) - 1;
-    int check99 = ceil(n * 0.99) - 1;
+    int check95 = std::min(ceil(n * 0.95), double(n - 1));
+    int check99 = std::min(ceil(n * 0.99), double(n - 1));
 
     //dump matches and inputs.
 

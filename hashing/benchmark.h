@@ -97,7 +97,7 @@ struct param_t {
     int ts_distribution;
     double skew;
     double zipf_param;
-    int duplicate_num = 4;
+    int duplicate_num = 1;
 
     int window_size;
     int step_sizeR;

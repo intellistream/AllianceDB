@@ -34,10 +34,7 @@ fetch_t *HashShuffler::pull(int32_t tid, bool b) {
 
     if (!rt)
         return nullptr;
-//    bool rt =  .try_dequeue(tuple);
-    DEBUGMSG("PULL: %d, tuple: %d, queue size:%d\n", idx,
-             tuple->tuple->key,
-             queue->size_approx());
+
     return tuple;
 }
 
@@ -96,9 +93,6 @@ baseShuffler::baseShuffler(int nthreads, relation_t *relR, relation_t *relS) {
 HashShuffler::HashShuffler(int nthreads, relation_t *relR, relation_t *relS)
         : baseShuffler(nthreads, relR, relS) {
     queues = new T_CQueue[nthreads];
-//    for (int i = 0; i < nthreads; i++) {
-//        queues[i] = new moodycamel::ConcurrentQueue<fetch_t *>();
-//    }
 }
 
 uint64_t s[2];

@@ -107,7 +107,6 @@ void SHJJoiner::clean(int32_t tid, tuple_t *tuple, bool cleanR) {
         debuild_hashtable_single(htR, tuple, htR->hash_mask, htR->skip_bits);
     } else {
         debuild_hashtable_single(htS, tuple, htS->hash_mask, htS->skip_bits);
-
     }
 }
 
