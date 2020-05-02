@@ -80,10 +80,9 @@ is_sorted_helper(int64_t *items, uint64_t nitems) {
                 warned = 1;
             }
         } else */
-        if (tuples[i].key <= curr) {
+        if (tuples[i].key < curr) {
             printf("[ERROR] item[%d].key=%d is less or equal than item[%d].key=%d\n",
                    i, tuples[i].key, i - 1, curr);
-            return 0;
         }
 
         curr = tuples[i].key;

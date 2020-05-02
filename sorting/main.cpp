@@ -419,6 +419,7 @@ struct cmdparam_t {
     int ts_distribution;
     double skew;
     double zipf_param;
+    int duplicate_num = 1;
 
     int window_size;
     int step_sizeR;
@@ -505,10 +506,10 @@ createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int32_t 
 //                                                 cmd_params.step_size, cmd_params.interval);
                 parallel_create_relation(rel, rel_size,
                                          nthreads,
-                                         rel_size);
+                                         rel_size, cmd_params.duplicate_num);
                 break;
             case 2: // zipf with zipf factor
-                create_relation_zipf(rel, rel_size, rel_size, cmd_params.skew);
+                create_relation_zipf(rel, rel_size, rel_size, cmd_params.skew, cmd_params.duplicate_num);
                 break;
             default:
                 break;
@@ -527,7 +528,7 @@ createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int32_t 
         //create_relation_pk(&rel, rel_size);
         parallel_create_relation(rel, rel_size,
                                  nthreads,
-                                 rel_size);
+                                 rel_size, cmd_params.duplicate_num);
         add_ts(rel, relPl, step_size, 0, partitions);
     }
 
@@ -831,7 +832,7 @@ parse_args(int argc, char **argv, cmdparam_t *cmd_params) {
         int option_index = 0;
 
 //        c = getopt_long(argc, argv, "a:n:p:r:s:o:x:y:z:hvf:m:S:",
-        c = getopt_long(argc, argv, "g:R:S:J:K:L:M:t:w:e:q:l:I:d:Z:D:a:B:W:n:p:r:s:o:x:y:z:hvf:m:N:",
+        c = getopt_long(argc, argv, "P:g:R:S:J:K:L:M:t:w:e:q:l:I:d:Z:D:a:B:W:n:p:r:s:o:x:y:z:hvf:m:N:",
                         long_options, &option_index);
 
         /* Detect the end of the options. */
@@ -992,6 +993,9 @@ parse_args(int argc, char **argv, cmdparam_t *cmd_params) {
                 break;
             case 'W':
                 cmd_params->fixS = atoi(mystrdup(optarg));
+                break;
+            case 'P':
+                cmd_params->duplicate_num = atoi(mystrdup(optarg));
                 break;
             default:
                 break;

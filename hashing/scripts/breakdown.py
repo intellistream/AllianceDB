@@ -158,7 +158,7 @@ def ReadFile(id):
         if (linecnt != 3):  ##skip sort.
             if value > max_value:
                 max_value = value
-            y[cnt][1] = value
+            y[cnt][0] = max(value, 0)
             cnt += 1
         linecnt += 1
 
@@ -171,7 +171,7 @@ def ReadFile(id):
         if (linecnt != 3):  ##skip sort.
             if value > max_value:
                 max_value = value
-            y[cnt][0] = value
+            y[cnt][1] = max(value, 0)
             cnt += 1
         linecnt += 1
 
@@ -184,7 +184,7 @@ def ReadFile(id):
         if (linecnt != 2):  ##skip build.
             if value > max_value:
                 max_value = value
-            y[cnt][3] = value
+            y[cnt][2] = max(value, 0)
             cnt += 1
         linecnt += 1
 
@@ -197,7 +197,7 @@ def ReadFile(id):
         if (linecnt != 2):  ##skip build.
             if value > max_value:
                 max_value = value
-            y[cnt][2] = value
+            y[cnt][3] = max(value, 0)
             cnt += 1
         linecnt += 1
 
@@ -210,7 +210,7 @@ def ReadFile(id):
             value = double(x.strip("\n"))
             if value > max_value:
                 max_value = value
-            y[cnt][4] = value
+            y[cnt][4] = max(value, 0)
             cnt += 1
         linecnt += 1
 
@@ -223,7 +223,7 @@ def ReadFile(id):
             value = double(x.strip("\n"))
             if value > max_value:
                 max_value = value
-            y[cnt][5] = value
+            y[cnt][5] = max(value, 0)
             cnt += 1
         linecnt += 1
 
@@ -236,7 +236,7 @@ def ReadFile(id):
             value = double(x.strip("\n"))
             if value > max_value:
                 max_value = value
-            y[cnt][6] = value
+            y[cnt][6] = max(value, 0)
             cnt += 1
         linecnt += 1
 
@@ -249,7 +249,7 @@ def ReadFile(id):
             value = double(x.strip("\n"))
             if value > max_value:
                 max_value = value
-            y[cnt][7] = value
+            y[cnt][7] = max(value, 0)
             cnt += 1
         linecnt += 1
     return y, max_value

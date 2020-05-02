@@ -17,8 +17,13 @@
 #done
 
 ##### APP Scale.
-python3 throughput_scale_lazy.py
-python3 throughput_scale_eager.py
+#python3 throughput_scale_lazy.py
+#python3 throughput_scale_eager.py
+
+
+### HS scheme
+#python3 breakdown_hsstudy_jm.py
+#python3 breakdown_hsstudy_hs.py
 
 ### KIM
 #for idx in {1..8} ; do #
@@ -38,7 +43,6 @@ python3 throughput_scale_eager.py
 #for id in {0..37}; do
 #  python3 disorderCDF.py -i $id
 #done
-
 
 ## MICRO BENCH
 
@@ -76,6 +80,13 @@ python3 throughput_scale_eager.py
 #for id in  20 24; do
 #  python3 progressive_figure.py -i $id
 #done
+
+## Impact of data duplication
+python3 throughput_figure6.py
+python3 latency_figure6.py
+for id in 25 28; do
+  python3 progressive_figure.py -i $id
+done
 
 ### SIMD_STUDY
 #python3 breakdown_simd.py

@@ -434,7 +434,6 @@ parallel_create_relation(relation_t *reln, uint64_t ntuples, uint32_t nthreads, 
     // only generate a segment tuples first
     reln->num_tuples = ntuples/duplicate_num;
 
-
     if (!reln->tuples) {
         perror("memory must be allocated first");
         return -1;

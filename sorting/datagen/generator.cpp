@@ -205,10 +205,10 @@ void add_zipf_ts(relation_t *relation, relation_payload_t *relationPayload, int 
         relationPayload->ts[cur_index] = (uint64_t) timestamps[i] * 2.1 * 1E6;//ms to cycle
         tid_offsets[partition]++;
 
-        DEBUGMSG(1,"%d, %ld\n", relation->tuples[i].key, relationPayload->ts[i]);
+        DEBUGMSG(1, "%d, %ld\n", relation->tuples[i].key, relationPayload->ts[i]);
     }
     for (auto i = 0; i < relation->num_tuples; i++) {
-        if (relationPayload->ts[i] < 0.25 * window_size* 2.1 * 1E6) {
+        if (relationPayload->ts[i] < 0.25 * window_size * 2.1 * 1E6) {
             small++;
         }
     }
@@ -406,18 +406,19 @@ create_relation_pk(relation_t *relation, int64_t num_tuples) {
 }
 
 int
-parallel_create_relation(relation_t *relation, uint64_t num_tuples,
-                         uint32_t nthreads, uint64_t maxid) {
+parallel_create_relation(relation_t *reln, uint64_t ntuples, uint32_t nthreads, uint64_t maxid,
+                         const int duplicate_num) {
     int rv;
     uint32_t i;
     uint64_t offset = 0;
 
     check_seed();
 
-    relation->num_tuples = num_tuples;
+    // only generate a segment tuples first
+    reln->num_tuples = ntuples/duplicate_num;
 
 
-    if (!relation->tuples) {
+    if (!reln->tuples) {
         perror("memory must be allocated first");
         return -1;
     }
@@ -435,14 +436,14 @@ parallel_create_relation(relation_t *relation, uint64_t num_tuples,
     uint64_t ntuples_lastthr;
 
     pagesize = getpagesize();
-    npages = (num_tuples * sizeof(tuple_t)) / pagesize + 1;
+    npages = (ntuples * sizeof(tuple_t)) / pagesize + 1;
     npages_perthr = npages / nthreads;
     ntuples_perthr = npages_perthr * (pagesize / sizeof(tuple_t));
 
     if (npages_perthr == 0)
-        ntuples_perthr = num_tuples / nthreads;
+        ntuples_perthr = ntuples / nthreads;
 
-    ntuples_lastthr = num_tuples - ntuples_perthr * (nthreads - 1);
+    ntuples_lastthr = ntuples - ntuples_perthr * (nthreads - 1);
     pthread_attr_init(&attr);
 
     rv = pthread_barrier_init(&barrier, NULL, nthreads);
@@ -452,7 +453,7 @@ parallel_create_relation(relation_t *relation, uint64_t num_tuples,
     }
 
 
-    volatile void *locks = (volatile void *) calloc(num_tuples, sizeof(char));
+    volatile void *locks = (volatile void *) calloc(ntuples, sizeof(char));
 
     for (i = 0; i < nthreads; i++) {
         int cpu_idx = get_cpu_id(i);
@@ -465,11 +466,11 @@ parallel_create_relation(relation_t *relation, uint64_t num_tuples,
         }
         args[i].firstkey = (offset + 1) % maxid;
         args[i].maxid = maxid;
-        args[i].rel.tuples = relation->tuples + offset;
+        args[i].rel.tuples = reln->tuples + offset;
         args[i].rel.num_tuples = (i == nthreads - 1) ? ntuples_lastthr
                                                      : ntuples_perthr;
 
-        args[i].fullrel = relation;
+        args[i].fullrel = reln;
         args[i].locks = locks;
         args[i].barrier = &barrier;
 
@@ -501,6 +502,7 @@ parallel_create_relation(relation_t *relation, uint64_t num_tuples,
     write_relation(relation, tables[(rs++)%2]);
 #endif
 
+    duplicate(reln, ntuples, duplicate_num);
     return 0;
 }
 
@@ -768,21 +770,40 @@ zipf_ggl(double *seed) {
     return (t - 1.0e0) / (d2 - 1.0e0);
 }
 
+void duplicate(relation_t *reln, uint64_t ntuples, const int duplicate_num) {// duplicate generated tuples
+    auto num_tuple_perseg = reln->num_tuples;
+    if (duplicate_num > 1) {
+        for (auto i = 0; i < num_tuple_perseg; i++) {
+            for (auto j = 1; j < duplicate_num; j++) {
+                auto index = j * num_tuple_perseg + i;
+                reln->tuples[index] = reln->tuples[i];
+            }
+        }
+    }
+    reln->num_tuples = ntuples;
+
+//    for (auto i=0; i < reln->num_tuples; i++) {
+//        DEBUGMSG("%dth: %d\n", i, reln->tuples[i].key);
+//    }
+}
+
 int
-create_relation_zipf(relation_t *relation, int64_t num_tuples,
-                     const int64_t maxid, const double zipf_param) {
+create_relation_zipf(relation_t *reln, int64_t ntuples, const int64_t maxid, const double zipfparam,
+                     const int duplicate_num) {
     check_seed();
 
-    relation->num_tuples = num_tuples;
-    relation->tuples = (tuple_t *) MALLOC(relation->num_tuples * sizeof(tuple_t));
+    // only generate a segment tuples first
+    reln->num_tuples = ntuples/duplicate_num;
 
-    if (!relation->tuples) {
+    reln->tuples = (tuple_t *) MALLOC(reln->num_tuples * sizeof(tuple_t));
+
+    if (!reln->tuples) {
         perror("out of memory");
         return -1;
     }
 
-    gen_zipf(num_tuples, maxid, zipf_param, &relation->tuples);
-
+    gen_zipf(ntuples, maxid, zipfparam, &reln->tuples);
+    duplicate(reln, ntuples, duplicate_num);
     return 0;
 }
 

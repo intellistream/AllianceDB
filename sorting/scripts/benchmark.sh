@@ -28,9 +28,9 @@ function Run() {
 
 function KimRun() {
   #####native execution
-  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -g $gap  -W $FIXS -I $id =="
+  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -g $gap -P $DD -W $FIXS -I $id =="
   #echo 3 >/proc/sys/vm/drop_caches
-  ../sorting -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -W $FIXS -g $gap -I $id
+  ../sorting -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -W $FIXS -g $gap -P $DD -I $id
 }
 
 function SetStockParameters() { #matches: 229517.
@@ -122,7 +122,7 @@ output=test$timestamp.txt
 #general benchmark.
 compile=0
 for algo in m-way m-pass; do
-  for benchmark in "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" ; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "AR" "RAR" "AD" "KD" "WS"
+  for benchmark in "DD" ; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "AR" "RAR" "AD" "KD" "WS"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "AR") #test arrival rate and assume both inputs have same arrival rate.
@@ -204,6 +204,21 @@ for algo in m-way m-pass; do
       echo test varying window size 20 - 24
       for WINDOW_SIZE in 500 1000 1500 2000 2500; do
         gap=$(($STEP_SIZE / 1000 * $WINDOW_SIZE))
+        KimRun
+        let "id++"
+      done
+      ;;
+    "DD") #test data duplication
+      id=25
+      ## Figure 6
+      ResetParameters
+      FIXS=1
+      ts=0
+      STEP_SIZE=1600
+      STEP_SIZE_S=1600
+      echo test DD 25 - 28
+      for DD in 1 10 100 200 400; do
+        gap=100
         KimRun
         let "id++"
       done

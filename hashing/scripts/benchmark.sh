@@ -2,7 +2,7 @@
 #set -e
 
 profile_breakdown=0 # set to 1 if we want to measure time breakdown! and also dedefine eager in common_function.h
-compile=1            #enable compiling.
+compile=1           #enable compiling.
 function compile() {
   if [ $compile != 0 ]; then
     cd ..
@@ -21,9 +21,9 @@ function Run() {
 
 function KimRun() {
   #####native execution
-  echo "==KIM benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS -[ $progress_step -] $merge_step -G $group -g $gap=="
+  echo "==KIM benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS -[ $progress_step -] $merge_step -G $group -P $DD -g $gap=="
   echo 3 >/proc/sys/vm/drop_caches
-  ../hashing -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS -[ $progress_step -] $merge_step -G $group -g $gap
+  ../hashing -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS -[ $progress_step -] $merge_step -G $group -P $DD -g $gap
   if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit -1; fi
 }
 function PARTITION_ONLY() {
@@ -174,9 +174,9 @@ function RUNALL() {
   fi
 }
 
-function RUNALLKIM() {
+function RUNALLMic() {
   if [ $profile_breakdown == 1 ]; then
-    if [ $algo == SHJ_JM_NP ] || [ $algo == SHJ_JBCR_NP ]; then
+    if [ $algo == SHJ_JM_NP ] || [ $algo == SHJ_JBCR_NP ] || [ $algo == SHJ_HS_NP ]; then
       SHJKIMRUN
     else
       if [ $algo == PMJ_JM_NP ] || [ $algo == PMJ_JBCR_NP ]; then
@@ -289,10 +289,10 @@ compile
 timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
 
-compile=0            #disable compiling.
+compile=0 #disable compiling.
 # general benchmark.
-for algo in SHJ_HS_NP; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
-  for benchmark in "Stock" "Rovio" "YSB" "DEBS"; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" # "Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "AD" "KD" "WS"
+for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
+  for benchmark in "DD"; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" # "Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "AD" "KD" "WS"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "AR") #test arrival rate and assume both inputs have same arrival rate.
@@ -306,7 +306,7 @@ for algo in SHJ_HS_NP; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
         #WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
         echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
         gap=$(($STEP_SIZE / 500 * $WINDOW_SIZE))
-        RUNALLKIM
+        RUNALLMic
         let "id++"
       done
       ;;
@@ -324,7 +324,7 @@ for algo in SHJ_HS_NP; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
         #        WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
         echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
         gap=$(($STEP_SIZE / 500 * $WINDOW_SIZE))
-        RUNALLKIM
+        RUNALLMic
         let "id++"
       done
       ;;
@@ -339,7 +339,7 @@ for algo in SHJ_HS_NP; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
       echo test varying timestamp distribution 10 - 14
       for ZIPF_FACTOR in 0 0.4 0.8 1.2 1.6; do #
         gap=$(($STEP_SIZE / 500 * $WINDOW_SIZE))
-        RUNALLKIM
+        RUNALLMic
         let "id++"
       done
       ;;
@@ -360,7 +360,7 @@ for algo in SHJ_HS_NP; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
         if [ $skew == 1.6 ]; then
           gap=1
         fi
-        RUNALLKIM
+        RUNALLMic
         let "id++"
       done
       ;;
@@ -374,7 +374,22 @@ for algo in SHJ_HS_NP; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
       echo test varying window size 20 - 24
       for WINDOW_SIZE in 500 1000 1500 2000 2500; do
         gap=$(($STEP_SIZE / 500 * $WINDOW_SIZE))
-        RUNALLKIM
+        RUNALLMic
+        let "id++"
+      done
+      ;;
+    "DD") #test data duplication
+      id=25
+      ## Figure 6
+      ResetParameters
+      ts=0
+      FIXS=1
+      STEP_SIZE=1600
+      STEP_SIZE_S=1600
+      echo test DD 25 - 28
+      for DD in 1 10 100 200 400; do
+        gap=100
+        RUNALLMic
         let "id++"
       done
       ;;
@@ -394,8 +409,8 @@ for algo in SHJ_HS_NP; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
       id=40
       ResetParameters
       SetYSBParameters
-      #      RUNALL
-      benchmarkRun # use this when profiling.
+      RUNALL
+      #      benchmarkRun # use this when profiling.
       ;;
     "DEBS")
       id=41
@@ -443,19 +458,9 @@ for algo in SHJ_HS_NP; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
         let "id++"
       done
       ;;
-    "ScaleMC")
-      id=58
-      ResetParameters
-      echo test scalability 58 - 61
-      for Threads in 1 2 4 8; do
-        RUNALLKIM
-        let "id++"
-      done
-      ;;
     esac
   done
 done
-
 
 ## back up.
 #  "PMJ_MERGE_STEP_STUDY")
@@ -473,9 +478,9 @@ done
 #    python3 progressive_merge.py
 #    ;;
 
-compile=1            #enable compiling.
+compile=1 #enable compiling.
 #benchmark experiment only apply for hashing directory.
-for benchmark in "" ; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY"
+for benchmark in ""; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY"
   case "$benchmark" in
   "SIMD_STUDY")
     id=104
@@ -485,7 +490,7 @@ for benchmark in "" ; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SI
     for algo in "PMJ_JM_NP" "PMJ_JBCR_NP"; do
       for scalar in 0 1; do
         sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scalar/g" ../helper/sort_common.h
-        RUNALLKIM
+        RUNALLMic
         let "id++"
       done
     done
@@ -501,7 +506,7 @@ for benchmark in "" ; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SI
         echo BUCKET_SIZE_STUDY $id
         sed -i -e "s/#define BUCKET_SIZE [[:alnum:]]*/#define BUCKET_SIZE $size/g" ../joins/npj_params.h
         compile
-        KimRun
+        RUNALLMic
         let "id++"
       done
     done
@@ -516,7 +521,7 @@ for benchmark in "" ; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SI
       echo RADIX BITS STUDY $id
       sed -i -e "s/NUM_RADIX_BITS [[:alnum:]]*/NUM_RADIX_BITS $b/g" ../joins/prj_params.h
       compile
-      KimRun
+      RUNALLMic
       let "id++"
     done
     python3 breakdown_radix.py
@@ -530,7 +535,7 @@ for benchmark in "" ; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SI
     ts=0 # batch data.
     for progress_step in 10 20 30 40 50; do #%
       echo PMJ_SORT_STEP_STUDY $id
-      FULLKIMRUN
+      RUNALLMic
       let "id++"
     done
     python3 breakdown_sort.py
@@ -544,7 +549,7 @@ for benchmark in "" ; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SI
     ts=0 # batch data.
     echo GROUP_SIZE_STUDY PMJ 124 - 127
     for group in 1 2 4 8; do
-      FULLKIMRUN
+      RUNALLMic
       let "id++"
     done
 
@@ -552,11 +557,28 @@ for benchmark in "" ; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SI
     ResetParameters
     echo GROUP_SIZE_STUDY SHJ 128 - 131
     for group in 1 2 4 8; do
-      SHJKIMRUN
+      RUNALLMic
       let "id++"
     done
     python3 breakdown_group_pmj.py
     python3 breakdown_group_shj.py
+    ;;
+  "HS_STUDY")
+    id=132
+    ResetParameters
+    algo="SHJ_JM_NP"
+    FIXS=1
+    STEP_SIZE=12800
+    STEP_SIZE_S=12800
+    echo HS_STUDY 132
+    WINDOW_SIZE=1000
+    gap=$(($STEP_SIZE / 500 * $WINDOW_SIZE))
+    RUNALLMic
+    let "id++"
+    algo="SHJ_HS_NP"
+    RUNALLMic
+    let "id++"
+    python3 breakdown_hsstudy.py
     ;;
   esac
 done

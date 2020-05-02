@@ -218,7 +218,7 @@ if __name__ == "__main__":
     legend_labels = ['partition', 'sort', 'merge', 'probe']  # , 'others'
 
     DrawFigure(x_values, y_values, legend_labels,
-               'group size', 'cycles per output tuple',
+               'group size', 'cycles per input',
                'breakdown_group_pmj_figure', True)
 
     # DrawLegend(legend_labels, 'breakdown_radix_legend')

@@ -131,18 +131,20 @@ void
 debuild_hashtable_single(const hashtable_t *ht, const tuple_t *tuple, const uint32_t hashmask,
                          const uint32_t skipbits) {
     uint32_t index_ht;
+    bucket_t *b;
     intkey_t idx = HASH(tuple->key, hashmask, skipbits);
 
+#ifdef DEBUG
     string str;
     str += "before\n";
-
-    bucket_t *b = ht->buckets + idx;
+    b = ht->buckets + idx;
     do {
         for (index_ht = 0; index_ht < b->count; index_ht++) {
             str += to_string(b->tuples[index_ht].key) + "\n";
         }
         b = b->next;/* follow overflow pointer */
     } while (b);
+#endif
 
     b = ht->buckets + idx;
     do {
@@ -154,6 +156,7 @@ debuild_hashtable_single(const hashtable_t *ht, const tuple_t *tuple, const uint
         b = b->next;/* follow overflow pointer */
     } while (b);
 
+#ifdef DEBUG
     b = ht->buckets + idx;
     str += "after\n";
     do {
@@ -163,6 +166,7 @@ debuild_hashtable_single(const hashtable_t *ht, const tuple_t *tuple, const uint
         b = b->next;/* follow overflow pointer */
     } while (b);
     printf("%s", str.c_str());
+#endif
 }
 
 void build_hashtable_single(const hashtable_t *ht, const tuple_t *tuple,
@@ -252,7 +256,7 @@ int64_t probe_hashtable_single_measure(const hashtable_t *ht, const tuple_t *tup
                 joinres->payloadID = tuple->payloadID;
 #endif
                 (*matches)++;
-#ifdef DEBUG
+#ifndef DEBUG
                 if (ISTupleR) {
 
                     DEBUGMSG("tid:%d, Join R:%d  with S:%d\n", this_thread::get_id(), tuple->key,
