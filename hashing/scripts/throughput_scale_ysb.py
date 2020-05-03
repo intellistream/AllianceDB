@@ -8,7 +8,7 @@ mpl.use('Agg')
 import matplotlib.pyplot as plt
 import pylab
 from matplotlib.font_manager import FontProperties
-from matplotlib.ticker import LinearLocator, MaxNLocator
+from matplotlib.ticker import MaxNLocator
 
 OPT_FONT_NAME = 'Helvetica'
 TICK_FONT_SIZE = 20
@@ -57,7 +57,7 @@ def ReadFile():
     col7 = []
     col8 = []
 
-    for id in it.chain(range(66,69)):
+    for id in it.chain(range(66, 70)):
         file = '/data1/xtra/results/timestamps/PRJ_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -66,7 +66,7 @@ def ReadFile():
         col1.append(value)
     y.append(col1)
 
-    for id in it.chain(range(66,69)):
+    for id in it.chain(range(66, 70)):
         file = '/data1/xtra/results/timestamps/NPJ_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -75,7 +75,7 @@ def ReadFile():
         col2.append(value)
     y.append(col2)
 
-    for id in it.chain(range(66,69)):
+    for id in it.chain(range(66, 70)):
         file = '/data1/xtra/results/timestamps/MPASS_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -84,7 +84,7 @@ def ReadFile():
         col3.append(value)
     y.append(col3)
 
-    for id in it.chain(range(66,69)):
+    for id in it.chain(range(66, 70)):
         file = '/data1/xtra/results/timestamps/MWAY_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -93,7 +93,7 @@ def ReadFile():
         col4.append(value)
     y.append(col4)
 
-    for id in it.chain(range(66,69)):
+    for id in it.chain(range(66, 70)):
         file = '/data1/xtra/results/timestamps/SHJ_JM_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -102,7 +102,7 @@ def ReadFile():
         col5.append(value)
     y.append(col5)
 
-    for id in it.chain(range(66,69)):
+    for id in it.chain(range(66, 70)):
         file = '/data1/xtra/results/timestamps/SHJ_JBCR_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -231,4 +231,4 @@ if __name__ == "__main__":
                0, 0,  # not in use.
                'throughput_scale_ysb',
                False)
-    #DrawLegend(legend_labels, 'throughput_scale_legend')
+    # DrawLegend(legend_labels, 'throughput_scale_legend')
