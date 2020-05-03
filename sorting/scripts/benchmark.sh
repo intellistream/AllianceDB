@@ -122,7 +122,7 @@ output=test$timestamp.txt
 #general benchmark.
 compile=0
 for algo in m-way m-pass; do
-  for benchmark in "DD" ; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "AR" "RAR" "AD" "KD" "WS"
+  for benchmark in "LargeScaleStock" "LargeScaleRovio" "LargeScaleYSB" "LargeScaleDEBS"; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "AR" "RAR" "AD" "KD" "WS"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "AR") #test arrival rate and assume both inputs have same arrival rate.
@@ -130,7 +130,7 @@ for algo in m-way m-pass; do
       ## Figure 1
       ResetParameters
       FIXS=0 #varying both.
-      ts=1 # stream case
+      ts=1   # stream case
       # step size should be bigger than nthreads
       for STEP_SIZE in 1600 3200 6400 12800 25600; do #128000
         #WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
@@ -214,11 +214,11 @@ for algo in m-way m-pass; do
       ResetParameters
       FIXS=1
       ts=0
-      STEP_SIZE=1600
-      STEP_SIZE_S=1600
+      STEP_SIZE=160
+      STEP_SIZE_S=160
       echo test DD 25 - 28
-      for DD in 1 10 100 200 400; do
-        gap=100
+      for DD in 1 10 50 100; do
+        gap=$(($STEP_SIZE * $WINDOW_SIZE * $DD / 500))
         KimRun
         let "id++"
       done
@@ -284,6 +284,46 @@ for algo in m-way m-pass; do
       echo test scalability 54 - 57
       for Threads in 1 2 4 8; do
         benchmarkRun
+        let "id++"
+      done
+      ;;
+    "LargeScaleStock")
+      id=58
+      ResetParameters
+      SetStockParameters
+      echo test scalability of Stock 58 - 61
+      for Threads in 10 20 30 40; do
+        RUNALL
+        let "id++"
+      done
+      ;;
+    "LargeScaleRovio")
+      id=62
+      ResetParameters
+      SetRovioParameters
+      echo test scalability 62 - 65
+      for Threads in 10 20 30 40; do
+        RUNALL
+        let "id++"
+      done
+      ;;
+    "LargeScaleYSB")
+      id=66
+      ResetParameters
+      SetYSBParameters
+      echo test scalability 66 - 69
+      for Threads in 10 20 30 40; do
+        RUNALL
+        let "id++"
+      done
+      ;;
+    "LargeScaleDEBS")
+      id=70
+      ResetParameters
+      SetDEBSParameters
+      echo test scalability 70 - 73
+      for Threads in 10 20 30 40; do
+        RUNALL
         let "id++"
       done
       ;;

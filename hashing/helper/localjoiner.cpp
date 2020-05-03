@@ -115,9 +115,10 @@ SHJJoiner::SHJJoiner(int sizeR, int sizeS) {
 
     int nbucketsR = sizeR / BUCKET_SIZE;
     allocate_hashtable(&htR, nbucketsR);
-
+    assert(nbucketsR > 0);
     int nbucketsS = sizeS / BUCKET_SIZE;
     allocate_hashtable(&htS, nbucketsS);
+    assert(nbucketsS > 0);
 }
 
 SHJJoiner::~SHJJoiner() {

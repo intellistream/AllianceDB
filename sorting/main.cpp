@@ -622,7 +622,8 @@ main(int argc, char *argv[]) {
     if (cmd_params.old_param) {
         relR.num_tuples = cmd_params.r_size;
     } else {
-        relR.num_tuples = (cmd_params.window_size / cmd_params.interval) * cmd_params.step_sizeR;
+        relR.num_tuples =
+                (cmd_params.window_size / cmd_params.interval) * cmd_params.step_sizeR * cmd_params.duplicate_num;
     }
     // check which fetcher is used, to decide whether need to partition ts.
     int partitions = cmd_params.nthreads;
@@ -632,7 +633,7 @@ main(int argc, char *argv[]) {
 
     createRelation(&relR, relR.payload, cmd_params.rkey, cmd_params.rts, cmd_params, cmd_params.loadfileR,
                    cmd_params.r_seed, cmd_params.step_sizeR, partitions);
-    DEBUGMSG(1, "relR: %s", print_relation(relR.tuples, min((uint64_t) 1000, cmd_params.r_size)).c_str());
+    DEBUGMSG(1, "relR: %s", print_relation(relR.tuples, min((uint64_t) 1000, relR.num_tuples)).c_str());
 
 
     /* create relation S */
@@ -640,14 +641,15 @@ main(int argc, char *argv[]) {
         relS.num_tuples = cmd_params.s_size;
     } else {
         if (cmd_params.fixS)
-            relS.num_tuples = (cmd_params.window_size / cmd_params.interval) * cmd_params.step_sizeS;
+            relS.num_tuples =
+                    (cmd_params.window_size / cmd_params.interval) * cmd_params.step_sizeS * cmd_params.duplicate_num;
         else
             relS.num_tuples = relR.num_tuples;
     }
 
     createRelation(&relS, relS.payload, cmd_params.skey, cmd_params.sts, cmd_params, cmd_params.loadfileS,
                    cmd_params.s_seed, cmd_params.step_sizeS, cmd_params.nthreads);
-    DEBUGMSG(1, "relS: %s", print_relation(relS.tuples, min((uint64_t) 1000, cmd_params.s_size)).c_str());
+    DEBUGMSG(1, "relS: %s", print_relation(relS.tuples, min((uint64_t) 1000, relS.num_tuples)).c_str());
 
     /* setup join configuration parameters */
     joinconfig_t joincfg;

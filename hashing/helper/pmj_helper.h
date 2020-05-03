@@ -113,7 +113,7 @@ struct sweepArea {
 //                    if (tuple->payloadID < 0) {
 //                        printf("???");
 //                    }
-#ifndef DEBUG
+#ifdef DEBUG
                     if (ISTupleR) {
                         DEBUGMSG("Join R:%d  with S:%d\n",  tuple->key, it.operator*()->key)
                     } else {

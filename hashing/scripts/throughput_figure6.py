@@ -5,7 +5,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import pylab
 from matplotlib.font_manager import FontProperties
-from matplotlib.ticker import MaxNLocator, LinearLocator
+from matplotlib.ticker import MaxNLocator, LinearLocator, LogLocator
 
 OPT_FONT_NAME = 'Helvetica'
 TICK_FONT_SIZE = 20
@@ -112,16 +112,17 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
                    handletextpad=0.1,
                    labelspacing=0.1)
     plt.xscale('log')
-    # plt.yscale('log')
+    plt.yscale('log')
     plt.xticks(x_values)
     # you may control the limits on your own.
     # plt.xlim(x_min, x_max)
-    plt.ylim(0, 13000)
+    # plt.ylim(0, 13000)
     # plt.ylim(y_min, y_max)
-    plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
+    # plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
     plt.grid(axis='y', color='gray')
+    figure.yaxis.set_major_locator(LogLocator(numticks=3))
     figure.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
-    figure.yaxis.set_major_locator(LinearLocator(3))
+    # figure.yaxis.set_major_locator(LinearLocator(3))
     # figure.xaxis.set_major_locator(MaxNLocator(integer=True))
 
     # figure.get_xaxis().set_tick_params(direction='in', pad=10)
@@ -214,7 +215,7 @@ def ReadFile():
 
 
 if __name__ == "__main__":
-    x_values = [1, 10, 100, 1000]
+    x_values = [1, 10, 50, 100]
 
     y_values = ReadFile()
 

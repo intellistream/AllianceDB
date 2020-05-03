@@ -51,14 +51,14 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int
     relPl->num_tuples = rel->num_tuples;
 
     fprintf(stdout,
-            "[INFO ] %s relation with size = %.3lf MiB, #tuples = %llu : ",
+            "[INFO ] %s relation with size = %.3lf MiB, #tuples = %lu : ",
             (loadfile != NULL) ? ("Loading") : ("Creating"),
             (double) sizeof(tuple_t) * rel_size / 1024.0 / 1024.0, rel_size);
     fflush(stdout);
 
 //    size_t relRsz = rel->num_tuples * sizeof(tuple_t)
 //                    + RELATION_PADDING(cmd_params.nthreads, cmd_params.part_fanout);
-    rel->tuples = (tuple_t *) MALLOC(rel->num_tuples * sizeof(tuple_t));
+    rel->tuples = (tuple_t *) MALLOC(rel_size * sizeof(tuple_t));
 
 //    size_t relPlsz = relPl->num_tuples * sizeof(relation_payload_t)
 //                     + RELATION_PADDING(cmd_params.nthreads, cmd_params.part_fanout);
@@ -151,10 +151,12 @@ benchmark(const param_t cmd_params) {
     result_t *results;
     /* create relation R */
 
+
     if (cmd_params.old_param) {
         relR.num_tuples = cmd_params.r_size;
     } else {
-        relR.num_tuples = (cmd_params.window_size / cmd_params.interval) * cmd_params.step_sizeR;
+        relR.num_tuples =
+                (cmd_params.window_size / cmd_params.interval) * cmd_params.step_sizeR * cmd_params.duplicate_num;
     }
     // check which fetcher is used, to decide whether need to partition ts.
     int partitions = cmd_params.nthreads;
@@ -172,7 +174,8 @@ benchmark(const param_t cmd_params) {
         relS.num_tuples = cmd_params.s_size;
     } else {
         if (cmd_params.fixS)
-            relS.num_tuples = (cmd_params.window_size / cmd_params.interval) * cmd_params.step_sizeS;
+            relS.num_tuples =
+                    (cmd_params.window_size / cmd_params.interval) * cmd_params.step_sizeS * cmd_params.duplicate_num;
         else
             relS.num_tuples = relR.num_tuples;
     }

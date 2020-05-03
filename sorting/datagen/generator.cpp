@@ -162,7 +162,7 @@ add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_size,
     }
 #ifdef DEBUG
     for (auto i = 0; i < relation->num_tuples; i++) {
-        DEBUGMSG(0,"ts: %ld\n", relationPayload->ts[i]);
+        DEBUGMSG(0, "ts: %ld\n", relationPayload->ts[i]);
     }
 #endif
 //    assert(interval == 0 || ts == window_size);
@@ -205,7 +205,7 @@ void add_zipf_ts(relation_t *relation, relation_payload_t *relationPayload, int 
         relationPayload->ts[cur_index] = (uint64_t) timestamps[i] * 2.1 * 1E6;//ms to cycle
         tid_offsets[partition]++;
 
-        DEBUGMSG(1, "%d, %ld\n", relation->tuples[i].key, relationPayload->ts[i]);
+        DEBUGMSG(0, "%d, %ld\n", relation->tuples[i].key, relationPayload->ts[i]);
     }
     for (auto i = 0; i < relation->num_tuples; i++) {
         if (relationPayload->ts[i] < 0.25 * window_size * 2.1 * 1E6) {
@@ -305,24 +305,24 @@ random_unique_gen_thread(void *args) {
     int rv;
     BARRIER_ARRIVE(arg->barrier, rv);
 
-    /* parallel synchronized knuth-shuffle */
-    volatile char *locks = (volatile char *) (arg->locks);
-    relation_t *fullrel = arg->fullrel;
-
-    uint64_t rel_offset_in_full = rel->tuples - fullrel->tuples;
-    uint64_t k = rel_offset_in_full + rel->num_tuples - 1;
-    for (i = rel->num_tuples - 1; i > 0; i--, k--) {
-        int64_t j = RAND_RANGE48(k, state);
-        lock(locks + k);  /* lock this rel-idx=i, fullrel-idx=k */
-        lock(locks + j);  /* lock full rel-idx=j */
-
-        intkey_t tmp = fullrel->tuples[k].key;
-        fullrel->tuples[k].key = fullrel->tuples[j].key;
-        fullrel->tuples[j].key = tmp;
-
-        unlock(locks + j);
-        unlock(locks + k);
-    }
+//    /* parallel synchronized knuth-shuffle */
+//    volatile char *locks = (volatile char *) (arg->locks);
+//    relation_t *fullrel = arg->fullrel;
+//
+//    uint64_t rel_offset_in_full = rel->tuples - fullrel->tuples;
+//    uint64_t k = rel_offset_in_full + rel->num_tuples - 1;
+//    for (i = rel->num_tuples - 1; i > 0; i--, k--) {
+//        int64_t j = RAND_RANGE48(k, state);
+//        lock(locks + k);  /* lock this rel-idx=i, fullrel-idx=k */
+//        lock(locks + j);  /* lock full rel-idx=j */
+//
+//        intkey_t tmp = fullrel->tuples[k].key;
+//        fullrel->tuples[k].key = fullrel->tuples[j].key;
+//        fullrel->tuples[j].key = tmp;
+//
+//        unlock(locks + j);
+//        unlock(locks + k);
+//    }
 
     return 0;
 }
@@ -415,7 +415,7 @@ parallel_create_relation(relation_t *reln, uint64_t ntuples, uint32_t nthreads, 
     check_seed();
 
     // only generate a segment tuples first
-    reln->num_tuples = ntuples/duplicate_num;
+    reln->num_tuples = ntuples / duplicate_num;
 
 
     if (!reln->tuples) {
@@ -436,14 +436,14 @@ parallel_create_relation(relation_t *reln, uint64_t ntuples, uint32_t nthreads, 
     uint64_t ntuples_lastthr;
 
     pagesize = getpagesize();
-    npages = (ntuples * sizeof(tuple_t)) / pagesize + 1;
+    npages = (reln->num_tuples * sizeof(tuple_t)) / pagesize + 1;
     npages_perthr = npages / nthreads;
     ntuples_perthr = npages_perthr * (pagesize / sizeof(tuple_t));
 
     if (npages_perthr == 0)
-        ntuples_perthr = ntuples / nthreads;
+        ntuples_perthr = reln->num_tuples / nthreads;
 
-    ntuples_lastthr = ntuples - ntuples_perthr * (nthreads - 1);
+    ntuples_lastthr = reln->num_tuples - ntuples_perthr * (nthreads - 1);
     pthread_attr_init(&attr);
 
     rv = pthread_barrier_init(&barrier, NULL, nthreads);
@@ -453,7 +453,7 @@ parallel_create_relation(relation_t *reln, uint64_t ntuples, uint32_t nthreads, 
     }
 
 
-    volatile void *locks = (volatile void *) calloc(ntuples, sizeof(char));
+    volatile void *locks = (volatile void *) calloc(reln->num_tuples, sizeof(char));
 
     for (i = 0; i < nthreads; i++) {
         int cpu_idx = get_cpu_id(i);
@@ -773,10 +773,15 @@ zipf_ggl(double *seed) {
 void duplicate(relation_t *reln, uint64_t ntuples, const int duplicate_num) {// duplicate generated tuples
     auto num_tuple_perseg = reln->num_tuples;
     if (duplicate_num > 1) {
-        for (auto i = 0; i < num_tuple_perseg; i++) {
-            for (auto j = 1; j < duplicate_num; j++) {
-                auto index = j * num_tuple_perseg + i;
-                reln->tuples[index] = reln->tuples[i];
+//        for (auto i = 0; i < num_tuple_perseg; i++) {
+//            for (auto j = 1; j < duplicate_num; j++) {
+//                auto index = j * num_tuple_perseg + i;
+//                reln->tuples[index] = reln->tuples[i];
+//            }
+//        }
+        for (auto i = 1; i < duplicate_num; i++) {
+            for (auto j = 0; j < num_tuple_perseg; j++) {
+                reln->tuples[num_tuple_perseg * i + j] = reln->tuples[j];
             }
         }
     }
@@ -785,6 +790,8 @@ void duplicate(relation_t *reln, uint64_t ntuples, const int duplicate_num) {// 
 //    for (auto i=0; i < reln->num_tuples; i++) {
 //        DEBUGMSG("%dth: %d\n", i, reln->tuples[i].key);
 //    }
+    /* randomly shuffle elements */
+    knuth_shuffle(reln);
 }
 
 int
@@ -793,7 +800,7 @@ create_relation_zipf(relation_t *reln, int64_t ntuples, const int64_t maxid, con
     check_seed();
 
     // only generate a segment tuples first
-    reln->num_tuples = ntuples/duplicate_num;
+    reln->num_tuples = ntuples / duplicate_num;
 
     reln->tuples = (tuple_t *) MALLOC(reln->num_tuples * sizeof(tuple_t));
 

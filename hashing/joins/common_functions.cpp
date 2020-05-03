@@ -256,7 +256,7 @@ int64_t probe_hashtable_single_measure(const hashtable_t *ht, const tuple_t *tup
                 joinres->payloadID = tuple->payloadID;
 #endif
                 (*matches)++;
-#ifndef DEBUG
+#ifdef DEBUG
                 if (ISTupleR) {
 
                     DEBUGMSG("tid:%d, Join R:%d  with S:%d\n", this_thread::get_id(), tuple->key,
