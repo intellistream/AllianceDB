@@ -57,7 +57,7 @@ def ReadFile():
     col7 = []
     col8 = []
 
-    for id in it.chain(range(46,50)):
+    for id in it.chain(range(62, 65)):
         file = '/data1/xtra/results/timestamps/PRJ_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -66,7 +66,7 @@ def ReadFile():
         col1.append(value)
     y.append(col1)
 
-    for id in it.chain(range(46,50)):
+    for id in it.chain(range(62, 65)):
         file = '/data1/xtra/results/timestamps/NPJ_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -75,7 +75,7 @@ def ReadFile():
         col2.append(value)
     y.append(col2)
 
-    for id in it.chain(range(46,50)):
+    for id in it.chain(range(62, 65)):
         file = '/data1/xtra/results/timestamps/MPASS_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -84,7 +84,7 @@ def ReadFile():
         col3.append(value)
     y.append(col3)
 
-    for id in it.chain(range(46,50)):
+    for id in it.chain(range(62, 65)):
         file = '/data1/xtra/results/timestamps/MWAY_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -93,7 +93,7 @@ def ReadFile():
         col4.append(value)
     y.append(col4)
 
-    for id in it.chain(range(46,50)):
+    for id in it.chain(range(62, 65)):
         file = '/data1/xtra/results/timestamps/SHJ_JM_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -102,7 +102,7 @@ def ReadFile():
         col5.append(value)
     y.append(col5)
 
-    for id in it.chain(range(46,50)):
+    for id in it.chain(range(62, 65)):
         file = '/data1/xtra/results/timestamps/SHJ_JBCR_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -111,7 +111,7 @@ def ReadFile():
         col6.append(value)
     y.append(col6)
 
-    # for id in it.chain(range(46,50)):
+    # for id in it.chain(range(62, 65)):
     #     file = '/data1/xtra/results/timestamps/PMJ_JM_NP_{}.txt'.format(id)
     #     f = open(file, "r")
     #     read = f.readlines()
@@ -120,7 +120,7 @@ def ReadFile():
     #     col7.append(value)
     # y.append(col7)
     #
-    # for id in it.chain(range(46,50)):
+    # for id in it.chain(range(62, 65)):
     #     file = '/data1/xtra/results/timestamps/PMJ_JBCR_NP_{}.txt'.format(id)
     #     f = open(file, "r")
     #     read = f.readlines()
