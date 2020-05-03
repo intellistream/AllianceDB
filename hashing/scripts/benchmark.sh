@@ -463,7 +463,7 @@ for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #NPO PRO SHJ
       ResetParameters
       SetStockParameters
       echo test scalability of Stock 58 - 61
-      for Threads in 10 20 30 40; do
+      for Threads in 4 8 16 32; do
         RUNALL
         let "id++"
       done
@@ -473,7 +473,7 @@ for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #NPO PRO SHJ
       ResetParameters
       SetRovioParameters
       echo test scalability 62 - 65
-      for Threads in 10 20 30 40; do
+      for Threads in 4 8 16 32; do
         RUNALL
         let "id++"
       done
@@ -483,7 +483,7 @@ for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #NPO PRO SHJ
       ResetParameters
       SetYSBParameters
       echo test scalability 66 - 69
-      for Threads in 10 20 30 40; do
+      for Threads in 4 8 16 32; do
         RUNALL
         let "id++"
       done
@@ -493,7 +493,7 @@ for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #NPO PRO SHJ
       ResetParameters
       SetDEBSParameters
       echo test scalability 70 - 73
-      for Threads in 10 20 30 40; do
+      for Threads in 4 8 16 32; do
         RUNALL
         let "id++"
       done

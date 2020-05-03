@@ -292,7 +292,7 @@ for algo in m-way m-pass; do
       ResetParameters
       SetStockParameters
       echo test scalability of Stock 58 - 61
-      for Threads in 10 20 30 40; do
+      for Threads in 4 8 16 32; do
         benchmarkRun
         let "id++"
       done
@@ -302,7 +302,7 @@ for algo in m-way m-pass; do
       ResetParameters
       SetRovioParameters
       echo test scalability 62 - 65
-      for Threads in 10 20 30 40; do
+      for Threads in 4 8 16 32; do
         benchmarkRun
         let "id++"
       done
@@ -312,7 +312,7 @@ for algo in m-way m-pass; do
       ResetParameters
       SetYSBParameters
       echo test scalability 66 - 69
-      for Threads in 10 20 30 40; do
+      for Threads in 4 8 16 32; do
         benchmarkRun
         let "id++"
       done
@@ -322,7 +322,7 @@ for algo in m-way m-pass; do
       ResetParameters
       SetDEBSParameters
       echo test scalability 70 - 73
-      for Threads in 10 20 30 40; do
+      for Threads in 4 8 16 32; do
         benchmarkRun
         let "id++"
       done
