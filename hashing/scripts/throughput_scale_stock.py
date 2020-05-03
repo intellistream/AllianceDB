@@ -218,7 +218,7 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
     dpi = fig.get_dpi()
 
     plt.savefig(FIGURE_FOLDER + "/" + filename + ".eps", bbox_inches='tight', format='eps')
-    ConvertEpsToPdf(FIGURE_FOLDER + "/" + filename)
+    ConvertEpsToPdf(FIGURE_FOLDER + "git /" + filename)
 
 
 if __name__ == "__main__":

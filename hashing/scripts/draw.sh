@@ -20,6 +20,10 @@
 #python3 throughput_scale_lazy.py
 #python3 throughput_scale_eager.py
 
+python3 throughput_scale_stock.py
+python3 throughput_scale_rovio.py
+python3 throughput_scale_ysb.py
+python3 throughput_scale_debs.py
 
 ### HS scheme
 #python3 breakdown_hsstudy_jm.py
@@ -82,11 +86,11 @@
 #done
 
 ## Impact of data duplication
-python3 throughput_figure6.py
-python3 latency_figure6.py
-for id in 25 28; do
-  python3 progressive_figure.py -i $id
-done
+#python3 throughput_figure6.py
+#python3 latency_figure6.py
+#for id in 25 28; do
+#  python3 progressive_figure.py -i $id
+#done
 
 ### SIMD_STUDY
 #python3 breakdown_simd.py
@@ -94,7 +98,6 @@ done
 
 ### Bucket size
 #python3 breakdown_bucket.py
-
 
 ### Radix bit study
 #python3 breakdown_radix.py
