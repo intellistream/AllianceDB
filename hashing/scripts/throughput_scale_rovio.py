@@ -184,7 +184,8 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
     for i in range(len(y_values)):
         lines[i], = figure.plot(x_values, y_values[i], color=LINE_COLORS[i], \
                                 linewidth=LINE_WIDTH, marker=MARKERS[i], \
-                                markersize=MARKER_SIZE, label=FIGURE_LABEL[i],markeredgewidth=2, markeredgecolor='k')
+                                markersize=MARKER_SIZE, label=FIGURE_LABEL[i]
+                                ,markeredgewidth=2, markeredgecolor='k')
 
     # sometimes you may not want to draw legends.
     if allow_legend == True:
