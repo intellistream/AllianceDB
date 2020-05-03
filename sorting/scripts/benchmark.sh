@@ -293,7 +293,7 @@ for algo in m-way m-pass; do
       SetStockParameters
       echo test scalability of Stock 58 - 61
       for Threads in 10 20 30 40; do
-        KimRun
+        benchmarkRun
         let "id++"
       done
       ;;
@@ -303,7 +303,7 @@ for algo in m-way m-pass; do
       SetRovioParameters
       echo test scalability 62 - 65
       for Threads in 10 20 30 40; do
-        KimRun
+        benchmarkRun
         let "id++"
       done
       ;;
@@ -313,7 +313,7 @@ for algo in m-way m-pass; do
       SetYSBParameters
       echo test scalability 66 - 69
       for Threads in 10 20 30 40; do
-        KimRun
+        benchmarkRun
         let "id++"
       done
       ;;
@@ -323,7 +323,7 @@ for algo in m-way m-pass; do
       SetDEBSParameters
       echo test scalability 70 - 73
       for Threads in 10 20 30 40; do
-        KimRun
+        benchmarkRun
         let "id++"
       done
       ;;
