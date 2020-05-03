@@ -224,7 +224,7 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
 if __name__ == "__main__":
     legend_labels = ['PRJ', 'NPJ', 'MPASS', 'MWAY', 'JM_SHJ', 'JB_SHJ']
     y = ReadFile()
-    x = [1, 2, 4, 8]
+    x = [4, 8, 16, 32]
 
     DrawFigure(x, y, legend_labels,
                'Number of threads', 'Tpt. (#matches/ms)',
