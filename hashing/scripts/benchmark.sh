@@ -1,7 +1,7 @@
 #!/bin/bash
 #set -e
 
-profile_breakdown=0 # set to 1 if we want to measure time breakdown! and also dedefine eager in common_function.h
+profile_breakdown=1 # set to 1 if we want to measure time breakdown! and also dedefine eager in common_function.h
 compile=1           #enable compiling.
 function compile() {
   if [ $compile != 0 ]; then
