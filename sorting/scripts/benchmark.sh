@@ -42,9 +42,9 @@ function SetStockParameters() { #matches: 229517.
   #  SPATH=/data1/xtra/datasets/stock/sb_3s_1t.txt
   WINDOW_SIZE=5000
   RSIZE=116941
-  SSIZE=151500
-  RPATH=/data1/xtra/datasets/stock/cj_60s_1t.txt
-  SPATH=/data1/xtra/datasets/stock/sb_60s_1t.txt
+  SSIZE=151505
+  RPATH=/data1/xtra/datasets/stock/cj_5s_1t.txt
+  SPATH=/data1/xtra/datasets/stock/sb_5s_1t.txt
   RKEY=0
   SKEY=0
   RTS=1
