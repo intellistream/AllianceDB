@@ -174,7 +174,7 @@ add_ts(relation_t* relation, relation_payload_t* relationPayload, int step_size,
     }
 
     for (auto i = 0; i < relation->num_tuples; i++) {
-        MSG("ts: %ld\n", relationPayload->ts[i]);
+        DEBUGMSG("ts: %ld\n", relationPayload->ts[i]);
     }
 
     //    assert(interval == 0 || ts == window_size);
