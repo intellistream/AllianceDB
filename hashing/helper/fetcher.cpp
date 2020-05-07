@@ -142,10 +142,10 @@ nextTupleS(t_state* state, const uint64_t* fetchStartTime, relation_t* relS) {
             return &(state->current_fetch);
         }
 #else//return without checking for timestamp.
-        state->fetch.tuple = readS;
-        state->fetch.ISTuple_R = false;
+        state->current_fetch.tuple = readS;
+        state->current_fetch.ISTuple_R = false;
         state->start_index_S++;
-        return &(state->fetch);
+        return &(state->current_fetch);
 #endif
         //        if (retry)
         //            MSG("sid[%d], arrivalTsS:%ld, readTS:%ld\n", state->start_index_S, arrivalTsS, readTS);
@@ -179,10 +179,10 @@ nextTupleR(t_state* state, const uint64_t* fetchStartTime, relation_t* relR) {
             return &(state->current_fetch);
         }
 #else//return without checking for timestamp.
-        state->fetch.tuple = readR;
-        state->fetch.ISTuple_R = true;
+        state->current_fetch.tuple = readR;
+        state->current_fetch.ISTuple_R = true;
         state->start_index_R++;
-        return &(state->fetch);
+        return &(state->current_fetch);
 #endif
         //        if (retry)
         //            MSG("rid[%d] (%%d), arrivalTsR:%ld, readTS:%ld\n", state->start_index_R, arrivalTsR, readTS);
