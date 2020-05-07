@@ -59,21 +59,18 @@ dump_timing(vector<double> vector, std::vector<double> vector_latency,
     //dump timestmap.
     string path_ts = "/data1/xtra/results/timestamps/" + name + ".txt";
     ofstream outputFile_ts(path_ts, std::ios::trunc);
-    auto begin = vector.begin().operator*();
-    vector.erase(vector.begin());
     for (auto& element : vector) {
-        //        MSG("timestamp:%f\n", (element + lastTS - begin));
-        outputFile_ts << (std::to_string(element + lastTS - begin) + "\n");
+        outputFile_ts << (std::to_string(element + lastTS) + "\n");
     }
     outputFile_ts.close();
     fprintf(stdout, "check50:%d\n", check50);
     fprintf(stdout, "Time to obtain 1%%, 5%%, 10%%, 25%%, 50%% of results (MSECS): \n");
     fprintf(stdout, "(%.2f) \t (%.2f) \t (%.2f) \t (%.2f) \t (%.2f)",
-            vector.at(check1) + lastTS - begin,
-            vector.at(check5) + lastTS - begin,
-            vector.at(check10) + lastTS - begin,
-            vector.at(check25) + lastTS - begin,
-            vector.at(check50) + lastTS - begin
+            vector.at(check1) + lastTS,
+            vector.at(check5) + lastTS,
+            vector.at(check10) + lastTS,
+            vector.at(check25) + lastTS,
+            vector.at(check50) + lastTS
     );
     fprintf(stdout, "\n");
     fprintf(stdout, "\n");
