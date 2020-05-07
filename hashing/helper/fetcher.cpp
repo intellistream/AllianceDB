@@ -2,7 +2,6 @@
 // Created by Shuhao Zhang on 1/11/19.
 //
 
-#include <cstdio>
 #include <assert.h>
 #include "fetcher.h"
 #include "pmj_helper.h"
