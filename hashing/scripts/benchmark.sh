@@ -1,7 +1,7 @@
 #!/bin/bash
 #set -e
 
-profile_breakdown=1 # set to 1 if we want to measure time breakdown! and also dedefine eager in common_function.h
+profile_breakdown=0 # set to 1 if we want to measure time breakdown! and also dedefine eager in common_function.h
 compile=1           #enable compiling.
 function compile() {
   if [ $compile != 0 ]; then
@@ -291,8 +291,8 @@ output=test$timestamp.txt
 
 compile=0 #disable compiling.
 # general benchmark.
-for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
-  for benchmark in "LargeScaleStock"; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" # "Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "AD" "KD" "WS" "DD"
+for algo in SHJ_JM_NP; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
+  for benchmark in "Stock"; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" # "Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "AD" "KD" "WS" "DD"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "AR") #test arrival rate and assume both inputs have same arrival rate.

@@ -196,10 +196,11 @@ void build_hashtable_single(const hashtable_t *ht, const tuple_t *tuple,
     } else {
         dest = curr->tuples + curr->count;//let dest point to correct place of bucket.
         curr->count++;
-
+#ifdef DEBUG
         if (curr->count > BUCKET_SIZE) {
             printf("this is wrong 2..\n");
         }
+#endif
     }
     *dest = *tuple;//copy the content of rel-tuples[i] to bucket.
 }
@@ -233,8 +234,8 @@ int64_t probe_hashtable(hashtable_t *ht, relation_t *rel, void *output, T_TIMER 
     return matches;
 }
 
-int64_t probe_hashtable_single_measure(const hashtable_t *ht, const tuple_t *tuple, const uint32_t hashmask,
-                                       const uint32_t skipbits, int64_t *matches,
+int64_t probe_hashtable_single(const hashtable_t *ht, const tuple_t *tuple, const uint32_t hashmask,
+                               const uint32_t skipbits, int64_t *matches,
         /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/
                                        T_TIMER *timer, bool ISTupleR, void *output) {
     uint32_t index_ht;
@@ -282,8 +283,8 @@ int64_t probe_hashtable_single_measure(const hashtable_t *ht, const relation_t *
                                        const uint32_t hashmask, const uint32_t skipbits, int64_t *matches,
         /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/
                                        T_TIMER *timer, void *output) {
-    return probe_hashtable_single_measure(ht, &rel->tuples[index_rel], hashmask, skipbits, matches,
-            /*thread_fun,*/ timer, false, output);
+    return probe_hashtable_single(ht, &rel->tuples[index_rel], hashmask, skipbits, matches,
+        /*thread_fun,*/ timer, false, output);
 }
 
 /**

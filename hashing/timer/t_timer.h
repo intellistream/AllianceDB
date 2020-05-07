@@ -40,7 +40,7 @@ struct T_TIMER {
     std::vector<int32_t> recordSID;
     int match_cnt = 0;
     int joiner_cnt = 0;
-    int record_gap = 10;
+    int record_gap = 1;
     int matches_in_sort = 0;
 #endif
 };
@@ -197,11 +197,13 @@ void sortRecords(string algo_name, int exp_id, long lastTS, unsigned long inputs
         timer->match_cnt++;                                     \
         if(timer->match_cnt == timer->record_gap){              \
             if(IStupleR){                                        \
-                auto ts =curtick();                              \
+                auto ts = curtick();                              \
+                MSG("TUPLE R [payload ID:%d] is joined at %lu\n", payloadID, ts)\
                 timer->recordRID.push_back(payloadID);           \
                 timer->recordR.push_back(ts);                    \
             }else{                                               \
-                auto ts =curtick();                              \
+                auto ts = curtick();                              \
+                MSG("TUPLE S [payload ID:%d] is joined at %lu\n", payloadID, ts)\
                 timer->recordSID.push_back(payloadID);           \
                 timer->recordS.push_back(ts);                    \
                 }                                                \

@@ -38,13 +38,11 @@ struct fetch_t {
 
 //thread local structure
 struct t_state {
-    int start_index_R = 0;//configure pointer of start reading point.
+    int current_index_R = 0;//configure pointer of start reading point.
     int end_index_R = 0;//configure pointer of end reading point.
     int start_index_S = 0;//configure pointer of start reading point.
     int end_index_S = 0;//configure pointer of end reading point.
-    //read R/S alternatively.
-    bool IsTupleR;
-    fetch_t fetch;
+    fetch_t current_fetch;
 };
 
 
@@ -100,9 +98,8 @@ public:
 
         //let first and last thread to read two streams.
         if (tid == 0) {
-            state->IsTupleR = true;
             /* replicate relR to thread 0 */
-            state->start_index_R = 0;
+            state->current_index_R = 0;
             state->end_index_R = relR->num_tuples;
         }
         if (tid == nthreads - 1) {
@@ -110,7 +107,7 @@ public:
             state->start_index_S = 0;
             state->end_index_S = relS->num_tuples;
         }
-        DEBUGMSG("TID:%d, R: start_index:%d, end_index:%d\n", tid, state->start_index_R, state->end_index_R);
+        DEBUGMSG("TID:%d, R: start_index:%d, end_index:%d\n", tid, state->current_index_R, state->end_index_R);
         DEBUGMSG("TID:%d, S: start_index:%d, end_index:%d\n", tid, state->start_index_S, state->end_index_S);
     }
 };
@@ -131,9 +128,8 @@ public:
 
         //let first and last thread to read two streams.
         if (tid == 0) {
-            state->IsTupleR = true;
             /* replicate relR to thread 0 */
-            state->start_index_R = 0;
+            state->current_index_R = 0;
             state->end_index_R = relR->num_tuples;
         }
         if (tid == nthreads - 1) {
@@ -142,7 +138,7 @@ public:
             state->end_index_S = relS->num_tuples;
         }
 
-        DEBUGMSG("TID:%d, R: start_index:%d, end_index:%d\n", tid, state->start_index_R, state->end_index_R);
+        DEBUGMSG("TID:%d, R: start_index:%d, end_index:%d\n", tid, state->current_index_R, state->end_index_R);
         DEBUGMSG("TID:%d, S: start_index:%d, end_index:%d\n", tid, state->start_index_S, state->end_index_S);
     }
 
@@ -170,7 +166,7 @@ public:
             printf("Thread %d has finished process input  0.75 S", tid);
         }
  * */
-        return state->start_index_R == state->end_index_R
+        return state->current_index_R == state->end_index_R
                && state->start_index_S == state->end_index_S;
     }
 
@@ -186,9 +182,8 @@ public:
 
         int numSthr = relS->num_tuples / nthreads;//replicate R, partition S.
 
-        state->IsTupleR = true;
         /* replicate relR for next thread */
-        state->start_index_R = 0;
+        state->current_index_R = 0;
         state->end_index_R = relR->num_tuples;
 
         /* assign part of the relS for next thread */
@@ -216,7 +211,7 @@ class JB_NP_Fetcher : public baseFetcher {
 public:
 
     bool finish() {
-        return state->start_index_R == state->end_index_R
+        return state->current_index_R == state->end_index_R
                && state->start_index_S == state->end_index_S;
     }
 
@@ -226,16 +221,15 @@ public:
         int numRthr = relR->num_tuples / nthreads;// partition R,
         int numSthr = relS->num_tuples / nthreads;// partition S.
 
-        state->IsTupleR = true;
         /* assign part of the relR for next thread */
-        state->start_index_R = numRthr * tid;
+        state->current_index_R = numRthr * tid;
         state->end_index_R = (last_thread(tid, nthreads)) ? relR->num_tuples : numRthr * (tid + 1);
 
         /* assign part of the relS for next thread */
         state->start_index_S = numSthr * tid;
         state->end_index_S = (last_thread(tid, nthreads)) ? relS->num_tuples : numSthr * (tid + 1);
 
-        DEBUGMSG("TID:%d, R: start_index:%d, end_index:%d\n", tid, state->start_index_R, state->end_index_R);
+        DEBUGMSG("TID:%d, R: start_index:%d, end_index:%d\n", tid, state->current_index_R, state->end_index_R);
         DEBUGMSG("TID:%d, S: start_index:%d, end_index:%d\n", tid, state->start_index_S, state->end_index_S);
 
     }

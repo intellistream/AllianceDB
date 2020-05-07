@@ -34,26 +34,27 @@ void *AGGFUNCTION(const tuple_t *r_tuple, const tuple_t *s_tuple, int64_t *match
  *
  * @return
  */
-void *
-THREAD_TASK_NOSHUFFLE(void *param) {
-    arg_t *args = (arg_t *) param;
+void*
+THREAD_TASK_NOSHUFFLE(void* param) {
+    arg_t* args = (arg_t*) param;
     int lock;
 
 #ifdef JOIN_RESULT_MATERIALIZE
     chainedtuplebuffer_t *chainedbuf = chainedtuplebuffer_init();
 #else
-    void *chainedbuf = NULL;
+    void* chainedbuf = NULL;
 #endif
     //call different data BaseFetcher.
-    baseFetcher *fetcher = args->fetcher;
+    baseFetcher* fetcher = args->fetcher;
     /* wait at a barrier until each thread started*/
     BARRIER_ARRIVE(args->barrier, lock)
 #ifndef NO_TIMING
     *args->startTS = curtick();
-//        printf(" *args->startTS :%lu\n", *args->startTS);
+    //        printf(" *args->startTS :%lu\n", *args->startTS);
     START_MEASURE((args->timer))
 #endif
     fetcher->fetchStartTime = args->startTS;//set the fetch starting time.
+    BARRIER_ARRIVE(args->barrier, lock)
 
 #ifdef PERF_COUNTERS
     if (args->tid == 0) {
@@ -62,32 +63,32 @@ THREAD_TASK_NOSHUFFLE(void *param) {
     }
 #endif
     do {
-        fetch_t *fetch = fetcher->next_tuple();/*time to fetch, waiting time*/
+        fetch_t* fetch = fetcher->next_tuple();/*time to fetch, waiting time*/
         if (fetch != nullptr) {
 #ifdef JOIN
             args->joiner->join(/*time to join for one tuple*/
-                    args->tid,
-                    fetch->tuple,
-                    fetch->ISTuple_R,
-                    args->matches,
-//                    AGGFUNCTION,
-                    chainedbuf);//build and probe at the same time.
+                args->tid,
+                fetch->tuple,
+                fetch->ISTuple_R,
+                args->matches,
+                //                    AGGFUNCTION,
+                chainedbuf);//build and probe at the same time.
 #endif
         }
     } while (!fetcher->finish());
 
-//    BEGIN_GARBAGE(args->timer)
+    //    BEGIN_GARBAGE(args->timer)
     /* wait at a barrier until each thread finishes*/
     BARRIER_ARRIVE(args->barrier, lock)
-//    END_GARBAGE(args->timer)
+    //    END_GARBAGE(args->timer)
 
 #ifdef JOIN
-//only PMJ needs this.
+    //only PMJ needs this.
     args->joiner->merge(
-            args->tid,
-            args->matches,
-//            AGGFUNCTION,
-            chainedbuf);
+        args->tid,
+        args->matches,
+        //            AGGFUNCTION,
+        chainedbuf);
 #endif
 
     DEBUGMSG("args->num_results (%d): %ld\n", args->tid, *args->matches);
@@ -100,7 +101,7 @@ THREAD_TASK_NOSHUFFLE(void *param) {
 #ifndef NO_TIMING
     END_MEASURE(args->timer)
     //time calibration
-//    args->timer->overall_timer -= args->timer->garbage_time;
+    //    args->timer->overall_timer -= args->timer->garbage_time;
     args->timer->partition_timer = args->timer->overall_timer - args->timer->wait_timer;
 #endif
 
@@ -122,22 +123,21 @@ THREAD_TASK_NOSHUFFLE(void *param) {
     pthread_exit(NULL);
 }
 
-
 void
-*THREAD_TASK_SHUFFLE(void *param) {
-    arg_t *args = (arg_t *) param;
+* THREAD_TASK_SHUFFLE(void* param) {
+    arg_t* args = (arg_t*) param;
     int lock;
 
 #ifdef JOIN_RESULT_MATERIALIZE
     chainedtuplebuffer_t *chainedbuf = chainedtuplebuffer_init();
 #else
-    void *chainedbuf = NULL;
+    void* chainedbuf = NULL;
 #endif
     //call different BaseFetcher.
-    baseFetcher *fetcher = args->fetcher;
-    baseShuffler *shuffler = args->shuffler;
+    baseFetcher* fetcher = args->fetcher;
+    baseShuffler* shuffler = args->shuffler;
     //fetch: pointer points to state.fetch (*fetch = &(state->fetch))
-    fetch_t *fetch;
+    fetch_t* fetch;
     /* wait at a barrier until each thread started*/
     BARRIER_ARRIVE(args->barrier, lock)
 #ifndef NO_TIMING
@@ -172,10 +172,10 @@ void
 #endif
     } while (!fetcher->finish());
 
-//    BEGIN_GARBAGE(args->timer)
+    //    BEGIN_GARBAGE(args->timer)
     /* wait at a barrier until each thread finishes fetch*/
     BARRIER_ARRIVE(args->barrier, lock)
-//    END_GARBAGE(args->timer)
+    //    END_GARBAGE(args->timer)
 
 #ifdef PERF_COUNTERS
     BARRIER_ARRIVE(args->barrier, lock);
@@ -192,23 +192,23 @@ void
         if (fetch != nullptr) {
 #ifdef JOIN
             args->joiner->join(
-                    args->tid,
-                    fetch->tuple,
-                    fetch->ISTuple_R,
-                    args->matches,
-//                    AGGFUNCTION,
-                    chainedbuf);
+                args->tid,
+                fetch->tuple,
+                fetch->ISTuple_R,
+                args->matches,
+                //                    AGGFUNCTION,
+                chainedbuf);
 #endif
         }
     } while (fetch != nullptr);
 
 #ifdef JOIN
-//only PMJ needs this.
+    //only PMJ needs this.
     args->joiner->merge(//merge the left-over.
-            args->tid,
-            args->matches,
-//                    AGGFUNCTION,
-            chainedbuf);
+        args->tid,
+        args->matches,
+        //                    AGGFUNCTION,
+        chainedbuf);
 #endif
 
 #ifdef JOIN_RESULT_MATERIALIZE
@@ -220,7 +220,7 @@ void
 #ifndef NO_TIMING
     END_MEASURE(args->timer)
     //time calibration
-//    args->timer->overall_timer -= args->timer->garbage_time;
+    //    args->timer->overall_timer -= args->timer->garbage_time;
     args->timer->partition_timer = args->timer->overall_timer - args->timer->wait_timer;
 #endif
 
@@ -242,7 +242,6 @@ void
     pthread_exit(NULL);
 }
 
-
 #define LEFT true
 #define RIGHT false
 
@@ -252,7 +251,7 @@ void
  * @param fetch
  */
 void
-processLeft(arg_t *args, fetch_t *fetch, int64_t *matches, void *chainedbuf) {
+processLeft(arg_t* args, fetch_t* fetch, int64_t* matches, void* chainedbuf) {
     if (fetch->ack) {/* msg is an acknowledgment message */
         //remove oldest tuple from S-window
         DEBUGMSG("TID %d: remove s %d from S-window because of ack.", args->tid, fetch->tuple->key)
@@ -273,12 +272,12 @@ processLeft(arg_t *args, fetch_t *fetch, int64_t *matches, void *chainedbuf) {
         //insert ri into R-window ;
 #ifdef JOIN
         args->joiner->join(
-                args->tid,
-                fetch->tuple,
-                fetch->ISTuple_R,
-                matches,
-//                AGGFUNCTION,
-                chainedbuf);
+            args->tid,
+            fetch->tuple,
+            fetch->ISTuple_R,
+            matches,
+            //                AGGFUNCTION,
+            chainedbuf);
 #endif
     }
 }
@@ -289,7 +288,7 @@ processLeft(arg_t *args, fetch_t *fetch, int64_t *matches, void *chainedbuf) {
  * @param fetch
  */
 void
-processLeft_PMJ(arg_t *args, fetch_t *fetch, int64_t *matches, void *chainedbuf) {
+processLeft_PMJ(arg_t* args, fetch_t* fetch, int64_t* matches, void* chainedbuf) {
     if (fetch->ack) {/* msg is an acknowledgment message */
         //remove oldest tuple from S-window
         DEBUGMSG("TID %d:remove S %s from S-window.", args->tid,
@@ -310,19 +309,19 @@ processLeft_PMJ(arg_t *args, fetch_t *fetch, int64_t *matches, void *chainedbuf)
         //insert ri into R-window ;
 #ifdef JOIN
         args->joiner->join(
-                args->tid,
-                fetch->fat_tuple,
-                fetch->fat_tuple_size,
-                fetch->ISTuple_R,
-                matches,
-//                AGGFUNCTION,
-                chainedbuf);
+            args->tid,
+            fetch->fat_tuple,
+            fetch->fat_tuple_size,
+            fetch->ISTuple_R,
+            matches,
+            //                AGGFUNCTION,
+            chainedbuf);
 #endif
     }
 }
 
 void
-processRight(baseShuffler *shuffler, arg_t *args, fetch_t *fetch, int64_t *matches, void *chainedbuf) {
+processRight(baseShuffler* shuffler, arg_t* args, fetch_t* fetch, int64_t* matches, void* chainedbuf) {
 
     //if msg contains a new tuple then
     if (fetch->tuple) {
@@ -336,20 +335,20 @@ processRight(baseShuffler *shuffler, arg_t *args, fetch_t *fetch, int64_t *match
         assert(!fetch->ISTuple_R);
 #endif
 
-//      scan R-window to find tuples that match si ;
-//      insert si into S-window ;
+        //      scan R-window to find tuples that match si ;
+        //      insert si into S-window ;
         args->joiner->join(
-                args->tid,
-                fetch->tuple,
-                fetch->ISTuple_R,
-                matches,
-//                AGGFUNCTION,
-                chainedbuf);//build and probe at the same time.
+            args->tid,
+            fetch->tuple,
+            fetch->ISTuple_R,
+            matches,
+            //                AGGFUNCTION,
+            chainedbuf);//build and probe at the same time.
     }
 
     //place acknowledgment for si in rightSendQueue ;
     if (args->tid != args->nthreads - 1) {
-        auto *ack = new fetch_t(fetch);
+        auto* ack = new fetch_t(fetch);
         ack->ack = true;
         DEBUGMSG("tid:%d pushes an acknowledgement of %d towards right\n", args->tid, fetch->tuple->key);
         shuffler->push(args->tid + 1, ack, LEFT);
@@ -358,7 +357,7 @@ processRight(baseShuffler *shuffler, arg_t *args, fetch_t *fetch, int64_t *match
 }
 
 void
-processRight_PMJ(baseShuffler *shuffler, arg_t *args, fetch_t *fetch, int64_t *matches, void *chainedbuf) {
+processRight_PMJ(baseShuffler* shuffler, arg_t* args, fetch_t* fetch, int64_t* matches, void* chainedbuf) {
 
     //if msg contains a new tuple then
     if (fetch->fat_tuple) {
@@ -372,21 +371,21 @@ processRight_PMJ(baseShuffler *shuffler, arg_t *args, fetch_t *fetch, int64_t *m
         assert(!fetch->ISTuple_R);
 #endif
 
-//      scan R-window to find tuples that match si ;
-//      insert si into S-window ;
+        //      scan R-window to find tuples that match si ;
+        //      insert si into S-window ;
         args->joiner->join(
-                args->tid,
-                fetch->fat_tuple,
-                fetch->fat_tuple_size,
-                fetch->ISTuple_R,
-                matches,
-//                AGGFUNCTION,
-                chainedbuf);//build and probe at the same time.
+            args->tid,
+            fetch->fat_tuple,
+            fetch->fat_tuple_size,
+            fetch->ISTuple_R,
+            matches,
+            //                AGGFUNCTION,
+            chainedbuf);//build and probe at the same time.
     }
 
     //place acknowledgment for si in rightSendQueue ;
     if (args->tid != args->nthreads - 1) {
-        auto *ack = new fetch_t(fetch);
+        auto* ack = new fetch_t(fetch);
         ack->ack = true;
         DEBUGMSG("tid:%d pushes an acknowledgement of %d towards right\n", args->tid, fetch->fat_tuple[0].key);
         shuffler->push(args->tid + 1, ack, LEFT);
@@ -394,7 +393,7 @@ processRight_PMJ(baseShuffler *shuffler, arg_t *args, fetch_t *fetch, int64_t *m
 
 }
 
-void forward_tuples(baseShuffler *shuffler, arg_t *args, fetch_t *fetchR, fetch_t *fetchS) {
+void forward_tuples(baseShuffler* shuffler, arg_t* args, fetch_t* fetchR, fetch_t* fetchS) {
     //place oldest non-forwarded si into leftSendQueue ;
 
     if (args->tid != 0) {
@@ -412,14 +411,14 @@ void forward_tuples(baseShuffler *shuffler, arg_t *args, fetch_t *fetchR, fetch_
             DEBUGMSG("tid:%d pushes R? %d towards right\n", args->tid, fetchR->tuple->key);
             shuffler->push(args->tid + 1, fetchR, LEFT);//push R towards right.
             DEBUGMSG("remove r %d from R-window.", fetchR->tuple->key)
-//            clean(args, fetchR, LEFT);
+            //            clean(args, fetchR, LEFT);
             if (!fetchR->ack)
                 args->joiner->clean(args->tid, fetchR->tuple, LEFT);
         }
     }
 }
 
-void forward_tuples_PMJ(baseShuffler *shuffler, arg_t *args, fetch_t *fetchR, fetch_t *fetchS) {
+void forward_tuples_PMJ(baseShuffler* shuffler, arg_t* args, fetch_t* fetchR, fetch_t* fetchS) {
     //place oldest non-forwarded si into leftSendQueue ;
 
     if (args->tid != 0) {
@@ -437,7 +436,7 @@ void forward_tuples_PMJ(baseShuffler *shuffler, arg_t *args, fetch_t *fetchR, fe
             DEBUGMSG("tid:%d pushes R? %d towards right\n", args->tid, fetchR->fat_tuple[0].key);
             shuffler->push(args->tid + 1, fetchR, LEFT);//push R towards right.
             DEBUGMSG("tid:%d remove r %d from R-window.", args->tid, fetchR->fat_tuple[0].key)
-//            clean(args, fetchR, LEFT);
+            //            clean(args, fetchR, LEFT);
             if (!fetchR->ack)
                 args->joiner->clean(args->tid, fetchR->fat_tuple, fetchR->fat_tuple_size, LEFT);
         }
@@ -450,23 +449,23 @@ void forward_tuples_PMJ(baseShuffler *shuffler, arg_t *args, fetch_t *fetchR, fe
  * @return
  */
 void
-*THREAD_TASK_SHUFFLE_HS(void *param) {
-    arg_t *args = (arg_t *) param;
+* THREAD_TASK_SHUFFLE_HS(void* param) {
+    arg_t* args = (arg_t*) param;
     int lock;
 #ifdef JOIN_RESULT_MATERIALIZE
     chainedtuplebuffer_t *chainedbuf = chainedtuplebuffer_init();
 #else
-    void *chainedbuf = NULL;
+    void* chainedbuf = NULL;
 #endif
 
     //call different data fetcher.
-    baseFetcher *fetcher = args->fetcher;
-    baseShuffler *shuffler = args->shuffler;
+    baseFetcher* fetcher = args->fetcher;
+    baseShuffler* shuffler = args->shuffler;
 
     fetcher->fetchStartTime = args->startTS;//set the fetch starting time.
 
-    fetch_t *fetchR;
-    fetch_t *fetchS;
+    fetch_t* fetchR;
+    fetch_t* fetchS;
 
     int sizeR = args->fetcher->relR->num_tuples;
     int sizeS = args->fetcher->relS->num_tuples;
@@ -540,10 +539,10 @@ void
     } while (fetcher->cntR < sizeR || fetcher->cntS < sizeS);
 #ifdef JOIN
     args->joiner->merge(
-            args->tid,
-            args->matches,
-//            AGGFUNCTION,
-            chainedbuf);
+        args->tid,
+        args->matches,
+        //            AGGFUNCTION,
+        chainedbuf);
 #endif
 #ifdef JOIN_RESULT_MATERIALIZE
     args->threadresult->nresults = *args->matches;
@@ -554,7 +553,7 @@ void
 #ifndef NO_TIMING
     END_MEASURE(args->timer)
     //time calibration
-//    args->timer->overall_timer -= args->timer->garbage_time;
+    //    args->timer->overall_timer -= args->timer->garbage_time;
     args->timer->partition_timer = args->timer->overall_timer - args->timer->wait_timer;
 #endif
 
@@ -582,8 +581,8 @@ void
  * @return
  */
 void
-*THREAD_TASK_SHUFFLE_PMJHS(void *param) {
-    arg_t *args = (arg_t *) param;
+* THREAD_TASK_SHUFFLE_PMJHS(void* param) {
+    arg_t* args = (arg_t*) param;
 #ifdef PERF_COUNTERS
     if (args->tid == 0) {
         PCM_initPerformanceMonitor(NULL, NULL);
@@ -610,22 +609,22 @@ void
 #ifdef JOIN_RESULT_MATERIALIZE
     chainedtuplebuffer_t *chainedbuf = chainedtuplebuffer_init();
 #else
-    void *chainedbuf = NULL;
+    void* chainedbuf = NULL;
 #endif
 
     //call different data fetcher.
-    baseFetcher *fetcher = args->fetcher;
-    baseShuffler *shuffler = args->shuffler;
+    baseFetcher* fetcher = args->fetcher;
+    baseShuffler* shuffler = args->shuffler;
 
-    fetch_t *fetchR;
-    fetch_t *fetchS;
+    fetch_t* fetchR;
+    fetch_t* fetchS;
 
     do {
         //pull left queue.
         if (args->tid == 0) {
             fetchR = fetcher->next_tuple();//
         } else {
-//            std::cin.get();//expect enter
+            //            std::cin.get();//expect enter
             fetchR = shuffler->pull(args->tid, LEFT);//pull itself.
         }
         if (fetchR) {
@@ -655,7 +654,7 @@ void
         //forward tuple twice!
         forward_tuples_PMJ(shuffler, args, fetchR, fetchS);
 
-//        usleep(rand() % 100);
+        //        usleep(rand() % 100);
 
     } while (!fetcher->finish());
 

@@ -61,7 +61,7 @@
 
 #define MSG(MSG, ...)                                                                   \
     { fprintf(stdout, "\n[INFO] @ %s:%d " MSG , __FILE__, __LINE__, ## __VA_ARGS__);      \
-        fprintf(stdout, "\n");                                                          \
+        fflush(stdout);                                                           \
     }
 
 
@@ -148,8 +148,8 @@ void
 build_hashtable_single(const hashtable_t *ht, const relation_t *rel, uint32_t i, const uint32_t hashmask,
                        const uint32_t skipbits);
 
-int64_t probe_hashtable_single_measure(const hashtable_t *ht, const tuple_t *tuple, const uint32_t hashmask,
-                                       const uint32_t skipbits, int64_t *matches,
+int64_t probe_hashtable_single(const hashtable_t *ht, const tuple_t *tuple, const uint32_t hashmask,
+                               const uint32_t skipbits, int64_t *matches,
         /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/
                                         T_TIMER *timer, bool ISTupleR, void *output);
 

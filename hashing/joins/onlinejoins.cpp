@@ -176,7 +176,7 @@ SHJ_JM_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
     param.algo_name = "SHJ_JM_NP";
     param.exp_id = cmd_params.exp_id;
     param.record_gap = cmd_params.gap;
-    uint64_t *startTS = new uint64_t();
+    auto *startTS = new uint64_t();
     auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_NOSHUFFLE, startTS, &joinStart)
     param = finishing(nthreads, param, startTS, &cmd_params);
