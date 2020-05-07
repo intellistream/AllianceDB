@@ -4,6 +4,7 @@
 
 
 #include "sort_common.h"
+#include "../joins/common_functions.h"
 
 int
 is_sorted_helper(int64_t *items, uint64_t nitems) {

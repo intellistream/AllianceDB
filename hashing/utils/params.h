@@ -33,7 +33,7 @@
 #define L2_CACHE_SIZE (256*1024)
 #endif
 
-/** L3 Cache size of the system in bytes 20480 or */
+/** L3 Cache size of the system in bytes 20480 or 25600*/
 #ifndef L3_CACHE_SIZE
 #define L3_CACHE_SIZE (25600*1024)
 #endif
