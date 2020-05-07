@@ -385,9 +385,9 @@ param_t defaultParam() {/* Command line parameters */
 /* command line handling functions */
 void
 print_help(char *progname) {
-    printf("Usage: %s [options]\n", progname);
+    MSG("Usage: %s [options]\n", progname);
 
-    printf(" \
+    MSG(" \
     Join algorithm selection, algorithms : RJ_st, PRO, PRH, PRHO, NPO, NPO_st    \n\
        -a --algo=<name>    Run the hash join algorithm named <name> [PRO]     \n\
                                                                               \n\
@@ -417,10 +417,10 @@ print_help(char *progname) {
 
 void
 print_version() {
-    printf("\n%s\n", PACKAGE_STRING);
-    printf("Copyright (c) 2012, 2013, ETH Zurich, Systems Group.\n");
-    printf("http://www.systems.ethz.ch/projects/paralleljoins\n\n");
-    printf("Modified 2019, Shuhao Zhang (Tony) and Yancan Mao, TU Berlin, NUS. \n");
+    MSG("\n%s\n", PACKAGE_STRING);
+    MSG("Copyright (c) 2012, 2013, ETH Zurich, Systems Group.\n");
+    MSG("http://www.systems.ethz.ch/projects/paralleljoins\n\n");
+    MSG("Modified 2019, Shuhao Zhang (Tony) and Yancan Mao, TU Berlin, NUS. \n");
 }
 
 static char *
@@ -506,10 +506,10 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
                 /* If this option set a flag, do nothing else now. */
                 if (long_options[option_index].flag != 0)
                     break;
-                printf("option %s", long_options[option_index].name);
+                MSG("option %s", long_options[option_index].name);
                 if (optarg)
-                    printf(" with arg %s", optarg);
-                printf("\n");
+                    MSG(" with arg %s", optarg);
+                MSG("\n");
                 break;
 
             case 'a':
@@ -525,7 +525,7 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
                 }
 
                 if (found == 0) {
-                    printf("[ERROR] Join algorithm named `%s' does not exist!\n",
+                    MSG("[ERROR] Join algorithm named `%s' does not exist!\n",
                            optarg);
                     print_help(argv[0]);
                     exit(EXIT_FAILURE);
@@ -597,8 +597,8 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
                 else if (strcmp(optarg, "RING") == 0)
                     cmd_params->numastrategy = RING;
                 else {
-                    printf("Invalid NUMA-shuffle strategy. Options: NEXT, RANDOM, RING\n");
-                    printf("Using RING as default.\n");
+                    MSG("Invalid NUMA-shuffle strategy. Options: NEXT, RANDOM, RING\n");
+                    MSG("Using RING as default.\n");
                 }
                 break;
 
@@ -687,14 +687,14 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
 
     if (cmd_params->nthreads == 1) {
         cmd_params->group_size = 1;
-        printf("[INFO] reset group size to one\n");
+        MSG("[INFO] reset group size to one\n");
     }
 
     /* Print any remaining command line arguments (not options). */
     if (optind < argc) {
-        printf("non-option arguments: ");
+        MSG("non-option arguments: ");
         while (optind < argc)
-            printf("%s ", argv[optind++]);
-        printf("\nc");
+            MSG("%s ", argv[optind++]);
+        MSG("\nc");
     }
 }

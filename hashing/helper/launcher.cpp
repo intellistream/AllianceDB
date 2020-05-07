@@ -82,10 +82,10 @@ launch(int nthreads, relation_t *relR, relation_t *relS, t_param param, void *(*
 
         rv = pthread_create(&param.tid[i], param.attr, thread_fun, (void *) &param.args[i]);
         if (rv) {
-            printf("ERROR; return code from pthread_create() is %d\n", rv);
+            MSG("ERROR; return code from pthread_create() is %d\n", rv);
             exit(-1);
         }
-//        printf("Launch thread[%d] :%lu\n", param.args[i].tid, param.tid[i]);
+//        MSG("Launch thread[%d] :%lu\n", param.args[i].tid, param.tid[i]);
         fflush(stdout);
     }
     // TODO: add a timer here, need to have global view?

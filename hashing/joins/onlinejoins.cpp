@@ -31,7 +31,7 @@ void initialize(int nthreads, const t_param &param) {
     int rv;
     rv = pthread_barrier_init(param.barrier, NULL, nthreads);
     if (rv != 0) {
-        printf("Couldn't create the barrier\n");
+        MSG("Couldn't create the barrier\n");
         exit(EXIT_FAILURE);
     }
     pthread_attr_init(param.attr);
@@ -47,10 +47,10 @@ t_param &finishing(int nthreads, t_param &param, uint64_t *startTS, param_t *cmd
     // TODO: add a timer here, how to minus startTimer? Can I use t_timer.h
     int64_t processingTime = curtick() - *startTS;
 #ifndef NO_TIMING
-    printf("With timing, Total processing time is: %f\n", processingTime / (2.1 * 1E6));//cycle to ms
+    MSG("With timing, Total processing time is: %f\n", processingTime / (2.1 * 1E6));//cycle to ms
 #endif
 #ifdef NO_TIMING
-    printf("No timing, Total processing time is: %ld\n", processingTime / (2.1 * 1E6));
+    MSG("No timing, Total processing time is: %ld\n", processingTime / (2.1 * 1E6));
 #endif
     for (i = 0; i < nthreads; i++) {
         /* sum up results */

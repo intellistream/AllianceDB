@@ -165,7 +165,7 @@ debuild_hashtable_single(const hashtable_t *ht, const tuple_t *tuple, const uint
         }
         b = b->next;/* follow overflow pointer */
     } while (b);
-    printf("%s", str.c_str());
+    MSG("%s", str.c_str());
 #endif
 }
 
@@ -198,7 +198,7 @@ void build_hashtable_single(const hashtable_t *ht, const tuple_t *tuple,
         curr->count++;
 #ifdef DEBUG
         if (curr->count > BUCKET_SIZE) {
-            printf("this is wrong 2..\n");
+            MSG("this is wrong 2..\n");
         }
 #endif
     }

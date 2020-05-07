@@ -151,19 +151,19 @@ public:
     bool finish() {
 /*
  *      if (cntR == relR->num_tuples / 4) {
-            printf("Thread %d has finished process input  0.25 R", tid);
+            MSG("Thread %d has finished process input  0.25 R", tid);
         } else if (cntR == relR->num_tuples / 2) {
-            printf("Thread %d has finished process input  0.5 R", tid);
+            MSG("Thread %d has finished process input  0.5 R", tid);
         } else if (cntR == relR->num_tuples / 4 * 3) {
-            printf("Thread %d has finished process input  0.75 R", tid);
+            MSG("Thread %d has finished process input  0.75 R", tid);
         }
 
         if (cntS == relS->num_tuples / 4) {
-            printf("Thread %d has finished process input  0.25 S", tid);
+            MSG("Thread %d has finished process input  0.25 S", tid);
         } else if (cntS == relS->num_tuples / 2) {
-            printf("Thread %d has finished process input  0.5 S", tid);
+            MSG("Thread %d has finished process input  0.5 S", tid);
         } else if (cntS == relS->num_tuples / 4 * 3) {
-            printf("Thread %d has finished process input  0.75 S", tid);
+            MSG("Thread %d has finished process input  0.75 S", tid);
         }
  * */
         return state->current_index_R == state->end_index_R

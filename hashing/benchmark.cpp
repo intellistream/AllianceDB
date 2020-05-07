@@ -124,7 +124,7 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int
                                  rel_size, cmd_params.duplicate_num);
         add_ts(rel, relPl, step_size, 0, partitions);
     }
-    printf("OK \n");
+    MSG("OK \n");
 }
 
 void writefile(relation_payload_t *relPl, const param_t cmd_params) {
@@ -189,14 +189,14 @@ benchmark(const param_t cmd_params) {
 //    writefile(relR.payload, cmd_params);
 
     /* Run the selected join algorithm */
-    printf("[INFO ] Running join algorithm %s ...\n", cmd_params.algo->name);
+    MSG("[INFO ] Running join algorithm %s ...\n", cmd_params.algo->name);
 
     if (cmd_params.ts == 0)
         results = cmd_params.algo->joinAlgo(&relR, &relS, cmd_params);//no window to wait.
     else
         results = cmd_params.algo->joinAlgo(&relR, &relS, cmd_params);
 
-    printf("[INFO ] Results = %ld. DONE.\n", results->totalresults);
+    MSG("[INFO ] Results = %ld. DONE.\n", results->totalresults);
 
     /* clean-up */
     delete_relation(&relR);
@@ -210,7 +210,7 @@ benchmark(const param_t cmd_params) {
 
 
 #if (defined(PERSIST_RELATIONS) && defined(JOIN_RESULT_MATERIALIZE))
-    printf("[INFO ] Persisting the join result to \"Out.tbl\" ...\n");
+    MSG("[INFO ] Persisting the join result to \"Out.tbl\" ...\n");
     write_result_relation(results, "Out.tbl");
 #endif
 

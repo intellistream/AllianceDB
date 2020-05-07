@@ -87,7 +87,7 @@ avxsort_unaligned(int64_t ** inputptr, int64_t ** outputptr, uint64_t nitems)
      * obtain sorted sequences of length 2^{itr+1}.
      */
     nchunks += (rem > 0);
-    /* printf("Merge chunks = %d\n", nchunks); */
+    /* MSG("Merge chunks = %d\n", nchunks); */
     const uint64_t logN = ceil(log2(nitems));
     for(i = LOG2_BLOCKSIZE; i < logN; i++) {
 
@@ -143,7 +143,7 @@ avxsort_aligned(int64_t ** inputptr, int64_t ** outputptr, uint64_t nitems)
     uint64_t i;
     uint64_t nchunks = (nitems / BLOCKSIZE);
     int rem = (nitems % BLOCKSIZE);
-    /* printf("nchunks = %d, nitems = %d, rem = %d\n", nchunks, nitems, rem); */
+    /* MSG("nchunks = %d, nitems = %d, rem = %d\n", nchunks, nitems, rem); */
     /* each chunk keeps track of its temporary memory offset */
     int64_t * ptrs[nchunks+1][2];/* [chunk-in, chunk-out-tmp] */
     uint32_t sizes[nchunks+1];
@@ -174,7 +174,7 @@ avxsort_aligned(int64_t ** inputptr, int64_t ** outputptr, uint64_t nitems)
      * obtain sorted sequences of length 2^{itr+1}.
      */
     nchunks += (rem > 0);
-    /* printf("Merge chunks = %d\n", nchunks); */
+    /* MSG("Merge chunks = %d\n", nchunks); */
     const uint64_t logN = ceil(log2(nitems));
     for(i = LOG2_BLOCKSIZE; i < logN; i++) {
 

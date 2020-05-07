@@ -32,7 +32,7 @@
 #define BARRIER_ARRIVE(B, RV)                            \
     RV = pthread_barrier_wait(B);                       \
     if(RV !=0 && RV != PTHREAD_BARRIER_SERIAL_THREAD){  \
-        printf("Couldn't wait on barrier\n");           \
+        MSG("Couldn't wait on barrier\n");           \
         exit(EXIT_FAILURE);                             \
     }
 #endif

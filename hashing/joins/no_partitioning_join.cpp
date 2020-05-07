@@ -48,7 +48,7 @@
 #define BARRIER_ARRIVE(B,RV)                            \
     RV = pthread_barrier_wait(B);                       \
     if(RV !=0 && RV != PTHREAD_BARRIER_SERIAL_THREAD){  \
-        printf("Couldn't wait on barrier\n");           \
+        MSG("Couldn't wait on barrier\n");           \
         exit(EXIT_FAILURE);                             \
     }
 #endif
@@ -316,7 +316,7 @@ np_distribute(const relation_t *relR, const relation_t *relS, int nthreads, hash
 
         rv = pthread_create(&tid[i], &attr, npo_thread, (void *) &args[i]);
         if (rv) {
-            printf("ERROR; return code from pthread_create() is %d\n", rv);
+            MSG("ERROR; return code from pthread_create() is %d\n", rv);
             exit(-1);
         }
     }
@@ -359,7 +359,7 @@ NPO(relation_t *relR, relation_t *relS, param_t cmd_params) {
 
     rv = pthread_barrier_init(&barrier, NULL, nthreads);
     if (rv != 0) {
-        printf("Couldn't create the barrier\n");
+        MSG("Couldn't create the barrier\n");
         exit(EXIT_FAILURE);
     }
 
@@ -375,7 +375,7 @@ NPO(relation_t *relR, relation_t *relS, param_t cmd_params) {
     //compute results.
     for (i = 0; i < nthreads; i++) {
         result += args[i].result;
-        printf("Thread[%d], produces %ld outputs\n", i, args[i].result);
+        MSG("Thread[%d], produces %ld outputs\n", i, args[i].result);
 #ifndef NO_TIMING
         merge(args[i].timer, relR, relS, startTS, cmd_params.ts == 0 ? 0 : cmd_params.window_size);
 #endif
@@ -385,7 +385,7 @@ NPO(relation_t *relR, relation_t *relS, param_t cmd_params) {
     // TODO: add a timer here, how to minus startTimer? Can I use t_timer.h
     int64_t processingTime = curtick() - *startTS;
 #ifndef NO_TIMING
-    printf("With timing, Total processing time is: %f\n", processingTime / (2.1 * 1E6));//cycle to ms
+    MSG("With timing, Total processing time is: %f\n", processingTime / (2.1 * 1E6));//cycle to ms
 #endif
 #ifndef NO_TIMING
     /* now print the timing results: */

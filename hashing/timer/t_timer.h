@@ -198,12 +198,12 @@ void sortRecords(string algo_name, int exp_id, long lastTS, unsigned long inputs
         if(timer->match_cnt == timer->record_gap){              \
             if(IStupleR){                                        \
                 auto ts = curtick();                              \
-                MSG("TUPLE R [payload ID:%d] is joined at %lu\n", payloadID, ts)\
+                DEBUGMSG("TUPLE R [payload ID:%d] is joined at %lu\n", payloadID, ts)\
                 timer->recordRID.push_back(payloadID);           \
                 timer->recordR.push_back(ts);                    \
             }else{                                               \
                 auto ts = curtick();                              \
-                MSG("TUPLE S [payload ID:%d] is joined at %lu\n", payloadID, ts)\
+                DEBUGMSG("TUPLE S [payload ID:%d] is joined at %lu\n", payloadID, ts)\
                 timer->recordSID.push_back(payloadID);           \
                 timer->recordS.push_back(ts);                    \
                 }                                                \

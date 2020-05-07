@@ -50,7 +50,7 @@ THREAD_TASK_NOSHUFFLE(void* param) {
     BARRIER_ARRIVE(args->barrier, lock)
 #ifndef NO_TIMING
     *args->startTS = curtick();
-    //        printf(" *args->startTS :%lu\n", *args->startTS);
+    //        MSG(" *args->startTS :%lu\n", *args->startTS);
     START_MEASURE((args->timer))
 #endif
     fetcher->fetchStartTime = args->startTS;//set the fetch starting time.
@@ -328,7 +328,7 @@ processRight(baseShuffler* shuffler, arg_t* args, fetch_t* fetch, int64_t* match
 #ifdef DEBUG
         if (fetch->ISTuple_R)//right must be tuple S.
         {
-            printf("tid:%d processRIGHT: something is wrong, %d \n", args->tid, fetch->tuple->key);
+            MSG("tid:%d processRIGHT: something is wrong, %d \n", args->tid, fetch->tuple->key);
             fflush(stdout);
         }
 #else
@@ -364,7 +364,7 @@ processRight_PMJ(baseShuffler* shuffler, arg_t* args, fetch_t* fetch, int64_t* m
 #ifdef DEBUG
         if (fetch->ISTuple_R)//right must be tuple S.
         {
-            printf("tid:%d processRIGHT: something is wrong, %d \n", args->tid, fetch->fat_tuple[0].key);
+            MSG("tid:%d processRIGHT: something is wrong, %d \n", args->tid, fetch->fat_tuple[0].key);
             fflush(stdout);
         }
 #else
@@ -498,7 +498,7 @@ void
                 fetcher->cntR--;
             } else {
 #ifdef DEBUG
-                printf("tid:%d, fetch R:%d, cntR:%lu\n", args->tid, fetchR->tuple->key, fetcher->cntR);
+                MSG("tid:%d, fetch R:%d, cntR:%lu\n", args->tid, fetchR->tuple->key, fetcher->cntR);
                 fflush(stdout); // Will now print%luverything in the stdout buffer
 #endif
             }
@@ -514,7 +514,7 @@ void
         if (fetchS) {
             fetcher->cntS++;
 #ifdef DEBUG
-            printf("tid:%d, fetch S:%d, ack:%d, cntS:%d\n", args->tid, fetchS->tuple->key, fetchS->ack, fetcher->cntS);
+            MSG("tid:%d, fetch S:%d, ack:%d, cntS:%d\n", args->tid, fetchS->tuple->key, fetchS->ack, fetcher->cntS);
             fflush(stdout); // Will now print everything in the stdout buffer
 #endif
             processRight(shuffler, args, fetchS, args->matches, chainedbuf);
@@ -522,12 +522,12 @@ void
 #ifdef DEBUG
         if (fetchR)
             if (!fetchR->ISTuple_R && !fetchR->ack) {
-                printf("something is wrong.\n");
+                MSG("something is wrong.\n");
             }
 
         if (fetchS)
             if (fetchS->ISTuple_R) {
-                printf("something is wrong.\n");
+                MSG("something is wrong.\n");
             }
 #endif
         //forward tuple twice!

@@ -158,7 +158,7 @@ void ContRandShuffler::push(intkey_t key, fetch_t *fetch, bool pushR) {
     } else { // partition S
 //        DEBUGMSG("PUSH: %d, tuple: %d, R?%d\n", idx, fetch->tuple->key, fetch->ISTuple_R)
         int32_t idx_s = next()% curGrp.size(); // randomly distribute to threads in the groups
-//        printf("idx_s:%d\n", idx_s);
+//        MSG("idx_s:%d\n", idx_s);
 //        moodycamel::ConcurrentQueue<fetch_t *> *queue = queues[curGrp[idx_s]].queue;
         queues[curGrp[idx_s]].queue->enqueue(new fetch_t(fetch));
 //        DEBUGMSG("PUSH: %d, tuple: %d, queue size:%d\n", idx,

@@ -44,7 +44,7 @@ using namespace std::chrono;
 #define BARRIER_ARRIVE(B, RV)                           \
     RV = pthread_barrier_wait(B);                       \
     if(RV !=0 && RV != PTHREAD_BARRIER_SERIAL_THREAD){  \
-        printf("Couldn't wait on barrier\n");           \
+        MSG("Couldn't wait on barrier\n");           \
         exit(EXIT_FAILURE);                             \
     }
 #endif
@@ -122,7 +122,7 @@ void ts_shuffle(relation_t *relation, relation_payload_t *relationPayload, uint3
         tid_start_idx[partition] = numthr * partition;
         tid_end_idx[partition] = (last_thread(partition, partitions)) ? relation->num_tuples : numthr * (partition + 1);
 
-        printf("partition %d start idx: %d end idx: %d\n", partition, tid_start_idx[partition], tid_end_idx[partition]);
+        MSG("partition %d start idx: %d end idx: %d\n", partition, tid_start_idx[partition], tid_end_idx[partition]);
     }
 
     for (auto i = 0; i < relation->num_tuples; i++) {
@@ -177,7 +177,7 @@ add_ts(relation_t *relation, relation_payload_t *relationPayload, int step_size,
 
 //#ifdef DEBUG
 //    for (auto i = 0; i < relation->num_tuples; i++) {
-//        printf("ts: %ld\n", relationPayload->ts[i]);
+//        MSG("ts: %ld\n", relationPayload->ts[i]);
 //    }
 //#endif
 //    assert(interval == 0 || ts == window_size);
@@ -227,7 +227,7 @@ void add_zipf_ts(relation_t *relation, relation_payload_t *relationPayload, int 
             small++;
         }
     }
-    printf("small ts %f\n", (double) small / relation->num_tuples);
+    MSG("small ts %f\n", (double) small / relation->num_tuples);
 }
 
 /**
@@ -305,7 +305,7 @@ random_unique_gen_thread(void *args) {
         rel->tuples[i].key = firstkey;
         rel->tuples[i].payloadID = firstkey;
         if (rel->tuples[i].payloadID < 0) {
-            printf("Something is wrong.");
+            MSG("Something is wrong.");
         }
         if (firstkey == maxid)
             firstkey = 0;
@@ -462,7 +462,7 @@ parallel_create_relation(relation_t *reln, uint64_t ntuples, uint32_t nthreads, 
 
     rv = pthread_barrier_init(&barrier, NULL, nthreads);
     if (rv != 0) {
-        printf("[ERROR] Couldn't create the barrier\n");
+        MSG("[ERROR] Couldn't create the barrier\n");
         exit(EXIT_FAILURE);
     }
 
@@ -588,7 +588,7 @@ parallel_create_relation_with_ts(relation_t *relation, relation_payload_t *relat
 
     rv = pthread_barrier_init(&barrier, NULL, nthreads);
     if (rv != 0) {
-        printf("[ERROR] Couldn't create the barrier\n");
+        MSG("[ERROR] Couldn't create the barrier\n");
         exit(EXIT_FAILURE);
     }
 
@@ -972,8 +972,8 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t
 
     //load ts and key
     while ((read = getline(&line, &len, fp)) != -1 && i < ntuples) {
-//        printf("Retrieved line of length %zu:\n", read);
-//        printf("%s", line);
+//        MSG("Retrieved line of length %zu:\n", read);
+//        MSG("%s", line);
         if (fmtcomma) {
             key[i] = stoi(split(line, ",")[keyby]);
             strcpy(row.value, line);
@@ -981,7 +981,7 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t
             if (tsKey != 0) {
                 ret[i] = stol(split(line, ",")[tsKey]) * 2.1 * 1E6;
 //                if (timestamp != 0)
-//                    printf("%lld \n", timestamp);
+//                    MSG("%lld \n", timestamp);
             }
         } else if (fmtbar) {
             key[i] = stoi(split(line, "|")[keyby]);
@@ -990,10 +990,10 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t
             if (tsKey != 0) {
                 ret[i] = stol(split(line, "|")[tsKey]) * 2.1 * 1E6;
 //                if (timestamp != 0)
-//                    printf("%lld \n", timestamp);
+//                    MSG("%lld \n", timestamp);
             }
         } else {
-            printf("error!!\n");
+            MSG("error!!\n");
             return;
         }
         i++;//id of record being read.
@@ -1017,8 +1017,8 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t
         rel->tuples[cur_index].payloadID = i;
         tid_offsets[partition]++;
     }
-//    printf("small%d, ts %f\n", small, (double) small / rel->num_tuples);
-//    printf("maxts:%f\n", maxTS / (2.1 * 1E6));
+//    MSG("small%d, ts %f\n", small, (double) small / rel->num_tuples);
+//    MSG("maxts:%f\n", maxTS / (2.1 * 1E6));
 //    fclose(fp);
 }
 
@@ -1045,7 +1045,7 @@ void *alloc_aligned(size_t size) {
 
 
 void smooth(uint64_t *ret, unsigned int stream_size) {
-    printf("smoothing timestamp...");
+    MSG("smoothing timestamp...");
     auto step_size = 0;
     auto current_index = 0;
     auto head_ts = ret[0];

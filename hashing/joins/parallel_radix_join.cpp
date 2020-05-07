@@ -51,7 +51,7 @@
 #define BARRIER_ARRIVE(B, RV)                            \
     RV = pthread_barrier_wait(B);                       \
     if(RV !=0 && RV != PTHREAD_BARRIER_SERIAL_THREAD){  \
-        printf("Couldn't wait on barrier\n");           \
+        MSG("Couldn't wait on barrier\n");           \
         exit(EXIT_FAILURE);                             \
     }
 #endif
@@ -60,7 +60,7 @@
 #ifndef MALLOC_CHECK
 #define MALLOC_CHECK(M)                                                 \
     if(!M){                                                             \
-        printf("[ERROR] MALLOC_CHECK: %s : %d\n", __FILE__, __LINE__);  \
+        MSG("[ERROR] MALLOC_CHECK: %s : %d\n", __FILE__, __LINE__);  \
         perror(": malloc() failed!\n");                                 \
         exit(EXIT_FAILURE);                                             \
     }
@@ -1196,9 +1196,9 @@ prj_thread(void *param) {
 #endif
 
         /* DEBUG NUMA MAPPINGS */
-        /* printf("Correct NUMA-mappings = %d, Wrong = %d\n", */
+        /* MSG("Correct NUMA-mappings = %d, Wrong = %d\n", */
         /*        correct_numa_mapping, wrong_numa_mapping); */
-        /* printf("Counts -- 0=%d, 1=%d, 2=%d, 3=%d\n",  */
+        /* MSG("Counts -- 0=%d, 1=%d, 2=%d, 3=%d\n",  */
         /*        counts[0], counts[1], counts[2], counts[3]); */
     }
 
@@ -1512,7 +1512,7 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, param_t cmd_p
 
     rv = pthread_barrier_init(&barrier, NULL, nthreads);
     if (rv != 0) {
-        printf("[ERROR] Couldn't create the barrier\n");
+        MSG("[ERROR] Couldn't create the barrier\n");
         exit(EXIT_FAILURE);
     }
 
@@ -1574,7 +1574,7 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, param_t cmd_p
 
         rv = pthread_create(&tid[i], &attr, prj_thread, (void *) &args[i]);
         if (rv) {
-            printf("[ERROR] return code from pthread_create() is %d\n", rv);
+            MSG("[ERROR] return code from pthread_create() is %d\n", rv);
             exit(-1);
         }
     }
@@ -1586,7 +1586,7 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, param_t cmd_p
     //compute results.
     for (i = 0; i < nthreads; i++) {
         result += args[i].result;
-        printf("Thread%d, produces %ld outputs\n", i, args[i].result);
+        MSG("Thread%d, produces %ld outputs\n", i, args[i].result);
 #ifndef NO_TIMING
         merge(args[i].timer, relR, relS, startTS, cmd_params.ts == 0 ? 0 : cmd_params.window_size);
 #endif
@@ -1597,7 +1597,7 @@ join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf, param_t cmd_p
     // TODO: add a timer here, how to minus startTimer? Can I use t_timer.h
     int64_t processingTime = curtick() - *startTS;
 #ifndef NO_TIMING
-    printf("With timing, Total processing time is: %f\n", processingTime / (2.1 * 1E6));//cycle to ms
+    MSG("With timing, Total processing time is: %f\n", processingTime / (2.1 * 1E6));//cycle to ms
 #endif
 
 #ifndef NO_TIMING

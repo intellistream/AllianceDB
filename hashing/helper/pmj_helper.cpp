@@ -63,7 +63,7 @@ void earlyJoinMergedRuns(std::vector<run> *Q, int64_t *matches, run *newRun, T_T
         int m = 0;
 
         int actual_merge_step = (int) Q->size();//std::min((int) Q->size(), merge_step);
-        //  printf("actual_merge_step:%d\n", actual_merge_step);
+        //  MSG("actual_merge_step:%d\n", actual_merge_step);
         for (auto run_itr = Q->begin();
              run_itr < Q->begin() + actual_merge_step; ++run_itr) {//iterate through several runs.
             if (Q->size() < 2) { break; }
@@ -127,9 +127,9 @@ void earlyJoinMergedRuns(std::vector<run> *Q, int64_t *matches, run *newRun, T_T
 
         if (!findI && !findJ) {
             if (Q->size() < 2) { return; }
-//            printf("[before] Q SIZE: %zu, actual_merge_step %d\n", Q->size(), actual_merge_step);
+//            MSG("[before] Q SIZE: %zu, actual_merge_step %d\n", Q->size(), actual_merge_step);
             Q->erase(Q->begin(), Q->begin() + actual_merge_step);//clean Q.
-//            printf("[after] Q SIZE: %zu, actual_merge_step %d\n", Q->size(), actual_merge_step);
+//            MSG("[after] Q SIZE: %zu, actual_merge_step %d\n", Q->size(), actual_merge_step);
             newRun->merged = true;
             delete[](RM);
             delete[](SM);
@@ -179,10 +179,10 @@ void earlyJoinMergedRuns(std::vector<run> *Q, int64_t *matches, run *newRun, T_T
 void insert(std::vector<run> *Q, tuple_t *run_R, int lengthR, tuple_t *run_S, int lengthS) {
 #ifdef DEBUG
     if (run_R->payloadID < 0) {
-        printf("wrong");
+        MSG("wrong");
     }
     if (run_S->payloadID < 0) {
-        printf("wrong");
+        MSG("wrong");
     }
 #endif
     Q->push_back(run(run_R, run_S, lengthR, lengthS));

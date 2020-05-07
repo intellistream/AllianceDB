@@ -106,12 +106,12 @@ struct sweepArea {
 #endif
 #ifndef NO_TIMING
 //                    if (tuple->payloadID > 100000 || tuple->payloadID < 0) {
-//                        printf("wrong.");
+//                        MSG("wrong.");
 //                    }
 //                    else
-//                        printf("payloadID:%d\n", tuple->payloadID);
+//                        MSG("payloadID:%d\n", tuple->payloadID);
 //                    if (tuple->payloadID < 0) {
-//                        printf("???");
+//                        MSG("???");
 //                    }
 #ifdef DEBUG
                     if (ISTupleR) {

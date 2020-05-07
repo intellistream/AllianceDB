@@ -15,7 +15,6 @@
 #include <zconf.h>
 #include <regex>
 
-
 using namespace std;
 
 std::string GetCurrentWorkingDir(void) {
@@ -38,16 +37,16 @@ dump_timing(vector<double> vector, std::vector<double> vector_latency,
     std::string name = arg_name + "_" + std::to_string(exp_id);
     //print progressive
     int n = vector.size() - 1;
-    int check01 = ceil(n * 0.001);
-    int check1 = ceil(n * 0.01);
-    int check5 = ceil(n * 0.05);
-    int check10 = ceil(n * 0.1);
-    int check15 = ceil(n * 0.15);
-    int check25 = ceil(n * 0.25);
-    int check50 = ceil(n * 0.50);
-    int check75 = ceil(n * 0.75);
-    int check95 = std::min(ceil(n * 0.95), double(n - 1));
-    int check99 = std::min(ceil(n * 0.99), double(n - 1));
+    int check01 = ceil(n*0.001);
+    int check1 = ceil(n*0.01);
+    int check5 = ceil(n*0.05);
+    int check10 = ceil(n*0.1);
+    int check15 = ceil(n*0.15);
+    int check25 = ceil(n*0.25);
+    int check50 = ceil(n*0.50);
+    int check75 = ceil(n*0.75);
+    int check95 = std::min(ceil(n*0.95), double(n - 1));
+    int check99 = std::min(ceil(n*0.99), double(n - 1));
 
     //dump matches and inputs.
 
@@ -62,8 +61,8 @@ dump_timing(vector<double> vector, std::vector<double> vector_latency,
     ofstream outputFile_ts(path_ts, std::ios::trunc);
     auto begin = vector.begin().operator*();
     vector.erase(vector.begin());
-    for (auto &element : vector) {
-//        printf("timestamp:%f\n", (element + lastTS - begin));
+    for (auto& element : vector) {
+        //        MSG("timestamp:%f\n", (element + lastTS - begin));
         outputFile_ts << (std::to_string(element + lastTS - begin) + "\n");
     }
     outputFile_ts.close();
@@ -83,7 +82,7 @@ dump_timing(vector<double> vector, std::vector<double> vector_latency,
     //dump latency
     string path_latency = "/data1/xtra/results/latency/" + name + ".txt";
     ofstream outputFile_latency(path_latency, std::ios::trunc);
-    for (auto &element : vector_latency) {
+    for (auto& element : vector_latency) {
         outputFile_latency << (std::to_string(element + lastTS) + "\n");
     }
     outputFile_latency.close();
@@ -95,7 +94,7 @@ dump_timing(vector<double> vector, std::vector<double> vector_latency,
     //dump gap
     string path_gap = "/data1/xtra/results/gaps/" + name + ".txt";
     ofstream outputFile_gap(path_gap, std::ios::trunc);
-    for (auto &element : global_record_gap) {
+    for (auto& element : global_record_gap) {
         outputFile_gap << (std::to_string(element + lastTS) + "\n");
     }
     outputFile_gap.close();
@@ -112,32 +111,32 @@ int matches_in_sort_total = 0;
  * @param lastTS
  * @param pFile
  */
-void breakdown_global(int64_t total_results, int nthreads, T_TIMER *timer, long lastTS, _IO_FILE *pFile) {
+void breakdown_global(int64_t total_results, int nthreads, T_TIMER* timer, long lastTS, _IO_FILE* pFile) {
     if (lastTS != 0) {//lazy join algorithms.
-        SET_WAIT_ACC(timer, lastTS * 2.1 * 1E6)
+        SET_WAIT_ACC(timer, lastTS*2.1*1E6)
         timer->overall_timer += timer->wait_timer;
     }
     auto others = (timer->overall_timer -
-                   (timer->wait_timer + timer->partition_timer + timer->buildtimer + timer->sorttimer +
-                    timer->mergetimer + timer->join_timer));
-    printf("%f\n%f\n%f\n%f\n%f\n%f\n%lu\n",
-           (double) timer->wait_timer / total_results,
-           (double) timer->partition_timer / total_results,
-           (double) timer->buildtimer / total_results,
-           (double) timer->sorttimer / total_results,
-           (double) timer->mergetimer / total_results,
-           (double) timer->join_timer / total_results,
-           others / total_results
+        (timer->wait_timer + timer->partition_timer + timer->buildtimer + timer->sorttimer +
+            timer->mergetimer + timer->join_timer));
+    MSG("%f\n%f\n%f\n%f\n%f\n%f\n%lu\n",
+           (double) timer->wait_timer/total_results,
+           (double) timer->partition_timer/total_results,
+           (double) timer->buildtimer/total_results,
+           (double) timer->sorttimer/total_results,
+           (double) timer->mergetimer/total_results,
+           (double) timer->join_timer/total_results,
+           others/total_results
     );
-    printf("matches_in_sort_total: %d\n", matches_in_sort_total);
+    MSG("matches_in_sort_total: %d\n", matches_in_sort_total);
     fprintf(pFile, "%f\n%f\n%f\n%f\n%f\n%f\n%lu\n",
-            (double) timer->wait_timer / total_results,
-            (double) timer->partition_timer / total_results,
-            (double) timer->buildtimer / total_results,
-            (double) timer->sorttimer / total_results,
-            (double) timer->mergetimer / total_results,
-            (double) timer->join_timer / total_results,
-            others / total_results
+            (double) timer->wait_timer/total_results,
+            (double) timer->partition_timer/total_results,
+            (double) timer->buildtimer/total_results,
+            (double) timer->sorttimer/total_results,
+            (double) timer->mergetimer/total_results,
+            (double) timer->join_timer/total_results,
+            others/total_results
     );
     fflush(pFile);
 }
@@ -177,7 +176,7 @@ breakdown_global(int64_t total_results, int nthreads, double average_partition_t
         t0 += std::stod(resultstr);
     }
 
-    wait_time = average_partition_timer - t0 / nthreads;//corrects for wait_time.
+    wait_time = average_partition_timer - t0/nthreads;//corrects for wait_time.
     if (window_size == 0) {
         //there is no waiting time for this dataset anyway.
         wait_time = 0;
@@ -191,10 +190,10 @@ breakdown_global(int64_t total_results, int nthreads, double average_partition_t
             std::regex newlines_re("\n+");
             auto resultstr = std::regex_replace(line, newlines_re, "");
             t1 += std::stod(resultstr);
-            DEBUGMSG("t1:%f\n", t1 / nthreads);
+            DEBUGMSG("t1:%f\n", t1/nthreads);
         }
 
-        join_time = average_partition_timer - wait_time - t1 / nthreads;
+        join_time = average_partition_timer - wait_time - t1/nthreads;
 
         auto t2 = 0.0;
         path = "/data1/xtra/results/breakdown/partition_buildsort_only/" + txtFile;
@@ -205,7 +204,7 @@ breakdown_global(int64_t total_results, int nthreads, double average_partition_t
             auto resultstr = std::regex_replace(line, newlines_re, "");
             t2 += std::stod(resultstr);//corrects for merge for PMJ.
         }
-        merge_time = average_partition_timer - wait_time - join_time - t2 / nthreads;//corrects for merge for PMJ.
+        merge_time = average_partition_timer - wait_time - join_time - t2/nthreads;//corrects for merge for PMJ.
 
     } else {
         path = "/data1/xtra/results/breakdown/partition_buildsort_only/" + txtFile;
@@ -218,8 +217,8 @@ breakdown_global(int64_t total_results, int nthreads, double average_partition_t
             t1 += std::stod(resultstr);//corrects for joiner for SHJ.
 
         }
-        DEBUGMSG("t1:%f\n", t1 / nthreads);
-        join_time = average_partition_timer - wait_time - t1 / nthreads;
+        DEBUGMSG("t1:%f\n", t1/nthreads);
+        join_time = average_partition_timer - wait_time - t1/nthreads;
     }
 
     path = "/data1/xtra/results/breakdown/partition_only/" + txtFile;
@@ -233,46 +232,44 @@ breakdown_global(int64_t total_results, int nthreads, double average_partition_t
 
     if (txtFile.find("SHJ") != std::string::npos) {
         build_time = average_partition_timer - wait_time - join_time - merge_time -
-                     t1 / nthreads;//corrects for buildtimer for SHJ.
+            t1/nthreads;//corrects for buildtimer for SHJ.
         DEBUGMSG("build timer: %f\n", build_time);
     } else {
         sort_time = average_partition_timer - wait_time - join_time - merge_time -
-                    t1 / nthreads;//corrects for buildtimer for PMJ.
+            t1/nthreads;//corrects for buildtimer for PMJ.
         DEBUGMSG("sort timer: %f\n", sort_time);
     }
-    partition_time = t1 / nthreads;//corrects for partition_timer.
+    partition_time = t1/nthreads;//corrects for partition_timer.
     DEBUGMSG("partition timer: %f\n", partition_time);
-
 
     path = "/data1/xtra/results/breakdown/" + txtFile;
     auto fp = fopen(path.c_str(), "w");
 
-
-    printf("%f\n%f\n%f\n%f\n%f\n%f\n%f\n",
-           (double) wait_time / total_results,
-           (double) partition_time / total_results,
-           (double) build_time / total_results,
-           (double) sort_time / total_results,
-           (double) merge_time / total_results,
-           (double) join_time / total_results,
-           others_time / total_results
+    MSG("%f\n%f\n%f\n%f\n%f\n%f\n%f\n",
+           (double) wait_time/total_results,
+           (double) partition_time/total_results,
+           (double) build_time/total_results,
+           (double) sort_time/total_results,
+           (double) merge_time/total_results,
+           (double) join_time/total_results,
+           others_time/total_results
     );
-    printf("matches_in_sort_total: %d\n", matches_in_sort_total);
+    MSG("matches_in_sort_total: %d\n", matches_in_sort_total);
     fprintf(fp, "%f\n%f\n%f\n%f\n%f\n%f\n%f\n",
-            (double) wait_time / total_results,
-            (double) partition_time / total_results,
-            (double) build_time / total_results,
-            (double) sort_time / total_results,
-            (double) merge_time / total_results,
-            (double) join_time / total_results,
-            others_time / total_results
+            (double) wait_time/total_results,
+            (double) partition_time/total_results,
+            (double) build_time/total_results,
+            (double) sort_time/total_results,
+            (double) merge_time/total_results,
+            (double) join_time/total_results,
+            others_time/total_results
     );
     fflush(fp);
 }
 
-void dump_partition_cost(T_TIMER *timer, _IO_FILE *pFile) {
+void dump_partition_cost(T_TIMER* timer, _IO_FILE* pFile) {
 
-    printf("partition cost: %lu\n", timer->partition_timer);
+    MSG("partition cost: %lu\n", timer->partition_timer);
     fprintf(pFile, "%lu\n", timer->partition_timer);
     fflush(pFile);
 }
@@ -289,7 +286,7 @@ void dump_partition_cost(T_TIMER *timer, _IO_FILE *pFile) {
 //
 //        if (file_name.find("PMJ") != std::string::npos) {
 //            path = "/data1/xtra/results/breakdown/partition_buildsort_probemerge_only/" + file_name;
-//            printf("Reading%s\n", path.c_str());
+//            MSG("Reading%s\n", path.c_str());
 //            std::ifstream infile(path);
 //            while (std::getline(infile, line)) {
 //                if (lineid == tid) {
@@ -298,7 +295,7 @@ void dump_partition_cost(T_TIMER *timer, _IO_FILE *pFile) {
 //                    if (timer->partition_timer > std::stol(resultstr)) {
 //                        timer->join_timer = timer->partition_timer - std::stol(resultstr);
 //                    } else {
-//                        printf("This is strange: it is faster when join is enabled!\n");
+//                        MSG("This is strange: it is faster when join is enabled!\n");
 //                    }
 //                    DEBUGMSG("joine_timer:%ld\n", timer->join_timer);
 //                }
@@ -332,7 +329,7 @@ void dump_partition_cost(T_TIMER *timer, _IO_FILE *pFile) {
 //                        timer->join_timer = timer->partition_timer -
 //                                            std::stol(resultstr);//corrects for joiner for SHJ.
 //                    } else {
-//                        printf("This is strange: it is faster when join is enabled!\n");
+//                        MSG("This is strange: it is faster when join is enabled!\n");
 //                    }
 //                    DEBUGMSG("merge_timer:%ld\n", timer->mergetimer);
 //
@@ -350,7 +347,7 @@ void dump_partition_cost(T_TIMER *timer, _IO_FILE *pFile) {
 //                if (file_name.find("SHJ") != std::string::npos) {
 //                    timer->buildtimer = timer->partition_timer - timer->join_timer - timer->mergetimer -
 //                                        std::stol(resultstr);//corrects for buildtimer for SHJ.
-//                    printf("build timer: %ld\n", timer->buildtimer);
+//                    MSG("build timer: %ld\n", timer->buildtimer);
 //                } else {
 //                    timer->sorttimer = timer->partition_timer - timer->join_timer - timer->mergetimer -
 //                                       std::stol(resultstr);//corrects for buildtimer for PMJ.
@@ -378,8 +375,8 @@ void dump_partition_cost(T_TIMER *timer, _IO_FILE *pFile) {
 //        others_time += others;
 //
 //        //for user to read.
-//        printf("[Info] RUNTIME TOTAL, WAIT, PART, BUILD, SORT, MERGE, JOIN, others (cycles): \n");
-//        printf("%llu \t %llu (%.2f%%) \t %llu (%.2f%%) \t %llu (%.2f%%)  "
+//        MSG("[Info] RUNTIME TOTAL, WAIT, PART, BUILD, SORT, MERGE, JOIN, others (cycles): \n");
+//        MSG("%llu \t %llu (%.2f%%) \t %llu (%.2f%%) \t %llu (%.2f%%)  "
 //               "\t %llu (%.2f%%)  \t %llu (%.2f%%) \t %llu (%.2f%%) \t %llu (%.2f%%)\n",
 //               timer->overall_timer,
 //               timer->wait_timer, (timer->wait_timer * 100 / (double) timer->overall_timer),
@@ -401,15 +398,15 @@ std::vector<double> global_record;
 vector<double> global_record_latency;
 vector<double> global_record_gap;
 
-void merge(T_TIMER *timer, relation_t *relR, relation_t *relS, uint64_t *startTS, long lastTS) {
+void merge(T_TIMER* timer, relation_t* relR, relation_t* relS, uint64_t* startTS, long lastTS) {
 #ifndef NO_TIMING
     //For progressiveness measurement
     actual_start_timestamp = *startTS;
     for (auto i = 0; i < timer->recordR.size(); i++) {
-        global_record.push_back(timer->recordR.at(i) / (2.1 * 1E6));
+        global_record.push_back((timer->recordR.at(i) - actual_start_timestamp)/(2.1*1E6));
     }
     for (auto i = 0; i < timer->recordS.size(); i++) {
-        global_record.push_back(timer->recordS.at(i) / (2.1 * 1E6));
+        global_record.push_back((timer->recordS.at(i) - actual_start_timestamp)/(2.1*1E6));
     }
     //For latency and disorder measurement
     int64_t latency = -1;
@@ -417,12 +414,10 @@ void merge(T_TIMER *timer, relation_t *relR, relation_t *relS, uint64_t *startTS
     auto Rrecord_size = timer->recordRID.size();
     for (auto i = 0; i < Rrecord_size; i++) {
         latency =
-                timer->recordR.at(i) - actual_start_timestamp
+            timer->recordR.at(i) - actual_start_timestamp
                 - relR->payload->ts[timer->recordRID.at(i)]//12537240 ~ 9205048
-                + (uint64_t) (lastTS * 2.1 * 1E6);//waiting for the last tuple.
-//        if (latency < 0)
-//            latency = 0;
-        global_record_latency.push_back(latency / (2.1 * 1E6));//cycle to ms
+                + (uint64_t) (lastTS*2.1*1E6);//waiting for the last tuple.
+        global_record_latency.push_back(latency/(2.1*1E6));//cycle to ms
 
         gap = (int32_t) timer->recordRID.at(i) - i;//if it's sequentially processed, gap should be zero.
         global_record_gap.push_back(gap);
@@ -431,12 +426,10 @@ void merge(T_TIMER *timer, relation_t *relR, relation_t *relS, uint64_t *startTS
     auto Srecord_size = timer->recordSID.size();
     for (auto i = 0; i < Srecord_size; i++) {
         latency =
-                timer->recordS.at(i) - actual_start_timestamp //cycles
+            timer->recordS.at(i) - actual_start_timestamp //cycles
                 - relS->payload->ts[timer->recordSID.at(i)]//cycles
-                + (uint64_t) (lastTS * 2.1 * 1E6);//latency of one tuple.
-//        if (latency < 0)
-//            latency = 0;
-        global_record_latency.push_back(latency / (2.1 * 1E6));
+                + (uint64_t) (lastTS*2.1*1E6);//latency of one tuple.
+        global_record_latency.push_back(latency/(2.1*1E6));
         gap = (int32_t) timer->recordSID.at(i) - i;//if it's sequentially processed, gap should be zero.
         global_record_gap.push_back(gap);
     }
@@ -451,7 +444,6 @@ void merge(T_TIMER *timer, relation_t *relR, relation_t *relS, uint64_t *startTS
 void sortRecords(string algo_name, int exp_id, long lastTS, unsigned long inputs, int64_t matches) {
 
     //sort the global record to get to know the actual time when each match success.
-    global_record.push_back(actual_start_timestamp / (2.1 * 1E6));//cycles to ms.
     sort(global_record.begin(), global_record.end());
     sort(global_record_latency.begin(), global_record_latency.end());
     sort(global_record_gap.begin(), global_record_gap.end());

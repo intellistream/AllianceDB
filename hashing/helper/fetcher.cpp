@@ -130,7 +130,7 @@ nextTupleS(t_state* state, const uint64_t* fetchStartTime, relation_t* relS) {
         arrivalTsS = relS->payload->ts[readS->payloadID];
         auto tick = curtick();
         if (arrivalTsS <= (tick - *fetchStartTime)) {//tuple has arrived at current fetch time.
-            MSG("TUPLE S [payload ID:%d] is arrived at %lu and "
+            DEBUGMSG("TUPLE S [payload ID:%d] is arrived at %lu and "
                 "is fetched at %lu, fetch start time:%lu\n",
                 readS->payloadID,
                 arrivalTsS,
@@ -149,7 +149,7 @@ nextTupleS(t_state* state, const uint64_t* fetchStartTime, relation_t* relS) {
         return &(state->fetch);
 #endif
         //        if (retry)
-        //            printf("sid[%d], arrivalTsS:%ld, readTS:%ld\n", state->start_index_S, arrivalTsS, readTS);
+        //            MSG("sid[%d], arrivalTsS:%ld, readTS:%ld\n", state->start_index_S, arrivalTsS, readTS);
     }
     return nullptr;
 }
@@ -167,7 +167,7 @@ nextTupleR(t_state* state, const uint64_t* fetchStartTime, relation_t* relR) {
         arrivalTsR = relR->payload->ts[readR->payloadID];
         uint64_t tick = curtick();
         if (arrivalTsR <= (tick - *fetchStartTime)) {//tuple has arrived at current fetch time.
-            MSG("TUPLE R [payload ID:%d] is arrived at %lu and "
+            DEBUGMSG("TUPLE R [payload ID:%d] is arrived at %lu and "
                 "is fetched at %lu, fetch start time:%lu\n",
                 readR->payloadID,
                 arrivalTsR,
@@ -186,7 +186,7 @@ nextTupleR(t_state* state, const uint64_t* fetchStartTime, relation_t* relR) {
         return &(state->fetch);
 #endif
         //        if (retry)
-        //            printf("rid[%d] (%%d), arrivalTsR:%ld, readTS:%ld\n", state->start_index_R, arrivalTsR, readTS);
+        //            MSG("rid[%d] (%%d), arrivalTsR:%ld, readTS:%ld\n", state->start_index_R, arrivalTsR, readTS);
     }
     return nullptr;
 }

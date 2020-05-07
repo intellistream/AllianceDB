@@ -152,7 +152,7 @@ gen_zipf(unsigned int stream_size,
     double *lut = gen_zipf_lut(zipf_factor, alphabet_size);
 
 //    for (int i=0; i < alphabet_size; i++) {
-//        printf("%d\n", alphabet[i]);
+//        MSG("%d\n", alphabet[i]);
 //    }
 
     assert (lut);
@@ -262,7 +262,7 @@ gen_zipf_ts(unsigned int stream_size,
     std::sort(ret, ret+stream_size);
 
 //    for (int i=0; i < stream_size; i++) {
-//        printf("%d\n", ret[i]);
+//        MSG("%d\n", ret[i]);
 //    }
 
     return ret;
