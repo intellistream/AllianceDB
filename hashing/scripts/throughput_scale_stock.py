@@ -236,4 +236,4 @@ if __name__ == "__main__":
                0, 0,  # not in use.
                'throughput_scale_stock',
                False)
-    DrawLegend(legend_labels, 'throughput_scale_legend')
+    DrawLegend(legend_labels, 'throughput_large_scale_legend')

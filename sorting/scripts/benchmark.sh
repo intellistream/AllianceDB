@@ -33,7 +33,7 @@ function KimRun() {
   ../sorting -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -W $FIXS -g $gap -P $DD -I $id
 }
 
-function SetStockParameters() { #matches: 229517.
+function SetStockParameters() { #matches: 57070441.
   ts=1 # stream case
   #  WINDOW_SIZE=1000
   #  RSIZE=60257
@@ -49,7 +49,7 @@ function SetStockParameters() { #matches: 229517.
   SKEY=0
   RTS=1
   STS=1
-  gap=229
+  gap=57070
 }
 
 function SetRovioParameters() { #matches: 27660233
@@ -122,7 +122,7 @@ output=test$timestamp.txt
 #general benchmark.
 compile=0
 for algo in m-way m-pass; do
-  for benchmark in "LargeScaleStock" "LargeScaleRovio" "LargeScaleYSB" "LargeScaleDEBS"; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "AR" "RAR" "AD" "KD" "WS"
+  for benchmark in "LargeScaleStock"; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "AR" "RAR" "AD" "KD" "WS"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "AR") #test arrival rate and assume both inputs have same arrival rate.

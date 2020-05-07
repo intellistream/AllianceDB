@@ -74,7 +74,7 @@ ADD_LIBRARY(common OBJECT utils/xxhash64.h timer/t_timer.h timer/t_timer.cpp ben
 #target_link_libraries(runUnitTests numa)
 #target_link_libraries(runUnitTests boost_system)
 
-add_executable(hashing  main.cpp $<TARGET_OBJECTS:common> )
+add_executable(hashing main.cpp $<TARGET_OBJECTS:common> )
 
 target_link_libraries(hashing ${CMAKE_DL_LIBS}) ##used by boost
 target_link_libraries(hashing numa)

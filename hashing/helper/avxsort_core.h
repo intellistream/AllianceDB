@@ -19,6 +19,7 @@
 #endif
 
 #include "avxcommon.h"
+#include "../joins/common_functions.h"
 
 //#include "params.h"
 /* #include "iacaMarks.h" */
@@ -469,7 +470,8 @@ merge16_varlen(int64_t *restrict inpA,
         }
 
         /* flush the register to one of the lists */
-        int64_t hireg[4] __attribute__((aligned(16)));
+//        int64_t hireg[4] __attribute__((aligned(16)));
+        auto hireg = (int64_t *) malloc_aligned(4 * sizeof(int64_t));
         _mm256_store_pd((double *) hireg, outreg2h2);
 
         if (*((int64_t *) inA) >= *((int64_t *) (hireg + 3))) {

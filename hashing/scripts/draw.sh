@@ -1,16 +1,16 @@
 #!/bin/bash
 ### APP
-#python3 latency_figure_app.py
-#python3 throughput_figure_app.py
+python3 latency_figure_app.py
+python3 throughput_figure_app.py
 ###
-#for id in {38..41}; do
-#  python3 progressive_figure.py -i $id
-#done
+for id in {38..41}; do
+  python3 progressive_figure.py -i $id
+done
 
-#python3 breakdown_broken.py -i 38
-#for id in {39..41} ; do
-#  python3 breakdown.py -i $id
-#done
+python3 breakdown_broken.py -i 38
+for id in {39..41} ; do
+  python3 breakdown.py -i $id
+done
 
 #for id in {38..41}; do
 #  python3 disorderCDF.py -i $id
@@ -20,10 +20,10 @@
 #python3 throughput_scale_lazy.py
 #python3 throughput_scale_eager.py
 
-python3 throughput_scale_stock.py
-python3 throughput_scale_rovio.py
-python3 throughput_scale_ysb.py
-python3 throughput_scale_debs.py
+#python3 throughput_scale_stock.py
+#python3 throughput_scale_rovio.py
+#python3 throughput_scale_ysb.py
+#python3 throughput_scale_debs.py
 
 ### HS scheme
 #python3 breakdown_hsstudy_jm.py
@@ -85,7 +85,7 @@ python3 throughput_scale_debs.py
 #  python3 progressive_figure.py -i $id
 #done
 
-## Impact of data duplication
+# Impact of data duplication
 #python3 throughput_figure6.py
 #python3 latency_figure6.py
 #for id in 25 28; do
