@@ -40,7 +40,7 @@ struct fetch_t {
 struct t_state {
     int current_index_R = 0;//configure pointer of start reading point.
     int end_index_R = 0;//configure pointer of end reading point.
-    int start_index_S = 0;//configure pointer of start reading point.
+    int current_index_S = 0;//configure pointer of start reading point.
     int end_index_S = 0;//configure pointer of end reading point.
     fetch_t current_fetch;
 };
@@ -104,11 +104,11 @@ public:
         }
         if (tid == nthreads - 1) {
             /* replicate relS to thread [nthread-1] */
-            state->start_index_S = 0;
+            state->current_index_S = 0;
             state->end_index_S = relS->num_tuples;
         }
         DEBUGMSG("TID:%d, R: start_index:%d, end_index:%d\n", tid, state->current_index_R, state->end_index_R);
-        DEBUGMSG("TID:%d, S: start_index:%d, end_index:%d\n", tid, state->start_index_S, state->end_index_S);
+        DEBUGMSG("TID:%d, S: start_index:%d, end_index:%d\n", tid, state->current_index_S, state->end_index_S);
     }
 };
 
@@ -134,12 +134,12 @@ public:
         }
         if (tid == nthreads - 1) {
             /* replicate relS to thread [nthread-1] */
-            state->start_index_S = 0;
+            state->current_index_S = 0;
             state->end_index_S = relS->num_tuples;
         }
 
         DEBUGMSG("TID:%d, R: start_index:%d, end_index:%d\n", tid, state->current_index_R, state->end_index_R);
-        DEBUGMSG("TID:%d, S: start_index:%d, end_index:%d\n", tid, state->start_index_S, state->end_index_S);
+        DEBUGMSG("TID:%d, S: start_index:%d, end_index:%d\n", tid, state->current_index_S, state->end_index_S);
     }
 
 
@@ -167,7 +167,7 @@ public:
         }
  * */
         return state->current_index_R == state->end_index_R
-               && state->start_index_S == state->end_index_S;
+               && state->current_index_S == state->end_index_S;
     }
 
     /**
@@ -187,7 +187,7 @@ public:
         state->end_index_R = relR->num_tuples;
 
         /* assign part of the relS for next thread */
-        state->start_index_S = numSthr * tid;
+        state->current_index_S = numSthr * tid;
         state->end_index_S = (last_thread(tid, nthreads)) ? relS->num_tuples : numSthr * (tid + 1);
 
 /*
@@ -195,15 +195,15 @@ public:
 
         state->IsTupleR = false;
         // replicate relS for next thread /
-        state->start_index_S = 0;
+        state->current_index_S = 0;
         state->end_index_S = relS->num_tuples;
 
         // assign part of the relR for next thread /
         state->start_index_R = numRthr * tid;
         state->end_index_R = (last_thread(tid, nthreads)) ? relR->num_tuples : numRthr * (tid + 1);
 */
-        DEBUGMSG("TID:%d, S: start_index:%d, start ts:%d\n", tid, state->start_index_S,
-                 relS->payload->ts[state->start_index_S]);
+        DEBUGMSG("TID:%d, S: start_index:%d, start ts:%d\n", tid, state->current_index_S,
+                 relS->payload->ts[state->current_index_S]);
     }
 };
 
@@ -212,7 +212,7 @@ public:
 
     bool finish() {
         return state->current_index_R == state->end_index_R
-               && state->start_index_S == state->end_index_S;
+               && state->current_index_S == state->end_index_S;
     }
 
     JB_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS, int tid, T_TIMER *timer)
@@ -226,11 +226,11 @@ public:
         state->end_index_R = (last_thread(tid, nthreads)) ? relR->num_tuples : numRthr * (tid + 1);
 
         /* assign part of the relS for next thread */
-        state->start_index_S = numSthr * tid;
+        state->current_index_S = numSthr * tid;
         state->end_index_S = (last_thread(tid, nthreads)) ? relS->num_tuples : numSthr * (tid + 1);
 
         DEBUGMSG("TID:%d, R: start_index:%d, end_index:%d\n", tid, state->current_index_R, state->end_index_R);
-        DEBUGMSG("TID:%d, S: start_index:%d, end_index:%d\n", tid, state->start_index_S, state->end_index_S);
+        DEBUGMSG("TID:%d, S: start_index:%d, end_index:%d\n", tid, state->current_index_S, state->end_index_S);
 
     }
 };

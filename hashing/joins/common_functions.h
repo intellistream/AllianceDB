@@ -18,8 +18,8 @@
 
 #define JOIN
 #define MERGE
-#define MATCH
-#define WAIT
+//#define MATCH
+//#define WAIT
 
 //#define EAGER //disable when profiling.
 

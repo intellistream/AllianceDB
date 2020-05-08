@@ -27,8 +27,8 @@ fetch_t* HS_NP_Fetcher::next_tuple() {
             return nullptr;
         }
     } else {//thread n-1 fetches S.
-        if (state->start_index_S < state->end_index_S) {
-            state->current_fetch.tuple = &relS->tuples[state->start_index_S++];
+        if (state->current_index_S < state->end_index_S) {
+            state->current_fetch.tuple = &relS->tuples[state->current_index_S++];
             state->current_fetch.ISTuple_R = false;
             return &(state->current_fetch);
         } else {
@@ -67,10 +67,10 @@ fetch_t* PMJ_HS_NP_Fetcher::next_tuple() {
     //        }
     //    }
     //    //try to read S then.
-    //    if (state->start_index_S < state->end_index_S) {
+    //    if (state->current_index_S < state->end_index_S) {
     //        state->fetch.fat_tuple_size = min((int) progressive_step_tupleS,
-    //                                          (state->end_index_S - state->start_index_S));//left-over..
-    //        readS = &relS->tuples[state->start_index_S];
+    //                                          (state->end_index_S - state->current_index_S));//left-over..
+    //        readS = &relS->tuples[state->current_index_S];
     //        //check the timestamp whether the tuple is ``ready" to be fetched.
     //        uint64_t timestamp
     //                = relS->payload->ts[readS[state->fetch.fat_tuple_size - 1].payloadID];
@@ -79,7 +79,7 @@ fetch_t* PMJ_HS_NP_Fetcher::next_tuple() {
     //        if (timegap  <= 0) {//if it's negative means our fetch is too slow.
     //            state->fetch.fat_tuple = readS;
     //            state->fetch.ISTuple_R = false;
-    //            state->start_index_S += state->fetch.fat_tuple_size;
+    //            state->current_index_S += state->fetch.fat_tuple_size;
     //            return &(state->fetch);
     //        } else {
     //            if (min_gap > timegap) {//S is nearest.
@@ -94,7 +94,7 @@ fetch_t* PMJ_HS_NP_Fetcher::next_tuple() {
     //#endif
     //                state->fetch.fat_tuple = readS;
     //                state->fetch.ISTuple_R = false;
-    //                state->start_index_S += state->fetch.fat_tuple_size;
+    //                state->current_index_S += state->fetch.fat_tuple_size;
     //                return &(state->fetch);
     //            } else if (readR != nullptr) {//R is nearest.
     //                DEBUGMSG("Thread %d is going to sleep for %d before get R", tid, min_gap)
@@ -122,8 +122,8 @@ nextTupleS(t_state* state, const uint64_t* fetchStartTime, relation_t* relS) {
     uint64_t arrivalTsS;
 
     //try to read S first.
-    if (state->start_index_S < state->end_index_S) {
-        readS = &relS->tuples[state->start_index_S];
+    if (state->current_index_S < state->end_index_S) {
+        readS = &relS->tuples[state->current_index_S];
 #ifdef WAIT
         //check the timestamp whether the tuple is ``ready" to be fetched.
         arrivalTsS = relS->payload->ts[readS->payloadID];
@@ -138,17 +138,17 @@ nextTupleS(t_state* state, const uint64_t* fetchStartTime, relation_t* relS) {
             )
             state->current_fetch.tuple = readS;
             state->current_fetch.ISTuple_R = false;
-            state->start_index_S++;
+            state->current_index_S++;
             return &(state->current_fetch);
         }
 #else//return without checking for timestamp.
         state->current_fetch.tuple = readS;
         state->current_fetch.ISTuple_R = false;
-        state->start_index_S++;
+        state->current_index_S++;
         return &(state->current_fetch);
 #endif
         //        if (retry)
-        //            MSG("sid[%d], arrivalTsS:%ld, readTS:%ld\n", state->start_index_S, arrivalTsS, readTS);
+        //            MSG("sid[%d], arrivalTsS:%ld, readTS:%ld\n", state->current_index_S, arrivalTsS, readTS);
     }
     return nullptr;
 }
@@ -181,7 +181,7 @@ nextTupleR(t_state* state, const uint64_t* fetchStartTime, relation_t* relR) {
 #else//return without checking for timestamp.
         state->current_fetch.tuple = readR;
         state->current_fetch.ISTuple_R = true;
-        state->start_index_R++;
+        state->current_index_R++;
         return &(state->current_fetch);
 #endif
         //        if (retry)
@@ -202,7 +202,7 @@ fetch_t* baseFetcher::_next_tuple() {
 
 fetch_t* baseFetcher::next_tuple() {
     if (tryR) {
-        //        if (state->start_index_S < state->end_index_S)
+        //        if (state->current_index_S < state->end_index_S)
         tryR = false;
         auto rt = nextTupleR(state, fetchStartTime, relR);
         if (rt != nullptr)
