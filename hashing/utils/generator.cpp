@@ -142,10 +142,8 @@ add_ts(relation_t* relation, relation_payload_t* relationPayload, int step_size,
     for (auto partition = 0; partition < partitions; partition++) {
         tid_offsets[partition] = 0;
         tid_start_idx[partition] = numthr*partition;
-        tid_end_idx[partition] = (last_thread(partition, partitions)) ? relation->num_tuples : numthr*(partition + 1);
-
-        //        DEBUGMSG("partition %d start idx: %d end idx: %d\n", partition, tid_start_idx[partition],
-        //                 tid_end_idx[partition]);
+        tid_end_idx[partition] =
+            (last_thread(partition, partitions)) ? relation->num_tuples - 1 : numthr*(partition + 1) - 1;
     }
 
     //create ts.
@@ -158,7 +156,7 @@ add_ts(relation_t* relation, relation_payload_t* relationPayload, int step_size,
     }
 
     //smooth ts.
-    smooth(ret, relation->num_tuples);
+    //    smooth(ret, relation->num_tuples);
 
     //shuffle assign ts
     for (auto i = 0; i < relation->num_tuples; i++) {
@@ -202,7 +200,8 @@ void add_zipf_ts(relation_t* relation, relation_payload_t* relationPayload, int 
     for (auto partition = 0; partition < partitions; partition++) {
         tid_offsets[partition] = 0;
         tid_start_idx[partition] = numthr*partition;
-        tid_end_idx[partition] = (last_thread(partition, partitions)) ? relation->num_tuples : numthr*(partition + 1);
+        tid_end_idx[partition] =
+            (last_thread(partition, partitions)) ? relation->num_tuples - 1 : numthr*(partition + 1) - 1;
     }
 
     for (auto i = 0; i < relation->num_tuples; i++) {
@@ -954,7 +953,12 @@ read_relation(relation_t* rel, relation_payload_t* relPl, int32_t keyby, int32_t
     for (auto partition = 0; partition < partitions; partition++) {
         tid_offsets[partition] = 0;
         tid_start_idx[partition] = numthr*partition;
-        tid_end_idx[partition] = (last_thread(partition, partitions)) ? rel->num_tuples : numthr*(partition + 1);
+        tid_end_idx[partition] =
+            (last_thread(partition, partitions)) ? rel->num_tuples - 1 : numthr*(partition + 1) - 1;
+        DEBUGMSG("Partition%d, start_index:%d, end_index=%d",
+               partition,
+               tid_start_idx[partition],
+               tid_end_idx[partition]);
     }
 
     uint64_t* ret;
@@ -995,7 +999,23 @@ read_relation(relation_t* rel, relation_payload_t* relPl, int32_t keyby, int32_t
 
     smooth(ret, rel->num_tuples);
 
+    uint64_t ts = 0;
+    for (auto i = 0; i < rel->num_tuples; i++) {
+        auto read = &rel->tuples[i];
+        auto read_ts = rel->payload->ts[read->payloadID];
+        if (read_ts >= ts) {
+            ts = read_ts;
+        } else {
+            printf("\nts is not monotonically increasing since:%d, "
+                   " S:%lu\n", i, read_ts);
+            break;
+        }
+    }
+    fflush(stdout);
+
     //shuffle assign ts
+    printf("ASSIGN TS\n");
+    auto assign_ts=0;
     for (auto i = 0; i < rel->num_tuples; i++) {
         // round robin to assign ts to each thread.
         auto partition = i%partitions;
@@ -1004,14 +1024,22 @@ read_relation(relation_t* rel, relation_payload_t* relPl, int32_t keyby, int32_t
         }
         // record cur index in partition
         int cur_index = tid_start_idx[partition] + tid_offsets[partition];
+//
+//        if (partition == 1) {
+//            if(ret[i]>=assign_ts){
+//                assign_ts=ret[i];
+//            } else{
+//                printf("not monotonically increasing. assign to P1 at %d with ts:%lu\n", cur_index, ret[i]);
+//            }
+//
+//        }
+
         relPl->ts[cur_index] = ret[i];
         rel->tuples[cur_index].key = key[i];
-        rel->tuples[cur_index].payloadID = i;
+        rel->tuples[cur_index].payloadID = cur_index;
         tid_offsets[partition]++;
     }
-    //    MSG("small%d, ts %f\n", small, (double) small / rel->num_tuples);
-    //    MSG("maxts:%f\n", maxTS / (2.1 * 1E6));
-    //    fclose(fp);
+
 }
 
 void* alloc_aligned(size_t size) {

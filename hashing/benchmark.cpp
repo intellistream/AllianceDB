@@ -186,6 +186,20 @@ benchmark(const param_t cmd_params) {
     /* Run the selected join algorithm */
     MSG("[INFO ] Running join algorithm %s ...", cmd_params.algo->name);
 
+//    uint64_t ts = 0;
+//    for (auto i = 0; i < relS.num_tuples; i++) {
+//        auto read = &relS.tuples[i];
+//        auto read_ts = relS.payload->ts[read->payloadID];
+//        if (read_ts >= ts) {
+//            ts = read_ts;
+//        } else {
+//            printf("\nts is not monotonically increasing since:%d, "
+//                   " S:%lu\n", i,   read_ts);
+//            break;
+//        }
+//    }
+//    fflush(stdout);
+
     if (cmd_params.ts == 0)
         results = cmd_params.algo->joinAlgo(&relR, &relS, cmd_params);//no window to wait.
     else

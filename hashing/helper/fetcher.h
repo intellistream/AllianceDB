@@ -146,23 +146,6 @@ class JM_NP_Fetcher : public baseFetcher {
   public:
 
     bool finish() {
-        /*
-         *      if (cntR == relR->num_tuples / 4) {
-                    MSG("Thread %d has finished process input  0.25 R", tid);
-                } else if (cntR == relR->num_tuples / 2) {
-                    MSG("Thread %d has finished process input  0.5 R", tid);
-                } else if (cntR == relR->num_tuples / 4 * 3) {
-                    MSG("Thread %d has finished process input  0.75 R", tid);
-                }
-
-                if (cntS == relS->num_tuples / 4) {
-                    MSG("Thread %d has finished process input  0.25 S", tid);
-                } else if (cntS == relS->num_tuples / 2) {
-                    MSG("Thread %d has finished process input  0.5 S", tid);
-                } else if (cntS == relS->num_tuples / 4 * 3) {
-                    MSG("Thread %d has finished process input  0.75 S", tid);
-                }
-         * */
         return state->current_index_R == state->end_index_R
             && state->current_index_S == state->end_index_S;
     }
@@ -187,8 +170,19 @@ class JM_NP_Fetcher : public baseFetcher {
         state->current_index_S = numSthr*tid;
         state->end_index_S = (last_thread(tid, nthreads)) ? relS->num_tuples - 1 : numSthr*(tid + 1) - 1;
 
-        DEBUGMSG("TID:%d, S: start_index:%d, start ts:%d\n", tid, state->current_index_S,
-                 relS->payload->ts[state->current_index_S]);
+//        uint64_t ts = 0;
+//        for (auto i = state->current_index_S; i < state->end_index_S; i++) {
+//            auto read = &relS->tuples[i];
+//            auto read_ts = relS->payload->ts[read->payloadID];
+//            if (read_ts >= ts) {
+//                ts = read_ts;
+//            } else {
+//                printf("\nts is not monotonically increasing since:%d, "
+//                       "tid:%d, S:%lu\n", i, tid, read_ts);
+//                break;
+//            }
+//        }
+//        fflush(stdout);
     }
 };
 
