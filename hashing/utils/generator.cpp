@@ -118,7 +118,8 @@ void ts_shuffle(relation_t* relation, relation_payload_t* relationPayload, uint3
     for (auto partition = 0; partition < partitions; partition++) {
         tid_offsets[partition] = 0;
         tid_start_idx[partition] = numthr*partition;
-        tid_end_idx[partition] = (last_thread(partition, partitions)) ? relation->num_tuples : numthr*(partition + 1);
+        tid_end_idx[partition] =
+            (last_thread(partition, partitions)) ? relation->num_tuples - 1 : numthr*(partition + 1) - 1;
 
         MSG("partition %d start idx: %d end idx: %d\n", partition, tid_start_idx[partition], tid_end_idx[partition]);
     }
@@ -956,9 +957,9 @@ read_relation(relation_t* rel, relation_payload_t* relPl, int32_t keyby, int32_t
         tid_end_idx[partition] =
             (last_thread(partition, partitions)) ? rel->num_tuples - 1 : numthr*(partition + 1) - 1;
         DEBUGMSG("Partition%d, start_index:%d, end_index=%d",
-               partition,
-               tid_start_idx[partition],
-               tid_end_idx[partition]);
+                 partition,
+                 tid_start_idx[partition],
+                 tid_end_idx[partition]);
     }
 
     uint64_t* ret;
@@ -1015,7 +1016,7 @@ read_relation(relation_t* rel, relation_payload_t* relPl, int32_t keyby, int32_t
 
     //shuffle assign ts
     printf("ASSIGN TS\n");
-    auto assign_ts=0;
+    auto assign_ts = 0;
     for (auto i = 0; i < rel->num_tuples; i++) {
         // round robin to assign ts to each thread.
         auto partition = i%partitions;
@@ -1024,15 +1025,15 @@ read_relation(relation_t* rel, relation_payload_t* relPl, int32_t keyby, int32_t
         }
         // record cur index in partition
         int cur_index = tid_start_idx[partition] + tid_offsets[partition];
-//
-//        if (partition == 1) {
-//            if(ret[i]>=assign_ts){
-//                assign_ts=ret[i];
-//            } else{
-//                printf("not monotonically increasing. assign to P1 at %d with ts:%lu\n", cur_index, ret[i]);
-//            }
-//
-//        }
+        //
+        //        if (partition == 1) {
+        //            if(ret[i]>=assign_ts){
+        //                assign_ts=ret[i];
+        //            } else{
+        //                printf("not monotonically increasing. assign to P1 at %d with ts:%lu\n", cur_index, ret[i]);
+        //            }
+        //
+        //        }
 
         relPl->ts[cur_index] = ret[i];
         rel->tuples[cur_index].key = key[i];
