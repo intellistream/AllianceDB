@@ -19,11 +19,10 @@
 #include <sys/time.h>           /* gettimeofday */
 #include <zconf.h>
 #include "onlinejoins.h"
-#include "../timer/t_timer.h"  /* startTimer, stopTimer */
 #include "../utils/barrier.h"
 #include "../helper/launcher.h"
 #include "../helper/thread_task.h"
-
+#include "common_functions.h"
 
 /** @} */
 
@@ -47,7 +46,7 @@ t_param &finishing(int nthreads, t_param &param, uint64_t *startTS, param_t *cmd
     // TODO: add a timer here, how to minus startTimer? Can I use t_timer.h
     int64_t processingTime = curtick() - *startTS;
 #ifndef NO_TIMING
-    MSG("With timing, Total processing time is: %f\n", processingTime / (2.1 * 1E6));//cycle to ms
+    MSG("With timing, Total processing time is: %f", processingTime / (2.1 * 1E6));//cycle to ms
 #endif
 #ifdef NO_TIMING
     MSG("No timing, Total processing time is: %ld\n", processingTime / (2.1 * 1E6));

@@ -19,15 +19,14 @@ enum fetcher {
     type_HS_NP_Fetcher, type_JM_NP_Fetcher, type_JB_NP_Fetcher, type_PMJ_HS_NP_Fetcher
 };
 
-
 struct fetch_t {
-    fetch_t(fetch_t *fetch);
+    fetch_t(fetch_t* fetch);
 
     fetch_t();
 
-    tuple_t *tuple = nullptr;//normal tuples.
+    tuple_t* tuple = nullptr;//normal tuples.
 
-    tuple_t *fat_tuple = nullptr;//used for PMJ only.
+    tuple_t* fat_tuple = nullptr;//used for PMJ only.
 
     int fat_tuple_size = 0;
 
@@ -45,22 +44,21 @@ struct t_state {
     fetch_t current_fetch;
 };
 
-
 class baseFetcher {
-public:
-    virtual fetch_t *next_tuple();
+  public:
+    virtual fetch_t* next_tuple();
 
-    virtual fetch_t *_next_tuple();//helper function to avoid recurrsion
-    relation_t *relR;//input relation
-    relation_t *relS;//input relation
+    virtual fetch_t* _next_tuple();//helper function to avoid recurrsion
+    relation_t* relR;//input relation
+    relation_t* relS;//input relation
     bool tryR = true;
-//    milliseconds *RdataTime;
-//    milliseconds *SdataTime;
-//    bool start = true;
+    //    milliseconds *RdataTime;
+    //    milliseconds *SdataTime;
+    //    bool start = true;
 
-    uint64_t *fetchStartTime;//initialize
-    T_TIMER *timer;
-    t_state *state;
+    uint64_t* fetchStartTime;//initialize
+    T_TIMER* timer;
+    t_state* state;
     int tid;
 
     //used by HS.
@@ -69,7 +67,7 @@ public:
 
     virtual bool finish() = 0;
 
-    baseFetcher(relation_t *relR, relation_t *relS, int tid, T_TIMER *timer) {
+    baseFetcher(relation_t* relR, relation_t* relS, int tid, T_TIMER* timer) {
         this->tid = tid;
         this->relR = relR;
         this->relS = relS;
@@ -82,9 +80,9 @@ inline bool last_thread(int i, int nthreads) {
 }
 
 class PMJ_HS_NP_Fetcher : public baseFetcher {
-public:
+  public:
 
-    fetch_t *next_tuple() override;
+    fetch_t* next_tuple() override;
     bool finish() { return false; };
     /**
      * Initialization
@@ -92,8 +90,8 @@ public:
      * @param relR
      * @param relS
      */
-    PMJ_HS_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS, int tid, T_TIMER *timer)
-            : baseFetcher(relR, relS, tid, timer) {
+    PMJ_HS_NP_Fetcher(int nthreads, relation_t* relR, relation_t* relS, int tid, T_TIMER* timer)
+        : baseFetcher(relR, relS, tid, timer) {
         state = new t_state();
 
         //let first and last thread to read two streams.
@@ -113,8 +111,8 @@ public:
 };
 
 class HS_NP_Fetcher : public baseFetcher {
-public:
-    fetch_t *next_tuple() override;
+  public:
+    fetch_t* next_tuple() override;
     bool finish() { return false; };
     /**
      * Initialization
@@ -122,8 +120,8 @@ public:
      * @param relR
      * @param relS
      */
-    HS_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS, int tid, T_TIMER *timer)
-            : baseFetcher(relR, relS, tid, timer) {
+    HS_NP_Fetcher(int nthreads, relation_t* relR, relation_t* relS, int tid, T_TIMER* timer)
+        : baseFetcher(relR, relS, tid, timer) {
         state = new t_state();
 
         //let first and last thread to read two streams.
@@ -142,32 +140,31 @@ public:
         DEBUGMSG("TID:%d, S: start_index:%d, end_index:%d\n", tid, state->current_index_S, state->end_index_S);
     }
 
-
 };
 
 class JM_NP_Fetcher : public baseFetcher {
-public:
+  public:
 
     bool finish() {
-/*
- *      if (cntR == relR->num_tuples / 4) {
-            MSG("Thread %d has finished process input  0.25 R", tid);
-        } else if (cntR == relR->num_tuples / 2) {
-            MSG("Thread %d has finished process input  0.5 R", tid);
-        } else if (cntR == relR->num_tuples / 4 * 3) {
-            MSG("Thread %d has finished process input  0.75 R", tid);
-        }
+        /*
+         *      if (cntR == relR->num_tuples / 4) {
+                    MSG("Thread %d has finished process input  0.25 R", tid);
+                } else if (cntR == relR->num_tuples / 2) {
+                    MSG("Thread %d has finished process input  0.5 R", tid);
+                } else if (cntR == relR->num_tuples / 4 * 3) {
+                    MSG("Thread %d has finished process input  0.75 R", tid);
+                }
 
-        if (cntS == relS->num_tuples / 4) {
-            MSG("Thread %d has finished process input  0.25 S", tid);
-        } else if (cntS == relS->num_tuples / 2) {
-            MSG("Thread %d has finished process input  0.5 S", tid);
-        } else if (cntS == relS->num_tuples / 4 * 3) {
-            MSG("Thread %d has finished process input  0.75 S", tid);
-        }
- * */
+                if (cntS == relS->num_tuples / 4) {
+                    MSG("Thread %d has finished process input  0.25 S", tid);
+                } else if (cntS == relS->num_tuples / 2) {
+                    MSG("Thread %d has finished process input  0.5 S", tid);
+                } else if (cntS == relS->num_tuples / 4 * 3) {
+                    MSG("Thread %d has finished process input  0.75 S", tid);
+                }
+         * */
         return state->current_index_R == state->end_index_R
-               && state->current_index_S == state->end_index_S;
+            && state->current_index_S == state->end_index_S;
     }
 
     /**
@@ -176,58 +173,46 @@ public:
      * @param relR
      * @param relS
      */
-    JM_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS, int tid, T_TIMER *timer)
-            : baseFetcher(relR, relS, tid, timer) {
+    JM_NP_Fetcher(int nthreads, relation_t* relR, relation_t* relS, int tid, T_TIMER* timer)
+        : baseFetcher(relR, relS, tid, timer) {
         state = new t_state();
 
-        int numSthr = relS->num_tuples / nthreads;//replicate R, partition S.
+        int numSthr = relS->num_tuples/nthreads;//replicate R, partition S.
 
         /* replicate relR for next thread */
         state->current_index_R = 0;
-        state->end_index_R = relR->num_tuples;
+        state->end_index_R = relR->num_tuples - 1;
 
         /* assign part of the relS for next thread */
-        state->current_index_S = numSthr * tid;
-        state->end_index_S = (last_thread(tid, nthreads)) ? relS->num_tuples : numSthr * (tid + 1);
+        state->current_index_S = numSthr*tid;
+        state->end_index_S = (last_thread(tid, nthreads)) ? relS->num_tuples - 1 : numSthr*(tid + 1) - 1;
 
-/*
-        int numRthr = relR->num_tuples / nthreads;//replicate S, partition R.
-
-        state->IsTupleR = false;
-        // replicate relS for next thread /
-        state->current_index_S = 0;
-        state->end_index_S = relS->num_tuples;
-
-        // assign part of the relR for next thread /
-        state->start_index_R = numRthr * tid;
-        state->end_index_R = (last_thread(tid, nthreads)) ? relR->num_tuples : numRthr * (tid + 1);
-*/
         DEBUGMSG("TID:%d, S: start_index:%d, start ts:%d\n", tid, state->current_index_S,
                  relS->payload->ts[state->current_index_S]);
     }
 };
 
 class JB_NP_Fetcher : public baseFetcher {
-public:
+  public:
 
     bool finish() {
         return state->current_index_R == state->end_index_R
-               && state->current_index_S == state->end_index_S;
+            && state->current_index_S == state->end_index_S;
     }
 
-    JB_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS, int tid, T_TIMER *timer)
-            : baseFetcher(relR, relS, tid, timer) {
+    JB_NP_Fetcher(int nthreads, relation_t* relR, relation_t* relS, int tid, T_TIMER* timer)
+        : baseFetcher(relR, relS, tid, timer) {
         state = new t_state[nthreads];
-        int numRthr = relR->num_tuples / nthreads;// partition R,
-        int numSthr = relS->num_tuples / nthreads;// partition S.
+        int numRthr = relR->num_tuples/nthreads;// partition R,
+        int numSthr = relS->num_tuples/nthreads;// partition S.
 
         /* assign part of the relR for next thread */
-        state->current_index_R = numRthr * tid;
-        state->end_index_R = (last_thread(tid, nthreads)) ? relR->num_tuples : numRthr * (tid + 1);
+        state->current_index_R = numRthr*tid;
+        state->end_index_R = (last_thread(tid, nthreads)) ? relR->num_tuples - 1 : numRthr*(tid + 1) - 1;
 
         /* assign part of the relS for next thread */
-        state->current_index_S = numSthr * tid;
-        state->end_index_S = (last_thread(tid, nthreads)) ? relS->num_tuples : numSthr * (tid + 1);
+        state->current_index_S = numSthr*tid;
+        state->end_index_S = (last_thread(tid, nthreads)) ? relS->num_tuples - 1 : numSthr*(tid + 1) - 1;
 
         DEBUGMSG("TID:%d, R: start_index:%d, end_index:%d\n", tid, state->current_index_R, state->end_index_R);
         DEBUGMSG("TID:%d, S: start_index:%d, end_index:%d\n", tid, state->current_index_S, state->end_index_S);

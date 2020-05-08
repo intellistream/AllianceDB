@@ -98,13 +98,6 @@ THREAD_TASK_NOSHUFFLE(void* param) {
     args->threadresult->results = (void *) chainedbuf;
 #endif
 
-#ifndef NO_TIMING
-    END_MEASURE(args->timer)
-    //time calibration
-    //    args->timer->overall_timer -= args->timer->garbage_time;
-    args->timer->partition_timer = args->timer->overall_timer - args->timer->wait_timer;
-#endif
-
 #ifdef PERF_COUNTERS
     if (args->tid == 0) {
         PCM_stop();
@@ -116,8 +109,17 @@ THREAD_TASK_NOSHUFFLE(void* param) {
     /* Just to make sure we get consistent performance numbers */
     BARRIER_ARRIVE(args->barrier, lock);
 #endif
+
     /* wait at a barrier until each thread finishes*/
     BARRIER_ARRIVE(args->barrier, lock)
+
+#ifndef NO_TIMING
+    END_MEASURE(args->timer)
+    //time calibration
+    //    args->timer->overall_timer -= args->timer->garbage_time;
+    args->timer->partition_timer = args->timer->overall_timer - args->timer->wait_timer;
+#endif
+
     DEBUGMSG("args->num_results (%d): %ld\n", args->tid, *args->matches);
     fflush(stdout);
     pthread_exit(NULL);
@@ -216,14 +218,6 @@ void
     args->threadresult->threadid = args->tid;
     args->threadresult->results = (void *) chainedbuf;
 #endif
-
-#ifndef NO_TIMING
-    END_MEASURE(args->timer)
-    //time calibration
-    //    args->timer->overall_timer -= args->timer->garbage_time;
-    args->timer->partition_timer = args->timer->overall_timer - args->timer->wait_timer;
-#endif
-
 #ifdef PERF_COUNTERS
     if (args->tid == 0) {
         PCM_stop();
@@ -237,6 +231,13 @@ void
 #endif
     /* wait at a barrier until each thread finishes*/
     BARRIER_ARRIVE(args->barrier, lock)
+#ifndef NO_TIMING
+    END_MEASURE(args->timer)
+    //time calibration
+    //    args->timer->overall_timer -= args->timer->garbage_time;
+    args->timer->partition_timer = args->timer->overall_timer - args->timer->wait_timer;
+#endif
+
     DEBUGMSG("args->num_results (%d): %ld\n", args->tid, *args->matches);
     fflush(stdout);
     pthread_exit(NULL);

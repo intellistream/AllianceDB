@@ -20,7 +20,6 @@
 #define MALLOC(SZ) alloc_aligned(SZ+RELATION_PADDING) /*malloc(SZ+RELATION_PADDING)*/
 #define FREE(X, SZ) free(X)
 
-
 int check_avx() {
     unsigned int eax, ebx, ecx, edx;
     if (!__get_cpuid(1, &eax, &ebx, &ecx, &edx))
@@ -34,44 +33,42 @@ int check_avx() {
 }
 
 // TODO: why need so many parameters, only need cmd_params inside.
-void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int32_t tsKey, const param_t &cmd_params,
-                    char *loadfile, uint32_t seed, const int step_size, int partitions) {
+void createRelation(relation_t* rel, relation_payload_t* relPl, int32_t key, int32_t tsKey, const param_t& cmd_params,
+                    char* loadfile, uint32_t seed, const int step_size, int partitions) {
     seed_generator(seed);
     /* to pass information to the create_relation methods */
     numalocalize = cmd_params.basic_numa;
     nthreads = cmd_params.nthreads;
 
-//    if (cmd_params.kim) {
+    //    if (cmd_params.kim) {
     // calculate num of tuples by params
-//    if (cmd_params.step_size < nthreads) {
-//        perror("step size should be bigger than the number of threads!");
-//        return;
-//    }
+    //    if (cmd_params.step_size < nthreads) {
+    //        perror("step size should be bigger than the number of threads!");
+    //        return;
+    //    }
     uint64_t rel_size = rel->num_tuples;
     relPl->num_tuples = rel->num_tuples;
 
-    fprintf(stdout,
-            "[INFO ] %s relation with size = %.3lf MiB, #tuples = %lu : ",
-            (loadfile != NULL) ? ("Loading") : ("Creating"),
-            (double) sizeof(tuple_t) * rel_size / 1024.0 / 1024.0, rel_size);
-    fflush(stdout);
+    MSG("[INFO ] %s relation with size = %.3lf MiB, #tuples = %lu : ",
+        (loadfile != NULL) ? ("Loading") : ("Creating"),
+        (double) sizeof(tuple_t)*rel_size/1024.0/1024.0, rel_size);
 
-//    size_t relRsz = rel->num_tuples * sizeof(tuple_t)
-//                    + RELATION_PADDING(cmd_params.nthreads, cmd_params.part_fanout);
-    rel->tuples = (tuple_t *) MALLOC(rel_size * sizeof(tuple_t));
+    //    size_t relRsz = rel->num_tuples * sizeof(tuple_t)
+    //                    + RELATION_PADDING(cmd_params.nthreads, cmd_params.part_fanout);
+    rel->tuples = (tuple_t*) MALLOC(rel_size*sizeof(tuple_t));
 
-//    size_t relPlsz = relPl->num_tuples * sizeof(relation_payload_t)
-//                     + RELATION_PADDING(cmd_params.nthreads, cmd_params.part_fanout);
-//    rel->payload = (relation_payload_t *) malloc_aligned(relPlsz);
+    //    size_t relPlsz = relPl->num_tuples * sizeof(relation_payload_t)
+    //                     + RELATION_PADDING(cmd_params.nthreads, cmd_params.part_fanout);
+    //    rel->payload = (relation_payload_t *) malloc_aligned(relPlsz);
 
     /** second allocate the memory for relation payload **/
-//    size_t relPlRsz = relPl->num_tuples * sizeof(table_t)
-//                      + RELATION_PADDING(cmd_params.nthreads, cmd_params.part_fanout);
-//    relPl->rows = (table_t *) malloc_aligned(relPlRsz);
+    //    size_t relPlRsz = relPl->num_tuples * sizeof(table_t)
+    //                      + RELATION_PADDING(cmd_params.nthreads, cmd_params.part_fanout);
+    //    relPl->rows = (table_t *) malloc_aligned(relPlRsz);
 
-//    size_t relTssz = relPl->num_tuples * sizeof(milliseconds)
-//                     + RELATION_PADDING(cmd_params.nthreads, cmd_params.part_fanout);
-    relPl->ts = (uint64_t *) MALLOC(relPl->num_tuples * sizeof(uint64_t));
+    //    size_t relTssz = relPl->num_tuples * sizeof(milliseconds)
+    //                     + RELATION_PADDING(cmd_params.nthreads, cmd_params.part_fanout);
+    relPl->ts = (uint64_t*) MALLOC(relPl->num_tuples*sizeof(uint64_t));
 
     //    /* NUMA-localize the input: */
     //    if(!nonumalocalize){
@@ -97,14 +94,13 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int
                 parallel_create_relation(rel, rel_size,
                                          nthreads,
                                          rel_size, cmd_params.duplicate_num);
-//                parallel_create_relation_with_ts(rel, relPl, rel->num_tuples, nthreads, rel->num_tuples,
-//                                                 cmd_params.step_size, cmd_params.interval);
+                //                parallel_create_relation_with_ts(rel, relPl, rel->num_tuples, nthreads, rel->num_tuples,
+                //                                                 cmd_params.step_size, cmd_params.interval);
                 break;
             case 2: // zipf with zipf factor
                 create_relation_zipf(rel, rel_size, rel_size, cmd_params.skew, cmd_params.duplicate_num);
                 break;
-            default:
-                break;
+            default:break;
         }
 
         switch (cmd_params.ts_distribution) {
@@ -114,8 +110,7 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int
             case 2: // zipf
                 add_zipf_ts(rel, relPl, cmd_params.window_size, cmd_params.zipf_param, partitions);
                 break;
-            default:
-                break;
+            default:break;
         }
     } else {
         //create_relation_pk(&rel, rel_size);
@@ -124,10 +119,10 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int
                                  rel_size, cmd_params.duplicate_num);
         add_ts(rel, relPl, step_size, 0, partitions);
     }
-    MSG("OK \n");
+    MSG("...smoothing done");
 }
 
-void writefile(relation_payload_t *relPl, const param_t cmd_params) {
+void writefile(relation_payload_t* relPl, const param_t cmd_params) {
     string path = "/data1/xtra/datasets/Kim/data_distribution_zipf" + std::to_string(cmd_params.zipf_param) + ".txt";
     ofstream outputFile(path, std::ios::trunc);
     for (auto i = 0; i < relPl->num_tuples; i++) {
@@ -148,7 +143,7 @@ benchmark(const param_t cmd_params) {
     relR.payload = new relation_payload_t();
     relS.payload = new relation_payload_t();
 
-    result_t *results;
+    result_t* results;
     /* create relation R */
 
 
@@ -156,7 +151,7 @@ benchmark(const param_t cmd_params) {
         relR.num_tuples = cmd_params.r_size;
     } else {
         relR.num_tuples =
-                (cmd_params.window_size / cmd_params.interval) * cmd_params.step_sizeR * cmd_params.duplicate_num;
+            (cmd_params.window_size/cmd_params.interval)*cmd_params.step_sizeR*cmd_params.duplicate_num;
     }
     // check which fetcher is used, to decide whether need to partition ts.
     int partitions = cmd_params.nthreads;
@@ -175,7 +170,7 @@ benchmark(const param_t cmd_params) {
     } else {
         if (cmd_params.fixS)
             relS.num_tuples =
-                    (cmd_params.window_size / cmd_params.interval) * cmd_params.step_sizeS * cmd_params.duplicate_num;
+                (cmd_params.window_size/cmd_params.interval)*cmd_params.step_sizeS*cmd_params.duplicate_num;
         else
             relS.num_tuples = relR.num_tuples;
     }
@@ -185,18 +180,18 @@ benchmark(const param_t cmd_params) {
     DEBUGMSG("relS [aligned:%d]: %s", is_aligned(relS.tuples, CACHE_LINE_SIZE),
              print_relation(relS.tuples, min((uint64_t) 1000, relS.num_tuples)).c_str());
 
-//    string path = "/data1/xtra/datasets/Kim/data_distribution_zipf" + std::to_string(cmd_params.zipf_param) + ".txt";
-//    writefile(relR.payload, cmd_params);
+    //    string path = "/data1/xtra/datasets/Kim/data_distribution_zipf" + std::to_string(cmd_params.zipf_param) + ".txt";
+    //    writefile(relR.payload, cmd_params);
 
     /* Run the selected join algorithm */
-    MSG("[INFO ] Running join algorithm %s ...\n", cmd_params.algo->name);
+    MSG("[INFO ] Running join algorithm %s ...", cmd_params.algo->name);
 
     if (cmd_params.ts == 0)
         results = cmd_params.algo->joinAlgo(&relR, &relS, cmd_params);//no window to wait.
     else
         results = cmd_params.algo->joinAlgo(&relR, &relS, cmd_params);
 
-    MSG("[INFO ] Results = %ld. DONE.\n", results->totalresults);
+    MSG("[INFO ] Results = %ld. DONE.", results->totalresults);
 
     /* clean-up */
     delete_relation(&relR);
@@ -205,8 +200,8 @@ benchmark(const param_t cmd_params) {
     delete_relation_payload(relS.payload);
     free(results);
 
-//    results = join_from_file(cmd_params, cmd_params.loadfileR, cmd_params.loadfileS,
-//            cmd_params.rkey, cmd_params.skey, cmd_params.r_size, cmd_params.s_size);
+    //    results = join_from_file(cmd_params, cmd_params.loadfileR, cmd_params.loadfileS,
+    //            cmd_params.rkey, cmd_params.skey, cmd_params.r_size, cmd_params.s_size);
 
 
 #if (defined(PERSIST_RELATIONS) && defined(JOIN_RESULT_MATERIALIZE))
