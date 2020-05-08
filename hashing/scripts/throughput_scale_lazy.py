@@ -83,12 +83,6 @@ def ReadFile():
     col2 = []
     col3 = []
     col4 = []
-    # col5 = []
-    # col6 = []
-    # col7 = []
-    # col8 = []
-    # col9 = []
-    # col10 = []
 
     for id in it.chain(range(42, 46)):
         file = '/data1/xtra/results/timestamps/PRJ_{}.txt'.format(id)
@@ -199,7 +193,7 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
     # you may control the limits on your own.
     plt.xlim(x_min, x_max)
     # plt.ylim(0, 41000)
-    plt.ylim(0, 5)
+    plt.ylim(0, 6)
     plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
     plt.grid(axis='y', color='gray')
 

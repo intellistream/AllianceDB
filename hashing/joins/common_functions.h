@@ -21,7 +21,7 @@
 #define MATCH
 #define WAIT
 
-//#define EAGER //disable when profiling.
+#define EAGER //disable when profiling.
 
 #ifndef PTHREAD_BARRIER_SERIAL_THREAD
 #define PTHREAD_BARRIER_SERIAL_THREAD 1

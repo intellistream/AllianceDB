@@ -1,6 +1,7 @@
 import getopt
 import os
 import sys
+from math import ceil
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -8,7 +9,6 @@ import numpy as np
 import pylab
 from matplotlib.font_manager import FontProperties
 from numpy import double
-from numpy.ma import ceil
 
 OPT_FONT_NAME = 'Helvetica'
 TICK_FONT_SIZE = 20
@@ -75,7 +75,7 @@ def DrawFigure(x_values, y_values, y_max, legend_labels, x_label, y_label, filen
                    loc='upper center', ncol=len(legend_labels), mode='expand', bbox_to_anchor=(0.45, 1.2), shadow=False,
                    frameon=False, borderaxespad=0.0, handlelength=2, labelspacing=0.2)
 
-    # plt.ylim(0, y_max)
+    plt.ylim(0, y_max)
     # you may need to tune the xticks position to get the best figure.
     plt.xticks(index + 0.5 * width, x_values)
     # plt.autofmt_xdate()
@@ -151,107 +151,126 @@ def ReadFile(id):
 
     cnt = 0
     linecnt = 0
+    sum = 0
     f = open("/data1/xtra/results/breakdown/NPJ_{}.txt".format(id), "r")
     read = f.readlines()
     for x in read:
         value = double(x.strip("\n"))
         if (linecnt != 3):  ##skip sort.
-            if value > max_value:
-                max_value = value
+            sum += value
             y[cnt][0] = max(value, 0)
             cnt += 1
         linecnt += 1
 
+    if sum > max_value:
+        max_value = sum
+
     cnt = 0
     linecnt = 0
+    sum = 0
     f = open("/data1/xtra/results/breakdown/PRJ_{}.txt".format(id), "r")
     read = f.readlines()
     for x in read:
         value = double(x.strip("\n"))
         if (linecnt != 3):  ##skip sort.
-            if value > max_value:
-                max_value = value
+            sum += value
             y[cnt][1] = max(value, 0)
             cnt += 1
         linecnt += 1
 
+    if sum > max_value:
+        max_value = sum
+
     cnt = 0
     linecnt = 0
+    sum = 0
     f = open("/data1/xtra/results/breakdown/MWAY_{}.txt".format(id), "r")
     read = f.readlines()
     for x in read:
         value = double(x.strip("\n"))
         if (linecnt != 2):  ##skip build.
-            if value > max_value:
-                max_value = value
+            sum += value
             y[cnt][2] = max(value, 0)
             cnt += 1
         linecnt += 1
+    if sum > max_value:
+        max_value = sum
 
     cnt = 0
     linecnt = 0
+    sum = 0
     f = open("/data1/xtra/results/breakdown/MPASS_{}.txt".format(id), "r")
     read = f.readlines()
     for x in read:
         value = double(x.strip("\n"))
         if (linecnt != 2):  ##skip build.
-            if value > max_value:
-                max_value = value
+            sum += value
             y[cnt][3] = max(value, 0)
             cnt += 1
         linecnt += 1
+    if sum > max_value:
+        max_value = sum
 
     cnt = 0
     linecnt = 0
+    sum = 0
     f = open("/data1/xtra/results/breakdown/SHJ_JM_NP_{}.txt".format(id), "r")
     read = f.readlines()
     for x in read:
         if (linecnt != 3):  ##skip sort.
             value = double(x.strip("\n"))
-            if value > max_value:
-                max_value = value
+            sum += value
             y[cnt][4] = max(value, 0)
             cnt += 1
         linecnt += 1
+    if sum > max_value:
+        max_value = sum
 
     cnt = 0
     linecnt = 0
+    sum = 0
     f = open("/data1/xtra/results/breakdown/SHJ_JBCR_NP_{}.txt".format(id), "r")
     read = f.readlines()
     for x in read:
         if (linecnt != 3):  ##skip sort.
             value = double(x.strip("\n"))
-            if value > max_value:
-                max_value = value
+            sum += value
             y[cnt][5] = max(value, 0)
             cnt += 1
         linecnt += 1
+    if sum > max_value:
+        max_value = sum
 
     cnt = 0
     linecnt = 0
+    sum = 0
     f = open("/data1/xtra/results/breakdown/PMJ_JM_NP_{}.txt".format(id), "r")
     read = f.readlines()
     for x in read:
         if (linecnt != 2):  ##skip build.
             value = double(x.strip("\n"))
-            if value > max_value:
-                max_value = value
+            sum += value
             y[cnt][6] = max(value, 0)
             cnt += 1
         linecnt += 1
+    if sum > max_value:
+        max_value = sum
 
     cnt = 0
     linecnt = 0
+    sum = 0
     f = open("/data1/xtra/results/breakdown/PMJ_JBCR_NP_{}.txt".format(id), "r")
     read = f.readlines()
     for x in read:
         if (linecnt != 2):  ##skip build.
             value = double(x.strip("\n"))
-            if value > max_value:
-                max_value = value
+            sum += value
             y[cnt][7] = max(value, 0)
             cnt += 1
         linecnt += 1
+    if sum > max_value:
+        max_value = sum
+
     return y, max_value
 
 
@@ -280,7 +299,7 @@ if __name__ == "__main__":
     # break into 4 parts
     legend_labels = ['wait', 'partition', 'build/sort', 'merge', 'probe', 'others']  #
     print(y_values)
-    DrawFigure(x_values, y_values, double(ceil(max_value / 1000.0)) * 1000, legend_labels, '',
+    DrawFigure(x_values, y_values, ceil(max_value / 10) * 10, legend_labels, '',
                'cycles per input',
                'breakdown_figure{}'.format(id), id, False)
 

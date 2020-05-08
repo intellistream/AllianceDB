@@ -90,7 +90,7 @@ def DrawFigure(x_values, y_values, y_max, legend_labels, x_label, y_label, filen
         bottom_base = np.array(y_values[i]) + bottom_base
 
     # zoom-in / limit the view to different portions of the data
-    ax1.set_ylim(39000, 40000)  #  most of the data
+    ax1.set_ylim(38000, 40000)  #  most of the data
     ax2.set_ylim(0, 10)  # waiting only
 
     # hide the spines between ax and ax2

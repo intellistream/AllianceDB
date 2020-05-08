@@ -2,8 +2,8 @@
 #set -e
 ## Set L3 Cache according to your machine.
 sed -i -e "s/#define L3_CACHE_SIZE [[:alnum:]]*/#define L3_CACHE_SIZE 20971520/g" ../utils/params.h
+profile_breakdown=0 # set to 1 if we want to measure time breakdown!
 
-profile_breakdown=1 # set to 1 if we want to measure time breakdown! and also dedefine eager in common_function.h
 compile=1           #enable compiling.
 function compile() {
   if [ $compile != 0 ]; then
@@ -281,10 +281,16 @@ function ResetParameters() {
   merge_step=16 #not in use.
   group=2
   gap=12800
+  DD=1
   sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag 0/g" ../helper/sort_common.h
 }
 
-#recompile by default.
+if [ $profile_breakdown == 1 ]; then
+  sed -i -e "s/#define EAGER/#define NO_EAGER/g" ../joins/common_functions.h
+else
+  sed -i -e "s/#define NO_EAGER/#define EAGER/g" ../joins/common_functions.h
+fi
+#compile once by default.
 compile
 # Configurable variables
 # Generate a timestamp
@@ -293,8 +299,8 @@ output=test$timestamp.txt
 
 compile=$profile_breakdown #compile depends on whether we want to profile.
 # general benchmark.
-for benchmark in "Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "AD" "KD" "WS" "DD" "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS"; do # "LargeScaleStock" "LargeScaleRovio" "LargeScaleYSB" "LargeScaleDEBS" # "Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "AD" "KD" "WS" "DD" "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS"
-  for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
+for benchmark in "Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "AD" "KD" "WS" "DD"; do #"Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "AD" "KD" "WS" "DD" "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS"
+  for algo in SHJ_JBCR_NP PMJ_JBCR_NP; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "AR") #test arrival rate and assume both inputs have same arrival rate.
@@ -522,7 +528,7 @@ done
 
 compile=1 #enable compiling.
 #benchmark experiment only apply for hashing directory.
-for benchmark in "SIMD_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY" "HS_STUDY"; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY"
+for benchmark in "GROUP_SIZE_STUDY" "HS_STUDY"; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY"
   case "$benchmark" in
   "SIMD_STUDY")
     id=104
