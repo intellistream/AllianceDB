@@ -117,13 +117,13 @@ void breakdown_global(int64_t total_results, int nthreads, T_TIMER* timer, long 
         (timer->wait_timer + timer->partition_timer + timer->buildtimer + timer->sorttimer +
             timer->mergetimer + timer->join_timer));
     MSG("%f\n%f\n%f\n%f\n%f\n%f\n%lu",
-           (double) timer->wait_timer/total_results,
-           (double) timer->partition_timer/total_results,
-           (double) timer->buildtimer/total_results,
-           (double) timer->sorttimer/total_results,
-           (double) timer->mergetimer/total_results,
-           (double) timer->join_timer/total_results,
-           others/total_results
+        (double) timer->wait_timer/total_results,
+        (double) timer->partition_timer/total_results,
+        (double) timer->buildtimer/total_results,
+        (double) timer->sorttimer/total_results,
+        (double) timer->mergetimer/total_results,
+        (double) timer->join_timer/total_results,
+        others/total_results
     );
     MSG("matches_in_sort_total: %d", matches_in_sort_total);
     fprintf(pFile, "%f\n%f\n%f\n%f\n%f\n%f\n%lu\n",
@@ -242,17 +242,16 @@ breakdown_global(int64_t total_results, int nthreads, double average_partition_t
     path = "/data1/xtra/results/breakdown/" + txtFile;
     auto fp = fopen(path.c_str(), "w");
 
-    MSG("wait, "
-        "%f\n%f\n%f\n%f\n%f\n%f\n%f\n",
-           (double) wait_time/total_results,
-           (double) partition_time/total_results,
-           (double) build_time/total_results,
-           (double) sort_time/total_results,
-           (double) merge_time/total_results,
-           (double) join_time/total_results,
-           others_time/total_results
+    MSG("[INFO] Cycles spent on each input\nwait: %f\npartition: %f\nbuild: %f\nsort: %f\nmerge: %f\njoin: %f\nothers: %f\n",
+        (double) wait_time/total_results,
+        (double) partition_time/total_results,
+        (double) build_time/total_results,
+        (double) sort_time/total_results,
+        (double) merge_time/total_results,
+        (double) join_time/total_results,
+        others_time/total_results
     );
-    MSG("matches_in_sort_total: %d\n", matches_in_sort_total);
+    MSG("[INFO] matches_in_sort_total: %d", matches_in_sort_total)
     fprintf(fp, "%f\n%f\n%f\n%f\n%f\n%f\n%f\n",
             (double) wait_time/total_results,
             (double) partition_time/total_results,
@@ -267,7 +266,7 @@ breakdown_global(int64_t total_results, int nthreads, double average_partition_t
 
 void dump_partition_cost(T_TIMER* timer, _IO_FILE* pFile) {
 
-    MSG("partition cost: %lu", timer->partition_timer);
+    MSG("[INFO ] partition cost: %lu", timer->partition_timer)
     fprintf(pFile, "%lu\n", timer->partition_timer);
     fflush(pFile);
 }

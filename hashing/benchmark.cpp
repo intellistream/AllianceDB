@@ -119,7 +119,7 @@ void createRelation(relation_t* rel, relation_payload_t* relPl, int32_t key, int
                                  rel_size, cmd_params.duplicate_num);
         add_ts(rel, relPl, step_size, 0, partitions);
     }
-    MSG("...smoothing done");
+
 }
 
 void writefile(relation_payload_t* relPl, const param_t cmd_params) {

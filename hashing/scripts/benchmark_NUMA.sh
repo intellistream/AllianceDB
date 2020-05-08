@@ -291,7 +291,7 @@ compile
 timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
 
-compile=0 #disable compiling.
+compile=$profile_breakdown #compile depends on whether we want to profile.
 # general benchmark.
 for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
   for benchmark in "LargeScaleStock" "LargeScaleRovio" "LargeScaleYSB" "LargeScaleDEBS"; do # "LargeScaleStock" "LargeScaleRovio" "LargeScaleYSB" "LargeScaleDEBS" # "Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "AD" "KD" "WS" "DD" "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS"

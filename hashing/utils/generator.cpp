@@ -969,8 +969,6 @@ read_relation(relation_t* rel, relation_payload_t* relPl, int32_t keyby, int32_t
 
     //load ts and key
     while ((read = getline(&line, &len, fp)) != -1 && i < ntuples) {
-        //        MSG("Retrieved line of length %zu:\n", read);
-        //        MSG("%s", line);
         if (fmtcomma) {
             key[i] = stoi(split(line, ",")[keyby]);
             strcpy(row.value, line);
@@ -997,26 +995,9 @@ read_relation(relation_t* rel, relation_payload_t* relPl, int32_t keyby, int32_t
     }
 
     //smooth ts.
-
     smooth(ret, rel->num_tuples);
 
-    uint64_t ts = 0;
-    for (auto i = 0; i < rel->num_tuples; i++) {
-        auto read = &rel->tuples[i];
-        auto read_ts = rel->payload->ts[read->payloadID];
-        if (read_ts >= ts) {
-            ts = read_ts;
-        } else {
-            printf("\nts is not monotonically increasing since:%d, "
-                   " S:%lu\n", i, read_ts);
-            break;
-        }
-    }
-    fflush(stdout);
-
     //shuffle assign ts
-    printf("ASSIGN TS\n");
-    auto assign_ts = 0;
     for (auto i = 0; i < rel->num_tuples; i++) {
         // round robin to assign ts to each thread.
         auto partition = i%partitions;
@@ -1025,22 +1006,11 @@ read_relation(relation_t* rel, relation_payload_t* relPl, int32_t keyby, int32_t
         }
         // record cur index in partition
         int cur_index = tid_start_idx[partition] + tid_offsets[partition];
-        //
-        //        if (partition == 1) {
-        //            if(ret[i]>=assign_ts){
-        //                assign_ts=ret[i];
-        //            } else{
-        //                printf("not monotonically increasing. assign to P1 at %d with ts:%lu\n", cur_index, ret[i]);
-        //            }
-        //
-        //        }
-
         relPl->ts[cur_index] = ret[i];
         rel->tuples[cur_index].key = key[i];
         rel->tuples[cur_index].payloadID = cur_index;
         tid_offsets[partition]++;
     }
-
 }
 
 void* alloc_aligned(size_t size) {
@@ -1065,7 +1035,7 @@ void* alloc_aligned(size_t size) {
 }
 
 void smooth(uint64_t* ret, unsigned int stream_size) {
-    MSG("smoothing timestamp...");
+    DEBUGMSG("smoothing timestamp...")
     auto step_size = 0;
     auto current_index = 0;
     auto head_ts = ret[0];
