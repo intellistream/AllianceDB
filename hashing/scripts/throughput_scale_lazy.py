@@ -85,7 +85,7 @@ def ReadFile():
     col4 = []
 
     for id in it.chain(range(42, 46)):
-        file = '/data1/xtra/results/timestamps/PRJ_{}.txt'.format(id)
+        file = '/data1/xtra/results/timestamps/MPASS_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
@@ -101,7 +101,7 @@ def ReadFile():
     y.append(normalize(col2))
 
     for id in it.chain(range(50, 54)):
-        file = '/data1/xtra/results/timestamps/NPJ_{}.txt'.format(id)
+        file = '/data1/xtra/results/timestamps/MPASS_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
