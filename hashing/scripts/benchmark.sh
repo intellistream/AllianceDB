@@ -202,7 +202,7 @@ function benchmarkRun() {
   if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit -1; fi
 }
 
-function SetStockParameters() { #matches: 57070441. #inputs= 116941 + 151500
+function SetStockParameters() { #matches: 15595000. #inputs= 60527 + 77227
   ts=1 # stream case
   WINDOW_SIZE=1000
   RSIZE=60527
@@ -216,7 +216,7 @@ function SetStockParameters() { #matches: 57070441. #inputs= 116941 + 151500
   gap=15595
 }
 
-function SetRovioParameters() { #matches: 27660233 #inputs= 51001 + 51001
+function SetRovioParameters() { #matches: 87856849382 #inputs= 2873604 + 2873604
   ts=1 # stream case
   WINDOW_SIZE=1000
   RSIZE=2873604
@@ -230,7 +230,7 @@ function SetRovioParameters() { #matches: 27660233 #inputs= 51001 + 51001
   gap=87856197
 }
 
-function SetYSBParameters() { #matches: 40100000. #inputs= 1000 + 40100000
+function SetYSBParameters() { #matches: 9990000. #inputs= 1000 + 10000000
   ts=1 # stream case
   WINDOW_SIZE=1000
   RSIZE=1000
@@ -295,7 +295,7 @@ output=test$timestamp.txt
 compile=$profile_breakdown #compile depends on whether we want to profile.
 # general benchmark.
 for benchmark in "Stock" "Rovio" "YSB" "DEBS"; do #"Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "AD" "KD" "WS" "DD" "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS"
-  for algo in SHJ_JBCR_NP PMJ_JBCR_NP; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
+  for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "AR") #test arrival rate and assume both inputs have same arrival rate.
@@ -626,5 +626,5 @@ for benchmark in ""; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZ
   esac
 done
 
-./draw.sh
+#./draw.sh
 python3 jobdone.py

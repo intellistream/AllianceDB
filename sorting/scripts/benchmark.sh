@@ -33,54 +33,50 @@ function KimRun() {
   ../sorting -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -W $FIXS -g $gap -P $DD -I $id
 }
 
-function SetStockParameters() { #matches: 57070441.
+
+function SetStockParameters() { #matches: 15595000. #inputs= 60527 + 77227
   ts=1 # stream case
-  #  WINDOW_SIZE=1000
-  #  RSIZE=60257
-  #  SSIZE=77227
-  #  RPATH=/data1/xtra/datasets/stock/cj_3s_1t.txt
-  #  SPATH=/data1/xtra/datasets/stock/sb_3s_1t.txt
-  WINDOW_SIZE=5000
-  RSIZE=116941
-  SSIZE=151505
-  RPATH=/data1/xtra/datasets/stock/cj_5s_1t.txt
-  SPATH=/data1/xtra/datasets/stock/sb_5s_1t.txt
+  WINDOW_SIZE=1000
+  RSIZE=60527
+  SSIZE=77227
+  RPATH=/data1/xtra/datasets/stock/cj_1000ms_1t.txt
+  SPATH=/data1/xtra/datasets/stock/sb_1000ms_1t.txt
   RKEY=0
   SKEY=0
   RTS=1
   STS=1
-  gap=57070
+  gap=15595
 }
 
-function SetRovioParameters() { #matches: 27660233
+function SetRovioParameters() { #matches: 87856849382 #inputs= 2873604 + 2873604
   ts=1 # stream case
-  WINDOW_SIZE=50
-  RSIZE=51001
-  SSIZE=51001
-  RPATH=/data1/xtra/datasets/rovio/500ms_1t.txt
-  SPATH=/data1/xtra/datasets/rovio/500ms_1t.txt
+  WINDOW_SIZE=1000
+  RSIZE=2873604
+  SSIZE=2873604
+  RPATH=/data1/xtra/datasets/rovio/1000ms_1t.txt
+  SPATH=/data1/xtra/datasets/rovio/1000ms_1t.txt
   RKEY=0
   SKEY=0
   RTS=3
   STS=3
-  gap=27660
+  gap=87856197
 }
 
-function SetYSBParameters() { #matches: 40100000.
+function SetYSBParameters() { #matches: 9990000. #inputs= 1000 + 10000000
   ts=1 # stream case
-  WINDOW_SIZE=400
+  WINDOW_SIZE=1000
   RSIZE=1000
-  SSIZE=40100000
+  SSIZE=10000000
   RPATH=/data1/xtra/datasets/YSB/campaigns_id.txt
   SPATH=/data1/xtra/datasets/YSB/ad_events.txt
   RKEY=0
   SKEY=0
   RTS=0
   STS=1
-  gap=40100
+  gap=9990
 }
 
-function SetDEBSParameters() { #matches: 251033140
+function SetDEBSParameters() { #matches: 251033140 #inputs= 1000000 + 1000000
   ts=1 # stream case
   WINDOW_SIZE=0
   RSIZE=1000000 #1000000
@@ -123,7 +119,7 @@ output=test$timestamp.txt
 #general benchmark.
 compile=0
 for algo in m-way m-pass; do
-  for benchmark in "Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "AD" "KD" "WS" "DD" "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS"; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "AR" "RAR" "AD" "KD" "WS"
+  for benchmark in "Stock" "Rovio" "YSB" "DEBS" "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS"; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "AR" "RAR" "AD" "KD" "WS"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "AR") #test arrival rate and assume both inputs have same arrival rate.
