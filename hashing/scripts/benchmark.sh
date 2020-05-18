@@ -2,7 +2,7 @@
 #set -e
 ## Set L3 Cache according to your machine.
 sed -i -e "s/#define L3_CACHE_SIZE [[:alnum:]]*/#define L3_CACHE_SIZE 20971520/g" ../utils/params.h
-profile_breakdown=0 # set to 1 if we want to measure time breakdown!
+profile_breakdown=1 # set to 1 if we want to measure time breakdown!
 
 compile=1           #enable compiling.
 function compile() {
@@ -234,14 +234,14 @@ function SetYSBParameters() { #matches: 10000000. #inputs= 1000 + 10000000
   ts=1 # stream case
   WINDOW_SIZE=1000
   RSIZE=1000
-  SSIZE=1000
+  SSIZE=10000000
   RPATH=/data1/xtra/datasets/YSB/campaigns_id.txt
   SPATH=/data1/xtra/datasets/YSB/ad_events.txt
   RKEY=0
   SKEY=0
   RTS=0
   STS=1
-  gap=1
+  gap=10000
 }
 
 function SetDEBSParameters() { #matches: 251033140 #inputs= 1000000 + 1000000
@@ -294,7 +294,7 @@ output=test$timestamp.txt
 
 compile=$profile_breakdown #compile depends on whether we want to profile.
 # general benchmark.
-for benchmark in "YSB"; do #"Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "AD" "KD" "WS" "DD" "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS"
+for benchmark in "Stock" "Rovio" "YSB" "DEBS"; do #"Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "AD" "KD" "WS" "DD"
   for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
@@ -421,6 +421,15 @@ for benchmark in "YSB"; do #"Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "AD" "KD" "W
       SetDEBSParameters
       RUNALL
       ;;
+    esac
+  done
+done
+
+compile=0 #compile depends on whether we want to profile.
+# general benchmark.
+for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do
+  for benchmark in "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS"; do
+    case "$benchmark" in
     "ScaleStock")
       id=42
       ResetParameters
@@ -457,46 +466,6 @@ for benchmark in "YSB"; do #"Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "AD" "KD" "W
       SetDEBSParameters
       echo test scalability 54 - 57
       for Threads in 1 2 4 8; do
-        RUNALL
-        let "id++"
-      done
-      ;;
-    "LargeScaleStock")
-      id=58
-      ResetParameters
-      SetStockParameters
-      echo test scalability of Stock 58 - 61
-      for Threads in 4 8 16 32; do
-        RUNALL
-        let "id++"
-      done
-      ;;
-    "LargeScaleRovio")
-      id=62
-      ResetParameters
-      SetRovioParameters
-      echo test scalability 62 - 65
-      for Threads in 4 8 16 32; do
-        RUNALL
-        let "id++"
-      done
-      ;;
-    "LargeScaleYSB")
-      id=66
-      ResetParameters
-      SetYSBParameters
-      echo test scalability 66 - 69
-      for Threads in 4 8 16 32; do
-        RUNALL
-        let "id++"
-      done
-      ;;
-    "LargeScaleDEBS")
-      id=70
-      ResetParameters
-      SetDEBSParameters
-      echo test scalability 70 - 73
-      for Threads in 4 8 16 32; do
         RUNALL
         let "id++"
       done
