@@ -204,12 +204,7 @@ function benchmarkRun() {
 
 function SetStockParameters() { #matches: 57070441. #inputs= 116941 + 151500
   ts=1 # stream case
-  #  WINDOW_SIZE=1000
-  #  RSIZE=60257
-  #  SSIZE=77227
-  #  RPATH=/data1/xtra/datasets/stock/cj_3s_1t.txt
-  #  SPATH=/data1/xtra/datasets/stock/sb_3s_1t.txt
-  WINDOW_SIZE=5000
+  WINDOW_SIZE=500
   RSIZE=116941
   SSIZE=151505
   RPATH=/data1/xtra/datasets/stock/cj_5s_1t.txt
@@ -223,7 +218,7 @@ function SetStockParameters() { #matches: 57070441. #inputs= 116941 + 151500
 
 function SetRovioParameters() { #matches: 27660233 #inputs= 51001 + 51001
   ts=1 # stream case
-  WINDOW_SIZE=50
+  WINDOW_SIZE=500
   RSIZE=51001
   SSIZE=51001
   RPATH=/data1/xtra/datasets/rovio/500ms_1t.txt
@@ -237,7 +232,7 @@ function SetRovioParameters() { #matches: 27660233 #inputs= 51001 + 51001
 
 function SetYSBParameters() { #matches: 40100000. #inputs= 1000 + 40100000
   ts=1 # stream case
-  WINDOW_SIZE=400
+  WINDOW_SIZE=500
   RSIZE=1000
   SSIZE=40100000
   RPATH=/data1/xtra/datasets/YSB/campaigns_id.txt
@@ -299,7 +294,7 @@ output=test$timestamp.txt
 
 compile=$profile_breakdown #compile depends on whether we want to profile.
 # general benchmark.
-for benchmark in "Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "AD" "KD" "WS" "DD"; do #"Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "AD" "KD" "WS" "DD" "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS"
+for benchmark in "Stock" "Rovio" "YSB" "DEBS"; do #"Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "AD" "KD" "WS" "DD" "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS"
   for algo in SHJ_JBCR_NP PMJ_JBCR_NP; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
@@ -528,7 +523,7 @@ done
 
 compile=1 #enable compiling.
 #benchmark experiment only apply for hashing directory.
-for benchmark in "GROUP_SIZE_STUDY" "HS_STUDY"; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY"
+for benchmark in ""; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY"
   case "$benchmark" in
   "SIMD_STUDY")
     id=104
