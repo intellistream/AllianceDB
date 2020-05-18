@@ -164,25 +164,26 @@ class JM_NP_Fetcher : public baseFetcher {
 
         /* replicate relR for next thread */
         state->current_index_R = 0;
-        state->end_index_R = relR->num_tuples - 1;
+        state->end_index_R = relR->num_tuples; //remember the last index is not count!
 
         /* assign part of the relS for next thread */
         state->current_index_S = numSthr*tid;
-        state->end_index_S = (last_thread(tid, nthreads)) ? relS->num_tuples - 1 : numSthr*(tid + 1) - 1;
+        state->end_index_S =
+            (last_thread(tid, nthreads)) ? relS->num_tuples : numSthr*(tid + 1);//remember the last index is not count!
 
-//        uint64_t ts = 0;
-//        for (auto i = state->current_index_S; i < state->end_index_S; i++) {
-//            auto read = &relS->tuples[i];
-//            auto read_ts = relS->payload->ts[read->payloadID];
-//            if (read_ts >= ts) {
-//                ts = read_ts;
-//            } else {
-//                printf("\nts is not monotonically increasing since:%d, "
-//                       "tid:%d, S:%lu\n", i, tid, read_ts);
-//                break;
-//            }
-//        }
-//        fflush(stdout);
+        //        uint64_t ts = 0;
+        //        for (auto i = state->current_index_S; i < state->end_index_S; i++) {
+        //            auto read = &relS->tuples[i];
+        //            auto read_ts = relS->payload->ts[read->payloadID];
+        //            if (read_ts >= ts) {
+        //                ts = read_ts;
+        //            } else {
+        //                printf("\nts is not monotonically increasing since:%d, "
+        //                       "tid:%d, S:%lu\n", i, tid, read_ts);
+        //                break;
+        //            }
+        //        }
+        //        fflush(stdout);
     }
 };
 
@@ -202,11 +203,11 @@ class JB_NP_Fetcher : public baseFetcher {
 
         /* assign part of the relR for next thread */
         state->current_index_R = numRthr*tid;
-        state->end_index_R = (last_thread(tid, nthreads)) ? relR->num_tuples - 1 : numRthr*(tid + 1) - 1;
+        state->end_index_R = (last_thread(tid, nthreads)) ? relR->num_tuples : numRthr*(tid + 1);
 
         /* assign part of the relS for next thread */
         state->current_index_S = numSthr*tid;
-        state->end_index_S = (last_thread(tid, nthreads)) ? relS->num_tuples - 1 : numSthr*(tid + 1) - 1;
+        state->end_index_S = (last_thread(tid, nthreads)) ? relS->num_tuples : numSthr*(tid + 1);
 
         DEBUGMSG("TID:%d, R: start_index:%d, end_index:%d\n", tid, state->current_index_R, state->end_index_R);
         DEBUGMSG("TID:%d, S: start_index:%d, end_index:%d\n", tid, state->current_index_S, state->end_index_S);

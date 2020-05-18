@@ -19,7 +19,7 @@ fetch_t::fetch_t() {
 
 fetch_t* HS_NP_Fetcher::next_tuple() {
     if (tid == 0) {//thread 0 fetches R.
-        if (state->current_index_R < state->end_index_R) {
+        if (state->current_index_R <= state->end_index_R) {
             state->current_fetch.tuple = &relR->tuples[state->current_index_R++];
             state->current_fetch.ISTuple_R = true;
             return &(state->current_fetch);
@@ -27,7 +27,7 @@ fetch_t* HS_NP_Fetcher::next_tuple() {
             return nullptr;
         }
     } else {//thread n-1 fetches S.
-        if (state->current_index_S < state->end_index_S) {
+        if (state->current_index_S <= state->end_index_S) {
             state->current_fetch.tuple = &relS->tuples[state->current_index_S++];
             state->current_fetch.ISTuple_R = false;
             return &(state->current_fetch);
@@ -129,13 +129,13 @@ nextTupleS(t_state* state, const uint64_t* fetchStartTime, relation_t* relS) {
         arrivalTsS = relS->payload->ts[readS->payloadID];
         auto tick = curtick();
         if (arrivalTsS <= (tick - *fetchStartTime)) {//tuple has arrived at current fetch time.
-            DEBUGMSG("TUPLE S [payload ID:%d] is arrived at %lu and "
-                "is fetched at %lu, fetch start time:%lu\n",
-                readS->payloadID,
-                arrivalTsS,
-                tick,
-                *fetchStartTime
-            )
+//            DEBUGMSG("TUPLE S [payload ID:%d] is arrived at %lu and "
+//                "is fetched at %lu, fetch start time:%lu\n",
+//                readS->payloadID,
+//                arrivalTsS,
+//                tick,
+//                *fetchStartTime
+//            )
             state->current_fetch.tuple = readS;
             state->current_fetch.ISTuple_R = false;
             state->current_index_S++;

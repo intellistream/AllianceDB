@@ -14,7 +14,7 @@
 
 //#define JOIN_RESULT_MATERIALIZE
 //#define NO_TIMING
-//#define DEBUG
+#define DEBUG
 
 #define JOIN
 #define MERGE
@@ -49,9 +49,9 @@
 
 /** Debug msg logging method */
 #ifdef DEBUG
-#define DEBUGMSG(MSG, ...)                                                        \
-    {                                                               \
-        fprintf(stdout, "\n[DEBUG] @ %s:%d " MSG, __FILE__, __LINE__, ## __VA_ARGS__);    \
+#define DEBUGMSG(MSG, ...)                                                              \
+    {                                                                                   \
+        fprintf(stdout, "\n[DEBUG] @ %s:%d " MSG, __FILE__, __LINE__, ## __VA_ARGS__);  \
           fprintf(stdout, "\n");                                                        \
            fflush(stdout);                                                              \
     }
@@ -60,8 +60,9 @@
 #endif
 
 #define MSG(MSG, ...)                                                                   \
-    { fprintf(stdout, "\n[INFO] @ %s:%d " MSG , __FILE__, __LINE__, ## __VA_ARGS__);      \
-        fflush(stdout);                                                           \
+    { fprintf(stdout, "\n[INFO] @ %s:%d " MSG , __FILE__, __LINE__, ## __VA_ARGS__);    \
+        fprintf(stdout, "\n");                                                          \
+        fflush(stdout);                                                                 \
     }
 
 

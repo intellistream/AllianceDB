@@ -260,11 +260,11 @@ int64_t probe_hashtable_single(const hashtable_t *ht, const tuple_t *tuple, cons
 #ifdef DEBUG
                 if (ISTupleR) {
 
-                    DEBUGMSG("tid:%d, Join R:%d  with S:%d\n", this_thread::get_id(), tuple->key,
-                             b->tuples[index_ht].key)
+//                    DEBUGMSG("tid:%d, Join R:%d  with S:%d\n", this_thread::get_id(), tuple->key,
+//                             b->tuples[index_ht].key)
                 } else {
-                    DEBUGMSG("tid:%d, Join S:%d  with R:%d\n", this_thread::get_id(), b->tuples[index_ht].key,
-                             tuple->key);
+//                    DEBUGMSG("tid:%d, Join S:%d  with R:%d\n", this_thread::get_id(), b->tuples[index_ht].key,
+//                             tuple->key);
                 }
 #endif
 

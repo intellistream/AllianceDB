@@ -59,7 +59,7 @@ function SetRovioParameters() { #matches: 87856849382 #inputs= 2873604 + 2873604
   SKEY=0
   RTS=3
   STS=3
-  gap=87856197
+  gap=87856849
 }
 
 function SetYSBParameters() { #matches: 9990000. #inputs= 1000 + 10000000

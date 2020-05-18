@@ -202,7 +202,7 @@ function benchmarkRun() {
   if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit -1; fi
 }
 
-function SetStockParameters() { #matches: 15595000. #inputs= 60527 + 77227
+function SetStockParameters() { #matches: 15598112. #inputs= 60527 + 77227
   ts=1 # stream case
   WINDOW_SIZE=1000
   RSIZE=60527
@@ -227,21 +227,21 @@ function SetRovioParameters() { #matches: 87856849382 #inputs= 2873604 + 2873604
   SKEY=0
   RTS=3
   STS=3
-  gap=87856197
+  gap=87856849
 }
 
-function SetYSBParameters() { #matches: 9990000. #inputs= 1000 + 10000000
+function SetYSBParameters() { #matches: 10000000. #inputs= 1000 + 10000000
   ts=1 # stream case
   WINDOW_SIZE=1000
   RSIZE=1000
-  SSIZE=10000000
+  SSIZE=1000
   RPATH=/data1/xtra/datasets/YSB/campaigns_id.txt
   SPATH=/data1/xtra/datasets/YSB/ad_events.txt
   RKEY=0
   SKEY=0
   RTS=0
   STS=1
-  gap=9990
+  gap=1
 }
 
 function SetDEBSParameters() { #matches: 251033140 #inputs= 1000000 + 1000000
@@ -294,7 +294,7 @@ output=test$timestamp.txt
 
 compile=$profile_breakdown #compile depends on whether we want to profile.
 # general benchmark.
-for benchmark in "Stock" "Rovio" "YSB" "DEBS"; do #"Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "AD" "KD" "WS" "DD" "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS"
+for benchmark in "YSB"; do #"Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "AD" "KD" "WS" "DD" "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS"
   for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1

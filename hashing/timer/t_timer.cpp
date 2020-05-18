@@ -63,14 +63,14 @@ dump_timing(vector<double> vector, std::vector<double> vector_latency,
         outputFile_ts << (std::to_string(element + lastTS) + "\n");
     }
     outputFile_ts.close();
-    fprintf(stdout, "check50:%d\n", check50);
     fprintf(stdout, "Time to obtain 1%%, 5%%, 10%%, 25%%, 50%% of results (MSECS): \n");
+
     fprintf(stdout, "(%.2f) \t (%.2f) \t (%.2f) \t (%.2f) \t (%.2f)",
-            vector.at(check1) + lastTS,
-            vector.at(check5) + lastTS,
-            vector.at(check10) + lastTS,
-            vector.at(check25) + lastTS,
-            vector.at(check50) + lastTS
+            vector.size() > check1 ? vector.at(check1) + lastTS : 0,
+            vector.size() > check5 ? vector.at(check5) + lastTS : 0,
+            vector.size() > check10 ? vector.at(check10) + lastTS : 0,
+            vector.size() > check25 ? vector.at(check25) + lastTS : 0,
+            vector.size() > check50 ? vector.at(check50) + lastTS : 0
     );
     fprintf(stdout, "\n");
     fprintf(stdout, "\n");
@@ -85,7 +85,8 @@ dump_timing(vector<double> vector, std::vector<double> vector_latency,
     outputFile_latency.close();
 
     fprintf(stdout, "95th latency: (%.2f)\t 99th latency: (%.2f)\n",
-            vector_latency.at(check95), vector_latency.at(check99)
+            vector.size() > check95 ? vector_latency.at(check95) : 0,
+            vector.size() > check99 ? vector_latency.at(check99) : 0
     );
 
     //dump gap
@@ -116,15 +117,15 @@ void breakdown_global(int64_t total_results, int nthreads, T_TIMER* timer, long 
     auto others = (timer->overall_timer -
         (timer->wait_timer + timer->partition_timer + timer->buildtimer + timer->sorttimer +
             timer->mergetimer + timer->join_timer));
-    MSG("[INFO] Cycles spent on each input\n"
-        "wait: %f\npartition: %f\nbuild: %f\nsort: %f\nmerge: %f\njoin: %f\nothers: %f\n",
-        (double) timer->wait_timer/total_results,
-        (double) timer->partition_timer/total_results,
-        (double) timer->buildtimer/total_results,
-        (double) timer->sorttimer/total_results,
-        (double) timer->mergetimer/total_results,
-        (double) timer->join_timer/total_results,
-        others/total_results
+    DEBUGMSG("[INFO] Cycles spent on each input\n"
+             "wait: %f\npartition: %f\nbuild: %f\nsort: %f\nmerge: %f\njoin: %f\nothers: %f\n",
+             (double) timer->wait_timer/total_results,
+             (double) timer->partition_timer/total_results,
+             (double) timer->buildtimer/total_results,
+             (double) timer->sorttimer/total_results,
+             (double) timer->mergetimer/total_results,
+             (double) timer->join_timer/total_results,
+             others/total_results
     );
     MSG("matches_in_sort_total: %d", matches_in_sort_total);
     fprintf(pFile, "%f\n%f\n%f\n%f\n%f\n%f\n%lu\n",
@@ -243,15 +244,15 @@ breakdown_global(int64_t total_results, int nthreads, double average_partition_t
     path = "/data1/xtra/results/breakdown/" + txtFile;
     auto fp = fopen(path.c_str(), "w");
 
-    MSG("[INFO] Cycles spent on each input\n"
-        "wait: %f\npartition: %f\nbuild: %f\nsort: %f\nmerge: %f\njoin: %f\nothers: %f\n",
-        (double) wait_time/total_results,
-        (double) partition_time/total_results,
-        (double) build_time/total_results,
-        (double) sort_time/total_results,
-        (double) merge_time/total_results,
-        (double) join_time/total_results,
-        others_time/total_results
+    DEBUGMSG("[INFO] Cycles spent on each input\n"
+             "wait: %f\npartition: %f\nbuild: %f\nsort: %f\nmerge: %f\njoin: %f\nothers: %f\n",
+             (double) wait_time/total_results,
+             (double) partition_time/total_results,
+             (double) build_time/total_results,
+             (double) sort_time/total_results,
+             (double) merge_time/total_results,
+             (double) join_time/total_results,
+             others_time/total_results
     );
     MSG("[INFO] matches_in_sort_total: %d", matches_in_sort_total)
     fprintf(fp, "%f\n%f\n%f\n%f\n%f\n%f\n%f\n",
@@ -268,7 +269,7 @@ breakdown_global(int64_t total_results, int nthreads, double average_partition_t
 
 void dump_partition_cost(T_TIMER* timer, _IO_FILE* pFile) {
 
-    MSG("[INFO ] partition cost: %lu", timer->partition_timer)
+    DEBUGMSG("[INFO ] partition cost: %lu", timer->partition_timer)
     fprintf(pFile, "%lu\n", timer->partition_timer);
     fflush(pFile);
 }
@@ -448,6 +449,5 @@ void sortRecords(string algo_name, int exp_id, long lastTS, unsigned long inputs
     sort(global_record_gap.begin(), global_record_gap.end());
     /* now print the progressive results: */
     dump_timing(global_record, global_record_latency, global_record_gap, algo_name, exp_id, lastTS, inputs, matches);
-
 }
 
