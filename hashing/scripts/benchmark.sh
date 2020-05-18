@@ -204,44 +204,44 @@ function benchmarkRun() {
 
 function SetStockParameters() { #matches: 57070441. #inputs= 116941 + 151500
   ts=1 # stream case
-  WINDOW_SIZE=500
-  RSIZE=116941
-  SSIZE=151505
-  RPATH=/data1/xtra/datasets/stock/cj_5s_1t.txt
-  SPATH=/data1/xtra/datasets/stock/sb_5s_1t.txt
+  WINDOW_SIZE=1000
+  RSIZE=60527
+  SSIZE=77227
+  RPATH=/data1/xtra/datasets/stock/cj_1000ms_1t.txt
+  SPATH=/data1/xtra/datasets/stock/sb_1000ms_1t.txt
   RKEY=0
   SKEY=0
   RTS=1
   STS=1
-  gap=57070
+  gap=15595
 }
 
 function SetRovioParameters() { #matches: 27660233 #inputs= 51001 + 51001
   ts=1 # stream case
-  WINDOW_SIZE=500
-  RSIZE=51001
-  SSIZE=51001
-  RPATH=/data1/xtra/datasets/rovio/500ms_1t.txt
-  SPATH=/data1/xtra/datasets/rovio/500ms_1t.txt
+  WINDOW_SIZE=1000
+  RSIZE=2873604
+  SSIZE=2873604
+  RPATH=/data1/xtra/datasets/rovio/1000ms_1t.txt
+  SPATH=/data1/xtra/datasets/rovio/1000ms_1t.txt
   RKEY=0
   SKEY=0
   RTS=3
   STS=3
-  gap=27660
+  gap=87856197
 }
 
 function SetYSBParameters() { #matches: 40100000. #inputs= 1000 + 40100000
   ts=1 # stream case
-  WINDOW_SIZE=500
+  WINDOW_SIZE=1000
   RSIZE=1000
-  SSIZE=40100000
+  SSIZE=10000000
   RPATH=/data1/xtra/datasets/YSB/campaigns_id.txt
   SPATH=/data1/xtra/datasets/YSB/ad_events.txt
   RKEY=0
   SKEY=0
   RTS=0
   STS=1
-  gap=40100
+  gap=9990
 }
 
 function SetDEBSParameters() { #matches: 251033140 #inputs= 1000000 + 1000000
