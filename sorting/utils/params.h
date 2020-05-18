@@ -35,7 +35,7 @@
 
 /** L3 Cache size of the system in bytes */
 #ifndef L3_CACHE_SIZE
-#define L3_CACHE_SIZE (20*1024*1024)
+#define L3_CACHE_SIZE 20971520
 #endif
 
 /**
