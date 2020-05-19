@@ -1,5 +1,8 @@
 #!/bin/bash
 #set -e
+## Set L3 Cache according to your machine.
+sed -i -e "s/#define L3_CACHE_SIZE [[:alnum:]]*/#define L3_CACHE_SIZE 20971520/g" ../utils/params.h
+
 compile=1
 function compile() {
   if [ $compile != 0 ]; then

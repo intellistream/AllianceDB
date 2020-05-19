@@ -425,7 +425,7 @@ for benchmark in "Stock" "Rovio" "YSB" "DEBS"; do #"Stock" "Rovio" "YSB" "DEBS" 
   done
 done
 
-compile=0 #compile depends on whether we want to profile.
+profile_breakdown=0 #compile depends on whether we want to profile.
 # general benchmark.
 for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do
   for benchmark in "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS"; do

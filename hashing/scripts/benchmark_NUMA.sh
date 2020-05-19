@@ -3,7 +3,7 @@
 ## Set L3 Cache according to your machine.
 sed -i -e "s/#define L3_CACHE_SIZE [[:alnum:]]*/#define L3_CACHE_SIZE 26214400/g" ../utils/params.h
 
-profile_breakdown=1 # set to 1 if we want to measure time breakdown! and also dedefine eager in common_function.h
+profile_breakdown=0 # set to 1 if we want to measure time breakdown! and also dedefine eager in common_function.h
 compile=1           #enable compiling.
 function compile() {
   if [ $compile != 0 ]; then

@@ -103,16 +103,12 @@ void earlyJoinMergedRuns(std::vector<run> *Q, int64_t *matches, run *newRun, T_T
                 if (posS < lengthS) {
                     //the left most of each subsequence is the smallest item of the subsequence.
                     readS = runS.at(posS);
-                    assert(readS->key > 0);
-
                 }
             } else {
                 tuple_t *runS = (run_itr).operator*().S;//get Rs in each run.
                 if (posS < lengthS) {
                     //the left most of each subsequence is the smallest item of the subsequence.
                     readS = &runS[posS];
-                    assert(readS->key > 0);
-
                 }
             }
             if (readS && (!minS || minS->key > readS->key)) {
