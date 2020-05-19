@@ -64,6 +64,8 @@ def ReadFile():
     col4 = []
     col5 = []
     col6 = []
+    col7 = []
+    col8 = []
     for id in it.chain(range(62, 66)):
         file = '/data1/xtra/results/timestamps/PRJ_{}.txt'.format(id)
         file2 = '/data1/xtra/results/records/PRJ_{}.txt'.format(id)
@@ -105,6 +107,21 @@ def ReadFile():
         value = GetThroughput(file, file2)
         col6.append(value)
     y.append(col6)
+
+    for id in it.chain(range(62,66)):
+        file = '/data1/xtra/results/timestamps/PMJ_JM_NP_{}.txt'.format(id)
+        file2 = '/data1/xtra/results/records/PMJ_JM_NP_{}.txt'.format(id)
+        value = GetThroughput(file, file2)
+        col7.append(value)
+    y.append(col7)
+
+    for id in it.chain(range(62,66)):
+        file = '/data1/xtra/results/timestamps/PMJ_JBCR_NP_{}.txt'.format(id)
+        file2 = '/data1/xtra/results/records/PMJ_JBCR_NP_{}.txt'.format(id)
+        value = GetThroughput(file, file2)
+        col8.append(value)
+    y.append(col8)
+    
     return y
 
 

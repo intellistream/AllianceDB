@@ -294,8 +294,8 @@ output=test$timestamp.txt
 
 compile=$profile_breakdown #compile depends on whether we want to profile.
 # general benchmark.
-for benchmark in ""; do #"Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "AD" "KD" "WS" "DD"
-  for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
+for benchmark in "Stock" "Rovio" "YSB" "DEBS" ; do #"Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "AD" "KD" "WS" "DD"
+  for algo in SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "AR") #test arrival rate and assume both inputs have same arrival rate.
@@ -428,8 +428,8 @@ done
 profile_breakdown=0 #compile depends on whether we want to profile.
 compile=0
 # general benchmark.
-for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do
-  for benchmark in "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS"; do
+for algo in SHJ_JM_NP; do
+  for benchmark in ; do #"ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS"
     case "$benchmark" in
     "ScaleStock")
       id=42

@@ -1,8 +1,4 @@
 #!/bin/bash
-#python3 throughput_scale_stock.py
-#python3 throughput_scale_rovio.py
-#python3 throughput_scale_ysb.py
-#python3 throughput_scale_debs.py
 
 ## APP
 echo "Drawing Figure 4..."
