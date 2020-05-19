@@ -8,7 +8,7 @@ mpl.use('Agg')
 import matplotlib.pyplot as plt
 import pylab
 from matplotlib.font_manager import FontProperties
-from matplotlib.ticker import LinearLocator, MaxNLocator
+from matplotlib.ticker import MaxNLocator
 
 OPT_FONT_NAME = 'Helvetica'
 TICK_FONT_SIZE = 20
@@ -44,6 +44,7 @@ def ConvertEpsToPdf(dir_filename):
     os.system("epstopdf --outfile " + dir_filename + ".pdf " + dir_filename + ".eps")
     os.system("rm -rf " + dir_filename + ".eps")
 
+
 def GetThroughput(file, file2):
     f = open(file, "r")
     f2 = open(file2, "r")
@@ -52,6 +53,7 @@ def GetThroughput(file, file2):
     x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
     i = float(read2.pop(0).strip("\n"))  # get number of inputs
     return i / x  # get throughput (#items/ms)
+
 
 # example for reading csv file
 def ReadFile():
@@ -62,42 +64,42 @@ def ReadFile():
     col4 = []
     col5 = []
     col6 = []
-    for id in it.chain(range(62,66)):
+    for id in it.chain(range(62, 66)):
         file = '/data1/xtra/results/timestamps/PRJ_{}.txt'.format(id)
         file2 = '/data1/xtra/results/records/PRJ_{}.txt'.format(id)
         value = GetThroughput(file, file2)
         col1.append(value)
     y.append(col1)
 
-    for id in it.chain(range(62,66)):
+    for id in it.chain(range(62, 66)):
         file = '/data1/xtra/results/timestamps/NPJ_{}.txt'.format(id)
         file2 = '/data1/xtra/results/records/NPJ_{}.txt'.format(id)
         value = GetThroughput(file, file2)
         col2.append(value)
     y.append(col2)
 
-    for id in it.chain(range(62,66)):
+    for id in it.chain(range(62, 66)):
         file = '/data1/xtra/results/timestamps/MPASS_{}.txt'.format(id)
         file2 = '/data1/xtra/results/records/MPASS_{}.txt'.format(id)
         value = GetThroughput(file, file2)
         col3.append(value)
     y.append(col3)
 
-    for id in it.chain(range(62,66)):
+    for id in it.chain(range(62, 66)):
         file = '/data1/xtra/results/timestamps/MWAY_{}.txt'.format(id)
         file2 = '/data1/xtra/results/records/MWAY_{}.txt'.format(id)
         value = GetThroughput(file, file2)
         col4.append(value)
     y.append(col4)
 
-    for id in it.chain(range(62,66)):
+    for id in it.chain(range(62, 66)):
         file = '/data1/xtra/results/timestamps/SHJ_JM_NP_{}.txt'.format(id)
         file2 = '/data1/xtra/results/records/SHJ_JM_NP_{}.txt'.format(id)
         value = GetThroughput(file, file2)
         col5.append(value)
     y.append(col5)
 
-    for id in it.chain(range(62,66)):
+    for id in it.chain(range(62, 66)):
         file = '/data1/xtra/results/timestamps/SHJ_JBCR_NP_{}.txt'.format(id)
         file2 = '/data1/xtra/results/records/SHJ_JBCR_NP_{}.txt'.format(id)
         value = GetThroughput(file, file2)
@@ -160,7 +162,7 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
         lines[i], = figure.plot(x_values, y_values[i], color=LINE_COLORS[i], \
                                 linewidth=LINE_WIDTH, marker=MARKERS[i], \
                                 markersize=MARKER_SIZE, label=FIGURE_LABEL[i]
-                                ,markeredgewidth=2, markeredgecolor='k')
+                                , markeredgewidth=2, markeredgecolor='k')
 
     # sometimes you may not want to draw legends.
     if allow_legend == True:
@@ -212,4 +214,4 @@ if __name__ == "__main__":
                0, 0,  # not in use.
                'throughput_scale_rovio',
                False)
-    #DrawLegend(legend_labels, 'throughput_scale_legend')
+    # DrawLegend(legend_labels, 'throughput_scale_legend')
