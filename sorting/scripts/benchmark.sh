@@ -2,6 +2,7 @@
 #set -e
 ## Set L3 Cache according to your machine.
 sed -i -e "s/#define L3_CACHE_SIZE [[:alnum:]]*/#define L3_CACHE_SIZE 20971520/g" ../utils/params.h
+sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h
 
 compile=1
 function compile() {
@@ -16,9 +17,9 @@ function compile() {
 
 function benchmarkRun() {
   #####native execution
-  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -g $gap -I $id== "
+  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -g $gap -o ./profile_$id.txt -I $id== "
   #echo 3 >/proc/sys/vm/drop_caches
-  ../sorting -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -g $gap -I $id
+  ../sorting -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -g $gap -o ./profile_$id.txt -I $id
   if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit 1; fi
 }
 
@@ -122,7 +123,7 @@ output=test$timestamp.txt
 #general benchmark.
 compile=0
 for algo in m-way m-pass; do
-  for benchmark in "Stock" "Rovio" "YSB" "DEBS" "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS"; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "AR" "RAR" "AD" "KD" "WS"
+  for benchmark in ; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "AR" "RAR" "AD" "KD" "WS"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "AR") #test arrival rate and assume both inputs have same arrival rate.
@@ -287,65 +288,25 @@ for algo in m-way m-pass; do
         let "id++"
       done
       ;;
-    "LargeScaleStock")
-      id=58
-      ResetParameters
-      SetStockParameters
-      echo test scalability of Stock 58 - 61
-      for Threads in 4 8 16 32; do
-        benchmarkRun
-        let "id++"
-      done
-      ;;
-    "LargeScaleRovio")
-      id=62
-      ResetParameters
-      SetRovioParameters
-      echo test scalability 62 - 65
-      for Threads in 4 8 16 32; do
-        benchmarkRun
-        let "id++"
-      done
-      ;;
-    "LargeScaleYSB")
-      id=66
+    esac
+  done
+done
+
+# Cache misses profiling with YSB, please run the program with sudo
+sed -i -e "s/#define NO_PERF_COUNTERS/#define PERF_COUNTERS/g" ../utils/perf_counters.h
+compile=1
+compile
+for benchmark in "YSB"; do #"
+  id=201
+  for algo in "m-way" "m-pass"; do
+    case "$benchmark" in
+    "YSB")
       ResetParameters
       SetYSBParameters
-      echo test scalability 66 - 69
-      for Threads in 4 8 16 32; do
-        benchmarkRun
-        let "id++"
-      done
+      benchmarkRun
       ;;
-    "LargeScaleDEBS")
-      id=70
-      ResetParameters
-      SetDEBSParameters
-      echo test scalability 70 - 73
-      for Threads in 4 8 16 32; do
-        benchmarkRun
-        let "id++"
-      done
-      ;;
-      #    "Google") #Error yet.
-      #      RSIZE=3747939
-      #      SSIZE=11931801
-      #      RPATH=/data1/xtra/datasets/google/users_key32_partitioned.csv
-      #      SPATH=/data1/xtra/datasets/google/reviews_key32_partitioned.csv
-      #      RKEY=1
-      #      SKEY=1
-      #      benchmarkRun
-      #      ;;
-      #    "Amazon") #Error yet.
-      #      RSIZE=10
-      #      SSIZE=10
-      #      RPATH=/data1/xtra/datasets/amazon/amazon_question_partitioned.csv
-      #      SPATH=/data1/xtra/datasets/amazon/amazon_answer_partitioned.csv
-      #      RKEY=0
-      #      SKEY=0
-      #      benchmarkRun
-      #      ;;
     esac
+    let "id++"
   done
 done
 

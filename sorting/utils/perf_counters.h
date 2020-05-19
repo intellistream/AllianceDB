@@ -20,7 +20,7 @@
  * @{
  */
 
-//#define PERF_COUNTERS
+#define PERF_COUNTERS
 
 /** Is performance monitoring PER_CORE? */
 #ifndef PER_CORE

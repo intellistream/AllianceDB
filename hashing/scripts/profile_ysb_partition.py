@@ -111,51 +111,55 @@ if __name__ == "__main__":
         'L1 miss', 'L2 miss', 'L3 miss'
     ]
     y_values = []
-    inputs = 1000 + 40100000
+    file = '/data1/xtra/results/records/NPJ_{}.txt'.format(203)
+    f = open(file, "r")
+    read = f.readlines()
+    inputs = float(read.pop(0).strip("\n"))  # get number of inputs
+
     y_values.append([  # NPJ does not have partition phase.
         0 / inputs,  # L1
         0 / inputs,  # L2
         0 / inputs  # L3
     ])
     y_values.append([  # PRJ
-        57343 / inputs,
-        5204681 / inputs,
-        5190180 / inputs
+        17188 / inputs,
+        902290 / inputs,
+        895929 / inputs
     ])
     y_values.append([  # WAY
-        15688 / inputs,
-        1180884 / inputs,
-        1171854 / inputs
+        4349 / inputs,
+        298189 / inputs,
+        295527 / inputs
     ])
     y_values.append([  # MPASS
-        14330 / inputs,
-        1186113 / inputs,
-        1177037 / inputs
+        8132 / inputs,
+        303381 / inputs,
+        293609 / inputs
     ])
-    y_values.append([  # SHJM
-        1301 / inputs,
-        3456 / inputs,
-        2163 / inputs
+    y_values.append([  # SHJM -- 205
+        203 / inputs,
+        454 / inputs,
+        81 / inputs
     ])
-    y_values.append([  # SHJB
-        4025051 / inputs,
-        7362756 / inputs,
-        765380 / inputs
+    y_values.append([  # SHJB -- 206
+        951608 / inputs,
+        1850856 / inputs,
+        198047 / inputs
     ])
-    y_values.append([  # PMJM
-        242 / inputs,
-        518 / inputs,
-        163 / inputs
+    y_values.append([  # PMJM -- 207
+        540 / inputs,
+        1502 / inputs,
+        667 / inputs
     ])
-    y_values.append([  # PMJB
-        4114776 / inputs,
-        7454989 / inputs,
-        765201 / inputs
+    y_values.append([  # PMJB -- 208
+        960145 / inputs,
+        1848849 / inputs,
+        192623 / inputs
     ])
 
     legend_labels = ['NPJ', 'PRJ', 'MWAY', 'MPASS', 'SHJ$^{JM}$', 'SHJ$^{JB}$', 'PMJ$^{JM}$',
                      'PMJ$^{JB}$']
 
-    DrawFigure(x_values, y_values, legend_labels, '', 'misses per input', 0, 7454989 / inputs, 'profile_ysb_partition',
+    DrawFigure(x_values, y_values, legend_labels, '', 'misses per input', 0, 1850856 / inputs, 'profile_ysb_partition',
                False)
     DrawLegend(legend_labels, 'profile_legend')

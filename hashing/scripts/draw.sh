@@ -1,27 +1,22 @@
 #!/bin/bash
 
-## APP
-echo "Drawing Figure 4..."
-python3 latency_figure_app.py
-python3 throughput_figure_app.py
-###
-echo "Drawing Figure 5..."
-for id in {38..41}; do
-  python3 progressive_figure.py -i $id
-done
+### APP
+#echo "Drawing Figure 4..."
+#python3 latency_figure_app.py
+#python3 throughput_figure_app.py
+####
+#echo "Drawing Figure 5..."
+#for id in {38..41}; do
+#  python3 progressive_figure.py -i $id
+#done
 
-#### APP Scale.
-echo "Drawing Figure 6..."
-python3 throughput_scale_lazy.py
-python3 throughput_scale_eager.py
+#echo "Drawing Figure 6..."
+#python3 breakdown_broken.py -i 38
+#for id in {39..41} ; do
+#  python3 breakdown.py -i $id
+#done
 
-echo "Drawing Figure 7..."
-python3 breakdown_broken.py -i 38
-for id in {39..41} ; do
-  python3 breakdown.py -i $id
-done
-
-echo "Drawing Figure 8..."
+echo "Drawing Figure 7 (Please profile with sudo, and then set results in these two files manually)..."
 python3 profile_ysb_partition.py
 python3 profile_ysb_probe.py
 
@@ -74,6 +69,12 @@ python3 latency_figure6.py
 for id in 25 28; do
   python3 progressive_figure.py -i $id
 done
+
+#### APP Scale.
+echo "Drawing Figure 20..."
+python3 throughput_scale_lazy.py
+python3 throughput_scale_eager.py
+
 
 ### SIMD_STUDY
 #python3 breakdown_simd.py

@@ -260,7 +260,7 @@ PCM_printAccumulators()
   ofstream outf;
 
   if(PCM_OUT) {
-    outf.open(PCM_OUT, ios::app);
+    outf.open(PCM_OUT, ios::trunc);
     out = &outf;
   }
   else {

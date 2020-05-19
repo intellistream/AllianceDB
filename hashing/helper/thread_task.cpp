@@ -567,7 +567,7 @@ void
         PCM_cleanup();
     }
     /* Just to make sure we get consistent performance numbers */
-    BARRIER_ARRIVE(args->barrier, rv);
+    BARRIER_ARRIVE(args->barrier, lock);
 #endif
     /* wait at a barrier until each thread finishes*/
     BARRIER_ARRIVE(args->barrier, lock)

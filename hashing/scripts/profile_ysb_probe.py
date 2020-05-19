@@ -111,52 +111,56 @@ if __name__ == "__main__":
         'L1 miss', 'L2 miss', 'L3 miss'
     ]
     y_values = []
-    inputs = 1000 + 40100000
+    file = '/data1/xtra/results/records/NPJ_{}.txt'.format(203)
+    f = open(file, "r")
+    read = f.readlines()
+    inputs = float(read.pop(0).strip("\n"))  # get number of inputs
+
     y_values.append([  # NPJ
-        836738 / inputs,  # L1
-        637052 / inputs,  # L2
-        632065 / inputs  # L3
+        258622 / inputs,  # L1
+        159669 / inputs,  # L2
+        157005 / inputs  # L3
     ])
     y_values.append([  # PRJ
-        141920 / inputs,
-        2839758 / inputs,
-        2827957 / inputs
+        15100 / inputs,
+        578006 / inputs,
+        575498 / inputs
     ])
     y_values.append([  # WAY
-        375922 / inputs,
-        578455 / inputs,
-        482609 / inputs
+        45508 / inputs,
+        161979 / inputs,
+        158363 / inputs
     ])
     y_values.append([  # MPASS
-        396528 / inputs,
-        609056 / inputs,
-        507194 / inputs
+        53451 / inputs,
+        213323 / inputs,
+        193336 / inputs
     ])
-    y_values.append([  # SHJM
-        (14479883 - 10305975) / inputs,
-        (7365406 - 6650167) / inputs,
+    y_values.append([  # SHJM -- 213 - 209
+        (3704227 - 2572670) / inputs,
+        (1877878 - 1693799) / inputs,
         (0) / inputs
     ])
-    y_values.append([  # SHJB
-        (15060067 - 3710179) / inputs,
-        (17319296 - 6979044) / inputs,
-        (12797271 - 773151) / inputs
+    y_values.append([  # SHJB -- 214 - 210
+        (0) / inputs,
+        (1810239 - 1798050) / inputs,
+        (198923 - 191949) / inputs
     ])
-    y_values.append([  # PMJM
-        (6220998 - 4903713) / inputs,
-        (8942942 - 5727993) / inputs,
-        (8271776 - 5094118) / inputs
+    y_values.append([  # PMJM -- 215 - 211
+        (1647144 - 1252976) / inputs,
+        (1142961 - 881546) / inputs,
+        (1029115 - 784662) / inputs
     ])
-    y_values.append([  # PMJB
-        (11252918 - 10766737) / inputs,
-        (20967472 - 15642001) / inputs,
-        (18806674 - 13490337) / inputs
+    y_values.append([  # PMJB -- 216 - 212
+        (1088998 - 1004825) / inputs,
+        (1854224 - 1835781) / inputs,
+        (0) / inputs
     ])
 
     legend_labels = ['NPJ', 'PRJ', 'MWAY', 'MPASS', 'SHJ$^{JM}$', 'SHJ$^{JB}$', 'PMJ$^{JM}$',
                      'PMJ$^{JB}$']
 
-    DrawFigure(x_values, y_values, legend_labels, '', 'misses per input', 0, (12797271 - 773151) / inputs,
+    DrawFigure(x_values, y_values, legend_labels, '', 'misses per input', 0, (3704227 - 2572670) / inputs,
                'profile_ysb_probe',
                False)
     DrawLegend(legend_labels, 'profile_legend')

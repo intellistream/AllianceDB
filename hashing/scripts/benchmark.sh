@@ -2,6 +2,8 @@
 #set -e
 ## Set L3 Cache according to your machine.
 sed -i -e "s/#define L3_CACHE_SIZE [[:alnum:]]*/#define L3_CACHE_SIZE 20971520/g" ../utils/params.h
+sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h
+
 profile_breakdown=1 # set to 1 if we want to measure time breakdown!
 
 compile=1           #enable compiling.
@@ -20,10 +22,17 @@ function Run() {
   echo 3 >/proc/sys/vm/drop_caches
   ../hashing -a $algo -r $RSIZE -s $SSIZE -n $Threads
 }
+function benchmarkRun() {
+  #####native execution
+  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap -o ./profile_$id.txt =="
+  echo 3 >/proc/sys/vm/drop_caches
+  ../hashing -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap -o ./profile_$id.txt
+  if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit -1; fi
+}
 
 function KimRun() {
   #####native execution
-  echo "==KIM benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS -[ $progress_step -] $merge_step -G $group -P $DD -g $gap=="
+  echo "==KIM benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS -[ $progress_step -] $merge_step -G $group -P $DD -g $gap =="
   echo 3 >/proc/sys/vm/drop_caches
   ../hashing -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS -[ $progress_step -] $merge_step -G $group -P $DD -g $gap
   if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit -1; fi
@@ -194,13 +203,7 @@ function RUNALLMic() {
   fi
 }
 
-function benchmarkRun() {
-  #####native execution
-  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap=="
-  echo 3 >/proc/sys/vm/drop_caches
-  ../hashing -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap
-  if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit -1; fi
-}
+
 
 function SetStockParameters() { #matches: 15598112. #inputs= 60527 + 77227
   ts=1 # stream case
@@ -295,7 +298,7 @@ output=test$timestamp.txt
 compile=$profile_breakdown #compile depends on whether we want to profile.
 # general benchmark.
 for benchmark in "Stock" "Rovio" "YSB" "DEBS" ; do #"Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "AD" "KD" "WS" "DD"
-  for algo in SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
+  for algo in ; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "AR") #test arrival rate and assume both inputs have same arrival rate.
@@ -490,6 +493,77 @@ done
 #    python3 latency_merge.py
 #    python3 progressive_merge.py
 #    ;;
+
+# Cache misses profiling with YSB, please run the program with sudo
+sed -i -e "s/#define NO_PERF_COUNTERS/#define PERF_COUNTERS/g" ../utils/perf_counters.h
+compile=1
+
+PARTITION_ONLY
+compile
+for benchmark in "YSB"; do #"
+  id=205
+  for algo in SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do
+    case "$benchmark" in
+    "YSB")
+      ResetParameters
+      SetYSBParameters
+      benchmarkRun
+      ;;
+    esac
+    let "id++"
+  done
+done
+
+PARTITION_BUILD_SORT
+compile
+for benchmark in "YSB"; do
+  id=209
+  for algo in SHJ_JM_NP SHJ_JBCR_NP; do
+    case "$benchmark" in
+    "YSB")
+      ResetParameters
+      SetYSBParameters
+      benchmarkRun
+      ;;
+    esac
+    let "id++"
+  done
+done
+
+PARTITION_BUILD_SORT_MERGE
+compile
+for benchmark in "YSB"; do #"
+  id=211
+  for algo in PMJ_JM_NP PMJ_JBCR_NP; do #NPO PRO
+    case "$benchmark" in
+    "YSB")
+      ResetParameters
+      SetYSBParameters
+      benchmarkRun
+      ;;
+    esac
+    let "id++"
+  done
+done
+
+PARTITION_BUILD_SORT_MERGE_JOIN
+compile
+for benchmark in "YSB"; do #"
+  id=213
+  for algo in SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #NPO PRO
+    case "$benchmark" in
+    "YSB")
+      ResetParameters
+      SetYSBParameters
+      benchmarkRun
+      ;;
+    esac
+    let "id++"
+  done
+done
+
+
+
 
 compile=1 #enable compiling.
 #benchmark experiment only apply for hashing directory.

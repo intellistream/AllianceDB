@@ -299,7 +299,7 @@ if __name__ == "__main__":
     # break into 4 parts
     legend_labels = ['wait', 'partition', 'build/sort', 'merge', 'probe', 'others']  #
     print(y_values)
-    DrawFigure(x_values, y_values, ceil(max_value / 10) * 10, legend_labels, '',
+    DrawFigure(x_values, y_values, ceil(max_value / 100) * 100, legend_labels, '',
                'cycles per input',
                'breakdown_figure{}'.format(id), id, False)
 
