@@ -207,7 +207,7 @@ if __name__ == "__main__":
     x = [4, 8, 16, 32]
 
     DrawFigure(x, y, legend_labels,
-               'Number of threads', 'Tpt. (#matches/ms)',
+               'Number of threads', 'Tpt. (#inputs/ms)',
                1, 32,  # not in use.
                0, 0,  # not in use.
                'throughput_scale_rovio',
