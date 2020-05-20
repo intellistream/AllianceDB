@@ -25,7 +25,7 @@ COLOR_MAP = (['#000000', '#5DA5DA', '#60BD68', '#B276B2', '#DECF3F', '#F17CB0', 
 PATTERNS = (["", "\\\\", "//////", "o", "||", "\\\\", "\\\\", "//////", "//////", ".", "\\\\\\", "\\\\\\"])
 LABEL_WEIGHT = 'bold'
 LINE_COLORS = COLOR_MAP
-LINE_WIDTH = 3.0
+LINE_WIDTH = 5.0
 MARKER_SIZE = 0.0
 MARKER_FREQUENCY = 1000
 
@@ -46,7 +46,7 @@ def ConvertEpsToPdf(dir_filename):
 
 
 # draw a line chart
-def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, allow_legend):
+def DrawFigure(x_values, y_values, sum, legend_labels, x_label, y_label, filename, allow_legend):
     # you may change the figure size on your own.
     fig = plt.figure(figsize=(8, 3.5))
     figure = fig.add_subplot(111)
@@ -85,22 +85,29 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, al
         if allow_legend == True:
             handles, labels = figure.get_legend_handles_labels()
         if allow_legend == True:
-            leg=plt.legend(handles[::-1], labels[::-1],
-                       loc='center',
-                       prop=LEGEND_FP,
-                       ncol=4,
-                       bbox_to_anchor=(0.5, 1.15),
-                       handletextpad=0.1,
-                       borderaxespad=0.0,
-                       handlelength=1.8,
-                       labelspacing=0.3,
-                       columnspacing=0.4,
-                       )
+            leg = plt.legend(handles[::-1], labels[::-1],
+                             loc='center',
+                             prop=LEGEND_FP,
+                             ncol=4,
+                             bbox_to_anchor=(0.5, 1.15),
+                             handletextpad=0.1,
+                             borderaxespad=0.0,
+                             handlelength=1.8,
+                             labelspacing=0.3,
+                             columnspacing=0.4,
+                             )
             leg.get_frame().set_linewidth(2)
             leg.get_frame().set_edgecolor("black")
-
+    x_coordinates = [0, 4]
+    y_coordinates = [sum, sum]
+    print(sum)
+    plt.plot(x_coordinates, y_coordinates,
+             color=LINE_COLORS[6], linewidth=LINE_WIDTH,
+             marker=MARKERS[6], markersize=MARKER_SIZE,
+             markeredgewidth=2, markeredgecolor='k')  # this is the JM line.
+    plt.text(3.7, sum+10, "JM", fontproperties=LABEL_FP)
     # you may need to tune the xticks position to get the best figure.
-    plt.xticks(index + 1 * width, x_values)
+    plt.xticks(index + 0.5 * width, x_values)
 
     # plt.xlim(0,)
     # plt.ylim(0,1)
@@ -175,7 +182,7 @@ def ReadFile(id):
         others = 0
         for x in read:
             value = double(x.strip("\n"))
-            if cnt == 1: #partition
+            if cnt == 1:  # partition
                 y[0][j] = value
             elif cnt == 2:  # build
                 y[1][j] = value
@@ -187,8 +194,22 @@ def ReadFile(id):
             #     y[2][j] = others
             cnt += 1
         j += 1
+    f = open("/data1/xtra/results/breakdown/SHJ_JM_NP_{}.txt".format(124), "r")
+    read = f.readlines()
+    sum = 0
+    cnt = 0
+    for x in read:
+        value = double(x.strip("\n"))
+        if cnt == 1:  # partition
+            sum += value
+        elif cnt == 2:  # build
+            sum += value
+        elif cnt == 5:  # join
+            sum += value
+        cnt += 1
     print(y)
-    return y, max_value
+    print(sum)
+    return y, sum, max_value
 
 
 if __name__ == "__main__":
@@ -208,14 +229,14 @@ if __name__ == "__main__":
 
     x_values = [1, 2, 4, 8]  # merging step size
 
-    y_values, max_value = ReadFile(id)  # 55
+    y_values, sum, max_value = ReadFile(id)  # 55
 
     # y_norm_values = normalize(y_values)
 
     # break into 4 parts
     legend_labels = ['partition', 'build', 'probe']  # , 'others'
 
-    DrawFigure(x_values, y_values, legend_labels,
+    DrawFigure(x_values, y_values, sum, legend_labels,
                'group size', 'cycles per input',
                'breakdown_group_shj_figure', True)
 

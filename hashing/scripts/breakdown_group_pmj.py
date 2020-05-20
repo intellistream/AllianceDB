@@ -25,7 +25,7 @@ COLOR_MAP = (['#000000', '#5DA5DA', '#60BD68', '#B276B2', '#DECF3F', '#F17CB0', 
 PATTERNS = (["", "\\\\", "//////", "o", "||", "\\\\", "\\\\", "//////", "//////", ".", "\\\\\\", "\\\\\\"])
 LABEL_WEIGHT = 'bold'
 LINE_COLORS = COLOR_MAP
-LINE_WIDTH = 3.0
+LINE_WIDTH = 5.0
 MARKER_SIZE = 0.0
 MARKER_FREQUENCY = 1000
 
@@ -46,7 +46,7 @@ def ConvertEpsToPdf(dir_filename):
 
 
 # draw a line chart
-def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, allow_legend):
+def DrawFigure(x_values, y_values, sum, legend_labels, x_label, y_label, filename, allow_legend):
     # you may change the figure size on your own.
     fig = plt.figure(figsize=(8, 3.5))
     figure = fig.add_subplot(111)
@@ -68,20 +68,18 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, al
         bars[i] = plt.bar(index + width / 2, y_values[i], width, hatch=PATTERNS[i], color=LINE_COLORS[i],
                           label=FIGURE_LABEL[i], bottom=bottom_base, edgecolor='black', linewidth=3)
         bottom_base = np.array(y_values[i]) + bottom_base
+    x_coordinates = [0, 4]
+    y_coordinates = [sum, sum]
+    print(sum)
 
+    plt.plot(x_coordinates, y_coordinates,
+             color=LINE_COLORS[6], linewidth=LINE_WIDTH,
+             marker=MARKERS[6], markersize=MARKER_SIZE,
+             markeredgewidth=2, markeredgecolor='k')  # this is the JM line.
+    plt.text(3.7, sum+10, "JM", fontproperties=LABEL_FP)
     # sometimes you may not want to draw legends.
     if allow_legend == True:
-        plt.legend(bars, FIGURE_LABEL
-                   #                     mode='expand',
-                   #                     shadow=False,
-                   #                     columnspacing=0.25,
-                   #                     labelspacing=-2.2,
-                   #                     borderpad=5,
-                   #                     bbox_transform=ax.transAxes,
-                   #                     frameon=False,
-                   #                     columnspacing=5.5,
-                   #                     handlelength=2,
-                   )
+        plt.legend(bars, FIGURE_LABEL)
         if allow_legend == True:
             handles, labels = figure.get_legend_handles_labels()
         if allow_legend == True:
@@ -100,7 +98,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, al
             leg.get_frame().set_edgecolor("black")
 
     # you may need to tune the xticks position to get the best figure.
-    plt.xticks(index + 1 * width, x_values)
+    plt.xticks(index + 0.5 * width, x_values)
 
     # plt.xlim(0,)
     # plt.ylim(0,1)
@@ -113,9 +111,6 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, al
 
     plt.xlabel(x_label, fontproperties=LABEL_FP)
     plt.ylabel(y_label, fontproperties=LABEL_FP)
-
-    size = fig.get_size_inches()
-    dpi = fig.get_dpi()
 
     plt.savefig(FIGURE_FOLDER + "/" + filename + ".pdf", bbox_inches='tight', format='pdf')
 
@@ -189,8 +184,24 @@ def ReadFile(id):
             #     y[2][j] = others
             cnt += 1
         j += 1
+    f = open("/data1/xtra/results/breakdown/PMJ_JM_NP_{}.txt".format(id), "r")
+    read = f.readlines()
+    sum = 0
+    cnt = 0
+    for x in read:
+        value = double(x.strip("\n"))
+        if cnt == 1:  # partition
+            sum += value
+        elif cnt == 3:  # sort
+            sum += value
+        elif cnt == 4:  # merge
+            sum += value
+        elif cnt == 5:  # join
+            sum += value
+        cnt += 1
     print(y)
-    return y, max_value
+    print(sum)
+    return y, sum, max_value
 
 
 if __name__ == "__main__":
@@ -210,14 +221,14 @@ if __name__ == "__main__":
 
     x_values = [1, 2, 4, 8]  # merging step size
 
-    y_values, max_value = ReadFile(id)  # 55
+    y_values, sum, max_value = ReadFile(id)  #
 
     # y_norm_values = normalize(y_values)
 
     # break into 4 parts
     legend_labels = ['partition', 'sort', 'merge', 'probe']  # , 'others'
 
-    DrawFigure(x_values, y_values, legend_labels,
+    DrawFigure(x_values, y_values, sum, legend_labels,
                'group size', 'cycles per input',
                'breakdown_group_pmj_figure', True)
 

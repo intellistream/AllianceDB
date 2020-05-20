@@ -4,8 +4,6 @@
 sed -i -e "s/#define L3_CACHE_SIZE [[:alnum:]]*/#define L3_CACHE_SIZE 20971520/g" ../utils/params.h
 sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h
 
-profile_breakdown=1 # set to 1 if we want to measure time breakdown!
-
 compile=1           #enable compiling.
 function compile() {
   if [ $compile != 0 ]; then
@@ -295,10 +293,11 @@ compile
 timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
 
+profile_breakdown=0 # set to 1 if we want to measure time breakdown!
 compile=$profile_breakdown #compile depends on whether we want to profile.
 # general benchmark.
-for benchmark in "Stock" "Rovio" "YSB" "DEBS" ; do #"Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "AD" "KD" "WS" "DD"
-  for algo in ; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
+for benchmark in "" ; do #"Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "AD" "KD" "WS" "DD"
+  for algo in SHJ_JM_NP; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "AR") #test arrival rate and assume both inputs have same arrival rate.
@@ -416,7 +415,6 @@ for benchmark in "Stock" "Rovio" "YSB" "DEBS" ; do #"Stock" "Rovio" "YSB" "DEBS"
       ResetParameters
       SetYSBParameters
       RUNALL
-      #      benchmarkRun # use this when profiling.
       ;;
     "DEBS")
       id=41
@@ -432,7 +430,7 @@ profile_breakdown=0 #compile depends on whether we want to profile.
 compile=0
 # general benchmark.
 for algo in SHJ_JM_NP; do
-  for benchmark in ; do #"ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS"
+  for benchmark in "ScaleYSB"; do #"ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS"
     case "$benchmark" in
     "ScaleStock")
       id=42
@@ -494,77 +492,76 @@ done
 #    python3 progressive_merge.py
 #    ;;
 
-# Cache misses profiling with YSB, please run the program with sudo
-sed -i -e "s/#define NO_PERF_COUNTERS/#define PERF_COUNTERS/g" ../utils/perf_counters.h
-compile=1
-
-PARTITION_ONLY
-compile
-for benchmark in "YSB"; do #"
-  id=205
-  for algo in SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do
-    case "$benchmark" in
-    "YSB")
-      ResetParameters
-      SetYSBParameters
-      benchmarkRun
-      ;;
-    esac
-    let "id++"
+PROFILE_YSB=0 ## Cache misses profiling with YSB, please run the program with sudo
+if [ $PROFILE_YSB == 1 ]; then
+  sed -i -e "s/#define NO_PERF_COUNTERS/#define PERF_COUNTERS/g" ../utils/perf_counters.h
+  compile=1
+  PARTITION_ONLY
+  compile
+  for benchmark in "YSB"; do #"
+    id=205
+    for algo in SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do
+      case "$benchmark" in
+      "YSB")
+        ResetParameters
+        SetYSBParameters
+        benchmarkRun
+        ;;
+      esac
+      let "id++"
+    done
   done
-done
 
-PARTITION_BUILD_SORT
-compile
-for benchmark in "YSB"; do
-  id=209
-  for algo in SHJ_JM_NP SHJ_JBCR_NP; do
-    case "$benchmark" in
-    "YSB")
-      ResetParameters
-      SetYSBParameters
-      benchmarkRun
-      ;;
-    esac
-    let "id++"
+  PARTITION_BUILD_SORT
+  compile
+  for benchmark in "YSB"; do
+    id=209
+    for algo in SHJ_JM_NP SHJ_JBCR_NP; do
+      case "$benchmark" in
+      "YSB")
+        ResetParameters
+        SetYSBParameters
+        benchmarkRun
+        ;;
+      esac
+      let "id++"
+    done
   done
-done
 
-PARTITION_BUILD_SORT_MERGE
-compile
-for benchmark in "YSB"; do #"
-  id=211
-  for algo in PMJ_JM_NP PMJ_JBCR_NP; do #NPO PRO
-    case "$benchmark" in
-    "YSB")
-      ResetParameters
-      SetYSBParameters
-      benchmarkRun
-      ;;
-    esac
-    let "id++"
+  PARTITION_BUILD_SORT_MERGE
+  compile
+  for benchmark in "YSB"; do #"
+    id=211
+    for algo in PMJ_JM_NP PMJ_JBCR_NP; do #NPO PRO
+      case "$benchmark" in
+      "YSB")
+        ResetParameters
+        SetYSBParameters
+        benchmarkRun
+        ;;
+      esac
+      let "id++"
+    done
   done
-done
 
-PARTITION_BUILD_SORT_MERGE_JOIN
-compile
-for benchmark in "YSB"; do #"
-  id=213
-  for algo in SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #NPO PRO
-    case "$benchmark" in
-    "YSB")
-      ResetParameters
-      SetYSBParameters
-      benchmarkRun
-      ;;
-    esac
-    let "id++"
+  PARTITION_BUILD_SORT_MERGE_JOIN
+  compile
+  for benchmark in "YSB"; do #"
+    id=213
+    for algo in SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #NPO PRO
+      case "$benchmark" in
+      "YSB")
+        ResetParameters
+        SetYSBParameters
+        benchmarkRun
+        ;;
+      esac
+      let "id++"
+    done
   done
-done
+fi
 
-
-
-
+profile_breakdown=1 #compile depends on whether we want to profile.
 compile=1 #enable compiling.
 #benchmark experiment only apply for hashing directory.
 for benchmark in ""; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY"
@@ -631,24 +628,29 @@ for benchmark in ""; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZ
     ;;
   "GROUP_SIZE_STUDY")
     id=124
-    algo="PMJ_JBCR_NP"
-    ResetParameters
     ts=0 # batch data.
-    echo GROUP_SIZE_STUDY PMJ 124 - 127
-    for group in 1 2 4 8; do
-      RUNALLMic
-      let "id++"
-    done
-
-    algo="SHJ_JBCR_NP"
-    ResetParameters
-    echo GROUP_SIZE_STUDY SHJ 128 - 131
-    for group in 1 2 4 8; do
-      RUNALLMic
-      let "id++"
-    done
-    python3 breakdown_group_pmj.py
-    python3 breakdown_group_shj.py
+#    algo="PMJ_JBCR_NP"
+#    ResetParameters
+#    echo GROUP_SIZE_STUDY PMJ 124 - 127
+#    for group in 1 2 4 8; do
+#      RUNALLMic
+#      let "id++"
+#    done
+#
+#    algo="SHJ_JBCR_NP"
+#    ResetParameters
+#    echo GROUP_SIZE_STUDY SHJ 128 - 131
+#    for group in 1 2 4 8; do
+#      RUNALLMic
+#      let "id++"
+#    done
+     ResetParameters
+     algo="PMJ_JM_NP"
+     RUNALLMic
+     algo="SHJ_JM_NP"
+     RUNALLMic
+#    python3 breakdown_group_pmj.py
+#    python3 breakdown_group_shj.py
     ;;
   "HS_STUDY")
     id=132
