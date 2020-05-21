@@ -6,11 +6,7 @@
 # What?
 AllianceDB is a library for a list of stream operations optimized on modern multicore processors.
 
-# Current Stage?
-We start with stream join, which is argubly the most fundamental and difficult to implement operations.
-In the future, we will add other relational operations including stream aggregation, filtering, group-by and so on.
-
-# How to preproduce our experimental results
+# How to preproduce our experimental results?
 
 Almost all of our experiments can be automatically reproduced by calling a few pre-prepared scripts.
 Only the cache miss profiling study requires manual efforts. This is because of the sudo requirement for conducting this test. We appologize for this trouble and we may fix it in future.
@@ -42,6 +38,9 @@ Repeat the experiments for sorting/scripts/benchmark.sh
 call ./draw.sh to generate figures.
 
   
+# What's Next?
+We start with stream join, which is argubly the most fundamental and difficult to implement operations.
+In the future, we will add other relational operations including stream aggregation, filtering, group-by and so on.
   
 
 
