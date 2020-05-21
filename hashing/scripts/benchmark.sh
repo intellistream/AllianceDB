@@ -293,10 +293,10 @@ compile
 timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
 
-profile_breakdown=0 # set to 1 if we want to measure time breakdown!
+profile_breakdown=1 # set to 1 if we want to measure time breakdown!
 compile=$profile_breakdown #compile depends on whether we want to profile.
 # general benchmark.
-for benchmark in "" ; do #"Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "AD" "KD" "WS" "DD"
+for benchmark in ""Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "AD" "KD" "WS" "DD"" ; do #"Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "AD" "KD" "WS" "DD"
   for algo in SHJ_JM_NP; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1

@@ -210,7 +210,7 @@ if __name__ == "__main__":
 
     legend_labels = [ 'NPJ', 'PRJ',  'MWAY', 'MPASS', 'SHJ$^{JM}$', 'SHJ$^{JB}$', 'PMJ$^{JM}$',
                      'PMJ$^{JB}$']
-
+    print(y_values)
     DrawFigure(x_values, y_values, legend_labels,
                '', '95$^{th}$ latency (ms)', 0,
                400, 'latency_figure_app', False)

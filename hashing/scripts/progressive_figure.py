@@ -338,7 +338,7 @@ if __name__ == "__main__":
     ts = ceil(getmaxts(id) / 100) * 100
     print("maximum timestamp:", ts)
     x_axis, y_axis = ReadFile(id)
-
+    print(y_axis[0])
     legend = False
     DrawFigure(x_axis, y_axis, legend_labels,
                'elapsed time (msec)', 'cumulative percent', 0, getCount(id),

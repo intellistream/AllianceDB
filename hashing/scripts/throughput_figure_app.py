@@ -216,5 +216,5 @@ if __name__ == "__main__":
     DrawFigure(x_values, y_values, legend_labels,
                '', 'Tpt. (#inputs/ms)', 0,
                400, 'throughput_figure_app', False)
-
+    print(y_values)
     DrawLegend(legend_labels, 'throughput_legend')
