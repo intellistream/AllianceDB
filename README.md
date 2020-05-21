@@ -3,7 +3,12 @@
     <img alt="GitHub Actions status" src="https://github.com/ShuhaoZhangTony/AllianceDB/workflows/Main%20workflow/badge.svg"></a>
 </p>
 
-# Stream Joins on Modern Multicore Processors
+# What?
+AllianceDB is a library for a list of stream operations optimized on modern multicore processors.
+
+# Current Stage?
+We start with stream join, which is argubly the most fundamental and difficult to implement operations.
+In the future, we will add other relational operations including stream aggregation, filtering, group-by and so on.
 
 ## How to preproduce our experimental results
 
