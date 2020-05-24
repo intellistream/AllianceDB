@@ -103,19 +103,20 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
                    #                     columnspacing=5.5,
                    #                     handlelength=2,
                    )
-        handles, labels = figure.get_legend_handles_labels()
-
+        # if we want to reorder the sequence.
+        # handles, labels = figure.get_legend_handles_labels()
+        # handles[::-1], labels[::-1]
         leg = plt.legend(
-                         loc='right',
-                         prop=LEGEND_FP,
-                         ncol=1,
-                         bbox_to_anchor=(1.3, 0.5),
-                         handletextpad=0.2,
-                         borderaxespad=0.0,
-                         handlelength=1.8,
-                         labelspacing=0.3,
-                         columnspacing=0.3,
-                         )
+            loc='right',
+            prop=LEGEND_FP,
+            ncol=1,
+            bbox_to_anchor=(1.5, 0.5),
+            handletextpad=0.2,
+            borderaxespad=0.0,
+            handlelength=1.8,
+            labelspacing=0.3,
+            columnspacing=0.3,
+        )
         leg.get_frame().set_linewidth(2)
         leg.get_frame().set_edgecolor("black")
 
@@ -144,11 +145,13 @@ def ReadFile():
     col2 = []
 
     cnt = 0
-    f = open("/data1/xtra/results/breakdown/SHJ_JM_NP_{}.txt".format(132), "r")
+    sum = 0
+    f = open("/data1/xtra/results/breakdown/SHJ_JM_P_{}.txt".format(133), "r")
     read = f.readlines()
 
     for x in read:
         value = double(x.strip("\n"))
+        sum += value
         if cnt == 1:  # partition
             col1.append(value)
         elif cnt == 2:  # build
@@ -156,14 +159,17 @@ def ReadFile():
         elif cnt == 5:  # probe
             col1.append(value)
         cnt += 1
+    col1.append(sum)
     y_values.append(col1)
 
     cnt = 0
-    f = open("/data1/xtra/results/breakdown/SHJ_HS_NP_{}.txt".format(132), "r")
+    sum = 0
+    f = open("/data1/xtra/results/breakdown/SHJ_JM_NP_{}.txt".format(133), "r")
     read = f.readlines()
 
     for x in read:
         value = double(x.strip("\n"))
+        sum += value
         if cnt == 1:  # partition
             col2.append(value)
         elif cnt == 2:  # build
@@ -171,6 +177,7 @@ def ReadFile():
         elif cnt == 5:  # probe
             col2.append(value)
         cnt += 1
+    col2.append(sum)
     y_values.append(col2)
     print(y_values)
 
@@ -179,15 +186,15 @@ def ReadFile():
 
 if __name__ == "__main__":
     x_values = [
-        'partition', 'build', 'probe'
+        'partition', 'build', 'probe', 'overall'
     ]
     y_values = []
 
     y_values = ReadFile()
 
-    legend_labels = ['SHJ$^{JM}$', 'SHJ$^{HS}$']
+    legend_labels = ['w/ Partition', 'w/o Partition']
 
     DrawFigure(x_values, y_values, legend_labels, '', 'cycles per input', 0, 0,
-               'breakdown_hsstudy',
+               'breakdown_p_np_study',
                True)
     # DrawLegend(legend_labels, 'profile_legend')

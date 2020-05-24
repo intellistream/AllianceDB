@@ -4,7 +4,7 @@
 sed -i -e "s/#define L3_CACHE_SIZE [[:alnum:]]*/#define L3_CACHE_SIZE 20971520/g" ../utils/params.h
 sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h
 
-compile=1           #enable compiling.
+compile=1 #enable compiling.
 function compile() {
   if [ $compile != 0 ]; then
     cd ..
@@ -167,7 +167,7 @@ function SHJKIMRUN() {
 
 function RUNALL() {
   if [ $profile_breakdown == 1 ]; then
-    if [ $algo == SHJ_JM_NP ] || [ $algo == SHJ_JBCR_NP ]; then
+    if [ $algo == SHJ_JM_NP ] || [ $algo == SHJ_JM_P ] || [ $algo == SHJ_JBCR_NP ]; then
       SHJBENCHRUN
     else
       if [ $algo == PMJ_JM_NP ] || [ $algo == PMJ_JBCR_NP ]; then
@@ -185,7 +185,7 @@ function RUNALL() {
 
 function RUNALLMic() {
   if [ $profile_breakdown == 1 ]; then
-    if [ $algo == SHJ_JM_NP ] || [ $algo == SHJ_JBCR_NP ] || [ $algo == SHJ_HS_NP ]; then
+    if [ $algo == SHJ_JM_NP ] || [ $algo == SHJ_JM_P ] || [ $algo == SHJ_JBCR_NP ] || [ $algo == SHJ_HS_NP ]; then
       SHJKIMRUN
     else
       if [ $algo == PMJ_JM_NP ] || [ $algo == PMJ_JBCR_NP ]; then
@@ -200,8 +200,6 @@ function RUNALLMic() {
     KimRun
   fi
 }
-
-
 
 function SetStockParameters() { #matches: 15598112. #inputs= 60527 + 77227
   ts=1 # stream case
@@ -293,10 +291,10 @@ compile
 timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
 
-profile_breakdown=1 # set to 1 if we want to measure time breakdown!
+## general benchmark.
+profile_breakdown=1        # set to 1 if we want to measure time breakdown!
 compile=$profile_breakdown #compile depends on whether we want to profile.
-# general benchmark.
-for benchmark in ""Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "AD" "KD" "WS" "DD"" ; do #"Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "AD" "KD" "WS" "DD"
+for benchmark in ""; do #"Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "AD" "KD" "WS" "DD"
   for algo in SHJ_JM_NP; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
@@ -426,11 +424,12 @@ for benchmark in ""Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "AD" "KD" "WS" "DD"" ;
   done
 done
 
+## SCLAE STUDY
 profile_breakdown=0 #compile depends on whether we want to profile.
 compile=0
 # general benchmark.
 for algo in SHJ_JM_NP; do
-  for benchmark in "ScaleYSB"; do #"ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS"
+  for benchmark in ""; do #"ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS"
     case "$benchmark" in
     "ScaleStock")
       id=42
@@ -561,10 +560,11 @@ if [ $PROFILE_YSB == 1 ]; then
   done
 fi
 
+## MICRO STUDY
 profile_breakdown=1 #compile depends on whether we want to profile.
-compile=1 #enable compiling.
+compile=1           #enable compiling.
 #benchmark experiment only apply for hashing directory.
-for benchmark in ""; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY"
+for benchmark in "HS_STUDY"; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY"
   case "$benchmark" in
   "SIMD_STUDY")
     id=104
@@ -629,32 +629,33 @@ for benchmark in ""; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZ
   "GROUP_SIZE_STUDY")
     id=124
     ts=0 # batch data.
-#    algo="PMJ_JBCR_NP"
-#    ResetParameters
-#    echo GROUP_SIZE_STUDY PMJ 124 - 127
-#    for group in 1 2 4 8; do
-#      RUNALLMic
-#      let "id++"
-#    done
-#
-#    algo="SHJ_JBCR_NP"
-#    ResetParameters
-#    echo GROUP_SIZE_STUDY SHJ 128 - 131
-#    for group in 1 2 4 8; do
-#      RUNALLMic
-#      let "id++"
-#    done
-     ResetParameters
-     algo="PMJ_JM_NP"
-     RUNALLMic
-     algo="SHJ_JM_NP"
-     RUNALLMic
-#    python3 breakdown_group_pmj.py
-#    python3 breakdown_group_shj.py
+    algo="PMJ_JBCR_NP"
+    ResetParameters
+    echo GROUP_SIZE_STUDY PMJ 124 - 127
+    for group in 1 2 4 8; do
+      RUNALLMic
+      let "id++"
+    done
+
+    algo="SHJ_JBCR_NP"
+    ResetParameters
+    echo GROUP_SIZE_STUDY SHJ 128 - 131
+    for group in 1 2 4 8; do
+      RUNALLMic
+      let "id++"
+    done
+    ResetParameters
+    algo="PMJ_JM_NP"
+    RUNALLMic
+    algo="SHJ_JM_NP"
+    RUNALLMic
+    python3 breakdown_group_pmj.py
+    python3 breakdown_group_shj.py
     ;;
   "HS_STUDY")
     id=132
     ResetParameters
+    ts=0 # batch data.
     algo="SHJ_JM_NP"
     FIXS=1
     STEP_SIZE=12800
@@ -663,11 +664,25 @@ for benchmark in ""; do #"PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZ
     WINDOW_SIZE=1000
     gap=$(($STEP_SIZE / 500 * $WINDOW_SIZE))
     RUNALLMic
-    let "id++"
     algo="SHJ_HS_NP"
     RUNALLMic
-    let "id++"
     python3 breakdown_hsstudy.py
+    ;;
+  "P_NP_STUDY")
+    id=133
+    ResetParameters
+    ts=0 # batch data.
+    FIXS=1
+    STEP_SIZE=12800
+    STEP_SIZE_S=12800
+    echo P_NP_STUDY 134
+    WINDOW_SIZE=1000
+    gap=$(($STEP_SIZE / 500 * $WINDOW_SIZE))
+    algo="SHJ_JM_NP"
+    RUNALLMic
+    algo="SHJ_JM_P"
+    RUNALLMic
+    python3 breakdown_p_np_study.py
     ;;
   esac
 done

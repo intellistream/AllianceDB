@@ -10,13 +10,13 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <thread>
-
 #include <chrono>
+#include "../utils/generator.h"          /* numa_localize() */
 
 using namespace std::chrono;
 
 enum fetcher {
-    type_HS_NP_Fetcher, type_JM_NP_Fetcher, type_JB_NP_Fetcher, type_PMJ_HS_NP_Fetcher
+    type_HS_NP_Fetcher, type_JM_NP_Fetcher, type_JM_P_Fetcher, type_JB_NP_Fetcher, type_PMJ_HS_NP_Fetcher
 };
 
 struct fetch_t {
@@ -47,14 +47,10 @@ struct t_state {
 class baseFetcher {
   public:
     virtual fetch_t* next_tuple();
-
     virtual fetch_t* _next_tuple();//helper function to avoid recurrsion
     relation_t* relR;//input relation
     relation_t* relS;//input relation
     bool tryR = true;
-    //    milliseconds *RdataTime;
-    //    milliseconds *SdataTime;
-    //    bool start = true;
 
     uint64_t* fetchStartTime;//initialize
     T_TIMER* timer;
@@ -67,7 +63,7 @@ class baseFetcher {
 
     virtual bool finish() = 0;
 
-    baseFetcher(relation_t* relR, relation_t* relS, int tid, T_TIMER* timer) {
+    baseFetcher(relation_t* relR, relation_t* relS, int tid, T_TIMER* timer, bool Physical_Partition) {
         this->tid = tid;
         this->relR = relR;
         this->relS = relS;
@@ -91,7 +87,7 @@ class PMJ_HS_NP_Fetcher : public baseFetcher {
      * @param relS
      */
     PMJ_HS_NP_Fetcher(int nthreads, relation_t* relR, relation_t* relS, int tid, T_TIMER* timer)
-        : baseFetcher(relR, relS, tid, timer) {
+        : baseFetcher(relR, relS, tid, timer, false) {
         state = new t_state();
 
         //let first and last thread to read two streams.
@@ -121,7 +117,7 @@ class HS_NP_Fetcher : public baseFetcher {
      * @param relS
      */
     HS_NP_Fetcher(int nthreads, relation_t* relR, relation_t* relS, int tid, T_TIMER* timer)
-        : baseFetcher(relR, relS, tid, timer) {
+        : baseFetcher(relR, relS, tid, timer, false) {
         state = new t_state();
 
         //let first and last thread to read two streams.
@@ -157,7 +153,7 @@ class JM_NP_Fetcher : public baseFetcher {
      * @param relS
      */
     JM_NP_Fetcher(int nthreads, relation_t* relR, relation_t* relS, int tid, T_TIMER* timer)
-        : baseFetcher(relR, relS, tid, timer) {
+        : baseFetcher(relR, relS, tid, timer, false) {
         state = new t_state();
 
         int numSthr = relS->num_tuples/nthreads;//replicate R, partition S.
@@ -187,6 +183,40 @@ class JM_NP_Fetcher : public baseFetcher {
     }
 };
 
+class JM_P_Fetcher : public JM_NP_Fetcher {
+  public:
+    //thread_local copy of input tuples.
+    tuple_t* tmpRelR;
+    tuple_t* tmpRelS;
+    int idx_R = 0;
+    int idx_S = 0;
+
+    fetch_t* next_tuple() override {
+
+        auto fetch = baseFetcher::next_tuple();
+        if (fetch != nullptr) {
+            //copy tuple and exchange pointer.
+            if (fetch->ISTuple_R) {
+                tmpRelR[idx_R] = fetch->tuple[0];
+                fetch->tuple = &tmpRelR[idx_R++];
+            } else {
+                tmpRelS[idx_S] = fetch->tuple[0];
+                fetch->tuple = &tmpRelS[idx_S++];
+            }
+            return fetch;
+        } else return nullptr;
+    }
+
+    JM_P_Fetcher(int nthreads, relation_t* relR, relation_t* relS, int tid, T_TIMER* timer) :
+        JM_NP_Fetcher(nthreads, relR, relS, tid, timer) {
+
+        /* allocate temporary space for partitioning */
+        tmpRelR = (tuple_t*) alloc_aligned(state->end_index_R*sizeof(tuple_t));
+        tmpRelS = (tuple_t*) alloc_aligned(state->end_index_S*sizeof(tuple_t));
+
+    }
+};
+
 class JB_NP_Fetcher : public baseFetcher {
   public:
 
@@ -196,7 +226,7 @@ class JB_NP_Fetcher : public baseFetcher {
     }
 
     JB_NP_Fetcher(int nthreads, relation_t* relR, relation_t* relS, int tid, T_TIMER* timer)
-        : baseFetcher(relR, relS, tid, timer) {
+        : baseFetcher(relR, relS, tid, timer, false) {
         state = new t_state[nthreads];
         int numRthr = relR->num_tuples/nthreads;// partition R,
         int numSthr = relS->num_tuples/nthreads;// partition S.

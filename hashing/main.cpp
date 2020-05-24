@@ -311,6 +311,7 @@ static struct algo_t algos[] =
                 {"NPO_st",      NPO_st}, /* NPO single threaded */
 /*** Symmetric Hash Join ***/
                 {"SHJ_st",      SHJ_st}, /* Symmetric hash join single_thread*/
+                {"SHJ_JM_P", SHJ_JM_P}, /* Symmetric hash join JM Model, Partition*/
                 {"SHJ_JM_NP",   SHJ_JM_NP}, /* Symmetric hash join JM Model, No-Partition*/
                 {"SHJ_JB_NP",   SHJ_JB_NP}, /* Symmetric hash join JB Model, No-Partition*/
                 {"SHJ_JBCR_NP", SHJ_JBCR_NP}, /* Symmetric hash join JB CountRound Model, No-Partition*/
