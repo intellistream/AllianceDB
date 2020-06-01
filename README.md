@@ -8,8 +8,7 @@ AllianceDB is a library for a list of stream operations optimized on modern mult
 
 # How to Reproduce Our Experimental Results?
 
-Almost all of our experiments can be automatically reproduced by calling a few pre-prepared scripts.
-Only the cache miss profiling study requires manual efforts. This is because of the sudo requirement for conducting this test. We appologize for this trouble and we may fix it in future.
+All of our experiments can be automatically reproduced by calling a few pre-prepared scripts.
 
 ### Step 1
 git clone https://github.com/ShuhaoZhangTony/AllianceDB.git
