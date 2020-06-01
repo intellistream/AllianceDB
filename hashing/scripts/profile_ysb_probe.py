@@ -15,11 +15,11 @@ LABEL_FP = FontProperties(style='normal', size=LABEL_FONT_SIZE)
 LEGEND_FP = FontProperties(style='normal', size=LEGEND_FONT_SIZE)
 TICK_FP = FontProperties(style='normal', size=TICK_FONT_SIZE)
 
-MARKERS = (['o', 's', 'v', "^", "h", "v", ">", "x", "d", "<", "|", "", "+", "_"])
+MARKERS = (['o', 's', 'v', "^", '', "h", "v", ">", "x", "d", "<", "|", "", "+", "_"])
 # you may want to change the color map for different figures
-COLOR_MAP = ('#ABB2B9', '#2E4053', '#8D6E63', '#000000', '#CD6155', '#52BE80', '#FFFF00', '#5499C7', '#BB8FCE')
+COLOR_MAP = ('#ABB2B9', '#2E4053', '#8D6E63', '#000000', '', '#CD6155', '#52BE80', '#FFFF00', '#5499C7', '#BB8FCE')
 # you may want to change the patterns for different figures
-PATTERNS = (["", "", "", "", "/", "\\", "||", "-", "o", "O", "////", ".", "|||", "o", "---", "+", "\\\\", "*"])
+PATTERNS = (["", "", "", "", '', "/", "\\", "||", "-", "o", "O", "////", ".", "|||", "o", "---", "+", "\\\\", "*"])
 LABEL_WEIGHT = 'bold'
 LINE_COLORS = COLOR_MAP
 LINE_WIDTH = 3.0
@@ -106,6 +106,30 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
     plt.savefig(FIGURE_FOLDER + "/" + filename + ".pdf", bbox_inches='tight')
 
 
+def GetL1MISS(id):
+    file = '/data1/xtra/results/breakdown/profile_{}.txt'.format(id)
+    with open(file) as fi:
+        for ln in fi:
+            if ln.startswith("L2Hit "):
+                return float(ln[6:])
+
+
+def GetL2MISS(id):
+    file = '/data1/xtra/results/breakdown/profile_{}.txt'.format(id)
+    with open(file) as fi:
+        for ln in fi:
+            if ln.startswith("L2Misses "):
+                return float(ln[9:])
+
+
+def GetL3MISS(id):
+    file = '/data1/xtra/results/breakdown/profile_{}.txt'.format(id)
+    with open(file) as fi:
+        for ln in fi:
+            if ln.startswith("L3Misses "):
+                return float(ln[9:])
+
+
 if __name__ == "__main__":
     x_values = [
         'L1 miss', 'L2 miss', 'L3 miss'
@@ -116,51 +140,60 @@ if __name__ == "__main__":
     read = f.readlines()
     inputs = float(read.pop(0).strip("\n"))  # get number of inputs
 
-    y_values.append([  # NPJ
-        258622 / inputs,  # L1
-        159669 / inputs,  # L2
-        157005 / inputs  # L3
+    y_values.append([  # NPJ  -- test id: 210
+        GetL1MISS(210) / inputs,  # L1
+        GetL2MISS(210) / inputs,  # L2
+        GetL3MISS(210) / inputs  # L3
     ])
     y_values.append([  # PRJ
-        15100 / inputs,
-        578006 / inputs,
-        575498 / inputs
+        GetL1MISS(211) / inputs,
+        GetL2MISS(211) / inputs,
+        GetL3MISS(211) / inputs
     ])
     y_values.append([  # WAY
-        45508 / inputs,
-        161979 / inputs,
-        158363 / inputs
+        GetL1MISS(203) / inputs,
+        GetL2MISS(203) / inputs,
+        GetL3MISS(203) / inputs
     ])
     y_values.append([  # MPASS
-        53451 / inputs,
-        213323 / inputs,
-        193336 / inputs
-    ])
-    y_values.append([  # SHJM -- 213 - 209
-        (3704227 - 2572670) / inputs,
-        (1877878 - 1693799) / inputs,
-        (0) / inputs
-    ])
-    y_values.append([  # SHJB -- 214 - 210
-        (0) / inputs,
-        (1810239 - 1798050) / inputs,
-        (198923 - 191949) / inputs
-    ])
-    y_values.append([  # PMJM -- 215 - 211
-        (1647144 - 1252976) / inputs,
-        (1142961 - 881546) / inputs,
-        (1029115 - 784662) / inputs
-    ])
-    y_values.append([  # PMJB -- 216 - 212
-        (1088998 - 1004825) / inputs,
-        (1854224 - 1835781) / inputs,
-        (0) / inputs
+        GetL1MISS(204) / inputs,
+        GetL2MISS(204) / inputs,
+        GetL3MISS(204) / inputs
     ])
 
-    legend_labels = ['NPJ', 'PRJ', 'MWAY', 'MPASS', 'SHJ$^{JM}$', 'SHJ$^{JB}$', 'PMJ$^{JM}$',
+    y_values.append([  # deliminator
+        0,
+        0,
+        0
+    ])
+
+    y_values.append([  # SHJM -- 212
+        GetL1MISS(212) / inputs,
+        GetL2MISS(212) / inputs,
+        GetL3MISS(212) / inputs
+    ])
+    y_values.append([  # SHJB -- 213
+        GetL1MISS(213) / inputs,
+        GetL2MISS(213) / inputs,
+        GetL3MISS(213) / inputs
+    ])
+    y_values.append([  # PMJM -- 214
+        GetL1MISS(214) / inputs,
+        GetL2MISS(214) / inputs,
+        GetL3MISS(214) / inputs
+    ])
+    y_values.append([  # PMJB -- 215
+        GetL1MISS(215) / inputs,
+        GetL2MISS(215) / inputs,
+        GetL3MISS(215) / inputs
+    ])
+
+    legend_labels = ['NPJ', 'PRJ', 'MWAY', 'MPASS',
+                     '',
+                     'SHJ$^{JM}$', 'SHJ$^{JB}$', 'PMJ$^{JM}$',
                      'PMJ$^{JB}$']
 
-    DrawFigure(x_values, y_values, legend_labels, '', 'misses per input', 0, (3704227 - 2572670) / inputs,
+    DrawFigure(x_values, y_values, legend_labels, '', 'misses per input', 0,  1,
                'profile_ysb_probe',
                False)
     DrawLegend(legend_labels, 'profile_legend')

@@ -1,21 +1,3 @@
-/**
- * @file    joincommon.h
- * @author  Cagri Balkesen <cagri.balkesen@inf.ethz.ch>
- * @date    Sat Dec 15 15:39:54 2012
- * @version $Id $
- *
- * @brief   Common structures, macros and functions of sort-merge join algorithms.
- *
- * (c) 2012-2014, ETH Zurich, Systems Group
- *
- * \ingroup Joins
- */
-
-/**
- * @defgroup Joins Join implementations & related code
- */
-
-
 #ifndef ALLIANCEDB_JOINCOMMON_H
 #define ALLIANCEDB_JOINCOMMON_H
 #include <stdint.h>
@@ -34,7 +16,8 @@
 
 //#define DEBUG
 //#define JOIN_MATERIALIZE
-//#define NO_TIMING
+#define NO_TIMING
+#define JOIN
 
 #define DEBUG_SORT_CHECK 0
 #define scalarflag 0

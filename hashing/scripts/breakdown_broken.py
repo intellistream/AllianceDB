@@ -6,7 +6,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import pylab
-from matplotlib import gridspec, figure
+from matplotlib import gridspec
 from matplotlib.font_manager import FontProperties
 from numpy import double
 from numpy.ma import ceil
@@ -56,13 +56,16 @@ def DrawFigure(x_values, y_values, y_max, legend_labels, x_label, y_label, filen
     # into two portions - use the top (ax) for the outliers, and the bottom
     # (ax2) for the details of the majority of our data
     # f, (ax, ax2) = plt.subplots(2, 1, sharex=True,figsize=(9, 4))
-    fig = plt.figure(figsize=(9.2, 4))
+    fig = plt.figure(figsize=(10, 4))
     # ax1 = fig.add_subplot(211)
     # ax2 = fig.add_subplot(212)
 
-    gs = gridspec.GridSpec(2, 1,height_ratios=[5,1])
+    gs = gridspec.GridSpec(2, 1, height_ratios=[5, 1])
     ax1 = plt.subplot(gs[0])
     ax2 = plt.subplot(gs[1])
+
+    # ax1.set_yscale('log')
+    # ax2.set_yscale('log')
     # ax = plt.subplot(111)    # The big subplot
 
     # Turn off axis lines and ticks of the big subplot
@@ -83,14 +86,18 @@ def DrawFigure(x_values, y_values, y_max, legend_labels, x_label, y_label, filen
     bars = [None] * (len(FIGURE_LABEL))
     for i in range(len(y_values)):
         # plot the same data on both axes
-        bars[i] = ax1.bar(index + width / 2, y_values[i], width, hatch=PATTERNS[i], color=LINE_COLORS[i],
-                          label=FIGURE_LABEL[i], bottom=bottom_base,edgecolor='black', linewidth=3)
-        ax2.bar(index + width / 2, y_values[i], width, hatch=PATTERNS[i], color=LINE_COLORS[i],
-               label=FIGURE_LABEL[i], bottom=bottom_base,edgecolor='black', linewidth=3)
-        bottom_base = np.array(y_values[i]) + bottom_base
+        if (i != 4):
+            bars[i] = ax1.bar(index + width / 2, y_values[i], width, hatch=PATTERNS[i], color=LINE_COLORS[i],
+                              label=FIGURE_LABEL[i], bottom=bottom_base, edgecolor='black', linewidth=3)
+            ax2.bar(index + width / 2, y_values[i], width, hatch=PATTERNS[i], color=LINE_COLORS[i],
+                    label=FIGURE_LABEL[i], bottom=bottom_base, edgecolor='black', linewidth=3)
+            bottom_base = np.array(y_values[i]) + bottom_base
+        else:
+            bars[i] = ax1.bar(index + width / 2, y_values[i], 0, hatch='', linewidth=0, fill=False)
+            ax2.bar(index + width / 2, y_values[i], 0, hatch='', linewidth=0, fill=False)
 
     # zoom-in / limit the view to different portions of the data
-    ax1.set_ylim(14000, 16000)  #  most of the data
+    ax1.set_ylim(14500, 15500)  # most of the data
     ax2.set_ylim(0, 10)  # waiting only
 
     # hide the spines between ax and ax2
@@ -110,7 +117,7 @@ def DrawFigure(x_values, y_values, y_max, legend_labels, x_label, y_label, filen
     d = .015  # how big to make the diagonal lines in axes coordinates
     # arguments to pass to plot, just so we don't keep repeating them
     kwargs = dict(transform=ax1.transAxes, color='k', clip_on=False)
-    ax1.plot((-d, +d), (-d, +d), **kwargs)        # top-left diagonal
+    ax1.plot((-d, +d), (-d, +d), **kwargs)  # top-left diagonal
     ax1.plot((1 - d, 1 + d), (-d, +d), **kwargs)  # top-right diagonal
 
     kwargs.update(transform=ax2.transAxes)  # switch to the bottom axes
@@ -129,7 +136,7 @@ def DrawFigure(x_values, y_values, y_max, legend_labels, x_label, y_label, filen
                    frameon=False, borderaxespad=0.0, handlelength=2, labelspacing=0.2)
 
     # plt.xlabel(x_label, fontproperties=LABEL_FP)
-    # plt.ylabel(y_label, fontproperties=LABEL_FP)
+    # ax1.set_ylabel(y_label, fontproperties=LABEL_FP)
     # Set common labels
     fig.text(0.5, 0.04, x_label, ha='center', fontproperties=LABEL_FP)
     fig.text(0.04, 0.5, y_label, va='center', rotation='vertical', fontproperties=LABEL_FP)
@@ -144,6 +151,7 @@ def DrawFigure(x_values, y_values, y_max, legend_labels, x_label, y_label, filen
     # plt.grid(axis='y', color='gray')
     # ax1.yaxis.set_major_locator(pylab.LinearLocator(3))
     # you may need to tune the xticks position to get the best figure.
+
     ax1.grid(axis='y', color='gray')
     ax2.grid(axis='y', color='gray')
     plt.xticks(index + 0.5 * width, x_values)
@@ -195,7 +203,7 @@ def normalize(y_values):
 # example for reading csv file
 def ReadFile(id):
     # Creates a list containing 8 lists, each of 7 items, all set to 0
-    w, h = 8, 6
+    w, h = 9, 6
     y = [[0 for x in range(w)] for y in range(h)]
     # print(matches)
     max_value = 0
@@ -256,18 +264,15 @@ def ReadFile(id):
     linecnt = 0
     f = open("/data1/xtra/results/breakdown/SHJ_JM_NP_{}.txt".format(id), "r")
     read = f.readlines()
-    for x in read:
+    for _ in read:
         if (linecnt != 3):  ##skip sort.
-            value = double(x.strip("\n"))
-            if value > max_value:
-                max_value = value
-            y[cnt][4] = value
+            y[cnt][4] = 0  # deliminator
             cnt += 1
         linecnt += 1
 
     cnt = 0
     linecnt = 0
-    f = open("/data1/xtra/results/breakdown/SHJ_JBCR_NP_{}.txt".format(id), "r")
+    f = open("/data1/xtra/results/breakdown/SHJ_JM_NP_{}.txt".format(id), "r")
     read = f.readlines()
     for x in read:
         if (linecnt != 3):  ##skip sort.
@@ -280,6 +285,19 @@ def ReadFile(id):
 
     cnt = 0
     linecnt = 0
+    f = open("/data1/xtra/results/breakdown/SHJ_JBCR_NP_{}.txt".format(id), "r")
+    read = f.readlines()
+    for x in read:
+        if (linecnt != 3):  ##skip sort.
+            value = double(x.strip("\n"))
+            if value > max_value:
+                max_value = value
+            y[cnt][6] = value
+            cnt += 1
+        linecnt += 1
+
+    cnt = 0
+    linecnt = 0
     f = open("/data1/xtra/results/breakdown/PMJ_JM_NP_{}.txt".format(id), "r")
     read = f.readlines()
     for x in read:
@@ -287,7 +305,7 @@ def ReadFile(id):
             value = double(x.strip("\n"))
             if value > max_value:
                 max_value = value
-            y[cnt][6] = value
+            y[cnt][7] = value
             cnt += 1
         linecnt += 1
 
@@ -300,7 +318,7 @@ def ReadFile(id):
             value = double(x.strip("\n"))
             if value > max_value:
                 max_value = value
-            y[cnt][7] = value
+            y[cnt][8] = value
             cnt += 1
         linecnt += 1
     return y, max_value
@@ -321,7 +339,8 @@ if __name__ == "__main__":
             print('Test ID:', opt_value)
             id = (int)(opt_value)
 
-    x_values = ['NPJ', 'PRJ', 'MWAY', 'MPASS',  'SHJ$^{JM}$', 'SHJ$^{JB}$', 'PMJ$^{JM}$',
+    x_values = ['NPJ', 'PRJ', 'MWAY', 'MPASS', '',
+                'SHJ$^{JM}$', 'SHJ$^{JB}$', 'PMJ$^{JM}$',
                 'PMJ$^{JB}$']  # join time is getting from total - others.
 
     y_values, max_value = ReadFile(id)
@@ -335,4 +354,4 @@ if __name__ == "__main__":
                'cycles per input',
                'breakdown_figure{}'.format(id), id, False)
 
-    DrawLegend(legend_labels, 'breakdown_legend')
+    #DrawLegend(legend_labels, 'breakdown_legend')

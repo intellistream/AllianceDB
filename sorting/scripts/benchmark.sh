@@ -17,9 +17,9 @@ function compile() {
 
 function benchmarkRun() {
   #####native execution
-  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -g $gap -o ./profile_$id.txt -I $id== "
+  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -g $gap -o /data1/xtra/results/breakdown/profile_$id.txt -I $id== "
   #echo 3 >/proc/sys/vm/drop_caches
-  ../sorting -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -g $gap -o ./profile_$id.txt -I $id
+  ../sorting -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -g $gap -o /data1/xtra/results/breakdown/profile_$id.txt -I $id
   if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit 1; fi
 }
 
@@ -37,6 +37,12 @@ function KimRun() {
   ../sorting -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -W $FIXS -g $gap -P $DD -I $id
 }
 
+function PARTITION_ONLY() {
+  sed -i -e "s/#define JOIN/#define NO_JOIN/g" ../joins/common_functions.h
+}
+function PARTITION_BUILD_SORT_MERGE_JOIN() {
+  sed -i -e "s/#define NO_JOIN/#define JOIN/g" ../joins/common_functions.h
+}
 
 function SetStockParameters() { #matches: 15595000. #inputs= 60527 + 77227
   ts=1 # stream case
@@ -110,7 +116,7 @@ function ResetParameters() {
   Threads=8
   gap=12800
   DD=1
-  sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag 0/g" ../joins/joincommon.h
+  sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag 0/g" ../joins/common_functions.h
 }
 
 #recompile by default.
@@ -294,20 +300,38 @@ done
 
 # Cache misses profiling with YSB, please run the program with sudo
 sed -i -e "s/#define NO_PERF_COUNTERS/#define PERF_COUNTERS/g" ../utils/perf_counters.h
-compile=1
-compile
 for benchmark in "YSB"; do #"
   id=201
+  PARTITION_ONLY
+  compile=1
+  compile
   for algo in "m-way" "m-pass"; do
     case "$benchmark" in
     "YSB")
       ResetParameters
       SetYSBParameters
+      rm /data1/xtra/results/breakdown/profile_$id.txt
       benchmarkRun
       ;;
     esac
     let "id++"
   done
+
+  PARTITION_BUILD_SORT_MERGE_JOIN
+  compile=1
+  compile
+  for algo in "m-way" "m-pass"; do
+    case "$benchmark" in
+    "YSB")
+      ResetParameters
+      SetYSBParameters
+      rm /data1/xtra/results/breakdown/profile_$id.txt
+      benchmarkRun
+      ;;
+    esac
+    let "id++"
+  done
+
 done
 
 compile=1

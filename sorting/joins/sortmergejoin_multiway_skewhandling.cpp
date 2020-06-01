@@ -17,10 +17,9 @@
 #include <stdlib.h> /* malloc() */
 #include <math.h>   /* log2(), ceil() */
 
-
-#include "../utils/barrier.h"            /* pthread_barrier_* */
-#include "../affinity/cpu_mapping.h"        /* cpu_id NUMA related methods */
-#include "joincommon.h"
+#include "../affinity/cpu_mapping.h" /* cpu_id NUMA related methods */
+#include "../utils/barrier.h"        /* pthread_barrier_* */
+#include "common_functions.h"
 #include "sortmergejoin_multiway.h" /* partitioning&sorting phases are same. */
 #include "sortmergejoin_multiway_skewhandling.h"
 

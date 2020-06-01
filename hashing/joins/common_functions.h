@@ -11,11 +11,10 @@
 #include "npj_types.h"
 #include "../timer/t_timer.h"
 
-
-//#define JOIN_RESULT_MATERIALIZE
-//#define NO_TIMING
 //#define DEBUG
+//#define JOIN_RESULT_MATERIALIZE
 
+#define NO_TIMING
 #define JOIN
 #define MERGE
 #define MATCH

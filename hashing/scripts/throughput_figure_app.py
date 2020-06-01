@@ -16,11 +16,11 @@ LABEL_FP = FontProperties(style='normal', size=LABEL_FONT_SIZE)
 LEGEND_FP = FontProperties(style='normal', size=LEGEND_FONT_SIZE)
 TICK_FP = FontProperties(style='normal', size=TICK_FONT_SIZE)
 
-MARKERS = (['o', 's', 'v', "^", "h", "v", ">", "x", "d", "<", "|", "", "+", "_"])
+MARKERS = (["", 'o', 's', 'v', "^", "", "h", "v", ">", "x", "d", "<", "|", "", "+", "_"])
 # you may want to change the color map for different figures
-COLOR_MAP = ('#ABB2B9', '#2E4053', '#8D6E63', '#000000', '#CD6155', '#52BE80', '#FFFF00', '#5499C7', '#BB8FCE')
+COLOR_MAP = ('', '#ABB2B9', '#2E4053', '#8D6E63', '#000000', '', '#CD6155', '#52BE80', '#FFFF00', '#5499C7', '#BB8FCE')
 # you may want to change the patterns for different figures
-PATTERNS = (["", "", "", "", "/", "\\", "||", "-", "o", "O", "////", ".", "|||", "o", "---", "+", "\\\\", "*"])
+PATTERNS = (["", "", "", "", "", "", "/", "\\", "||", "-", "o", "O", "////", ".", "|||", "o", "---", "+", "\\\\", "*"])
 LABEL_WEIGHT = 'bold'
 LINE_COLORS = COLOR_MAP
 LINE_WIDTH = 3.0
@@ -46,20 +46,23 @@ def DrawLegend(legend_labels, filename):
     data = [1]
     x_values = [1]
 
-    width = 0.3
+    width = 0.2
     for i in range(len(FIGURE_LABEL)):
-        bars[i] = ax1.bar(x_values, data, width,
-                          hatch=PATTERNS[i],
-                          color=LINE_COLORS[i],
-                          label=FIGURE_LABEL[i],
-                          edgecolor='black', linewidth=3)
+        if (i == 0 or i == 5):
+            bars[i] = ax1.bar(x_values, data, 0, hatch='', linewidth=0, fill=False)
+        else:
+            bars[i] = ax1.bar(x_values, data, width,
+                              hatch=PATTERNS[i],
+                              color=LINE_COLORS[i],
+                              label=FIGURE_LABEL[i],
+                              edgecolor='black', linewidth=3)
 
     # LEGEND
 
     figlegend.legend(bars, FIGURE_LABEL, prop=LEGEND_FP, \
                      loc=1, ncol=len(FIGURE_LABEL), mode="expand", shadow=True, \
-                     frameon=True, handlelength=2, handletextpad=0.3, columnspacing=0.5,
-                     borderaxespad=-0.2, fancybox=True
+                     frameon=True, handlelength=1.2, handletextpad=0.3, columnspacing=0.5,
+                     borderaxespad=-0.2, fancybox=False
                      )
     figlegend.savefig(FIGURE_FOLDER + '/' + filename + '.pdf')
 
@@ -67,7 +70,7 @@ def DrawLegend(legend_labels, filename):
 # draw a bar chart
 def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max, filename, allow_legend):
     # you may change the figure size on your own.
-    fig = plt.figure(figsize=(8, 3))
+    fig = plt.figure(figsize=(10, 3))
     figure = fig.add_subplot(111)
 
     FIGURE_LABEL = legend_labels
@@ -79,7 +82,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
     index = np.arange(len(x_values))
     # the bar width.
     # you may need to tune it to get the best figure.
-    width = 0.1
+    width = 0.08
     # draw the bars
     bars = [None] * (len(FIGURE_LABEL))
     for i in range(len(y_values)):
@@ -109,7 +112,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
                    )
 
     # you may need to tune the xticks position to get the best figure.
-    plt.xticks(index + 2.5 * width, x_values)
+    plt.xticks(index + 5 * width, x_values)
     plt.yscale('log')
 
     plt.grid(axis='y', color='gray')
@@ -122,7 +125,6 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
     plt.ylabel(y_label, fontproperties=LABEL_FP)
 
     plt.savefig(FIGURE_FOLDER + "/" + filename + ".pdf", bbox_inches='tight')
-
 
 
 def GetThroughput(file, file2):
@@ -146,6 +148,11 @@ def ReadFile():
     col6 = []
     col7 = []
     col8 = []
+    col9 = []
+
+    for id in it.chain(range(38, 42)):
+        col9.append(0)
+    y.append(col9)  # this is a fake empty line to separate eager and lazy.
 
     for id in it.chain(range(38, 42)):
         file = '/data1/xtra/results/timestamps/NPJ_{}.txt'.format(id)
@@ -174,6 +181,8 @@ def ReadFile():
         value = GetThroughput(file, file2)
         col4.append(value)
     y.append(col4)
+
+    y.append(col9)  # this is a fake empty line to separate eager and lazy.
 
     for id in it.chain(range(38, 42)):
         file = '/data1/xtra/results/timestamps/SHJ_JM_NP_{}.txt'.format(id)
@@ -210,8 +219,8 @@ if __name__ == "__main__":
 
     y_values = ReadFile()
 
-    legend_labels = ['NPJ', 'PRJ', 'MWAY', 'MPASS', 'SHJ$^{JM}$', 'SHJ$^{JB}$', 'PMJ$^{JM}$',
-                     'PMJ$^{JB}$']
+    legend_labels = ['Lazy:', 'NPJ', 'PRJ', 'MWAY', 'MPASS',
+                     'Eager:', 'SHJ$^{JM}$', 'SHJ$^{JB}$', 'PMJ$^{JM}$', 'PMJ$^{JB}$']
 
     DrawFigure(x_values, y_values, legend_labels,
                '', 'Tpt. (#inputs/ms)', 0,

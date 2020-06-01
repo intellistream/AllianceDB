@@ -48,7 +48,7 @@ def ConvertEpsToPdf(dir_filename):
 # draw a line chart
 def DrawFigure(x_values, y_values, y_max, legend_labels, x_label, y_label, filename, id, allow_legend):
     # you may change the figure size on your own.
-    fig = plt.figure(figsize=(9, 4))
+    fig = plt.figure(figsize=(10, 4))
     figure = fig.add_subplot(111)
 
     FIGURE_LABEL = legend_labels
@@ -65,9 +65,12 @@ def DrawFigure(x_values, y_values, y_max, legend_labels, x_label, y_label, filen
     bottom_base = np.zeros(len(y_values[0]))
     bars = [None] * (len(FIGURE_LABEL))
     for i in range(len(y_values)):
+        # if (i != 4):
         bars[i] = plt.bar(index + width / 2, y_values[i], width, hatch=PATTERNS[i], color=LINE_COLORS[i],
                           label=FIGURE_LABEL[i], bottom=bottom_base, edgecolor='black', linewidth=3)
         bottom_base = np.array(y_values[i]) + bottom_base
+    # else:
+    #     bars[i] = plt.bar(index + width / 2, y_values[i], 0, hatch='', linewidth=0, fill=False)
 
     # sometimes you may not want to draw legends.
     if allow_legend == True:
@@ -80,6 +83,7 @@ def DrawFigure(x_values, y_values, y_max, legend_labels, x_label, y_label, filen
     plt.xticks(index + 0.5 * width, x_values)
     # plt.autofmt_xdate()
     plt.xticks(rotation=30)
+
     # if id == 38:  # stock: all algorithms are idle most of the time.
     #     plt.yscale('log')
     #     figure.yaxis.set_major_locator(matplotlib.ticker.LogLocator(numticks=5))
@@ -144,7 +148,7 @@ def normalize(y_values):
 # example for reading csv file
 def ReadFile(id):
     # Creates a list containing 8 lists, each of 7 items, all set to 0
-    w, h = 8, 6
+    w, h = 9, 6
     y = [[0 for x in range(w)] for y in range(h)]
     # print(matches)
     max_value = 0
@@ -213,23 +217,18 @@ def ReadFile(id):
 
     cnt = 0
     linecnt = 0
-    sum = 0
     f = open("/data1/xtra/results/breakdown/SHJ_JM_NP_{}.txt".format(id), "r")
     read = f.readlines()
-    for x in read:
+    for _ in read:
         if (linecnt != 3):  ##skip sort.
-            value = double(x.strip("\n"))
-            sum += value
-            y[cnt][4] = max(value, 0)
+            y[cnt][4] = 1e-12  # deliminator
             cnt += 1
         linecnt += 1
-    if sum > max_value:
-        max_value = sum
 
     cnt = 0
     linecnt = 0
     sum = 0
-    f = open("/data1/xtra/results/breakdown/SHJ_JBCR_NP_{}.txt".format(id), "r")
+    f = open("/data1/xtra/results/breakdown/SHJ_JM_NP_{}.txt".format(id), "r")
     read = f.readlines()
     for x in read:
         if (linecnt != 3):  ##skip sort.
@@ -244,13 +243,28 @@ def ReadFile(id):
     cnt = 0
     linecnt = 0
     sum = 0
+    f = open("/data1/xtra/results/breakdown/SHJ_JBCR_NP_{}.txt".format(id), "r")
+    read = f.readlines()
+    for x in read:
+        if (linecnt != 3):  ##skip sort.
+            value = double(x.strip("\n"))
+            sum += value
+            y[cnt][6] = max(value, 0)
+            cnt += 1
+        linecnt += 1
+    if sum > max_value:
+        max_value = sum
+
+    cnt = 0
+    linecnt = 0
+    sum = 0
     f = open("/data1/xtra/results/breakdown/PMJ_JM_NP_{}.txt".format(id), "r")
     read = f.readlines()
     for x in read:
         if (linecnt != 2):  ##skip build.
             value = double(x.strip("\n"))
             sum += value
-            y[cnt][6] = max(value, 0)
+            y[cnt][7] = max(value, 0)
             cnt += 1
         linecnt += 1
     if sum > max_value:
@@ -265,7 +279,7 @@ def ReadFile(id):
         if (linecnt != 2):  ##skip build.
             value = double(x.strip("\n"))
             sum += value
-            y[cnt][7] = max(value, 0)
+            y[cnt][8] = max(value, 0)
             cnt += 1
         linecnt += 1
     if sum > max_value:
@@ -289,8 +303,9 @@ if __name__ == "__main__":
             print('Test ID:', opt_value)
             id = (int)(opt_value)
 
-    x_values = ['NPJ', 'PRJ', 'MWAY', 'MPASS', 'SHJ$^{JM}$', 'SHJ$^{JB}$', 'PMJ$^{JM}$',
-                'PMJ$^{JB}$']  # join time is getting from total - others.
+    x_values = ['NPJ', 'PRJ', 'MWAY', 'MPASS',
+                '',
+                'SHJ$^{JM}$', 'SHJ$^{JB}$', 'PMJ$^{JM}$', 'PMJ$^{JB}$']  # join time is getting from total - others.
 
     y_values, max_value = ReadFile(id)
 

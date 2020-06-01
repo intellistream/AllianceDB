@@ -21,11 +21,13 @@ LABEL_FP = FontProperties(style='normal', size=LABEL_FONT_SIZE)
 LEGEND_FP = FontProperties(style='normal', size=LEGEND_FONT_SIZE)
 TICK_FP = FontProperties(style='normal', size=TICK_FONT_SIZE)
 
-MARKERS = (['^', 'v', '<', ">", "8", "s", "p", "P", "d", "<", "|", "", "+", "_"])
+MARKERS = (['', '^', 'v', '<', ">", '', "8", "s", "p", "P", "d", "<", "|", "", "+", "_"])
 # you may want to change the color map for different figures
-COLOR_MAP = ('#ABB2B9', '#2E4053', '#8D6E63', '#000000', '#CD6155', '#52BE80', '#FFFF00', '#5499C7', '#BB8FCE')
+COLOR_MAP = (
+    '#5499C7', '#ABB2B9', '#2E4053', '#8D6E63', '#000000', '#5499C7', '#CD6155', '#52BE80', '#FFFF00', '#5499C7',
+    '#BB8FCE')
 # you may want to change the patterns for different figures
-PATTERNS = (["", "", "", "", "/", "\\", "||", "-", "o", "O", "////", ".", "|||", "o", "---", "+", "\\\\", "*"])
+PATTERNS = (['', "", "", "", "", '', "/", "\\", "||", "-", "o", "O", "////", ".", "|||", "o", "---", "+", "\\\\", "*"])
 LABEL_WEIGHT = 'bold'
 LINE_COLORS = COLOR_MAP
 LINE_WIDTH = 3.0
@@ -121,15 +123,23 @@ def ReadFile(id):
     x_axis = []
     y_axis = []
 
+    empty_col = []
+    empty_coly = []
     col = []
     f = open("/data1/xtra/results/timestamps/NPJ_{}.txt".format(id), "r")
     read = f.readlines()
     for r in read:
         value = double(r.strip("\n"))  # timestamp.
         col.append(value)
+        empty_col.append(0)
+        empty_coly.append(0)
 
     # calculate the proportional values of samples
     coly = 1. * arange(len(col)) / (len(col) - 1)
+
+    x_axis.append(empty_col)
+    y_axis.append(empty_coly)
+
     x_axis.append(col)
     y_axis.append(coly)
 
@@ -168,6 +178,9 @@ def ReadFile(id):
     coly = 1. * arange(len(col)) / (len(col) - 1)
     x_axis.append(col)
     y_axis.append(coly)
+
+    x_axis.append(empty_col)
+    y_axis.append(empty_coly)
 
     col = []
     f = open("/data1/xtra/results/timestamps/SHJ_JM_NP_{}.txt".format(id), "r")
@@ -228,7 +241,7 @@ def DrawLegend(legend_labels, filename):
     MARKER_SIZE = 20.0
     LEGEND_FP = FontProperties(style='normal', size=26)
 
-    figlegend = pylab.figure(figsize=(16, 0.4))
+    figlegend = pylab.figure(figsize=(17, 0.5))
     idx = 0
     lines = [None] * (len(FIGURE_LABEL))
     data = [1]
@@ -236,18 +249,25 @@ def DrawLegend(legend_labels, filename):
 
     idx = 0
     for group in range(len(FIGURE_LABEL)):
-        lines[idx], = ax1.plot(x_values, data,
-                               color=LINE_COLORS[idx], linewidth=LINE_WIDTH,
-                               marker=MARKERS[idx], markersize=MARKER_SIZE, label=str(group),
-                               markeredgewidth=2, markeredgecolor='k'
-                               )
+        if (idx == 0 or idx == 5):
+            lines[idx], = ax1.plot(x_values, data,
+                                   color=LINE_COLORS[idx], linewidth=0,
+                                   marker=MARKERS[idx], markersize=0, label=str(group),
+                                   markeredgewidth=0, markeredgecolor='k'
+                                   )
+        else:
+            lines[idx], = ax1.plot(x_values, data,
+                                   color=LINE_COLORS[idx], linewidth=LINE_WIDTH,
+                                   marker=MARKERS[idx], markersize=MARKER_SIZE, label=str(group),
+                                   markeredgewidth=2,  markeredgecolor='k'
+                                   )
 
         idx = idx + 1
 
     # LEGEND
     figlegend.legend(lines, FIGURE_LABEL, prop=LEGEND_FP,
                      loc=1, ncol=len(FIGURE_LABEL), mode="expand", shadow=False,
-                     frameon=False, borderaxespad=-0.2, handlelength=1.2)
+                     frameon=False, borderaxespad=-0.2, handlelength=0.8)
 
     if not os.path.exists(FIGURE_FOLDER):
         os.makedirs(FIGURE_FOLDER)
@@ -258,7 +278,7 @@ def DrawLegend(legend_labels, filename):
 # draw a line chart
 def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, y_min, y_max, filename, allow_legend):
     # you may change the figure size on your own.
-    fig = plt.figure(figsize=(7, 3))
+    fig = plt.figure(figsize=(10, 3))
     figure = fig.add_subplot(111)
 
     FIGURE_LABEL = legend_labels
@@ -271,12 +291,18 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
     print("mark gap:", ceil(x_max / 6))
     lines = [None] * (len(FIGURE_LABEL))
     for i in range(len(y_values)):
-        lines[i], = figure.plot(x_values[i], y_values[i], color=LINE_COLORS[i], \
-                                linewidth=LINE_WIDTH, marker=MARKERS[i], \
-                                markersize=MARKER_SIZE, label=FIGURE_LABEL[i],
-                                markevery=ceil(x_max / 6), markeredgewidth=2, markeredgecolor='k'
-                                )
-
+        if (i != 0 or i != 5):
+            lines[i] = figure.plot(x_values[i], y_values[i], color=LINE_COLORS[i], \
+                                   linewidth=LINE_WIDTH, marker=MARKERS[i], \
+                                   markersize=MARKER_SIZE, label=FIGURE_LABEL[i],
+                                   markevery=ceil(x_max / 6), markeredgewidth=2, markeredgecolor='k'
+                                   )
+        else:
+            lines[i] = figure.plot(x_values[i], y_values[i], color='white', \
+                                   linewidth=0, marker='None', \
+                                   markersize=0, label=FIGURE_LABEL[i],
+                                   markevery=ceil(x_max / 6), markeredgewidth=0, markeredgecolor='k'
+                                   )
     # sometimes you may not want to draw legends.
     if allow_legend == True:
         plt.legend(lines,
@@ -333,12 +359,12 @@ if __name__ == "__main__":
             print('Test ID:', opt_value)
             id = (int)(opt_value)
 
-    legend_labels = ['NPJ', 'PRJ', 'MWAY', 'MPASS', 'SHJ$^{JM}$', 'SHJ$^{JB}$', 'PMJ$^{JM}$', 'PMJ$^{JB}$']
+    legend_labels = ['Lazy:', 'NPJ', 'PRJ', 'MWAY', 'MPASS',
+                     'Eager:', 'SHJ$^{JM}$', 'SHJ$^{JB}$', 'PMJ$^{JM}$', 'PMJ$^{JB}$']
 
     ts = ceil(getmaxts(id) / 100) * 100
     print("maximum timestamp:", ts)
     x_axis, y_axis = ReadFile(id)
-    print(y_axis[0])
     legend = False
     DrawFigure(x_axis, y_axis, legend_labels,
                'elapsed time (msec)', 'cumulative percent', 0, getCount(id),

@@ -335,11 +335,11 @@ $ cat cpu-mapping.txt
 #include "affinity/numa_shuffle.h"       /* numa_shuffle_init() */
 
 /**************** include join algorithm thread implementations ***************/
+#include "joins/common_functions.h"
+#include "joins/sortmergejoin_mpsm.h"
 #include "joins/sortmergejoin_multipass.h"
 #include "joins/sortmergejoin_multiway.h"
 #include "joins/sortmergejoin_multiway_skewhandling.h"
-#include "joins/sortmergejoin_mpsm.h"
-#include "joins/joincommon.h"
 
 #ifdef JOIN_MATERIALIZE
 #include "tuple_buffer.h"       /* for materialization */

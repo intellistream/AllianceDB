@@ -2,19 +2,16 @@
 // Created by Shuhao Zhang on 17/10/19.
 //
 
-
-
-#include "t_timer.h"  /* startTimer, stopTimer */
-#include "../joins/joincommon.h"
-#include <sys/time.h>           /* gettimeofday */
-#include <stdlib.h>             /* memalign */
-#include <stdio.h>              /* printf */
-#include <string.h>             /* memset */
-#include <pthread.h>            /* pthread_* */
-#include <sstream>
-#include <zconf.h>
+#include "t_timer.h" /* startTimer, stopTimer */
+#include "../joins/common_functions.h"
 #include <algorithm>
-
+#include <pthread.h> /* pthread_* */
+#include <sstream>
+#include <stdio.h>    /* printf */
+#include <stdlib.h>   /* memalign */
+#include <string.h>   /* memset */
+#include <sys/time.h> /* gettimeofday */
+#include <zconf.h>
 
 using namespace std;
 

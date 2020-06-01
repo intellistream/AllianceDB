@@ -39,7 +39,7 @@ add_executable(sorting
         joins/sortmergejoin_multipass.h joins/sortmergejoin_multiway.h
         joins/sortmergejoin_multiway_skewhandling.h joins/sortmergejoin_mpsm.h
         affinity/memalloc.cpp affinity/memalloc.h utils/params.h
-        affinity/numa_shuffle.cpp affinity/numa_shuffle.h joins/joincommon.cpp joins/joincommon.h
+        affinity/numa_shuffle.cpp affinity/numa_shuffle.h joins/common_functions.cpp joins/common_functions.h
         utils/generic_task_queue.cpp utils/generic_task_queue.h utils/barrier.h utils/lock.h
         joins/avxcommon.h joins/merge.cpp joins/merge.h joins/scalar_multiwaymerge.cpp joins/scalar_multiwaymerge.h
         joins/partition.cpp joins/partition.h joins/avxsort.cpp joins/avxsort.h joins/avxintrin_emu.h joins/avxsort_core.h

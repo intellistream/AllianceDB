@@ -11,12 +11,12 @@
  * \ingroup Joins
  */
 
+#include "common_functions.h"
+#include "../affinity/cpu_mapping.h" /* get_cpu_id() */
 #include <stdio.h>
 #include <stdlib.h> /* posix_memalign() */
 #include <thread>
 #include <time.h>
-#include "joincommon.h"
-#include "../affinity/cpu_mapping.h"        /* get_cpu_id() */
 //#include "affinity.h"           /* CPU_SET, CPU_ZERO */
 #include "../affinity/memalloc.h"           /* malloc_aligned() */
 

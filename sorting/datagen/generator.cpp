@@ -15,12 +15,11 @@
 #include "generator.h"
 #include "../affinity/cpu_mapping.h"        /* get_cpu_id() */
 //#include "../affinity/affinity.h"           /* pthread_attr_setaffinity_np */
-#include "genzipf.h"            /* gen_zipf() */
-#include "../utils/lock.h"
-#include "../utils/barrier.h"
 #include "../affinity/memalloc.h"
-#include "../joins/joincommon.h"
-
+#include "../joins/common_functions.h"
+#include "../utils/barrier.h"
+#include "../utils/lock.h"
+#include "genzipf.h" /* gen_zipf() */
 
 /* return a random number in range [0,N] */
 #define RAND_RANGE(N) ((double)rand() / ((double)RAND_MAX + 1) * (N))

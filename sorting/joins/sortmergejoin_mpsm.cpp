@@ -12,11 +12,10 @@
 #include <stdlib.h> /* malloc() */
 #include <math.h>   /* log2(), ceil() */
 
-#include "sortmergejoin_mpsm.h"
-#include "joincommon.h"
-#include "avxsort.h"    /* avxsort_tuples() */
+#include "avxsort.h" /* avxsort_tuples() */
+#include "common_functions.h"
 #include "scalarsort.h" /* scalarsort_tuples() */
-
+#include "sortmergejoin_mpsm.h"
 
 #ifdef JOIN_MATERIALIZE
 #include "../utils/tuple_buffer.h"
