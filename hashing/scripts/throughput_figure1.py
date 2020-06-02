@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 import pylab
 from matplotlib.font_manager import FontProperties
 from matplotlib.ticker import MaxNLocator, LinearLocator
+from matplotlib import rc
+
 
 OPT_FONT_NAME = 'Helvetica'
 TICK_FONT_SIZE = 20
@@ -14,12 +16,13 @@ LEGEND_FONT_SIZE = 24
 LABEL_FP = FontProperties(style='normal', size=LABEL_FONT_SIZE)
 LEGEND_FP = FontProperties(style='normal', size=LEGEND_FONT_SIZE)
 TICK_FP = FontProperties(style='normal', size=TICK_FONT_SIZE)
-
-MARKERS = (['^', 'v', '<', ">", "8", "s", "p", "P", "d", "<", "|", "", "+", "_"])
+MARKERS = (['', '^', 'v', '<', ">", '', "8", "s", "p", "P", "d", "<", "|", "", "+", "_"])
 # you may want to change the color map for different figures
-COLOR_MAP = ('#ABB2B9', '#2E4053', '#8D6E63', '#000000', '#CD6155', '#52BE80', '#FFFF00', '#5499C7', '#BB8FCE')
+COLOR_MAP = (
+    '#5499C7', '#ABB2B9', '#2E4053', '#8D6E63', '#000000', '#5499C7', '#CD6155', '#52BE80', '#FFFF00', '#5499C7',
+    '#BB8FCE')
 # you may want to change the patterns for different figures
-PATTERNS = (["", "", "", "", "/", "\\", "||", "-", "o", "O", "////", ".", "|||", "o", "---", "+", "\\\\", "*"])
+PATTERNS = (['', "", "", "", "", '', "/", "\\", "||", "-", "o", "O", "////", ".", "|||", "o", "---", "+", "\\\\", "*"])
 LABEL_WEIGHT = 'bold'
 LINE_COLORS = COLOR_MAP
 LINE_WIDTH = 3.0
@@ -31,6 +34,14 @@ matplotlib.rcParams['pdf.use14corefonts'] = True
 matplotlib.rcParams['xtick.labelsize'] = TICK_FONT_SIZE
 matplotlib.rcParams['ytick.labelsize'] = TICK_FONT_SIZE
 matplotlib.rcParams['font.family'] = OPT_FONT_NAME
+rc('text.latex', preamble=r'\usepackage[cm]{sfmath}')
+rc('font',**{'family':'sans-serif',
+             'sans-serif':['Helvetica'],
+             'weight' : 'bold',
+             'size'   : 22
+             }
+   )
+rc('text', usetex=True)
 
 FIGURE_FOLDER = '/data1/xtra/results/figure'
 
@@ -50,26 +61,29 @@ def DrawLegend(legend_labels, filename):
     MARKER_SIZE = 20.0
     LEGEND_FP = FontProperties(style='normal', size=26)
 
-    figlegend = pylab.figure(figsize=(16, 0.4))
-    idx = 0
+    figlegend = pylab.figure(figsize=(17, 0.5))
     lines = [None] * (len(FIGURE_LABEL))
     data = [1]
     x_values = [1]
 
-    idx = 0
-    for group in range(len(FIGURE_LABEL)):
-        lines[idx], = ax1.plot(x_values, data,
+    for idx in range(len(FIGURE_LABEL)):
+        if (idx != 0 or idx != 5):
+            lines[idx], = ax1.plot(x_values, data,
                                color=LINE_COLORS[idx], linewidth=LINE_WIDTH,
-                               marker=MARKERS[idx], markersize=MARKER_SIZE, label=str(group),
+                               marker=MARKERS[idx], markersize=MARKER_SIZE, label=str(idx),
                                markeredgewidth=2, markeredgecolor='k'
                                )
-
-        idx = idx + 1
+        else:
+            lines[idx] = ax1.plot(x_values, y_values, color='white', \
+                                   linewidth=0, marker='None', \
+                                   markersize=0, label=FIGURE_LABEL[idx],
+                                   markevery=0, markeredgewidth=0, markeredgecolor='k'
+                                   )
 
     # LEGEND
     figlegend.legend(lines, FIGURE_LABEL, prop=LEGEND_FP,
                      loc=1, ncol=len(FIGURE_LABEL), mode="expand", shadow=False,
-                     frameon=False, borderaxespad=-0.2, handlelength=1.2)
+                     frameon=False, borderaxespad=-0.2, handlelength=0.8)
 
     if not os.path.exists(FIGURE_FOLDER):
         os.makedirs(FIGURE_FOLDER)
@@ -83,7 +97,7 @@ class ScalarFormatterForceFormat(matplotlib.ticker.ScalarFormatter):
 # draw a line chart
 def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, filename, allow_legend):
     # you may change the figure size on your own.
-    fig = plt.figure(figsize=(7, 3))
+    fig = plt.figure(figsize=(10, 3))
     figure = fig.add_subplot(111)
 
     FIGURE_LABEL = legend_labels
@@ -158,6 +172,11 @@ def ReadFile():
     col6 = []
     col7 = []
     col8 = []
+    col9 = []
+
+    for id in it.chain(range(0, 5)):
+        col9.append(0)
+    y.append(col9)
 
     for id in it.chain(range(0, 5)):
         file = '/data1/xtra/results/timestamps/PRJ_{}.txt'.format(id)
@@ -186,6 +205,8 @@ def ReadFile():
         value = GetThroughput(file, file2)
         col4.append(value)
     y.append(col4)
+
+    y.append(col9)
 
     for id in it.chain(range(0, 5)):
         file = '/data1/xtra/results/timestamps/SHJ_JM_NP_{}.txt'.format(id)
@@ -222,11 +243,11 @@ if __name__ == "__main__":
 
     y_values = ReadFile()
 
-    legend_labels = ['NPJ', 'PRJ', 'MWAY', 'MPASS', 'SHJ$^{JM}$', 'SHJ$^{JB}$', 'PMJ$^{JM}$',
-                     'PMJ$^{JB}$']
+    legend_labels = ['Lazy:', 'NPJ', 'PRJ', 'MWAY', 'MPASS',
+                     'Eager:', 'SHJ$^{JM}$', 'SHJ$^{JB}$', 'PMJ$^{JM}$', 'PMJ$^{JB}$']
 
     DrawFigure(x_values, y_values, legend_labels,
-               'Input arrival rate (e/ms)', 'Tpt. (#inputs/ms)', 1400,
+               r'$v_R$=$v_S$ (inputs/ms)',  'Tpt. (inputs/ms)', 1400,
                30000, 'throughput_figure1', False)
     # print(y_values)
-    DrawLegend(legend_labels, 'throughput_line_legend')
+    # DrawLegend(legend_labels, 'throughput_line_legend')

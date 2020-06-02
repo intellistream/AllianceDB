@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import pylab
 from matplotlib.font_manager import FontProperties
 from matplotlib.ticker import MaxNLocator, LinearLocator
-
+from matplotlib import rc
 OPT_FONT_NAME = 'Helvetica'
 TICK_FONT_SIZE = 20
 LABEL_FONT_SIZE = 22
@@ -31,7 +31,14 @@ matplotlib.rcParams['pdf.use14corefonts'] = True
 matplotlib.rcParams['xtick.labelsize'] = TICK_FONT_SIZE
 matplotlib.rcParams['ytick.labelsize'] = TICK_FONT_SIZE
 matplotlib.rcParams['font.family'] = OPT_FONT_NAME
-
+rc('text.latex', preamble=r'\usepackage[cm]{sfmath}')
+rc('font',**{'family':'sans-serif',
+             'sans-serif':['Helvetica'],
+             'weight' : 'bold',
+             'size'   : 22
+             }
+   )
+rc('text', usetex=True)
 FIGURE_FOLDER = '/data1/xtra/results/figure'
 
 
@@ -80,7 +87,7 @@ def DrawLegend(legend_labels, filename):
 # draw a line chart
 def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, filename, allow_legend):
     # you may change the figure size on your own.
-    fig = plt.figure(figsize=(7, 3))
+    fig = plt.figure(figsize=(10, 3))
     figure = fig.add_subplot(111)
 
     FIGURE_LABEL = legend_labels
@@ -222,7 +229,7 @@ if __name__ == "__main__":
                      'PMJ$^{JB}$']
 
     DrawFigure(x_values, y_values, legend_labels,
-               'Window sizes (ms)', 'Tpt. (#inputs/ms)', 0,
+               r'$w$ (ms)', 'Tpt. (inputs/ms)', 0,
                1.6, 'throughput_figure5', False)
     # print(y_values)
     DrawLegend(legend_labels, 'throughput_line_legend')

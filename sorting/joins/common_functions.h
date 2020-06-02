@@ -16,7 +16,7 @@
 
 //#define DEBUG
 //#define JOIN_MATERIALIZE
-#define NO_TIMING
+#define TIMING
 #define JOIN
 
 #define DEBUG_SORT_CHECK 0

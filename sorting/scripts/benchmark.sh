@@ -3,7 +3,7 @@
 ## Set L3 Cache according to your machine.
 sed -i -e "s/#define L3_CACHE_SIZE [[:alnum:]]*/#define L3_CACHE_SIZE 20971520/g" ../utils/params.h
 sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h
-
+sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h
 compile=1
 function compile() {
   if [ $compile != 0 ]; then
@@ -129,7 +129,7 @@ output=test$timestamp.txt
 #general benchmark.
 compile=0
 for algo in m-way m-pass; do
-  for benchmark in ; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "AR" "RAR" "AD" "KD" "WS"
+  for benchmark in "AR"; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "AR" "RAR" "AD" "KD" "WS"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "AR") #test arrival rate and assume both inputs have same arrival rate.
@@ -139,7 +139,7 @@ for algo in m-way m-pass; do
       FIXS=0 #varying both.
       ts=1   # stream case
       # step size should be bigger than nthreads
-      for STEP_SIZE in 1600 3200 6400 12800 25600; do #128000
+      for STEP_SIZE in 3200 6400 12800 25600 ; do #3200 6400 12800 25600
         #WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
         echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
         gap=$(($STEP_SIZE / 500 * $WINDOW_SIZE))
@@ -300,7 +300,7 @@ done
 
 # Cache misses profiling with YSB, please run the program with sudo
 sed -i -e "s/#define NO_PERF_COUNTERS/#define PERF_COUNTERS/g" ../utils/perf_counters.h
-for benchmark in "YSB"; do #"
+for benchmark in ""; do #"YSB
   id=201
   PARTITION_ONLY
   compile=1

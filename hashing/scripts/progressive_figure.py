@@ -301,7 +301,7 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
             lines[i] = figure.plot(x_values[i], y_values[i], color='white', \
                                    linewidth=0, marker='None', \
                                    markersize=0, label=FIGURE_LABEL[i],
-                                   markevery=ceil(x_max / 6), markeredgewidth=0, markeredgecolor='k'
+                                   markevery=0, markeredgewidth=0, markeredgecolor='k'
                                    )
     # sometimes you may not want to draw legends.
     if allow_legend == True:
