@@ -10,6 +10,15 @@ AllianceDB is a library for a list of stream operations optimized on modern mult
 
 All of our experiments can be automatically reproduced by calling a few pre-prepared scripts.
 
+## Third-party Lib
+
+1) tex font rendering:
+sudo apt-get install texlive-fonts-recommended texlive-fonts-extra
+sudo apt-get install dvipng
+
+2) python3:
+sudo apt-get install python3
+
 ### Step 1
 git clone https://github.com/ShuhaoZhangTony/AllianceDB.git
 
