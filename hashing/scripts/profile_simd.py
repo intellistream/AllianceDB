@@ -93,19 +93,19 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
 
     # sometimes you may not want to draw legends.
     if allow_legend == True:
-        leg=plt.legend(bars, FIGURE_LABEL, prop=LEGEND_FP,
-                   ncol=3,
-                   #                     mode='expand',
-                   #                     shadow=False,
-                   bbox_to_anchor=(0.5, 1.4),
-                   columnspacing=0.25,
-                   handletextpad=0.2,
-                   #                     bbox_transform=ax.transAxes,
-                   #                     frameon=False,
-                   #                     columnspacing=5.5,
-                   #                     handlelength=2,
-                   loc='upper center'
-                   )
+        leg = plt.legend(bars, FIGURE_LABEL, prop=LEGEND_FP,
+                         ncol=3,
+                         #                     mode='expand',
+                         #                     shadow=False,
+                         bbox_to_anchor=(0.5, 1.4),
+                         columnspacing=0.25,
+                         handletextpad=0.2,
+                         #                     bbox_transform=ax.transAxes,
+                         #                     frameon=False,
+                         #                     columnspacing=5.5,
+                         #                     handlelength=2,
+                         loc='upper center'
+                         )
         leg.get_frame().set_linewidth(2)
         leg.get_frame().set_edgecolor("black")
     #    plt.xticks(rotation=35)
@@ -127,30 +127,59 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
 
     plt.savefig(FIGURE_FOLDER + "/" + filename + ".pdf", bbox_inches='tight')
 
+
+def GetL1MISS(id):
+    file = '/data1/xtra/results/breakdown/profile_{}.txt'.format(id)
+    with open(file) as fi:
+        for ln in fi:
+            if ln.startswith("L2Hit"):
+                return float(ln[6:])
+
+
+def GetL2MISS(id):
+    file = '/data1/xtra/results/breakdown/profile_{}.txt'.format(id)
+    with open(file) as fi:
+        for ln in fi:
+            if ln.startswith("L2Misses "):
+                return float(ln[9:])
+
+
+def GetL3MISS(id):
+    file = '/data1/xtra/results/breakdown/profile_{}.txt'.format(id)
+    with open(file) as fi:
+        for ln in fi:
+            if ln.startswith("L3Misses "):
+                return float(ln[9:])
+
+
 if __name__ == "__main__":
     x_values = [
         'MWAY', 'MPASS', 'PMJ$^{JM}$', 'PMJ$^{JB}$'
     ]
     y_values = []
-    inputs = 128000000 + 12800000
+    file = '/data1/xtra/results/records/PMJ_JM_NP_{}.txt'.format(104)
+    f = open(file, "r")
+    read = f.readlines()
+    inputs = float(read.pop(0).strip("\n"))  # get number of inputs
+
     y_values.append([  # L1
-        14326962 / inputs,
-        14282306 / inputs,
-        (29597976-603) / inputs,
-        (39357920-19709686) / inputs,
+        GetL1MISS(102) / inputs,
+        GetL1MISS(103) / inputs,
+        GetL1MISS(106) / inputs,
+        GetL1MISS(107) / inputs,
     ])
     y_values.append([  # L2
-        2569761 / inputs,
-        4067798 / inputs,
-        (40295530-746) / inputs,
-        (77455174-27345069) / inputs,
+        GetL2MISS(102) / inputs,
+        GetL2MISS(103) / inputs,
+        GetL2MISS(106) / inputs,
+        GetL2MISS(107) / inputs,
     ])
     y_values.append([  # L3
-        2263150 / inputs,
-        4041460 / inputs,
-        (35687990-165) / inputs,
-        (71058883-2786917) / inputs,
+        GetL3MISS(102) / inputs,
+        GetL3MISS(103) / inputs,
+        GetL3MISS(106) / inputs,
+        GetL3MISS(107) / inputs,
     ])
     legend_labels = ['L1 miss', 'L2 miss', 'L3 miss']
 
-    DrawFigure(x_values, y_values, legend_labels, '', 'misses per input', 0, 79280326 / inputs, 'profile_simd', True)
+    DrawFigure(x_values, y_values, legend_labels, '', 'misses per input', 0, GetL3MISS(107) / inputs, 'profile_simd', True)

@@ -18,6 +18,7 @@
 //#define JOIN_MATERIALIZE
 #define TIMING
 #define JOIN
+#define SORT
 
 #define DEBUG_SORT_CHECK 0
 #define scalarflag 0

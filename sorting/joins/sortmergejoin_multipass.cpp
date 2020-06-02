@@ -190,13 +190,14 @@ void *sortmergejoin_multipass_thread(void *param) {
   BEGIN_MEASURE_SORT_ACC(args->timer) /* sort start */
 #endif
 
-  // don't care sorting
-  //#ifdef PERF_COUNTERS
-  //    if(my_tid == 0){
-  //        PCM_start();
-  //    }
-  //    BARRIER_ARRIVE(args->barrier, rv);
-  //#endif
+#ifdef SORT // profile sort
+  #ifdef PERF_COUNTERS
+      if(my_tid == 0){
+          PCM_start();
+      }
+      BARRIER_ARRIVE(args->barrier, rv);
+  #endif
+#endif
   /*************************************************************************
    *
    *   Phase.2) NUMA-local sorting of cache-sized chunks
@@ -209,15 +210,16 @@ void *sortmergejoin_multipass_thread(void *param) {
 #ifndef NO_TIMING
   END_MEASURE_SORT_ACC(args->timer) /* sort end */
 #endif
-
-  //#ifdef PERF_COUNTERS
-  //    if(my_tid == 0) {
-  //        PCM_stop();
-  //        PCM_log("========= 2) Profiling results of Sorting Phase
-  //        =========\n"); PCM_printResults();
-  //    }
-  //#endif
-
+#ifdef SORT // profile sort
+  #ifdef PERF_COUNTERS
+      if(my_tid == 0) {
+          PCM_stop();
+          PCM_log("========= 2) Profiling results of Sorting Phase
+          =========\n");
+          PCM_printResults();
+      }
+  #endif
+#endif
   //
   //#ifdef PERF_COUNTERS
   //    BARRIER_ARRIVE(args->barrier, rv);

@@ -39,9 +39,15 @@ function KimRun() {
 
 function PARTITION_ONLY() {
   sed -i -e "s/#define JOIN/#define NO_JOIN/g" ../joins/common_functions.h
+  sed -i -e "s/#define SORT/#define NO_SORT/g" ../joins/common_functions.h
+}
+function PARTITION_BUILD_SORT() {
+  sed -i -e "s/#define JOIN/#define NO_JOIN/g" ../joins/common_functions.h
+  sed -i -e "s/#define NO_SORT/#define SORT/g" ../joins/common_functions.h
 }
 function PARTITION_BUILD_SORT_MERGE_JOIN() {
   sed -i -e "s/#define NO_JOIN/#define JOIN/g" ../joins/common_functions.h
+  sed -i -e "s/#define SORT/#define NO_SORT/g" ../joins/common_functions.h
 }
 
 function SetStockParameters() { #matches: 15595000. #inputs= 60527 + 77227
@@ -139,7 +145,7 @@ for algo in m-way m-pass; do
       FIXS=0 #varying both.
       ts=1   # stream case
       # step size should be bigger than nthreads
-      for STEP_SIZE in 3200 6400 12800 25600 ; do #3200 6400 12800 25600
+      for STEP_SIZE in 3200 6400 12800 25600; do #3200 6400 12800 25600
         #WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
         echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
         gap=$(($STEP_SIZE / 500 * $WINDOW_SIZE))
@@ -342,6 +348,18 @@ for benchmark in ""; do #
     ResetParameters
     ts=0 # batch data.
     echo SIMD 100-103
+    PARTITION_ONLY
+    compile=1
+    for algo in "m-way" "m-pass"; do
+      for scalar in 0 1; do
+        sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scalar/g" ../joins/joincommon.h
+        compile
+        KimRun
+        let "id++"
+      done
+    done
+    PARTITION_BUILD_SORT
+    compile=1
     for algo in "m-way" "m-pass"; do
       for scalar in 0 1; do
         sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scalar/g" ../joins/joincommon.h

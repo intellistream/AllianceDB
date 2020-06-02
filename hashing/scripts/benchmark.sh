@@ -568,6 +568,17 @@ if [ $PROFILE_MICRO == 1 ]; then
       ResetParameters
       ts=0 # batch data.
       echo SIMD PMJ 104 - 107
+      PARTITION_ONLY
+      compile
+      for algo in "PMJ_JM_NP" "PMJ_JBCR_NP"; do
+        for scalar in 0 1; do
+          sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scalar/g" ../helper/sort_common.h
+          RUNALLMic
+          let "id++"
+        done
+      done
+      PARTITION_BUILD_SORT
+      compile
       for algo in "PMJ_JM_NP" "PMJ_JBCR_NP"; do
         for scalar in 0 1; do
           sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scalar/g" ../helper/sort_common.h
