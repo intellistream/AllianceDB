@@ -4,9 +4,10 @@ import os
 import matplotlib
 import matplotlib.pyplot as plt
 import pylab
+from matplotlib import rc
 from matplotlib.font_manager import FontProperties
 from matplotlib.ticker import MaxNLocator, LinearLocator
-from matplotlib import rc
+
 OPT_FONT_NAME = 'Helvetica'
 TICK_FONT_SIZE = 20
 LABEL_FONT_SIZE = 22
@@ -32,11 +33,11 @@ matplotlib.rcParams['xtick.labelsize'] = TICK_FONT_SIZE
 matplotlib.rcParams['ytick.labelsize'] = TICK_FONT_SIZE
 matplotlib.rcParams['font.family'] = OPT_FONT_NAME
 rc('text.latex', preamble=r'\usepackage[cm]{sfmath}')
-rc('font',**{'family':'sans-serif',
-             'sans-serif':['Helvetica'],
-             'weight' : 'bold',
-             'size'   : 22
-             }
+rc('font', **{'family': 'sans-serif',
+              'sans-serif': ['Helvetica'],
+              'weight': 'bold',
+              'size': 22
+              }
    )
 rc('text', usetex=True)
 FIGURE_FOLDER = '/data1/xtra/results/figure'
@@ -123,7 +124,7 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
     plt.xticks(x_values)
     # you may control the limits on your own.
     # plt.xlim(x_min, x_max)
-    plt.ylim(0, 15500)
+    plt.ylim(bottom=0)
     plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
     plt.grid(axis='y', color='gray')
     figure.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
@@ -153,39 +154,39 @@ def ReadFile():
     col7 = []
     col8 = []
 
-    for id in it.chain(range(25,29)):
-        file = '/data1/xtra/results/latency/PRJ_{}.txt'.format(id)
+    for id in it.chain(range(25, 29)):
+        file = '/data1/xtra/results/latency/NPJ_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(int(len(read) * 0.95)).strip("\n"))  # get the 99th timestamp
         col1.append(x)
     y.append(col1)
 
-    for id in it.chain(range(25,29)):
-        file = '/data1/xtra/results/latency/NPJ_{}.txt'.format(id)
+    for id in it.chain(range(25, 29)):
+        file = '/data1/xtra/results/latency/PRJ_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(int(len(read) * 0.95)).strip("\n"))  # get the 99th timestamp
         col2.append(x)
     y.append(col2)
 
-    for id in it.chain(range(25,29)):
-        file = '/data1/xtra/results/latency/MPASS_{}.txt'.format(id)
+    for id in it.chain(range(25, 29)):
+        file = '/data1/xtra/results/latency/MWAY_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(int(len(read) * 0.95)).strip("\n"))  # get the 99th timestamp
         col3.append(x)
     y.append(col3)
 
-    for id in it.chain(range(25,29)):
-        file = '/data1/xtra/results/latency/MWAY_{}.txt'.format(id)
+    for id in it.chain(range(25, 29)):
+        file = '/data1/xtra/results/latency/MPASS_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(int(len(read) * 0.95)).strip("\n"))  # get the 99th timestamp
         col4.append(x)
     y.append(col4)
 
-    for id in it.chain(range(25,29)):
+    for id in it.chain(range(25, 29)):
         file = '/data1/xtra/results/latency/SHJ_JM_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -193,7 +194,7 @@ def ReadFile():
         col5.append(x)
     y.append(col5)
 
-    for id in it.chain(range(25,29)):
+    for id in it.chain(range(25, 29)):
         file = '/data1/xtra/results/latency/SHJ_JBCR_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -201,7 +202,7 @@ def ReadFile():
         col6.append(x)
     y.append(col6)
 
-    for id in it.chain(range(25,29)):
+    for id in it.chain(range(25, 29)):
         file = '/data1/xtra/results/latency/PMJ_JM_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -209,7 +210,7 @@ def ReadFile():
         col7.append(x)
     y.append(col7)
 
-    for id in it.chain(range(25,29)):
+    for id in it.chain(range(25, 29)):
         file = '/data1/xtra/results/latency/PMJ_JBCR_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
@@ -220,7 +221,7 @@ def ReadFile():
 
 
 if __name__ == "__main__":
-    x_values = [1, 10, 50, 100]
+    x_values = [1, 10, 100, 200]
 
     y_values = ReadFile()
 

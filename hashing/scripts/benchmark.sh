@@ -310,12 +310,12 @@ timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
 
 ## general benchmark.
-GENERAL_BENCH=0
+GENERAL_BENCH=1
 if [ $GENERAL_BENCH == 1 ]; then
-  profile_breakdown=1        # set to 1 if we want to measure time breakdown!
+  profile_breakdown=0        # set to 1 if we want to measure time breakdown!
   compile=$profile_breakdown # compile depends on whether we want to profile.
-  for benchmark in "Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "AD" "KD" "WS" "DD"; do #
-    for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #
+  for benchmark in "Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "KD" "WS" "DD" ; do #"Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "KD" "WS" "DD"
+    for algo in NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP ; do # NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
       case "$benchmark" in
       # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
       "AR") #test arrival rate and assume both inputs have same arrival rate.
@@ -405,12 +405,12 @@ if [ $GENERAL_BENCH == 1 ]; then
         id=25
         ## Figure 6
         ResetParameters
-        ts=0
+        ts=1
         FIXS=1
-        STEP_SIZE=160
-        STEP_SIZE_S=160
+        STEP_SIZE=6400
+        STEP_SIZE_S=6400
         echo test DD 25 - 28
-        for DD in 1 10 50 100; do
+        for DD in 1 100 1000 10000; do
           gap=$(($STEP_SIZE * $WINDOW_SIZE * $DD / 500))
           RUNALLMic
           let "id++"
@@ -513,7 +513,7 @@ fi
 #    python3 progressive_merge.py
 #    ;;
 
-PROFILE_YSB=1 ## Cache misses profiling with YSB, please run the program with sudo
+PROFILE_YSB=0 ## Cache misses profiling with YSB, please run the program with sudo
 if [ $PROFILE_YSB == 1 ]; then
   sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h #disable time measurement
   sed -i -e "s/#define NO_PERF_COUNTERS/#define PERF_COUNTERS/g" ../utils/perf_counters.h

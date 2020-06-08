@@ -135,7 +135,7 @@ output=test$timestamp.txt
 #general benchmark.
 compile=0
 for algo in m-way m-pass; do
-  for benchmark in "AR"; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "AR" "RAR" "AD" "KD" "WS"
+  for benchmark in "DD"; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "AR" "RAR" "AD" "KD" "WS"
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "AR") #test arrival rate and assume both inputs have same arrival rate.
@@ -226,11 +226,11 @@ for algo in m-way m-pass; do
       ## Figure 6
       ResetParameters
       FIXS=1
-      ts=0
-      STEP_SIZE=160
-      STEP_SIZE_S=160
+      ts=1
+      STEP_SIZE=6400
+      STEP_SIZE_S=6400
       echo test DD 25 - 28
-      for DD in 1 10 50 100; do
+      for DD in 1 100 1000 10000; do
         gap=$(($STEP_SIZE * $WINDOW_SIZE * $DD / 500))
         KimRun
         let "id++"
@@ -304,70 +304,74 @@ for algo in m-way m-pass; do
   done
 done
 
-# Cache misses profiling with YSB, please run the program with sudo
-sed -i -e "s/#define NO_PERF_COUNTERS/#define PERF_COUNTERS/g" ../utils/perf_counters.h
-for benchmark in ""; do #"YSB
-  id=201
-  PARTITION_ONLY
-  compile=1
-  compile
-  for algo in "m-way" "m-pass"; do
-    case "$benchmark" in
-    "YSB")
-      ResetParameters
-      SetYSBParameters
-      rm /data1/xtra/results/breakdown/profile_$id.txt
-      benchmarkRun
-      ;;
-    esac
-    let "id++"
-  done
-
-  PARTITION_BUILD_SORT_MERGE_JOIN
-  compile=1
-  compile
-  for algo in "m-way" "m-pass"; do
-    case "$benchmark" in
-    "YSB")
-      ResetParameters
-      SetYSBParameters
-      rm /data1/xtra/results/breakdown/profile_$id.txt
-      benchmarkRun
-      ;;
-    esac
-    let "id++"
-  done
-
-done
-
-compile=1
-for benchmark in ""; do #
-  case "$benchmark" in
-  "SIMD_STUDY")
-    id=100
-    ResetParameters
-    ts=0 # batch data.
-    echo SIMD 100-103
+PROFILE_YSB=0 ## Cache misses profiling with YSB, please run the program with sudo
+if [ $PROFILE_YSB == 1 ]; then
+  sed -i -e "s/#define NO_PERF_COUNTERS/#define PERF_COUNTERS/g" ../utils/perf_counters.h
+  for benchmark in ""; do #"YSB
+    id=201
     PARTITION_ONLY
     compile=1
+    compile
     for algo in "m-way" "m-pass"; do
-      for scalar in 0 1; do
-        sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scalar/g" ../joins/joincommon.h
-        compile
-        KimRun
-        let "id++"
-      done
+      case "$benchmark" in
+      "YSB")
+        ResetParameters
+        SetYSBParameters
+        rm /data1/xtra/results/breakdown/profile_$id.txt
+        benchmarkRun
+        ;;
+      esac
+      let "id++"
     done
-    PARTITION_BUILD_SORT
+
+    PARTITION_BUILD_SORT_MERGE_JOIN
     compile=1
+    compile
     for algo in "m-way" "m-pass"; do
-      for scalar in 0 1; do
-        sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scalar/g" ../joins/joincommon.h
-        compile
-        KimRun
-        let "id++"
-      done
+      case "$benchmark" in
+      "YSB")
+        ResetParameters
+        SetYSBParameters
+        rm /data1/xtra/results/breakdown/profile_$id.txt
+        benchmarkRun
+        ;;
+      esac
+      let "id++"
     done
-    ;;
-  esac
-done
+  done
+fi
+
+## MICRO STUDY
+PROFILE_MICRO=0
+if [ $PROFILE_MICRO == 1 ]; then
+  for benchmark in ""; do #
+    case "$benchmark" in
+    "SIMD_STUDY")
+      id=100
+      ResetParameters
+      ts=0 # batch data.
+      echo SIMD 100-103
+      PARTITION_ONLY
+      compile=1
+      for algo in "m-way" "m-pass"; do
+        for scalar in 0 1; do
+          sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scalar/g" ../joins/joincommon.h
+          compile
+          KimRun
+          let "id++"
+        done
+      done
+      PARTITION_BUILD_SORT
+      compile=1
+      for algo in "m-way" "m-pass"; do
+        for scalar in 0 1; do
+          sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scalar/g" ../joins/joincommon.h
+          compile
+          KimRun
+          let "id++"
+        done
+      done
+      ;;
+    esac
+  done
+fi

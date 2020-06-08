@@ -23,7 +23,7 @@ python3 profile_ysb_probe.py
 ## MICRO BENCH
 #
 ### Impact of arrival rate
-echo "Drawing Figure 9..."
+echo "Drawing Figure 8..."
 python3 throughput_figure1.py
 python3 latency_figure1.py
 for id in 0 4; do
@@ -31,7 +31,7 @@ for id in 0 4; do
 done
 
 ### Impact of relative arrival rate
-echo "Drawing Figure 10..."
+echo "Drawing Figure 9..."
 python3 throughput_figure2.py
 python3 latency_figure2.py
 for id in 5 9; do
@@ -39,7 +39,7 @@ for id in 5 9; do
 done
 
 #### Impact of arrival distribution
-echo "Drawing Figure 11..."
+echo "Drawing Figure 10.."
 python3 throughput_figure3.py
 python3 latency_figure3.py
 for id in 10 14 ; do
@@ -47,7 +47,7 @@ for id in 10 14 ; do
 done
 
 ## Impact of key distribution
-echo "Drawing Figure 12..."
+echo "Drawing Figure 11..."
 python3 throughput_figure4.py
 python3 latency_figure4.py
 for id in  15 19 ; do
@@ -55,7 +55,7 @@ for id in  15 19 ; do
 done
 
 ## Impact of window size
-echo "Drawing Figure 13..."
+echo "Drawing Figure 12..."
 python3 throughput_figure5.py
 python3 latency_figure5.py
 for id in  20 24; do
@@ -63,10 +63,10 @@ for id in  20 24; do
 done
 
 ## Impact of data duplication
-echo "Drawing Figure 14..."
+echo "Drawing Figure 13..."
 python3 throughput_figure6.py
 python3 latency_figure6.py
-for id in 25 28; do
+for id in 26 27; do
   python3 progressive_figure.py -i $id
 done
 
