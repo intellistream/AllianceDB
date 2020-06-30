@@ -233,7 +233,6 @@ def ReadFile(id):
 
     return x_axis, y_axis
 
-
 def DrawLegend(legend_labels, filename):
     fig = pylab.figure()
     ax1 = fig.add_subplot(111)
@@ -242,15 +241,14 @@ def DrawLegend(legend_labels, filename):
     MARKER_SIZE = 20.0
     LEGEND_FP = FontProperties(style='normal', size=26)
 
-    figlegend = pylab.figure(figsize=(17, 0.5))
-    idx = 0
+    figlegend = pylab.figure(figsize=(16, 0.5))
     lines = [None] * (len(FIGURE_LABEL))
     data = [1]
     x_values = [1]
 
     idx = 0
     for group in range(len(FIGURE_LABEL)):
-        if (idx == 0 or idx == 5):
+        if (idx == 0 or idx == 5): #add a space between lazy and eager.
             lines[idx], = ax1.plot(x_values, data,
                                    color=LINE_COLORS[idx], linewidth=0,
                                    marker=MARKERS[idx], markersize=0, label=str(group),
@@ -268,7 +266,8 @@ def DrawLegend(legend_labels, filename):
     # LEGEND
     figlegend.legend(lines, FIGURE_LABEL, prop=LEGEND_FP,
                      loc=1, ncol=len(FIGURE_LABEL), mode="expand", shadow=False,
-                     frameon=False, borderaxespad=-0.2, handlelength=0.8)
+                     frameon=True, handlelength=1.2, handletextpad=0.3, columnspacing=0.5,
+                     borderaxespad=-0.2, fancybox=False)
 
     if not os.path.exists(FIGURE_FOLDER):
         os.makedirs(FIGURE_FOLDER)
