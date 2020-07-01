@@ -1,6 +1,3 @@
-# What?
-This is a library for relational stream operations optimized on modern multicore processors.
-
 # How to Reproduce Our Experimental Results?
 
 All of our experiments can be automatically reproduced by calling a few pre-prepared scripts.
@@ -71,10 +68,6 @@ Rovio:
 Stock: 
 
 ​	This dataset is not open-sourced out of privacy, the data structure is stockid|timestamp.
-
-# What's Next?
-We start with stream join, which is argubly the most fundamental and difficult to implement operations.
-In the future, we will add other relational operations including stream aggregation, filtering, group-by and so on.
 
 
 
