@@ -15,7 +15,7 @@ sudo apt-get install dvipng
 sudo apt-get install python3
 
 ### Step 1
-git clone https://github.com/ShuhaoZhangTony/AllianceDB.git
+git clone https://github.com/ShuhaoZhangTony/WalnutDB.git
 
 ### Step 2
 open hashing/scripts/benchmark.sh
