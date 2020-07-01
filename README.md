@@ -1,5 +1,5 @@
 # What?
-WalnutDB is a library for a list of stream operations optimized on modern multicore processors.
+WalnutDB is a library for relational stream operations optimized on modern multicore processors.
 
 # How to Reproduce Our Experimental Results?
 
