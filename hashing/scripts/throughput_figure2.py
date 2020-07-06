@@ -234,7 +234,7 @@ if __name__ == "__main__":
                      'PMJ$^{JB}$']
 
     DrawFigure(x_values, y_values, legend_labels,
-               r'$v_S$ (inputs/ms)', 'Tpt. (inputs/ms)', 1400,
+               r'$v_S$ (inputs/msec)', 'Tpt. (inputs/msec)', 1400,
                30000, 'throughput_figure2', False)
     # print(y_values)
     # DrawLegend(legend_labels, 'throughput_line_legend')

@@ -228,5 +228,5 @@ if __name__ == "__main__":
                      'PMJ$^{JB}$']
     # print(y_values)
     DrawFigure(x_values, y_values, legend_labels,
-               r'$w$ (ms)', 'Latency (ms)', 0,
+               r'$w$ (msec)', 'Latency (msec)', 0,
                1.6, 'latency_figure5', False)

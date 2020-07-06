@@ -238,5 +238,5 @@ if __name__ == "__main__":
                      'Eager:', 'SHJ$^{JM}$', 'SHJ$^{JB}$', 'PMJ$^{JM}$', 'PMJ$^{JB}$']
     # print(y_values)
     DrawFigure(x_values, y_values, legend_labels,
-               r'$v_R$=$v_S$ (inputs/ms)', 'Latency (ms)', 1400,
+               r'$v_R$=$v_S$ (inputs/msec)', 'Latency (msec)', 1400,
                x_values[4], 'latency_figure1', False)
