@@ -5,13 +5,27 @@ All of our experiments can be automatically reproduced by calling a few pre-prep
 ## Third-party Lib
 
 1) tex font rendering:
+
 sudo apt-get install texlive-fonts-recommended texlive-fonts-extra
+
 sudo apt-get install dvipng
 
 2) python3:
+
 sudo apt-get install python3
 
+3) NUMA library
+
+sudo apt-get install -y libnuma-dev
+
+4) Zlib
+
+sudo apt install zlib1g-dev
+
+### Prerequisite
+
 ### Step 1
+
 git clone the repo.
 
 ### Step 2
