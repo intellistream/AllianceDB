@@ -375,7 +375,7 @@ execution
 #include "affinity/memalloc.h"     /* malloc_aligned() */
 #include "affinity/numa_shuffle.h" /* numa_shuffle_init() */
 #include "datagen/generator.h"
-#include "params.h" /* macro parameters */
+#include "utils/params.h" /* macro parameters */
 #include "utils/types.h"
 
 /**************** include join algorithm thread implementations ***************/

@@ -1,28 +1,30 @@
 #!/bin/bash
 #set -e
 ## Create directories on your machine.
-mkdir -p /data1/xtra/results/breakdown/partition_buildsort_probemerge_join
-mkdir -p /data1/xtra/results/breakdown/partition_only
-mkdir -p /data1/xtra/results/breakdown/partition_buildsort_only
-mkdir -p /data1/xtra/results/breakdown/partition_buildsort_probemerge_only
-mkdir -p /data1/xtra/results/breakdown/allIncludes
+expDir="/data1/xtra"
+mkdir -p $expDir/results/breakdown/partition_buildsort_probemerge_join
+mkdir -p $expDir/results/breakdown/partition_only
+mkdir -p $expDir/results/breakdown/partition_buildsort_only
+mkdir -p $expDir/results/breakdown/partition_buildsort_probemerge_only
+mkdir -p $expDir/results/breakdown/allIncludes
 
-mkdir -p /data1/xtra/results/figure
-mkdir -p /data1/xtra/results/gaps
-mkdir -p /data1/xtra/results/latency
-mkdir -p /data1/xtra/results/records
-mkdir -p /data1/xtra/results/timestamps
+mkdir -p $expDir/results/figure
+mkdir -p $expDir/results/gaps
+mkdir -p $expDir/results/latency
+mkdir -p $expDir/results/records
+mkdir -p $expDir/results/timestamps
 
 
 
 ## Set L3 Cache according to your machine.
-sed -i -e "s/#define L3_CACHE_SIZE [[:alnum:]]*/#define L3_CACHE_SIZE 20971520/g" ../utils/params.h
+sed -i -e "s/#define L3_CACHE_SIZE [[:alnum:]]*/#define L3_CACHE_SIZE 12582912/g" ../utils/params.h
 sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h
 sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h
 
 compile=1 #enable compiling.
 eager=1
 profile_breakdown=1
+
 function compile() {
   if [ $compile != 0 ]; then
     if [ $eager == 0 ] || [ $profile_breakdown == 1 ]; then #to reduce profile overhead, we postpone eager joins during profiling.
@@ -37,17 +39,19 @@ function compile() {
     make -C .. -j4 -s
   fi
 }
+
 function Run() {
   #####native execution
   echo "==benchmark:$benchmark -a $algo -n $Threads=="
   echo 3 >/proc/sys/vm/drop_caches
   ../hashing -a $algo -r $RSIZE -s $SSIZE -n $Threads
 }
+
 function benchmarkRun() {
   #####native execution
-  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap -o /data1/xtra/results/breakdown/profile_$id.txt =="
+  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap -o $expDir/results/breakdown/profile_$id.txt =="
   echo 3 >/proc/sys/vm/drop_caches
-  ../hashing -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap -o /data1/xtra/results/breakdown/profile_$id.txt
+  ../hashing -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap -o $expDir/results/breakdown/profile_$id.txt
   if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit -1; fi
 }
 
@@ -229,8 +233,8 @@ function SetStockParameters() { #matches: 15598112. #inputs= 60527 + 77227
   WINDOW_SIZE=1000
   RSIZE=60527
   SSIZE=77227
-  RPATH=/data1/xtra/datasets/stock/cj_1000ms_1t.txt
-  SPATH=/data1/xtra/datasets/stock/sb_1000ms_1t.txt
+  RPATH=$expDir/datasets/stock/cj_1000ms_1t.txt
+  SPATH=$expDir/datasets/stock/sb_1000ms_1t.txt
   RKEY=0
   SKEY=0
   RTS=1
@@ -243,8 +247,8 @@ function SetRovioParameters() { #matches: 87856849382 #inputs= 2873604 + 2873604
   WINDOW_SIZE=1000
   RSIZE=2873604
   SSIZE=2873604
-  RPATH=/data1/xtra/datasets/rovio/1000ms_1t.txt
-  SPATH=/data1/xtra/datasets/rovio/1000ms_1t.txt
+  RPATH=$expDir/datasets/rovio/1000ms_1t.txt
+  SPATH=$expDir/datasets/rovio/1000ms_1t.txt
   RKEY=0
   SKEY=0
   RTS=3
@@ -257,8 +261,8 @@ function SetYSBParameters() { #matches: 10000000. #inputs= 1000 + 10000000
   WINDOW_SIZE=1000
   RSIZE=1000
   SSIZE=10000000
-  RPATH=/data1/xtra/datasets/YSB/campaigns_id.txt
-  SPATH=/data1/xtra/datasets/YSB/ad_events.txt
+  RPATH=$expDir/datasets/YSB/campaigns_id.txt
+  SPATH=$expDir/datasets/YSB/ad_events.txt
   RKEY=0
   SKEY=0
   RTS=0
@@ -271,8 +275,8 @@ function SetDEBSParameters() { #matches: 251033140 #inputs= 1000000 + 1000000
   WINDOW_SIZE=0
   RSIZE=1000000 #1000000
   SSIZE=1000000 #1000000
-  RPATH=/data1/xtra/datasets/DEBS/posts_key32_partitioned.csv
-  SPATH=/data1/xtra/datasets/DEBS/comments_key32_partitioned.csv
+  RPATH=$expDir/datasets/DEBS/posts_key32_partitioned.csv
+  SPATH=$expDir/datasets/DEBS/comments_key32_partitioned.csv
   RKEY=0
   SKEY=0
   RTS=0
@@ -529,7 +533,7 @@ if [ $PROFILE_YSB == 1 ]; then
       "YSB")
         ResetParameters
         SetYSBParameters
-        rm /data1/xtra/results/breakdown/profile_$id.txt
+        rm $expDir/results/breakdown/profile_$id.txt
         benchmarkRun
         ;;
       esac
@@ -546,7 +550,7 @@ if [ $PROFILE_YSB == 1 ]; then
       "YSB")
         ResetParameters
         SetYSBParameters
-        rm /data1/xtra/results/breakdown/profile_$id.txt
+        rm $expDir/results/breakdown/profile_$id.txt
         benchmarkRun
         ;;
       esac
