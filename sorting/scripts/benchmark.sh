@@ -1,9 +1,14 @@
 #!/bin/bash
+
 #set -e
 ## Set L3 Cache according to your machine.
 sed -i -e "s/#define L3_CACHE_SIZE [[:alnum:]]*/#define L3_CACHE_SIZE 12582912/g" ../utils/params.h
 sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h
 sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h
+
+# change cpu-mapping path here, e.g. following changes /data1/xtra/cpu-mapping.txt to /data1/xtra/cpu-mapping.txt
+sed -i -e "s/\/data1\/xtra\/cpu-mapping.txt/\/data1\/xtra\/cpu-mapping.txt/g" ../affinity/cpu_mapping.h
+
 compile=1
 function compile() {
   if [ $compile != 0 ]; then

@@ -22,7 +22,7 @@
  * and finally round-robin as last option.
  */
 #ifndef CUSTOM_CPU_MAPPING
-#define CUSTOM_CPU_MAPPING "cpu-mapping.txt"
+#define CUSTOM_CPU_MAPPING "/data1/xtra/cpu-mapping.txt"
 #endif
 
 /**

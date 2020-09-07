@@ -46,7 +46,7 @@ add_executable(sorting
         joins/scalarsort.cpp joins/scalarsort.h joins/avx_multiwaymerge.cpp joins/avx_multiwaymerge.h joins/avxsort_multiway.cpp
         joins/avxsort_multiway.h joins/sortmergejoin_multiway.cpp
         joins/sortmergejoin_multipass.cpp joins/sortmergejoin_mpsm.cpp joins/sortmergejoin_multiway_skewhandling.cpp
-        test/check_avxsort.cpp test/testutil.cpp test/testutil.h params.h timer/t_timer.cpp timer/t_timer.h
+        test/check_avxsort.cpp test/testutil.cpp test/testutil.h timer/t_timer.cpp timer/t_timer.h
         main.cpp utils/tuple_buffer.h)
 
 target_link_libraries(sorting numa)
