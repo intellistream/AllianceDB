@@ -15,6 +15,8 @@ sudo apt-get install dvipng
 
 ```shell
 sudo apt-get install python3
+pip3 install numpy
+pip3 install matplotlib
 ```
 
 3.  NUMA library
@@ -50,14 +52,14 @@ sudo apt-get install python-tk
 
 2. TODO: add some instructions on how to run the scripts, such as how to configure cache size and other profiling strategies. Also, we may need to mention we need to run scripts at sorting/hashing folder.
 
-   | Parameters                     | Default         | Description                                   |
-   | ------------------------------ | --------------- | --------------------------------------------- |
-   | expDir                         | /data1/xtra     | path to save all results and generate figures |
-   | L3_CACHE_SIZE                  | 20971520 (20MB) | size of l3 cache                              |
-   | PERF_COUNTERS/NO_PERF_COUNTERS | No              | Unknown                                       |
-   | NO_TIMING/TIMING               | No              | turn on/off breakdown timer                   |
-   | compile                        | 1               | compile the framework                         |
-   | Threads                        | 1 2 4 8         | experiments threads settings                  |
+   | Parameters                       | Default         | Description                                   |
+   | -------------------------------- | --------------- | --------------------------------------------- |
+   | expDir                           | /data1/xtra     | path to save all results and generate figures |
+   | L3_CACHE_SIZE (rather important) | 20971520 (20MB) | size of l3 cache                              |
+   | PERF_COUNTERS/NO_PERF_COUNTERS   | No              | Unknown                                       |
+   | NO_TIMING/TIMING                 | No              | turn on/off breakdown timer                   |
+   | compile                          | 1               | compile the framework                         |
+   | Threads                          | 1 2 4 8         | experiments threads settings                  |
 
 3. TODO: run hashing first, and then run sorting, or we can write another scripts to launch all those scripts.
 

@@ -32,9 +32,9 @@ function perfBenchmarkRun() {
   #####native execution
   echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -g $gap -o /data1/xtra/results/breakdown/perf_$id.csv -I $id== "
   #echo 3 >/proc/sys/vm/drop_caches
-#  toplev.py -I 10 -l2 -x, --output /data1/xtra/results/breakdown/perf_$id.csv ../sorting -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -g $gap -I $id
-  perf stat -I 100 -x, --topdown  -o /data1/xtra/results/breakdown/perf_$id.csv -a ../sorting -a $algo  -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -g $gap -I $id
-#  perf stat -a -o /data1/xtra/results/breakdown/perf_a_$id.csv -e cache-references,cache-misses,cycles,instructions,branches,faults,migrations ../sorting -a $algo  -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -g $gap -I $id
+  perf stat -a -x, --topdown  -o /data1/xtra/results/breakdown/perf_$id.csv ../sorting -a $algo  -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -g $gap -I $id
+  perf stat -a -x, -o /data1/xtra/results/breakdown/perf_a_$id.csv -e cache-references,cache-misses,cycles,instructions,branches,faults,migrations ../sorting -a $algo  -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -g $gap -I $id
+#  toplev.py -I 10 -l2  -a -x, -o /data1/xtra/results/breakdown/perf_a_$id.csv ../sorting -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -g $gap -I $id
   if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit 1; fi
 }
 
@@ -147,177 +147,177 @@ compile
 timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
 
-##general benchmark.
-#compile=0
-#for algo in m-way m-pass; do
-#  for benchmark in "DD"; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "AR" "RAR" "AD" "KD" "WS"
-#    case "$benchmark" in
-#    # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
-#    "AR") #test arrival rate and assume both inputs have same arrival rate.
-#      id=0
-#      ## Figure 1
-#      ResetParameters
-#      FIXS=0 #varying both.
-#      ts=1   # stream case
-#      # step size should be bigger than nthreads
-#      for STEP_SIZE in 3200 6400 12800 25600; do #3200 6400 12800 25600
-#        #WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
-#        echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
-#        gap=$(($STEP_SIZE / 500 * $WINDOW_SIZE))
-#        KimRun
-#        let "id++"
-#      done
-#      ;;
-#    "RAR") #test relative arrival rate when R is small
-#      id=5
-#      ## Figure 2
-#      ResetParameters
-#      FIXS=1
-#      echo test relative arrival rate 5 - 9
-#      ts=1 # stream case
-#      # step size should be bigger than nthreads
-#      # remember to fix the relation size of S.
-#      STEP_SIZE=1600
-#      for STEP_SIZE_S in 1600 3200 6400 12800 25600; do
-#        #        WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
-#        echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
-#        gap=$(($STEP_SIZE / 500 * $WINDOW_SIZE))
-#        KimRun
-#        let "id++"
-#      done
-#      ;;
-#    "AD") #test arrival distribution
-#      id=10
-#      ## Figure 3
-#      ResetParameters
-#      FIXS=1
-#      STEP_SIZE=1600
-#      STEP_SIZE_S=1600
-#      TS_DISTRIBUTION=2
-#      echo test varying timestamp distribution 10 - 14
-#      for ZIPF_FACTOR in 0 0.4 0.8 1.2 1.6; do #
-#        gap=$(($STEP_SIZE / 500 * $WINDOW_SIZE))
-#        KimRun
-#        let "id++"
-#      done
-#      ;;
-#    "KD") #test key distribution
-#      id=15
-#      ## Figure 4
-#      ResetParameters
-#      FIXS=1
-#      STEP_SIZE=12800
-#      STEP_SIZE_S=12800
-#      gap=$(($STEP_SIZE / 500 * $WINDOW_SIZE))
-#      echo test varying key distribution 15 - 19
-#      distrbution=2 #varying zipf factor
-#      for skew in 0 0.4 0.8 1.2 1.6; do
-#        if [ $skew == 1.2 ]; then
-#          gap=100
-#        fi
-#        if [ $skew == 1.6 ]; then
-#          gap=1
-#        fi
-#        KimRun
-#        let "id++"
-#      done
-#      ;;
-#    "WS") #test window size
-#      id=20
-#      ## Figure 5
-#      ResetParameters
-#      FIXS=1
-#      STEP_SIZE=6400
-#      STEP_SIZE_S=6400
-#      echo test varying window size 20 - 24
-#      for WINDOW_SIZE in 500 1000 1500 2000 2500; do
-#        gap=$(($STEP_SIZE / 1000 * $WINDOW_SIZE))
-#        KimRun
-#        let "id++"
-#      done
-#      ;;
-#    "DD") #test data duplication
-#      id=25
-#      ## Figure 6
-#      ResetParameters
-#      FIXS=1
-#      ts=1
-#      STEP_SIZE=6400
-#      STEP_SIZE_S=6400
-#      echo test DD 25 - 28
-#      for DD in 1 100 1000 10000; do
-#        gap=$(($STEP_SIZE * $WINDOW_SIZE * $DD / 500))
-#        KimRun
-#        let "id++"
-#      done
-#      ;;
-#    "Stock")
-#      id=38
-#      ResetParameters
-#      SetStockParameters
-#      benchmarkRun
-#      ;;
-#    "Rovio") #matches:
-#      id=39
-#      ResetParameters
-#      SetRovioParameters
-#      benchmarkRun
-#      ;;
-#    "YSB")
-#      id=40
-#      ResetParameters
-#      SetYSBParameters
-#      benchmarkRun
-#      ;;
-#    "DEBS")
-#      id=41
-#      ResetParameters
-#      SetDEBSParameters
-#      benchmarkRun
-#      ;;
-#    "ScaleStock")
-#      id=42
-#      ResetParameters
-#      SetStockParameters
-#      echo test scalability of Stock 42 - 45
-#      for Threads in 1 2 4 8; do
-#        benchmarkRun
-#        let "id++"
-#      done
-#      ;;
-#    "ScaleRovio")
-#      id=46
-#      ResetParameters
-#      SetRovioParameters
-#      echo test scalability 46 - 49
-#      for Threads in 1 2 4 8; do
-#        benchmarkRun
-#        let "id++"
-#      done
-#      ;;
-#    "ScaleYSB")
-#      id=50
-#      ResetParameters
-#      SetYSBParameters
-#      echo test scalability 50 - 53
-#      for Threads in 1 2 4 8; do
-#        benchmarkRun
-#        let "id++"
-#      done
-#      ;;
-#    "ScaleDEBS")
-#      id=54
-#      ResetParameters
-#      SetDEBSParameters
-#      echo test scalability 54 - 57
-#      for Threads in 1 2 4 8; do
-#        benchmarkRun
-#        let "id++"
-#      done
-#      ;;
-#    esac
-#  done
-#done
+#general benchmark.
+compile=0
+for algo in m-way m-pass; do
+  for benchmark in ; do # "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS" "AR" "RAR" "AD" "KD" "WS"
+    case "$benchmark" in
+    # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
+    "AR") #test arrival rate and assume both inputs have same arrival rate.
+      id=0
+      ## Figure 1
+      ResetParameters
+      FIXS=0 #varying both.
+      ts=1   # stream case
+      # step size should be bigger than nthreads
+      for STEP_SIZE in 3200 6400 12800 25600; do #3200 6400 12800 25600
+        #WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
+        echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
+        gap=$(($STEP_SIZE / 500 * $WINDOW_SIZE))
+        KimRun
+        let "id++"
+      done
+      ;;
+    "RAR") #test relative arrival rate when R is small
+      id=5
+      ## Figure 2
+      ResetParameters
+      FIXS=1
+      echo test relative arrival rate 5 - 9
+      ts=1 # stream case
+      # step size should be bigger than nthreads
+      # remember to fix the relation size of S.
+      STEP_SIZE=1600
+      for STEP_SIZE_S in 1600 3200 6400 12800 25600; do
+        #        WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
+        echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
+        gap=$(($STEP_SIZE / 500 * $WINDOW_SIZE))
+        KimRun
+        let "id++"
+      done
+      ;;
+    "AD") #test arrival distribution
+      id=10
+      ## Figure 3
+      ResetParameters
+      FIXS=1
+      STEP_SIZE=1600
+      STEP_SIZE_S=1600
+      TS_DISTRIBUTION=2
+      echo test varying timestamp distribution 10 - 14
+      for ZIPF_FACTOR in 0 0.4 0.8 1.2 1.6; do #
+        gap=$(($STEP_SIZE / 500 * $WINDOW_SIZE))
+        KimRun
+        let "id++"
+      done
+      ;;
+    "KD") #test key distribution
+      id=15
+      ## Figure 4
+      ResetParameters
+      FIXS=1
+      STEP_SIZE=12800
+      STEP_SIZE_S=12800
+      gap=$(($STEP_SIZE / 500 * $WINDOW_SIZE))
+      echo test varying key distribution 15 - 19
+      distrbution=2 #varying zipf factor
+      for skew in 0 0.4 0.8 1.2 1.6; do
+        if [ $skew == 1.2 ]; then
+          gap=100
+        fi
+        if [ $skew == 1.6 ]; then
+          gap=1
+        fi
+        KimRun
+        let "id++"
+      done
+      ;;
+    "WS") #test window size
+      id=20
+      ## Figure 5
+      ResetParameters
+      FIXS=1
+      STEP_SIZE=6400
+      STEP_SIZE_S=6400
+      echo test varying window size 20 - 24
+      for WINDOW_SIZE in 500 1000 1500 2000 2500; do
+        gap=$(($STEP_SIZE / 1000 * $WINDOW_SIZE))
+        KimRun
+        let "id++"
+      done
+      ;;
+    "DD") #test data duplication
+      id=25
+      ## Figure 6
+      ResetParameters
+      FIXS=1
+      ts=1
+      STEP_SIZE=6400
+      STEP_SIZE_S=6400
+      echo test DD 25 - 28
+      for DD in 1 100 1000 10000; do
+        gap=$(($STEP_SIZE * $WINDOW_SIZE * $DD / 500))
+        KimRun
+        let "id++"
+      done
+      ;;
+    "Stock")
+      id=38
+      ResetParameters
+      SetStockParameters
+      benchmarkRun
+      ;;
+    "Rovio") #matches:
+      id=39
+      ResetParameters
+      SetRovioParameters
+      benchmarkRun
+      ;;
+    "YSB")
+      id=40
+      ResetParameters
+      SetYSBParameters
+      benchmarkRun
+      ;;
+    "DEBS")
+      id=41
+      ResetParameters
+      SetDEBSParameters
+      benchmarkRun
+      ;;
+    "ScaleStock")
+      id=42
+      ResetParameters
+      SetStockParameters
+      echo test scalability of Stock 42 - 45
+      for Threads in 1 2 4 8; do
+        benchmarkRun
+        let "id++"
+      done
+      ;;
+    "ScaleRovio")
+      id=46
+      ResetParameters
+      SetRovioParameters
+      echo test scalability 46 - 49
+      for Threads in 1 2 4 8; do
+        benchmarkRun
+        let "id++"
+      done
+      ;;
+    "ScaleYSB")
+      id=50
+      ResetParameters
+      SetYSBParameters
+      echo test scalability 50 - 53
+      for Threads in 1 2 4 8; do
+        benchmarkRun
+        let "id++"
+      done
+      ;;
+    "ScaleDEBS")
+      id=54
+      ResetParameters
+      SetDEBSParameters
+      echo test scalability 54 - 57
+      for Threads in 1 2 4 8; do
+        benchmarkRun
+        let "id++"
+      done
+      ;;
+    esac
+  done
+done
 
 PROFILE_YSB=0 ## Cache misses profiling with YSB, please run the program with sudo
 if [ $PROFILE_YSB == 1 ]; then
@@ -406,6 +406,7 @@ if [ $PERF_YSB == 1 ]; then
         ResetParameters
         SetYSBParameters
         rm /data1/xtra/results/breakdown/perf_$id.csv
+        rm /data1/xtra/results/breakdown/perf_a_$id.csv
         perfBenchmarkRun
 #        benchmarkRun
         ;;
