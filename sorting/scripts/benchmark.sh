@@ -32,8 +32,9 @@ function perfBenchmarkRun() {
   #####native execution
   echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -g $gap -o /data1/xtra/results/breakdown/perf_$id.csv -I $id== "
   #echo 3 >/proc/sys/vm/drop_caches
-  perf stat -a -x, --topdown  -o /data1/xtra/results/breakdown/perf_$id.csv ../sorting -a $algo  -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -g $gap -I $id
-  perf stat -a -x, -o /data1/xtra/results/breakdown/perf_a_$id.csv -e cache-references,cache-misses,cycles,instructions,branches,faults,migrations ../sorting -a $algo  -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -g $gap -I $id
+  perf stat -a --topdown  -o /data1/xtra/results/breakdown/perf_$id.csv ../sorting -a $algo  -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -g $gap -I $id
+#  perf stat -a -x, -o /data1/xtra/results/breakdown/perf_a_$id.csv -e cache-references,cache-misses,cycles,instructions,branches,faults,migrations ../sorting -a $algo  -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -g $gap -I $id
+#  vtune -collect uarch-expoloration XXX
 #  toplev.py -I 10 -l2  -a -x, -o /data1/xtra/results/breakdown/perf_a_$id.csv ../sorting -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -g $gap -I $id
   if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit 1; fi
 }

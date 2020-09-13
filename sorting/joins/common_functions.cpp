@@ -184,6 +184,10 @@ sortmergejoin_initrun(relation_t *relR, relation_t *relS, joinconfig_t *joincfg,
         args[i].threadresult = &(joinresult->resultlist[i]);
 #endif
 
+#ifdef PERF_UARCH
+        // dump the pid outside, and attach vtune for performance measurement
+#endif
+
         /* run the selected join algorithm thread */
         rv = pthread_create(&tid[i], &attr, jointhread, (void *) &args[i]);
 
