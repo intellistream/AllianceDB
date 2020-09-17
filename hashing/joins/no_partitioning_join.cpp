@@ -202,8 +202,6 @@ void *npo_thread(void *param) {
   }
 #endif
 
-    // TODO: move this to common function? make it controlable from scripts
-#define PERF_UARCH
 
 #ifdef PERF_UARCH
     auto curtime = std::chrono::steady_clock::now();

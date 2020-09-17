@@ -52,8 +52,6 @@ void *THREAD_TASK_NOSHUFFLE(void *param) {
   //        MSG(" *args->startTS :%lu\n", *args->startTS);
   START_MEASURE((args->timer))
 #endif
-    // TODO: move this to common function? make it controlable from scripts
-#define PERF_UARCH
 
 #ifdef PERF_UARCH
     auto curtime = std::chrono::steady_clock::now();
@@ -155,8 +153,6 @@ void *THREAD_TASK_SHUFFLE(void *param) {
   START_MEASURE((args->timer))
 #endif
 
-    // TODO: move this to common function? make it controlable from scripts
-#define PERF_UARCH
 
 #ifdef PERF_UARCH
     auto curtime = std::chrono::steady_clock::now();
@@ -481,8 +477,7 @@ void *THREAD_TASK_SHUFFLE_HS(void *param) {
   START_MEASURE((args->timer))
 #endif
 
-    // TODO: move this to common function? make it controlable from scripts
-#define PERF_UARCH
+
 
 #ifdef PERF_UARCH
     auto curtime = std::chrono::steady_clock::now();
@@ -610,9 +605,6 @@ void *THREAD_TASK_SHUFFLE_PMJHS(void *param) {
   /* the first thread checkpoints the start time */
   START_MEASURE((args->timer))
 #endif
-
-    // TODO: move this to common function? make it controlable from scripts
-#define PERF_UARCH
 
 #ifdef PERF_UARCH
     auto curtime = std::chrono::steady_clock::now();

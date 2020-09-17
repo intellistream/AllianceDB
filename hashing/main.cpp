@@ -273,9 +273,6 @@ main(int argc, char **argv) {
     param_t cmd_params = defaultParam();
     parse_args(argc, argv, &cmd_params);
 
-    // TODO: move this to common function? make it controlable from scripts
-#define PERF_UARCH
-
 #ifdef PERF_UARCH
     auto curtime = std::chrono::steady_clock::now();
     // dump the pid outside, and attach vtune for performance measurement
@@ -298,7 +295,7 @@ main(int argc, char **argv) {
     }
 #ifdef PERF_COUNTERS
     PCM_CONFIG = cmd_params.perfconf;
-    PCM_OUT    = cmd_params.perfout;
+    PCM_OUT = cmd_params.perfout;
 #endif
 
     benchmark(cmd_params);
@@ -324,7 +321,7 @@ static struct algo_t algos[] =
                 {"NPO_st",      NPO_st}, /* NPO single threaded */
 /*** Symmetric Hash Join ***/
                 {"SHJ_st",      SHJ_st}, /* Symmetric hash join single_thread*/
-                {"SHJ_JM_P", SHJ_JM_P}, /* Symmetric hash join JM Model, Partition*/
+                {"SHJ_JM_P",    SHJ_JM_P}, /* Symmetric hash join JM Model, Partition*/
                 {"SHJ_JM_NP",   SHJ_JM_NP}, /* Symmetric hash join JM Model, No-Partition*/
                 {"SHJ_JB_NP",   SHJ_JB_NP}, /* Symmetric hash join JB Model, No-Partition*/
                 {"SHJ_JBCR_NP", SHJ_JBCR_NP}, /* Symmetric hash join JB CountRound Model, No-Partition*/
@@ -521,8 +518,7 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
                 if (long_options[option_index].flag != 0)
                     break;
                 MSG("option %s", long_options[option_index].name);
-                if (optarg)
-                    MSG(" with arg %s", optarg);
+                if (optarg) MSG(" with arg %s", optarg);
                 MSG("\n");
                 break;
 
@@ -540,7 +536,7 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
 
                 if (found == 0) {
                     MSG("[ERROR] Join algorithm named `%s' does not exist!\n",
-                           optarg);
+                        optarg);
                     print_help(argv[0]);
                     exit(EXIT_FAILURE);
                 }
@@ -707,8 +703,7 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
     /* Print any remaining command line arguments (not options). */
     if (optind < argc) {
         MSG("non-option arguments: ");
-        while (optind < argc)
-            MSG("%s ", argv[optind++]);
+        while (optind < argc) MSG("%s ", argv[optind++]);
         MSG("\nc");
     }
 }
