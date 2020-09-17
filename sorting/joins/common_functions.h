@@ -65,7 +65,8 @@ typedef struct relationpair_t relationpair_t;
 
 #define MSG(MSG, ...)                                        \
         fprintf(stdout,                                                 \
-                "[INFO @ %s:%d] " MSG, __FILE__, __LINE__, ## __VA_ARGS__); \
+                " [INFO @ %s:%d]" MSG, __FILE__, __LINE__, ## __VA_ARGS__); \
+                fprintf(stdout, "\n");                                             \
                 fflush(stdout);
 
 /* In DEBUG mode, we also validate whether the sorting is successful. */

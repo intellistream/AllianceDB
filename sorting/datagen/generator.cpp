@@ -847,7 +847,7 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t
     ifstream myfile;
     myfile.open(filename);
     if (myfile.is_open()) {
-        printf("reading file: %s", filename);
+        MSG("reading file: %s", filename)
     } else{
         cout << "Error: can't open input file " << filename << endl;
     }

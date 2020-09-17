@@ -1011,12 +1011,14 @@ void parse_args(int argc, char **argv, cmdparam_t *cmd_params) {
       break;
     case 'R':
       cmd_params->loadfileR = mystrdup(optarg);
+      MSG("Load File for R:%s", cmd_params->loadfileR)
       break;
     case 'g':
       cmd_params->gap = atoi(mystrdup(optarg));
       break;
     case 'S':
       cmd_params->loadfileS = mystrdup(optarg);
+      MSG("Load File for S:%s", cmd_params->loadfileS)
       break;
     case 'J':
       cmd_params->rkey = atoi(mystrdup(optarg));
