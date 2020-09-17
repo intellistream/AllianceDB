@@ -252,15 +252,6 @@ param_t defaultParam();
 
 int
 main(int argc, char **argv) {
-//    vector<int> v = { 10, 9, 8, 6, 7, 2, 5, 1 };
-//    cout<<"Elements before sorting"<<endl;
-//    for (const auto &i: v)
-//        cout << i << ' '<<endl;
-//    cout<<"Elements after sorting"<<endl;
-//    sort(v.begin(), v.end());
-//    for (const auto &i: v)
-//        cout << i << ' '<<endl;
-//    return 0;
 
     /* start initially on CPU-0 */
     cpu_set_t set;
@@ -332,7 +323,7 @@ static struct algo_t algos[] =
                 {"PMJ_JB_NP",   PMJ_JB_NP}, /* Progressive Merge Join JB_NP*/
                 {"PMJ_JBCR_NP", PMJ_JBCR_NP}, /* Progressive Merge Join JBCR_NP*/
                 {"PMJ_HS_NP",   PMJ_HS_NP}, /* Progressive Merge Join HS_NP*/
-/*** Ripple Join ***/
+/*** Ripple Join (unfinished) ***/
                 {"RPJ_st",      RPJ_st}, /* Ripple Join Single_thread*/
                 {"RPJ_JM_NP",   RPJ_JM_NP}, /* Ripple Join JM*/
                 {"RPJ_JB_NP",   RPJ_JB_NP}, /* Ripple Join JB*/
