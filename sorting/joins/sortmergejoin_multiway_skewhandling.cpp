@@ -243,6 +243,7 @@ sortmergejoin_multiway_skewhandling_thread(void * param)
     DEBUGMSG(1, "Thread-%d started running ... \n", my_tid);
 #ifdef PERF_COUNTERS
     if(my_tid == 0){
+        MSG("PCM starts..")
         PCM_initPerformanceMonitor(NULL, NULL);
         PCM_start();
     }
