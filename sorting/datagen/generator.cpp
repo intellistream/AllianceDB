@@ -625,7 +625,6 @@ load_relation(relation_t *relation, relation_payload_t *relation_payload, int32_
         return -1;
     }
 
-    MSG("load from the given input file %s", filename)
     read_relation(relation, relation_payload, keyby, tsKey, filename, partitions);
 
     return 0;
@@ -844,8 +843,12 @@ vector<string> split(string s, string delimiter) {
 void
 read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t tsKey, char *filename,
               uint32_t partitions) {
-    printf("reading file: %s", filename);
-    FILE *fp = fopen(filename, "r");
+//    FILE *fp = fopen(filename, "r");
+    ifstream myfile;
+    myfile.open(filename);
+    if (myfile.is_open()) {
+        printf("reading file: %s", filename);
+    }
     /* skip the header line */
     char c;
 //    do {
@@ -857,7 +860,8 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t
     int fmtcomma = 0;
     int fmtbar = 0;
     do {
-        c = fgetc(fp);
+        myfile.get(c);// loop getting single characters
+//        c = getline(myfile);
 //        if (c == ' ') {
 //            fmtspace = 1;
 //            break;
@@ -877,7 +881,9 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t
     ssize_t read;
 
     /* rewind back to the beginning and start parsing again */
-    rewind(fp);
+    myfile.close();
+    myfile.open(filename);
+//    rewind(myfile);
     /* skip the header line */
 //    do {
 //        c = fgetc(fp);
@@ -964,7 +970,7 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t
     }
     printf("small%d, ts %f\n", small, (double) small / rel->num_tuples);
     printf("maxts:%f\n", maxTS / (2.1 * 1E6));
-    fclose(fp);
+    myfile.close();
 }
 
 void *alloc_aligned(size_t size) {
