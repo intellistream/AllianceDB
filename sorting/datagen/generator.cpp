@@ -625,7 +625,7 @@ load_relation(relation_t *relation, relation_payload_t *relation_payload, int32_
         return -1;
     }
 
-    /* load from the given input file */
+    MSG("load from the given input file")
     read_relation(relation, relation_payload, keyby, tsKey, filename, partitions);
 
     return 0;
