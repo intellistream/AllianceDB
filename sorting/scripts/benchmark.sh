@@ -387,7 +387,7 @@ if [ $PROFILE_YSB == 1 ]; then
 fi
 
 ## MICRO STUDY
-PROFILE_MICRO=1
+PROFILE_MICRO=0
 if [ $PROFILE_MICRO == 1 ]; then
   for benchmark in "SIMD_STUDY"; do #
     case "$benchmark" in
@@ -400,7 +400,7 @@ if [ $PROFILE_MICRO == 1 ]; then
       compile=1
       for algo in "m-way" "m-pass"; do
         for scalar in 0 1; do
-          sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scalar/g" ../joins/joincommon.h
+          sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scalar/g" ../joins/common_functions.h
           compile
           KimRun
           let "id++"
@@ -410,7 +410,7 @@ if [ $PROFILE_MICRO == 1 ]; then
       compile=1
       for algo in "m-way" "m-pass"; do
         for scalar in 0 1; do
-          sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scalar/g" ../joins/joincommon.h
+          sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scalar/g" ../joins/common_functions.h
           compile
           KimRun
           let "id++"
