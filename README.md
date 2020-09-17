@@ -40,7 +40,7 @@ sudo apt-get install python-tk
 ### Prerequisite
 
 1. Profiling only supports Intel CPUs.
-2. Prepare cpu-mapping, and need to configure the path in hashing/utils/cpu_mapping.txt. Do remember we have modified the path of CUSTOM_CPU_MAPPING, which reads this file and generate mapping of cpus.
+2. Prepare cpu-mapping, and need to configure the path in hashing/cpu_mapping.txt. Do remember we have modified the path of CUSTOM_CPU_MAPPING, which reads this file and generate mapping of cpus.
 3. configure the results output path, ensure you have permissions to access and modify the files inside.
 4. configure cache size at utils/params.h
 5. where to run scripts? need to be at scripts folder.
