@@ -844,8 +844,8 @@ vector<string> split(string s, string delimiter) {
 void
 read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t tsKey, char *filename,
               uint32_t partitions) {
-    FILE *fp = fopen(filename, "r");
     printf("reading file: %s", filename);
+    FILE *fp = fopen(filename, "r");
     /* skip the header line */
     char c;
 //    do {
