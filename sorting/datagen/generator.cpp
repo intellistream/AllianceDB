@@ -885,6 +885,7 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t
     /* rewind back to the beginning and start parsing again */
     myfile.close();
     myfile.open(filename);
+    MSG("rewind")
 //    rewind(myfile);
     /* skip the header line */
 //    do {
