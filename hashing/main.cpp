@@ -323,7 +323,7 @@ static struct algo_t algos[] =
                 {"PMJ_JB_NP",   PMJ_JB_NP}, /* Progressive Merge Join JB_NP*/
                 {"PMJ_JBCR_NP", PMJ_JBCR_NP}, /* Progressive Merge Join JBCR_NP*/
                 {"PMJ_HS_NP",   PMJ_HS_NP}, /* Progressive Merge Join HS_NP*/
-/*** Ripple Join ***/
+/*** Ripple Join (unfinished) ***/
                 {"RPJ_st",      RPJ_st}, /* Ripple Join Single_thread*/
                 {"RPJ_JM_NP",   RPJ_JM_NP}, /* Ripple Join JM*/
                 {"RPJ_JB_NP",   RPJ_JB_NP}, /* Ripple Join JB*/
