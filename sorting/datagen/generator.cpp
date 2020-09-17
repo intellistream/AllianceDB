@@ -877,7 +877,7 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t
         }
     } ;
 
-    char *line;
+//    char *line;
     size_t len;
     ssize_t read;
 
@@ -923,7 +923,7 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t
 //        printf("%s", str.c_str());
         if (fmtcomma) {
             key = stoi(split(str, ",")[keyby]);
-            strcpy(row.value, line);
+            strcpy(row.value, str.c_str());
             payload = i;
             if (tsKey != 0) {
                 timestamp = stol(split(str, ",")[tsKey]) * 2.1 * 1E6;
@@ -932,7 +932,7 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t
             }
         } else if (fmtbar) {
             key = stoi(split(str, "|")[keyby]);
-            strcpy(row.value, line);
+            strcpy(row.value, str.c_str());
             payload = i;
             if (tsKey != 0) {
                 timestamp = stol(split(str, "|")[tsKey]) * 2.1 * 1E6;
