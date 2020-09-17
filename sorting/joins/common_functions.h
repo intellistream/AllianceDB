@@ -20,6 +20,8 @@
 #define JOIN
 #define SORT
 
+#define NO_PERF_UARCH
+
 #define DEBUG_SORT_CHECK 0
 #define scalarflag 0
 
@@ -162,6 +164,7 @@ struct arg_t {
     T_TIMER *timer;
     uint64_t *startTS;
 
+    int exp_id; // for perf stat
 } __attribute__((aligned(CACHE_LINE_SIZE)));
 
 

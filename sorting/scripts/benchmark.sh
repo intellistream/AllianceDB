@@ -28,14 +28,37 @@ function benchmarkRun() {
   if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit 1; fi
 }
 
-function perfBenchmarkRun() {
+#function perfUarchBenchmarkRun() {
+##  #####native execution
+##  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -g $gap -o /data1/xtra/results/breakdown/perf_$id.csv -I $id== "
+#  #echo 3 >/proc/sys/vm/drop_caches
+#  perf stat -I10 -x, -a --topdown  -o /data1/xtra/results/breakdown/perf_$id.csv ../sorting -a $algo  -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -g $gap -I $id
+##  perf stat -I10 -a -x, -o /data1/xtra/results/breakdown/perf_a_$id.csv -e cache-references,cache-misses,cycles,instructions,branches,faults,migrations ../sorting -a $algo  -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -g $gap -I $id
+##  vtune -collect uarch-expoloration XXX
+##  toplev.py -I 10 -l2  -a -x, -o /data1/xtra/results/breakdown/perf_a_$id.csv ../sorting -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -g $gap -I $id
+#  if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit 1; fi
+#}
+
+function perfUarchBenchmarkRun() {
+#  #####native execution
+#  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -g $gap -o /data1/xtra/results/breakdown/perf_$id.csv -I $id== "
+  #####native execution
+  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -g $gap -P $DD -W $FIXS -I $id =="
+
+  #echo 3 >/proc/sys/vm/drop_caches
+#  perf stat -I10 -x, -a --topdown  -o /data1/xtra/results/breakdown/perf_$id.csv ../sorting -a $algo  -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -g $gap -I $id
+  perf stat -I10 -x, -a --topdown  -o /data1/xtra/results/breakdown/perf_$id.csv ../sorting -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -W $FIXS -g $gap -P $DD -I $id
+#  perf stat -I10 -a -x, -o /data1/xtra/results/breakdown/perf_a_$id.csv -e cache-references,cache-misses,cycles,instructions,branches,faults,migrations ../sorting -a $algo  -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -g $gap -I $id
+#  vtune -collect uarch-expoloration XXX
+#  toplev.py -I 10 -l2  -a -x, -o /data1/xtra/results/breakdown/perf_a_$id.csv ../sorting -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -g $gap -I $id
+  if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit 1; fi
+}
+
+function perfUtilBenchmarkRun() {
   #####native execution
   echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -g $gap -o /data1/xtra/results/breakdown/perf_$id.csv -I $id== "
   #echo 3 >/proc/sys/vm/drop_caches
-  perf stat -a --topdown  -o /data1/xtra/results/breakdown/perf_$id.csv ../sorting -a $algo  -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -g $gap -I $id
-#  perf stat -a -x, -o /data1/xtra/results/breakdown/perf_a_$id.csv -e cache-references,cache-misses,cycles,instructions,branches,faults,migrations ../sorting -a $algo  -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -g $gap -I $id
-#  vtune -collect uarch-expoloration XXX
-#  toplev.py -I 10 -l2  -a -x, -o /data1/xtra/results/breakdown/perf_a_$id.csv ../sorting -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -g $gap -I $id
+  perf stat -I10 -x, -o /data1/xtra/results/breakdown/perf_$id.csv -e cache-misses,cycles ../sorting -a $algo  -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -g $gap -I $id
   if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit 1; fi
 }
 
@@ -399,20 +422,37 @@ if [ $PERF_YSB == 1 ]; then
 #  compile=1
 #  compile
   sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h
-  for benchmark in "YSB"; do #"YSB
+  for benchmark in "Kim"; do #"YSB
     id=300
     for algo in "m-way" "m-pass"; do
       case "$benchmark" in
-      "YSB")
+      "Kim")
         ResetParameters
-        SetYSBParameters
+#        SetYSBParameters
+#        SetDEBSParameters
+        STEP_SIZE=1280
+        STEP_SIZE_S=12800
+        WINDOW_SIZE=10000
         rm /data1/xtra/results/breakdown/perf_$id.csv
-        rm /data1/xtra/results/breakdown/perf_a_$id.csv
-        perfBenchmarkRun
-#        benchmarkRun
+        perfUarchBenchmarkRun
         ;;
       esac
       let "id++"
     done
   done
+
+#  for benchmark in "YSB"; do #"YSB
+#    id=400
+#    for algo in "m-way" "m-pass"; do
+#      case "$benchmark" in
+#      "YSB")
+#        ResetParameters
+#        SetYSBParameters
+#        rm /data1/xtra/results/breakdown/perf_$id.csv
+#        perfUtilBenchmarkRun
+#        ;;
+#      esac
+#      let "id++"
+#    done
+#  done
 fi

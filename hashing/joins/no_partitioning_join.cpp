@@ -34,6 +34,7 @@
 #include "../utils/perf_counters.h"
 #include "common_functions.h"
 #include <sched.h>
+#include "unistd.h"
 
 #ifdef JOIN_RESULT_MATERIALIZE
 
@@ -74,6 +75,8 @@ struct arg_t {
   int64_t result;
 
   uint64_t *startTS;
+
+  int exp_id; // for perf stat
 };
 
 /** @} */
@@ -191,13 +194,26 @@ void *npo_thread(void *param) {
   //    BARRIER_ARRIVE(args->barrier, rv);
   //#endif
 
-
+    BARRIER_ARRIVE(args->barrier, rv)
 #ifndef NO_TIMING
   /* wait at a barrier until each thread completes build phase */
-  BARRIER_ARRIVE(args->barrier, rv)
   if (args->tid == 0) {
     END_MEASURE_BUILD((args->timer))
   }
+#endif
+
+    // TODO: move this to common function? make it controlable from scripts
+#define PERF_UARCH
+
+#ifdef PERF_UARCH
+    auto curtime = std::chrono::steady_clock::now();
+    // dump the pid outside, and attach vtune for performance measurement
+    string path = "/data1/xtra/time_end_" + std::to_string(args->exp_id) + ".txt";
+    auto fp = fopen(path.c_str(), "w");
+    setbuf(fp,NULL);
+    fprintf(fp, "%ld\n", curtime);
+    fflush(fp);
+//    sleep(1);
 #endif
 
 #ifdef JOIN_RESULT_MATERIALIZE
@@ -296,6 +312,8 @@ void np_distribute(const relation_t *relR, const relation_t *relS, int nthreads,
     args[i].ht = ht;
     args[i].barrier = &barrier;
     args[i].startTS = startTS;
+
+    args[i].exp_id = exp_id;
 
     /* assing part of the relR for next thread */
     args[i].relR.num_tuples = (i == (nthreads - 1)) ? numR : numRthr;

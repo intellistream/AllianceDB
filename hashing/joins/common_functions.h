@@ -20,6 +20,8 @@
 #define MATCH
 #define WAIT
 
+#define NO_PERF_UARCH
+
 #define EAGER //disable when profiling.
 
 #ifndef PTHREAD_BARRIER_SERIAL_THREAD

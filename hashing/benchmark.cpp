@@ -5,6 +5,7 @@
 #include "benchmark.h"
 #include "joins/prj_params.h"
 #include "utils/generator.h"
+#include <unistd.h>
 
 /**
  * Put an odd number of cache lines between partitions in pass-2:
@@ -137,6 +138,7 @@ void writefile(relation_payload_t* relPl, const param_t cmd_params) {
  */
 void
 benchmark(const param_t cmd_params) {
+
     relation_t relR;
     relation_t relS;
 
@@ -182,6 +184,20 @@ benchmark(const param_t cmd_params) {
 
     //    string path = "/data1/xtra/datasets/Kim/data_distribution_zipf" + std::to_string(cmd_params.zipf_param) + ".txt";
     //    writefile(relR.payload, cmd_params);
+
+#ifdef PERF_UARCH
+    auto curtime = std::chrono::steady_clock::now();
+    // dump the pid outside, and attach vtune for performance measurement
+    string path = "/data1/xtra/sink_threadId.txt";
+    auto fp = fopen(path.c_str(), "w");
+    setbuf(fp,NULL);
+    fprintf(fp, "%d\n", getpid());
+    fflush(fp);
+    if (strcmp(cmd_params.algo->name, "NPO") == 0 || strcmp(cmd_params.algo->name, "PRO") == 0) {
+        sleep(10);
+    }
+#endif
+
 
     /* Run the selected join algorithm */
     MSG("[INFO ] Running join algorithm %s ...", cmd_params.algo->name);

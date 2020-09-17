@@ -366,6 +366,7 @@ execution
 #include <sys/time.h> /* gettimeofday */
 //#include <bits/cpu-set.h>
 #include <sched.h>
+#include <unistd.h>
 
 /* #include <assert.h> */
 
@@ -577,6 +578,7 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key,
 }
 
 int main(int argc, char *argv[]) {
+
   relation_t relR;
   relation_t relS;
 
@@ -636,6 +638,19 @@ int main(int argc, char *argv[]) {
   cmd_params.mwaymerge_bufsize = MWAY_MERGE_BUFFER_SIZE_DEFAULT;
 
   parse_args(argc, argv, &cmd_params);
+
+//    // TODO: move this to common function? make it controlable from scripts
+//#define PERF_UARCH
+//
+//#ifdef PERF_UARCH
+//    auto curtime = std::chrono::steady_clock::now();
+//    // dump the pid outside, and attach vtune for performance measurement
+//    string path = "/data1/xtra/time_start_" + std::to_string(cmd_params.exp_id) + ".txt";
+//    auto fp = fopen(path.c_str(), "w");
+//    setbuf(fp,NULL);
+//    fprintf(fp, "%ld\n", curtime);
+//    fflush(fp);
+//#endif
 
   // reset relation size according to our settings.
   //    cmd_params.r_size = cmd_params.window_size / cmd_params.interval *
@@ -705,7 +720,19 @@ int main(int argc, char *argv[]) {
   joincfg.NUMASTRATEGY = cmd_params.numastrategy;
   numa_shuffle_init(joincfg.NUMASTRATEGY, joincfg.NTHREADS);
 
-  /* Run the selected join algorithm */
+#ifdef PERF_UARCH
+    auto curtime = std::chrono::steady_clock::now();
+    // dump the pid outside, and attach vtune for performance measurement
+    string path = "/data1/xtra/sink_threadId.txt";
+    auto fp = fopen(path.c_str(), "w");
+    setbuf(fp,NULL);
+    fprintf(fp, "%d\n", getpid());
+    fflush(fp);
+    sleep(10);
+#endif
+
+
+    /* Run the selected join algorithm */
   fprintf(stdout, "[INFO ] Running join algorithm %s ...\n",
           cmd_params.algo->name);
   result_t *result;

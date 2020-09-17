@@ -175,6 +175,8 @@ sortmergejoin_initrun(relation_t *relR, relation_t *relS, joinconfig_t *joincfg,
 
         args[i].timer->record_gap = gap;
 
+        args[i].exp_id = exp_id;
+
 #ifdef SKEW_HANDLING
         /** skew handling task queue ptrs. */
         args[i].numa_taskqueues = ptrs_to_taskqueues;
@@ -182,10 +184,6 @@ sortmergejoin_initrun(relation_t *relR, relation_t *relS, joinconfig_t *joincfg,
 
 #ifdef JOIN_MATERIALIZE
         args[i].threadresult = &(joinresult->resultlist[i]);
-#endif
-
-#ifdef PERF_UARCH
-        // dump the pid outside, and attach vtune for performance measurement
 #endif
 
         /* run the selected join algorithm thread */

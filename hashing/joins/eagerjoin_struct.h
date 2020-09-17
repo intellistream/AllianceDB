@@ -37,6 +37,7 @@ struct arg_t {
     uint64_t *startTS;
 //#endif
 
+    int exp_id; // for perf stat
 };
 
 struct t_param {

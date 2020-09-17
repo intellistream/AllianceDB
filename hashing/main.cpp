@@ -273,6 +273,18 @@ main(int argc, char **argv) {
     param_t cmd_params = defaultParam();
     parse_args(argc, argv, &cmd_params);
 
+    // TODO: move this to common function? make it controlable from scripts
+#define PERF_UARCH
+
+#ifdef PERF_UARCH
+    auto curtime = std::chrono::steady_clock::now();
+    // dump the pid outside, and attach vtune for performance measurement
+    string path = "/data1/xtra/time_start_" + std::to_string(cmd_params.exp_id) + ".txt";
+    auto fp = fopen(path.c_str(), "w");
+    setbuf(fp,NULL);
+    fprintf(fp, "%ld\n", curtime);
+    fflush(fp);
+#endif
 
     //reset relation size according to our settings.
 //    cmd_params.r_size = cmd_params.window_size / cmd_params.interval * cmd_params.step_sizeR;
@@ -288,6 +300,7 @@ main(int argc, char **argv) {
     PCM_CONFIG = cmd_params.perfconf;
     PCM_OUT    = cmd_params.perfout;
 #endif
+
     benchmark(cmd_params);
     return 0;
 }

@@ -58,12 +58,27 @@ function benchmarkRun() {
   if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit -1; fi
 }
 
-function perfBenchmarkRun() {
+#function perfuArchBenchmarkRun() {
+#  #####native execution
+#  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap -o $expDir/results/breakdown/perf_$id.txt =="
+#  echo 3 >/proc/sys/vm/drop_caches
+#  perf stat --topdown -I10 -a -x, -o /data1/xtra/results/breakdown/perf_$id.csv ../hashing -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap
+#  if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit -1; fi
+#}
+
+function perfuArchBenchmarkRun() {
   #####native execution
-  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap -o $expDir/results/breakdown/profile_$id.txt =="
+  echo "==KIM benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS -[ $progress_step -] $merge_step -G $group -P $DD -g $gap =="
   echo 3 >/proc/sys/vm/drop_caches
-  perf stat --topdown -a -x, -o /data1/xtra/results/breakdown/perf_$id.csv ../hashing -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap
-  perf stat -a -x, -o /data1/xtra/results/breakdown/perf_a_$id.csv -e cache-references,cache-misses,cycles,instructions,branches,faults,migrations ../hashing -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap
+  perf stat --topdown -I10 -a -x, -o /data1/xtra/results/breakdown/perf_$id.csv ../hashing -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS -[ $progress_step -] $merge_step -G $group -P $DD -g $gap
+  if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit -1; fi
+}
+
+function perfUtilBenchmarkRun() {
+  #####native execution
+  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap -o $expDir/results/breakdown/perf_$id.txt =="
+  echo 3 >/proc/sys/vm/drop_caches
+  perf stat -I10 -x, -o /data1/xtra/results/breakdown/perf_$id.csv -e cache-misses,cycles  ../hashing -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap
   if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit -1; fi
 }
 
@@ -717,22 +732,40 @@ PERF_YSB=1 ## Cache misses profiling with YSB, please run the program with sudo
 if [ $PERF_YSB == 1 ]; then
 #  compile=1
 #  compile
-  for benchmark in "YSB"; do #"YSB
+  for benchmark in "Kim"; do #"YSB
     id=302
-    for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do
+    for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do # NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
       case "$benchmark" in
-      "YSB")
+      "Kim")
         ResetParameters
-        SetYSBParameters
-        rm /data1/xtra/results/breakdown/perf_a_$id.csv
+#        SetYSBParameters
+#        SetDEBSParameters
+        STEP_SIZE=1280
+        STEP_SIZE_S=12800
+        WINDOW_SIZE=10000
         rm /data1/xtra/results/breakdown/perf_$id.csv
-        perfBenchmarkRun
-#        benchmarkRun
+        perfuArchBenchmarkRun
         ;;
       esac
       let "id++"
     done
   done
+
+#  for benchmark in "YSB"; do #"YSB
+#    id=402
+#    for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do
+#      case "$benchmark" in
+#      "YSB")
+#        ResetParameters
+#        SetYSBParameters
+#        rm /data1/xtra/results/breakdown/perf_$id.csv
+#        perfUtilBenchmarkRun
+##        benchmarkRun
+#        ;;
+#      esac
+#      let "id++"
+#    done
+#  done
 fi
 
 python3 jobdone.py

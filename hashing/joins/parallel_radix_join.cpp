@@ -34,6 +34,7 @@
 #include "../utils/perf_counters.h"
 #include <algorithm>
 #include <immintrin.h>
+#include "unistd.h"
 
 #ifdef JOIN_RESULT_MATERIALIZE
 
@@ -168,6 +169,8 @@ struct arg_t {
   //#ifndef NO_TIMING
   T_TIMER *timer;
   //#endif
+
+  int exp_id; // for perf stat
 
 #ifdef SYNCSTATS
   /** Thread local timers : */
@@ -1038,6 +1041,20 @@ void *prj_thread(void *param) {
   }
 #endif
 
+    // TODO: move this to common function? make it controlable from scripts
+#define PERF_UARCH
+
+#ifdef PERF_UARCH
+    auto curtime = std::chrono::steady_clock::now();
+    // dump the pid outside, and attach vtune for performance measurement
+    string path = "/data1/xtra/time_end_" + std::to_string(args->exp_id) + ".txt";
+    auto fp = fopen(path.c_str(), "w");
+    setbuf(fp,NULL);
+    fprintf(fp, "%ld\n", curtime);
+    fflush(fp);
+//    sleep(1);
+#endif
+
   /********** 1st pass of multi-pass partitioning ************/
   part.R = 0;
   part.D = NUM_RADIX_BITS / NUM_PASSES; // PASS1RADIXBITS
@@ -1545,6 +1562,8 @@ result_t *join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf,
     args[i].threadresult = &(joinresult->resultlist[i]);
 
     args[i].startTS = startTS;
+
+    args[i].exp_id = cmd_params.exp_id;
 
     rv = pthread_create(&tid[i], &attr, prj_thread, (void *)&args[i]);
     if (rv) {
