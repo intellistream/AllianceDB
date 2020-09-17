@@ -5,9 +5,10 @@ All of our experiments can be automatically reproduced by calling a few pre-prep
 ## TODO
 
 1. clean all data path, do not use fixed "/data1/xtra/..."
-2. move all control variables into a dedicated header file "control.hpp". Currently, they are scattered in multiple files including common_functions.h perf_counter.h
-3. modify perf_counter to support more hardware-related profiling.
-4. create a auto-deploy scripts in the end.
+2. need to check write permission of all folders in /data1/xtra/...
+3. move all control variables into a dedicated header file "control.hpp". Currently, they are scattered in multiple files including common_functions.h perf_counter.h
+4. modify perf_counter to support more hardware-related profiling.
+5. create a auto-deploy scripts in the end.
 
 ## Third-party Lib
 

@@ -1,5 +1,6 @@
 #ifndef ALLIANCEDB_JOINCOMMON_H
 #define ALLIANCEDB_JOINCOMMON_H
+
 #include <stdint.h>
 #include <stdlib.h>             /* posix_memalign, EXIT_FAILURE */
 #include <sys/time.h>           /* gettimeofday */
@@ -59,6 +60,13 @@ typedef struct relationpair_t relationpair_t;
 #else
 #define DEBUGMSG(COND, MSG, ...)
 #endif
+
+/** msg logging method */
+
+#define MSG(MSG, ...)                                        \
+        fprintf(stdout,                                                 \
+                "[INFO @ %s:%d] " MSG, __FILE__, __LINE__, ## __VA_ARGS__); \
+                fflush(stdout);
 
 /* In DEBUG mode, we also validate whether the sorting is successful. */
 #ifdef DEBUG
