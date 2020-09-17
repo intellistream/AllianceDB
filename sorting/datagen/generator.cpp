@@ -907,24 +907,27 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t
     }
     int small = 0;
     u_int64_t maxTS = 0;
-    while ((read = getline(&line, &len, fp)) != -1 && i < ntuples) {
+
+    std::ifstream file(filename);
+    std::string str;
+    while (std::getline(file, str) && i < ntuples) /*read = getline(&line, &len, fp)) != -1 && */ {
 //        printf("Retrieved line of length %zu:\n", read);
 //        printf("%s", line);
         if (fmtcomma) {
-            key = stoi(split(line, ",")[keyby]);
+            key = stoi(split(str, ",")[keyby]);
             strcpy(row.value, line);
             payload = i;
             if (tsKey != 0) {
-                timestamp = stol(split(line, ",")[tsKey]) * 2.1 * 1E6;
+                timestamp = stol(split(str, ",")[tsKey]) * 2.1 * 1E6;
 //                if (timestamp != 0)
 //                    printf("%lld \n", timestamp);
             }
         } else if (fmtbar) {
-            key = stoi(split(line, "|")[keyby]);
+            key = stoi(split(str, "|")[keyby]);
             strcpy(row.value, line);
             payload = i;
             if (tsKey != 0) {
-                timestamp = stol(split(line, "|")[tsKey]) * 2.1 * 1E6;
+                timestamp = stol(split(str, "|")[tsKey]) * 2.1 * 1E6;
 //                if (timestamp != 0)
 //                    printf("%lld \n", timestamp);
             }

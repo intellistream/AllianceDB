@@ -968,22 +968,24 @@ read_relation(relation_t* rel, relation_payload_t* relPl, int32_t keyby, int32_t
     key = (intkey_t*) malloc(rel->num_tuples*sizeof(intkey_t));
 
     //load ts and key
-    while ((read = getline(&line, &len, fp)) != -1 && i < ntuples) {
+    std::ifstream file(filename);
+    std::string str;
+    while (std::getline(file, str) && i < ntuples) {
         if (fmtcomma) {
-            key[i] = stoi(split(line, ",")[keyby]);
-            strcpy(row.value, line);
+            key[i] = stoi(split(str, ",")[keyby]);
+            strcpy(row.value, str.c_str());
 
             if (tsKey != 0) {
-                ret[i] = stol(split(line, ",")[tsKey])*2.1*1E6;
+                ret[i] = stol(split(str, ",")[tsKey])*2.1*1E6;
                 //                if (timestamp != 0)
                 //                    MSG("%lld \n", timestamp);
             }
         } else if (fmtbar) {
-            key[i] = stoi(split(line, "|")[keyby]);
-            strcpy(row.value, line);
+            key[i] = stoi(split(str, "|")[keyby]);
+            strcpy(row.value, str.c_str());
 
             if (tsKey != 0) {
-                ret[i] = stol(split(line, "|")[tsKey])*2.1*1E6;
+                ret[i] = stol(split(str, "|")[tsKey])*2.1*1E6;
                 //                if (timestamp != 0)
                 //                    MSG("%lld \n", timestamp);
             }

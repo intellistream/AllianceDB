@@ -39,6 +39,7 @@ public:
     merge(int32_t tid, int64_t *matches, /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/
           void *pVoid) {
         //do nothing.
+        return -1;
     }
 
     virtual void clean(int32_t tid, tuple_t *fat_tuple, int fat_tuple_size, bool cleanR) {
