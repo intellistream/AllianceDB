@@ -625,7 +625,7 @@ load_relation(relation_t *relation, relation_payload_t *relation_payload, int32_
         return -1;
     }
 
-    MSG("load from the given input file")
+    MSG("load from the given input file %s", filename)
     read_relation(relation, relation_payload, keyby, tsKey, filename, partitions);
 
     return 0;
@@ -912,7 +912,7 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t
     std::string str;
     while (std::getline(file, str) && i < ntuples) /*read = getline(&line, &len, fp)) != -1 && */ {
 //        printf("Retrieved line of length %zu:\n", read);
-        printf("%s", str.c_str());
+//        printf("%s", str.c_str());
         if (fmtcomma) {
             key = stoi(split(str, ",")[keyby]);
             strcpy(row.value, line);
