@@ -358,6 +358,7 @@ void *sortmergejoin_multiway_thread(void *param) {
   if (my_tid == 0) {
     PCM_initPerformanceMonitor(NULL, NULL);
     PCM_start();
+    MSG("PCM starts..")
   }
   BARRIER_ARRIVE(args->barrier, rv);
 #endif

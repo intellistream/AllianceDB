@@ -323,7 +323,7 @@ void *sortmergejoin_multipass_thread(void *param) {
 #ifdef PERF_COUNTERS
     BARRIER_ARRIVE(args->barrier, rv);
     if (my_tid == 0) {
-        PCM_initPerformanceMonitor(NULL, NULL);
+         PCM_initPerformanceMonitor(NULL, NULL);
         PCM_start();
     }
     BARRIER_ARRIVE(args->barrier, rv);
