@@ -17,12 +17,12 @@ mkdir -p $expDir/results/timestamps
 
 
 ## Set L3 Cache according to your machine.
-sed -i -e "s/#define L3_CACHE_SIZE [[:alnum:]]*/#define L3_CACHE_SIZE 20971520/g" ../utils/params.h
+sed -i -e "s/#define L3_CACHE_SIZE [[:alnum:]]*/#define L3_CACHE_SIZE 19922944/g" ../utils/params.h
 sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h
 sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h
 
 # change cpu-mapping path here, e.g. following changes /data1/xtra/cpu-mapping.txt to /data1/xtra/cpu-mapping.txt
-sed -i -e "s/\/data1\/xtra\/cpu-mapping.txt/\/data1\/xtra\/cpu-mapping.txt/g" ../affinity/cpu_mapping.h
+#sed -i -e "s/\/data1\/xtra\/cpu-mapping.txt/\/data1\/xtra\/cpu-mapping.txt/g" ../affinity/cpu_mapping.h
 
 compile=1 #enable compiling.
 eager=1
@@ -345,8 +345,8 @@ GENERAL_BENCH=1
 if [ $GENERAL_BENCH == 1 ]; then
   profile_breakdown=0        # set to 1 if we want to measure time breakdown!
   compile=$profile_breakdown # compile depends on whether we want to profile.
-  for benchmark in  ; do #"Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "KD" "WS" "DD"
-    for algo in NPO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP ; do # NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
+  for benchmark in "Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "KD" "WS" "DD" ; do
+    for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP ; do # NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
       case "$benchmark" in
       # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
       "AR") #test arrival rate and assume both inputs have same arrival rate.
@@ -476,7 +476,7 @@ if [ $GENERAL_BENCH == 1 ]; then
   done
 fi
 ## SCLAE STUDY
-SCALE_STUDY=0
+SCALE_STUDY=1
 if [ $SCALE_STUDY == 1 ]; then
   profile_breakdown=0 #compile depends on whether we want to profile.
   compile=0
@@ -544,7 +544,7 @@ fi
 #    python3 progressive_merge.py
 #    ;;
 
-PROFILE_YSB=0 ## Cache misses profiling with YSB, please run the program with sudo
+PROFILE_YSB=1 ## Cache misses profiling with YSB, please run the program with sudo
 if [ $PROFILE_YSB == 1 ]; then
   sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h #disable time measurement
   sed -i -e "s/#define NO_PERF_COUNTERS/#define PERF_COUNTERS/g" ../utils/perf_counters.h
@@ -587,12 +587,12 @@ if [ $PROFILE_YSB == 1 ]; then
 fi
 
 ## MICRO STUDY
-PROFILE_MICRO=0
+PROFILE_MICRO=1
 if [ $PROFILE_MICRO == 1 ]; then
   profile_breakdown=1 #compile depends on whether we want to profile.
   compile=1           #enable compiling.
   #benchmark experiment only apply for hashing directory.
-  for benchmark in "SIMD_STUDY""BUCKET_SIZE_STUDY" "PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY" "HS_STUDY" "P_NP_STUDY"; do #
+  for benchmark in "SIMD_STUDY" "BUCKET_SIZE_STUDY" "PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY" "HS_STUDY" "P_NP_STUDY"; do #
     case "$benchmark" in
     "SIMD_STUDY")
       id=104
@@ -728,7 +728,7 @@ if [ $PROFILE_MICRO == 1 ]; then
 fi
 #./draw.sh
 
-PERF_YSB=1 ## Cache misses profiling with YSB, please run the program with sudo
+PERF_YSB=0 ## hardware profiling with YSB, please run the program with sudo
 if [ $PERF_YSB == 1 ]; then
 #  compile=1
 #  compile
