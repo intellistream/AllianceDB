@@ -861,8 +861,7 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t
     int fmtspace = 0;
     int fmtcomma = 0;
     int fmtbar = 0;
-    do {
-        myfile.get(c);// loop getting single characters
+    while (myfile.get(c)){// loop getting single characters
 //        c = getline(myfile);
 //        if (c == ' ') {
 //            fmtspace = 1;
@@ -876,7 +875,7 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t
             fmtbar = 1;
             break;
         }
-    } while (c != '\n');
+    } ;
 
     char *line;
     size_t len;
