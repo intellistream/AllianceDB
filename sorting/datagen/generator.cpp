@@ -912,7 +912,7 @@ read_relation(relation_t *rel, relation_payload_t *relPl, int32_t keyby, int32_t
     std::string str;
     while (std::getline(file, str) && i < ntuples) /*read = getline(&line, &len, fp)) != -1 && */ {
 //        printf("Retrieved line of length %zu:\n", read);
-//        printf("%s", line);
+        printf("%s", str.c_str());
         if (fmtcomma) {
             key = stoi(split(str, ",")[keyby]);
             strcpy(row.value, line);
