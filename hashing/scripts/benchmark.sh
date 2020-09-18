@@ -341,7 +341,7 @@ timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
 
 ## general benchmark.
-GENERAL_BENCH=1
+GENERAL_BENCH=0
 if [ $GENERAL_BENCH == 1 ]; then
   profile_breakdown=0        # set to 1 if we want to measure time breakdown!
   compile=$profile_breakdown # compile depends on whether we want to profile.
@@ -476,7 +476,7 @@ if [ $GENERAL_BENCH == 1 ]; then
   done
 fi
 ## SCLAE STUDY
-SCALE_STUDY=1
+SCALE_STUDY=0
 if [ $SCALE_STUDY == 1 ]; then
   profile_breakdown=0 #compile depends on whether we want to profile.
   compile=0
@@ -544,7 +544,7 @@ fi
 #    python3 progressive_merge.py
 #    ;;
 
-PROFILE_YSB=1 ## Cache misses profiling with YSB, please run the program with sudo
+PROFILE_YSB=0 ## Cache misses profiling with YSB, please run the program with sudo
 if [ $PROFILE_YSB == 1 ]; then
   sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h #disable time measurement
   sed -i -e "s/#define NO_PERF_COUNTERS/#define PERF_COUNTERS/g" ../utils/perf_counters.h
@@ -589,6 +589,8 @@ fi
 ## MICRO STUDY
 PROFILE_MICRO=1
 if [ $PROFILE_MICRO == 1 ]; then
+  sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h #enable time measurement
+  sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h #disable hardware counters
   profile_breakdown=1 #compile depends on whether we want to profile.
   compile=1           #enable compiling.
   #benchmark experiment only apply for hashing directory.
