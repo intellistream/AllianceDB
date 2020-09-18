@@ -24,7 +24,7 @@ PATTERNS = (["", "", "", "", "", "", "/", "\\", "||", "-", "o", "O", "////", "."
 LABEL_WEIGHT = 'bold'
 LINE_COLORS = COLOR_MAP
 LINE_WIDTH = 3.0
-MARKER_SIZE = 13.0
+MARKER_SIZE = 15.0
 MARKER_FREQUENCY = 1000
 
 matplotlib.rcParams['ps.useafm'] = True
