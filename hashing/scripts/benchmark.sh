@@ -345,7 +345,7 @@ GENERAL_BENCH=0
 if [ $GENERAL_BENCH == 1 ]; then
   profile_breakdown=0        # set to 1 if we want to measure time breakdown!
   compile=$profile_breakdown # compile depends on whether we want to profile.
-  for benchmark in "Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "KD" "WS" "DD" ; do
+  for benchmark in "AR" "RAR" "AD" "KD" "WS" "DD" "Stock" "Rovio" "YSB" "DEBS"; do
     for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP ; do # NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
       case "$benchmark" in
       # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1

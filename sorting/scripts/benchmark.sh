@@ -179,12 +179,11 @@ sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_cou
 profile_breakdown=0
 compile=0
 for algo in m-way m-pass; do
-  for benchmark in  "Stock" "Rovio" "YSB" "DEBS" "AR" "RAR" "KD" "WS" "DD" "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS"; do
+  for benchmark in  "AR" "RAR" "AD" "KD" "WS" "DD" "Stock" "Rovio" "YSB" "DEBS" "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS"; do
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "AR") #test arrival rate and assume both inputs have same arrival rate.
       id=0
-      ## Figure 1
       ResetParameters
       FIXS=0 #varying both.
       ts=1   # stream case
@@ -199,7 +198,6 @@ for algo in m-way m-pass; do
       ;;
     "RAR") #test relative arrival rate when R is small
       id=5
-      ## Figure 2
       ResetParameters
       FIXS=1
       echo test relative arrival rate 5 - 9
@@ -217,7 +215,6 @@ for algo in m-way m-pass; do
       ;;
     "AD") #test arrival distribution
       id=10
-      ## Figure 3
       ResetParameters
       FIXS=1
       STEP_SIZE=1600
