@@ -16,10 +16,6 @@ for id in {39..41} ; do
   python3 breakdown.py -i $id
 done
 
-echo "Drawing Figure 8 (Please profile with sudo, and then set results in these two files manually)..."
-python3 profile_ysb_partition.py
-python3 profile_ysb_probe.py
-
 ## MICRO BENCH
 #
 ### Impact of arrival rate
@@ -91,16 +87,22 @@ python3 breakdown_radix.py
 python3 latency_radix.py
 python3 progressive_radix.py
 
+#### APP Scale.
+echo "Drawing Figure 21..."
+python3 throughput_scale_lazy.py
+python3 throughput_scale_eager.py
+
 ## SIMD_STUDY
 echo "Drawing Figure 19..."
 python3 breakdown_simd.py
 echo "Drawing Figure 20..."
 python3 profile_simd.py
 
-#### APP Scale.
-echo "Drawing Figure 21..."
-python3 throughput_scale_lazy.py
-python3 throughput_scale_eager.py
+### Profile..
+echo "Drawing Figure 8 (Please profile with sudo, and then set results in these two files manually)..."
+python3 profile_ysb_partition.py
+python3 profile_ysb_probe.py
+
 
 #not in use
 #echo "Please draw Figure 22 after launch breakdown_NUMA.sh"
