@@ -188,7 +188,7 @@ for algo in m-pass; do #m-way
       FIXS=0 #varying both.
       ts=1   # stream case
       # step size should be bigger than nthreads
-      for STEP_SIZE in 3200 6400 12800 25600; do #3200 6400 12800 25600
+      for STEP_SIZE in 1600 3200 6400 12800 25600; do
         #WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
         echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
         gap=$(($STEP_SIZE / 500 * $WINDOW_SIZE))
