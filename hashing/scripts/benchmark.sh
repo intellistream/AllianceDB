@@ -544,48 +544,6 @@ fi
 #    python3 progressive_merge.py
 #    ;;
 
-PROFILE_YSB=0 ## Cache misses profiling with YSB, please run the program with sudo
-if [ $PROFILE_YSB == 1 ]; then
-  sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h #disable time measurement
-  sed -i -e "s/#define NO_PERF_COUNTERS/#define PERF_COUNTERS/g" ../utils/perf_counters.h
-  profile_breakdown=0      # disable measure time breakdown!
-  eager=1 #with eager
-  compile=1
-  PARTITION_ONLY
-  compile
-  for benchmark in "YSB"; do #"
-    id=205
-    for algo in PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do
-      case "$benchmark" in
-      "YSB")
-        ResetParameters
-        SetYSBParameters
-        rm $expDir/results/breakdown/profile_$id.txt
-        benchmarkRun
-        ;;
-      esac
-      let "id++"
-    done
-  done
-
-  PARTITION_BUILD_SORT_MERGE_JOIN
-  compile
-  for benchmark in "YSB"; do #"
-    id=210
-    for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do # ~215
-      case "$benchmark" in
-      "YSB")
-        ResetParameters
-        SetYSBParameters
-        rm $expDir/results/breakdown/profile_$id.txt
-        benchmarkRun
-        ;;
-      esac
-      let "id++"
-    done
-  done
-fi
-
 ## MICRO STUDY
 PROFILE_MICRO=1
 if [ $PROFILE_MICRO == 1 ]; then
@@ -594,7 +552,7 @@ if [ $PROFILE_MICRO == 1 ]; then
   profile_breakdown=1 #compile depends on whether we want to profile.
   compile=1           #enable compiling.
   #benchmark experiment only apply for hashing directory.
-  for benchmark in "SIMD_STUDY" "BUCKET_SIZE_STUDY" "PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY" "HS_STUDY" "P_NP_STUDY"; do #
+  for benchmark in "GROUP_SIZE_STUDY" ; do # "SIMD_STUDY" "BUCKET_SIZE_STUDY" "PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY" "HS_STUDY" "P_NP_STUDY"
     case "$benchmark" in
     "SIMD_STUDY")
       id=104
@@ -670,6 +628,12 @@ if [ $PROFILE_MICRO == 1 ]; then
     "GROUP_SIZE_STUDY")
       id=124
       ts=0 # batch data.
+      ResetParameters
+      algo="PMJ_JM_NP"
+      RUNALLMic
+      algo="SHJ_JM_NP"
+      RUNALLMic
+
       algo="PMJ_JBCR_NP"
       ResetParameters
       echo GROUP_SIZE_STUDY PMJ 124 - 127
@@ -685,11 +649,6 @@ if [ $PROFILE_MICRO == 1 ]; then
         RUNALLMic
         let "id++"
       done
-      ResetParameters
-      algo="PMJ_JM_NP"
-      RUNALLMic
-      algo="SHJ_JM_NP"
-      RUNALLMic
       python3 breakdown_group_pmj.py
       python3 breakdown_group_shj.py
       ;;
@@ -728,7 +687,48 @@ if [ $PROFILE_MICRO == 1 ]; then
     esac
   done
 fi
-#./draw.sh
+
+PROFILE_YSB=0 ## Cache misses profiling with YSB, please run the program with sudo
+if [ $PROFILE_YSB == 1 ]; then
+  sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h #disable time measurement
+  sed -i -e "s/#define NO_PERF_COUNTERS/#define PERF_COUNTERS/g" ../utils/perf_counters.h
+  profile_breakdown=0      # disable measure time breakdown!
+  eager=1 #with eager
+  compile=1
+  PARTITION_ONLY
+  compile
+  for benchmark in "YSB"; do #"
+    id=205
+    for algo in PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do
+      case "$benchmark" in
+      "YSB")
+        ResetParameters
+        SetYSBParameters
+        rm $expDir/results/breakdown/profile_$id.txt
+        benchmarkRun
+        ;;
+      esac
+      let "id++"
+    done
+  done
+
+  PARTITION_BUILD_SORT_MERGE_JOIN
+  compile
+  for benchmark in "YSB"; do #"
+    id=210
+    for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do # ~215
+      case "$benchmark" in
+      "YSB")
+        ResetParameters
+        SetYSBParameters
+        rm $expDir/results/breakdown/profile_$id.txt
+        benchmarkRun
+        ;;
+      esac
+      let "id++"
+    done
+  done
+fi
 
 PERF_YSB=0 ## hardware profiling with YSB, please run the program with sudo
 if [ $PERF_YSB == 1 ]; then

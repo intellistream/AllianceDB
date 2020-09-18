@@ -102,11 +102,12 @@ echo "Drawing Figure 21..."
 python3 throughput_scale_lazy.py
 python3 throughput_scale_eager.py
 
-echo "Please draw Figure 22 after launch breakdown_NUMA.sh"
-python3 throughput_scale_stock.py
-python3 throughput_scale_rovio.py
-python3 throughput_scale_ysb.py
-python3 throughput_scale_debs.py
+#not in use
+#echo "Please draw Figure 22 after launch breakdown_NUMA.sh"
+#python3 throughput_scale_stock.py
+#python3 throughput_scale_rovio.py
+#python3 throughput_scale_ysb.py
+#python3 throughput_scale_debs.py
 
 ## Bucket size -- not in use.
 #python3 breakdown_bucket.py
