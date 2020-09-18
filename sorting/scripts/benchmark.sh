@@ -172,14 +172,14 @@ timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
 
 #general benchmark.
-GENERAL_BENCH=1
+GENERAL_BENCH=0
 if [ $GENERAL_BENCH == 1 ]; then
 sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h #enable time measurement
 sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h #disable hardware counters
 profile_breakdown=0
 compile=0
 for algo in m-way m-pass; do
-  for benchmark in  "AR" ; do #"RAR" "AD" "KD" "WS" "DD" "Stock" "Rovio" "YSB" "DEBS" "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS"
+  for benchmark in  "AR" "RAR" "AD" "KD" "WS" "DD" "Stock" "Rovio" "YSB" "DEBS" "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS"; do #
     case "$benchmark" in
     # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
     "AR") #test arrival rate and assume both inputs have same arrival rate.
