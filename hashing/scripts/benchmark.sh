@@ -345,7 +345,7 @@ GENERAL_BENCH=1
 if [ $GENERAL_BENCH == 1 ]; then
   profile_breakdown=0        # set to 1 if we want to measure time breakdown!
   compile=$profile_breakdown # compile depends on whether we want to profile.
-  for benchmark in "AD"; do #"AR" "RAR" "KD" "WS" "DD" "Stock" "Rovio" "YSB" "DEBS"
+  for benchmark in "AR" "RAR" "KD" "WS" "DD" "Stock" "Rovio" "YSB" "DEBS"; do #"AR" "RAR" "KD" "WS" "DD" "Stock" "Rovio" "YSB" "DEBS"
     for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP ; do # NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
       case "$benchmark" in
       # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
@@ -476,7 +476,7 @@ if [ $GENERAL_BENCH == 1 ]; then
   done
 fi
 ## SCLAE STUDY
-SCALE_STUDY=0
+SCALE_STUDY=1
 if [ $SCALE_STUDY == 1 ]; then
   profile_breakdown=0 #compile depends on whether we want to profile.
   compile=0
@@ -545,7 +545,7 @@ fi
 #    ;;
 
 ## MICRO STUDY
-PROFILE_MICRO=0
+PROFILE_MICRO=1
 if [ $PROFILE_MICRO == 1 ]; then
   sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h #enable time measurement
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h #disable hardware counters
@@ -688,7 +688,7 @@ if [ $PROFILE_MICRO == 1 ]; then
   done
 fi
 
-PROFILE_YSB=0 ## Cache misses profiling with YSB, please run the program with sudo
+PROFILE_YSB=1 ## Cache misses profiling with YSB, please run the program with sudo
 if [ $PROFILE_YSB == 1 ]; then
   sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h #disable time measurement
   sed -i -e "s/#define NO_PERF_COUNTERS/#define PERF_COUNTERS/g" ../utils/perf_counters.h
