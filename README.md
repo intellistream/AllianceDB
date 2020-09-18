@@ -19,6 +19,7 @@ All of our experiments can be automatically reproduced by calling a few pre-prep
 sudo apt-get install texlive-fonts-recommended texlive-fonts-extra
 sudo apt-get install dvipng
 sudo apt install font-manager
+sudo apt-get install cm-super
 ```
 
 2. python3:
