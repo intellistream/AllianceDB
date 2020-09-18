@@ -319,14 +319,13 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
     # plt.xticks(x_values)
     # you may control the limits on your own.
     plt.xlim(left=0)
-    plt.ylim(y_min, y_max)
-
+    # plt.ylim(y_min, y_max)
     plt.grid(axis='y', color='gray')
 
-    figure.yaxis.set_major_locator(pylab.LinearLocator(6))
+    # figure.yaxis.set_major_locator(LogLocator(base=10))
     # figure.xaxis.set_major_locator(matplotlib.ticker.FixedFormatter(["0.25", "0.5", "0.75", "1"]))
     # figure.xaxis.set_major_formatter(matplotlib.ticker.PercentFormatter(1.0))
-    # figure.xaxis.set_major_locator(pylab.LinearLocator(6))
+    figure.xaxis.set_major_locator(pylab.LinearLocator(6))
     # figure.xaxis.set_major_formatter(matplotlib.ticker.ScalarFormatter())
     figure.get_xaxis().set_tick_params(direction='in', pad=10)
     figure.get_yaxis().set_tick_params(direction='in', pad=10)
