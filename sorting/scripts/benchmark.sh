@@ -174,6 +174,8 @@ output=test$timestamp.txt
 #general benchmark.
 GENERAL_BENCH=0
 if [ $GENERAL_BENCH == 1 ]; then
+sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h #enable time measurement
+sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h #disable hardware counters
 profile_breakdown=0
 compile=0
 for algo in m-way m-pass; do
@@ -347,6 +349,43 @@ for algo in m-way m-pass; do
 done
 fi
 
+## MICRO STUDY
+PROFILE_MICRO=0
+if [ $PROFILE_MICRO == 1 ]; then
+  sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h #enable time measurement
+  sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h #disable hardware counters
+  for benchmark in "SIMD_STUDY"; do #
+    case "$benchmark" in
+    "SIMD_STUDY")
+      id=100
+      ResetParameters
+      ts=0 # batch data.
+      echo SIMD 100-103
+      PARTITION_ONLY
+      compile=1
+      for algo in "m-way" "m-pass"; do
+        for scalar in 0 1; do
+          sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scalar/g" ../joins/common_functions.h
+          compile
+          KimRun
+          let "id++"
+        done
+      done
+      PARTITION_BUILD_SORT
+      compile=1
+      for algo in "m-way" "m-pass"; do
+        for scalar in 0 1; do
+          sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scalar/g" ../joins/common_functions.h
+          compile
+          KimRun
+          let "id++"
+        done
+      done
+      ;;
+    esac
+  done
+fi
+
 PROFILE_YSB=1 ## Cache misses profiling with YSB, please run the program with sudo
 if [ $PROFILE_YSB == 1 ]; then
   sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h #disable time measurement
@@ -386,43 +425,8 @@ if [ $PROFILE_YSB == 1 ]; then
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h
 fi
 
-## MICRO STUDY
-PROFILE_MICRO=0
-if [ $PROFILE_MICRO == 1 ]; then
-  for benchmark in "SIMD_STUDY"; do #
-    case "$benchmark" in
-    "SIMD_STUDY")
-      id=100
-      ResetParameters
-      ts=0 # batch data.
-      echo SIMD 100-103
-      PARTITION_ONLY
-      compile=1
-      for algo in "m-way" "m-pass"; do
-        for scalar in 0 1; do
-          sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scalar/g" ../joins/common_functions.h
-          compile
-          KimRun
-          let "id++"
-        done
-      done
-      PARTITION_BUILD_SORT
-      compile=1
-      for algo in "m-way" "m-pass"; do
-        for scalar in 0 1; do
-          sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scalar/g" ../joins/common_functions.h
-          compile
-          KimRun
-          let "id++"
-        done
-      done
-      ;;
-    esac
-  done
-fi
-
 #export PATH=~/workspace/pmu-tools:$PATH
-PERF_YSB=0 ## Cache misses profiling with YSB, please run the program with sudo
+PERF_YSB=0 ## Hardware Counters profiling with YSB, please run the program with sudo
 if [ $PERF_YSB == 1 ]; then
 #  compile=1
 #  compile
