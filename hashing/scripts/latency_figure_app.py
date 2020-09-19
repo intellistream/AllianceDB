@@ -116,7 +116,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
         'mathtext.fontset': 'cm',
     })
     plt.grid(axis='y', color='gray')
-    # figure.yaxis.set_major_locator(LogLocator(base=10))
+    figure.yaxis.set_major_locator(LogLocator(base=10))
     # figure.xaxis.set_major_locator(LinearLocator(5))
     figure.get_xaxis().set_tick_params(direction='in', pad=10)
     figure.get_yaxis().set_tick_params(direction='in', pad=10)
