@@ -59,8 +59,10 @@ SHJ_JB_NP(relation_t *relR, relation_t *relS,  param_t cmd_params);
  * @return
  */
 result_t *
-SHJ_JBCR_NP(relation_t *relR, relation_t *relS,  param_t cmd_params);      
+SHJ_JBCR_NP(relation_t *relR, relation_t *relS,  param_t cmd_params);
 
+result_t *
+SHJ_JBCR_P(relation_t *relR, relation_t *relS, param_t cmd_params);
 
 /**
  * HandShake Model
@@ -110,7 +112,22 @@ PMJ_st(relation_t *relR, relation_t *relS,  param_t cmd_params);
  * @return
  */
 result_t *
-PMJ_JM_NP(relation_t *relR, relation_t *relS,  param_t cmd_params);      
+PMJ_JM_NP(relation_t *relR, relation_t *relS,  param_t cmd_params);
+
+//5.5th
+result_t *PMJ_JM_P(relation_t *relR, relation_t *relS, param_t cmd_params);
+/**
+ * PMJ JB NP
+ * @param relR
+ * @param relS
+ * @param nthreads
+ * @return
+ */
+result_t *
+PMJ_JB_NP(relation_t *relR, relation_t *relS,  param_t cmd_params);
+
+//6.5
+result_t *PMJ_JB_P(relation_t *relR, relation_t *relS, param_t cmd_params);
 
 /**
  * PMJ JB NP
@@ -120,19 +137,10 @@ PMJ_JM_NP(relation_t *relR, relation_t *relS,  param_t cmd_params);
  * @return
  */
 result_t *
-PMJ_JB_NP(relation_t *relR, relation_t *relS,  param_t cmd_params);      
+PMJ_JBCR_NP(relation_t *relR, relation_t *relS,  param_t cmd_params);
 
-
-/**
- * PMJ JB NP
- * @param relR
- * @param relS
- * @param nthreads
- * @return
- */
-result_t *
-PMJ_JBCR_NP(relation_t *relR, relation_t *relS,  param_t cmd_params);      
-
+//7.5th
+result_t *PMJ_JBCR_P(relation_t *relR, relation_t *relS, param_t cmd_params);
 /**
  * PMJ HS NP
  * @param relR

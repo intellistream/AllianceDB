@@ -219,10 +219,10 @@ function SHJKIMRUN() {
 
 function RUNALL() {
   if [ $profile_breakdown == 1 ]; then
-    if [ $algo == SHJ_JM_NP ] || [ $algo == SHJ_JM_P ] || [ $algo == SHJ_JBCR_NP ]; then
+    if [ $algo == SHJ_JM_P ] || [ $algo == SHJ_JM_P ] || [ $algo == SHJ_JBCR_P ]; then
       SHJBENCHRUN
     else
-      if [ $algo == PMJ_JM_NP ] || [ $algo == PMJ_JBCR_NP ]; then
+      if [ $algo == PMJ_JM_P ] || [ $algo == PMJ_JBCR_P ]; then
         FULLBENCHRUN
       else
         benchmarkRun
@@ -237,10 +237,10 @@ function RUNALL() {
 
 function RUNALLMic() {
   if [ $profile_breakdown == 1 ]; then
-    if [ $algo == SHJ_JM_NP ] || [ $algo == SHJ_JM_P ] || [ $algo == SHJ_JBCR_NP ] || [ $algo == SHJ_HS_NP ]; then
+    if [ $algo == SHJ_JM_P ] || [ $algo == SHJ_JM_P ] || [ $algo == SHJ_JBCR_P ] || [ $algo == SHJ_HS_P ]; then
       SHJKIMRUN
     else
-      if [ $algo == PMJ_JM_NP ] || [ $algo == PMJ_JBCR_NP ]; then
+      if [ $algo == PMJ_JM_P ] || [ $algo == PMJ_JBCR_P ]; then
         FULLKIMRUN
       else
         KimRun
@@ -346,7 +346,7 @@ if [ $APP_BENCH == 1 ]; then
   profile_breakdown=1                                                                     #compile depends on whether we want to profile.
   compile=$profile_breakdown                                                              # compile depends on whether we want to profile.
   for benchmark in "Stock" "Rovio" "YSB" "DEBS"; do #
-    for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do
+    for algo in NPO PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P; do
       case "$benchmark" in
       "Stock")
         id=38
@@ -383,9 +383,9 @@ if [ $MICRO_BENCH == 1 ]; then
   profile_breakdown=0        # set to 1 if we want to measure time breakdown!
   compile=$profile_breakdown # compile depends on whether we want to profile.
   for benchmark in "AR" "RAR" "KD" "WS" "DD"; do #
-    for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do # NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
+    for algo in NPO PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P; do # NPO PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P
       case "$benchmark" in
-      # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
+      # Batch -a SHJ_JM_P -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
       "AR") #test arrival rate and assume both inputs have same arrival rate.
         id=0
         ## Figure 1
@@ -497,7 +497,7 @@ if [ $SCALE_STUDY == 1 ]; then
   profile_breakdown=0                                                                     #compile depends on whether we want to profile.
   compile=0
   # general benchmark.
-  for algo in SHJ_JM_NP; do
+  for algo in SHJ_JM_P; do
     for benchmark in "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS"; do #
       case "$benchmark" in
       "ScaleStock")
@@ -547,7 +547,7 @@ fi
 ## back up.
 #  "PMJ_MERGE_STEP_STUDY")
 #    id=66
-#    algo="PMJ_JBCR_NP"
+#    algo="PMJ_JBCR_P"
 #    ResetParameters
 #    echo PMJ_MERGE_STEP_STUDY 66-70
 #    for merge_step in 8 10 12 14 16; do
@@ -568,7 +568,7 @@ if [ $PROFILE_MICRO == 1 ]; then
   profile_breakdown=1                                                                     #compile depends on whether we want to profile.
   compile=1                                                                               #enable compiling.
   #benchmark experiment only apply for hashing directory.
-  for benchmark in "P_NP_STUDY"; do # "SIMD_STUDY" "BUCKET_SIZE_STUDY" "PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY" "HS_STUDY" "P_NP_STUDY"
+  for benchmark in  "GROUP_SIZE_STUDY"; do # "SIMD_STUDY" "BUCKET_SIZE_STUDY" "PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY" "HS_STUDY" "P_P_STUDY"
     case "$benchmark" in
     "SIMD_STUDY")
       id=104
@@ -577,7 +577,7 @@ if [ $PROFILE_MICRO == 1 ]; then
       echo SIMD PMJ 104 - 107
       PARTITION_ONLY
       compile
-      for algo in "PMJ_JM_NP" "PMJ_JBCR_NP"; do
+      for algo in "PMJ_JM_P" "PMJ_JBCR_P"; do
         for scalar in 0 1; do
           sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scalar/g" ../helper/sort_common.h
           RUNALLMic
@@ -586,7 +586,7 @@ if [ $PROFILE_MICRO == 1 ]; then
       done
       PARTITION_BUILD_SORT
       compile
-      for algo in "PMJ_JM_NP" "PMJ_JBCR_NP"; do
+      for algo in "PMJ_JM_P" "PMJ_JBCR_P"; do
         for scalar in 0 1; do
           sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scalar/g" ../helper/sort_common.h
           RUNALLMic
@@ -629,7 +629,7 @@ if [ $PROFILE_MICRO == 1 ]; then
       ;;
     "PMJ_SORT_STEP_STUDY")
       id=119
-      algo="PMJ_JBCR_NP"
+      algo="PMJ_JBCR_P"
       ResetParameters
       ts=0 # batch data.
       for progress_step in 10 20 30 40 50; do #%
@@ -645,19 +645,19 @@ if [ $PROFILE_MICRO == 1 ]; then
       id=124
       ResetParameters
       ts=0 # batch data.
-      algo="PMJ_JM_NP"
+      algo="PMJ_JM_P"
       RUNALLMic
-      algo="SHJ_JM_NP"
+      algo="SHJ_JM_P"
       RUNALLMic
 
-      algo="PMJ_JBCR_NP"
+      algo="PMJ_JBCR_P"
       echo GROUP_SIZE_STUDY PMJ 124 - 127
       for group in 1 2 4 8; do
         RUNALLMic
         let "id++"
       done
 
-      algo="SHJ_JBCR_NP"
+      algo="SHJ_JBCR_P"
       echo GROUP_SIZE_STUDY SHJ 128 - 131
       for group in 1 2 4 8; do
         RUNALLMic
@@ -670,13 +670,13 @@ if [ $PROFILE_MICRO == 1 ]; then
       id=132
       ResetParameters
       ts=0 # batch data.
-      algo="SHJ_HS_NP"
+      algo="SHJ_HS_P"
       RUNALLMic
-      algo="SHJ_JM_NP"
+      algo="SHJ_JM_P"
       RUNALLMic
       python3 breakdown_hsstudy.py
       ;;
-    "P_NP_STUDY")
+    "P_P_STUDY")
       id=133
       ResetParameters
       ts=0 # batch data.
@@ -701,7 +701,7 @@ if [ $PROFILE_YSB == 1 ]; then
   compile
   for benchmark in "YSB"; do #"
     id=205
-    for algo in PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do
+    for algo in PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P; do
       case "$benchmark" in
       "YSB")
         ResetParameters
@@ -718,7 +718,7 @@ if [ $PROFILE_YSB == 1 ]; then
   compile
   for benchmark in "YSB"; do #"
     id=210
-    for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do # ~215
+    for algo in NPO PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P; do # ~215
       case "$benchmark" in
       "YSB")
         ResetParameters
@@ -738,7 +738,7 @@ if [ $PERF_YSB == 1 ]; then
   #  compile
   for benchmark in "Kim"; do #"YSB
     id=302
-    for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do # NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
+    for algo in NPO PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P; do # NPO PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P
       case "$benchmark" in
       "Kim")
         ResetParameters
@@ -757,7 +757,7 @@ if [ $PERF_YSB == 1 ]; then
 
 #  for benchmark in "YSB"; do #"YSB
 #    id=402
-#    for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do
+#    for algo in NPO PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P; do
 #      case "$benchmark" in
 #      "YSB")
 #        ResetParameters

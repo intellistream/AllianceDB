@@ -16,17 +16,17 @@
 using namespace std::chrono;
 
 enum fetcher {
-    type_HS_NP_Fetcher, type_JM_NP_Fetcher, type_JM_P_Fetcher, type_JB_NP_Fetcher, type_PMJ_HS_NP_Fetcher
+    type_HS_NP_Fetcher, type_JM_NP_Fetcher, type_JM_P_Fetcher, type_JB_NP_Fetcher, type_JB_P_Fetcher, type_PMJ_HS_NP_Fetcher
 };
 
 struct fetch_t {
-    fetch_t(fetch_t* fetch);
+    fetch_t(fetch_t *fetch);
 
     fetch_t();
 
-    tuple_t* tuple = nullptr;//normal tuples.
+    tuple_t *tuple = nullptr;//normal tuples.
 
-    tuple_t* fat_tuple = nullptr;//used for PMJ only.
+    tuple_t *fat_tuple = nullptr;//used for PMJ only.
 
     int fat_tuple_size = 0;
 
@@ -45,16 +45,17 @@ struct t_state {
 };
 
 class baseFetcher {
-  public:
-    virtual fetch_t* next_tuple();
-    virtual fetch_t* _next_tuple();//helper function to avoid recurrsion
-    relation_t* relR;//input relation
-    relation_t* relS;//input relation
+public:
+    virtual fetch_t *next_tuple();
+
+    virtual fetch_t *_next_tuple();//helper function to avoid recurrsion
+    relation_t *relR;//input relation
+    relation_t *relS;//input relation
     bool tryR = true;
 
-    uint64_t* fetchStartTime;//initialize
-    T_TIMER* timer;
-    t_state* state;
+    uint64_t *fetchStartTime;//initialize
+    T_TIMER *timer;
+    t_state *state;
     int tid;
 
     //used by HS.
@@ -63,7 +64,7 @@ class baseFetcher {
 
     virtual bool finish() = 0;
 
-    baseFetcher(relation_t* relR, relation_t* relS, int tid, T_TIMER* timer, bool Physical_Partition) {
+    baseFetcher(relation_t *relR, relation_t *relS, int tid, T_TIMER *timer, bool Physical_Partition) {
         this->tid = tid;
         this->relR = relR;
         this->relS = relS;
@@ -76,18 +77,20 @@ inline bool last_thread(int i, int nthreads) {
 }
 
 class PMJ_HS_NP_Fetcher : public baseFetcher {
-  public:
+public:
 
-    fetch_t* next_tuple() override;
+    fetch_t *next_tuple() override;
+
     bool finish() { return false; };
+
     /**
      * Initialization
      * @param nthreads
      * @param relR
      * @param relS
      */
-    PMJ_HS_NP_Fetcher(int nthreads, relation_t* relR, relation_t* relS, int tid, T_TIMER* timer)
-        : baseFetcher(relR, relS, tid, timer, false) {
+    PMJ_HS_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS, int tid, T_TIMER *timer)
+            : baseFetcher(relR, relS, tid, timer, false) {
         state = new t_state();
 
         //let first and last thread to read two streams.
@@ -107,17 +110,19 @@ class PMJ_HS_NP_Fetcher : public baseFetcher {
 };
 
 class HS_NP_Fetcher : public baseFetcher {
-  public:
-    fetch_t* next_tuple() override;
+public:
+    fetch_t *next_tuple() override;
+
     bool finish() { return false; };
+
     /**
      * Initialization
      * @param nthreads
      * @param relR
      * @param relS
      */
-    HS_NP_Fetcher(int nthreads, relation_t* relR, relation_t* relS, int tid, T_TIMER* timer)
-        : baseFetcher(relR, relS, tid, timer, false) {
+    HS_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS, int tid, T_TIMER *timer)
+            : baseFetcher(relR, relS, tid, timer, false) {
         state = new t_state();
 
         //let first and last thread to read two streams.
@@ -139,11 +144,11 @@ class HS_NP_Fetcher : public baseFetcher {
 };
 
 class JM_NP_Fetcher : public baseFetcher {
-  public:
+public:
 
     bool finish() {
         return state->current_index_R == state->end_index_R
-            && state->current_index_S == state->end_index_S;
+               && state->current_index_S == state->end_index_S;
     }
 
     /**
@@ -152,20 +157,21 @@ class JM_NP_Fetcher : public baseFetcher {
      * @param relR
      * @param relS
      */
-    JM_NP_Fetcher(int nthreads, relation_t* relR, relation_t* relS, int tid, T_TIMER* timer)
-        : baseFetcher(relR, relS, tid, timer, false) {
+    JM_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS, int tid, T_TIMER *timer)
+            : baseFetcher(relR, relS, tid, timer, false) {
         state = new t_state();
 
-        int numSthr = relS->num_tuples/nthreads;//replicate R, partition S.
+        int numSthr = relS->num_tuples / nthreads;//replicate R, partition S.
 
         /* replicate relR for next thread */
         state->current_index_R = 0;
         state->end_index_R = relR->num_tuples; //remember the last index is not count!
 
         /* assign part of the relS for next thread */
-        state->current_index_S = numSthr*tid;
+        state->current_index_S = numSthr * tid;
         state->end_index_S =
-            (last_thread(tid, nthreads)) ? relS->num_tuples : numSthr*(tid + 1);//remember the last index is not count!
+                (last_thread(tid, nthreads)) ? relS->num_tuples : numSthr *
+                                                                  (tid + 1);//remember the last index is not count!
 
         //        uint64_t ts = 0;
         //        for (auto i = state->current_index_S; i < state->end_index_S; i++) {
@@ -184,14 +190,14 @@ class JM_NP_Fetcher : public baseFetcher {
 };
 
 class JM_P_Fetcher : public JM_NP_Fetcher {
-  public:
+public:
     //thread_local copy of input tuples.
-    tuple_t* tmpRelR;
-    tuple_t* tmpRelS;
+    tuple_t *tmpRelR;
+    tuple_t *tmpRelS;
     int idx_R = 0;
     int idx_S = 0;
 
-    fetch_t* next_tuple() override {
+    fetch_t *next_tuple() override {
 
         auto fetch = baseFetcher::next_tuple();
         if (fetch != nullptr) {
@@ -207,37 +213,40 @@ class JM_P_Fetcher : public JM_NP_Fetcher {
         } else return nullptr;
     }
 
-    JM_P_Fetcher(int nthreads, relation_t* relR, relation_t* relS, int tid, T_TIMER* timer) :
-        JM_NP_Fetcher(nthreads, relR, relS, tid, timer) {
+    JM_P_Fetcher(int nthreads, relation_t *relR, relation_t *relS, int tid, T_TIMER *timer) :
+            JM_NP_Fetcher(nthreads, relR, relS, tid, timer) {
 
         /* allocate temporary space for partitioning */
-        tmpRelR = (tuple_t*) alloc_aligned(state->end_index_R*sizeof(tuple_t));
-        tmpRelS = (tuple_t*) alloc_aligned(state->end_index_S*sizeof(tuple_t));
+        tmpRelR = (tuple_t *) alloc_aligned(state->end_index_R * sizeof(tuple_t));
+        tmpRelS = (tuple_t *) alloc_aligned(state->end_index_S * sizeof(tuple_t));
 
     }
 };
 
+
+
+
 class JB_NP_Fetcher : public baseFetcher {
-  public:
+public:
 
     bool finish() {
         return state->current_index_R == state->end_index_R
-            && state->current_index_S == state->end_index_S;
+               && state->current_index_S == state->end_index_S;
     }
 
-    JB_NP_Fetcher(int nthreads, relation_t* relR, relation_t* relS, int tid, T_TIMER* timer)
-        : baseFetcher(relR, relS, tid, timer, false) {
+    JB_NP_Fetcher(int nthreads, relation_t *relR, relation_t *relS, int tid, T_TIMER *timer)
+            : baseFetcher(relR, relS, tid, timer, false) {
         state = new t_state[nthreads];
-        int numRthr = relR->num_tuples/nthreads;// partition R,
-        int numSthr = relS->num_tuples/nthreads;// partition S.
+        int numRthr = relR->num_tuples / nthreads;// partition R,
+        int numSthr = relS->num_tuples / nthreads;// partition S.
 
         /* assign part of the relR for next thread */
-        state->current_index_R = numRthr*tid;
-        state->end_index_R = (last_thread(tid, nthreads)) ? relR->num_tuples : numRthr*(tid + 1);
+        state->current_index_R = numRthr * tid;
+        state->end_index_R = (last_thread(tid, nthreads)) ? relR->num_tuples : numRthr * (tid + 1);
 
         /* assign part of the relS for next thread */
-        state->current_index_S = numSthr*tid;
-        state->end_index_S = (last_thread(tid, nthreads)) ? relS->num_tuples : numSthr*(tid + 1);
+        state->current_index_S = numSthr * tid;
+        state->end_index_S = (last_thread(tid, nthreads)) ? relS->num_tuples : numSthr * (tid + 1);
 
         DEBUGMSG("TID:%d, R: start_index:%d, end_index:%d\n", tid, state->current_index_R, state->end_index_R);
         DEBUGMSG("TID:%d, S: start_index:%d, end_index:%d\n", tid, state->current_index_S, state->end_index_S);
@@ -245,4 +254,36 @@ class JB_NP_Fetcher : public baseFetcher {
     }
 };
 
+class JB_P_Fetcher : public JB_NP_Fetcher {
+public:
+    //thread_local copy of input tuples.
+    tuple_t *tmpRelR;
+    tuple_t *tmpRelS;
+    int idx_R = 0;
+    int idx_S = 0;
+
+    fetch_t *next_tuple() override {
+
+        auto fetch = baseFetcher::next_tuple();
+        if (fetch != nullptr) {
+            //copy tuple and exchange pointer.
+            if (fetch->ISTuple_R) {
+                tmpRelR[idx_R] = fetch->tuple[0];
+                fetch->tuple = &tmpRelR[idx_R++];
+            } else {
+                tmpRelS[idx_S] = fetch->tuple[0];
+                fetch->tuple = &tmpRelS[idx_S++];
+            }
+            return fetch;
+        } else return nullptr;
+    }
+
+    JB_P_Fetcher(int nthreads, relation_t *relR, relation_t *relS, int tid, T_TIMER *timer)
+            : JB_NP_Fetcher(nthreads,relR, relS, tid, timer) {
+        /* allocate temporary space for partitioning */
+        tmpRelR = (tuple_t *) alloc_aligned(state->end_index_R * sizeof(tuple_t));
+        tmpRelS = (tuple_t *) alloc_aligned(state->end_index_S * sizeof(tuple_t));
+
+    }
+};
 #endif //ALLIANCEDB_FETCHER_H

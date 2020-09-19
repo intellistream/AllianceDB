@@ -72,6 +72,10 @@ launch(int nthreads, relation_t *relR, relation_t *relS, t_param param, void *(*
                 param.args[i].fetcher = new JM_NP_Fetcher(nthreads, relR, relS, i,
                                                           param.args[i].joiner->timer);
                 break;
+            case type_JB_P_Fetcher:
+                param.args[i].fetcher = new JB_P_Fetcher(nthreads, relR, relS, i,
+                                                          param.args[i].joiner->timer);
+                break;
             case type_JB_NP_Fetcher:
                 param.args[i].fetcher = new JB_NP_Fetcher(nthreads, relR, relS, i,
                                                           param.args[i].joiner->timer);

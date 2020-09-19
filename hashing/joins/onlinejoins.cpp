@@ -236,6 +236,24 @@ SHJ_JBCR_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
     return param.joinresult;
 }
 
+//3.5rd online algorithm
+result_t *
+SHJ_JBCR_P(relation_t *relR, relation_t *relS, param_t cmd_params) {
+    t_param param(nthreads);
+    initialize(nthreads, param);
+    param.fetcher = type_JB_P_Fetcher;//new JB_NP_Fetcher(nthreads, relR, relS);
+    param.shuffler = new ContRandShuffler(nthreads, relR, relS, cmd_params.group_size);
+    param.joiner = type_SHJJoiner;//new SHJJoiner();
+    param.algo_name = "SHJ_JBCR_NP";
+    param.exp_id = cmd_params.exp_id;
+    param.record_gap = cmd_params.gap;
+    uint64_t *startTS = new uint64_t();
+    auto joinStart = (uint64_t) 0;
+    LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE, startTS, &joinStart)
+    param = finishing(nthreads, param, startTS, &cmd_params);
+    return param.joinresult;
+}
+
 //4th
 result_t *
 SHJ_HS_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
@@ -344,11 +362,52 @@ result_t *PMJ_JM_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
     return param.joinresult;
 }
 
+//5.5th
+result_t *PMJ_JM_P(relation_t *relR, relation_t *relS, param_t cmd_params) {
+    t_param param(nthreads);
+    initialize(nthreads, param);
+    param.fetcher = type_JM_P_Fetcher;//new JM_NP_Fetcher(nthreads, relR, relS);
+    //no shuffler is required for JM mode.
+    param.joiner = type_PMJJoiner;//new PMJJoiner(relR->num_tuples, relS->num_tuples / nthreads, nthreads);
+    param.algo_name = "PMJ_JM_NP";
+    param.exp_id = cmd_params.exp_id;
+    param.record_gap = cmd_params.gap;
+
+    param.progressive_step = cmd_params.progressive_step;
+    param.merge_step = cmd_params.merge_step;
+    uint64_t *startTS = new uint64_t();
+    auto joinStart = (uint64_t) 0;
+    LAUNCH(nthreads, relR, relS, param, THREAD_TASK_NOSHUFFLE, startTS, &joinStart)
+    param = finishing(nthreads, param, startTS, &cmd_params);
+    return param.joinresult;
+}
+
 //6th
 result_t *PMJ_JB_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
     t_param param(nthreads);
     initialize(nthreads, param);
     param.fetcher = type_JB_NP_Fetcher;//new JM_NP_Fetcher(nthreads, relR, relS);
+    param.shuffler = new HashShuffler(nthreads, relR, relS);
+    param.joiner = type_PMJJoiner;//new PMJJoiner(relR->num_tuples, relS->num_tuples / nthreads, nthreads);
+    param.algo_name = "PMJ_JB_NP";
+    param.exp_id = cmd_params.exp_id;
+    param.record_gap = cmd_params.gap;
+
+    param.progressive_step = cmd_params.progressive_step;
+    param.merge_step = cmd_params.merge_step;
+
+    uint64_t *startTS = new uint64_t();
+    auto joinStart = (uint64_t) 0;
+    LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE, startTS, &joinStart)
+    param = finishing(nthreads, param, startTS, &cmd_params);
+    return param.joinresult;
+}
+
+//6.5
+result_t *PMJ_JB_P(relation_t *relR, relation_t *relS, param_t cmd_params) {
+    t_param param(nthreads);
+    initialize(nthreads, param);
+    param.fetcher = type_JB_P_Fetcher;//new JM_NP_Fetcher(nthreads, relR, relS);
     param.shuffler = new HashShuffler(nthreads, relR, relS);
     param.joiner = type_PMJJoiner;//new PMJJoiner(relR->num_tuples, relS->num_tuples / nthreads, nthreads);
     param.algo_name = "PMJ_JB_NP";
@@ -383,6 +442,26 @@ result_t *PMJ_JBCR_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
     param = finishing(nthreads, param, startTS, &cmd_params);
     return param.joinresult;
 }
+
+//7.5th
+result_t *PMJ_JBCR_P(relation_t *relR, relation_t *relS, param_t cmd_params) {
+    t_param param(nthreads);
+    initialize(nthreads, param);
+    param.fetcher = type_JB_P_Fetcher;//new JM_NP_Fetcher(nthreads, relR, relS);
+    param.shuffler = new ContRandShuffler(nthreads, relR, relS, cmd_params.group_size);
+    param.joiner = type_PMJJoiner;//new PMJJoiner(relR->num_tuples, relS->num_tuples / nthreads, nthreads);
+    param.algo_name = "PMJ_JBCR_NP";
+    param.exp_id = cmd_params.exp_id;
+    param.record_gap = cmd_params.gap;
+    param.progressive_step = cmd_params.progressive_step;
+    param.merge_step = cmd_params.merge_step;
+    uint64_t *startTS = new uint64_t();
+    auto joinStart = (uint64_t) 0;
+    LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE, startTS, &joinStart)
+    param = finishing(nthreads, param, startTS, &cmd_params);
+    return param.joinresult;
+}
+
 
 //8th
 result_t *PMJ_HS_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {

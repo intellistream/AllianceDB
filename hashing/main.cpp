@@ -316,12 +316,15 @@ static struct algo_t algos[] =
                 {"SHJ_JM_NP",   SHJ_JM_NP}, /* Symmetric hash join JM Model, No-Partition*/
                 {"SHJ_JB_NP",   SHJ_JB_NP}, /* Symmetric hash join JB Model, No-Partition*/
                 {"SHJ_JBCR_NP", SHJ_JBCR_NP}, /* Symmetric hash join JB CountRound Model, No-Partition*/
+                {"SHJ_JBCR_P",  SHJ_JBCR_P}, /* Symmetric hash join JB CountRound Model, No-Partition*/
                 {"SHJ_HS_NP",   SHJ_HS_NP}, /* Symmetric hash join HS Model, No-Partition*/
 /*** Progressive Merge Join ***/
                 {"PMJ_st",      PMJ_st}, /* Progressive Merge Join Single_thread*/
                 {"PMJ_JM_NP",   PMJ_JM_NP}, /* Progressive Merge Join JM_NP*/
+                {"PMJ_JM_P",    PMJ_JM_P}, /* Progressive Merge Join JM_P*/
                 {"PMJ_JB_NP",   PMJ_JB_NP}, /* Progressive Merge Join JB_NP*/
                 {"PMJ_JBCR_NP", PMJ_JBCR_NP}, /* Progressive Merge Join JBCR_NP*/
+                {"PMJ_JBCR_P",  PMJ_JBCR_P}, /* Progressive Merge Join JBCR_P*/
                 {"PMJ_HS_NP",   PMJ_HS_NP}, /* Progressive Merge Join HS_NP*/
 /*** Ripple Join (unfinished) ***/
                 {"RPJ_st",      RPJ_st}, /* Ripple Join Single_thread*/
