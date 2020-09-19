@@ -329,6 +329,7 @@ function ResetParameters() {
   gap=12800
   DD=1
   sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag 0/g" ../helper/sort_common.h
+  sed -i -e "s/NUM_RADIX_BITS [[:alnum:]]*/NUM_RADIX_BITS 8/g" ../joins/prj_params.h
 }
 
 #compile once by default.

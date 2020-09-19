@@ -211,7 +211,7 @@ if [ $APP_BENCH == 1 ]; then
 fi
 
 #MICRO benchmark.
-MICRO_BENCH=0
+MICRO_BENCH=1
 if [ $MICRO_BENCH == 1 ]; then
   sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h            #enable time measurement
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h #disable hardware counters
@@ -322,7 +322,7 @@ if [ $MICRO_BENCH == 1 ]; then
 fi
 
 #SCLAE benchmark.
-SCALE_STUDY=0
+SCALE_STUDY=1
 if [ $SCALE_STUDY == 1 ]; then
   sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h            #enable time measurement
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h #disable hardware counters
@@ -377,7 +377,7 @@ if [ $SCALE_STUDY == 1 ]; then
 fi
 
 ## MICRO STUDY
-PROFILE_MICRO=0
+PROFILE_MICRO=1
 if [ $PROFILE_MICRO == 1 ]; then
   sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h            #enable time measurement
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h #disable hardware counters
@@ -413,7 +413,7 @@ if [ $PROFILE_MICRO == 1 ]; then
   done
 fi
 
-PROFILE_YSB=0 ## Cache misses profiling with YSB, please run the program with sudo
+PROFILE_YSB=1 ## Cache misses profiling with YSB, please run the program with sudo
 if [ $PROFILE_YSB == 1 ]; then
   sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h #disable time measurement
   sed -i -e "s/#define NO_PERF_COUNTERS/#define PERF_COUNTERS/g" ../utils/perf_counters.h
