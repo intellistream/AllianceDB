@@ -135,7 +135,7 @@ def ReadFile(id):
         empty_coly.append(0)
 
     # calculate the proportional values of samples
-    coly = 1. * arange(len(col)) / (len(col) - 1) * 100
+    coly = 1. * arange(len(col)) / (len(col) - 1)
 
     x_axis.append(empty_col)
     y_axis.append(empty_coly)
