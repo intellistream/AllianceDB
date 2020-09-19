@@ -192,7 +192,7 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
     # you may control the limits on your own.
     plt.xlim(x_min, x_max)
     # plt.ylim(0, 41000)
-    # plt.ylim(0, 6)
+    plt.ylim(0, 8)
     plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
     plt.grid(axis='y', color='gray')
 

@@ -9,15 +9,15 @@ from matplotlib.ticker import LinearLocator
 
 OPT_FONT_NAME = 'Helvetica'
 TICK_FONT_SIZE = 20
-LABEL_FONT_SIZE = 22
-LEGEND_FONT_SIZE = 24
+LABEL_FONT_SIZE = 24
+LEGEND_FONT_SIZE = 26
 LABEL_FP = FontProperties(style='normal', size=LABEL_FONT_SIZE)
 LEGEND_FP = FontProperties(style='normal', size=LEGEND_FONT_SIZE)
 TICK_FP = FontProperties(style='normal', size=TICK_FONT_SIZE)
 
-MARKERS = (['o', 's', 'v', "^", '', "h", "v", ">", "x", "d", "<", "|", "", "+", "_"])
+MARKERS = (["", 'o', 's', 'v', "^", "", "h", "v", ">", "x", "d", "<", "|", "", "+", "_"])
 # you may want to change the color map for different figures
-COLOR_MAP = ('#ABB2B9', '#2E4053', '#8D6E63', '#000000', '', '#CD6155', '#52BE80', '#FFFF00', '#5499C7', '#BB8FCE')
+COLOR_MAP = ('#000000', '#332288', '#88CCEE', '#44AA99', '#117733', '#000000', '#17202A', '#DDCC77', '#2E86C1', '#882255', '#AA4499')
 # you may want to change the patterns for different figures
 PATTERNS = (["", "", "", "", '', "/", "\\", "||", "-", "o", "O", "////", ".", "|||", "o", "---", "+", "\\\\", "*"])
 LABEL_WEIGHT = 'bold'
