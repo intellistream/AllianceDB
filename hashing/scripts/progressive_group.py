@@ -69,7 +69,7 @@ def ReadFile(S, id):
     w = 5
     bound = id + 1 * w
     for i in range(id, bound, 1):
-        f = open("/data1/xtra/results/timestamps/PMJ_JBCR_NP_{}.txt".format(i), "r")
+        f = open("/data1/xtra/results/timestamps/PMJ_JBCR_P_{}.txt".format(i), "r")
         cnt = 1
         read = f.readlines()
         for x in read:

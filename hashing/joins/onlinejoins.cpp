@@ -369,7 +369,7 @@ result_t *PMJ_JM_P(relation_t *relR, relation_t *relS, param_t cmd_params) {
     param.fetcher = type_JM_P_Fetcher;//new JM_NP_Fetcher(nthreads, relR, relS);
     //no shuffler is required for JM mode.
     param.joiner = type_PMJJoiner;//new PMJJoiner(relR->num_tuples, relS->num_tuples / nthreads, nthreads);
-    param.algo_name = "PMJ_JM_NP";
+    param.algo_name = "PMJ_JM_P";
     param.exp_id = cmd_params.exp_id;
     param.record_gap = cmd_params.gap;
 
@@ -410,7 +410,7 @@ result_t *PMJ_JB_P(relation_t *relR, relation_t *relS, param_t cmd_params) {
     param.fetcher = type_JB_P_Fetcher;//new JM_NP_Fetcher(nthreads, relR, relS);
     param.shuffler = new HashShuffler(nthreads, relR, relS);
     param.joiner = type_PMJJoiner;//new PMJJoiner(relR->num_tuples, relS->num_tuples / nthreads, nthreads);
-    param.algo_name = "PMJ_JB_NP";
+    param.algo_name = "PMJ_JB_P";
     param.exp_id = cmd_params.exp_id;
     param.record_gap = cmd_params.gap;
 
@@ -450,7 +450,7 @@ result_t *PMJ_JBCR_P(relation_t *relR, relation_t *relS, param_t cmd_params) {
     param.fetcher = type_JB_P_Fetcher;//new JM_NP_Fetcher(nthreads, relR, relS);
     param.shuffler = new ContRandShuffler(nthreads, relR, relS, cmd_params.group_size);
     param.joiner = type_PMJJoiner;//new PMJJoiner(relR->num_tuples, relS->num_tuples / nthreads, nthreads);
-    param.algo_name = "PMJ_JBCR_NP";
+    param.algo_name = "PMJ_JBCR_P";
     param.exp_id = cmd_params.exp_id;
     param.record_gap = cmd_params.gap;
     param.progressive_step = cmd_params.progressive_step;

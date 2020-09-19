@@ -76,7 +76,7 @@ def ReadFile(id):
 
 
     col = []
-    f = open("/data1/xtra/results/timestamps/SHJ_HS_NP_{}.txt".format(38), "r")
+    f = open("/data1/xtra/results/timestamps/SHJ_HS_P_{}.txt".format(38), "r")
     read = f.readlines()
     for r in read:
         value = double(r.strip("\n"))  # timestamp.
@@ -87,7 +87,7 @@ def ReadFile(id):
     y_axis.append(coly)
 
     col = []
-    f = open("/data1/xtra/results/timestamps/SHJ_HS_NP_{}.txt".format(39), "r")
+    f = open("/data1/xtra/results/timestamps/SHJ_HS_P_{}.txt".format(39), "r")
     read = f.readlines()
     for r in read:
         value = double(r.strip("\n"))  # timestamp.
@@ -98,7 +98,7 @@ def ReadFile(id):
     y_axis.append(coly)
 
     col = []
-    f = open("/data1/xtra/results/timestamps/SHJ_HS_NP_{}.txt".format(41), "r")
+    f = open("/data1/xtra/results/timestamps/SHJ_HS_P_{}.txt".format(41), "r")
     read = f.readlines()
     for r in read:
         value = double(r.strip("\n"))  # timestamp.

@@ -84,7 +84,7 @@ def ReadFile():
     col4 = []
 
     for id in it.chain(range(42, 46)):
-        file = '/data1/xtra/results/timestamps/SHJ_JM_NP_{}.txt'.format(id)
+        file = '/data1/xtra/results/timestamps/SHJ_JM_P_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
@@ -92,7 +92,7 @@ def ReadFile():
     y.append(normalize(col1))
 
     for id in it.chain(range(46, 50)):
-        file = '/data1/xtra/results/timestamps/SHJ_JM_NP_{}.txt'.format(id)
+        file = '/data1/xtra/results/timestamps/SHJ_JM_P_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
@@ -100,7 +100,7 @@ def ReadFile():
     y.append(normalize(col2))
 
     for id in it.chain(range(50, 54)):
-        file = '/data1/xtra/results/timestamps/SHJ_JM_NP_{}.txt'.format(id)
+        file = '/data1/xtra/results/timestamps/SHJ_JM_P_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
@@ -108,7 +108,7 @@ def ReadFile():
     y.append(normalize(col3))
 
     for id in it.chain(range(54, 58)):
-        file = '/data1/xtra/results/timestamps/SHJ_JM_NP_{}.txt'.format(id)
+        file = '/data1/xtra/results/timestamps/SHJ_JM_P_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp

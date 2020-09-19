@@ -220,7 +220,7 @@ def ReadFile(id):
 
     cnt = 0
     linecnt = 0
-    f = open("/data1/xtra/results/breakdown/SHJ_JM_NP_{}.txt".format(id), "r")
+    f = open("/data1/xtra/results/breakdown/SHJ_JM_P_{}.txt".format(id), "r")
     read = f.readlines()
     for _ in read:
         if (linecnt != 3):  ##skip sort.
@@ -231,7 +231,7 @@ def ReadFile(id):
     cnt = 0
     linecnt = 0
     sum = 0
-    f = open("/data1/xtra/results/breakdown/SHJ_JM_NP_{}.txt".format(id), "r")
+    f = open("/data1/xtra/results/breakdown/SHJ_JM_P_{}.txt".format(id), "r")
     read = f.readlines()
     for x in read:
         if (linecnt != 3):  ##skip sort.
@@ -246,7 +246,7 @@ def ReadFile(id):
     cnt = 0
     linecnt = 0
     sum = 0
-    f = open("/data1/xtra/results/breakdown/SHJ_JBCR_NP_{}.txt".format(id), "r")
+    f = open("/data1/xtra/results/breakdown/SHJ_JBCR_P_{}.txt".format(id), "r")
     read = f.readlines()
     for x in read:
         if (linecnt != 3):  ##skip sort.
@@ -261,7 +261,7 @@ def ReadFile(id):
     cnt = 0
     linecnt = 0
     sum = 0
-    f = open("/data1/xtra/results/breakdown/PMJ_JM_NP_{}.txt".format(id), "r")
+    f = open("/data1/xtra/results/breakdown/PMJ_JM_P_{}.txt".format(id), "r")
     read = f.readlines()
     for x in read:
         if (linecnt != 2):  ##skip build.
@@ -276,7 +276,7 @@ def ReadFile(id):
     cnt = 0
     linecnt = 0
     sum = 0
-    f = open("/data1/xtra/results/breakdown/PMJ_JBCR_NP_{}.txt".format(id), "r")
+    f = open("/data1/xtra/results/breakdown/PMJ_JBCR_P_{}.txt".format(id), "r")
     read = f.readlines()
     for x in read:
         if (linecnt != 2):  ##skip build.

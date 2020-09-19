@@ -170,7 +170,7 @@ def ReadFile(id):
     for i in range(id, bound, 1):
         cnt = 0
         print(i)
-        f = open("/data1/xtra/results/breakdown/SHJ_JM_NP_{}.txt".format(i), "r")
+        f = open("/data1/xtra/results/breakdown/SHJ_JM_P_{}.txt".format(i), "r")
         read = f.readlines()
         others = 0
         for x in read:

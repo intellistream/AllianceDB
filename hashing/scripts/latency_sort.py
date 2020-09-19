@@ -137,7 +137,7 @@ def ReadFile(id):
     w = 5
     bound = id + 1 * w
     for i in range(id, bound, 1):
-        file = '/data1/xtra/results/latency/PMJ_JBCR_NP_{}.txt'.format(i)
+        file = '/data1/xtra/results/latency/PMJ_JBCR_P_{}.txt'.format(i)
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(int(len(read) * 0.90)).strip("\n"))  # get the 90th timestamp
