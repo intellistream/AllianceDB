@@ -20,7 +20,7 @@ TICK_FP = FontProperties(style='normal', size=TICK_FONT_SIZE)
 
 MARKERS = (['o', 's', 'v', "^", "h", "v", ">", "x", "d", "<", "|", "", "|", "_"])
 # you may want to change the color map for different figures
-COLOR_MAP = (['#000000', '#5DA5DA', '#60BD68', '#B276B2', '#DECF3F', '#F17CB0', '#B2912F', '#FAA43A', '#AFAFAF'])
+COLOR_MAP = ('#000000', '#88CCEE', '#FFFFFF', '#117733', '#999933', '#DDCC77', '#CC6677', '#882255', '#AA4499')
 # you may want to change the patterns for different figures
 PATTERNS = (["", "\\\\", "//////", "o", "||", "\\\\", "\\\\", "//////", "//////", ".", "\\\\\\", "\\\\\\"])
 LABEL_WEIGHT = 'bold'
