@@ -135,7 +135,7 @@ def ReadFile(id):
         empty_coly.append(0)
 
     # calculate the proportional values of samples
-    coly = 1. * arange(len(col)) / (len(col) - 1)
+    coly = 1. * arange(len(col)) / (len(col) - 1) * 100
 
     x_axis.append(empty_col)
     y_axis.append(empty_coly)
@@ -323,7 +323,7 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
     # plt.ylim(y_min, y_max)
     plt.grid(axis='y', color='gray')
 
-    figure.yaxis.set_major_formatter(PercentFormatter())
+    figure.yaxis.set_major_formatter(PercentFormatter(1.0))
     # figure.yaxis.set_major_locator(LogLocator(base=10))
     # figure.xaxis.set_major_locator(matplotlib.ticker.FixedFormatter(["0.25", "0.5", "0.75", "1"]))
     # figure.xaxis.set_major_formatter(matplotlib.ticker.PercentFormatter(1.0))
