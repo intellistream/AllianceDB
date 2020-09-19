@@ -568,7 +568,7 @@ if [ $PROFILE_MICRO == 1 ]; then
   profile_breakdown=1                                                                     #compile depends on whether we want to profile.
   compile=1                                                                               #enable compiling.
   #benchmark experiment only apply for hashing directory.
-  for benchmark in "GROUP_SIZE_STUDY"; do # "SIMD_STUDY" "BUCKET_SIZE_STUDY" "PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY" "HS_STUDY" "P_NP_STUDY"
+  for benchmark in "P_NP_STUDY"; do # "SIMD_STUDY" "BUCKET_SIZE_STUDY" "PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY" "HS_STUDY" "P_NP_STUDY"
     case "$benchmark" in
     "SIMD_STUDY")
       id=104
