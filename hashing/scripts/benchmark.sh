@@ -14,8 +14,6 @@ mkdir -p $expDir/results/latency
 mkdir -p $expDir/results/records
 mkdir -p $expDir/results/timestamps
 
-
-
 ## Set L3 Cache according to your machine.
 sed -i -e "s/#define L3_CACHE_SIZE [[:alnum:]]*/#define L3_CACHE_SIZE 19922944/g" ../utils/params.h
 sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h
@@ -78,7 +76,7 @@ function perfUtilBenchmarkRun() {
   #####native execution
   echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap -o $expDir/results/breakdown/perf_$id.txt =="
   echo 3 >/proc/sys/vm/drop_caches
-  perf stat -I10 -x, -o /data1/xtra/results/breakdown/perf_$id.csv -e cache-misses,cycles  ../hashing -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap
+  perf stat -I10 -x, -o /data1/xtra/results/breakdown/perf_$id.csv -e cache-misses,cycles ../hashing -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap
   if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit -1; fi
 }
 
@@ -343,12 +341,12 @@ output=test$timestamp.txt
 ## APP benchmark.
 APP_BENCH=1
 if [ $APP_BENCH == 1 ]; then
-  sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h #enable time measurement
+  sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h            #enable time measurement
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h #disable hardware counters
-  profile_breakdown=1 #compile depends on whether we want to profile.
-  compile=$profile_breakdown # compile depends on whether we want to profile.
+  profile_breakdown=1                                                                     #compile depends on whether we want to profile.
+  compile=$profile_breakdown                                                              # compile depends on whether we want to profile.
   for benchmark in "Stock" "Rovio" "YSB" "DEBS"; do #
-    for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP ; do
+    for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do
       case "$benchmark" in
       "Stock")
         id=38
@@ -385,7 +383,7 @@ if [ $MICRO_BENCH == 1 ]; then
   profile_breakdown=0        # set to 1 if we want to measure time breakdown!
   compile=$profile_breakdown # compile depends on whether we want to profile.
   for benchmark in "AR" "RAR" "KD" "WS" "DD"; do #
-    for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP ; do # NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
+    for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do # NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
       case "$benchmark" in
       # Batch -a SHJ_JM_NP -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
       "AR") #test arrival rate and assume both inputs have same arrival rate.
@@ -494,9 +492,9 @@ fi
 ## SCLAE STUDY
 SCALE_STUDY=0
 if [ $SCALE_STUDY == 1 ]; then
-  sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h #enable time measurement
+  sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h            #enable time measurement
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h #disable hardware counters
-  profile_breakdown=0 #compile depends on whether we want to profile.
+  profile_breakdown=0                                                                     #compile depends on whether we want to profile.
   compile=0
   # general benchmark.
   for algo in SHJ_JM_NP; do
@@ -565,12 +563,12 @@ fi
 ## MICRO STUDY
 PROFILE_MICRO=0
 if [ $PROFILE_MICRO == 1 ]; then
-  sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h #enable time measurement
+  sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h            #enable time measurement
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h #disable hardware counters
-  profile_breakdown=1 #compile depends on whether we want to profile.
-  compile=1           #enable compiling.
+  profile_breakdown=1                                                                     #compile depends on whether we want to profile.
+  compile=1                                                                               #enable compiling.
   #benchmark experiment only apply for hashing directory.
-  for benchmark in "GROUP_SIZE_STUDY" ; do # "SIMD_STUDY" "BUCKET_SIZE_STUDY" "PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY" "HS_STUDY" "P_NP_STUDY"
+  for benchmark in "GROUP_SIZE_STUDY"; do # "SIMD_STUDY" "BUCKET_SIZE_STUDY" "PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY" "HS_STUDY" "P_NP_STUDY"
     case "$benchmark" in
     "SIMD_STUDY")
       id=104
@@ -710,8 +708,8 @@ PROFILE_YSB=0 ## Cache misses profiling with YSB, please run the program with su
 if [ $PROFILE_YSB == 1 ]; then
   sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h #disable time measurement
   sed -i -e "s/#define NO_PERF_COUNTERS/#define PERF_COUNTERS/g" ../utils/perf_counters.h
-  profile_breakdown=0      # disable measure time breakdown!
-  eager=1 #with eager
+  profile_breakdown=0 # disable measure time breakdown!
+  eager=1             #with eager
   compile=1
   PARTITION_ONLY
   compile
@@ -750,16 +748,16 @@ fi
 
 PERF_YSB=0 ## hardware profiling with YSB, please run the program with sudo
 if [ $PERF_YSB == 1 ]; then
-#  compile=1
-#  compile
+  #  compile=1
+  #  compile
   for benchmark in "Kim"; do #"YSB
     id=302
     for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do # NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
       case "$benchmark" in
       "Kim")
         ResetParameters
-#        SetYSBParameters
-#        SetDEBSParameters
+        #        SetYSBParameters
+        #        SetDEBSParameters
         STEP_SIZE=1280
         STEP_SIZE_S=12800
         WINDOW_SIZE=10000

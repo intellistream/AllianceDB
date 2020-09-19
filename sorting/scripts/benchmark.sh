@@ -413,7 +413,7 @@ if [ $PROFILE_MICRO == 1 ]; then
   done
 fi
 
-PROFILE_YSB=1 ## Cache misses profiling with YSB, please run the program with sudo
+PROFILE_YSB=0 ## Cache misses profiling with YSB, please run the program with sudo
 if [ $PROFILE_YSB == 1 ]; then
   sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h #disable time measurement
   sed -i -e "s/#define NO_PERF_COUNTERS/#define PERF_COUNTERS/g" ../utils/perf_counters.h
