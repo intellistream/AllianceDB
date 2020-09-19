@@ -339,7 +339,7 @@ timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
 
 ## APP benchmark.
-APP_BENCH=1
+APP_BENCH=0
 if [ $APP_BENCH == 1 ]; then
   sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h            #enable time measurement
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h #disable hardware counters
@@ -561,7 +561,7 @@ fi
 #    ;;
 
 ## MICRO STUDY
-PROFILE_MICRO=0
+PROFILE_MICRO=1
 if [ $PROFILE_MICRO == 1 ]; then
   sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h            #enable time measurement
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h #disable hardware counters
@@ -643,15 +643,14 @@ if [ $PROFILE_MICRO == 1 ]; then
       ;;
     "GROUP_SIZE_STUDY")
       id=124
-      ts=0 # batch data.
       ResetParameters
+      ts=0 # batch data.
       algo="PMJ_JM_NP"
       RUNALLMic
       algo="SHJ_JM_NP"
       RUNALLMic
 
       algo="PMJ_JBCR_NP"
-      ResetParameters
       echo GROUP_SIZE_STUDY PMJ 124 - 127
       for group in 1 2 4 8; do
         RUNALLMic
@@ -659,7 +658,6 @@ if [ $PROFILE_MICRO == 1 ]; then
       done
 
       algo="SHJ_JBCR_NP"
-      ResetParameters
       echo GROUP_SIZE_STUDY SHJ 128 - 131
       for group in 1 2 4 8; do
         RUNALLMic
@@ -672,12 +670,6 @@ if [ $PROFILE_MICRO == 1 ]; then
       id=132
       ResetParameters
       ts=0 # batch data.
-      FIXS=1
-      STEP_SIZE=1600
-      STEP_SIZE_S=1600
-      echo HS_STUDY 132
-      WINDOW_SIZE=1000
-      gap=$(($STEP_SIZE / 500 * $WINDOW_SIZE))
       algo="SHJ_HS_NP"
       RUNALLMic
       algo="SHJ_JM_NP"
@@ -688,12 +680,6 @@ if [ $PROFILE_MICRO == 1 ]; then
       id=133
       ResetParameters
       ts=0 # batch data.
-      FIXS=1
-      STEP_SIZE=12800
-      STEP_SIZE_S=12800
-      echo P_NP_STUDY 134
-      WINDOW_SIZE=1000
-      gap=$(($STEP_SIZE / 500 * $WINDOW_SIZE))
       algo="SHJ_JM_NP"
       RUNALLMic
       algo="SHJ_JM_P"
