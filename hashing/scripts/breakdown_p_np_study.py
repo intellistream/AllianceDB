@@ -107,10 +107,10 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
         # handles, labels = figure.get_legend_handles_labels()
         # handles[::-1], labels[::-1]
         leg = plt.legend(
-            loc='right',
+            loc='center',
             prop=LEGEND_FP,
-            ncol=1,
-            bbox_to_anchor=(1.4, 0.5),
+            ncol=2,
+            bbox_to_anchor=(0.5, 1.5),
             handletextpad=0.2,
             borderaxespad=0.0,
             handlelength=1.8,

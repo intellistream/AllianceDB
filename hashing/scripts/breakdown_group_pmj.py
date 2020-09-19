@@ -73,7 +73,7 @@ def DrawFigure(x_values, y_values, sum, legend_labels, x_label, y_label, filenam
     print(sum)
 
     plt.plot(x_coordinates, y_coordinates,
-             color=LINE_COLORS[4], linewidth=LINE_WIDTH,
+             color='black', linewidth=LINE_WIDTH,
              marker=MARKERS[4], markersize=MARKER_SIZE,
              markeredgewidth=2, markeredgecolor='k')  # this is the JM line.
     plt.text(3.7, sum+10, "JM", fontproperties=LABEL_FP)
