@@ -123,8 +123,8 @@ def DrawLegend(legend_labels, filename):
     fig = pylab.figure()
     ax1 = fig.add_subplot(111)
     FIGURE_LABEL = legend_labels
-    LINE_WIDTH = 8.0
-    MARKER_SIZE = 20.0
+    LINE_WIDTH = 10.0
+    MARKER_SIZE = 26.0
     LEGEND_FP = FontProperties(style='normal', size=26)
 
     figlegend = pylab.figure(figsize=(16, 0.4))
@@ -156,7 +156,7 @@ def DrawLegend(legend_labels, filename):
 # draw a line chart
 def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, filename, allow_legend):
     # you may change the figure size on your own.
-    fig = plt.figure(figsize=(10, 3))
+    fig = plt.figure(figsize=(9, 3))
     figure = fig.add_subplot(111)
 
     FIGURE_LABEL = legend_labels

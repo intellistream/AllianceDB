@@ -46,7 +46,7 @@ def ConvertEpsToPdf(dir_filename):
 # draw a line chart
 def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, allow_legend):
     # you may change the figure size on your own.
-    fig = plt.figure(figsize=(12, 3.5))
+    fig = plt.figure(figsize=(9, 3))
     figure = fig.add_subplot(111)
 
     FIGURE_LABEL = legend_labels
