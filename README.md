@@ -4,6 +4,7 @@ All of our experiments can be automatically reproduced by calling a few pre-prep
 
 ## TODO
 
+-1. correct name in all scripts (e.g., drawing which figure.).
 0. Figure 3 (a) legend.
 1. clean all data path, do not use fixed "/data1/xtra/..."
 2. need to check write permission of all folders in /data1/xtra/...
