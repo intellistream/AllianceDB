@@ -166,7 +166,7 @@ def ReadFile(id):
     for i in range(id, bound, 1):
         cnt = 0
         print(i)
-        f = open("/data1/xtra/results/breakdown/PMJ_JBCR_NP_{}.txt".format(i), "r")
+        f = open("/data1/xtra/results/breakdown/PMJ_JBCR_P_{}.txt".format(i), "r")
         read = f.readlines()
         others = 0
         for x in read:
@@ -185,7 +185,7 @@ def ReadFile(id):
             #     y[2][j] = others
             cnt += 1
         j += 1
-    f = open("/data1/xtra/results/breakdown/PMJ_JM_NP_{}.txt".format(id), "r")
+    f = open("/data1/xtra/results/breakdown/PMJ_JM_P_{}.txt".format(id), "r")
     read = f.readlines()
     sum = 0
     cnt = 0
