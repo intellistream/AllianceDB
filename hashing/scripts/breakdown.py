@@ -80,7 +80,8 @@ def DrawFigure(x_values, y_values, y_max, legend_labels, x_label, y_label, filen
                    frameon=False, borderaxespad=0.0, handlelength=2, labelspacing=0.2)
 
     plt.ylim(0, y_max)
-    plt.yscale('log')
+    # plt.yscale('log')
+    plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
     # you may need to tune the xticks position to get the best figure.
     plt.xticks(index + 0.5 * width, x_values)
     # plt.autofmt_xdate()
@@ -92,9 +93,8 @@ def DrawFigure(x_values, y_values, y_max, legend_labels, x_label, y_label, filen
     # else:
     # figure.yaxis.set_major_locator(pylab.LinearLocator(5))
     plt.grid(axis='y', color='gray')
-    figure.yaxis.set_major_locator(LogLocator(base=10))
+    # figure.yaxis.set_major_locator(LogLocator(base=10))
     #
-
     # figure.get_xaxis().set_tick_params(direction='in', pad=10)
     # figure.get_yaxis().set_tick_params(direction='in', pad=10)
 
