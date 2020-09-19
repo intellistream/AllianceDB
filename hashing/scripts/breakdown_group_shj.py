@@ -102,8 +102,8 @@ def DrawFigure(x_values, y_values, sum, legend_labels, x_label, y_label, filenam
     y_coordinates = [sum, sum]
     print(sum)
     plt.plot(x_coordinates, y_coordinates,
-             color=LINE_COLORS[5], linewidth=LINE_WIDTH,
-             marker=MARKERS[5], markersize=MARKER_SIZE,
+             color=LINE_COLORS[4], linewidth=LINE_WIDTH,
+             marker=MARKERS[4], markersize=MARKER_SIZE,
              markeredgewidth=2, markeredgecolor='k')  # this is the JM line.
     plt.text(3.7, sum+10, "JM", fontproperties=LABEL_FP)
     # you may need to tune the xticks position to get the best figure.
