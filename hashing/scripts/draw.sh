@@ -11,8 +11,8 @@ for id in {38..41}; do
 done
 
 echo "Drawing Figure 7..."
-python3 breakdown_broken.py -i 38
-for id in {39..41} ; do
+#python3 breakdown_broken.py -i 38
+for id in {38..41} ; do
   python3 breakdown.py -i $id
 done
 

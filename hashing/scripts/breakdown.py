@@ -8,19 +8,20 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pylab
 from matplotlib.font_manager import FontProperties
+from matplotlib.ticker import LogLocator
 from numpy import double
 
 OPT_FONT_NAME = 'Helvetica'
 TICK_FONT_SIZE = 20
-LABEL_FONT_SIZE = 22
-LEGEND_FONT_SIZE = 24
+LABEL_FONT_SIZE = 24
+LEGEND_FONT_SIZE = 26
 LABEL_FP = FontProperties(style='normal', size=LABEL_FONT_SIZE)
 LEGEND_FP = FontProperties(style='normal', size=LEGEND_FONT_SIZE)
 TICK_FP = FontProperties(style='normal', size=TICK_FONT_SIZE)
 
 MARKERS = (['o', 's', 'v', "^", "h", "v", ">", "x", "d", "<", "|", "", "|", "_"])
 # you may want to change the color map for different figures
-COLOR_MAP = (['#000000', '#5DA5DA', '#60BD68', '#B276B2', '#DECF3F', '#F17CB0', '#B2912F', '#FAA43A', '#AFAFAF'])
+COLOR_MAP = ('#000000', '#332288', '#88CCEE', '#44AA99', '#117733', '#999933', '#DDCC77', '#CC6677', '#882255', '#AA4499')
 # you may want to change the patterns for different figures
 PATTERNS = (["", "\\", "///", "o", "||", "\\\\", "\\\\", "//////", "//////", ".", "\\\\\\", "\\\\\\"])
 LABEL_WEIGHT = 'bold'
@@ -79,6 +80,7 @@ def DrawFigure(x_values, y_values, y_max, legend_labels, x_label, y_label, filen
                    frameon=False, borderaxespad=0.0, handlelength=2, labelspacing=0.2)
 
     plt.ylim(0, y_max)
+    plt.yscale('log')
     # you may need to tune the xticks position to get the best figure.
     plt.xticks(index + 0.5 * width, x_values)
     # plt.autofmt_xdate()
@@ -88,8 +90,9 @@ def DrawFigure(x_values, y_values, y_max, legend_labels, x_label, y_label, filen
     #     plt.yscale('log')
     #     figure.yaxis.set_major_locator(matplotlib.ticker.LogLocator(numticks=5))
     # else:
-    figure.yaxis.set_major_locator(pylab.LinearLocator(5))
+    # figure.yaxis.set_major_locator(pylab.LinearLocator(5))
     plt.grid(axis='y', color='gray')
+    figure.yaxis.set_major_locator(LogLocator(base=10))
     #
 
     # figure.get_xaxis().set_tick_params(direction='in', pad=10)

@@ -5,20 +5,20 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pylab
 from matplotlib.font_manager import FontProperties
-from matplotlib.ticker import LinearLocator
+from matplotlib.ticker import LinearLocator, LogLocator
 from numpy import double
 
 OPT_FONT_NAME = 'Helvetica'
 TICK_FONT_SIZE = 20
-LABEL_FONT_SIZE = 22
-LEGEND_FONT_SIZE = 24
+LABEL_FONT_SIZE = 24
+LEGEND_FONT_SIZE = 26
 LABEL_FP = FontProperties(style='normal', size=LABEL_FONT_SIZE)
 LEGEND_FP = FontProperties(style='normal', size=LEGEND_FONT_SIZE)
 TICK_FP = FontProperties(style='normal', size=TICK_FONT_SIZE)
 
 MARKERS = (['o', 's', 'v', "^", "h", "v", ">", "x", "d", "<", "|", "", "+", "_"])
 # you may want to change the color map for different figures
-COLOR_MAP = ('#ABB2B9', '#2E4053', '#8D6E63', '#000000', '#CD6155', '#52BE80', '#FFFF00', '#5499C7', '#BB8FCE')
+COLOR_MAP = ('#000000', '#332288', '#88CCEE', '#44AA99', '#117733', '#999933', '#DDCC77', '#CC6677', '#882255', '#AA4499')
 # you may want to change the patterns for different figures
 PATTERNS = (["", "", "", "", "/", "\\", "||", "-", "o", "O", "////", ".", "|||", "o", "---", "+", "\\\\", "*"])
 LABEL_WEIGHT = 'bold'
@@ -122,9 +122,10 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
 
     # plt.xlim(0,)
     # plt.ylim(y_min, y_max)
-
+    plt.yscale('log')
     plt.grid(axis='y', color='gray')
-    figure.yaxis.set_major_locator(LinearLocator(6))
+    # figure.yaxis.set_major_locator(LinearLocator(6))
+    figure.yaxis.set_major_locator(LogLocator(base=10))
 
     figure.get_xaxis().set_tick_params(direction='in', pad=10)
     figure.get_yaxis().set_tick_params(direction='in', pad=10)
