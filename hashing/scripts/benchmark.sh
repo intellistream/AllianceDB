@@ -340,14 +340,14 @@ timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
 
 ## APP benchmark.
-APP_BENCH=0
+APP_BENCH=1
 if [ $APP_BENCH == 1 ]; then
   sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h            #enable time measurement
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h #disable hardware counters
   profile_breakdown=1                                                                     #compile depends on whether we want to profile.
   compile=$profile_breakdown                                                              # compile depends on whether we want to profile.
   for benchmark in "Stock" "Rovio" "YSB" "DEBS"; do #
-    for algo in SHJ_JBCR_P; do #NPO PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P
+    for algo in NPO PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P; do #NPO PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P
       case "$benchmark" in
       "Stock")
         id=38
@@ -383,8 +383,8 @@ MICRO_BENCH=1
 if [ $MICRO_BENCH == 1 ]; then
   profile_breakdown=0        # set to 1 if we want to measure time breakdown!
   compile=$profile_breakdown # compile depends on whether we want to profile.
-  for benchmark in "AD"; do #"AR" "RAR" "AD" "KD" "WS" "DD"
-    for algo in  SHJ_JBCR_P ; do # NPO PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P
+  for benchmark in "AR" "RAR" "AD" "KD" "WS" "DD"; do #"AR" "RAR" "AD" "KD" "WS" "DD"
+    for algo in  NPO PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P ; do #
       case "$benchmark" in
       # Batch -a SHJ_JM_P -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
       "AR") #test arrival rate and assume both inputs have same arrival rate.
@@ -491,7 +491,7 @@ if [ $MICRO_BENCH == 1 ]; then
 fi
 
 ## SCLAE STUDY
-SCALE_STUDY=0
+SCALE_STUDY=1
 if [ $SCALE_STUDY == 1 ]; then
   sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h            #enable time measurement
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h #disable hardware counters
@@ -562,14 +562,14 @@ fi
 #    ;;
 
 ## MICRO STUDY
-PROFILE_MICRO=0
+PROFILE_MICRO=1
 if [ $PROFILE_MICRO == 1 ]; then
   sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h            #enable time measurement
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h #disable hardware counters
   profile_breakdown=1                                                                     #compile depends on whether we want to profile.
   compile=1                                                                               #enable compiling.
   #benchmark experiment only apply for hashing directory.
-  for benchmark in  "SIMD_STUDY" "BUCKET_SIZE_STUDY" "PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY" "P_P_STUDY"; do # "SIMD_STUDY" "BUCKET_SIZE_STUDY" "PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY" "HS_STUDY" "P_P_STUDY"
+  for benchmark in "SIMD_STUDY" "BUCKET_SIZE_STUDY" "PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY" "P_P_STUDY"; do # "SIMD_STUDY" "BUCKET_SIZE_STUDY" "PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY" "HS_STUDY" "P_P_STUDY"
     case "$benchmark" in
     "SIMD_STUDY")
       id=104
@@ -691,7 +691,7 @@ if [ $PROFILE_MICRO == 1 ]; then
   done
 fi
 
-PROFILE_YSB=0 ## Cache misses profiling with YSB, please run the program with sudo
+PROFILE_YSB=1 ## Cache misses profiling with YSB, please run the program with sudo
 if [ $PROFILE_YSB == 1 ]; then
   sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h #disable time measurement
   sed -i -e "s/#define NO_PERF_COUNTERS/#define PERF_COUNTERS/g" ../utils/perf_counters.h
