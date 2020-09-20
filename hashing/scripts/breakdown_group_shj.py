@@ -89,7 +89,7 @@ def DrawFigure(x_values, y_values, sum, legend_labels, x_label, y_label, filenam
                              loc='center',
                              prop=LEGEND_FP,
                              ncol=4,
-                             bbox_to_anchor=(0.5, 1.2),
+                             bbox_to_anchor=(0.5, 1.3),
                              handletextpad=0.1,
                              borderaxespad=0.0,
                              handlelength=1.8,

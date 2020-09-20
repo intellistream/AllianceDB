@@ -76,7 +76,9 @@ def DrawFigure(x_values, y_values, y_max, legend_labels, x_label, y_label, filen
     # sometimes you may not want to draw legends.
     if allow_legend == True:
         plt.legend(bars, FIGURE_LABEL, prop=LEGEND_FP,
-                   loc='upper center', ncol=len(legend_labels), mode='expand', bbox_to_anchor=(0.45, 1.2), shadow=False,
+                   loc='upper center', ncol=len(legend_labels), mode='expand',
+                   bbox_to_anchor=(0.45, 1.1),
+                   shadow=False,
                    frameon=False, borderaxespad=0.0, handlelength=2, labelspacing=0.2)
 
     plt.ylim(0, y_max)

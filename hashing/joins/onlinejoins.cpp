@@ -244,7 +244,7 @@ SHJ_JBCR_P(relation_t *relR, relation_t *relS, param_t cmd_params) {
     param.fetcher = type_JB_P_Fetcher;//new JB_NP_Fetcher(nthreads, relR, relS);
     param.shuffler = new ContRandShuffler(nthreads, relR, relS, cmd_params.group_size);
     param.joiner = type_SHJJoiner;//new SHJJoiner();
-    param.algo_name = "SHJ_JBCR_NP";
+    param.algo_name = "SHJ_JBCR_P";
     param.exp_id = cmd_params.exp_id;
     param.record_gap = cmd_params.gap;
     uint64_t *startTS = new uint64_t();
