@@ -172,7 +172,7 @@ timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
 
 # APP_Bench.
-APP_BENCH=1
+APP_BENCH=0
 if [ $APP_BENCH == 1 ]; then
   sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h            #enable time measurement
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h #disable hardware counters
@@ -211,7 +211,7 @@ if [ $APP_BENCH == 1 ]; then
 fi
 
 #MICRO benchmark.
-MICRO_BENCH=1
+MICRO_BENCH=0
 if [ $MICRO_BENCH == 1 ]; then
   sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h            #enable time measurement
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h #disable hardware counters
@@ -322,7 +322,7 @@ if [ $MICRO_BENCH == 1 ]; then
 fi
 
 #SCLAE benchmark.
-SCALE_STUDY=1
+SCALE_STUDY=0
 if [ $SCALE_STUDY == 1 ]; then
   sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h            #enable time measurement
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h #disable hardware counters
@@ -377,7 +377,7 @@ if [ $SCALE_STUDY == 1 ]; then
 fi
 
 ## MICRO STUDY
-PROFILE_MICRO=1
+PROFILE_MICRO=0
 if [ $PROFILE_MICRO == 1 ]; then
   sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h            #enable time measurement
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h #disable hardware counters
