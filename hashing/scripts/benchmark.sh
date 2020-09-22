@@ -237,10 +237,10 @@ function RUNALL() {
 
 function RUNALLMic() {
   if [ $profile_breakdown == 1 ]; then
-    if [ $algo == SHJ_JM_P ] || [ $algo == SHJ_JM_P ] || [ $algo == SHJ_JBCR_P ] || [ $algo == SHJ_HS_P ]; then
+    if [ $algo == SHJ_JM_P ] || [ $algo == SHJ_JM_NP ] || [ $algo == SHJ_JBCR_P ] || [ $algo == SHJ_JBCR_NP ] || [ $algo == SHJ_HS_P ]|| [ $algo == SHJ_HS_NP ]; then
       SHJKIMRUN
     else
-      if [ $algo == PMJ_JM_P ] || [ $algo == PMJ_JBCR_P ]; then
+      if [ $algo == PMJ_JM_P ] || [ $algo == PMJ_JM_NP ] || [ $algo == PMJ_JBCR_P ] || [ $algo == PMJ_JBCR_NP ]; then
         FULLKIMRUN
       else
         KimRun
@@ -340,7 +340,7 @@ timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
 
 ## APP benchmark.
-APP_BENCH=1
+APP_BENCH=0
 if [ $APP_BENCH == 1 ]; then
   sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h            #enable time measurement
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h #disable hardware counters
@@ -379,7 +379,7 @@ if [ $APP_BENCH == 1 ]; then
 fi
 
 ## MICRO benchmark.
-MICRO_BENCH=1
+MICRO_BENCH=0
 if [ $MICRO_BENCH == 1 ]; then
   profile_breakdown=0        # set to 1 if we want to measure time breakdown!
   compile=$profile_breakdown # compile depends on whether we want to profile.
@@ -491,7 +491,7 @@ if [ $MICRO_BENCH == 1 ]; then
 fi
 
 ## SCLAE STUDY
-SCALE_STUDY=1
+SCALE_STUDY=0
 if [ $SCALE_STUDY == 1 ]; then
   sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h            #enable time measurement
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h #disable hardware counters
@@ -569,7 +569,7 @@ if [ $PROFILE_MICRO == 1 ]; then
   profile_breakdown=1                                                                     #compile depends on whether we want to profile.
   compile=1                                                                               #enable compiling.
   #benchmark experiment only apply for hashing directory.
-  for benchmark in "SIMD_STUDY" "BUCKET_SIZE_STUDY" "PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY" "P_P_STUDY"; do # "SIMD_STUDY" "BUCKET_SIZE_STUDY" "PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY" "HS_STUDY" "P_P_STUDY"
+  for benchmark in "P_P_STUDY"; do # "SIMD_STUDY" "BUCKET_SIZE_STUDY" "PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY"
     case "$benchmark" in
     "SIMD_STUDY")
       id=104
@@ -691,7 +691,7 @@ if [ $PROFILE_MICRO == 1 ]; then
   done
 fi
 
-PROFILE=1 ## Cache misses profiling, please run the program with sudo
+PROFILE=0 ## Cache misses profiling, please run the program with sudo
 if [ $PROFILE == 1 ]; then
   sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h #disable time measurement
   sed -i -e "s/#define NO_PERF_COUNTERS/#define PERF_COUNTERS/g" ../utils/perf_counters.h
