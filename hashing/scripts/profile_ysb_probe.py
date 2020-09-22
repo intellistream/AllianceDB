@@ -88,11 +88,9 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
     # you may need to tune the xticks position to get the best figure.
     plt.xticks(index + 3 * width, x_values)
 
-    # plt.xlim(0,)
-    # plt.ylim(y_min, y_max)
-    # plt.ylim(0, y_max)
-    # plt.yscale('lzog')
-    plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
+    plt.ticklabel_format(axis="y", style="sci", scilimits=(0,0), useMathText=True)
+    plt.grid(axis='y', color='gray')
+    figure.yaxis.set_major_locator(LinearLocator(3))
     # plt.grid(axis='y', color='gray')
     # figure.yaxis.set_major_locator(LinearLocator(6))
 
