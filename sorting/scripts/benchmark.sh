@@ -422,20 +422,6 @@ if [ $PROFILE == 1 ]; then
   profile_breakdown=0                                                                    #compile depends on whether we want to profile.
   compile=1                                                                               #enable compiling.
 
-  echo Profile SIMD SORT
-  id=102
-  ResetParameters
-  ts=0 # batch data.
-  PARTITION_BUILD_SORT
-  compile
-  for algo in "m-way" "m-pass"; do
-    for scalar in 0 1; do
-      sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scalar/g" ../helper/sort_common.h
-      KimRun
-      let "id++"
-    done
-  done
-
   for benchmark in "YSB"; do
     id=201
     PARTITION_ONLY

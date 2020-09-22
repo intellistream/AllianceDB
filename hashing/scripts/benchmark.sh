@@ -699,22 +699,6 @@ if [ $PROFILE == 1 ]; then
   eager=1             #with eager
   compile=1
 
-  echo Profile SIMD SORT
-  id=106
-  ResetParameters
-  ts=0 # batch data.
-  PARTITION_BUILD_SORT
-  compile
-  for algo in "PMJ_JM_P" "PMJ_JBCR_P"; do
-    for scalar in 0 1; do
-      sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scalar/g" ../helper/sort_common.h
-      RUNALLMic
-      let "id++"
-    done
-  done
-  python3 breakdown_simd.py
-  python3 profile_simd.py
-
   PARTITION_ONLY
   compile
   for benchmark in "YSB"; do #"
