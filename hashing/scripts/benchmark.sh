@@ -702,7 +702,7 @@ if [ $PROFILE_YSB == 1 ]; then
   compile
   for benchmark in "YSB"; do #"
     id=205
-    for algo in NPO; do #PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P
+    for algo in NPO PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P; do #PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P
       case "$benchmark" in
       "YSB")
         ResetParameters
@@ -719,7 +719,7 @@ if [ $PROFILE_YSB == 1 ]; then
   compile
   for benchmark in "YSB"; do #"
     id=210
-    for algo in NPO; do # ~215 NPO PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P
+    for algo in NPO PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P; do # ~215 NPO PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P
       case "$benchmark" in
       "YSB")
         ResetParameters

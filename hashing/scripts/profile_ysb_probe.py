@@ -135,7 +135,7 @@ if __name__ == "__main__":
         'L1 miss', 'L2 miss', 'L3 miss'
     ]
     y_values = []
-    file = '/data1/xtra/results/records/NPJ_{}.txt'.format(203)
+    file = '/data1/xtra/results/records/NPJ_{}.txt'.format(40)
     f = open(file, "r")
     read = f.readlines()
     inputs = float(read.pop(0).strip("\n"))  # get number of inputs
