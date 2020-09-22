@@ -107,7 +107,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, al
     plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
     plt.grid(axis='y', color='gray')
     figure.get_yaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
-    figure.yaxis.set_major_locator(MaxNLocator(nbins=4, integer=True))
+    figure.yaxis.set_major_locator(LinearLocator(3))
 
     # figure.yaxis.set_major_locator(LinearLocator(6))
     # figure.yaxis.set_major_locator(LogLocator(base=10))
