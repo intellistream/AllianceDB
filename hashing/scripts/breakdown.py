@@ -81,7 +81,7 @@ def DrawFigure(x_values, y_values, y_max, legend_labels, x_label, y_label, filen
                    shadow=False,
                    frameon=False, borderaxespad=0.0, handlelength=2, labelspacing=0.2)
 
-    plt.ylim(0, y_max)
+    # plt.ylim(0, y_max)
     # plt.yscale('log')
     plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
     figure.yaxis.set_major_locator(LinearLocator(4))

@@ -168,6 +168,7 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
     plt.xscale('log')
     # plt.xticks(x_values)
     # you may control the limits on your own.
+    plt.xlim(left=0)
     # plt.xlim(x_min, x_max)
     # plt.ylim(y_min, y_max)
 
@@ -178,7 +179,7 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
     figure.xaxis.set_major_locator(LogLocator(base=10))
     # figure.xaxis.set_major_locator(LinearLocator(5))
 
-    figure.get_xaxis().set_tick_params(direction='in', pad=5)
+    figure.get_xaxis().set_tick_params(direction='in', pad=10)
     figure.get_yaxis().set_tick_params(direction='in', pad=10)
 
     plt.xlabel(x_label, fontproperties=LABEL_FP)
