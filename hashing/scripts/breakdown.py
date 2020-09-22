@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pylab
 from matplotlib.font_manager import FontProperties
-from matplotlib.ticker import LogLocator
+from matplotlib.ticker import LogLocator, LinearLocator
 from numpy import double
 
 OPT_FONT_NAME = 'Helvetica'
@@ -84,6 +84,7 @@ def DrawFigure(x_values, y_values, y_max, legend_labels, x_label, y_label, filen
     plt.ylim(0, y_max)
     # plt.yscale('log')
     plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
+    figure.yaxis.set_major_locator(LinearLocator(4))
     # you may need to tune the xticks position to get the best figure.
     plt.xticks(index + 0.5 * width, x_values)
     # plt.autofmt_xdate()

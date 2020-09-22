@@ -91,7 +91,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
     # plt.xlim(0,)
     # plt.ylim(y_min, y_max)
 
-    plt.ylim(0, y_max)
+    # plt.ylim(0, y_max)
     # plt.yscale('log')
     plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
     # plt.grid(axis='y', color='gray')

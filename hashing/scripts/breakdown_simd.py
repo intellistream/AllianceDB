@@ -105,6 +105,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, al
     # plt.ylim(0,1)
     # plt.yscale('log')
     plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
+    figure.yaxis.set_major_locator(LinearLocator(4))
     plt.grid(axis='y', color='gray')
     # figure.yaxis.set_major_locator(LinearLocator(6))
     # figure.yaxis.set_major_locator(LogLocator(base=10))
