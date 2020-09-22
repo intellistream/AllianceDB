@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import pylab
 from matplotlib import rc
 from matplotlib.font_manager import FontProperties
-from matplotlib.ticker import MaxNLocator, LogLocator
+from matplotlib.ticker import MaxNLocator, LogLocator, LinearLocator
 
 OPT_FONT_NAME = 'Helvetica'
 TICK_FONT_SIZE = 20
@@ -119,17 +119,19 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
                    frameon=True, borderaxespad=0.0, handlelength=1.5,
                    handletextpad=0.1,
                    labelspacing=0.1)
-    plt.xscale('log')
-    plt.yscale('log')
+    # plt.xscale('log')
+    # plt.yscale('log')
     plt.xticks(x_values)
     # you may control the limits on your own.
     # plt.xlim(x_min, x_max)
-    # plt.ylim(0, 13000)
+    plt.ylim(0, 13000)
     # plt.ylim(y_min, y_max)
-    # plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
+    plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
     plt.grid(axis='y', color='gray')
-    figure.yaxis.set_major_locator(LogLocator(numticks=3))
     figure.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
+    figure.yaxis.set_major_locator(LinearLocator(3))
+    # figure.xaxis.set_major_locator(MaxNLocator(integer=True))
+
     # figure.yaxis.set_major_locator(LinearLocator(3))
     # figure.xaxis.set_major_locator(MaxNLocator(integer=True))
 
