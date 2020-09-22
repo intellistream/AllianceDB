@@ -89,7 +89,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
     plt.xticks(index + 3 * width, x_values)
 
     # plt.xlim(0,)
-    plt.ylim(y_min, y_max)
+    # plt.ylim(y_min, y_max)
 
     plt.grid(axis='y', color='gray')
     figure.yaxis.set_major_locator(LinearLocator(6))
@@ -138,7 +138,7 @@ if __name__ == "__main__":
     file = '/data1/xtra/results/records/NPJ_{}.txt'.format(40)
     f = open(file, "r")
     read = f.readlines()
-    inputs = float(read.pop(0).strip("\n"))  # get number of inputs
+    inputs = float(read.pop(0).strip("\n")) /1000 # get number of inputs (in k)
 
     y_values.append([  # NPJ  -- test id: 210
         GetL1MISS(210) / inputs,  # L1
@@ -193,7 +193,7 @@ if __name__ == "__main__":
                      'SHJ$^{JM}$', 'SHJ$^{JB}$', 'PMJ$^{JM}$',
                      'PMJ$^{JB}$']
 
-    DrawFigure(x_values, y_values, legend_labels, '', 'misses per input', 0,  1,
+    DrawFigure(x_values, y_values, legend_labels, '', 'misses per k input', 0,  1,
                'profile_ysb_probe',
                False)
     DrawLegend(legend_labels, 'profile_legend')
