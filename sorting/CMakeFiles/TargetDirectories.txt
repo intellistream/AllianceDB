@@ -1,0 +1,3 @@
+/home/shuhao.zhang/AllianceDB/sorting/CMakeFiles/rebuild_cache.dir
+/home/shuhao.zhang/AllianceDB/sorting/CMakeFiles/sorting.dir
+/home/shuhao.zhang/AllianceDB/sorting/CMakeFiles/edit_cache.dir
