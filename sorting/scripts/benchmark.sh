@@ -431,7 +431,7 @@ if [ $PROFILE == 1 ]; then
   for algo in "m-way" "m-pass"; do
     for scalar in 0 1; do
       sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scalar/g" ../helper/sort_common.h
-      RUNALLMic
+      KimRun
       let "id++"
     done
   done
