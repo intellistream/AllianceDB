@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pylab
 from matplotlib.font_manager import FontProperties
-from matplotlib.ticker import LinearLocator, LogLocator
+from matplotlib.ticker import LinearLocator, LogLocator, MaxNLocator
 from numpy import double
 
 OPT_FONT_NAME = 'Helvetica'
@@ -106,7 +106,8 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, al
     # plt.ylim(0,1)
     # plt.yscale('log')
     plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
-    figure.yaxis.set_major_locator(LinearLocator(4))
+    figure.yaxis.set_major_locator(MaxNLocator(nbins=4, integer=True))
+    figure.get_yaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
     plt.grid(axis='y', color='gray')
     # figure.yaxis.set_major_locator(LogLocator(base=10))
     # figure.yaxis.set_major_locator(LinearLocator(6))

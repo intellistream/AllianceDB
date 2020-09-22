@@ -85,6 +85,7 @@ def DrawFigure(x_values, y_values, y_max, legend_labels, x_label, y_label, filen
     # plt.yscale('log')
     plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
     figure.yaxis.set_major_locator(MaxNLocator(nbins=4, integer=True))
+    figure.get_yaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
     # you may need to tune the xticks position to get the best figure.
     plt.xticks(index + 0.5 * width, x_values)
     # plt.autofmt_xdate()
