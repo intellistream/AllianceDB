@@ -172,7 +172,7 @@ timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
 
 # APP_Bench.
-APP_BENCH=1
+APP_BENCH=0
 if [ $APP_BENCH == 1 ]; then
   sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h            #enable time measurement
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h #disable hardware counters
@@ -211,7 +211,7 @@ if [ $APP_BENCH == 1 ]; then
 fi
 
 #MICRO benchmark.
-MICRO_BENCH=1
+MICRO_BENCH=0
 if [ $MICRO_BENCH == 1 ]; then
   sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h            #enable time measurement
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h #disable hardware counters
@@ -322,7 +322,7 @@ if [ $MICRO_BENCH == 1 ]; then
 fi
 
 #SCLAE benchmark.
-SCALE_STUDY=1
+SCALE_STUDY=0
 if [ $SCALE_STUDY == 1 ]; then
   sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h            #enable time measurement
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h #disable hardware counters
@@ -377,7 +377,7 @@ if [ $SCALE_STUDY == 1 ]; then
 fi
 
 ## MICRO STUDY
-PROFILE_MICRO=1
+PROFILE_MICRO=0
 if [ $PROFILE_MICRO == 1 ]; then
   sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h            #enable time measurement
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h #disable hardware counters
@@ -415,12 +415,27 @@ if [ $PROFILE_MICRO == 1 ]; then
   done
 fi
 
-PROFILE_YSB=1 ## Cache misses profiling with YSB, please run the program with sudo
-if [ $PROFILE_YSB == 1 ]; then
+PROFILE=1 ## Cache misses profiling, please run the program with sudo
+if [ $PROFILE == 1 ]; then
   sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h #disable time measurement
   sed -i -e "s/#define NO_PERF_COUNTERS/#define PERF_COUNTERS/g" ../utils/perf_counters.h
   profile_breakdown=0                                                                    #compile depends on whether we want to profile.
   compile=1                                                                               #enable compiling.
+
+  echo Profile SIMD SORT
+  id=102
+  ResetParameters
+  ts=0 # batch data.
+  PARTITION_BUILD_SORT
+  compile
+  for algo in "m-way" "m-pass"; do
+    for scalar in 0 1; do
+      sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scalar/g" ../helper/sort_common.h
+      RUNALLMic
+      let "id++"
+    done
+  done
+
   for benchmark in "YSB"; do
     id=201
     PARTITION_ONLY

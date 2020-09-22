@@ -384,7 +384,7 @@ if [ $MICRO_BENCH == 1 ]; then
   profile_breakdown=0        # set to 1 if we want to measure time breakdown!
   compile=$profile_breakdown # compile depends on whether we want to profile.
   for benchmark in "AR" "RAR" "AD" "KD" "WS" "DD"; do #"AR" "RAR" "AD" "KD" "WS" "DD"
-    for algo in  NPO PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P ; do #
+    for algo in NPO PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P; do #
       case "$benchmark" in
       # Batch -a SHJ_JM_P -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
       "AR") #test arrival rate and assume both inputs have same arrival rate.
@@ -691,13 +691,30 @@ if [ $PROFILE_MICRO == 1 ]; then
   done
 fi
 
-PROFILE_YSB=1 ## Cache misses profiling with YSB, please run the program with sudo
-if [ $PROFILE_YSB == 1 ]; then
+PROFILE=1 ## Cache misses profiling, please run the program with sudo
+if [ $PROFILE == 1 ]; then
   sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h #disable time measurement
   sed -i -e "s/#define NO_PERF_COUNTERS/#define PERF_COUNTERS/g" ../utils/perf_counters.h
   profile_breakdown=0 # disable measure time breakdown!
   eager=1             #with eager
   compile=1
+
+  echo Profile SIMD SORT
+  id=106
+  ResetParameters
+  ts=0 # batch data.
+  PARTITION_BUILD_SORT
+  compile
+  for algo in "PMJ_JM_P" "PMJ_JBCR_P"; do
+    for scalar in 0 1; do
+      sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scalar/g" ../helper/sort_common.h
+      RUNALLMic
+      let "id++"
+    done
+  done
+  python3 breakdown_simd.py
+  python3 profile_simd.py
+
   PARTITION_ONLY
   compile
   for benchmark in "YSB"; do #"
