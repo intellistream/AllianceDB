@@ -16,3 +16,5 @@ sorting.zip
 
 hashing/.idea/*
 sorting/.idea/*
+
+*.o
