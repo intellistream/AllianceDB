@@ -196,10 +196,8 @@ if __name__ == "__main__":
         GetL3MISS(209) / inputs
     ])
 
-    legend_labels = ['NPJ', 'PRJ', 'MWAY', 'MPASS',
-                     '',
-                     'SHJ$^{JM}$', 'SHJ$^{JB}$', 'PMJ$^{JM}$',
-                     'PMJ$^{JB}$']
+    legend_labels = ['Lazy:', 'NPJ', 'PRJ', 'MWAY', 'MPASS',
+                     'Eager:', 'SHJ$^{JM}$', 'SHJ$^{JB}$', 'PMJ$^{JM}$', 'PMJ$^{JB}$']
 
     DrawFigure(x_values, y_values, legend_labels, '', 'misses per k input', 0, 1, 'profile_ysb_partition',
                False)
