@@ -176,37 +176,36 @@ APP_BENCH=1
 if [ $APP_BENCH == 1 ]; then
   sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h            #enable time measurement
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h #disable hardware counters
-  for profile_breakdown in 1 0; do
-    compile=1
-    for algo in m-way m-pass; do
-      for benchmark in "Stock" "Rovio" "YSB" "DEBS"; do #
-        case "$benchmark" in
-        "Stock")
-          id=38
-          ResetParameters
-          SetStockParameters
-          benchmarkRun
-          ;;
-        "Rovio") #matches:
-          id=39
-          ResetParameters
-          SetRovioParameters
-          benchmarkRun
-          ;;
-        "YSB")
-          id=40
-          ResetParameters
-          SetYSBParameters
-          benchmarkRun
-          ;;
-        "DEBS")
-          id=41
-          ResetParameters
-          SetDEBSParameters
-          benchmarkRun
-          ;;
-        esac
-      done
+  profile_breakdown=1
+  compile=1
+  for algo in m-way m-pass; do
+    for benchmark in "Stock" "Rovio" "YSB" "DEBS"; do #
+      case "$benchmark" in
+      "Stock")
+        id=38
+        ResetParameters
+        SetStockParameters
+        benchmarkRun
+        ;;
+      "Rovio") #matches:
+        id=39
+        ResetParameters
+        SetRovioParameters
+        benchmarkRun
+        ;;
+      "YSB")
+        id=40
+        ResetParameters
+        SetYSBParameters
+        benchmarkRun
+        ;;
+      "DEBS")
+        id=41
+        ResetParameters
+        SetDEBSParameters
+        benchmarkRun
+        ;;
+      esac
     done
   done
 fi
@@ -416,7 +415,7 @@ if [ $PROFILE_MICRO == 1 ]; then
   done
 fi
 
-PROFILE=0 ## Cache misses profiling, please run the program with sudo
+PROFILE=1 ## Cache misses profiling, please run the program with sudo
 if [ $PROFILE == 1 ]; then
   sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h #disable time measurement
   sed -i -e "s/#define NO_PERF_COUNTERS/#define PERF_COUNTERS/g" ../utils/perf_counters.h
