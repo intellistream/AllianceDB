@@ -562,7 +562,7 @@ fi
 #    ;;
 
 ## MICRO STUDY
-PROFILE_MICRO=1
+PROFILE_MICRO=0
 if [ $PROFILE_MICRO == 1 ]; then
   sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h            #enable time measurement
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h #disable hardware counters
@@ -691,7 +691,7 @@ if [ $PROFILE_MICRO == 1 ]; then
   done
 fi
 
-PROFILE=0 ## Cache misses profiling, please run the program with sudo
+PROFILE=1 ## Cache misses profiling, please run the program with sudo
 if [ $PROFILE == 1 ]; then
   sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h #disable time measurement
   sed -i -e "s/#define NO_PERF_COUNTERS/#define PERF_COUNTERS/g" ../utils/perf_counters.h
@@ -708,7 +708,6 @@ if [ $PROFILE == 1 ]; then
       "YSB")
         ResetParameters
         SetYSBParameters
-        rm $expDir/results/breakdown/profile_$id.txt
         benchmarkRun
         ;;
       esac
@@ -725,7 +724,6 @@ if [ $PROFILE == 1 ]; then
       "YSB")
         ResetParameters
         SetYSBParameters
-        rm $expDir/results/breakdown/profile_$id.txt
         benchmarkRun
         ;;
       esac
