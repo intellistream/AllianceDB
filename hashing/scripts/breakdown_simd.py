@@ -241,7 +241,7 @@ def ReadFile():
     id += 1
 
     cnt = 0
-    f = open("/data1/xtra/results/breakdown/PMJ_JM_P_{}.txt".format(id), "r")
+    f = open("/data1/xtra/results/breakdown/PMJ_JM_NP_{}.txt".format(id), "r")
     read = f.readlines()
     others = 0
     for x in read:
@@ -259,7 +259,7 @@ def ReadFile():
     id += 1
 
     cnt = 0
-    f = open("/data1/xtra/results/breakdown/PMJ_JM_P_{}.txt".format(id), "r")
+    f = open("/data1/xtra/results/breakdown/PMJ_JM_NP_{}.txt".format(id), "r")
     read = f.readlines()
     others = 0
     for x in read:
@@ -277,7 +277,7 @@ def ReadFile():
     id += 1
 
     cnt = 0
-    f = open("/data1/xtra/results/breakdown/PMJ_JBCR_P_{}.txt".format(id), "r")
+    f = open("/data1/xtra/results/breakdown/PMJ_JBCR_NP_{}.txt".format(id), "r")
     read = f.readlines()
     others = 0
     for x in read:
@@ -295,7 +295,7 @@ def ReadFile():
     id += 1
 
     cnt = 0
-    f = open("/data1/xtra/results/breakdown/PMJ_JBCR_P_{}.txt".format(id), "r")
+    f = open("/data1/xtra/results/breakdown/PMJ_JBCR_NP_{}.txt".format(id), "r")
     read = f.readlines()
     others = 0
     for x in read:

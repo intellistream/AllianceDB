@@ -188,7 +188,7 @@ def ReadFile():
     y.append(col4)
 
     for id in it.chain(range(5, 10)):
-        file = '/data1/xtra/results/latency/SHJ_JM_P_{}.txt'.format(id)
+        file = '/data1/xtra/results/latency/SHJ_JM_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(int(len(read) * 0.95)).strip("\n"))  # get last timestamp
@@ -196,7 +196,7 @@ def ReadFile():
     y.append(col5)
 
     for id in it.chain(range(5, 10)):
-        file = '/data1/xtra/results/latency/SHJ_JBCR_P_{}.txt'.format(id)
+        file = '/data1/xtra/results/latency/SHJ_JBCR_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(int(len(read) * 0.95)).strip("\n"))  # get last timestamp
@@ -204,7 +204,7 @@ def ReadFile():
     y.append(col6)
 
     for id in it.chain(range(5, 10)):
-        file = '/data1/xtra/results/latency/PMJ_JM_P_{}.txt'.format(id)
+        file = '/data1/xtra/results/latency/PMJ_JM_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(int(len(read) * 0.95)).strip("\n"))  # get last timestamp
@@ -212,7 +212,7 @@ def ReadFile():
     y.append(col7)
 
     for id in it.chain(range(5, 10)):
-        file = '/data1/xtra/results/latency/PMJ_JBCR_P_{}.txt'.format(id)
+        file = '/data1/xtra/results/latency/PMJ_JBCR_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(int(len(read) * 0.95)).strip("\n"))  # get last timestamp

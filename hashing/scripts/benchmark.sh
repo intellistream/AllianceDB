@@ -340,14 +340,14 @@ timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
 
 ## APP benchmark.
-APP_BENCH=0
+APP_BENCH=1
 if [ $APP_BENCH == 1 ]; then
   sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h            #enable time measurement
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h #disable hardware counters
   profile_breakdown=1                                                                     #compile depends on whether we want to profile.
   compile=$profile_breakdown                                                              # compile depends on whether we want to profile.
   for benchmark in "Stock" "Rovio" "YSB" "DEBS"; do #
-    for algo in NPO PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P; do #NPO PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P
+    for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do
       case "$benchmark" in
       "Stock")
         id=38
@@ -379,12 +379,12 @@ if [ $APP_BENCH == 1 ]; then
 fi
 
 ## MICRO benchmark.
-MICRO_BENCH=0
+MICRO_BENCH=1
 if [ $MICRO_BENCH == 1 ]; then
   profile_breakdown=0        # set to 1 if we want to measure time breakdown!
   compile=$profile_breakdown # compile depends on whether we want to profile.
   for benchmark in "AR" "RAR" "AD" "KD" "WS" "DD"; do #"AR" "RAR" "AD" "KD" "WS" "DD"
-    for algo in NPO PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P; do #
+    for algo in NPO NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #
       case "$benchmark" in
       # Batch -a SHJ_JM_P -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
       "AR") #test arrival rate and assume both inputs have same arrival rate.
@@ -491,14 +491,14 @@ if [ $MICRO_BENCH == 1 ]; then
 fi
 
 ## SCLAE STUDY
-SCALE_STUDY=0
+SCALE_STUDY=1
 if [ $SCALE_STUDY == 1 ]; then
   sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h            #enable time measurement
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h #disable hardware counters
   profile_breakdown=0                                                                     #compile depends on whether we want to profile.
   compile=0
   # general benchmark.
-  for algo in SHJ_JM_P; do
+  for algo in SHJ_JM_NP; do
     for benchmark in "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS"; do #
       case "$benchmark" in
       "ScaleStock")
@@ -562,14 +562,14 @@ fi
 #    ;;
 
 ## MICRO STUDY
-PROFILE_MICRO=0
+PROFILE_MICRO=1
 if [ $PROFILE_MICRO == 1 ]; then
   sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h            #enable time measurement
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h #disable hardware counters
   profile_breakdown=1                                                                     #compile depends on whether we want to profile.
   compile=1                                                                               #enable compiling.
   #benchmark experiment only apply for hashing directory.
-  for benchmark in "P_P_STUDY"; do # "SIMD_STUDY" "BUCKET_SIZE_STUDY" "PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY"
+  for benchmark in "SIMD_STUDY" "BUCKET_SIZE_STUDY" "PRJ_RADIX_BITS_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY"; do # "P_P_STUDY"
     case "$benchmark" in
     "SIMD_STUDY")
       id=104
@@ -578,7 +578,7 @@ if [ $PROFILE_MICRO == 1 ]; then
       echo SIMD PMJ 104 - 107
       PARTITION_ONLY
       compile
-      for algo in "PMJ_JM_P" "PMJ_JBCR_P"; do
+      for algo in "PMJ_JM_NP" "PMJ_JBCR_NP"; do
         for scalar in 0 1; do
           sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scalar/g" ../helper/sort_common.h
           RUNALLMic
@@ -587,7 +587,7 @@ if [ $PROFILE_MICRO == 1 ]; then
       done
       PARTITION_BUILD_SORT
       compile
-      for algo in "PMJ_JM_P" "PMJ_JBCR_P"; do
+      for algo in "PMJ_JM_NP" "PMJ_JBCR_NP"; do
         for scalar in 0 1; do
           sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scalar/g" ../helper/sort_common.h
           RUNALLMic
@@ -630,7 +630,7 @@ if [ $PROFILE_MICRO == 1 ]; then
       ;;
     "PMJ_SORT_STEP_STUDY")
       id=119
-      algo="PMJ_JBCR_P"
+      algo="PMJ_JBCR_NP"
       ResetParameters
       ts=0 # batch data.
       for progress_step in 10 20 30 40 50; do #%
@@ -646,19 +646,19 @@ if [ $PROFILE_MICRO == 1 ]; then
       id=124
       ResetParameters
       ts=0 # batch data.
-      algo="PMJ_JM_P"
+      algo="PMJ_JM_NP"
       RUNALLMic
-      algo="SHJ_JM_P"
+      algo="SHJ_JM_NP"
       RUNALLMic
 
-      algo="PMJ_JBCR_P"
+      algo="PMJ_JBCR_NP"
       echo GROUP_SIZE_STUDY PMJ 124 - 127
       for group in 1 2 4 8; do
         RUNALLMic
         let "id++"
       done
 
-      algo="SHJ_JBCR_P"
+      algo="SHJ_JBCR_NP"
       echo GROUP_SIZE_STUDY SHJ 128 - 131
       for group in 1 2 4 8; do
         RUNALLMic
@@ -671,9 +671,9 @@ if [ $PROFILE_MICRO == 1 ]; then
       id=132
       ResetParameters
       ts=0 # batch data.
-      algo="SHJ_HS_P"
+      algo="SHJ_HS_NP"
       RUNALLMic
-      algo="SHJ_JM_P"
+      algo="SHJ_JM_NP"
       RUNALLMic
       python3 breakdown_hsstudy.py
       ;;
@@ -703,7 +703,7 @@ if [ $PROFILE == 1 ]; then
   compile
   for benchmark in "YSB"; do #"
     id=205
-    for algo in NPO PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P; do #PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P
+    for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P
       case "$benchmark" in
       "YSB")
         ResetParameters
@@ -719,7 +719,7 @@ if [ $PROFILE == 1 ]; then
   compile
   for benchmark in "YSB"; do #"
     id=210
-    for algo in NPO PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P; do # ~215 NPO PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P
+    for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do # ~215 NPO PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P
       case "$benchmark" in
       "YSB")
         ResetParameters
@@ -738,7 +738,7 @@ if [ $PERF_YSB == 1 ]; then
   #  compile
   for benchmark in "Kim"; do #"YSB
     id=302
-    for algo in NPO PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P; do # NPO PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P
+    for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do # NPO PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P
       case "$benchmark" in
       "Kim")
         ResetParameters

@@ -157,7 +157,7 @@ if __name__ == "__main__":
         'MWAY', 'MPASS', 'PMJ$^{JM}$', 'PMJ$^{JB}$'
     ]
     y_values = []
-    file = '/data1/xtra/results/records/PMJ_JM_P_{}.txt'.format(104)
+    file = '/data1/xtra/results/records/PMJ_JM_NP_{}.txt'.format(104)
     f = open(file, "r")
     read = f.readlines()
     inputs = float(read.pop(0).strip("\n"))  # get number of inputs

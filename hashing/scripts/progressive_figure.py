@@ -81,28 +81,28 @@ def getmaxts(id):
     if (x > ts):
         ts = x
 
-    file = '/data1/xtra/results/timestamps/SHJ_JM_P_{}.txt'.format(id)
+    file = '/data1/xtra/results/timestamps/SHJ_JM_NP_{}.txt'.format(id)
     f = open(file, "r")
     read = f.readlines()
     x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
     if (x > ts):
         ts = x
 
-    file = '/data1/xtra/results/timestamps/SHJ_JBCR_P_{}.txt'.format(id)
+    file = '/data1/xtra/results/timestamps/SHJ_JBCR_NP_{}.txt'.format(id)
     f = open(file, "r")
     read = f.readlines()
     x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
     if (x > ts):
         ts = x
 
-    file = '/data1/xtra/results/timestamps/PMJ_JM_P_{}.txt'.format(id)
+    file = '/data1/xtra/results/timestamps/PMJ_JM_NP_{}.txt'.format(id)
     f = open(file, "r")
     read = f.readlines()
     x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
     if (x > ts):
         ts = x
 
-    file = '/data1/xtra/results/timestamps/PMJ_JBCR_P_{}.txt'.format(id)
+    file = '/data1/xtra/results/timestamps/PMJ_JBCR_NP_{}.txt'.format(id)
     f = open(file, "r")
     read = f.readlines()
     x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
@@ -183,7 +183,7 @@ def ReadFile(id):
     y_axis.append(empty_coly)
 
     col = []
-    f = open("/data1/xtra/results/timestamps/SHJ_JM_P_{}.txt".format(id), "r")
+    f = open("/data1/xtra/results/timestamps/SHJ_JM_NP_{}.txt".format(id), "r")
     read = f.readlines()
     for r in read:
         value = double(r.strip("\n"))  # timestamp.
@@ -195,7 +195,7 @@ def ReadFile(id):
     y_axis.append(coly)
 
     col = []
-    f = open("/data1/xtra/results/timestamps/SHJ_JBCR_P_{}.txt".format(id), "r")
+    f = open("/data1/xtra/results/timestamps/SHJ_JBCR_NP_{}.txt".format(id), "r")
     read = f.readlines()
     for r in read:
         value = double(r.strip("\n"))  # timestamp.
@@ -207,7 +207,7 @@ def ReadFile(id):
     y_axis.append(coly)
 
     col = []
-    f = open("/data1/xtra/results/timestamps/PMJ_JM_P_{}.txt".format(id), "r")
+    f = open("/data1/xtra/results/timestamps/PMJ_JM_NP_{}.txt".format(id), "r")
     read = f.readlines()
     for r in read:
         value = double(r.strip("\n"))  # timestamp.
@@ -219,7 +219,7 @@ def ReadFile(id):
     y_axis.append(coly)
 
     col = []
-    f = open("/data1/xtra/results/timestamps/PMJ_JBCR_P_{}.txt".format(id), "r")
+    f = open("/data1/xtra/results/timestamps/PMJ_JBCR_NP_{}.txt".format(id), "r")
     read = f.readlines()
     for r in read:
         value = double(r.strip("\n"))  # timestamp.
