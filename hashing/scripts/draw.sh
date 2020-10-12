@@ -98,7 +98,7 @@ python3 breakdown_simd.py
 # -- python3 profile_simd.py not in use anymore.
 
 ### Profile..
-echo "Drawing Figure 8 (Please profile with sudo, and then set results in these two files manually)..."
+echo "Drawing Figure 8 (Please profile with sudo)..."
 python3 profile_ysb_partition.py
 python3 profile_ysb_probe.py
 

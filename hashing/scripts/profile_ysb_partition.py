@@ -140,6 +140,12 @@ if __name__ == "__main__":
     read = f.readlines()
     inputs = float(read.pop(0).strip("\n"))  /1000 # get number of inputs (in k)
 
+    y_values.append([  # placeholders
+        0 / inputs,  # L1
+        0 / inputs,  # L2
+        0 / inputs  # L3
+    ])
+
     y_values.append([  # NPJ does not have partition phase.
         0 / inputs,  # L1
         0 / inputs,  # L2
