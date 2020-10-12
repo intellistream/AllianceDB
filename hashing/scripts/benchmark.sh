@@ -344,36 +344,38 @@ APP_BENCH=1
 if [ $APP_BENCH == 1 ]; then
   sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h            #enable time measurement
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h #disable hardware counters
-  profile_breakdown=1                                                                     #compile depends on whether we want to profile.
-  compile=$profile_breakdown                                                              # compile depends on whether we want to profile.
-  for benchmark in "Stock" "Rovio" "YSB" "DEBS"; do #
-    for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do
-      case "$benchmark" in
-      "Stock")
-        id=38
-        ResetParameters
-        SetStockParameters
-        RUNALL
-        ;;
-      "Rovio") #matches:
-        id=39
-        ResetParameters
-        SetRovioParameters
-        RUNALL
-        ;;
-      "YSB")
-        id=40
-        ResetParameters
-        SetYSBParameters
-        RUNALL
-        ;;
-      "DEBS")
-        id=41
-        ResetParameters
-        SetDEBSParameters
-        RUNALL
-        ;;
-      esac
+  #compile depends on whether we want to profile.
+  for profile_breakdown in 1 0; do
+    compile=1
+    for benchmark in "Stock" "Rovio" "YSB" "DEBS"; do #
+      for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do
+        case "$benchmark" in
+        "Stock")
+          id=38
+          ResetParameters
+          SetStockParameters
+          RUNALL
+          ;;
+        "Rovio") #matches:
+          id=39
+          ResetParameters
+          SetRovioParameters
+          RUNALL
+          ;;
+        "YSB")
+          id=40
+          ResetParameters
+          SetYSBParameters
+          RUNALL
+          ;;
+        "DEBS")
+          id=41
+          ResetParameters
+          SetDEBSParameters
+          RUNALL
+          ;;
+        esac
+      done
     done
   done
 fi
