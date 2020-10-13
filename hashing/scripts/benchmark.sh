@@ -219,10 +219,10 @@ function SHJKIMRUN() {
 
 function RUNALL() {
   if [ $profile_breakdown == 1 ]; then
-    if [ $algo == SHJ_JM_P ] || [ $algo == SHJ_JM_P ] || [ $algo == SHJ_JBCR_P ]; then
+    if [ $algo == SHJ_JM_P ] || [ $algo == SHJ_JM_NP ] || [ $algo == SHJ_JBCR_P ]|| [ $algo == SHJ_JBCR_NP ] ; then
       SHJBENCHRUN
     else
-      if [ $algo == PMJ_JM_P ] || [ $algo == PMJ_JBCR_P ]; then
+      if [ $algo == PMJ_JM_P ] || [ $algo == PMJ_JM_NP ] || [ $algo == PMJ_JBCR_P ] || [ $algo == PMJ_JBCR_NP ];  then
         FULLBENCHRUN
       else
         benchmarkRun
