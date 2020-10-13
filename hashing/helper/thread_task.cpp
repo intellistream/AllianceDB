@@ -167,9 +167,11 @@ void *THREAD_TASK_SHUFFLE(void *param) {
   fetcher->fetchStartTime = args->startTS; // set the fetch starting time.
 #ifdef PERF_COUNTERS
   if (args->tid == 0) {
+    MSG("Thread:%id initialize PCM", args->tid)
     PCM_initPerformanceMonitor(NULL, NULL);
     PCM_start();
   }
+  BARRIER_ARRIVE(args->barrier, lock)
 #endif
   do {
     fetch = fetcher->next_tuple();
