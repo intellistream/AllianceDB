@@ -69,6 +69,7 @@ void *THREAD_TASK_NOSHUFFLE(void *param) {
     MSG("Thread:%id initialize PCM", args->tid)
     PCM_initPerformanceMonitor(NULL, NULL);
     PCM_start();
+    MSG("Thread:%id initialized PCM", args->tid)
   }
   BARRIER_ARRIVE(args->barrier, lock)
 #endif
@@ -106,14 +107,13 @@ void *THREAD_TASK_NOSHUFFLE(void *param) {
 
 #ifdef PERF_COUNTERS
   if (args->tid == 0) {
+    MSG("Thread:%id stops PCM", args->tid)
     PCM_stop();
     PCM_log("========== Entire phase profiling results ==========\n");
     PCM_printResults();
     PCM_log("===================================================\n");
     PCM_cleanup();
   }
-  /* Just to make sure we get consistent performance numbers */
-  BARRIER_ARRIVE(args->barrier, lock);
 #endif
 
   /* wait at a barrier until each thread finishes*/
@@ -170,6 +170,7 @@ void *THREAD_TASK_SHUFFLE(void *param) {
     MSG("Thread:%id initialize PCM", args->tid)
     PCM_initPerformanceMonitor(NULL, NULL);
     PCM_start();
+    MSG("Thread:%id initialized PCM", args->tid)
   }
   BARRIER_ARRIVE(args->barrier, lock)
 #endif
@@ -224,14 +225,13 @@ void *THREAD_TASK_SHUFFLE(void *param) {
 #endif
 #ifdef PERF_COUNTERS
   if (args->tid == 0) {
+    MSG("Thread:%id stops PCM", args->tid)
     PCM_stop();
     PCM_log("========== Entire phase profiling results ==========\n");
     PCM_printResults();
     PCM_log("===================================================\n");
     PCM_cleanup();
   }
-  /* Just to make sure we get consistent performance numbers */
-  BARRIER_ARRIVE(args->barrier, lock);
 #endif
   /* wait at a barrier until each thread finishes*/
   BARRIER_ARRIVE(args->barrier, lock)
