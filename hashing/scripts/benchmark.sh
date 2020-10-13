@@ -710,6 +710,7 @@ if [ $PROFILE == 1 ]; then
       "YSB")
         ResetParameters
         SetYSBParameters
+        rm /data1/xtra/results/breakdown/profile_$id.txt
         benchmarkRun
         ;;
       esac
@@ -726,6 +727,7 @@ if [ $PROFILE == 1 ]; then
       "YSB")
         ResetParameters
         SetYSBParameters
+        rm /data1/xtra/results/breakdown/profile_$id.txt
         benchmarkRun
         ;;
       esac
