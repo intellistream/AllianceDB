@@ -348,7 +348,7 @@ if [ $APP_BENCH == 1 ]; then
   for profile_breakdown in 1; do
     compile=1
     for benchmark in "Stock" "Rovio" "YSB" "DEBS"; do #
-      for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do
+      for algo in SHJ_JM_NP; do #NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
         case "$benchmark" in
         "Stock")
           id=38
@@ -386,7 +386,7 @@ if [ $MICRO_BENCH == 1 ]; then
   profile_breakdown=0        # set to 1 if we want to measure time breakdown!
   compile=$profile_breakdown # compile depends on whether we want to profile.
   for benchmark in "AR" "RAR" "AD" "KD" "WS" "DD"; do #"AR" "RAR" "AD" "KD" "WS" "DD"
-    for algo in NPO NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #
+    for algo in SHJ_JM_NP; do # NPO NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
       case "$benchmark" in
       # Batch -a SHJ_JM_P -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
       "AR") #test arrival rate and assume both inputs have same arrival rate.
@@ -564,7 +564,7 @@ fi
 #    ;;
 
 ## MICRO STUDY
-PROFILE_MICRO=1
+PROFILE_MICRO=0
 if [ $PROFILE_MICRO == 1 ]; then
   sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h            #enable time measurement
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h #disable hardware counters
@@ -693,7 +693,7 @@ if [ $PROFILE_MICRO == 1 ]; then
   done
 fi
 
-PROFILE=1 ## Cache misses profiling, please run the program with sudo
+PROFILE=0 ## Cache misses profiling, please run the program with sudo
 if [ $PROFILE == 1 ]; then
   sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h #disable time measurement
   sed -i -e "s/#define NO_PERF_COUNTERS/#define PERF_COUNTERS/g" ../utils/perf_counters.h
