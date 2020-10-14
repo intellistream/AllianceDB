@@ -66,7 +66,7 @@ def DrawLegend(legend_labels, filename):
 # draw a line chart
 def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max, filename, allow_legend):
     # you may change the figure size on your own.
-    fig = plt.figure(figsize=(10, 4))
+    fig = plt.figure(figsize=(9, 4))
     figure = fig.add_subplot(111)
 
     FIGURE_LABEL = legend_labels
