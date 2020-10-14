@@ -66,7 +66,7 @@ def DrawLegend(legend_labels, filename):
 # draw a line chart
 def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max, filename, allow_legend):
     # you may change the figure size on your own.
-    fig = plt.figure(figsize=(9, 4))
+    fig = plt.figure(figsize=(8, 4))
     figure = fig.add_subplot(111)
 
     FIGURE_LABEL = legend_labels
@@ -86,7 +86,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
                           label=FIGURE_LABEL[i], edgecolor='black', linewidth=3)
 
     # you may need to tune the xticks position to get the best figure.
-    plt.xticks(index + 2 * width, x_values)
+    plt.xticks(index + 4 * width, x_values)
 
     plt.ticklabel_format(axis="y", style="sci", scilimits=(0,0), useMathText=True)
     plt.grid(axis='y', color='gray')
