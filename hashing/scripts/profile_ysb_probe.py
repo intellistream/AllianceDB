@@ -156,19 +156,19 @@ if __name__ == "__main__":
         GetL3MISS(211) / inputs  # L3
     ])
     y_values.append([  # PRJ
-        (GetL1MISS(212) - GetL1MISS(206)) / inputs,
-        (GetL2MISS(212) - GetL2MISS(206)) / inputs,
-        (GetL3MISS(212) - GetL2MISS(206)) / inputs
+        max(0, (GetL1MISS(212) - GetL1MISS(206))) / inputs,
+        max(0, (GetL2MISS(212) - GetL2MISS(206))) / inputs,
+        max(0, (GetL3MISS(212) - GetL2MISS(206))) / inputs
     ])
     y_values.append([  # WAY
-        (GetL1MISS(203) - GetL1MISS(201)) / inputs,
-        (GetL2MISS(203) - GetL2MISS(201)) / inputs,
-        (GetL3MISS(203) - GetL3MISS(201)) / inputs
+        max(0, (GetL1MISS(203) - GetL1MISS(201))) / inputs,
+        max(0, (GetL2MISS(203) - GetL2MISS(201))) / inputs,
+        max(0, (GetL3MISS(203) - GetL3MISS(201))) / inputs
     ])
     y_values.append([  # MPASS
-        (GetL1MISS(204) - GetL1MISS(202)) / inputs,
-        (GetL2MISS(204) - GetL2MISS(202)) / inputs,
-        (GetL3MISS(204) - GetL3MISS(202)) / inputs
+        max(0, (GetL1MISS(204) - GetL1MISS(202))) / inputs,
+        max(0, (GetL2MISS(204) - GetL2MISS(202))) / inputs,
+        max(0, (GetL3MISS(204) - GetL3MISS(202))) / inputs
     ])
 
     y_values.append([  # deliminator
@@ -178,24 +178,24 @@ if __name__ == "__main__":
     ])
 
     y_values.append([  # SHJM
-        (GetL1MISS(213) - GetL1MISS(207)) / inputs,
-        (GetL2MISS(213) - GetL2MISS(207)) / inputs,
-        (GetL3MISS(213) - GetL3MISS(207)) / inputs
+        max(0, (GetL1MISS(213) - GetL1MISS(207))) / inputs,
+        max(0, (GetL2MISS(213) - GetL2MISS(207))) / inputs,
+        max(0, (GetL3MISS(213) - GetL3MISS(207))) / inputs
     ])
     y_values.append([  # SHJB
-        (GetL1MISS(214) - GetL1MISS(208)) / inputs,
-        (GetL2MISS(214) - GetL2MISS(208)) / inputs,
-        (GetL3MISS(214) - GetL3MISS(208)) / inputs
+        max(0, (GetL1MISS(214) - GetL1MISS(208))) / inputs,
+        max(0, (GetL2MISS(214) - GetL2MISS(208))) / inputs,
+        max(0, (GetL3MISS(214) - GetL3MISS(208))) / inputs
     ])
     y_values.append([  # PMJM
-        (GetL1MISS(215) - GetL1MISS(209)) / inputs,
-        (GetL2MISS(215) - GetL2MISS(209)) / inputs,
-        (GetL3MISS(215) - GetL3MISS(209)) / inputs
+        max(0, (GetL1MISS(215) - GetL1MISS(209))) / inputs,
+        max(0, (GetL2MISS(215) - GetL2MISS(209))) / inputs,
+        max(0, (GetL3MISS(215) - GetL3MISS(209))) / inputs
     ])
     y_values.append([  # PMJB
-        (GetL1MISS(216) - GetL1MISS(210)) / inputs,
-        (GetL2MISS(216) - GetL2MISS(210)) / inputs,
-        (GetL3MISS(216) - GetL3MISS(210)) / inputs
+        max(0, (GetL1MISS(216) - GetL1MISS(210))) / inputs,
+        max(0, (GetL2MISS(216) - GetL2MISS(210))) / inputs,
+        max(0, (GetL3MISS(216) - GetL3MISS(210))) / inputs
     ])
 
     legend_labels = ['Lazy:', 'NPJ', 'PRJ', 'MWAY', 'MPASS',
