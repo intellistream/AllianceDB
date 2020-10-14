@@ -100,7 +100,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, al
             leg.get_frame().set_edgecolor("black")
 
     # you may need to tune the xticks position to get the best figure.
-    plt.xticks(index + 1 * width, x_values)
+    plt.xticks(index + 0.5 * width, x_values)
 
     plt.ticklabel_format(axis="y", style="sci", scilimits=(0,0), useMathText=True)
     plt.grid(axis='y', color='gray')
