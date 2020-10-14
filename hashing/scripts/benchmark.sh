@@ -340,7 +340,7 @@ timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
 
 ## APP benchmark.
-APP_BENCH=1
+APP_BENCH=0
 if [ $APP_BENCH == 1 ]; then
   sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h            #enable time measurement
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h #disable hardware counters
@@ -381,7 +381,7 @@ if [ $APP_BENCH == 1 ]; then
 fi
 
 ## MICRO benchmark.
-MICRO_BENCH=1
+MICRO_BENCH=0
 if [ $MICRO_BENCH == 1 ]; then
   profile_breakdown=0        # set to 1 if we want to measure time breakdown!
   compile=$profile_breakdown # compile depends on whether we want to profile.
@@ -493,7 +493,7 @@ if [ $MICRO_BENCH == 1 ]; then
 fi
 
 ## SCLAE STUDY
-SCALE_STUDY=1
+SCALE_STUDY=0
 if [ $SCALE_STUDY == 1 ]; then
   sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h            #enable time measurement
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h #disable hardware counters
@@ -564,7 +564,7 @@ fi
 #    ;;
 
 ## MICRO STUDY
-PROFILE_MICRO=1
+PROFILE_MICRO=0
 if [ $PROFILE_MICRO == 1 ]; then
   sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h            #enable time measurement
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h #disable hardware counters
@@ -721,7 +721,7 @@ if [ $PROFILE == 1 ]; then
   PARTITION_BUILD_SORT_MERGE_JOIN
   compile
   for benchmark in "YSB"; do #"
-    id=210
+    id=211
     for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do # ~215 NPO PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P
       case "$benchmark" in
       "YSB")

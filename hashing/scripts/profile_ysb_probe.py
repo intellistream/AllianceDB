@@ -146,15 +146,15 @@ if __name__ == "__main__":
         0 / inputs  # L3
     ])
 
-    y_values.append([  # NPJ  -- test id: 210
-        GetL1MISS(210) / inputs,  # L1
-        GetL2MISS(210) / inputs,  # L2
-        GetL3MISS(210) / inputs  # L3
+    y_values.append([  # NPJ
+        GetL1MISS(211) / inputs,  # L1
+        GetL2MISS(211) / inputs,  # L2
+        GetL3MISS(211) / inputs  # L3
     ])
     y_values.append([  # PRJ
-        GetL1MISS(211) / inputs,
-        GetL2MISS(211) / inputs,
-        GetL3MISS(211) / inputs
+        GetL1MISS(212) / inputs,
+        GetL2MISS(212) / inputs,
+        GetL3MISS(212) / inputs
     ])
     y_values.append([  # WAY
         GetL1MISS(203) / inputs,
@@ -173,25 +173,25 @@ if __name__ == "__main__":
         0
     ])
 
-    y_values.append([  # SHJM -- 212
-        GetL1MISS(212) / inputs,
-        GetL2MISS(212) / inputs,
-        GetL3MISS(212) / inputs
-    ])
-    y_values.append([  # SHJB -- 213
+    y_values.append([  # SHJM
         GetL1MISS(213) / inputs,
         GetL2MISS(213) / inputs,
         GetL3MISS(213) / inputs
     ])
-    y_values.append([  # PMJM -- 214
+    y_values.append([  # SHJB
         GetL1MISS(214) / inputs,
         GetL2MISS(214) / inputs,
         GetL3MISS(214) / inputs
     ])
-    y_values.append([  # PMJB -- 215
+    y_values.append([  # PMJM
         GetL1MISS(215) / inputs,
         GetL2MISS(215) / inputs,
         GetL3MISS(215) / inputs
+    ])
+    y_values.append([  # PMJB
+        GetL1MISS(216) / inputs,
+        GetL2MISS(216) / inputs,
+        GetL3MISS(216) / inputs
     ])
 
     legend_labels = ['Lazy:', 'NPJ', 'PRJ', 'MWAY', 'MPASS',

@@ -152,11 +152,10 @@ if __name__ == "__main__":
         0 / inputs  # L3
     ])
 
-    ##fill in with results from "profile_205.txt"
     y_values.append([  # PRJ
-        GetL1MISS(205) / inputs,
-        GetL2MISS(205) / inputs,
-        GetL3MISS(205) / inputs
+        GetL1MISS(206) / inputs,
+        GetL2MISS(206) / inputs,
+        GetL3MISS(206) / inputs
     ])
     y_values.append([  # WAY
         GetL1MISS(201) / inputs,
@@ -175,25 +174,25 @@ if __name__ == "__main__":
         0 / inputs  # L3
     ])
 
-    y_values.append([  # SHJM -- 206
-        GetL1MISS(206) / inputs,
-        GetL2MISS(206) / inputs,
-        GetL3MISS(206) / inputs
-    ])
-    y_values.append([  # SHJB -- 207
+    y_values.append([  # SHJM
         GetL1MISS(207) / inputs,
         GetL2MISS(207) / inputs,
         GetL3MISS(207) / inputs
     ])
-    y_values.append([  # PMJM -- 208
+    y_values.append([  # SHJB
         GetL1MISS(208) / inputs,
         GetL2MISS(208) / inputs,
         GetL3MISS(208) / inputs
     ])
-    y_values.append([  # PMJB -- 209
+    y_values.append([  # PMJM
         GetL1MISS(209) / inputs,
         GetL2MISS(209) / inputs,
         GetL3MISS(209) / inputs
+    ])
+    y_values.append([  # PMJB
+        GetL1MISS(210) / inputs,
+        GetL2MISS(210) / inputs,
+        GetL3MISS(210) / inputs
     ])
 
     legend_labels = ['Lazy:', 'NPJ', 'PRJ', 'MWAY', 'MPASS',
