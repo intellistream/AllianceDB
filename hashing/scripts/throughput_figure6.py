@@ -167,7 +167,7 @@ def ReadFile():
     col8 = []
     col9 = []
 
-    for id in it.chain(range(0, 5)):
+    for id in it.chain(range(25, 29)):
         col9.append(0)
     y.append(col9)
 
