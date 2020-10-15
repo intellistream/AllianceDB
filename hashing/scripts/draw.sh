@@ -12,7 +12,7 @@ done
 
 echo "Drawing Figure 7..."
 #python3 breakdown_broken.py -i 38
-for id in {38..41} ; do
+for id in {38..41}; do
   python3 breakdown.py -i $id
 done
 
@@ -38,7 +38,7 @@ done
 echo "Drawing Figure 11.."
 python3 throughput_figure3.py
 python3 latency_figure3.py
-for id in 10 14 ; do
+for id in 10 14; do
   python3 progressive_figure.py -i $id
 done
 
@@ -46,7 +46,7 @@ done
 echo "Drawing Figure 12..."
 python3 throughput_figure4.py
 python3 latency_figure4.py
-for id in  15 19 ; do
+for id in 15 19; do
   python3 progressive_figure.py -i $id
 done
 
@@ -54,7 +54,7 @@ done
 echo "Drawing Figure 13..."
 python3 throughput_figure5.py
 python3 latency_figure5.py
-for id in  20 24; do
+for id in 20 24; do
   python3 progressive_figure.py -i $id
 done
 
@@ -101,7 +101,6 @@ python3 breakdown_simd.py
 echo "Drawing Figure 8 (Please profile with sudo)..."
 python3 profile_ysb_partition.py
 python3 profile_ysb_probe.py
-
 
 #not in use
 #echo "Please draw Figure 22 after launch breakdown_NUMA.sh"

@@ -190,8 +190,6 @@ def ReadFile():
         col4.append(x)
     y.append(col4)
 
-    for id in it.chain(range(38, 42)):
-        col9.append(0)
     y.append(col9)  # this is a fake empty line to separate eager and lazy.
 
     for id in it.chain(range(25, 29)):
@@ -233,8 +231,8 @@ if __name__ == "__main__":
 
     y_values = ReadFile()
 
-    legend_labels = ['NPJ', 'PRJ', 'MWAY', 'MPASS', 'SHJ$^{JM}$', 'SHJ$^{JB}$', 'PMJ$^{JM}$',
-                     'PMJ$^{JB}$']
+    legend_labels = ['Lazy:', 'NPJ', 'PRJ', 'MWAY', 'MPASS',
+                     'Eager:', 'SHJ$^{JM}$', 'SHJ$^{JB}$', 'PMJ$^{JM}$', 'PMJ$^{JB}$']
     # print(y_values)
     DrawFigure(x_values, y_values, legend_labels,
                r'$dupe$', 'Latency (ms)', 0,

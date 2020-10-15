@@ -4,9 +4,10 @@ import os
 import matplotlib
 import matplotlib.pyplot as plt
 import pylab
+from matplotlib import rc
 from matplotlib.font_manager import FontProperties
 from matplotlib.ticker import MaxNLocator, LinearLocator
-from matplotlib import rc
+
 OPT_FONT_NAME = 'Helvetica'
 TICK_FONT_SIZE = 20
 LABEL_FONT_SIZE = 24
@@ -17,9 +18,11 @@ TICK_FP = FontProperties(style='normal', size=TICK_FONT_SIZE)
 
 MARKERS = (["", 'o', 's', 'v', "^", "", "h", "v", ">", "x", "d", "<", "|", "", "+", "_"])
 # you may want to change the color map for different figures
-COLOR_MAP = ('#FFFFFF', '#B03A2E', '#2874A6', '#239B56', '#7D3C98', '#FFFFFF', '#F1C40F', '#F5CBA7', '#82E0AA', '#AEB6BF', '#AA4499')
+COLOR_MAP = (
+'#FFFFFF', '#B03A2E', '#2874A6', '#239B56', '#7D3C98', '#FFFFFF', '#F1C40F', '#F5CBA7', '#82E0AA', '#AEB6BF', '#AA4499')
 # you may want to change the patterns for different figures
-PATTERNS = (["", "////", "\\\\", "//", "o", "", "||", "-", "//", "\\", "o", "O", "////", ".", "|||", "o", "---", "+", "\\\\", "*"])
+PATTERNS = (
+["", "////", "\\\\", "//", "o", "", "||", "-", "//", "\\", "o", "O", "////", ".", "|||", "o", "---", "+", "\\\\", "*"])
 LABEL_WEIGHT = 'bold'
 LINE_COLORS = COLOR_MAP
 LINE_WIDTH = 3.0
@@ -32,11 +35,11 @@ matplotlib.rcParams['xtick.labelsize'] = TICK_FONT_SIZE
 matplotlib.rcParams['ytick.labelsize'] = TICK_FONT_SIZE
 matplotlib.rcParams['font.family'] = OPT_FONT_NAME
 rc('text.latex', preamble=r'\usepackage[cm]{sfmath}')
-rc('font',**{'family':'sans-serif',
-             'sans-serif':['Helvetica'],
-             'weight' : 'bold',
-             'size'   : 22
-             }
+rc('font', **{'family': 'sans-serif',
+              'sans-serif': ['Helvetica'],
+              'weight': 'bold',
+              'size': 22
+              }
    )
 rc('text', usetex=True)
 FIGURE_FOLDER = '/data1/xtra/results/figure'
@@ -161,57 +164,61 @@ def ReadFile():
     col6 = []
     col7 = []
     col8 = []
+    col9 = []
 
-    for id in it.chain(range(20,25)):
+    for id in it.chain(range(0, 5)):
+        col9.append(0)
+    y.append(col9)
+    for id in it.chain(range(20, 25)):
         file = '/data1/xtra/results/timestamps/PRJ_{}.txt'.format(id)
         file2 = '/data1/xtra/results/records/PRJ_{}.txt'.format(id)
         value = GetThroughput(file, file2)
         col1.append(value)
     y.append(col1)
 
-    for id in it.chain(range(20,25)):
+    for id in it.chain(range(20, 25)):
         file = '/data1/xtra/results/timestamps/NPJ_{}.txt'.format(id)
         file2 = '/data1/xtra/results/records/NPJ_{}.txt'.format(id)
         value = GetThroughput(file, file2)
         col2.append(value)
     y.append(col2)
 
-    for id in it.chain(range(20,25)):
+    for id in it.chain(range(20, 25)):
         file = '/data1/xtra/results/timestamps/MPASS_{}.txt'.format(id)
         file2 = '/data1/xtra/results/records/MPASS_{}.txt'.format(id)
         value = GetThroughput(file, file2)
         col3.append(value)
     y.append(col3)
 
-    for id in it.chain(range(20,25)):
+    for id in it.chain(range(20, 25)):
         file = '/data1/xtra/results/timestamps/MWAY_{}.txt'.format(id)
         file2 = '/data1/xtra/results/records/MWAY_{}.txt'.format(id)
         value = GetThroughput(file, file2)
         col4.append(value)
     y.append(col4)
-
-    for id in it.chain(range(20,25)):
+    y.append(col9)
+    for id in it.chain(range(20, 25)):
         file = '/data1/xtra/results/timestamps/SHJ_JM_NP_{}.txt'.format(id)
         file2 = '/data1/xtra/results/records/SHJ_JM_NP_{}.txt'.format(id)
         value = GetThroughput(file, file2)
         col5.append(value)
     y.append(col5)
 
-    for id in it.chain(range(20,25)):
+    for id in it.chain(range(20, 25)):
         file = '/data1/xtra/results/timestamps/SHJ_JBCR_NP_{}.txt'.format(id)
         file2 = '/data1/xtra/results/records/SHJ_JBCR_NP_{}.txt'.format(id)
         value = GetThroughput(file, file2)
         col6.append(value)
     y.append(col6)
 
-    for id in it.chain(range(20,25)):
+    for id in it.chain(range(20, 25)):
         file = '/data1/xtra/results/timestamps/PMJ_JM_NP_{}.txt'.format(id)
         file2 = '/data1/xtra/results/records/PMJ_JM_NP_{}.txt'.format(id)
         value = GetThroughput(file, file2)
         col7.append(value)
     y.append(col7)
 
-    for id in it.chain(range(20,25)):
+    for id in it.chain(range(20, 25)):
         file = '/data1/xtra/results/timestamps/PMJ_JBCR_NP_{}.txt'.format(id)
         file2 = '/data1/xtra/results/records/PMJ_JBCR_NP_{}.txt'.format(id)
         value = GetThroughput(file, file2)
@@ -225,8 +232,8 @@ if __name__ == "__main__":
 
     y_values = ReadFile()
 
-    legend_labels = ['NPJ', 'PRJ', 'MWAY', 'MPASS', 'SHJ$^{JM}$', 'SHJ$^{JB}$', 'PMJ$^{JM}$',
-                     'PMJ$^{JB}$']
+    legend_labels = ['Lazy:', 'NPJ', 'PRJ', 'MWAY', 'MPASS',
+                     'Eager:', 'SHJ$^{JM}$', 'SHJ$^{JB}$', 'PMJ$^{JM}$', 'PMJ$^{JB}$']
 
     DrawFigure(x_values, y_values, legend_labels,
                r'$w$ (msec)', 'Tpt. (inputs/msec)', 0,

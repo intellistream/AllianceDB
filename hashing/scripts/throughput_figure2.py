@@ -200,34 +200,32 @@ def ReadFile():
         col4.append(value)
     y.append(col4)
 
-    for id in it.chain(range(0, 5)):
-        col9.append(0)
     y.append(col9)
 
     for id in it.chain(range(5,10)):
-        file = '/data1/xtra/results/timestamps/SHJ_JM_P_{}.txt'.format(id)
-        file2 = '/data1/xtra/results/records/SHJ_JM_P_{}.txt'.format(id)
+        file = '/data1/xtra/results/timestamps/SHJ_JM_NP_{}.txt'.format(id)
+        file2 = '/data1/xtra/results/records/SHJ_JM_NP_{}.txt'.format(id)
         value = GetThroughput(file, file2)
         col5.append(value)
     y.append(col5)
 
     for id in it.chain(range(5,10)):
-        file = '/data1/xtra/results/timestamps/SHJ_JBCR_P_{}.txt'.format(id)
-        file2 = '/data1/xtra/results/records/SHJ_JBCR_P_{}.txt'.format(id)
+        file = '/data1/xtra/results/timestamps/SHJ_JBCR_NP_{}.txt'.format(id)
+        file2 = '/data1/xtra/results/records/SHJ_JBCR_NP_{}.txt'.format(id)
         value = GetThroughput(file, file2)
         col6.append(value)
     y.append(col6)
 
     for id in it.chain(range(5,10)):
-        file = '/data1/xtra/results/timestamps/PMJ_JM_P_{}.txt'.format(id)
-        file2 = '/data1/xtra/results/records/PMJ_JM_P_{}.txt'.format(id)
+        file = '/data1/xtra/results/timestamps/PMJ_JM_NP_{}.txt'.format(id)
+        file2 = '/data1/xtra/results/records/PMJ_JM_NP_{}.txt'.format(id)
         value = GetThroughput(file, file2)
         col7.append(value)
     y.append(col7)
 
     for id in it.chain(range(5,10)):
-        file = '/data1/xtra/results/timestamps/PMJ_JBCR_P_{}.txt'.format(id)
-        file2 = '/data1/xtra/results/records/PMJ_JBCR_P_{}.txt'.format(id)
+        file = '/data1/xtra/results/timestamps/PMJ_JBCR_NP_{}.txt'.format(id)
+        file2 = '/data1/xtra/results/records/PMJ_JBCR_NP_{}.txt'.format(id)
         value = GetThroughput(file, file2)
         col8.append(value)
     y.append(col8)
@@ -239,8 +237,8 @@ if __name__ == "__main__":
 
     y_values = ReadFile()
 
-    legend_labels = ['NPJ', 'PRJ', 'MWAY', 'MPASS', 'SHJ$^{JM}$', 'SHJ$^{JB}$', 'PMJ$^{JM}$',
-                     'PMJ$^{JB}$']
+    legend_labels = ['Lazy:', 'NPJ', 'PRJ', 'MWAY', 'MPASS',
+                     'Eager:', 'SHJ$^{JM}$', 'SHJ$^{JB}$', 'PMJ$^{JM}$', 'PMJ$^{JB}$']
 
     DrawFigure(x_values, y_values, legend_labels,
                r'$v_S$ (inputs/msec)', 'Tpt. (inputs/msec)', 1400,

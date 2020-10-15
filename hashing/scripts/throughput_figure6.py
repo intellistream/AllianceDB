@@ -165,6 +165,11 @@ def ReadFile():
     col6 = []
     col7 = []
     col8 = []
+    col9 = []
+
+    for id in it.chain(range(0, 5)):
+        col9.append(0)
+    y.append(col9)
 
     for id in it.chain(range(25, 29)):
         file = '/data1/xtra/results/timestamps/NPJ_{}.txt'.format(id)
@@ -193,7 +198,7 @@ def ReadFile():
         value = GetThroughput(file, file2)
         col4.append(value)
     y.append(col4)
-
+    y.append(col9)
     for id in it.chain(range(25, 29)):
         file = '/data1/xtra/results/timestamps/SHJ_JM_NP_{}.txt'.format(id)
         file2 = '/data1/xtra/results/records/SHJ_JM_NP_{}.txt'.format(id)
@@ -228,9 +233,8 @@ if __name__ == "__main__":
     x_values = [1, 10, 100, 200]
 
     y_values = ReadFile()
-
-    legend_labels = ['NPJ', 'PRJ', 'MWAY', 'MPASS', 'SHJ$^{JM}$', 'SHJ$^{JB}$', 'PMJ$^{JM}$',
-                     'PMJ$^{JB}$']
+    legend_labels = ['Lazy:', 'NPJ', 'PRJ', 'MWAY', 'MPASS',
+                     'Eager:', 'SHJ$^{JM}$', 'SHJ$^{JB}$', 'PMJ$^{JM}$', 'PMJ$^{JB}$']
 
     DrawFigure(x_values, y_values, legend_labels,
                r'$dupe$', 'Tpt. (inputs/ms)', 0,
