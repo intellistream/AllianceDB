@@ -102,7 +102,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
                          loc='upper center',
                          #                     mode='expand',
                          shadow=False,
-                         bbox_to_anchor=(0.5, 1.3),
+                         bbox_to_anchor=(0.5, 1.5),
                          columnspacing=0.1,
                          handletextpad=0.2,
                          #                     bbox_transform=ax.transAxes,
@@ -115,7 +115,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
 
     # you may need to tune the xticks position to get the best figure.
     plt.xticks(index + 1 * width, x_values)
-    plt.ticklabel_format(axis="y", style="sci", scilimits=(0,0), useMathText=True)
+    plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0), useMathText=True)
     plt.grid(axis='y', color='gray')
     figure.yaxis.set_major_locator(pylab.LinearLocator(3))
     # figure.yaxis.set_major_locator(LogLocator(base=10))
