@@ -125,6 +125,7 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
     plt.xlim(x_min, x_max)
     # plt.ylim(1000, 7000)
     # plt.ylim(y_min, y_max)
+    plt.ylim(bottom=0)
     plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
     plt.grid(axis='y', color='gray')
     figure.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())

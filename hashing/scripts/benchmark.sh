@@ -564,14 +564,14 @@ fi
 #    ;;
 
 ## MICRO STUDY
-PROFILE_MICRO=0
+PROFILE_MICRO=1
 if [ $PROFILE_MICRO == 1 ]; then
   sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h            #enable time measurement
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h #disable hardware counters
   profile_breakdown=1                                                                     #compile depends on whether we want to profile.
   compile=1                                                                               #enable compiling.
   #benchmark experiment only apply for hashing directory.
-  for benchmark in  "SIMD_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY" "BUCKET_SIZE_STUDY"  "PRJ_RADIX_BITS_STUDY" "P_P_STUDY" ; do #
+  for benchmark in  "P_P_STUDY" ; do # "SIMD_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY" "BUCKET_SIZE_STUDY"  "PRJ_RADIX_BITS_STUDY"
     case "$benchmark" in
     "SIMD_STUDY")
       id=104
@@ -693,7 +693,7 @@ if [ $PROFILE_MICRO == 1 ]; then
   done
 fi
 
-PROFILE=1 ## Cache misses profiling, please run the program with sudo
+PROFILE=0 ## Cache misses profiling, please run the program with sudo
 if [ $PROFILE == 1 ]; then
   sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h #disable time measurement
   sed -i -e "s/#define NO_PERF_COUNTERS/#define PERF_COUNTERS/g" ../utils/perf_counters.h
