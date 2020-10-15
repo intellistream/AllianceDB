@@ -17,7 +17,7 @@ TICK_FP = FontProperties(style='normal', size=TICK_FONT_SIZE)
 
 MARKERS = (["", 'o', 's', 'v', "^", "", "h", "v", ">", "x", "d", "<", "|", "", "+", "_"])
 # you may want to change the color map for different figures
-COLOR_MAP = ('#000000', '#B03A2E', '#2874A6', '#239B56', '#7D3C98', '#000000', '#F1C40F', '#F5CBA7', '#82E0AA', '#AEB6BF', '#AA4499')
+COLOR_MAP = ('#FFFFFF', '#B03A2E', '#2874A6', '#239B56', '#7D3C98', '#FFFFFF', '#F1C40F', '#F5CBA7', '#82E0AA', '#AEB6BF', '#AA4499')
 # you may want to change the patterns for different figures
 PATTERNS = (["", "////", "\\\\", "//", "o", "", "||", "-", "//", "\\", "o", "O", "////", ".", "|||", "o", "---", "+", "\\\\", "*"])
 LABEL_WEIGHT = 'bold'
@@ -161,6 +161,11 @@ def ReadFile():
     col6 = []
     col7 = []
     col8 = []
+    col9 = []
+
+    for id in it.chain(range(0, 5)):
+        col9.append(0)
+    y.append(col9)
 
     for id in it.chain(range(15,20)):
         file = '/data1/xtra/results/timestamps/PRJ_{}.txt'.format(id)
@@ -189,6 +194,10 @@ def ReadFile():
         value = GetThroughput(file, file2)
         col4.append(value)
     y.append(col4)
+
+    for id in it.chain(range(0, 5)):
+        col9.append(0)
+    y.append(col9)
 
     for id in it.chain(range(15,20)):
         file = '/data1/xtra/results/timestamps/SHJ_JM_NP_{}.txt'.format(id)

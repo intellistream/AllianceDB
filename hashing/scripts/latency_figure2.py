@@ -18,7 +18,7 @@ TICK_FP = FontProperties(style='normal', size=TICK_FONT_SIZE)
 
 MARKERS = (["", 'o', 's', 'v', "^", "", "h", "v", ">", "x", "d", "<", "|", "", "+", "_"])
 # you may want to change the color map for different figures
-COLOR_MAP = ('#000000', '#B03A2E', '#2874A6', '#239B56', '#7D3C98', '#000000', '#F1C40F', '#F5CBA7', '#82E0AA', '#AEB6BF', '#AA4499')
+COLOR_MAP = ('#FFFFFF', '#B03A2E', '#2874A6', '#239B56', '#7D3C98', '#FFFFFF', '#F1C40F', '#F5CBA7', '#82E0AA', '#AEB6BF', '#AA4499')
 # you may want to change the patterns for different figures
 PATTERNS = (["", "////", "\\\\", "//", "o", "", "||", "-", "//", "\\", "o", "O", "////", ".", "|||", "o", "---", "+", "\\\\", "*"])
 LABEL_WEIGHT = 'bold'
@@ -154,6 +154,11 @@ def ReadFile():
     col6 = []
     col7 = []
     col8 = []
+    col9 = []
+
+    for id in it.chain(range(0, 5)):
+        col9.append(0)
+    y.append(col9)
 
     for id in it.chain(range(5, 10)):
         file = '/data1/xtra/results/latency/PRJ_{}.txt'.format(id)
@@ -186,6 +191,10 @@ def ReadFile():
         x = float(read.pop(int(len(read) * 0.95)).strip("\n"))  # get the 99th timestamp
         col4.append(x)
     y.append(col4)
+
+    for id in it.chain(range(38, 42)):
+        col9.append(0)
+    y.append(col9)  # this is a fake empty line to separate eager and lazy.
 
     for id in it.chain(range(5, 10)):
         file = '/data1/xtra/results/latency/SHJ_JM_NP_{}.txt'.format(id)

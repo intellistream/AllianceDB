@@ -19,7 +19,7 @@ TICK_FP = FontProperties(style='normal', size=TICK_FONT_SIZE)
 
 MARKERS = (["", 'o', 's', 'v', "^", "", "h", "v", ">", "x", "d", "<", "|", "", "+", "_"])
 # you may want to change the color map for different figures
-COLOR_MAP = ('#000000', '#B03A2E', '#2874A6', '#239B56', '#7D3C98', '#000000', '#F1C40F', '#F5CBA7', '#82E0AA', '#AEB6BF', '#AA4499')
+COLOR_MAP = ('#FFFFFF', '#B03A2E', '#2874A6', '#239B56', '#7D3C98', '#FFFFFF', '#F1C40F', '#F5CBA7', '#82E0AA', '#AEB6BF', '#AA4499')
 # you may want to change the patterns for different figures
 PATTERNS = (["", "////", "\\\\", "//", "o", "", "||", "-", "//", "\\", "o", "O", "////", ".", "|||", "o", "---", "+", "\\\\", "*"])
 LABEL_WEIGHT = 'bold'
@@ -132,7 +132,7 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
     plt.xticks(x_values)
     plt.xlim(x_min, x_max)
     figure.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
-
+    plt.ylim(bottom=0)
     plt.ticklabel_format(axis="y", style="sci", scilimits=(0,0))
     plt.grid(axis='y', color='gray')
     figure.yaxis.set_major_locator(LinearLocator(3))
@@ -201,29 +201,29 @@ def ReadFile():
     y.append(col9)
 
     for id in it.chain(range(0, 5)):
-        file = '/data1/xtra/results/timestamps/SHJ_JM_NP_{}.txt'.format(id)
-        file2 = '/data1/xtra/results/records/SHJ_JM_NP_{}.txt'.format(id)
+        file = '/data1/xtra/results/timestamps/SHJ_JM_P_{}.txt'.format(id)
+        file2 = '/data1/xtra/results/records/SHJ_JM_P_{}.txt'.format(id)
         value = GetThroughput(file, file2)
         col5.append(value)
     y.append(col5)
 
     for id in it.chain(range(0, 5)):
-        file = '/data1/xtra/results/timestamps/SHJ_JBCR_NP_{}.txt'.format(id)
-        file2 = '/data1/xtra/results/records/SHJ_JBCR_NP_{}.txt'.format(id)
+        file = '/data1/xtra/results/timestamps/SHJ_JBCR_P_{}.txt'.format(id)
+        file2 = '/data1/xtra/results/records/SHJ_JBCR_P_{}.txt'.format(id)
         value = GetThroughput(file, file2)
         col6.append(value)
     y.append(col6)
 
     for id in it.chain(range(0, 5)):
-        file = '/data1/xtra/results/timestamps/PMJ_JM_NP_{}.txt'.format(id)
-        file2 = '/data1/xtra/results/records/PMJ_JM_NP_{}.txt'.format(id)
+        file = '/data1/xtra/results/timestamps/PMJ_JM_P_{}.txt'.format(id)
+        file2 = '/data1/xtra/results/records/PMJ_JM_P_{}.txt'.format(id)
         value = GetThroughput(file, file2)
         col7.append(value)
     y.append(col7)
 
     for id in it.chain(range(0, 5)):
-        file = '/data1/xtra/results/timestamps/PMJ_JBCR_NP_{}.txt'.format(id)
-        file2 = '/data1/xtra/results/records/PMJ_JBCR_NP_{}.txt'.format(id)
+        file = '/data1/xtra/results/timestamps/PMJ_JBCR_P_{}.txt'.format(id)
+        file2 = '/data1/xtra/results/records/PMJ_JBCR_P_{}.txt'.format(id)
         value = GetThroughput(file, file2)
         col8.append(value)
     y.append(col8)

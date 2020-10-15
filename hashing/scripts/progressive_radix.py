@@ -90,7 +90,6 @@ def ReadFile(id):
 
     return x_axis, y_axis
 
-
 def DrawLegend(legend_labels, filename):
     fig = pylab.figure()
     ax1 = fig.add_subplot(111)
@@ -165,10 +164,10 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
         # leg.get_frame().set_linewidth(2)
         # leg.get_frame().set_edgecolor("black")
 
-    plt.xscale('log')
+    # plt.xscale('log')
     # plt.xticks(x_values)
     # you may control the limits on your own.
-    plt.xlim(left=0)
+    # plt.xlim(left=0)
     # plt.xlim(x_min, x_max)
     # plt.ylim(y_min, y_max)
 
@@ -176,7 +175,7 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
     figure.yaxis.set_major_formatter(PercentFormatter(1.0))
     # figure.yaxis.set_major_locator(LogLocator(base=10))
     # figure.xaxis.set_major_locator(matplotlib.ticker.FixedFormatter(["0.25", "0.5", "0.75", "1"]))
-    figure.xaxis.set_major_locator(LogLocator(base=10))
+    # figure.xaxis.set_major_locator(LogLocator(base=10))
     # figure.xaxis.set_major_locator(LinearLocator(5))
 
     figure.get_xaxis().set_tick_params(direction='in', pad=10)
