@@ -148,7 +148,18 @@ void *sortmergejoin_multipass_thread(void *param) {
     START_MEASURE(args->timer)
 #endif
 
-#ifdef NO_JOIN // partition only
+#ifdef OVERVIEW // partition only
+#ifdef PERF_COUNTERS
+    if (my_tid == 0) {
+        PCM_initPerformanceMonitor(NULL, NULL);
+        PCM_start();
+    }
+    BARRIER_ARRIVE(args->barrier, rv);
+#endif
+#endif
+
+
+#ifdef PARTITION // partition only
 #ifdef PERF_COUNTERS
     if (my_tid == 0) {
       PCM_initPerformanceMonitor(NULL, NULL);
@@ -172,7 +183,7 @@ void *sortmergejoin_multipass_thread(void *param) {
 
     BARRIER_ARRIVE(args->barrier, rv);
 
-#ifdef NO_JOIN // partition only
+#ifdef PARTITION // partition only
 #ifdef PERF_COUNTERS
     if (my_tid == 0) {
       PCM_stop();
@@ -335,6 +346,20 @@ void *sortmergejoin_multipass_thread(void *param) {
 #endif
     BARRIER_ARRIVE(args->barrier, rv);
 #endif
+
+#ifdef OVERVIEW
+#ifdef PERF_COUNTERS
+    BARRIER_ARRIVE(args->barrier, rv);
+    if (my_tid == 0) {
+        PCM_stop();
+        PCM_log("========= results of Overview =========\n");
+        PCM_printResults();
+        PCM_cleanup();
+    }
+#endif
+    BARRIER_ARRIVE(args->barrier, rv);
+#endif
+
 #ifndef NO_TIMING
     /* wait at a barrier until each thread completes join phase */
     BARRIER_ARRIVE(args->barrier, rv)

@@ -15,7 +15,7 @@ mkdir -p $expDir/results/records
 mkdir -p $expDir/results/timestamps
 
 ## Set L3 Cache according to your machine.
-sed -i -e "s/#define L3_CACHE_SIZE [[:alnum:]]*/#define L3_CACHE_SIZE 19922944/g" ../utils/params.h
+sed -i -e "s/#define L3_CACHE_SIZE [[:alnum:]]*/#define L3_CACHE_SIZE 20971520/g" ../utils/params.h
 sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h
 sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h
 
@@ -781,11 +781,10 @@ if [ $PROFILE_KIM == 1 ]; then
   sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h #disable time measurement
   sed -i -e "s/#define NO_PERF_COUNTERS/#define PERF_COUNTERS/g" ../utils/perf_counters.h
   profile_breakdown=0 # disable measure time breakdown!
-#  ALL_ON
-  PARTITION_ONLY
+  PARTITION_BUILD_SORT_MERGE_JOIN # eliminate wait phase
   compile=1
   compile
-  for benchmark in "YSB"; do #"YSB
+  for benchmark in "Kim"; do #"YSB
     id=402
     for algo in NPO PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P; do # NPO PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P
       case "$benchmark" in

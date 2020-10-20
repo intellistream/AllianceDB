@@ -18,8 +18,10 @@
 //#define DEBUG
 //#define JOIN_MATERIALIZE
 #define TIMING
-#define JOIN
-#define SORT
+#define NO_JOIN
+#define PARTITION
+#define NO_SORT
+#define OVERVIEW
 
 #define NO_PERF_UARCH
 

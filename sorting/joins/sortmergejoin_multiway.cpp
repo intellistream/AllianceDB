@@ -136,7 +136,17 @@ void *sortmergejoin_multiway_thread(void *param) {
 
 //  MSG("Thread-%d started running ... \n", my_tid);
 
-#ifdef NO_JOIN // partition only
+#ifdef OVERVIEW // partition only
+#ifdef PERF_COUNTERS
+    if (my_tid == 0) {
+        PCM_initPerformanceMonitor(NULL, NULL);
+        PCM_start();
+    }
+    BARRIER_ARRIVE(args->barrier, rv);
+#endif
+#endif
+
+#ifdef PARTITION // partition only
 #ifdef PERF_COUNTERS
     if (my_tid == 0) {
       PCM_initPerformanceMonitor(NULL, NULL);
@@ -166,7 +176,7 @@ void *sortmergejoin_multiway_thread(void *param) {
     relation_t **partsS = NULL;
     partitioning_phase(&partsR, &partsS, args);
 
-#ifdef NO_JOIN // partition only
+#ifdef PARTITION // partition only
 #ifdef PERF_COUNTERS
     BARRIER_ARRIVE(args->barrier, rv);
     if (my_tid == 0) {
@@ -370,6 +380,19 @@ void *sortmergejoin_multiway_thread(void *param) {
     if (my_tid == 0) {
         PCM_stop();
         PCM_log("========= 4) results of Multi-Way Joining Phase =========\n");
+        PCM_printResults();
+        PCM_cleanup();
+    }
+#endif
+    BARRIER_ARRIVE(args->barrier, rv);
+#endif
+
+#ifdef OVERVIEW
+    #ifdef PERF_COUNTERS
+    BARRIER_ARRIVE(args->barrier, rv);
+    if (my_tid == 0) {
+        PCM_stop();
+        PCM_log("========= results of Overview =========\n");
         PCM_printResults();
         PCM_cleanup();
     }

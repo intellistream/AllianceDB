@@ -90,14 +90,27 @@ function KimProfileRun() {
 function PARTITION_ONLY() {
   sed -i -e "s/#define JOIN/#define NO_JOIN/g" ../joins/common_functions.h
   sed -i -e "s/#define SORT/#define NO_SORT/g" ../joins/common_functions.h
+  sed -i -e "s/#define NO_PARTITION/#define PARTITION/g" ../joins/common_functions.h
+  sed -i -e "s/#define OVERVIEW/#define NO_OVERVIEW/g" ../joins/common_functions.h
 }
 function PARTITION_BUILD_SORT() {
   sed -i -e "s/#define JOIN/#define NO_JOIN/g" ../joins/common_functions.h
   sed -i -e "s/#define NO_SORT/#define SORT/g" ../joins/common_functions.h
+  sed -i -e "s/#define NO_PARTITION/#define PARTITION/g" ../joins/common_functions.h
+  sed -i -e "s/#define OVERVIEW/#define NO_OVERVIEW/g" ../joins/common_functions.h
 }
 function PARTITION_BUILD_SORT_MERGE_JOIN() {
   sed -i -e "s/#define NO_JOIN/#define JOIN/g" ../joins/common_functions.h
   sed -i -e "s/#define SORT/#define NO_SORT/g" ../joins/common_functions.h
+  sed -i -e "s/#define PARTITION/#define NO_PARTITION/g" ../joins/common_functions.h
+  sed -i -e "s/#define OVERVIEW/#define NO_OVERVIEW/g" ../joins/common_functions.h
+}
+
+function OVERVIEW() {
+  sed -i -e "s/#define JOIN/#define NO_JOIN/g" ../joins/common_functions.h
+  sed -i -e "s/#define SORT/#define NO_SORT/g" ../joins/common_functions.h
+  sed -i -e "s/#define PARTITION/#define NO_PARTITION/g" ../joins/common_functions.h
+  sed -i -e "s/#define NO_OVERVIEW/#define OVERVIEW/g" ../joins/common_functions.h
 }
 
 function SetStockParameters() { #matches: 15595000. #inputs= 60527 + 77227
@@ -493,21 +506,6 @@ if [ $PERF_YSB == 1 ]; then
       let "id++"
     done
   done
-
-#  for benchmark in "YSB"; do #"YSB
-#    id=400
-#    for algo in "m-way" "m-pass"; do
-#      case "$benchmark" in
-#      "YSB")
-#        ResetParameters
-#        SetYSBParameters
-#        rm /data1/xtra/results/breakdown/perf_$id.csv
-#        perfUtilBenchmarkRun
-#        ;;
-#      esac
-#      let "id++"
-#    done
-#  done
 fi
 
 # profiling for figure 21b. TODO: maybe need to change a flag here
@@ -519,7 +517,7 @@ if [ $PROFILE_KIM == 1 ]; then
 
   for benchmark in "Kim"; do
     id=400
-    PARTITION_ONLY
+    OVERVIEW
     compile=1
     compile
     for algo in "m-way"; do # "m-way" "m-pass"
