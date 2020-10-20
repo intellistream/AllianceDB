@@ -2,7 +2,7 @@
 
 #set -e
 ## Set L3 Cache according to your machine.
-sed -i -e "s/#define L3_CACHE_SIZE [[:alnum:]]*/#define L3_CACHE_SIZE 19922944/g" ../utils/params.h
+sed -i -e "s/#define L3_CACHE_SIZE [[:alnum:]]*/#define L3_CACHE_SIZE 20971520/g" ../utils/params.h
 sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h
 sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h
 
