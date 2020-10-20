@@ -18,7 +18,7 @@
 //#define DEBUG
 //#define JOIN_MATERIALIZE
 #define TIMING
-#define NO_JOIN
+#define JOIN
 #define SORT
 
 #define NO_PERF_UARCH
