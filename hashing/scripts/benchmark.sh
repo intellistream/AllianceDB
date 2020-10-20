@@ -87,6 +87,19 @@ function KimRun() {
   ../hashing -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS -[ $progress_step -] $merge_step -G $group -P $DD -g $gap
   if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit -1; fi
 }
+
+function KimProfileRun() {
+  #####native execution
+  echo "==KIM benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS -[ $progress_step -] $merge_step -G $group -P $DD -g $gap =="
+  echo 3 >/proc/sys/vm/drop_caches
+  if [ ! -z "$PERF_CONF" -a "$PERF_CONF"!=" " ]; then
+    ../hashing -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS -[ $progress_step -] $merge_step -G $group -P $DD -g $gap -o /data1/xtra/results/breakdown/profile_$id.txt -p $PERF_CONF
+  else
+    ../hashing -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS -[ $progress_step -] $merge_step -G $group -P $DD -g $gap -o /data1/xtra/results/breakdown/profile_$id.txt
+  fi
+  if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit -1; fi
+}
+
 function PARTITION_ONLY() {
   sed -i -e "s/#define JOIN/#define NO_JOIN/g" ../joins/common_functions.h
   sed -i -e "s/#define MERGE/#define NO_MERGE/g" ../joins/common_functions.h
@@ -564,7 +577,7 @@ fi
 #    ;;
 
 ## MICRO STUDY
-PROFILE_MICRO=1
+PROFILE_MICRO=0
 if [ $PROFILE_MICRO == 1 ]; then
   sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h            #enable time measurement
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h #disable hardware counters
@@ -738,42 +751,69 @@ fi
 
 PERF_YSB=0 ## hardware profiling with YSB, please run the program with sudo
 if [ $PERF_YSB == 1 ]; then
-  #  compile=1
-  #  compile
+  sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h #disable time measurement
+  sed -i -e "s/#define NO_PERF_UARCH/#define PERF_UARCH/g" ../joins/common_functions.h
+  profile_breakdown=0
+  compile=1
+  compile
   for benchmark in "Kim"; do #"YSB
     id=302
-    for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do # NPO PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P
+    for algo in NPO PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P; do # NPO PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P
       case "$benchmark" in
       "Kim")
         ResetParameters
-        #        SetYSBParameters
-        #        SetDEBSParameters
         STEP_SIZE=1280
         STEP_SIZE_S=12800
         WINDOW_SIZE=10000
         rm /data1/xtra/results/breakdown/perf_$id.csv
-        perfuArchBenchmarkRun
+        KimRun
+        ;;
+      esac
+      sleep 5
+      let "id++"
+    done
+  done
+  sed -i -e "s/#define PERF_UARCH/#define NO_PERF_UARCH/g" ../joins/common_functions.h
+fi
+
+PROFILE_KIM=1 ## hardware profiling with YSB, please run the program with sudo
+if [ $PROFILE_KIM == 1 ]; then
+  sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h #disable time measurement
+  sed -i -e "s/#define NO_PERF_COUNTERS/#define PERF_COUNTERS/g" ../utils/perf_counters.h
+  profile_breakdown=0 # disable measure time breakdown!
+#  ALL_ON
+  PARTITION_ONLY
+  compile=1
+  compile
+  for benchmark in "YSB"; do #"YSB
+    id=402
+    for algo in NPO PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P; do # NPO PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P
+      case "$benchmark" in
+      "Kim")
+        ResetParameters
+        STEP_SIZE=1280
+        STEP_SIZE_S=12800
+        WINDOW_SIZE=10000
+        rm /data1/xtra/results/breakdown/profile_$id.txt
+        PERF_CONF=/data1/xtra/pcm.cfg
+        KimProfileRun
+        PERF_CONF=/data1/xtra/pcm2.cfg
+        KimProfileRun
+        PERF_CONF=""
+        KimProfileRun
+        ;;
+      "YSB")
+        ResetParameters
+        SetYSBParameters
+        rm /data1/xtra/results/breakdown/profile_$id.txt
+        benchmarkRun
         ;;
       esac
       let "id++"
     done
   done
-
-#  for benchmark in "YSB"; do #"YSB
-#    id=402
-#    for algo in NPO PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P; do
-#      case "$benchmark" in
-#      "YSB")
-#        ResetParameters
-#        SetYSBParameters
-#        rm /data1/xtra/results/breakdown/perf_$id.csv
-#        perfUtilBenchmarkRun
-##        benchmarkRun
-#        ;;
-#      esac
-#      let "id++"
-#    done
-#  done
+  sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h
 fi
+
 ./draw.sh
 python3 jobdone.py

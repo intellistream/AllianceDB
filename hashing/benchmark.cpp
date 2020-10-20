@@ -6,6 +6,7 @@
 #include "joins/prj_params.h"
 #include "utils/generator.h"
 #include <unistd.h>
+#include <sys/resource.h>
 
 /**
  * Put an odd number of cache lines between partitions in pass-2:
@@ -132,6 +133,29 @@ void writefile(relation_payload_t* relPl, const param_t cmd_params) {
     outputFile.close();
 }
 
+void *
+memory_calculator_thread(void *args) {
+    uint64_t exp_id = (uint64_t)args;
+    struct rusage r_usage;
+    int counter = 0;
+    string path = "/data1/xtra/mem/mem_stat_" + std::to_string(exp_id) + ".txt";
+    auto fp = fopen(path.c_str(), "w");
+    setbuf(fp,NULL);
+
+    while(counter < 10000) {
+        int ret = getrusage(RUSAGE_SELF,&r_usage);
+        if(ret == 0) {
+            fprintf(fp, "Memory usage: %ld kilobytes\n",r_usage.ru_maxrss);
+            fflush(fp);
+        }
+        else
+            printf("Error in getrusage. errno = %d\n", errno);
+        counter++;
+        usleep(10000);
+    }
+    return 0;
+}
+
 /**
  *
  * @param cmd_params
@@ -193,6 +217,15 @@ benchmark(const param_t cmd_params) {
     setbuf(fp,NULL);
     fprintf(fp, "%d\n", getpid());
     fflush(fp);
+
+    // create a thread for memory consumption
+    pthread_t thread_id;
+    uint32_t rv = pthread_create(&thread_id, nullptr, memory_calculator_thread, (void *) cmd_params.exp_id);
+    if (rv) {
+        fprintf(stderr, "[ERROR] pthread_create() return code is %d\n", rv);
+        exit(-1);
+    }
+
     if (strcmp(cmd_params.algo->name, "NPO") == 0 || strcmp(cmd_params.algo->name, "PRO") == 0) {
         sleep(10);
     }

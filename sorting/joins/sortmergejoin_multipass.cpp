@@ -148,20 +148,6 @@ void *sortmergejoin_multipass_thread(void *param) {
     START_MEASURE(args->timer)
 #endif
 
-//    // TODO: move this to common function? make it controlable from scripts
-//#define PERF_UARCH
-//
-//#ifdef PERF_UARCH
-//    auto curtime = std::chrono::steady_clock::now();
-//    // dump the pid outside, and attach vtune for performance measurement
-//    string path = "/data1/xtra/time_end_" + std::to_string(args->exp_id) + ".txt";
-//    auto fp = fopen(path.c_str(), "w");
-//    setbuf(fp,NULL);
-//    fprintf(fp, "%ld\n", curtime);
-//    fflush(fp);
-//    sleep(10);
-//#endif
-
 #ifdef NO_JOIN // partition only
 #ifdef PERF_COUNTERS
     if (my_tid == 0) {

@@ -203,17 +203,6 @@ void *npo_thread(void *param) {
 #endif
 
 
-#ifdef PERF_UARCH
-    auto curtime = std::chrono::steady_clock::now();
-    // dump the pid outside, and attach vtune for performance measurement
-    string path = "/data1/xtra/time_end_" + std::to_string(args->exp_id) + ".txt";
-    auto fp = fopen(path.c_str(), "w");
-    setbuf(fp,NULL);
-    fprintf(fp, "%ld\n", curtime);
-    fflush(fp);
-//    sleep(1);
-#endif
-
 #ifdef JOIN_RESULT_MATERIALIZE
   chainedtuplebuffer_t *chainedbuf = chainedtuplebuffer_init();
 #else

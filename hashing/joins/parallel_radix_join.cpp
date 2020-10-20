@@ -1041,18 +1041,6 @@ void *prj_thread(void *param) {
   }
 #endif
 
-
-#ifdef PERF_UARCH
-    auto curtime = std::chrono::steady_clock::now();
-    // dump the pid outside, and attach vtune for performance measurement
-    string path = "/data1/xtra/time_end_" + std::to_string(args->exp_id) + ".txt";
-    auto fp = fopen(path.c_str(), "w");
-    setbuf(fp,NULL);
-    fprintf(fp, "%ld\n", curtime);
-    fflush(fp);
-//    sleep(1);
-#endif
-
   /********** 1st pass of multi-pass partitioning ************/
   part.R = 0;
   part.D = NUM_RADIX_BITS / NUM_PASSES; // PASS1RADIXBITS

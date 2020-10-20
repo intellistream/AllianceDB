@@ -76,6 +76,17 @@ function KimRun() {
   ../sorting -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -W $FIXS -g $gap -P $DD -I $id
 }
 
+function KimProfileRun() {
+  #####native execution
+  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -g $gap -P $DD -W $FIXS -I $id =="
+  #echo 3 >/proc/sys/vm/drop_caches
+  if [ ! -z "$PERF_CONF" -a "$PERF_CONF"!=" " ]; then
+    ../sorting -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -W $FIXS -g $gap -P $DD -o /data1/xtra/results/breakdown/profile_$id.txt -p $PERF_CONF -I $id
+  else
+    ../sorting -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -W $FIXS -g $gap -P $DD -o /data1/xtra/results/breakdown/profile_$id.txt -I $id
+  fi
+}
+
 function PARTITION_ONLY() {
   sed -i -e "s/#define JOIN/#define NO_JOIN/g" ../joins/common_functions.h
   sed -i -e "s/#define SORT/#define NO_SORT/g" ../joins/common_functions.h
@@ -415,7 +426,7 @@ if [ $PROFILE_MICRO == 1 ]; then
   done
 fi
 
-PROFILE=1 ## Cache misses profiling, please run the program with sudo
+PROFILE=0 ## Cache misses profiling, please run the program with sudo
 if [ $PROFILE == 1 ]; then
   sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h #disable time measurement
   sed -i -e "s/#define NO_PERF_COUNTERS/#define PERF_COUNTERS/g" ../utils/perf_counters.h
@@ -478,6 +489,7 @@ if [ $PERF_YSB == 1 ]; then
         perfUarchBenchmarkRun
         ;;
       esac
+      sleep 5
       let "id++"
     done
   done
@@ -496,4 +508,44 @@ if [ $PERF_YSB == 1 ]; then
 #      let "id++"
 #    done
 #  done
+fi
+
+# profiling for figure 21b. TODO: maybe need to change a flag here
+PROFILE_KIM=1 ## Cache misses profiling with YSB, please run the program with sudo
+if [ $PROFILE_KIM == 1 ]; then
+  sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h #disable time measurement
+  sed -i -e "s/#define NO_PERF_COUNTERS/#define PERF_COUNTERS/g" ../utils/perf_counters.h
+  profile_breakdown=0
+
+  for benchmark in "Kim"; do
+    id=400
+    PARTITION_ONLY
+    compile=1
+    compile
+    for algo in "m-way"; do # "m-way" "m-pass"
+      case "$benchmark" in
+      "Kim")
+        ResetParameters
+        STEP_SIZE=1280
+        STEP_SIZE_S=12800
+        WINDOW_SIZE=10000
+        rm /data1/xtra/results/breakdown/profile_$id.txt
+        PERF_CONF=/data1/xtra/pcm.cfg
+        KimProfileRun
+        PERF_CONF=/data1/xtra/pcm2.cfg
+        KimProfileRun
+        PERF_CONF=""
+        KimProfileRun
+        ;;
+      "YSB")
+        ResetParameters
+        SetYSBParameters
+        rm /data1/xtra/results/breakdown/profile_$id.txt
+        benchmarkRun
+        ;;
+      esac
+      let "id++"
+    done
+  done
+  sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h
 fi

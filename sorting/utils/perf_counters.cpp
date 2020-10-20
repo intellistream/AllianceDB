@@ -197,6 +197,12 @@ PCM_printResults()
                << getCyclesLostDueL2CacheMisses(before_state, after_state) << endl;
         (*out) << "CyclesLostDueL3CacheMisses "
                << getCyclesLostDueL3CacheMisses(before_state, after_state) << endl;
+
+        (*out) << "MemoryBandwidth "
+               << getLocalMemoryBW(before_state, after_state) << endl;
+
+        (*out) << "CPUCycles "
+               << getCycles(before_state, after_state) << endl;
 #if PER_CORE==0
         (*out) << "BytesFromMC " << getBytesReadFromMC(before_state, after_state) << endl;
         (*out) << "BytesWrittenToMC " << getBytesWrittenToMC(before_state, after_state) << endl;
