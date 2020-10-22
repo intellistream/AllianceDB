@@ -60,6 +60,10 @@ void *THREAD_TASK_NOSHUFFLE(void *param) {
     MSG("Thread:%id initialize PCM", args->tid)
     PCM_initPerformanceMonitor(NULL, NULL);
     PCM_start();
+      auto curtime = std::chrono::steady_clock::now();
+      string path = "/data1/xtra/time_start_" + std::to_string(args->exp_id) + ".txt";
+      auto fp = fopen(path.c_str(), "w");
+      fprintf(fp, "%ld\n", curtime);
     MSG("Thread:%id initialized PCM", args->tid)
   }
   BARRIER_ARRIVE(args->barrier, lock)
@@ -100,6 +104,10 @@ void *THREAD_TASK_NOSHUFFLE(void *param) {
   if (args->tid == 0) {
     MSG("Thread:%id stops PCM", args->tid)
     PCM_stop();
+      auto curtime = std::chrono::steady_clock::now();
+      string path = "/data1/xtra/time_end_" + std::to_string(args->exp_id) + ".txt";
+      auto fp = fopen(path.c_str(), "w");
+      fprintf(fp, "%ld\n", curtime);
     PCM_log("========== Entire phase profiling results ==========\n");
     PCM_printResults();
     PCM_log("===================================================\n");
@@ -150,6 +158,10 @@ void *THREAD_TASK_SHUFFLE(void *param) {
     MSG("Thread:%id initialize PCM", args->tid)
     PCM_initPerformanceMonitor(NULL, NULL);
     PCM_start();
+      auto curtime = std::chrono::steady_clock::now();
+      string path = "/data1/xtra/time_start_" + std::to_string(args->exp_id) + ".txt";
+      auto fp = fopen(path.c_str(), "w");
+      fprintf(fp, "%ld\n", curtime);
     MSG("Thread:%id initialized PCM", args->tid)
   }
   BARRIER_ARRIVE(args->barrier, lock)
@@ -207,6 +219,10 @@ void *THREAD_TASK_SHUFFLE(void *param) {
   if (args->tid == 0) {
     MSG("Thread:%id stops PCM", args->tid)
     PCM_stop();
+      auto curtime = std::chrono::steady_clock::now();
+      string path = "/data1/xtra/time_end_" + std::to_string(args->exp_id) + ".txt";
+      auto fp = fopen(path.c_str(), "w");
+      fprintf(fp, "%ld\n", curtime);
     PCM_log("========== Entire phase profiling results ==========\n");
     PCM_printResults();
     PCM_log("===================================================\n");
@@ -465,6 +481,10 @@ void *THREAD_TASK_SHUFFLE_HS(void *param) {
   if (args->tid == 0) {
     PCM_initPerformanceMonitor(NULL, NULL);
     PCM_start();
+      auto curtime = std::chrono::steady_clock::now();
+      string path = "/data1/xtra/time_start_" + std::to_string(args->exp_id) + ".txt";
+      auto fp = fopen(path.c_str(), "w");
+      fprintf(fp, "%ld\n", curtime);
   }
 #endif
 
@@ -544,6 +564,10 @@ void *THREAD_TASK_SHUFFLE_HS(void *param) {
 #ifdef PERF_COUNTERS
   if (args->tid == 0) {
     PCM_stop();
+      auto curtime = std::chrono::steady_clock::now();
+      string path = "/data1/xtra/time_end_" + std::to_string(args->exp_id) + ".txt";
+      auto fp = fopen(path.c_str(), "w");
+      fprintf(fp, "%ld\n", curtime);
     PCM_log("========== Probe phase profiling results ==========\n");
     PCM_printResults();
     PCM_log("===================================================\n");
@@ -585,6 +609,10 @@ void *THREAD_TASK_SHUFFLE_PMJHS(void *param) {
     PCM_log("========== Build phase profiling results ==========\n");
     PCM_printResults();
     PCM_start();
+      auto curtime = std::chrono::steady_clock::now();
+      string path = "/data1/xtra/time_start_" + std::to_string(args->exp_id) + ".txt";
+      auto fp = fopen(path.c_str(), "w");
+      fprintf(fp, "%ld\n", curtime);
   }
   /* Just to make sure we get consistent performance numbers */
   BARRIER_ARRIVE(args->barrier, rv);
@@ -657,6 +685,10 @@ void *THREAD_TASK_SHUFFLE_PMJHS(void *param) {
 #ifdef PERF_COUNTERS
   if (args->tid == 0) {
     PCM_stop();
+      auto curtime = std::chrono::steady_clock::now();
+      string path = "/data1/xtra/time_end_" + std::to_string(args->exp_id) + ".txt";
+      auto fp = fopen(path.c_str(), "w");
+      fprintf(fp, "%ld\n", curtime);
     PCM_log("========== Probe phase profiling results ==========\n");
     PCM_printResults();
     PCM_log("===================================================\n");

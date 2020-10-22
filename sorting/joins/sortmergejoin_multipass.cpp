@@ -153,8 +153,14 @@ void *sortmergejoin_multipass_thread(void *param) {
     if (my_tid == 0) {
         PCM_initPerformanceMonitor(NULL, NULL);
         PCM_start();
+        auto curtime = std::chrono::steady_clock::now();
+        string path = "/data1/xtra/time_start_" + std::to_string(args->exp_id) + ".txt";
+        auto fp = fopen(path.c_str(), "w");
+        fprintf(fp, "%ld\n", curtime);
+        sleep(10);
     }
     BARRIER_ARRIVE(args->barrier, rv);
+
 #endif
 #endif
 
@@ -352,9 +358,14 @@ void *sortmergejoin_multipass_thread(void *param) {
     BARRIER_ARRIVE(args->barrier, rv);
     if (my_tid == 0) {
         PCM_stop();
+        auto curtime = std::chrono::steady_clock::now();
+        string path = "/data1/xtra/time_end_" + std::to_string(args->exp_id) + ".txt";
+        auto fp = fopen(path.c_str(), "w");
+        fprintf(fp, "%ld\n", curtime);
         PCM_log("========= results of Overview =========\n");
         PCM_printResults();
         PCM_cleanup();
+
     }
 #endif
     BARRIER_ARRIVE(args->barrier, rv);

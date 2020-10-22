@@ -184,8 +184,9 @@ void PCM_printResults() {
       (*out) << "MemoryBandwidth "
              << getLocalMemoryBW(before_state, after_state) << endl;
 
-      (*out) << "CPUCycles "
-             << getCycles(before_state, after_state) << endl;
+      (*out) << "CPUCycle/Frequency "
+             << getCycles(before_state, after_state)/getActiveAverageFrequency(before_state, after_state) << endl;
+
 #if PER_CORE == 0
     (*out) << "BytesFromMC " << getBytesReadFromMC(before_state, after_state)
            << endl;
