@@ -171,12 +171,19 @@ void *npo_thread(void *param) {
   }
 #endif
 
-  //#ifdef PERF_COUNTERS
-  //    if(args->tid == 0){
-  //            PCM_initPerformanceMonitor(NULL, NULL);
-  //            PCM_start();
-  //        }
-  //#endif
+#ifdef OVERVIEW
+#ifdef PERF_COUNTERS
+  if(args->tid == 0){
+      PCM_initPerformanceMonitor(NULL, NULL);
+      PCM_start();
+      auto curtime = std::chrono::steady_clock::now();
+      string path = "/data1/xtra/time_start_" + std::to_string(args->exp_id) + ".txt";
+      auto fp = fopen(path.c_str(), "w");
+      fprintf(fp, "%ld\n", curtime);
+      sleep(1);
+      }
+#endif
+#endif
 
   /* insert tuples from the assigned part of relR to the ht */
   build_hashtable_mt(args->ht, &args->relR, &overflowbuf);
@@ -217,6 +224,7 @@ void *npo_thread(void *param) {
   }
 #endif
 
+#ifndef OVERVIEW
 #ifdef PERF_COUNTERS
   if (args->tid == 0) {
     PCM_initPerformanceMonitor(NULL, NULL);
@@ -227,6 +235,7 @@ void *npo_thread(void *param) {
       fprintf(fp, "%ld\n", curtime);
   }
    BARRIER_ARRIVE(args->barrier, rv);
+#endif
 #endif
 
   /* probe for matching tuples from the assigned part of relS */
@@ -239,6 +248,7 @@ void *npo_thread(void *param) {
   args->threadresult->results = (void *)chainedbuf;
 #endif
 
+#ifndef OVERVIEW
 #ifdef PERF_COUNTERS
   if (args->tid == 0) {
     PCM_stop();
@@ -253,6 +263,25 @@ void *npo_thread(void *param) {
   }
   /* Just to make sure we get consistent performance numbers */
   BARRIER_ARRIVE(args->barrier, rv);
+#endif
+#endif
+
+#ifdef OVERVIEW
+#ifdef PERF_COUNTERS
+  if (args->tid == 0) {
+    PCM_stop();
+      auto curtime = std::chrono::steady_clock::now();
+      string path = "/data1/xtra/time_end_" + std::to_string(args->exp_id) + ".txt";
+      auto fp = fopen(path.c_str(), "w");
+      fprintf(fp, "%ld\n", curtime);
+    PCM_log("========== overview profiling results ==========\n");
+    PCM_printResults();
+    PCM_log("===================================================\n");
+    PCM_cleanup();
+  }
+  /* Just to make sure we get consistent performance numbers */
+  BARRIER_ARRIVE(args->barrier, rv);
+#endif
 #endif
 
 #ifndef NO_TIMING

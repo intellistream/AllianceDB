@@ -518,7 +518,7 @@ if [ $PROFILE_KIM == 1 ]; then
   sed -i -e "s/#define NO_PERF_COUNTERS/#define PERF_COUNTERS/g" ../utils/perf_counters.h
   profile_breakdown=0
 
-  for benchmark in "Stock"; do
+  for benchmark in "YSB"; do
     id=400
     OVERVIEW
     compile=1
@@ -531,6 +531,10 @@ if [ $PROFILE_KIM == 1 ]; then
         STEP_SIZE_S=12800
         WINDOW_SIZE=10000
         rm /data1/xtra/results/breakdown/profile_$id.txt
+        PERF_CONF=/data1/xtra/pcm-uarch.cfg
+        KimProfileRun
+        PERF_CONF=/data1/xtra/pcm-uarch2.cfg
+        KimProfileRun
         PERF_CONF=/data1/xtra/pcm.cfg
         KimProfileRun
         PERF_CONF=/data1/xtra/pcm2.cfg
@@ -541,8 +545,18 @@ if [ $PROFILE_KIM == 1 ]; then
       "YSB")
         ResetParameters
         SetYSBParameters
+        # uarch counters
         rm /data1/xtra/results/breakdown/profile_$id.txt
-        benchmarkRun
+        PERF_CONF=/data1/xtra/pcm-uarch.cfg
+        benchmarkProfileRun
+        PERF_CONF=/data1/xtra/pcm-uarch2.cfg
+        benchmarkProfileRun
+        PERF_CONF=/data1/xtra/pcm.cfg
+        benchmarkProfileRun
+        PERF_CONF=/data1/xtra/pcm2.cfg
+        benchmarkProfileRun
+        PERF_CONF=""
+        benchmarkProfileRun
         ;;
       "Stock")
         ResetParameters

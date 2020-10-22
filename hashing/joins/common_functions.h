@@ -19,6 +19,7 @@
 #define MERGE
 #define MATCH
 #define WAIT
+#define OVERVIEW
 
 #define NO_PERF_UARCH
 

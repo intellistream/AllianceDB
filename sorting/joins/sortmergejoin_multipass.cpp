@@ -157,7 +157,7 @@ void *sortmergejoin_multipass_thread(void *param) {
         string path = "/data1/xtra/time_start_" + std::to_string(args->exp_id) + ".txt";
         auto fp = fopen(path.c_str(), "w");
         fprintf(fp, "%ld\n", curtime);
-        sleep(10);
+        sleep(1);
     }
     BARRIER_ARRIVE(args->barrier, rv);
 

@@ -56,6 +56,18 @@ function benchmarkRun() {
   if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit -1; fi
 }
 
+function benchmarkProfileRun() {
+  #####native execution
+  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap -o $expDir/results/breakdown/profile_$id.txt =="
+  echo 3 >/proc/sys/vm/drop_caches
+  if [ ! -z "$PERF_CONF" -a "$PERF_CONF"!=" " ]; then
+    ../hashing -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap -o $expDir/results/breakdown/profile_$id.txt -p $PERF_CONF
+  else
+    ../hashing -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap -o $expDir/results/breakdown/profile_$id.txt
+  fi
+  if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit -1; fi
+}
+
 #function perfuArchBenchmarkRun() {
 #  #####native execution
 #  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap -o $expDir/results/breakdown/perf_$id.txt =="
@@ -105,6 +117,7 @@ function PARTITION_ONLY() {
   sed -i -e "s/#define MERGE/#define NO_MERGE/g" ../joins/common_functions.h
   sed -i -e "s/#define MATCH/#define NO_MATCH/g" ../joins/common_functions.h
   sed -i -e "s/#define WAIT/#define NO_WAIT/g" ../joins/common_functions.h
+  sed -i -e "s/#define OVERVIEW/#define NO_OVERVIEW/g" ../joins/common_functions.h
 }
 
 function PARTITION_BUILD_SORT() {
@@ -112,6 +125,7 @@ function PARTITION_BUILD_SORT() {
   sed -i -e "s/#define MERGE/#define NO_MERGE/g" ../joins/common_functions.h
   sed -i -e "s/#define MATCH/#define NO_MATCH/g" ../joins/common_functions.h
   sed -i -e "s/#define WAIT/#define NO_WAIT/g" ../joins/common_functions.h
+  sed -i -e "s/#define OVERVIEW/#define NO_OVERVIEW/g" ../joins/common_functions.h
 }
 
 function PARTITION_BUILD_SORT_MERGE() {
@@ -119,6 +133,7 @@ function PARTITION_BUILD_SORT_MERGE() {
   sed -i -e "s/#define NO_MERGE/#define MERGE/g" ../joins/common_functions.h
   sed -i -e "s/#define MATCH/#define NO_MATCH/g" ../joins/common_functions.h
   sed -i -e "s/#define WAIT/#define NO_WAIT/g" ../joins/common_functions.h
+  sed -i -e "s/#define OVERVIEW/#define NO_OVERVIEW/g" ../joins/common_functions.h
 }
 
 function PARTITION_BUILD_SORT_MERGE_JOIN() {
@@ -126,6 +141,7 @@ function PARTITION_BUILD_SORT_MERGE_JOIN() {
   sed -i -e "s/#define NO_MERGE/#define MERGE/g" ../joins/common_functions.h
   sed -i -e "s/#define NO_MATCH/#define MATCH/g" ../joins/common_functions.h
   sed -i -e "s/#define WAIT/#define NO_WAIT/g" ../joins/common_functions.h
+  sed -i -e "s/#define OVERVIEW/#define NO_OVERVIEW/g" ../joins/common_functions.h
 }
 
 function ALL_ON() {
@@ -133,7 +149,9 @@ function ALL_ON() {
   sed -i -e "s/#define NO_MERGE/#define MERGE/g" ../joins/common_functions.h
   sed -i -e "s/#define NO_MATCH/#define MATCH/g" ../joins/common_functions.h
   sed -i -e "s/#define NO_WAIT/#define WAIT/g" ../joins/common_functions.h
+  sed -i -e "s/#define NO_OVERVIEW/#define OVERVIEW/g" ../joins/common_functions.h
 }
+
 
 function FULLBENCHRUN() {
   PARTITION_ONLY
@@ -781,10 +799,10 @@ if [ $PROFILE_KIM == 1 ]; then
   sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h #disable time measurement
   sed -i -e "s/#define NO_PERF_COUNTERS/#define PERF_COUNTERS/g" ../utils/perf_counters.h
   profile_breakdown=0 # disable measure time breakdown!
-  PARTITION_BUILD_SORT_MERGE_JOIN # eliminate wait phase
+  ALL_ON # eliminate wait phase
   compile=1
   compile
-  for benchmark in "Kim"; do #"YSB
+  for benchmark in "YSB"; do #"YSB
     id=402
     for algo in NPO PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P; do # NPO PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P
       case "$benchmark" in
@@ -805,7 +823,16 @@ if [ $PROFILE_KIM == 1 ]; then
         ResetParameters
         SetYSBParameters
         rm /data1/xtra/results/breakdown/profile_$id.txt
-        benchmarkRun
+        PERF_CONF=/data1/xtra/pcm-uarch.cfg
+        benchmarkProfileRun
+        PERF_CONF=/data1/xtra/pcm-uarch2.cfg
+        benchmarkProfileRun
+        PERF_CONF=/data1/xtra/pcm.cfg
+        benchmarkProfileRun
+        PERF_CONF=/data1/xtra/pcm2.cfg
+        benchmarkProfileRun
+        PERF_CONF=""
+        benchmarkProfileRun
         ;;
       esac
       let "id++"

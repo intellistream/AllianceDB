@@ -1019,12 +1019,28 @@ void *prj_thread(void *param) {
 
   args->parts_processed = 0;
 
+#ifdef OVERVIEW // overview counters
+#ifdef PERF_COUNTERS
+  if (my_tid == 0) {
+    PCM_initPerformanceMonitor(NULL, NULL);
+    PCM_start();
+      auto curtime = std::chrono::steady_clock::now();
+      string path = "/data1/xtra/time_start_" + std::to_string(args->exp_id) + ".txt";
+      auto fp = fopen(path.c_str(), "w");
+      fprintf(fp, "%ld\n", curtime);
+      sleep(1);
+  }
+#endif
+#endif
+
+#ifndef OVERVIEW
 #ifdef NO_JOIN // partition only
 #ifdef PERF_COUNTERS
   if (my_tid == 0) {
     PCM_initPerformanceMonitor(NULL, NULL);
     PCM_start();
   }
+#endif
 #endif
 #endif
 
@@ -1333,6 +1349,7 @@ void *prj_thread(void *param) {
 //    BEGIN_MEASURE_BUILD( (args->timer) )
 #endif
 
+#ifndef OVERVIEW
 #ifdef NO_JOIN // partition only
 #ifdef PERF_COUNTERS
   if (my_tid == 0) {
@@ -1346,6 +1363,7 @@ void *prj_thread(void *param) {
   BARRIER_ARRIVE(args->barrier, rv);
 #endif
 #endif
+#endif
 
 #ifdef JOIN_RESULT_MATERIALIZE
   chainedtuplebuffer_t *chainedbuf = chainedtuplebuffer_init();
@@ -1353,6 +1371,7 @@ void *prj_thread(void *param) {
   void *chainedbuf = NULL;
 #endif
 
+#ifndef OVERVIEW
 #ifdef JOIN // everything
 #ifdef PERF_COUNTERS
   if (my_tid == 0) {
@@ -1363,6 +1382,7 @@ void *prj_thread(void *param) {
       auto fp = fopen(path.c_str(), "w");
       fprintf(fp, "%ld\n", curtime);
   }
+#endif
 #endif
 #endif
 
@@ -1399,6 +1419,7 @@ void *prj_thread(void *param) {
   }
 #endif
 
+#ifndef OVERVIEW
 #ifdef PERF_COUNTERS
 #ifdef JOIN // everything
   if (my_tid == 0) {
@@ -1414,6 +1435,24 @@ void *prj_thread(void *param) {
 #endif
   /* Just to make sure we get consistent performance numbers */
   BARRIER_ARRIVE(args->barrier, rv);
+#endif
+#endif
+
+#ifdef PERF_COUNTERS
+#ifdef OVERVIEW // everything
+    if (my_tid == 0) {
+        PCM_stop();
+        auto curtime = std::chrono::steady_clock::now();
+        string path = "/data1/xtra/time_end_" + std::to_string(args->exp_id) + ".txt";
+        auto fp = fopen(path.c_str(), "w");
+        fprintf(fp, "%ld\n", curtime);
+        PCM_log("=========== overview profiling results =========\n");
+        PCM_printResults();
+        PCM_cleanup();
+    }
+#endif
+    /* Just to make sure we get consistent performance numbers */
+    BARRIER_ARRIVE(args->barrier, rv);
 #endif
 
   return 0;
