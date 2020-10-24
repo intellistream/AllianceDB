@@ -66,6 +66,12 @@ add_executable(sorting
         lib/types.h
         lib/utils.cpp
         lib/utils.h
+        lib/debug.cpp
+        lib/debug.h
+        lib/threadpool.cpp
+        lib/threadpool.h
+        lib/topology.h
+        lib/topology.cpp
         lib/width_extender.h
         test/check_avxsort.cpp
         test/testutil.cpp

@@ -18,13 +18,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include <stdio.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-
 #ifndef _MSC_VER
-
 #include <unistd.h>
-
 #endif
-
 #include "types.h"
 #include "msr.h"
 #include <assert.h>
@@ -36,7 +32,18 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include "Winmsrdriver\win7\msrstruct.h"
 #include "winring0/OlsApiInitExt.h"
 
-extern HMODULE hOpenLibSys;
+#endif
+
+#if defined(__FreeBSD__) || defined(__DragonFly__)
+#include <sys/ioccom.h>
+#include <sys/cpuctl.h>
+#endif
+
+namespace pcm {
+
+#ifdef _MSC_VER
+
+    extern HMODULE hOpenLibSys;
 
 // here comes an implementatation for Windows
 MsrHandle::MsrHandle(uint32 cpu) : cpu_id(cpu)
@@ -64,7 +71,7 @@ int32 MsrHandle::write(uint64 msr_number, uint64 value)
         req.write_value = value;
         BOOL status = DeviceIoControl(hDriver, IO_CTL_MSR_WRITE, &req, sizeof(MSR_Request), &result, sizeof(uint64), &reslength, NULL);
         assert(status && "Error in DeviceIoControl");
-        return reslength;
+        return status ? sizeof(uint64) : 0;
     }
 
     cvt_ds cvt;
@@ -102,7 +109,7 @@ int32 MsrHandle::read(uint64 msr_number, uint64 * value)
 }
 
 #elif __APPLE__
-// OSX Version
+    // OSX Version
 
 MSRAccessor * MsrHandle::driver = NULL;
 int MsrHandle::num_handles = 0;
@@ -163,10 +170,7 @@ uint32 MsrHandle::decrementNumInstances()
 
 #elif defined(__FreeBSD__) || defined(__DragonFly__)
 
-#include <sys/ioccom.h>
-#include <sys/cpuctl.h>
-
-MsrHandle::MsrHandle(uint32 cpu) : fd(-1), cpu_id(cpu)
+    MsrHandle::MsrHandle(uint32 cpu) : fd(-1), cpu_id(cpu)
 {
     char path[200];
     snprintf(path, 200, "/dev/cpuctl%d", cpu);
@@ -205,34 +209,41 @@ int32 MsrHandle::read(uint64 msr_number, uint64 * value)
 }
 
 #else
-
 // here comes a Linux version
-MsrHandle::MsrHandle(uint32 cpu) : fd(-1), cpu_id(cpu) {
-    char *path = new char[200];
-    snprintf(path, 200, "/dev/cpu/%d/msr", cpu);
-    int handle = ::open(path, O_RDWR);
-    if (handle < 0) {   // try Android msr device path
-        snprintf(path, 200, "/dev/msr%d", cpu);
-        handle = ::open(path, O_RDWR);
+    MsrHandle::MsrHandle(uint32 cpu) : fd(-1), cpu_id(cpu)
+    {
+        char * path = new char[200];
+        snprintf(path, 200, "/dev/cpu/%d/msr", cpu);
+        int handle = ::open(path, O_RDWR);
+        if (handle < 0)
+        {   // try Android msr device path
+            snprintf(path, 200, "/dev/msr%d", cpu);
+            handle = ::open(path, O_RDWR);
+        }
+        delete[] path;
+        if (handle < 0)
+        {
+            std::cerr << "PCM Error: can't open MSR handle for core " << cpu << "\n";
+            throw std::exception();
+        }
+        fd = handle;
     }
-    delete[] path;
-    if (handle < 0) {
-        std::cerr << "PCM Error: can't open MSR handle for core " << cpu << std::endl;
-        throw std::exception();
+
+    MsrHandle::~MsrHandle()
+    {
+        if (fd >= 0) ::close(fd);
     }
-    fd = handle;
-}
 
-MsrHandle::~MsrHandle() {
-    if (fd >= 0) ::close(fd);
-}
+    int32 MsrHandle::write(uint64 msr_number, uint64 value)
+    {
+        return ::pwrite(fd, (const void *)&value, sizeof(uint64), msr_number);
+    }
 
-int32 MsrHandle::write(uint64 msr_number, uint64 value) {
-    return ::pwrite(fd, (const void *) &value, sizeof(uint64), msr_number);
-}
-
-int32 MsrHandle::read(uint64 msr_number, uint64 *value) {
-    return ::pread(fd, (void *) value, sizeof(uint64), msr_number);
-}
+    int32 MsrHandle::read(uint64 msr_number, uint64 * value)
+    {
+        return ::pread(fd, (void *)value, sizeof(uint64), msr_number);
+    }
 
 #endif
+
+} // namespace pcm

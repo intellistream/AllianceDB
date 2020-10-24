@@ -4,14 +4,13 @@
 #ifdef _MSC_VER
 #include <windows.h>
 #else
-
 #include <pthread.h>
-
 #endif
 
 #include <stdlib.h>
 
-namespace PCM_Util {
+namespace pcm
+{
     class Mutex {
 #ifdef _MSC_VER
         HANDLE mutex_;
@@ -20,15 +19,16 @@ namespace PCM_Util {
 #endif
 
     public:
-        Mutex() {
+        Mutex()
+        {
 #ifdef _MSC_VER
             mutex_ = CreateMutex(NULL, FALSE, NULL);
 #else
             pthread_mutex_init(&mutex_, NULL);
 #endif
         }
-
-        virtual ~Mutex() {
+        virtual ~Mutex()
+        {
 #ifdef _MSC_VER
             CloseHandle(mutex_);
 #else
@@ -36,15 +36,16 @@ namespace PCM_Util {
 #endif
         }
 
-        void lock() {
+        void lock()
+        {
 #ifdef _MSC_VER
             WaitForSingleObject(mutex_, INFINITE);
 #else
             pthread_mutex_lock(&mutex_);
 #endif
         }
-
-        void unlock() {
+        void unlock()
+        {
 #ifdef _MSC_VER
             ReleaseMutex(mutex_);
 #else
@@ -53,12 +54,12 @@ namespace PCM_Util {
         }
 
         class Scope {
-            Mutex &m;
+            Mutex & m;
         public:
-            Scope(Mutex &m_) : m(m_) {
+            Scope(Mutex & m_) : m(m_)
+            {
                 m.lock();
             }
-
             ~Scope() {
                 m.unlock();
             }

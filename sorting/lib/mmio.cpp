@@ -16,30 +16,28 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 #include <iostream>
 #include <string.h>
-
 #ifndef _MSC_VER
-
 #include <sys/types.h>
-
 #endif
-
 #include <sys/stat.h>
 #include <fcntl.h>
 #include "pci.h"
 #include "mmio.h"
 
 #ifndef _MSC_VER
-
 #include <sys/mman.h>
 #include <errno.h>
-
 #endif
 
 #ifdef _MSC_VER
-
 #include <windows.h>
+#endif
 
-class PCMPmem : public WinPmem {
+namespace pcm {
+
+#ifdef _MSC_VER
+
+    class PCMPmem : public WinPmem {
 protected:
     virtual int load_driver_()
     {
@@ -55,16 +53,16 @@ protected:
             wcscat_s(driver_filename, MAX_PATH, L"\\winpmem_x64.sys");
             if (GetFileAttributes(driver_filename) == INVALID_FILE_ATTRIBUTES)
             {
-                std::cout << "ERROR: winpmem_x64.sys not found in current directory. Download it from https://github.com/google/rekall/raw/master/tools/pmem/resources/winpmem/winpmem_x64.sys ." << std::endl;
-                std::cout << "ERROR: Memory bandwidth statistics will not be available." << std::endl;
+                std::cerr << "ERROR: winpmem_x64.sys not found in current directory. Download it from https://github.com/google/rekall/raw/master/tools/pmem/resources/winpmem/winpmem_x64.sys .\n";
+                std::cerr << "ERROR: Memory bandwidth statistics will not be available.\n";
             }
             break;
         case PROCESSOR_ARCHITECTURE_INTEL:
             wcscat_s(driver_filename, MAX_PATH, L"\\winpmem_x86.sys");
             if (GetFileAttributes(driver_filename) == INVALID_FILE_ATTRIBUTES)
             {
-                std::cout << "ERROR: winpmem_x86.sys not found in current directory. Download it from https://github.com/google/rekall/raw/master/tools/pmem/resources/winpmem/winpmem_x86.sys ." << std::endl;
-                std::cout << "ERROR: Memory bandwidth statistics will not be available." << std::endl;
+                std::cerr << "ERROR: winpmem_x86.sys not found in current directory. Download it from https://github.com/google/rekall/raw/master/tools/pmem/resources/winpmem/winpmem_x86.sys .\n";
+                std::cerr << "ERROR: Memory bandwidth statistics will not be available.\n";
             }
             break;
         default:
@@ -79,7 +77,7 @@ protected:
 };
 
 std::shared_ptr<WinPmem> MMIORange::pmem;
-PCM_Util::Mutex MMIORange::mutex;
+Mutex MMIORange::mutex;
 bool MMIORange::writeSupported;
 
 MMIORange::MMIORange(uint64 baseAddr_, uint64 /* size_ */, bool readonly_) : startAddr(baseAddr_), readonly(readonly_)
@@ -97,7 +95,7 @@ MMIORange::MMIORange(uint64 baseAddr_, uint64 /* size_ */, bool readonly_) : sta
 
 #elif __APPLE__
 
-#include "PCIDriverInterface.h"
+    #include "PCIDriverInterface.h"
 
 MMIORange::MMIORange(uint64 physical_address, uint64 size_, bool readonly_) :
     mmapAddr(NULL),
@@ -106,7 +104,7 @@ MMIORange::MMIORange(uint64 physical_address, uint64 size_, bool readonly_) :
 {
     if (size > 4096)
     {
-        std::cerr << "PCM Error: the driver does not support mapping of regions > 4KB" << std::endl;
+        std::cerr << "PCM Error: the driver does not support mapping of regions > 4KB\n";
         return;
     }
     if (physical_address) {
@@ -130,11 +128,11 @@ uint64 MMIORange::read64(uint64 offset)
 
 void MMIORange::write32(uint64 offset, uint32 val)
 {
-    std::cerr << "PCM Error: the driver does not support writing to MMIORange" << std::endl;
+    std::cerr << "PCM Error: the driver does not support writing to MMIORange\n";
 }
 void MMIORange::write64(uint64 offset, uint64 val)
 {
-    std::cerr << "PCM Error: the driver does not support writing to MMIORange" << std::endl;
+    std::cerr << "PCM Error: the driver does not support writing to MMIORange\n";
 }
 
 MMIORange::~MMIORange()
@@ -144,56 +142,66 @@ MMIORange::~MMIORange()
 
 #elif defined(__linux__) || defined(__FreeBSD__) || defined(__DragonFly__)
 
-MMIORange::MMIORange(uint64 baseAddr_, uint64 size_, bool readonly_) :
-        fd(-1),
-        mmapAddr(NULL),
-        size(size_),
-        readonly(readonly_) {
-    const int oflag = readonly ? O_RDONLY : O_RDWR;
-    int handle = ::open("/dev/mem", oflag);
-    if (handle < 0) {
-        std::cout << "opening /dev/mem failed: errno is " << errno << " (" << strerror(errno) << ")" << std::endl;
-        throw std::exception();
+    MMIORange::MMIORange(uint64 baseAddr_, uint64 size_, bool readonly_) :
+            fd(-1),
+            mmapAddr(NULL),
+            size(size_),
+            readonly(readonly_)
+    {
+        const int oflag = readonly ? O_RDONLY : O_RDWR;
+        int handle = ::open("/dev/mem", oflag);
+        if (handle < 0)
+        {
+            std::cerr << "opening /dev/mem failed: errno is " << errno << " (" << strerror(errno) << ")\n";
+            throw std::exception();
+        }
+        fd = handle;
+
+        const int prot = readonly ? PROT_READ : (PROT_READ | PROT_WRITE);
+        mmapAddr = (char *)mmap(NULL, size, prot, MAP_SHARED, fd, baseAddr_);
+
+        if (mmapAddr == MAP_FAILED)
+        {
+            std::cerr << "mmap failed: errno is " << errno << " (" << strerror(errno) << ")\n";
+            throw std::exception();
+        }
     }
-    fd = handle;
 
-    const int prot = readonly ? PROT_READ : (PROT_READ | PROT_WRITE);
-    mmapAddr = (char *) mmap(NULL, size, prot, MAP_SHARED, fd, baseAddr_);
-
-    if (mmapAddr == MAP_FAILED) {
-        std::cout << "mmap failed: errno is " << errno << " (" << strerror(errno) << ")" << std::endl;
-        throw std::exception();
+    uint32 MMIORange::read32(uint64 offset)
+    {
+        return *((uint32 *)(mmapAddr + offset));
     }
-}
 
-uint32 MMIORange::read32(uint64 offset) {
-    return *((uint32 *) (mmapAddr + offset));
-}
-
-uint64 MMIORange::read64(uint64 offset) {
-    return *((uint64 *) (mmapAddr + offset));
-}
-
-void MMIORange::write32(uint64 offset, uint32 val) {
-    if (readonly) {
-        std::cerr << "PCM Error: attempting to write to a read-only MMIORange" << std::endl;
-        return;
+    uint64 MMIORange::read64(uint64 offset)
+    {
+        return *((uint64 *)(mmapAddr + offset));
     }
-    *((uint32 *) (mmapAddr + offset)) = val;
-}
 
-void MMIORange::write64(uint64 offset, uint64 val) {
-    if (readonly) {
-        std::cerr << "PCM Error: attempting to write to a read-only MMIORange" << std::endl;
-        return;
+    void MMIORange::write32(uint64 offset, uint32 val)
+    {
+        if (readonly)
+        {
+            std::cerr << "PCM Error: attempting to write to a read-only MMIORange\n";
+            return;
+        }
+        *((uint32 *)(mmapAddr + offset)) = val;
     }
-    *((uint64 *) (mmapAddr + offset)) = val;
-}
+    void MMIORange::write64(uint64 offset, uint64 val)
+    {
+        if (readonly)
+        {
+            std::cerr << "PCM Error: attempting to write to a read-only MMIORange\n";
+            return;
+        }
+        *((uint64 *)(mmapAddr + offset)) = val;
+    }
 
-MMIORange::~MMIORange() {
-    if (mmapAddr) munmap(mmapAddr, size);
-    if (fd >= 0) ::close(fd);
-}
+    MMIORange::~MMIORange()
+    {
+        if (mmapAddr) munmap(mmapAddr, size);
+        if (fd >= 0) ::close(fd);
+    }
 
 #endif
 
+} // namespace pcm
