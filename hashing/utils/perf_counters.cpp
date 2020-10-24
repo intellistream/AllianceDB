@@ -14,7 +14,7 @@
 #include "../lib/cpucounters.h" /* intel perf counters monitor */
 
 using namespace std;
-
+using namespace pcm;
 /** \ingroup PerformanceMonitoring Intel Performance Counter Monitor instance */
 
 static PCM *pcmInstance;
@@ -176,10 +176,10 @@ void PCM_printResults() {
     (*out) << "L3HitRatio " << getL3CacheHitRatio(before_state, after_state)
            << endl;
 
-    (*out) << "CyclesLostDueL2CacheMisses "
-           << getCyclesLostDueL2CacheMisses(before_state, after_state) << endl;
-    (*out) << "CyclesLostDueL3CacheMisses "
-           << getCyclesLostDueL3CacheMisses(before_state, after_state) << endl;
+//    (*out) << "CyclesLostDueL2CacheMisses "
+//           << getCyclesLostDueL2CacheMisses(before_state, after_state) << endl;
+//    (*out) << "CyclesLostDueL3CacheMisses "
+//           << getCyclesLostDueL3CacheMisses(before_state, after_state) << endl;
 
       (*out) << "MemoryBandwidth "
              << getLocalMemoryBW(before_state, after_state) << endl;
@@ -222,10 +222,10 @@ void PCM_accumulate() {
     //        (*out) << "L3HitRatio "
     eventAcc[6] += getL3CacheHitRatio(before_state, after_state);
 
-    //(*out) << "CyclesLostDueL2CacheMisses "
-    eventAcc[7] += getCyclesLostDueL2CacheMisses(before_state, after_state);
-    //(*out) << "CyclesLostDueL3CacheMisses "
-    eventAcc[8] += getCyclesLostDueL3CacheMisses(before_state, after_state);
+//    //(*out) << "CyclesLostDueL2CacheMisses "
+//    eventAcc[7] += getCyclesLostDueL2CacheMisses(before_state, after_state);
+//    //(*out) << "CyclesLostDueL3CacheMisses "
+//    eventAcc[8] += getCyclesLostDueL3CacheMisses(before_state, after_state);
 
 #if PER_CORE == 0
     //(*out) << "BytesFromMC " <<

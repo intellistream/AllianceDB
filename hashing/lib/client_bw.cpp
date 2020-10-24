@@ -18,6 +18,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include "client_bw.h"
 #include "pci.h"
 
+namespace pcm {
+
 #define PCM_CLIENT_IMC_BAR_OFFSET       (0x0048)
 #define PCM_CLIENT_IMC_DRAM_IO_REQESTS  (0x5048)
 #define PCM_CLIENT_IMC_DRAM_DATA_READS  (0x5050)
@@ -25,28 +27,34 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #define PCM_CLIENT_IMC_MMAP_SIZE        (0x6000)
 #define PCM_CLIENT_IMC_EVENT_BASE       (0x5000)
 
-ClientBW::ClientBW() {
-    PciHandleType imcHandle(0, 0, 0, 0); // memory controller device coordinates: domain 0, bus 0, device 0, function 0
-    uint64 imcbar = 0;
-    imcHandle.read64(PCM_CLIENT_IMC_BAR_OFFSET, &imcbar);
-    // std::cout << "DEBUG: imcbar="<<std::hex << imcbar <<std::endl;
-    if (!imcbar) {
-        std::cerr << "ERROR: imcbar is zero." << std::endl;
-        throw std::exception();
+    ClientBW::ClientBW()
+    {
+        PciHandleType imcHandle(0, 0, 0, 0); // memory controller device coordinates: domain 0, bus 0, device 0, function 0
+        uint64 imcbar = 0;
+        imcHandle.read64(PCM_CLIENT_IMC_BAR_OFFSET, &imcbar);
+        // std::cout << "DEBUG: imcbar=" << std::hex << imcbar << "\n" << std::flush;
+        if (!imcbar)
+        {
+            std::cerr << "ERROR: imcbar is zero.\n";
+            throw std::exception();
+        }
+        const auto startAddr = imcbar & (~(4096ULL - 1ULL)); // round down to 4K
+        mmioRange = std::make_shared<MMIORange>(startAddr + PCM_CLIENT_IMC_EVENT_BASE, PCM_CLIENT_IMC_MMAP_SIZE - PCM_CLIENT_IMC_EVENT_BASE);
     }
-    auto startAddr = imcbar & (~(4096ULL - 1ULL)); // round down to 4K
-    mmioRange = std::make_shared<MMIORange>(startAddr + PCM_CLIENT_IMC_EVENT_BASE,
-                                            PCM_CLIENT_IMC_MMAP_SIZE - PCM_CLIENT_IMC_EVENT_BASE);
-}
 
-uint64 ClientBW::getImcReads() {
-    return mmioRange->read32(PCM_CLIENT_IMC_DRAM_DATA_READS - PCM_CLIENT_IMC_EVENT_BASE);
-}
+    uint64 ClientBW::getImcReads()
+    {
+        return mmioRange->read32(PCM_CLIENT_IMC_DRAM_DATA_READS - PCM_CLIENT_IMC_EVENT_BASE);
+    }
 
-uint64 ClientBW::getImcWrites() {
-    return mmioRange->read32(PCM_CLIENT_IMC_DRAM_DATA_WRITES - PCM_CLIENT_IMC_EVENT_BASE);
-}
+    uint64 ClientBW::getImcWrites()
+    {
+        return mmioRange->read32(PCM_CLIENT_IMC_DRAM_DATA_WRITES - PCM_CLIENT_IMC_EVENT_BASE);
+    }
 
-uint64 ClientBW::getIoRequests() {
-    return mmioRange->read32(PCM_CLIENT_IMC_DRAM_IO_REQESTS - PCM_CLIENT_IMC_EVENT_BASE);
-}
+    uint64 ClientBW::getIoRequests()
+    {
+        return mmioRange->read32(PCM_CLIENT_IMC_DRAM_IO_REQESTS - PCM_CLIENT_IMC_EVENT_BASE);
+    }
+
+} // namespace pcm

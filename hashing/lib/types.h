@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2009-2018, Intel Corporation
+Copyright (c) 2009-2020, Intel Corporation
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,10 +28,16 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include <sstream>
 #include <iomanip>
 
-typedef unsigned long long uint64;
-typedef signed long long int64;
-typedef unsigned int uint32;
-typedef signed int int32;
+#ifdef _MSC_VER
+#include <windows.h>
+#endif
+
+namespace pcm {
+
+    typedef unsigned long long uint64;
+    typedef signed long long int64;
+    typedef unsigned int uint32;
+    typedef signed int int32;
 
 
 /*
@@ -298,29 +304,32 @@ typedef signed int int32;
         System Programming Guide, Part 2", Figure 30-6. Layout of IA32_PERFEVTSELx
         MSRs Supporting Architectural Performance Monitoring Version 3
 */
-struct EventSelectRegister {
-    union {
-        struct {
-            uint64 event_select : 8;
-            uint64 umask : 8;
-            uint64 usr : 1;
-            uint64 os : 1;
-            uint64 edge : 1;
-            uint64 pin_control : 1;
-            uint64 apic_int : 1;
-            uint64 any_thread : 1;
-            uint64 enable : 1;
-            uint64 invert : 1;
-            uint64 cmask : 8;
-            uint64 in_tx : 1;
-            uint64 in_txcp : 1;
-            uint64 reservedX : 30;
-        } fields;
-        uint64 value;
-    };
+    struct EventSelectRegister
+    {
+        union
+        {
+            struct
+            {
+                uint64 event_select : 8;
+                uint64 umask : 8;
+                uint64 usr : 1;
+                uint64 os : 1;
+                uint64 edge : 1;
+                uint64 pin_control : 1;
+                uint64 apic_int : 1;
+                uint64 any_thread : 1;
+                uint64 enable : 1;
+                uint64 invert : 1;
+                uint64 cmask : 8;
+                uint64 in_tx : 1;
+                uint64 in_txcp : 1;
+                uint64 reservedX : 30;
+            } fields;
+            uint64 value;
+        };
 
-    EventSelectRegister() : value(0) {}
-};
+        EventSelectRegister() : value(0) {}
+    };
 
 
 /* \brief Fixed Event Control Register format
@@ -330,50 +339,55 @@ struct EventSelectRegister {
         System Programming Guide, Part 2", Figure 30-7. Layout of
         IA32_FIXED_CTR_CTRL MSR Supporting Architectural Performance Monitoring Version 3
 */
-struct FixedEventControlRegister {
-    union {
-        struct {
-            // CTR0
-            uint64 os0 : 1;
-            uint64 usr0 : 1;
-            uint64 any_thread0 : 1;
-            uint64 enable_pmi0 : 1;
-            // CTR1
-            uint64 os1 : 1;
-            uint64 usr1 : 1;
-            uint64 any_thread1 : 1;
-            uint64 enable_pmi1 : 1;
-            // CTR2
-            uint64 os2 : 1;
-            uint64 usr2 : 1;
-            uint64 any_thread2 : 1;
-            uint64 enable_pmi2 : 1;
+    struct FixedEventControlRegister
+    {
+        union
+        {
+            struct
+            {
+                // CTR0
+                uint64 os0 : 1;
+                uint64 usr0 : 1;
+                uint64 any_thread0 : 1;
+                uint64 enable_pmi0 : 1;
+                // CTR1
+                uint64 os1 : 1;
+                uint64 usr1 : 1;
+                uint64 any_thread1 : 1;
+                uint64 enable_pmi1 : 1;
+                // CTR2
+                uint64 os2 : 1;
+                uint64 usr2 : 1;
+                uint64 any_thread2 : 1;
+                uint64 enable_pmi2 : 1;
 
-            uint64 reserved1 : 52;
-        } fields;
-        uint64 value;
+                uint64 reserved1 : 52;
+            } fields;
+            uint64 value;
+        };
+        FixedEventControlRegister() : value(0) {}
     };
-};
 
-inline std::ostream &operator<<(std::ostream &o, const FixedEventControlRegister &reg) {
-    o << "os0\t\t" << reg.fields.os0 << std::endl;
-    o << "usr0\t\t" << reg.fields.usr0 << std::endl;
-    o << "any_thread0\t" << reg.fields.any_thread0 << std::endl;
-    o << "enable_pmi0\t" << reg.fields.enable_pmi0 << std::endl;
+    inline std::ostream & operator << (std::ostream & o, const FixedEventControlRegister & reg)
+    {
+        o << "os0\t\t" << reg.fields.os0 << "\n";
+        o << "usr0\t\t" << reg.fields.usr0 << "\n";
+        o << "any_thread0\t" << reg.fields.any_thread0 << "\n";
+        o << "enable_pmi0\t" << reg.fields.enable_pmi0 << "\n";
 
-    o << "os1\t\t" << reg.fields.os1 << std::endl;
-    o << "usr1\t\t" << reg.fields.usr1 << std::endl;
-    o << "any_thread1\t" << reg.fields.any_thread1 << std::endl;
-    o << "enable_pmi10\t" << reg.fields.enable_pmi1 << std::endl;
+        o << "os1\t\t" << reg.fields.os1 << "\n";
+        o << "usr1\t\t" << reg.fields.usr1 << "\n";
+        o << "any_thread1\t" << reg.fields.any_thread1 << "\n";
+        o << "enable_pmi10\t" << reg.fields.enable_pmi1 << "\n";
 
-    o << "os2\t\t" << reg.fields.os2 << std::endl;
-    o << "usr2\t\t" << reg.fields.usr2 << std::endl;
-    o << "any_thread2\t" << reg.fields.any_thread2 << std::endl;
-    o << "enable_pmi2\t" << reg.fields.enable_pmi2 << std::endl;
+        o << "os2\t\t" << reg.fields.os2 << "\n";
+        o << "usr2\t\t" << reg.fields.usr2 << "\n";
+        o << "any_thread2\t" << reg.fields.any_thread2 << "\n";
+        o << "enable_pmi2\t" << reg.fields.enable_pmi2 << "\n";
 
-    o << "reserved1\t" << reg.fields.reserved1 << std::endl;
-    return o;
-}
+        o << "reserved1\t" << reg.fields.reserved1 << "\n";
+        return o;
+    }
 
 // UNCORE COUNTER CONTROL
 
@@ -383,79 +397,89 @@ inline std::ostream &operator<<(std::ostream &o, const FixedEventControlRegister
         "Intel 64 and IA-32 Architectures Software Developers Manual Volume 3B:
         System Programming Guide, Part 2", Figure 30-20. Layout of MSR_UNCORE_PERFEVTSELx MSRs
 */
-struct UncoreEventSelectRegister {
-    union {
-        struct {
-            uint64 event_select : 8;
-            uint64 umask : 8;
-            uint64 reserved1 : 1;
-            uint64 occ_ctr_rst : 1;
-            uint64 edge : 1;
-            uint64 reserved2 : 1;
-            uint64 enable_pmi : 1;
-            uint64 reserved3 : 1;
-            uint64 enable : 1;
-            uint64 invert : 1;
-            uint64 cmask : 8;
-            uint64 reservedx : 32;
-        } fields;
-        uint64 value;
+    struct UncoreEventSelectRegister
+    {
+        union
+        {
+            struct
+            {
+                uint64 event_select : 8;
+                uint64 umask : 8;
+                uint64 reserved1 : 1;
+                uint64 occ_ctr_rst : 1;
+                uint64 edge : 1;
+                uint64 reserved2 : 1;
+                uint64 enable_pmi : 1;
+                uint64 reserved3 : 1;
+                uint64 enable : 1;
+                uint64 invert : 1;
+                uint64 cmask : 8;
+                uint64 reservedx : 32;
+            } fields;
+            uint64 value;
+        };
     };
-};
 
 /* \brief Beckton Uncore PMU ZDP FVC Control Register format
 
         From "Intel(r) Xeon(r) Processor 7500 Series Uncore Programming Guide"
         Table 2-80. M_MSR_PMU_ZDP_CTL_FVC Register - Field Definitions
 */
-struct BecktonUncorePMUZDPCTLFVCRegister {
-    union {
-        struct {
-            uint64 fvid : 5;
-            uint64 bcmd : 3;
-            uint64 resp : 3;
-            uint64 evnt0 : 3;
-            uint64 evnt1 : 3;
-            uint64 evnt2 : 3;
-            uint64 evnt3 : 3;
-            uint64 pbox_init_err : 1;
-        } fields; // nehalem-ex version
-        struct {
-            uint64 fvid : 6;
-            uint64 bcmd : 3;
-            uint64 resp : 3;
-            uint64 evnt0 : 3;
-            uint64 evnt1 : 3;
-            uint64 evnt2 : 3;
-            uint64 evnt3 : 3;
-            uint64 pbox_init_err : 1;
-        } fields_wsm; // westmere-ex version
-        uint64 value;
+    struct BecktonUncorePMUZDPCTLFVCRegister
+    {
+        union
+        {
+            struct
+            {
+                uint64 fvid : 5;
+                uint64 bcmd : 3;
+                uint64 resp : 3;
+                uint64 evnt0 : 3;
+                uint64 evnt1 : 3;
+                uint64 evnt2 : 3;
+                uint64 evnt3 : 3;
+                uint64 pbox_init_err : 1;
+            } fields; // nehalem-ex version
+            struct
+            {
+                uint64 fvid : 6;
+                uint64 bcmd : 3;
+                uint64 resp : 3;
+                uint64 evnt0 : 3;
+                uint64 evnt1 : 3;
+                uint64 evnt2 : 3;
+                uint64 evnt3 : 3;
+                uint64 pbox_init_err : 1;
+            } fields_wsm; // westmere-ex version
+            uint64 value;
+        };
     };
-};
 
 /* \brief Beckton Uncore PMU Counter Control Register format
 
         From "Intel(r) Xeon(r) Processor 7500 Series Uncore Programming Guide"
         Table 2-67. M_MSR_PMU_CNT_CTL{5-0} Register - Field Definitions
 */
-struct BecktonUncorePMUCNTCTLRegister {
-    union {
-        struct {
-            uint64 en : 1;
-            uint64 pmi_en : 1;
-            uint64 count_mode : 2;
-            uint64 storage_mode : 2;
-            uint64 wrap_mode : 1;
-            uint64 flag_mode : 1;
-            uint64 rsv1 : 1;
-            uint64 inc_sel : 5;
-            uint64 rsv2 : 5;
-            uint64 set_flag_sel : 3;
-        } fields;
-        uint64 value;
+    struct BecktonUncorePMUCNTCTLRegister
+    {
+        union
+        {
+            struct
+            {
+                uint64 en : 1;
+                uint64 pmi_en : 1;
+                uint64 count_mode : 2;
+                uint64 storage_mode : 2;
+                uint64 wrap_mode : 1;
+                uint64 flag_mode : 1;
+                uint64 rsv1 : 1;
+                uint64 inc_sel : 5;
+                uint64 rsv2 : 5;
+                uint64 set_flag_sel : 3;
+            } fields;
+            uint64 value;
+        };
     };
-};
 
 #define MSR_SMI_COUNT (0x34)
 
@@ -557,6 +581,21 @@ struct BecktonUncorePMUCNTCTLRegister {
 #define KNL_EDC7_ECLK_REGISTER_DEV_ADDR (31)
 #define KNL_EDC7_ECLK_REGISTER_FUNC_ADDR (2)
 
+#define HSX_HA0_REGISTER_DEV_ADDR (18)
+#define HSX_HA0_REGISTER_FUNC_ADDR (1)
+#define HSX_HA1_REGISTER_DEV_ADDR (18)
+#define HSX_HA1_REGISTER_FUNC_ADDR (5)
+
+#define XPF_HA_PCI_PMON_BOX_CTL_ADDR    (0xF4)
+#define XPF_HA_PCI_PMON_CTL0_ADDR       (0xD8 + 4*0)
+#define XPF_HA_PCI_PMON_CTL1_ADDR       (0xD8 + 4*1)
+#define XPF_HA_PCI_PMON_CTL2_ADDR       (0xD8 + 4*2)
+#define XPF_HA_PCI_PMON_CTL3_ADDR       (0xD8 + 4*3)
+#define XPF_HA_PCI_PMON_CTR0_ADDR       (0xA0 + 8*0)
+#define XPF_HA_PCI_PMON_CTR1_ADDR       (0xA0 + 8*1)
+#define XPF_HA_PCI_PMON_CTR2_ADDR       (0xA0 + 8*2)
+#define XPF_HA_PCI_PMON_CTR3_ADDR       (0xA0 + 8*3)
+
 /**
  * XPF_ for Xeons: SNB, IVT, HSX, BDW, etc.
  * KNX_ for Xeon Phi (Knights *) processors
@@ -629,9 +668,36 @@ struct BecktonUncorePMUCNTCTLRegister {
 #define SKX_QPI_PORT2_REGISTER_DEV_ADDR  (16)
 #define SKX_QPI_PORT2_REGISTER_FUNC_ADDR (0)
 
+#define CPX_QPI_PORT3_REGISTER_DEV_ADDR  (14)
+#define CPX_QPI_PORT3_REGISTER_FUNC_ADDR (4)
+#define CPX_QPI_PORT4_REGISTER_DEV_ADDR  (15)
+#define CPX_QPI_PORT4_REGISTER_FUNC_ADDR (4)
+#define CPX_QPI_PORT5_REGISTER_DEV_ADDR  (16)
+#define CPX_QPI_PORT5_REGISTER_FUNC_ADDR (4)
+
 #define QPI_PORT0_MISC_REGISTER_FUNC_ADDR (0)
 #define QPI_PORT1_MISC_REGISTER_FUNC_ADDR (0)
 #define QPI_PORT2_MISC_REGISTER_FUNC_ADDR (0)
+
+    constexpr auto SKX_M3UPI_PORT0_REGISTER_DEV_ADDR = (0x12);
+    constexpr auto SKX_M3UPI_PORT0_REGISTER_FUNC_ADDR = (1);
+    constexpr auto SKX_M3UPI_PORT1_REGISTER_DEV_ADDR = (0x12);
+    constexpr auto SKX_M3UPI_PORT1_REGISTER_FUNC_ADDR = (2);
+    constexpr auto SKX_M3UPI_PORT2_REGISTER_DEV_ADDR = (0x12);
+    constexpr auto SKX_M3UPI_PORT2_REGISTER_FUNC_ADDR = (5);
+
+    constexpr auto CPX_M3UPI_PORT0_REGISTER_DEV_ADDR = (0x12);
+    constexpr auto CPX_M3UPI_PORT0_REGISTER_FUNC_ADDR = (1);
+    constexpr auto CPX_M3UPI_PORT1_REGISTER_DEV_ADDR = (0x12);
+    constexpr auto CPX_M3UPI_PORT1_REGISTER_FUNC_ADDR = (2);
+    constexpr auto CPX_M3UPI_PORT2_REGISTER_DEV_ADDR = (0x13);
+    constexpr auto CPX_M3UPI_PORT2_REGISTER_FUNC_ADDR = (1);
+    constexpr auto CPX_M3UPI_PORT3_REGISTER_DEV_ADDR = (0x13);
+    constexpr auto CPX_M3UPI_PORT3_REGISTER_FUNC_ADDR = (2);
+    constexpr auto CPX_M3UPI_PORT4_REGISTER_DEV_ADDR = (0x14);
+    constexpr auto CPX_M3UPI_PORT4_REGISTER_FUNC_ADDR = (1);
+    constexpr auto CPX_M3UPI_PORT5_REGISTER_DEV_ADDR = (0x14);
+    constexpr auto CPX_M3UPI_PORT5_REGISTER_FUNC_ADDR = (2);
 
 #define SKX_M2M_0_REGISTER_DEV_ADDR  (8)
 #define SKX_M2M_0_REGISTER_FUNC_ADDR (0)
@@ -649,6 +715,20 @@ struct BecktonUncorePMUCNTCTLRegister {
 #define M2M_PCI_PMON_CTR1_ADDR (0x208)
 #define M2M_PCI_PMON_CTR2_ADDR (0x210)
 #define M2M_PCI_PMON_CTR3_ADDR (0x218)
+
+    constexpr auto M3UPI_PCI_PMON_BOX_CTL_ADDR = (0xF4);
+
+    constexpr auto M3UPI_PCI_PMON_CTL0_ADDR = (0xD8);
+    constexpr auto M3UPI_PCI_PMON_CTL1_ADDR = (0xDC);
+    constexpr auto M3UPI_PCI_PMON_CTL2_ADDR = (0xE0);
+
+    constexpr auto M3UPI_PCI_PMON_CTR0_ADDR = (0xA0);
+    constexpr auto M3UPI_PCI_PMON_CTR1_ADDR = (0xA8);
+    constexpr auto M3UPI_PCI_PMON_CTR2_ADDR = (0xB0);
+
+    constexpr auto MSR_UNCORE_PMON_GLOBAL_CTL = 0x700;
+
+    constexpr auto IVT_MSR_UNCORE_PMON_GLOBAL_CTL = 0x0C00;
 
 #define PCM_INVALID_DEV_ADDR (~(uint32)0UL)
 #define PCM_INVALID_FUNC_ADDR (~(uint32)0UL)
@@ -685,6 +765,13 @@ struct BecktonUncorePMUCNTCTLRegister {
 #define UBOX_MSR_PMON_CTL1_ADDR (0x706)
 #define UBOX_MSR_PMON_CTR0_ADDR (0x709)
 #define UBOX_MSR_PMON_CTR1_ADDR (0x70a)
+
+    constexpr auto JKTIVT_UCLK_FIXED_CTR_ADDR = (0x0C09);
+    constexpr auto JKTIVT_UCLK_FIXED_CTL_ADDR = (0x0C08);
+    constexpr auto JKTIVT_UBOX_MSR_PMON_CTL0_ADDR = (0x0C10);
+    constexpr auto JKTIVT_UBOX_MSR_PMON_CTL1_ADDR = (0x0C11);
+    constexpr auto JKTIVT_UBOX_MSR_PMON_CTR0_ADDR = (0x0C16);
+    constexpr auto JKTIVT_UBOX_MSR_PMON_CTR1_ADDR = (0x0C17);
 
 #define JKTIVT_PCU_MSR_PMON_CTR3_ADDR (0x0C39)
 #define JKTIVT_PCU_MSR_PMON_CTR2_ADDR (0x0C38)
@@ -821,6 +908,9 @@ struct BecktonUncorePMUCNTCTLRegister {
 
 #define JKT_CBO_MSR_PMON_BOX_FILTER_OPC(x) (x << 23UL)
 #define IVTHSX_CBO_MSR_PMON_BOX_FILTER1_OPC(x) (x << 20UL)
+#define BDX_CBO_MSR_PMON_BOX_GET_OPC0(x) ((x >> 20) & 0x3FF)
+#define BDX_CBO_MSR_PMON_BOX_GET_FLT(x) ((x >> 0x10) & 0x1)
+#define BDX_CBO_MSR_PMON_BOX_GET_TID(x) ((x >> 0x11) & 0x1)
 
 #define SKX_CHA_MSR_PMON_BOX_FILTER1_REM(x) (x << 0UL)
 #define SKX_CHA_MSR_PMON_BOX_FILTER1_LOC(x) (x << 1UL)
@@ -829,6 +919,9 @@ struct BecktonUncorePMUCNTCTLRegister {
 #define SKX_CHA_MSR_PMON_BOX_FILTER1_OPC0(x) ((x) << 9UL)
 #define SKX_CHA_MSR_PMON_BOX_FILTER1_OPC1(x) ((x) << 19UL)
 #define SKX_CHA_MSR_PMON_BOX_FILTER1_NC(x) (x << 30UL)
+#define SKX_CHA_MSR_PMON_BOX_FILTER1_RSV(x) (x << 2UL)
+#define SKX_CHA_MSR_PMON_BOX_GET_OPC0(x) ((x >> 9) & 0x3FF)
+#define SKX_CHA_MSR_PMON_BOX_GET_NC(x) ((x >> 0x1e) & 0x1)
 
 #define SKX_CHA_TOR_INSERTS_UMASK_IRQ(x) (x << 0)
 #define SKX_CHA_TOR_INSERTS_UMASK_PRQ(x) (x << 2)
@@ -862,6 +955,15 @@ struct BecktonUncorePMUCNTCTLRegister {
 #define M2M_PCI_PMON_CTL_INVERT     (1 << 23)
 #define M2M_PCI_PMON_CTL_THRESH(x)  ((x) << 24ULL)
 
+#define HA_PCI_PMON_CTL_EVENT(x)   ((x) << 0)
+#define HA_PCI_PMON_CTL_UMASK(x)   ((x) << 8)
+#define HA_PCI_PMON_CTL_RST        (1 << 17)
+#define HA_PCI_PMON_CTL_EDGE_DET   (1 << 18)
+#define HA_PCI_PMON_CTL_OV_EN      (1 << 20)
+#define HA_PCI_PMON_CTL_EN         (1 << 22)
+#define HA_PCI_PMON_CTL_INVERT     (1 << 23)
+#define HA_PCI_PMON_CTL_THRESH(x)  ((x) << 24ULL)
+
 #define UCLK_FIXED_CTL_OV_EN (1 << 20)
 #define UCLK_FIXED_CTL_EN    (1 << 22)
 
@@ -869,29 +971,33 @@ struct BecktonUncorePMUCNTCTLRegister {
 
     IIOn_MSR_PMON_CTL{3-0} Register- Field Definitions
 */
-struct IIOPMUCNTCTLRegister {
-    union {
-        struct {
-            uint64 event_select : 8;
-            uint64 umask : 8;
-            uint64 reserved1 : 1;
-            uint64 reset : 1;
-            uint64 edge_det : 1;
-            uint64 ignored : 1;
-            uint64 overflow_enable : 1;
-            uint64 reserved2 : 1;
-            uint64 enable : 1;
-            uint64 invert : 1;
-            uint64 thresh : 12;
-            uint64 ch_mask : 8;
-            uint64 fc_mask : 3;
-            uint64 reservedX : 17;
-        } fields;
-        uint64 value;
+    struct IIOPMUCNTCTLRegister
+    {
+        union
+        {
+            struct
+            {
+                uint64 event_select : 8;
+                uint64 umask : 8;
+                uint64 reserved1 : 1;
+                uint64 reset : 1;
+                uint64 edge_det : 1;
+                uint64 ignored : 1;
+                uint64 overflow_enable : 1;
+                uint64 reserved2 : 1;
+                uint64 enable : 1;
+                uint64 invert : 1;
+                uint64 thresh : 12;
+                uint64 ch_mask : 8;
+                uint64 fc_mask : 3;
+                uint64 reservedX : 17;
+            } fields;
+            uint64 value;
+        };
+        IIOPMUCNTCTLRegister() : value(0) { }
+        IIOPMUCNTCTLRegister(const uint64 v) : value(v) { }
+        operator uint64() { return value; }
     };
-
-    IIOPMUCNTCTLRegister() : value(0) {}
-};
 
 #define MSR_PACKAGE_THERM_STATUS (0x01B1)
 #define MSR_IA32_THERM_STATUS    (0x019C)
@@ -916,55 +1022,59 @@ struct IIOPMUCNTCTLRegister {
 
 #define MSR_TSX_FORCE_ABORT (0x10f)
 
-#ifdef _MSC_VER
-#include <windows.h>
 // data structure for converting two uint32s <-> uin64
-union cvt_ds
-{
-    UINT64 ui64;
-    struct
+    union cvt_ds
     {
-        DWORD low;
-        DWORD high;
-    } ui32;
-};
-
+#ifndef _MSC_VER
+        typedef uint64 UINT64;
+        typedef uint32 DWORD;
 #endif
+        UINT64 ui64;
+        struct
+        {
+            DWORD low;
+            DWORD high;
+        } ui32;
+    };
 
-struct MCFGRecord {
-    unsigned long long baseAddress;
-    unsigned short PCISegmentGroupNumber;
-    unsigned char startBusNumber;
-    unsigned char endBusNumber;
-    char reserved[4];
+    struct MCFGRecord
+    {
+        unsigned long long baseAddress;
+        unsigned short PCISegmentGroupNumber;
+        unsigned char startBusNumber;
+        unsigned char endBusNumber;
+        char reserved[4];
+        void print()
+        {
+            std::cout << "BaseAddress=" << (std::hex) << "0x" << baseAddress << " PCISegmentGroupNumber=0x" << PCISegmentGroupNumber <<
+                      " startBusNumber=0x" << (unsigned)startBusNumber << " endBusNumber=0x" << (unsigned)endBusNumber << "\n";
+        }
+    };
 
-    void print() {
-        std::cout << "BaseAddress=" << (std::hex) << "0x" << baseAddress << " PCISegmentGroupNumber=0x"
-                  << PCISegmentGroupNumber <<
-                  " startBusNumber=0x" << (unsigned) startBusNumber << " endBusNumber=0x" << (unsigned) endBusNumber
-                  << std::endl;
-    }
-};
+    struct MCFGHeader
+    {
+        char signature[4];
+        unsigned length;
+        unsigned char revision;
+        unsigned char checksum;
+        char OEMID[6];
+        char OEMTableID[8];
+        unsigned OEMRevision;
+        unsigned creatorID;
+        unsigned creatorRevision;
+        char reserved[8];
 
-struct MCFGHeader {
-    char signature[4];
-    unsigned length;
-    unsigned char revision;
-    unsigned char checksum;
-    char OEMID[6];
-    char OEMTableID[8];
-    unsigned OEMRevision;
-    unsigned creatorID;
-    unsigned creatorRevision;
-    char reserved[8];
+        unsigned nrecords() const
+        {
+            return (length - sizeof(MCFGHeader)) / sizeof(MCFGRecord);
+        }
 
-    unsigned nrecords() const {
-        return (length - sizeof(MCFGHeader)) / sizeof(MCFGRecord);
-    }
+        void print()
+        {
+            std::cout << "Header: length=" << length << " nrecords=" << nrecords() << "\n";
+        }
+    };
 
-    void print() {
-        std::cout << "Header: length=" << length << " nrecords=" << nrecords() << std::endl;
-    }
-};
+} // namespace pcm
 
 #endif

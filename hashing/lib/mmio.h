@@ -27,20 +27,20 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include "windows.h"
 #include "winpmem\winpmem.h"
 #else
-
 #include <unistd.h>
-
 #endif
 
 #include "mutex.h"
 #include <memory>
 
+namespace pcm {
+
 #ifdef _MSC_VER
-class MMIORange
+    class MMIORange
 {
 
     static std::shared_ptr<WinPmem> pmem;
-    static PCM_Util::Mutex mutex;
+    static Mutex mutex;
     static bool writeSupported;
     uint64 startAddr;
 
@@ -49,12 +49,12 @@ class MMIORange
     {
         if (!writeSupported)
         {
-            std::cerr << "PCM Error: MMIORange writes are not supported by the driver" << std::endl;
+            std::cerr << "PCM Error: MMIORange writes are not supported by the driver\n";
             return;
         }
         if (readonly)
         {
-            std::cerr << "PCM Error: attempting to write to a read-only MMIORange" << std::endl;
+            std::cerr << "PCM Error: attempting to write to a read-only MMIORange\n";
             return;
         }
         mutex.lock();
@@ -95,25 +95,20 @@ public:
 
 #elif defined(__APPLE__) || defined(__linux__) || defined(__FreeBSD__) || defined(__DragonFly__)
 
-class MMIORange {
-    int32 fd;
-    char *mmapAddr;
-    const uint64 size;
-    const bool readonly;
-public:
-    MMIORange(uint64 baseAddr_, uint64 size_, bool readonly_ = true);
-
-    uint32 read32(uint64 offset);
-
-    uint64 read64(uint64 offset);
-
-    void write32(uint64 offset, uint32 val);
-
-    void write64(uint64 offset, uint64 val);
-
-    ~MMIORange();
-};
-
+    class MMIORange
+    {
+        int32 fd;
+        char * mmapAddr;
+        const uint64 size;
+        const bool readonly;
+    public:
+        MMIORange(uint64 baseAddr_, uint64 size_, bool readonly_ = true);
+        uint32 read32(uint64 offset);
+        uint64 read64(uint64 offset);
+        void write32(uint64 offset, uint32 val);
+        void write64(uint64 offset, uint64 val);
+        ~MMIORange();
+    };
 #endif
 
-
+} // namespace pcm

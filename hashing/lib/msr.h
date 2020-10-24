@@ -33,92 +33,94 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include "mutex.h"
 #include <memory>
 
-class MsrHandle {
+namespace pcm {
+
+    class MsrHandle
+    {
 #ifdef _MSC_VER
-    HANDLE hDriver;
+        HANDLE hDriver;
 #elif __APPLE__
-    static MSRAccessor * driver;
+        static MSRAccessor * driver;
     static int num_handles;
 #else
-    int32 fd;
+        int32 fd;
 #endif
-    uint32 cpu_id;
+        uint32 cpu_id;
+        MsrHandle();                                // forbidden
+        MsrHandle(const MsrHandle &);               // forbidden
+        MsrHandle & operator = (const MsrHandle &); // forbidden
 
-    MsrHandle();                                // forbidden
-    MsrHandle(const MsrHandle &);               // forbidden
-    MsrHandle &operator=(const MsrHandle &); // forbidden
-
-public:
-    MsrHandle(uint32 cpu);
-
-    int32 read(uint64 msr_number, uint64 *value);
-
-    int32 write(uint64 msr_number, uint64 value);
-
-    int32 getCoreId() { return (int32) cpu_id; }
-
+    public:
+        MsrHandle(uint32 cpu);
+        int32 read(uint64 msr_number, uint64 * value);
+        int32 write(uint64 msr_number, uint64 value);
+        int32 getCoreId() { return (int32)cpu_id; }
 #ifdef __APPLE__
-    int32 buildTopology(uint32 num_cores, void *);
+        int32 buildTopology(uint32 num_cores, void *);
     uint32 getNumInstances();
     uint32 incrementNumInstances();
     uint32 decrementNumInstances();
 #endif
+        virtual ~MsrHandle();
+    };
 
-    virtual ~MsrHandle();
-};
+    class SafeMsrHandle
+    {
+        std::shared_ptr<MsrHandle> pHandle;
+        Mutex mutex;
 
-class SafeMsrHandle {
-    std::shared_ptr<MsrHandle> pHandle;
-    PCM_Util::Mutex mutex;
+        SafeMsrHandle(const SafeMsrHandle &);               // forbidden
+        SafeMsrHandle & operator = (const SafeMsrHandle &); // forbidden
 
-    SafeMsrHandle(const SafeMsrHandle &);               // forbidden
-    SafeMsrHandle &operator=(const SafeMsrHandle &); // forbidden
+    public:
+        SafeMsrHandle() { }
 
-public:
-    SafeMsrHandle() {}
+        SafeMsrHandle(uint32 core_id) : pHandle(new MsrHandle(core_id))
+        { }
 
-    SafeMsrHandle(uint32 core_id) : pHandle(new MsrHandle(core_id)) {}
+        int32 read(uint64 msr_number, uint64 * value)
+        {
+            if (pHandle)
+                return pHandle->read(msr_number, value);
 
-    int32 read(uint64 msr_number, uint64 *value) {
-        if (pHandle)
-            return pHandle->read(msr_number, value);
+            *value = 0;
 
-        *value = 0;
+            return (int32)sizeof(uint64);
+        }
 
-        return (int32) sizeof(uint64);
-    }
+        int32 write(uint64 msr_number, uint64 value)
+        {
+            if (pHandle)
+                return pHandle->write(msr_number, value);
 
-    int32 write(uint64 msr_number, uint64 value) {
-        if (pHandle)
-            return pHandle->write(msr_number, value);
+            return (int32)sizeof(uint64);
+        }
 
-        return (int32) sizeof(uint64);
-    }
+        int32 getCoreId()
+        {
+            if (pHandle)
+                return pHandle->getCoreId();
 
-    int32 getCoreId() {
-        if (pHandle)
-            return pHandle->getCoreId();
+            throw std::runtime_error("Core is offline");
+        }
 
-        throw std::exception();
-        return -1;
-    }
+        void lock()
+        {
+            mutex.lock();
+        }
 
-    void lock() {
-        mutex.lock();
-    }
-
-    void unlock() {
-        mutex.unlock();
-    }
+        void unlock()
+        {
+            mutex.unlock();
+        }
 
 #ifdef __APPLE__
-    int32 buildTopology(uint32 num_cores, void * p)
+        int32 buildTopology(uint32 num_cores, void * p)
     {
         if (pHandle)
             return pHandle->buildTopology(num_cores, p);
 
         throw std::exception();
-        return 0;
     }
     uint32 getNumInstances()
     {
@@ -126,7 +128,6 @@ public:
             return pHandle->getNumInstances();
 
         throw std::exception();
-        return 0;
     }
     uint32 incrementNumInstances()
     {
@@ -134,7 +135,6 @@ public:
             return pHandle->incrementNumInstances();
 
         throw std::exception();
-        return 0;
     }
     uint32 decrementNumInstances()
     {
@@ -142,11 +142,12 @@ public:
             return pHandle->decrementNumInstances();
 
         throw std::exception();
-        return 0;
     }
 #endif
+        virtual ~SafeMsrHandle()
+        { }
+    };
 
-    virtual ~SafeMsrHandle() {}
-};
+} // namespace pcm
 
 #endif
