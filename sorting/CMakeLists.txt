@@ -1,17 +1,34 @@
-cmake_minimum_required(VERSION 3.13)
-project(sorting)
+cmake_minimum_required(VERSION 3.5.1)
+project(AllianceDB)
+set(CMAKE_CXX_STANDARD 11)
 
-set(CMAKE_CXX_STANDARD 14)
+find_path(LIBNUMA_INCLUDE numa.h PATHS ${SEARCH_DIRS})
+find_library(LIBNUMA_LIB NAMES libnuma.so PATHS ${SEARCH_DIRS})
+if(LIBNUMA_INCLUDE-NOTFOUND)
+    set (LIBNUMA_INCLUDE "" CACHE PATH "Directory where libnuma header files can be found (consider installing libnuma-dev)")
+else()
+    include_directories(${LIBNUMA_INCLUDE})
+endif()
+if(LIBNUMA_LIB-NOTFOUND)
+    set (LIBNUMA_LIB "" CACHE PATH "Directory where the libnuma library can be found")
+else()
+    link_libraries(${LIBNUMA_LIB})
+endif()
 
-include_directories(.)
-include_directories(affinity)
-include_directories(datagen)
-include_directories(joins)
-include_directories(lib)
-include_directories(lib/exceptions)
-include_directories(test)
-include_directories(timer)
-include_directories(utils)
+#####OTHERS########
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release)
+endif()
+
+SET (CMAKE_STATIC_LINKER_FLAGS -lnuma)
+#SET (CMAKE_STATIC_LINKER_FLAGS -lboost_system)
+SET (CMAKE_STATIC_LINKER_FLAGS -lrt)
+
+SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${./bin})
+SET(CMAKE_CXX_FLAGS "-Wall -Wextra")
+SET(CMAKE_CXX_FLAGS_DEBUG "-g")
+SET(CMAKE_CXX_FLAGS_RELEASE "-O3")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -msse4.2 -mavx2")
 
 add_executable(sorting
         affinity/cpu_mapping.cpp
@@ -91,3 +108,11 @@ add_executable(sorting
         utils/types.h
         config.h
         main.cpp)
+
+target_link_libraries(sorting numa)
+#target_link_libraries(sorting check)
+target_link_libraries(sorting rt)
+#target_link_libraries(sorting boost_system)
+
+
+
