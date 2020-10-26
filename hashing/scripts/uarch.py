@@ -218,6 +218,12 @@ def ReadFile(id):
                 column["EXE_ACTIVITY.EXE_BOUND_0_PORTS"] = float(line.split(" ")[1])
             elif line.startswith("EXE_ACTIVITY.BOUND_ON_STORES"):
                 column["EXE_ACTIVITY.BOUND_ON_STORES"] = float(line.split(" ")[1])
+            elif line.startswith("MEM_LOAD_UOPS_MISC_RETIRED.LLC_MISS"):
+                column["MEM_LOAD_UOPS_MISC_RETIRED.LLC_MISS"] = float(line.split(" ")[1])
+            elif line.startswith("MEM_LOAD_UOPS_RETIRED.L3_HIT"):
+                column["MEM_LOAD_UOPS_RETIRED.L3_HIT"] = float(line.split(" ")[1])
+            elif line.startswith("CYCLE_ACTIVITY.STALLS_L2_PENDING"):
+                column["CYCLE_ACTIVITY.STALLS_L2_PENDING"] = float(line.split(" ")[1])
 
         clocks = column["CPU_CLK_UNHALTED.THREAD"]
         slots = 4*clocks
@@ -225,7 +231,7 @@ def ReadFile(id):
         uarch["Bad Speculation"] = (column["UOPS_ISSUED.ANY"] - column["UOPS_RETIRED.RETIRE_SLOTS"] + 4*column["INT_MISC.RECOVERY_CYCLES"])/slots
         uarch["Retiring"] = column["UOPS_RETIRED.RETIRE_SLOTS"]/slots
         uarch["Backend Bound"] = 1 - (uarch["Frontend Bound"] + uarch["Bad Speculation"] + uarch["Retiring"])
-        # uarch["Memory Bound"] = (column["CYCLE_ACTIVITY.STALLS_MEM_ANY"] + column["RESOURCE_STALLS.SB"])/clocks
+        uarch["Memory Bound"] = (column["CYCLE_ACTIVITY.STALLS_MEM_ANY"] + column["RESOURCE_STALLS.SB"])/clocks
 
         # memory bound
         Retired_Slots = column["UOPS_RETIRED.RETIRE_SLOTS"]
@@ -236,6 +242,11 @@ def ReadFile(id):
         Memory_Bound_Fraction = (column["CYCLE_ACTIVITY.STALLS_MEM_ANY"] + column["EXE_ACTIVITY.BOUND_ON_STORES"]) / Backend_Bound_Cycles
         Memory_bound= Memory_Bound_Fraction * uarch["Backend Bound"]
         uarch["Memory Bound"] = Memory_bound
+
+        # memory bound 2
+        # M = (7 * column["MEM_LOAD_UOPS_MISC_RETIRED.LLC_MISS"]) / (column["MEM_LOAD_UOPS_RETIRED.L3_HIT"] + column["MEM_LOAD_UOPS_MISC_RETIRED.LLC_MISS"])
+        # uarch["Memory Bound"] = (M * column["CYCLE_ACTIVITY.STALLS_L2_PENDING"]) / clocks
+
         uarch["Core Bound"] = uarch["Backend Bound"] - uarch["Memory Bound"]
 
         print(uarch)
