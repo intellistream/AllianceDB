@@ -15,6 +15,7 @@ FIGURE_FOLDER = '/data1/xtra/results/figure'
 # example for reading csv file
 def ReadFile(id, tuple_cnt):
     # Creates a list containing w lists, each of h items, all set to 0
+    global UNC_ARB_TRK_OCCUPANCY, UNC_CLOCK_SOCKET
     w = 8
 
     bound = id + 1 * w
@@ -44,14 +45,19 @@ def ReadFile(id, tuple_cnt):
                 colomn["BRANCH_MISP"] = float(line.split(" ")[1])/tuple_cnt
             elif line.startswith("BR_INST_EXEC"):
                 colomn["INST_EXEC"] = float(line.split(" ")[1])/tuple_cnt
-            elif line.startswith("MemoryBandwidth"):
-                colomn["MEM_BAND"] = float(line.split(" ")[1])
+            # elif line.startswith("MemoryBandwidth"):
+            #     colomn["MEM_BAND"] = float(line.split(" ")[1])
+            elif line.startswith("UNC_ARB_TRK_OCCUPANCY.ALL"):
+                UNC_ARB_TRK_OCCUPANCY = float(line.split(" ")[1])
+            elif line.startswith("UNC_CLOCK.SOCKET"):
+                UNC_CLOCK_SOCKET = float(line.split(" ")[1])
             elif line.startswith("CPUCycle"):
                 ts_start_ns = float(open('/data1/xtra/time_start_{}.txt'.format(i), "r").read())
                 ts_end_ns = float(open('/data1/xtra/time_end_{}.txt'.format(i), "r").read())
                 time_interval_s = (ts_end_ns - ts_start_ns) / 1E9
                 colomn["CPU_UTIL"] = float(line.split(" ")[1])/time_interval_s
         colomn["L1D_MISSES"] = colomn["L2_MISSES"] + colomn["L2_Hit"] - colomn["L1I_MISSES"]
+        colomn["MEM_BAND"] = UNC_ARB_TRK_OCCUPANCY/UNC_CLOCK_SOCKET
         print(i, colomn)
         colomn.clear()
 

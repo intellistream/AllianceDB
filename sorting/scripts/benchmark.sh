@@ -535,6 +535,8 @@ if [ $PROFILE_KIM == 1 ]; then
         KimProfileRun
         PERF_CONF=/data1/xtra/pcm-uarch2.cfg
         KimProfileRun
+        PERF_CONF=/data1/xtra/pcm-uarch3.cfg
+        KimProfileRun
         PERF_CONF=/data1/xtra/pcm.cfg
         KimProfileRun
         PERF_CONF=/data1/xtra/pcm2.cfg
@@ -550,6 +552,8 @@ if [ $PROFILE_KIM == 1 ]; then
         PERF_CONF=/data1/xtra/pcm-uarch.cfg
         benchmarkProfileRun
         PERF_CONF=/data1/xtra/pcm-uarch2.cfg
+        benchmarkProfileRun
+        PERF_CONF=/data1/xtra/pcm-uarch3.cfg
         benchmarkProfileRun
         PERF_CONF=/data1/xtra/pcm.cfg
         benchmarkProfileRun
