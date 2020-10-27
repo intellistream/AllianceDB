@@ -49,7 +49,7 @@ t_param &finishing(int nthreads, t_param &param, uint64_t *startTS, param_t *cmd
     MSG("With timing, Total processing time is: %f", processingTime / (2.1 * 1E6));//cycle to ms
 #endif
 #ifdef NO_TIMING
-    MSG("No timing, Total processing time is: %ld\n", processingTime / (2.1 * 1E6));
+    MSG("No timing, Total processing time is: %f\n", processingTime / (2.1 * 1E6));
 #endif
     for (i = 0; i < nthreads; i++) {
         /* sum up results */
