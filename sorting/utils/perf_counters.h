@@ -10,7 +10,7 @@
  */
 
 #ifndef PERF_COUNTERS_H
-#define PERF_COUNTERS_H
+#define NO_PERF_COUNTERS_H
 
 
 /** @defgroup PerformanceMonitoring Performance Monitoring Tools.
@@ -20,11 +20,11 @@
  * @{
  */
 
-#define PERF_COUNTERS
+#define NO_PERF_COUNTERS
 
 /** Is performance monitoring PER_CORE? */
 #ifndef PER_CORE
-#define PER_CORE 0
+#define PER_CORE 1
 #endif
 
 /** Is performance monitoring PER_SOCKET? */
@@ -34,7 +34,7 @@
 
 /** Is performance monitoring PER_SYSTEM? */
 #ifndef PER_SYSTEM
-#define PER_SYSTEM 1
+#define PER_SYSTEM 0
 #endif
 
 /** custom performance counters config file, if NULL no custom config. */
