@@ -34,14 +34,16 @@ matplotlib.rcParams['pdf.use14corefonts'] = True
 matplotlib.rcParams['xtick.labelsize'] = TICK_FONT_SIZE
 matplotlib.rcParams['ytick.labelsize'] = TICK_FONT_SIZE
 matplotlib.rcParams['font.family'] = OPT_FONT_NAME
-rc('text.latex', preamble=r'\usepackage[cm]{sfmath}')
-rc('font', **{'family': 'sans-serif',
-              'sans-serif': ['Helvetica'],
-              'weight': 'bold',
-              'size': 22
-              }
-   )
-rc('text', usetex=True)
+
+# rc('text.latex', preamble=r'\usepackage[cm]{sfmath}')
+# rc('font', **{'family': 'sans-serif',
+#               'sans-serif': ['Helvetica'],
+#               'weight': 'bold',
+#               'size': 22
+#               }
+#    )
+# rc('text', usetex=True)
+
 FIGURE_FOLDER = '/data1/xtra/results/figure'
 
 
@@ -90,7 +92,7 @@ def DrawLegend(legend_labels, filename):
 # draw a line chart
 def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, filename, allow_legend):
     # you may change the figure size on your own.
-    fig = plt.figure(figsize=(10, 3))
+    fig = plt.figure(figsize=(10, 6))
     figure = fig.add_subplot(111)
 
     FIGURE_LABEL = legend_labels
@@ -114,9 +116,9 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
                    FIGURE_LABEL,
                    prop=LEGEND_FP,
                    loc='upper center',
-                   ncol=3,
+                   ncol=1,
                    #                     mode='expand',
-                   bbox_to_anchor=(0.55, 1.5), shadow=False,
+                   bbox_to_anchor=(1.2, 1), shadow=False,
                    columnspacing=0.1,
                    frameon=True, borderaxespad=0.0, handlelength=1.5,
                    handletextpad=0.1,
@@ -166,7 +168,7 @@ def ReadFile(id, sample_point):
         for sample_idx in range(0, sample_point):
             if selector < len(read):
                 col.append(int(read[selector].split(": ")[1].split(" ")[0]))
-                selector = sample_idx * 250
+                selector = sample_idx * 10
             else:
                 col.append(0)
         y.append(col)
@@ -182,9 +184,10 @@ def ReadFile(id, sample_point):
 if __name__ == "__main__":
     id = 300
 
-    sample_point = 25
+    # 1500
+    sample_point = 35
 
-    x_values = [x * 2.5 for x in range(0, sample_point)]
+    x_values = [x * 100 for x in range(0, sample_point)]
 
     y_values = ReadFile(id, sample_point)
 
@@ -193,5 +196,5 @@ if __name__ == "__main__":
 
     # print(y_values)
     DrawFigure(x_values, y_values, legend_labels,
-               '$time(s)$', 'memory usage (kb)', 0,
-               55, 'memory_usage', False)
+               '$time(ms)$', 'memory usage (kb)', 0,
+               3500, 'memory_usage', True)

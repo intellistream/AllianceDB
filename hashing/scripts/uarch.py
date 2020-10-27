@@ -89,7 +89,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, al
             leg = plt.legend(handles[::-1], labels[::-1],
                              loc='center',
                              prop=LEGEND_FP,
-                             ncol=3,
+                             ncol=2,
                              bbox_to_anchor=(0.5, 1.2),
                              handletextpad=0.1,
                              borderaxespad=0.0,
@@ -181,7 +181,7 @@ def normalize(y_values):
 # example for reading csv file
 def ReadFile(id):
     # Creates a list containing w lists, each of h items, all set to 0
-    w, h = 8, 5
+    w, h = 8, 4
     y = [[0 for x in range(w+1)] for y in range(h)]
     max_value = 0
 
@@ -251,18 +251,24 @@ def ReadFile(id):
 
         print(uarch)
 
+        # y[0][j] = uarch["Frontend Bound"] * 100
+        # y[1][j] = uarch["Bad Speculation"] * 100
+        # y[2][j] = uarch["Retiring"] * 100
+        # y[3][j] = uarch["Memory Bound"] * 100
+        # y[4][j] = uarch["Core Bound"] * 100
+
         y[0][j] = uarch["Frontend Bound"] * 100
-        y[1][j] = uarch["Bad Speculation"] * 100
-        y[2][j] = uarch["Retiring"] * 100
-        y[3][j] = uarch["Memory Bound"] * 100
-        y[4][j] = uarch["Core Bound"] * 100
+        y[1][j] = uarch["Backend Bound"] * 100
+        y[2][j] = uarch["Bad Speculation"] * 100
+        y[3][j] = uarch["Retiring"] * 100
+
         j += 1
         if j == 4:
             y[0][j] = 0
             y[1][j] = 0
             y[2][j] = 0
             y[3][j] = 0
-            y[4][j] = 0
+            # y[4][j] = 0
             j +=1
         column.clear()
     # reorder value 0,1 and 2,3
@@ -283,7 +289,7 @@ if __name__ == "__main__":
 
     y_values, max_value = ReadFile(id)  # 55
     # break into 4 parts
-    legend_labels = ['frontend bound', 'bad speculation', 'retiring',  'memory bound', 'cpu bound']  # , 'others'
+    legend_labels = ["Frontend Bound", "Backend Bound", "Bad Speculation", "Retiring"]  # , 'others'
 
     DrawFigure(x_values, y_values, legend_labels,
                '', 'percentage of time',

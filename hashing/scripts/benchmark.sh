@@ -765,18 +765,20 @@ if [ $PROFILE == 1 ]; then
       let "id++"
     done
   done
+  sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h
 fi
 
-PERF_YSB=0 ## hardware profiling with YSB, please run the program with sudo
+PERF_YSB=1 ## hardware profiling with YSB, please run the program with sudo
 if [ $PERF_YSB == 1 ]; then
   sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h #disable time measurement
+  sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h
   sed -i -e "s/#define NO_PERF_UARCH/#define PERF_UARCH/g" ../joins/common_functions.h
   profile_breakdown=0
   compile=1
   compile
-  for benchmark in "Kim"; do #"YSB
+  for benchmark in "YSB"; do #"YSB
     id=302
-    for algo in NPO PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P; do # NPO PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P
+    for algo in SHJ_JM_P; do # NPO PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P
       case "$benchmark" in
       "Kim")
         ResetParameters
@@ -786,6 +788,12 @@ if [ $PERF_YSB == 1 ]; then
         rm /data1/xtra/results/breakdown/perf_$id.csv
         KimRun
         ;;
+      "YSB")
+        ResetParameters
+        SetYSBParameters
+        rm /data1/xtra/results/breakdown/perf_$id.txt
+        benchmarkRun
+        ;;
       esac
       sleep 5
       let "id++"
@@ -794,7 +802,7 @@ if [ $PERF_YSB == 1 ]; then
   sed -i -e "s/#define PERF_UARCH/#define NO_PERF_UARCH/g" ../joins/common_functions.h
 fi
 
-PROFILE_KIM=1 ## hardware profiling with YSB, please run the program with sudo
+PROFILE_KIM=0 ## hardware profiling with YSB, please run the program with sudo
 if [ $PROFILE_KIM == 1 ]; then
   sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h #disable time measurement
   sed -i -e "s/#define NO_PERF_COUNTERS/#define PERF_COUNTERS/g" ../utils/perf_counters.h

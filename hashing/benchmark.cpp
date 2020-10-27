@@ -227,7 +227,7 @@ benchmark(const param_t cmd_params) {
     }
 
     if (strcmp(cmd_params.algo->name, "NPO") == 0 || strcmp(cmd_params.algo->name, "PRO") == 0) {
-        sleep(10);
+        sleep(1);
     }
 #endif
 

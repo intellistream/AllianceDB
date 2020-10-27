@@ -748,7 +748,7 @@ int main(int argc, char *argv[]) {
         exit(-1);
     }
 
-    sleep(10);
+    sleep(1);
 #endif
 
 
