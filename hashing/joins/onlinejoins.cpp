@@ -48,7 +48,9 @@ t_param &finishing(int nthreads, t_param &param, uint64_t *startTS, param_t *cmd
 #ifndef NO_TIMING
     MSG("With timing, Total processing time is: %f\n", processingTime / (2.1 * 1E6));//cycle to ms
 #endif
-
+#ifdef NO_TIMING
+    MSG("No timing, Total processing time is: %f\n", processingTime / (2.1 * 1E6));
+#endif
     for (i = 0; i < nthreads; i++) {
         /* sum up results */
         param.result += *param.args[i].matches;
