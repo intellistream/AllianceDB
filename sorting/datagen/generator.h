@@ -136,4 +136,6 @@ knuth_shuffle(relation_t * relation);
 
 /** @} */
 
+void smooth(uint64_t *ret, unsigned int stream_size);
+
 #endif /* GENERATOR_H */

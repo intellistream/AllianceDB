@@ -66,7 +66,8 @@ def ReadFile(id, tuple_cnt):
                 ts_start_ns = float(open('/data1/xtra/time_start_{}.txt'.format(i), "r").read())
                 ts_end_ns = float(open('/data1/xtra/time_end_{}.txt'.format(i), "r").read())
                 time_interval_s = (ts_end_ns - ts_start_ns) / 1E9
-                colomn["CPU_UTIL"] = float(line.split(" ")[1])/time_interval_s
+                # system wide cpu utilization, should divided by the number of cores.
+                colomn["CPU_UTIL"] = float(line.split(" ")[1])/(time_interval_s*8)
 
         # colomn["L1D_MISSES"] = colomn["L2_MISSES"] + colomn["L2_Hit"] - colomn["L1I_MISSES"]
         colomn["L1D_MISSES"] = colomn["L1_MISSES"] + colomn["HIT_LFB"] - colomn["L1I_MISSES"]
