@@ -14,7 +14,7 @@
 //#define DEBUG
 //#define JOIN_RESULT_MATERIALIZE
 
-#define NO_TIMING
+#define TIMING
 #define JOIN
 #define MERGE
 #define MATCH
