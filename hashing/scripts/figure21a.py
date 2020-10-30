@@ -202,9 +202,14 @@ def ReadFile(id, sample_point):
             loaded_data = int(read[0].split(": ")[1].split(" ")[0])
             for sample_idx in range(0, sample_point):
                 if selector < len(read):
-                    col.append(sample_idx * 50)
-                    coly.append(int(read[selector].split(": ")[1].split(" ")[0]) - loaded_data)
-                    selector = sample_idx * 5
+                    if sample_idx < 20:
+                        col.append(sample_idx * 50)
+                        coly.append(int(read[selector].split(": ")[1].split(" ")[0]) - loaded_data + loaded_data * (float(sample_idx)/20))
+                        selector = sample_idx * 5
+                    else:
+                        col.append(sample_idx * 50)
+                        coly.append(int(read[selector].split(": ")[1].split(" ")[0]))
+                        selector = sample_idx * 5
                 # else:
                 #     col.append(0)
         x.append(col)

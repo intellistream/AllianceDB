@@ -485,7 +485,7 @@ if [ $PROFILE == 1 ]; then
 fi
 
 #export PATH=~/workspace/pmu-tools:$PATH
-PERF_YSB=1 ## Hardware Counters profiling with YSB, please run the program with sudo
+PERF_YSB=0 ## Hardware Counters profiling with YSB, please run the program with sudo
 if [ $PERF_YSB == 1 ]; then
   #  compile=1
   #  compile
@@ -524,7 +524,7 @@ if [ $PERF_YSB == 1 ]; then
 fi
 
 # profiling for figure 21b. TODO: maybe need to change a flag here
-PROFILE_KIM=0 ## Cache misses profiling with YSB, please run the program with sudo
+PROFILE_KIM=1 ## Cache misses profiling with YSB, please run the program with sudo
 if [ $PROFILE_KIM == 1 ]; then
   sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h #disable time measurement
   sed -i -e "s/#define NO_PERF_COUNTERS/#define PERF_COUNTERS/g" ../utils/perf_counters.h
@@ -564,12 +564,14 @@ if [ $PROFILE_KIM == 1 ]; then
         PERF_CONF=/data1/xtra/pcm-uarch.cfg
         benchmarkProfileRun
         PERF_CONF=/data1/xtra/pcm-uarch2.cfg
-        benchmarkProfileRun
-        PERF_CONF=/data1/xtra/pcm-uarch3.cfg
+#        benchmarkProfileRun
+#        PERF_CONF=/data1/xtra/pcm-uarch3.cfg
         benchmarkProfileRun
         PERF_CONF=/data1/xtra/pcm.cfg
         benchmarkProfileRun
         PERF_CONF=/data1/xtra/pcm2.cfg
+        benchmarkProfileRun
+        PERF_CONF=/data1/xtra/pcm3.cfg
         benchmarkProfileRun
         PERF_CONF=""
         benchmarkProfileRun

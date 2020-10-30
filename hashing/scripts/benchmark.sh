@@ -802,7 +802,7 @@ if [ $PERF_YSB == 1 ]; then
   sed -i -e "s/#define PERF_UARCH/#define NO_PERF_UARCH/g" ../joins/common_functions.h
 fi
 
-PROFILE_KIM=0 ## hardware profiling with YSB, please run the program with sudo
+PROFILE_KIM=1 ## hardware profiling with YSB, please run the program with sudo
 if [ $PROFILE_KIM == 1 ]; then
   sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h #disable time measurement
   sed -i -e "s/#define NO_PERF_COUNTERS/#define PERF_COUNTERS/g" ../utils/perf_counters.h
@@ -835,11 +835,13 @@ if [ $PROFILE_KIM == 1 ]; then
         benchmarkProfileRun
         PERF_CONF=/data1/xtra/pcm-uarch2.cfg
         benchmarkProfileRun
-        PERF_CONF=/data1/xtra/pcm-uarch3.cfg
-        benchmarkProfileRun
+#        PERF_CONF=/data1/xtra/pcm-uarch3.cfg
+#        benchmarkProfileRun
         PERF_CONF=/data1/xtra/pcm.cfg
         benchmarkProfileRun
         PERF_CONF=/data1/xtra/pcm2.cfg
+        benchmarkProfileRun
+        PERF_CONF=/data1/xtra/pcm3.cfg
         benchmarkProfileRun
         PERF_CONF=""
         benchmarkProfileRun
