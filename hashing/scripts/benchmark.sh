@@ -378,8 +378,8 @@ if [ $APP_BENCH == 1 ]; then
   #compile depends on whether we want to profile.
   for profile_breakdown in 1; do
     compile=1
-    for benchmark in "Stock" "Rovio" "YSB" "DEBS"; do #
-      for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do
+    for benchmark in "Stock" "Rovio" "YSB" "DEBS"; do # "Stock" "Rovio" "YSB" "DEBS"
+      for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do # NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
         case "$benchmark" in
         "Stock")
           id=38
@@ -778,7 +778,7 @@ if [ $PERF_YSB == 1 ]; then
   compile
   for benchmark in "YSB"; do #"YSB
     id=302
-    for algo in SHJ_JM_P; do # NPO PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P
+    for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do # NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
       case "$benchmark" in
       "Kim")
         ResetParameters
@@ -802,7 +802,7 @@ if [ $PERF_YSB == 1 ]; then
   sed -i -e "s/#define PERF_UARCH/#define NO_PERF_UARCH/g" ../joins/common_functions.h
 fi
 
-PROFILE_KIM=0 ## hardware profiling with YSB, please run the program with sudo
+PROFILE_KIM=1 ## hardware profiling with YSB, please run the program with sudo
 if [ $PROFILE_KIM == 1 ]; then
   sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h #disable time measurement
   sed -i -e "s/#define NO_PERF_COUNTERS/#define PERF_COUNTERS/g" ../utils/perf_counters.h
@@ -812,7 +812,7 @@ if [ $PROFILE_KIM == 1 ]; then
   compile
   for benchmark in "YSB"; do #"YSB
     id=402
-    for algo in NPO PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P; do # NPO PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P
+    for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do # NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
       case "$benchmark" in
       "Kim")
         ResetParameters
@@ -835,11 +835,13 @@ if [ $PROFILE_KIM == 1 ]; then
         benchmarkProfileRun
         PERF_CONF=/data1/xtra/pcm-uarch2.cfg
         benchmarkProfileRun
-        PERF_CONF=/data1/xtra/pcm-uarch3.cfg
-        benchmarkProfileRun
+#        PERF_CONF=/data1/xtra/pcm-uarch3.cfg
+#        benchmarkProfileRun
         PERF_CONF=/data1/xtra/pcm.cfg
         benchmarkProfileRun
         PERF_CONF=/data1/xtra/pcm2.cfg
+        benchmarkProfileRun
+        PERF_CONF=/data1/xtra/pcm3.cfg
         benchmarkProfileRun
         PERF_CONF=""
         benchmarkProfileRun

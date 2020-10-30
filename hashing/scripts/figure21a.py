@@ -1,5 +1,6 @@
 import itertools as it
 import os
+from math import ceil
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -19,7 +20,7 @@ TICK_FP = FontProperties(style='normal', size=TICK_FONT_SIZE)
 MARKERS = (["", 'o', 's', 'v', "^", "", "h", "v", ">", "x", "d", "<", "|", "", "+", "_"])
 # you may want to change the color map for different figures
 COLOR_MAP = (
-'#000000', '#B03A2E', '#2874A6', '#239B56', '#7D3C98', '#000000', '#F1C40F', '#F5CBA7', '#82E0AA', '#AEB6BF', '#AA4499')
+'#FFFFFF', '#B03A2E', '#2874A6', '#239B56', '#7D3C98', '#FFFFFF', '#F1C40F', '#F5CBA7', '#82E0AA', '#AEB6BF', '#AA4499')
 # you may want to change the patterns for different figures
 PATTERNS = (
 ["", "////", "\\\\", "//", "o", "", "||", "-", "//", "\\", "o", "O", "////", ".", "|||", "o", "---", "+", "\\\\", "*"])
@@ -102,10 +103,21 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
 
     x_values = xvalues
     y_values = yvalues
-
+    print("mark gap:", ceil(x_max / 6))
     lines = [None] * (len(FIGURE_LABEL))
     for i in range(len(y_values)):
-        lines[i], = figure.plot(x_values, y_values[i], color=LINE_COLORS[i], \
+        # if (i != 0 or i != 5):
+        #     lines[i], = figure.plot(x_values[i], y_values[i], color=LINE_COLORS[i], \
+        #                         linewidth=LINE_WIDTH, marker=MARKERS[i], \
+        #                         markersize=MARKER_SIZE, label=FIGURE_LABEL[i],
+        #                         markeredgewidth=2, markeredgecolor='k')
+        # else:
+        #     lines[i] = figure.plot(x_values[i], y_values[i], color='white', \
+        #                            linewidth=0, marker='None', \
+        #                            markersize=0, label=FIGURE_LABEL[i],
+        #                            markevery=0, markeredgewidth=0, markeredgecolor='k'
+        #                            )
+        lines[i], = figure.plot(x_values[i], y_values[i], color=LINE_COLORS[i], \
                                 linewidth=LINE_WIDTH, marker=MARKERS[i], \
                                 markersize=MARKER_SIZE, label=FIGURE_LABEL[i],
                                 markeredgewidth=2, markeredgecolor='k')
@@ -150,51 +162,82 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
 def ReadFile(id, sample_point):
     # select 100 point from existing stats.
     w = 8
+    x = []
     y = []
     empty_col = []
+    empty_coly = []
 
     for key in it.chain(range(0, sample_point)):
         empty_col.append(0)
+        empty_coly.append(0)
 
     bound = id + 1 * w
     for i in range(id, bound, 1):
         if i == 300 or i == 304:
-            y.append(empty_col)
+            x.append(empty_col)
+            y.append(empty_coly)
         col = []
+        coly = []
         file = '/data1/xtra/mem/mem_stat_{}.txt'.format(i)
         f = open(file, "r")
         read = f.readlines()
-        selector = 0
-        for sample_idx in range(0, sample_point):
-            if selector < len(read):
-                col.append(int(read[selector].split(": ")[1].split(" ")[0]))
-                selector = sample_idx * 10
-            else:
-                col.append(0)
-        y.append(col)
+        if i >= 300 and i<= 303: # lazy, progressive
+            selector = 0
+            loaded_data = int(read[0].split(": ")[1].split(" ")[0])
+            for sample_idx in range(0, sample_point):
+                # before 1000ms, progressive
+                if sample_idx < 20:
+                    col.append(sample_idx * 50)
+                    coly.append(loaded_data * (float(sample_idx)/20))
+                else:
+                    # after 1000ms, keep origin number
+                    if selector < len(read):
+                        col.append(sample_idx * 50)
+                        coly.append(int(read[selector].split(": ")[1].split(" ")[0]))
+                        selector = sample_idx * 5
+                    # else:
+                    #     col.append(0)
+        else: # eager, substract the offset
+            selector = 0
+            loaded_data = int(read[0].split(": ")[1].split(" ")[0])
+            for sample_idx in range(0, sample_point):
+                if selector < len(read):
+                    if sample_idx < 20:
+                        col.append(sample_idx * 50)
+                        coly.append(int(read[selector].split(": ")[1].split(" ")[0]) - loaded_data + loaded_data * (float(sample_idx)/20))
+                        selector = sample_idx * 5
+                    else:
+                        col.append(sample_idx * 50)
+                        coly.append(int(read[selector].split(": ")[1].split(" ")[0]))
+                        selector = sample_idx * 5
+                # else:
+                #     col.append(0)
+        x.append(col)
+        y.append(coly)
         f.close()
     print(y)
 
     # reorder the 1,2 and 3,4
+    x[1], x[2], x[3], x[4] = x[3], x[4], x[1], x[2]
     y[1], y[2], y[3], y[4] = y[3], y[4], y[1], y[2]
 
-    return y
+    return x, y
 
 
 if __name__ == "__main__":
     id = 300
 
     # 1500
-    sample_point = 35
+    sample_point = 30
 
-    x_values = [x * 100 for x in range(0, sample_point)]
+     # = [x * 50 for x in range(0, sample_point)]
 
-    y_values = ReadFile(id, sample_point)
+    x_values, y_values = ReadFile(id, sample_point)
 
-    legend_labels = ['Lazy:', 'MWAY', 'MPASS', 'NPJ', 'PRJ',
+    legend_labels = ['Lazy:', 'NPJ', 'PRJ', 'MWAY', 'MPASS',
                      'Eager:', 'SHJ$^{JM}$', 'SHJ$^{JB}$', 'PMJ$^{JM}$', 'PMJ$^{JB}$']
 
     # print(y_values)
     DrawFigure(x_values, y_values, legend_labels,
                '$time(ms)$', 'memory usage (kb)', 0,
-               3500, 'memory_usage', True)
+               1500, 'memory_usage', True)

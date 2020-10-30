@@ -119,7 +119,7 @@ void ts_shuffle(relation_t* relation, relation_payload_t* relationPayload, uint3
         tid_offsets[partition] = 0;
         tid_start_idx[partition] = numthr*partition;
         tid_end_idx[partition] =
-            (last_thread(partition, partitions)) ? relation->num_tuples - 1 : numthr*(partition + 1) - 1;
+            (last_thread(partition, partitions)) ? relation->num_tuples : numthr*(partition + 1);
 
         MSG("partition %d start idx: %d end idx: %d\n", partition, tid_start_idx[partition], tid_end_idx[partition]);
     }
@@ -144,7 +144,7 @@ add_ts(relation_t* relation, relation_payload_t* relationPayload, int step_size,
         tid_offsets[partition] = 0;
         tid_start_idx[partition] = numthr*partition;
         tid_end_idx[partition] =
-            (last_thread(partition, partitions)) ? relation->num_tuples - 1 : numthr*(partition + 1) - 1;
+            (last_thread(partition, partitions)) ? relation->num_tuples : numthr*(partition + 1);
     }
 
     //create ts.
@@ -202,7 +202,7 @@ void add_zipf_ts(relation_t* relation, relation_payload_t* relationPayload, int 
         tid_offsets[partition] = 0;
         tid_start_idx[partition] = numthr*partition;
         tid_end_idx[partition] =
-            (last_thread(partition, partitions)) ? relation->num_tuples - 1 : numthr*(partition + 1) - 1;
+            (last_thread(partition, partitions)) ? relation->num_tuples : numthr*(partition + 1);
     }
 
     for (auto i = 0; i < relation->num_tuples; i++) {
@@ -899,7 +899,15 @@ vector<string> split(string s, string delimiter) {
 void
 read_relation(relation_t* rel, relation_payload_t* relPl, int32_t keyby, int32_t tsKey, char* filename,
               uint32_t partitions) {
-    FILE* fp = fopen(filename, "r");
+//    FILE* fp = fopen(filename, "r");
+    ifstream myfile;
+
+    myfile.open(filename);
+    if (myfile.is_open()) {
+        MSG("reading file: %s", filename)
+    } else{
+        cout << "Error: can't open input file " << filename << endl;
+    }
 
     /* skip the header line */
     char c;
@@ -911,12 +919,12 @@ read_relation(relation_t* rel, relation_payload_t* relPl, int32_t keyby, int32_t
     int fmtspace = 0;
     int fmtcomma = 0;
     int fmtbar = 0;
-    do {
-        c = fgetc(fp);
-        //        if (c == ' ') {
-        //            fmtspace = 1;
-        //            break;
-        //        }
+    while (myfile.get(c)){// loop getting single characters
+//        c = getline(myfile);
+//        if (c == ' ') {
+//            fmtspace = 1;
+//            break;
+//        }
         if (c == ',') {
             fmtcomma = 1;
             break;
@@ -925,14 +933,17 @@ read_relation(relation_t* rel, relation_payload_t* relPl, int32_t keyby, int32_t
             fmtbar = 1;
             break;
         }
-    } while (c != '\n');
+    }
 
     char* line;
     size_t len;
     ssize_t read;
 
     /* rewind back to the beginning and start parsing again */
-    rewind(fp);
+    myfile.close();
+    myfile.open(filename);
+    MSG("rewind")
+//    rewind(fp);
     /* skip the header line */
     //    do {
     //        c = fgetc(fp);
@@ -955,11 +966,9 @@ read_relation(relation_t* rel, relation_payload_t* relPl, int32_t keyby, int32_t
         tid_offsets[partition] = 0;
         tid_start_idx[partition] = numthr*partition;
         tid_end_idx[partition] =
-            (last_thread(partition, partitions)) ? rel->num_tuples - 1 : numthr*(partition + 1) - 1;
-        DEBUGMSG("Partition%d, start_index:%d, end_index=%d",
-                 partition,
-                 tid_start_idx[partition],
-                 tid_end_idx[partition]);
+                (last_thread(partition, partitions)) ? rel->num_tuples : numthr*(partition + 1);
+//        tid_end_idx[partition] =
+//                (last_thread(partition, partitions)) ? rel->num_tuples - 1 : numthr*(partition + 1) - 1;
     }
 
     uint64_t* ret;
@@ -1013,6 +1022,8 @@ read_relation(relation_t* rel, relation_payload_t* relPl, int32_t keyby, int32_t
         rel->tuples[cur_index].payloadID = cur_index;
         tid_offsets[partition]++;
     }
+    free(ret);
+    free(key);
 }
 
 void* alloc_aligned(size_t size) {
