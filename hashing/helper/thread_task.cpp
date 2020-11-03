@@ -53,7 +53,6 @@ void *THREAD_TASK_NOSHUFFLE(void *param) {
     START_MEASURE((args->timer))
 #endif
 
-
     fetcher->fetchStartTime = args->startTS; // set the fetch starting time.
 #ifdef PERF_COUNTERS
     if (args->tid == 0) {
@@ -119,10 +118,10 @@ void *THREAD_TASK_NOSHUFFLE(void *param) {
     BARRIER_ARRIVE(args->barrier, lock)
 
 #ifndef NO_TIMING
-        END_MEASURE(args->timer)
-        // time calibration
-        //    args->timer->overall_timer -= args->timer->garbage_time;
-        args->timer->partition_timer =
+    END_MEASURE(args->timer)
+    // time calibration
+    //    args->timer->overall_timer -= args->timer->garbage_time;
+    args->timer->partition_timer =
             args->timer->overall_timer - args->timer->wait_timer;
 #endif
 
@@ -232,10 +231,10 @@ void *THREAD_TASK_SHUFFLE(void *param) {
     /* wait at a barrier until each thread finishes*/
     BARRIER_ARRIVE(args->barrier, lock)
 #ifndef NO_TIMING
-        END_MEASURE(args->timer)
-        // time calibration
-        //    args->timer->overall_timer -= args->timer->garbage_time;
-        args->timer->partition_timer =
+    END_MEASURE(args->timer)
+    // time calibration
+    //    args->timer->overall_timer -= args->timer->garbage_time;
+    args->timer->partition_timer =
             args->timer->overall_timer - args->timer->wait_timer;
 #endif
 
@@ -558,7 +557,7 @@ void *THREAD_TASK_SHUFFLE_HS(void *param) {
     // time calibration
     //    args->timer->overall_timer -= args->timer->garbage_time;
     args->timer->partition_timer =
-        args->timer->overall_timer - args->timer->wait_timer;
+            args->timer->overall_timer - args->timer->wait_timer;
 #endif
 
 #ifdef PERF_COUNTERS

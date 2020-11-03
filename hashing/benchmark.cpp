@@ -35,8 +35,8 @@ int check_avx() {
 }
 
 // TODO: why need so many parameters, only need cmd_params inside.
-void createRelation(relation_t* rel, relation_payload_t* relPl, int32_t key, int32_t tsKey, const param_t& cmd_params,
-                    char* loadfile, uint32_t seed, const int step_size, int partitions) {
+void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int32_t tsKey, const param_t &cmd_params,
+                    char *loadfile, uint32_t seed, const int step_size, int partitions) {
     seed_generator(seed);
     /* to pass information to the create_relation methods */
     numalocalize = cmd_params.basic_numa;
@@ -53,11 +53,11 @@ void createRelation(relation_t* rel, relation_payload_t* relPl, int32_t key, int
 
     MSG("[INFO ] %s relation with size = %.3lf MiB, #tuples = %lu : ",
         (loadfile != NULL) ? ("Loading") : ("Creating"),
-        (double) sizeof(tuple_t)*rel_size/1024.0/1024.0, rel_size)
+        (double) sizeof(tuple_t) * rel_size / 1024.0 / 1024.0, rel_size)
 
     //    size_t relRsz = rel->num_tuples * sizeof(tuple_t)
     //                    + RELATION_PADDING(cmd_params.nthreads, cmd_params.part_fanout);
-    rel->tuples = (tuple_t*) MALLOC(rel_size*sizeof(tuple_t));
+    rel->tuples = (tuple_t *) MALLOC(rel_size * sizeof(tuple_t));
 
     //    size_t relPlsz = relPl->num_tuples * sizeof(relation_payload_t)
     //                     + RELATION_PADDING(cmd_params.nthreads, cmd_params.part_fanout);
@@ -70,7 +70,7 @@ void createRelation(relation_t* rel, relation_payload_t* relPl, int32_t key, int
 
     //    size_t relTssz = relPl->num_tuples * sizeof(milliseconds)
     //                     + RELATION_PADDING(cmd_params.nthreads, cmd_params.part_fanout);
-    relPl->ts = (uint64_t*) MALLOC(relPl->num_tuples*sizeof(uint64_t));
+    relPl->ts = (uint64_t *) MALLOC(relPl->num_tuples * sizeof(uint64_t));
 
     //    /* NUMA-localize the input: */
     //    if(!nonumalocalize){
@@ -102,7 +102,8 @@ void createRelation(relation_t* rel, relation_payload_t* relPl, int32_t key, int
             case 2: // zipf with zipf factor
                 create_relation_zipf(rel, rel_size, rel_size, cmd_params.skew, cmd_params.duplicate_num);
                 break;
-            default:break;
+            default:
+                break;
         }
 
         switch (cmd_params.ts_distribution) {
@@ -112,7 +113,8 @@ void createRelation(relation_t* rel, relation_payload_t* relPl, int32_t key, int
             case 2: // zipf
                 add_zipf_ts(rel, relPl, cmd_params.window_size, cmd_params.zipf_param, partitions);
                 break;
-            default:break;
+            default:
+                break;
         }
     } else {
         //create_relation_pk(&rel, rel_size);
@@ -121,10 +123,9 @@ void createRelation(relation_t* rel, relation_payload_t* relPl, int32_t key, int
                                  rel_size, cmd_params.duplicate_num);
         add_ts(rel, relPl, step_size, 0, partitions);
     }
-
 }
 
-void writefile(relation_payload_t* relPl, const param_t cmd_params) {
+void writefile(relation_payload_t *relPl, const param_t cmd_params) {
     string path = "/data1/xtra/datasets/Kim/data_distribution_zipf" + std::to_string(cmd_params.zipf_param) + ".txt";
     ofstream outputFile(path, std::ios::trunc);
     for (auto i = 0; i < relPl->num_tuples; i++) {
@@ -135,20 +136,19 @@ void writefile(relation_payload_t* relPl, const param_t cmd_params) {
 
 void *
 memory_calculator_thread(void *args) {
-    uint64_t exp_id = (uint64_t)args;
+    uint64_t exp_id = (uint64_t) args;
     struct rusage r_usage;
     int counter = 0;
     string path = "/data1/xtra/mem/mem_stat_" + std::to_string(exp_id) + ".txt";
     auto fp = fopen(path.c_str(), "w");
-    setbuf(fp,NULL);
+    setbuf(fp, NULL);
 
-    while(counter < 10000) {
-        int ret = getrusage(RUSAGE_SELF,&r_usage);
-        if(ret == 0) {
-            fprintf(fp, "Memory usage: %ld kilobytes\n",r_usage.ru_maxrss);
+    while (counter < 10000) {
+        int ret = getrusage(RUSAGE_SELF, &r_usage);
+        if (ret == 0) {
+            fprintf(fp, "Memory usage: %ld kilobytes\n", r_usage.ru_maxrss);
             fflush(fp);
-        }
-        else
+        } else
             printf("Error in getrusage. errno = %d\n", errno);
         counter++;
         usleep(10000);
@@ -169,7 +169,7 @@ benchmark(const param_t cmd_params) {
     relR.payload = new relation_payload_t();
     relS.payload = new relation_payload_t();
 
-    result_t* results;
+    result_t *results;
     /* create relation R */
 
 
@@ -177,7 +177,7 @@ benchmark(const param_t cmd_params) {
         relR.num_tuples = cmd_params.r_size;
     } else {
         relR.num_tuples =
-            (cmd_params.window_size/cmd_params.interval)*cmd_params.step_sizeR;
+                (cmd_params.window_size / cmd_params.interval) * cmd_params.step_sizeR;
     }
     // check which fetcher is used, to decide whether need to partition ts.
     int partitions = cmd_params.nthreads;
@@ -196,7 +196,7 @@ benchmark(const param_t cmd_params) {
     } else {
         if (cmd_params.fixS)
             relS.num_tuples =
-                (cmd_params.window_size/cmd_params.interval)*cmd_params.step_sizeS;
+                    (cmd_params.window_size / cmd_params.interval) * cmd_params.step_sizeS;
         else
             relS.num_tuples = relR.num_tuples;
     }

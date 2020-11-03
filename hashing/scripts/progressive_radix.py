@@ -161,8 +161,8 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
                    frameon=True, borderaxespad=0.0, handlelength=1.5,
                    handletextpad=0.1,
                    labelspacing=0.1)
-        # leg.get_frame().set_linewidth(2)
-        # leg.get_frame().set_edgecolor("black")
+        leg.get_frame().set_linewidth(2)
+        leg.get_frame().set_edgecolor("black")
 
     # plt.xscale('log')
     # plt.xticks(x_values)
