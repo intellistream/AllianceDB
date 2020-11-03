@@ -60,7 +60,10 @@ def ReadFile(id, tuple_cnt):
                 colomn["INST_EXEC"] = float(line.split(" ")[1])/tuple_cnt
             elif line.startswith("MemoryBandwidth"):
                 colomn["MEM_BAND"] = float(line.split(" ")[1])
-                print(colomn["MEM_BAND"])
+            elif line.startswith("BytesFromMC"):
+                colomn["BytesFromMC"] = float(line.split(" ")[1])
+            elif line.startswith("BytesWrittenToMC"):
+                colomn["BytesWrittenToMC"] = float(line.split(" ")[1])
             # elif line.startswith("UNC_ARB_TRK_OCCUPANCY.ALL"):
             #     UNC_ARB_TRK_OCCUPANCY = float(line.split(" ")[1])
             # elif line.startswith("INST_RETIRED.ANY"):
@@ -83,22 +86,24 @@ def ReadFile(id, tuple_cnt):
         time_interval_s = (ts_end_ns - ts_start_ns) / 1E9
         # colomn["MEM_BAND_CAL"] = ((colomn["CAS_COUNT.RD"] + colomn["CAS_COUNT.WR"]) * 64) / (time_interval_s*1000000)
         # colomn["MEM_BAND_CAL"] = ((colomn["CAS_COUNT.RD"]) * 64) / (time_interval_s*1000000)
+        colomn["MEM_BAND_CAL"] = (colomn["BytesFromMC"] + colomn["BytesWrittenToMC"]) / (time_interval_s*1000000)
 
         print(colomn)
 
-        data[0][j] = format(colomn["TLBD_Misses"], '.6f')
-        data[1][j] = format(colomn["ITLB_MISSES"], '.6f')
-        data[2][j] = format(colomn["L1I_MISSES"], '.6f')
-        data[3][j] = format(colomn["L1D_MISSES"], '.6f')
-        data[4][j] = format(colomn["L2_MISSES"], '.6f')
-        data[5][j] = format(colomn["L3_MISSES"], '.6f')
-        data[6][j] = format(colomn["BRANCH_MISP"], '.6f')
-        data[7][j] = format(colomn["INST_EXEC"], '.6f')
-        data[8][j] = format(colomn["MEM_BAND"]/31872.0 * 100, '.6f')
+        data[0][j] = format(colomn["TLBD_Misses"], '.3f')
+        data[1][j] = format(colomn["ITLB_MISSES"], '.3f')
+        data[2][j] = format(colomn["L1I_MISSES"], '.3f')
+        data[3][j] = format(colomn["L1D_MISSES"], '.3f')
+        data[4][j] = format(colomn["L2_MISSES"], '.3f')
+        data[5][j] = format(colomn["L3_MISSES"], '.3f')
+        data[6][j] = format(colomn["BRANCH_MISP"], '.3f')
+        data[7][j] = format(colomn["INST_EXEC"], '.3f')
+        data[8][j] = format(colomn["MEM_BAND_CAL"]/31872.0 * 100, '.3f')
+        # data[8][j] = format(colomn["MEM_BAND"]/31872.0 * 100, '.6f')
         # data[8][j] = format(colomn["MEM_BAND"], '.6f')
-        data[9][j] = format(colomn["CPU_UTIL"] * 100, '.6f')
+        data[9][j] = format(colomn["CPU_UTIL"] * 100, '.3f')
         # data[10][j] = format(colomn["MEM_BAND_CAL"]/31872.0, '.6f')
-        data[10][j] = format(colomn["MEM_BAND_CAL"], '.6f')
+        data[10][j] = format(colomn["MEM_BAND_CAL"]/31872.0 * 100, '.3f')
         j += 1
         colomn.clear()
 

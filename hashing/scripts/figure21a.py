@@ -122,19 +122,36 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
                                 markersize=MARKER_SIZE, label=FIGURE_LABEL[i],
                                 markeredgewidth=2, markeredgecolor='k')
 
+    # # sometimes you may not want to draw legends.
+    # if allow_legend == True:
+    #     plt.legend(lines,
+    #                FIGURE_LABEL,
+    #                prop=LEGEND_FP,
+    #                loc='upper center',
+    #                ncol=1,
+    #                #                     mode='expand',
+    #                bbox_to_anchor=(1.2, 1), shadow=False,
+    #                columnspacing=0.1,
+    #                frameon=True, borderaxespad=0.0, handlelength=1.5,
+    #                handletextpad=0.1,
+    #                labelspacing=0.1)
+
     # sometimes you may not want to draw legends.
     if allow_legend == True:
-        plt.legend(lines,
-                   FIGURE_LABEL,
-                   prop=LEGEND_FP,
-                   loc='upper center',
-                   ncol=1,
-                   #                     mode='expand',
-                   bbox_to_anchor=(1.2, 1), shadow=False,
-                   columnspacing=0.1,
-                   frameon=True, borderaxespad=0.0, handlelength=1.5,
-                   handletextpad=0.1,
-                   labelspacing=0.1)
+        leg=plt.legend(lines,
+                       FIGURE_LABEL,
+                       prop=LEGEND_FP,
+                       loc='right',
+                       ncol=1,
+                       #                     mode='expand',
+                       bbox_to_anchor=(1.3, 0.5), shadow=False,
+                       columnspacing=0.1,
+                       frameon=True, borderaxespad=0.0, handlelength=1.5,
+                       handletextpad=0.1,
+                       labelspacing=0.1)
+        leg.get_frame().set_linewidth(2)
+        leg.get_frame().set_edgecolor("black")
+
     # plt.xscale('log')
     # plt.yscale('log')
     # plt.xticks(x_values)
