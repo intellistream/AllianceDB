@@ -14,12 +14,16 @@
 //#define DEBUG
 //#define JOIN_RESULT_MATERIALIZE
 
-#define TIMING
+#define NO_TIMING
 #define JOIN
 #define MERGE
 #define MATCH
 #define WAIT
 #define OVERVIEW
+
+// used for perf events counters
+#define PERF_TOPDOWN
+#define NO_JOIN_THREAD
 
 #define NO_PERF_UARCH
 

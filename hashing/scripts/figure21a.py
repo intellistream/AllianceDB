@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import pylab
 from matplotlib.font_manager import FontProperties
 from matplotlib.ticker import MaxNLocator, LinearLocator
+from matplotlib.ticker import PercentFormatter, LogLocator
 from matplotlib import rc
 
 OPT_FONT_NAME = 'Helvetica'
@@ -152,22 +153,23 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
         leg.get_frame().set_linewidth(2)
         leg.get_frame().set_edgecolor("black")
 
-    # plt.xscale('log')
+    plt.xscale('symlog')
     # plt.yscale('log')
     # plt.xticks(x_values)
     # you may control the limits on your own.
-    plt.xlim(x_min, x_max)
+    # plt.xlim(0, 1000)
+    plt.xlim(left=0)
     plt.ylim(bottom=0)
     plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
     plt.grid(axis='y', color='gray')
-    figure.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
+    # figure.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
     figure.yaxis.set_major_locator(LinearLocator(3))
     # figure.xaxis.set_major_locator(FixedLocator(x_values, nbins=len(x_values)))
     # figure.yaxis.set_major_locator(LogLocator(base=10))
-    # figure.xaxis.set_major_locator(LogLocator(base=10))
+    figure.xaxis.set_major_locator(LogLocator(base=10))
     # figure.xaxis.set_major_locator(MaxNLocator(integer=True))
 
-    # figure.get_xaxis().set_tick_params(direction='in', pad=10)
+    figure.get_xaxis().set_tick_params(direction='in', pad=10)
     # figure.get_yaxis().set_tick_params(direction='in', pad=10)
 
     plt.xlabel(x_label, fontproperties=LABEL_FP)
@@ -198,41 +200,52 @@ def ReadFile(id, sample_point):
         file = '/data1/xtra/mem/mem_stat_{}.txt'.format(i)
         f = open(file, "r")
         read = f.readlines()
-        if i >= 300 and i<= 303: # lazy, progressive
-            selector = 0
-            loaded_data = int(read[0].split(": ")[1].split(" ")[0])
-            for sample_idx in range(0, sample_point):
-                # before 1000ms, progressive
-                if sample_idx < 20:
-                    col.append(sample_idx * 50)
-                    coly.append(loaded_data * (float(sample_idx)/20))
-                else:
-                    # after 1000ms, keep origin number
-                    if selector < len(read):
-                        col.append(sample_idx * 50)
-                        coly.append(int(read[selector].split(": ")[1].split(" ")[0]))
-                        selector = sample_idx * 5
-                    # else:
-                    #     col.append(0)
-        else: # eager, substract the offset
-            selector = 0
-            loaded_data = int(read[0].split(": ")[1].split(" ")[0])
-            for sample_idx in range(0, sample_point):
-                if selector < len(read):
-                    if sample_idx < 20:
-                        col.append(sample_idx * 50)
-                        coly.append(int(read[selector].split(": ")[1].split(" ")[0]) - loaded_data + loaded_data * (float(sample_idx)/20))
-                        selector = sample_idx * 5
-                    else:
-                        col.append(sample_idx * 50)
-                        coly.append(int(read[selector].split(": ")[1].split(" ")[0]))
-                        selector = sample_idx * 5
+        # if i >= 300 and i<= 303: # lazy, progressive
+        #     selector = 0
+        #     loaded_data = int(read[0].split(": ")[1].split(" ")[0])
+        #     for sample_idx in range(0, sample_point):
+        #         # before 1000ms, progressive
+        #         if sample_idx < 1:
+        #             col.append(sample_idx * 5)
+        #             # coly.append(loaded_data * (float(sample_idx)/20))
+        #             coly.append(0)
+        #         else:
+        #             # after 1000ms, keep origin number
+        #             if selector < len(read):
+        #                 col.append(sample_idx * 5)
+        #                 coly.append(int(read[selector].split(": ")[1].split(" ")[0]))
+        #                 selector = sample_idx * 500
+        #             # else:
+        #             #     col.append(0)
+        # else: # eager, substract the offset
+        #     selector = 0
+        #     loaded_data = int(read[0].split(": ")[1].split(" ")[0])
+        #     for sample_idx in range(0, sample_point):
+        #         if selector < len(read):
+        #             if sample_idx < 1:
+        #                 col.append(sample_idx * 5)
+        #                 # coly.append(int(read[selector].split(": ")[1].split(" ")[0]) - loaded_data + loaded_data * (float(sample_idx)/20))
+        #                 coly.append(0)
+        #                 selector = sample_idx * 500
+        #             else:
+        #                 col.append(sample_idx * 5)
+        #                 coly.append(int(read[selector].split(": ")[1].split(" ")[0]))
+        #                 selector = sample_idx * 500
                 # else:
                 #     col.append(0)
+        # sample number of points:
+        for i in range(0, sample_point):
+            if i == 0:
+                col.append(0)
+                coly.append(0)
+            else:
+                index = int(len(read) * i / sample_point)
+                col.append(int(index / 100))
+                coly.append(int(read[index].split(": ")[1].split(" ")[0]))
         x.append(col)
         y.append(coly)
         f.close()
-    print(y)
+    print(x, y)
 
     # reorder the 1,2 and 3,4
     x[1], x[2], x[3], x[4] = x[3], x[4], x[1], x[2]
@@ -244,8 +257,8 @@ def ReadFile(id, sample_point):
 if __name__ == "__main__":
     id = 300
 
-    # 1500
-    sample_point = 30
+    # 80000
+    sample_point = 10
 
      # = [x * 50 for x in range(0, sample_point)]
 
@@ -256,5 +269,5 @@ if __name__ == "__main__":
 
     # print(y_values)
     DrawFigure(x_values, y_values, legend_labels,
-               '$time(ms)$', 'memory usage (kb)', 0,
-               1500, 'memory_usage', True)
+               '$time(s)$', 'memory usage (kb)', 0,
+               800, 'memory_usage', True)

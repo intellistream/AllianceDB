@@ -68,19 +68,17 @@ function benchmarkProfileRun() {
   if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit -1; fi
 }
 
-#function perfuArchBenchmarkRun() {
-#  #####native execution
-#  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap -o $expDir/results/breakdown/perf_$id.txt =="
-#  echo 3 >/proc/sys/vm/drop_caches
-#  perf stat --topdown -I10 -a -x, -o /data1/xtra/results/breakdown/perf_$id.csv ../hashing -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap
-#  if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit -1; fi
-#}
-
-function perfuArchBenchmarkRun() {
+function perfUarchBenchmarkRun() {
   #####native execution
-  echo "==KIM benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS -[ $progress_step -] $merge_step -G $group -P $DD -g $gap =="
+  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap -o $expDir/results/breakdown/profile_$id.txt =="
   echo 3 >/proc/sys/vm/drop_caches
-  perf stat --topdown -I10 -a -x, -o /data1/xtra/results/breakdown/perf_$id.csv ../hashing -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS -[ $progress_step -] $merge_step -G $group -P $DD -g $gap
+  if [ ! -z "$PERF_OUTPUT" -a "$PERF_OUTPUT"!=" " ]; then
+    perf stat -x, -a -e CPU_CLK_UNHALTED.THREAD,IDQ_UOPS_NOT_DELIVERED.CORE,UOPS_ISSUED.ANY,UOPS_RETIRED.RETIRE_SLOTS,INT_MISC.RECOVERY_CYCLES,CYCLE_ACTIVITY.STALLS_MEM_ANY,RESOURCE_STALLS.SB -o $PERF_OUTPUT \
+    ../hashing -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap
+  else
+    perf stat -e CPU_CLK_UNHALTED.THREAD,IDQ_UOPS_NOT_DELIVERED.CORE,UOPS_ISSUED.ANY,UOPS_RETIRED.RETIRE_SLOTS,INT_MISC.RECOVERY_CYCLES,CYCLE_ACTIVITY.STALLS_MEM_ANY,RESOURCE_STALLS.SB \
+    ../hashing -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap
+  fi
   if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit -1; fi
 }
 
@@ -768,15 +766,16 @@ if [ $PROFILE == 1 ]; then
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h
 fi
 
-PERF_YSB=1 ## hardware profiling with YSB, please run the program with sudo
+PERF_YSB=0 ## hardware profiling with YSB, please run the program with sudo
 if [ $PERF_YSB == 1 ]; then
   sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h #disable time measurement
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h
+  sed -i -e "s/#define PERF_TOPDOWN/#define NO_PERF_TOPDOWN/g" ../joins/common_functions.h
   sed -i -e "s/#define NO_PERF_UARCH/#define PERF_UARCH/g" ../joins/common_functions.h
   profile_breakdown=0
   compile=1
   compile
-  for benchmark in "YSB"; do #"YSB
+  for benchmark in "Rovio"; do #"YSB
     id=302
     for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do # NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
       case "$benchmark" in
@@ -794,12 +793,72 @@ if [ $PERF_YSB == 1 ]; then
         rm /data1/xtra/results/breakdown/perf_$id.txt
         benchmarkRun
         ;;
+      "Rovio")
+        ResetParameters
+        SetRovioParameters
+        rm /data1/xtra/results/breakdown/perf_$id.txt
+        benchmarkRun
+        ;;
       esac
-      sleep 5
       let "id++"
     done
   done
   sed -i -e "s/#define PERF_UARCH/#define NO_PERF_UARCH/g" ../joins/common_functions.h
+fi
+
+# profiling for figure 21b. TODO: maybe need to change a flag here
+PROFILE_KIM=0 ## Cache misses profiling with YSB, please run the program with sudo
+if [ $PROFILE_KIM == 1 ]; then
+  # copy custom pcm event counters to the /data1/xtra
+  sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h #disable time measurement
+  sed -i -e "s/#define NO_PERF_TOPDOWN/#define PERF_TOPDOWN/g" ../joins/common_functions.h
+
+  for benchmark in "Rovio"; do
+    id=402
+    for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP ; do # NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
+      case "$benchmark" in
+      "YSB")
+        ResetParameters
+        SetYSBParameters
+        # use perf
+        # with JOIN
+        sed -i -e "s/#define NO_JOIN_THREAD/#define JOIN_THREAD/g" ../joins/common_functions.h
+        profile_breakdown=0
+        compile=1
+        compile
+        PERF_OUTPUT=/data1/xtra/results/breakdown/profile_w_join_$id.txt
+        perfUarchBenchmarkRun
+        # without JOIN
+        sed -i -e "s/#define JOIN_THREAD/#define NO_JOIN_THREAD/g" ../joins/common_functions.h
+        profile_breakdown=0
+        compile=1
+        compile
+        PERF_OUTPUT=/data1/xtra/results/breakdown/profile_wo_join_$id.txt
+        perfUarchBenchmarkRun
+        ;;
+      "Rovio")
+        ResetParameters
+        SetRovioParameters
+        # use perf
+        # with JOIN
+        sed -i -e "s/#define NO_JOIN_THREAD/#define JOIN_THREAD/g" ../joins/common_functions.h
+        profile_breakdown=0
+        compile=1
+        compile
+        PERF_OUTPUT=/data1/xtra/results/breakdown/profile_w_join_$id.txt
+        # without JOIN
+        perfUarchBenchmarkRun
+        sed -i -e "s/#define JOIN_THREAD/#define NO_JOIN_THREAD/g" ../joins/common_functions.h
+        compile=1
+        compile
+        PERF_OUTPUT=/data1/xtra/results/breakdown/profile_wo_join_$id.txt
+        perfUarchBenchmarkRun
+        ;;
+      esac
+      let "id++"
+    done
+  done
+  sed -i -e "s/#define PERF_TOPDOWN/#define NO_PERF_TOPDOWN/g" ../joins/common_functions.h
 fi
 
 PROFILE_KIM=1 ## hardware profiling with YSB, please run the program with sudo
@@ -810,38 +869,17 @@ if [ $PROFILE_KIM == 1 ]; then
   ALL_ON # eliminate wait phase
   compile=1
   compile
-  for benchmark in "YSB"; do #"YSB
+  for benchmark in "Rovio"; do #"YSB
     id=402
     for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do # NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
       case "$benchmark" in
-      "Kim")
+      "Rovio")
         ResetParameters
-        STEP_SIZE=1280
-        STEP_SIZE_S=12800
-        WINDOW_SIZE=10000
+        SetRovioParameters
         rm /data1/xtra/results/breakdown/profile_$id.txt
-        PERF_CONF=/data1/xtra/pcm.cfg
-        KimProfileRun
-        PERF_CONF=/data1/xtra/pcm2.cfg
-        KimProfileRun
-        PERF_CONF=""
-        KimProfileRun
-        ;;
-      "YSB")
-        ResetParameters
-        SetYSBParameters
-        rm /data1/xtra/results/breakdown/profile_$id.txt
-        PERF_CONF=/data1/xtra/pcm-uarch.cfg
-        benchmarkProfileRun
-        PERF_CONF=/data1/xtra/pcm-uarch2.cfg
-        benchmarkProfileRun
-#        PERF_CONF=/data1/xtra/pcm-uarch3.cfg
-#        benchmarkProfileRun
         PERF_CONF=/data1/xtra/pcm.cfg
         benchmarkProfileRun
         PERF_CONF=/data1/xtra/pcm2.cfg
-        benchmarkProfileRun
-        PERF_CONF=/data1/xtra/pcm3.cfg
         benchmarkProfileRun
         PERF_CONF=""
         benchmarkProfileRun

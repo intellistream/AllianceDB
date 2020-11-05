@@ -18,3 +18,9 @@ hashing/.idea/*
 sorting/.idea/*
 
 *.o
+
+cmake-build-*/
+
+.clion*
+
+venv/

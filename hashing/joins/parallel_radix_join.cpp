@@ -982,6 +982,8 @@ void *prj_thread(void *param) {
 
   arg_t *args = (arg_t *)param;
   int32_t my_tid = args->tid;
+  int rv;
+
 
   const int fanOut = 1 << (NUM_RADIX_BITS / NUM_PASSES); // PASS1RADIXBITS;
   const int R = (NUM_RADIX_BITS / NUM_PASSES);           // PASS1RADIXBITS;
@@ -990,12 +992,13 @@ void *prj_thread(void *param) {
 
   uint64_t results = 0;
   int i;
-  int rv;
+
 
   part_t part;
   task_t *task;
   task_queue_t *part_queue;
   task_queue_t *join_queue;
+
 #ifdef SKEW_HANDLING
   task_queue_t *skew_queue;
 #endif
@@ -1018,6 +1021,17 @@ void *prj_thread(void *param) {
   /* in the first pass, partitioning is done together by all threads */
 
   args->parts_processed = 0;
+
+#ifdef PERF_TOPDOWN
+#ifdef JOIN_THREAD
+    if (my_tid == 0) {
+        sleep(1);
+    }
+    BARRIER_ARRIVE(args->barrier, rv);
+#else
+    return nullptr;
+#endif
+#endif
 
 #ifdef OVERVIEW // overview counters
 #ifdef PERF_COUNTERS

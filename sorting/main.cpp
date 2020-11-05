@@ -587,7 +587,7 @@ memory_calculator_thread(void *args) {
     auto fp = fopen(path.c_str(), "w");
     setbuf(fp,NULL);
 
-    while(counter < 10000) {
+    while(counter < 1000000) {
         int ret = getrusage(RUSAGE_SELF,&r_usage);
         if(ret == 0) {
             fprintf(fp, "Memory usage: %ld kilobytes\n",r_usage.ru_maxrss);

@@ -157,6 +157,17 @@ void *npo_thread(void *param) {
   int rv;
   arg_t *args = (arg_t *)param;
 
+#ifdef PERF_TOPDOWN
+#ifdef JOIN_THREAD
+if(args->tid == 0){
+    sleep(1);
+}
+BARRIER_ARRIVE(args->barrier, rv);
+#else
+return nullptr;
+#endif
+#endif
+
   /* allocate overflow buffer for each thread */
   bucket_buffer_t *overflowbuf;
   init_bucket_buffer(&overflowbuf);

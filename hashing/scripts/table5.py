@@ -38,8 +38,6 @@ def ReadFile(id, tuple_cnt):
                 colomn["L1_MISSES"] = float(line.split(" ")[1])/tuple_cnt
             elif line.startswith("MEM_LOAD_UOPS_RETIRED.HIT_LFB"):
                 colomn["HIT_LFB"] = float(line.split(" ")[1])/tuple_cnt
-            # elif line.startswith("FRONTEND_RETIRED.L1I_MISS"):
-            #     colomn["L1I_MISSES"] = float(line.split(" ")[1])/tuple_cnt
             elif line.startswith("L2Misses"):
                 colomn["L2_MISSES"] = float(line.split(" ")[1])/tuple_cnt
             elif line.startswith("L2Hit"):
@@ -50,10 +48,6 @@ def ReadFile(id, tuple_cnt):
                 ts_end_ns = float(open('/data1/xtra/time_end_{}.txt'.format(i), "r").read())
                 time_interval_s = (ts_end_ns - ts_start_ns) / 1E9
                 colomn["MEM_BAND_CAL"] = float(line.split(" ")[1]) * 64 / (time_interval_s*1000000)
-            # elif line.startswith("CAS_COUNT.RD"):
-            #     colomn["CAS_COUNT.RD"] = float(line.split(" ")[1])
-            # elif line.startswith("CAS_COUNT.WR"):
-            #     colomn["CAS_COUNT.WR"] = float(line.split(" ")[1])
             elif line.startswith("BR_MISP_EXEC"):
                 colomn["BRANCH_MISP"] = float(line.split(" ")[1])/tuple_cnt
             elif line.startswith("BR_INST_EXEC"):
@@ -64,12 +58,6 @@ def ReadFile(id, tuple_cnt):
                 colomn["BytesFromMC"] = float(line.split(" ")[1])
             elif line.startswith("BytesWrittenToMC"):
                 colomn["BytesWrittenToMC"] = float(line.split(" ")[1])
-            # elif line.startswith("UNC_ARB_TRK_OCCUPANCY.ALL"):
-            #     UNC_ARB_TRK_OCCUPANCY = float(line.split(" ")[1])
-            # elif line.startswith("INST_RETIRED.ANY"):
-            #     INST_RETIRED = float(line.split(" ")[1])
-            # elif line.startswith("UNC_CLOCK.SOCKET"):
-            #     UNC_CLOCK_SOCKET = float(line.split(" ")[1])
             elif line.startswith("CPUCycle"):
                 ts_start_ns = float(open('/data1/xtra/time_start_{}.txt'.format(i), "r").read())
                 ts_end_ns = float(open('/data1/xtra/time_end_{}.txt'.format(i), "r").read())
@@ -77,15 +65,11 @@ def ReadFile(id, tuple_cnt):
                 # system wide cpu utilization, should divided by the number of cores.
                 colomn["CPU_UTIL"] = float(line.split(" ")[1])/(time_interval_s*8)
 
-        # colomn["L1D_MISSES"] = colomn["L2_MISSES"] + colomn["L2_Hit"] - colomn["L1I_MISSES"]
         colomn["L1D_MISSES"] = colomn["L1_MISSES"] + colomn["HIT_LFB"] - colomn["L1I_MISSES"]
-        # colomn["MEM_BAND_2"] = UNC_ARB_TRK_OCCUPANCY/INST_RETIRED
 
         ts_start_ns = float(open('/data1/xtra/time_start_{}.txt'.format(i), "r").read())
         ts_end_ns = float(open('/data1/xtra/time_end_{}.txt'.format(i), "r").read())
         time_interval_s = (ts_end_ns - ts_start_ns) / 1E9
-        # colomn["MEM_BAND_CAL"] = ((colomn["CAS_COUNT.RD"] + colomn["CAS_COUNT.WR"]) * 64) / (time_interval_s*1000000)
-        # colomn["MEM_BAND_CAL"] = ((colomn["CAS_COUNT.RD"]) * 64) / (time_interval_s*1000000)
         colomn["MEM_BAND_CAL"] = (colomn["BytesFromMC"] + colomn["BytesWrittenToMC"]) / (time_interval_s*1000000)
 
         print(colomn)

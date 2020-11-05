@@ -136,6 +136,14 @@ void *sortmergejoin_multiway_thread(void *param) {
 
 //  MSG("Thread-%d started running ... \n", my_tid);
 
+#ifdef PERF_TOPDOWN
+#ifdef JOIN_THREAD
+    sleep(1);
+#else
+    return nullptr;
+#endif
+#endif
+
 #ifdef OVERVIEW // partition only
 #ifdef PERF_COUNTERS
     if (my_tid == 0) {
@@ -148,7 +156,6 @@ void *sortmergejoin_multiway_thread(void *param) {
         sleep(1);
     }
     BARRIER_ARRIVE(args->barrier, rv);
-
 #endif
 #endif
 

@@ -23,6 +23,10 @@
 #define NO_SORT
 #define OVERVIEW
 
+// used for perf events counters
+#define PERF_TOPDOWN
+#define JOIN_THREAD
+
 #define NO_PERF_UARCH
 
 #define DEBUG_SORT_CHECK 0

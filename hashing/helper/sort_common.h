@@ -10,7 +10,7 @@
 #include <cstdio>
 #include "../utils/types.h"
 
-#define scalarflag 1
+#define scalarflag 0
 
 /** utility method to check whether arrays are sorted */
 int
