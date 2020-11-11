@@ -768,7 +768,7 @@ if [ $PROFILE == 1 ]; then
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h
 fi
 
-PROFILE_MEMORY_CONSUMPTION=1 ## profile memory consumption
+PROFILE_MEMORY_CONSUMPTION=0 ## profile memory consumption
 if [ $PROFILE_MEMORY_CONSUMPTION == 1 ]; then
   sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h #disable time measurement
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h
@@ -808,7 +808,7 @@ if [ $PROFILE_MEMORY_CONSUMPTION == 1 ]; then
   sed -i -e "s/#define PROFILE_MEMORY_CONSUMPTION/#define NO_PROFILE_MEMORY_CONSUMPTION/g" ../joins/common_functions.h
 fi
 
-PROFILE_PMU_COUNTERS=1 # profile PMU counters using pcm
+PROFILE_PMU_COUNTERS=0 # profile PMU counters using pcm
 if [ $PROFILE_PMU_COUNTERS == 1 ]; then
   sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h #disable time measurement
   sed -i -e "s/#define NO_PERF_COUNTERS/#define PERF_COUNTERS/g" ../utils/perf_counters.h

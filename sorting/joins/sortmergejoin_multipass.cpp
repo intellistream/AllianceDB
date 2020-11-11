@@ -245,6 +245,7 @@ void *sortmergejoin_multipass_thread(void *param) {
         PCM_stop();
         PCM_log("========= 2) Profiling results of Sorting Phase=========\n");
         PCM_printResults();
+        PCM_cleanup();
     }
 #endif
 #endif

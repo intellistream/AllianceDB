@@ -139,7 +139,7 @@ memory_calculator_thread(void *args) {
     uint64_t exp_id = (uint64_t) args;
     struct rusage r_usage;
     int counter = 0;
-    string path = "/data1/xtra/mem/mem_stat_" + std::to_string(exp_id) + ".txt";
+    string path = "/data1/xtra/results/breakdown/mem_stat_" + std::to_string(exp_id) + ".txt";
     auto fp = fopen(path.c_str(), "w");
     setbuf(fp, NULL);
 

@@ -23,11 +23,11 @@
 #define OVERVIEW // enable overview profiling
 
 // used for perf events counters
-#define NO_PROFILE_TOPDOWN
-#define NO_JOIN_THREAD
+#define PROFILE_TOPDOWN
+#define JOIN_THREAD
 
 // used for memory consumption profiling
-#define NO_PROFILE_MEMORY_CONSUMPTION
+#define PROFILE_MEMORY_CONSUMPTION
 
 #define EAGER //disable when profiling.
 

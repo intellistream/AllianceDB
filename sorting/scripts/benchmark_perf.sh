@@ -30,7 +30,7 @@ function benchmarkRun() {
   echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -g $gap -o $exp_dir/results/breakdown/profile_$id.txt -I $id== "
   #echo 3 >/proc/sys/vm/drop_caches
   ../sorting -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -g $gap -o $exp_dir/results/breakdown/profile_$id.txt -I $id
-  if [[ $? -eq 139 ]]; the/home/myc/workspace/AllianceDB/sortingn echo "oops, sigsegv" exit 1; fi
+  if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit 1; fi
 }
 
 function benchmarkProfileRun() {
@@ -488,7 +488,7 @@ if [ $PROFILE == 1 ]; then
 fi
 
 #export PATH=~/workspace/pmu-tools:$PATH
-PROFILE_MEMORY_CONSUMPTION=1 ## Hardware Counters profiling with YSB, please run the program with sudo
+PROFILE_MEMORY_CONSUMPTION=0 ## Hardware Counters profiling with YSB, please run the program with sudo
 if [ $PROFILE_MEMORY_CONSUMPTION == 1 ]; then
   sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h
@@ -530,7 +530,7 @@ if [ $PROFILE_MEMORY_CONSUMPTION == 1 ]; then
   sed -i -e "s/#define PROFILE_MEMORY_CONSUMPTION/#define NO_PROFILE_MEMORY_CONSUMPTION/g" ../joins/common_functions.h
 fi
 
-PROFILE_PMU_COUNTERS=1 # profile PMU counters using pcm
+PROFILE_PMU_COUNTERS=0 # profile PMU counters using pcm
 if [ $PROFILE_PMU_COUNTERS == 1 ]; then
   sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h #disable time measurement
   sed -i -e "s/#define NO_PERF_COUNTERS/#define PERF_COUNTERS/g" ../utils/perf_counters.h

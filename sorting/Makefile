@@ -59,38 +59,27 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /usr/local/bin/cmake
+CMAKE_COMMAND = /home/tony/Documents/clion-2020.1.2/bin/cmake/linux/bin/cmake
 
 # The command to remove a file.
-RM = /usr/local/bin/cmake -E rm -f
+RM = /home/tony/Documents/clion-2020.1.2/bin/cmake/linux/bin/cmake -E rm -f
 
 # Escaping for special characters.
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /tmp/tmp.6lDN4wsJbW
+CMAKE_SOURCE_DIR = /home/tony/AllianceDB/sorting
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /tmp/tmp.6lDN4wsJbW
+CMAKE_BINARY_DIR = /home/tony/AllianceDB/sorting
 
 #=============================================================================
 # Targets provided globally by CMake.
 
-# Special rule for the target rebuild_cache
-rebuild_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	/usr/local/bin/cmake --regenerate-during-build -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
-.PHONY : rebuild_cache
-
-# Special rule for the target rebuild_cache
-rebuild_cache/fast: rebuild_cache
-
-.PHONY : rebuild_cache/fast
-
 # Special rule for the target edit_cache
 edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
-	/usr/local/bin/ccmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
+	/home/tony/Documents/clion-2020.1.2/bin/cmake/linux/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -98,11 +87,22 @@ edit_cache/fast: edit_cache
 
 .PHONY : edit_cache/fast
 
+# Special rule for the target rebuild_cache
+rebuild_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
+	/home/tony/Documents/clion-2020.1.2/bin/cmake/linux/bin/cmake --regenerate-during-build -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+.PHONY : rebuild_cache
+
+# Special rule for the target rebuild_cache
+rebuild_cache/fast: rebuild_cache
+
+.PHONY : rebuild_cache/fast
+
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /tmp/tmp.6lDN4wsJbW/CMakeFiles /tmp/tmp.6lDN4wsJbW/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/tony/AllianceDB/sorting/CMakeFiles /home/tony/AllianceDB/sorting/CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /tmp/tmp.6lDN4wsJbW/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/tony/AllianceDB/sorting/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -656,33 +656,6 @@ lib/cpucounters.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sorting.dir/build.make CMakeFiles/sorting.dir/lib/cpucounters.cpp.s
 .PHONY : lib/cpucounters.cpp.s
 
-lib/debug.o: lib/debug.cpp.o
-
-.PHONY : lib/debug.o
-
-# target to build an object file
-lib/debug.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sorting.dir/build.make CMakeFiles/sorting.dir/lib/debug.cpp.o
-.PHONY : lib/debug.cpp.o
-
-lib/debug.i: lib/debug.cpp.i
-
-.PHONY : lib/debug.i
-
-# target to preprocess a source file
-lib/debug.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sorting.dir/build.make CMakeFiles/sorting.dir/lib/debug.cpp.i
-.PHONY : lib/debug.cpp.i
-
-lib/debug.s: lib/debug.cpp.s
-
-.PHONY : lib/debug.s
-
-# target to generate assembly for a file
-lib/debug.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sorting.dir/build.make CMakeFiles/sorting.dir/lib/debug.cpp.s
-.PHONY : lib/debug.cpp.s
-
 lib/mmio.o: lib/mmio.cpp.o
 
 .PHONY : lib/mmio.o
@@ -763,60 +736,6 @@ lib/pci.s: lib/pci.cpp.s
 lib/pci.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sorting.dir/build.make CMakeFiles/sorting.dir/lib/pci.cpp.s
 .PHONY : lib/pci.cpp.s
-
-lib/threadpool.o: lib/threadpool.cpp.o
-
-.PHONY : lib/threadpool.o
-
-# target to build an object file
-lib/threadpool.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sorting.dir/build.make CMakeFiles/sorting.dir/lib/threadpool.cpp.o
-.PHONY : lib/threadpool.cpp.o
-
-lib/threadpool.i: lib/threadpool.cpp.i
-
-.PHONY : lib/threadpool.i
-
-# target to preprocess a source file
-lib/threadpool.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sorting.dir/build.make CMakeFiles/sorting.dir/lib/threadpool.cpp.i
-.PHONY : lib/threadpool.cpp.i
-
-lib/threadpool.s: lib/threadpool.cpp.s
-
-.PHONY : lib/threadpool.s
-
-# target to generate assembly for a file
-lib/threadpool.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sorting.dir/build.make CMakeFiles/sorting.dir/lib/threadpool.cpp.s
-.PHONY : lib/threadpool.cpp.s
-
-lib/topology.o: lib/topology.cpp.o
-
-.PHONY : lib/topology.o
-
-# target to build an object file
-lib/topology.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sorting.dir/build.make CMakeFiles/sorting.dir/lib/topology.cpp.o
-.PHONY : lib/topology.cpp.o
-
-lib/topology.i: lib/topology.cpp.i
-
-.PHONY : lib/topology.i
-
-# target to preprocess a source file
-lib/topology.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sorting.dir/build.make CMakeFiles/sorting.dir/lib/topology.cpp.i
-.PHONY : lib/topology.cpp.i
-
-lib/topology.s: lib/topology.cpp.s
-
-.PHONY : lib/topology.s
-
-# target to generate assembly for a file
-lib/topology.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sorting.dir/build.make CMakeFiles/sorting.dir/lib/topology.cpp.s
-.PHONY : lib/topology.cpp.s
 
 lib/utils.o: lib/utils.cpp.o
 
@@ -1073,9 +992,6 @@ help:
 	@echo "... lib/cpucounters.o"
 	@echo "... lib/cpucounters.i"
 	@echo "... lib/cpucounters.s"
-	@echo "... lib/debug.o"
-	@echo "... lib/debug.i"
-	@echo "... lib/debug.s"
 	@echo "... lib/mmio.o"
 	@echo "... lib/mmio.i"
 	@echo "... lib/mmio.s"
@@ -1085,12 +1001,6 @@ help:
 	@echo "... lib/pci.o"
 	@echo "... lib/pci.i"
 	@echo "... lib/pci.s"
-	@echo "... lib/threadpool.o"
-	@echo "... lib/threadpool.i"
-	@echo "... lib/threadpool.s"
-	@echo "... lib/topology.o"
-	@echo "... lib/topology.i"
-	@echo "... lib/topology.s"
 	@echo "... lib/utils.o"
 	@echo "... lib/utils.i"
 	@echo "... lib/utils.s"
@@ -1125,4 +1035,3 @@ help:
 cmake_check_build_system:
 	$(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
-

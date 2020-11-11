@@ -39,7 +39,7 @@ void *THREAD_TASK_NOSHUFFLE(void *param) {
     int lock;
 
 #ifdef PROFILE_TOPDOWN
-#ifdef JOIN_THREAD
+    #ifdef JOIN_THREAD
     // do nothing
 #else
     return nullptr;
@@ -126,7 +126,7 @@ void *THREAD_TASK_NOSHUFFLE(void *param) {
     BARRIER_ARRIVE(args->barrier, lock)
 
 #ifndef NO_TIMING
-    END_MEASURE(args->timer)
+        END_MEASURE(args->timer)
     // time calibration
     //    args->timer->overall_timer -= args->timer->garbage_time;
     args->timer->partition_timer =
@@ -143,7 +143,7 @@ void *THREAD_TASK_SHUFFLE(void *param) {
     int lock;
 
 #ifdef PROFILE_TOPDOWN
-#ifdef JOIN_THREAD
+    #ifdef JOIN_THREAD
     // do nothing
 #else
     return nullptr;
@@ -247,7 +247,7 @@ void *THREAD_TASK_SHUFFLE(void *param) {
     /* wait at a barrier until each thread finishes*/
     BARRIER_ARRIVE(args->barrier, lock)
 #ifndef NO_TIMING
-    END_MEASURE(args->timer)
+        END_MEASURE(args->timer)
     // time calibration
     //    args->timer->overall_timer -= args->timer->garbage_time;
     args->timer->partition_timer =
@@ -466,7 +466,7 @@ void *THREAD_TASK_SHUFFLE_HS(void *param) {
     int lock;
 
 #ifdef PROFILE_TOPDOWN
-#ifdef JOIN_THREAD
+    #ifdef JOIN_THREAD
     // do nothing
 #else
     return nullptr;
@@ -493,9 +493,9 @@ void *THREAD_TASK_SHUFFLE_HS(void *param) {
 
     /* wait at a barrier until each thread started*/
     BARRIER_ARRIVE(args->barrier, lock)
+    *args->startTS = curtick();
 
 #ifndef NO_TIMING
-    *args->startTS = curtick();
     START_MEASURE((args->timer))
 #endif
 
@@ -616,7 +616,7 @@ void *THREAD_TASK_SHUFFLE_PMJHS(void *param) {
     arg_t *args = (arg_t *) param;
 
 #ifdef PROFILE_TOPDOWN
-#ifdef JOIN_THREAD
+    #ifdef JOIN_THREAD
     // do nothing
 #else
     return nullptr;
@@ -641,11 +641,7 @@ void *THREAD_TASK_SHUFFLE_PMJHS(void *param) {
       PCM_stop();
       PCM_log("========== Build phase profiling results ==========\n");
       PCM_printResults();
-      PCM_start();
-        auto curtime = std::chrono::steady_clock::now();
-        string path = "/data1/xtra/time_start_" + std::to_string(args->exp_id) + ".txt";
-        auto fp = fopen(path.c_str(), "w");
-        fprintf(fp, "%ld\n", curtime);
+      PCM_cleanup();
     }
     /* Just to make sure we get consistent performance numbers */
     BARRIER_ARRIVE(args->barrier, rv);

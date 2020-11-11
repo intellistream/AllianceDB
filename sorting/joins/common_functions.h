@@ -18,16 +18,16 @@
 //#define DEBUG
 //#define JOIN_MATERIALIZE
 #define TIMING
-#define NO_JOIN
-#define NO_PARTITION
-#define NO_SORT
-#define NO_OVERVIEW
+#define JOIN
+#define ARTITION
+#define SORT
+#define OVERVIEW
 
 // used for perf events counters
-#define NO_PROFILE_TOPDOWN
-#define NO_JOIN_THREAD
+#define PROFILE_TOPDOWN
+#define JOIN_THREAD
 
-#define NO_PROFILE_MEMORY_CONSUMPTION
+#define PROFILE_MEMORY_CONSUMPTION
 
 #define DEBUG_SORT_CHECK 0
 #define scalarflag 0

@@ -209,7 +209,7 @@ def ReadFile(id, sample_point):
             y.append(empty_coly)
         col = []
         coly = []
-        file = '/data1/xtra/mem/mem_stat_{}.txt'.format(i)
+        file = '/data1/xtra/results/breakdown/mem_stat_{}.txt'.format(i)
         f = open(file, "r")
         read = f.readlines()
         # if i >= 300 and i<= 303: # lazy, progressive

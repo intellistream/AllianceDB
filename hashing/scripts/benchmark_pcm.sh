@@ -838,7 +838,7 @@ if [ $PROFILE_PMU_COUNTERS == 1 ]; then
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h
 fi
 
-PROFILE_TOPDOWN=1 ## profile intel topdown performance metrics using perf/pcm
+PROFILE_TOPDOWN=0 ## profile intel topdown performance metrics using perf/pcm
 if [ $PROFILE_TOPDOWN == 1 ]; then
   sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h #disable time measurement
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h

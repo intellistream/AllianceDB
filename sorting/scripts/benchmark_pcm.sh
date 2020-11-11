@@ -30,7 +30,7 @@ function benchmarkRun() {
   echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -g $gap -o $exp_dir/results/breakdown/profile_$id.txt -I $id== "
   #echo 3 >/proc/sys/vm/drop_caches
   ../sorting -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -g $gap -o $exp_dir/results/breakdown/profile_$id.txt -I $id
-  if [[ $? -eq 139 ]]; the/home/myc/workspace/AllianceDB/sortingn echo "oops, sigsegv" exit 1; fi
+  if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit 1; fi
 }
 
 function benchmarkProfileRun() {
@@ -563,7 +563,7 @@ if [ $PROFILE_PMU_COUNTERS == 1 ]; then
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h
 fi
 
-PROFILE_TOPDOWN=1 ## profile intel topdown performance metrics using perf/pcm
+PROFILE_TOPDOWN=0 ## profile intel topdown performance metrics using perf/pcm
 if [ $PROFILE_TOPDOWN == 1 ]; then
   # copy custom pcm event counters to the $exp_dir
   sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h #disable time measurement
