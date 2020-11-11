@@ -1022,7 +1022,7 @@ void *prj_thread(void *param) {
 
   args->parts_processed = 0;
 
-#ifdef PERF_TOPDOWN
+#ifdef PROFILE_TOPDOWN
 #ifdef JOIN_THREAD
     if (my_tid == 0) {
         sleep(1);
@@ -1047,7 +1047,7 @@ void *prj_thread(void *param) {
 #endif
 #endif
 
-#ifndef OVERVIEW
+#ifndef OVERVIEW // non-overview case
 #ifdef NO_JOIN // partition only
 #ifdef PERF_COUNTERS
   if (my_tid == 0) {
@@ -1363,7 +1363,7 @@ void *prj_thread(void *param) {
 //    BEGIN_MEASURE_BUILD( (args->timer) )
 #endif
 
-#ifndef OVERVIEW
+#ifndef OVERVIEW // non-overview case
 #ifdef NO_JOIN // partition only
 #ifdef PERF_COUNTERS
   if (my_tid == 0) {
@@ -1385,7 +1385,7 @@ void *prj_thread(void *param) {
   void *chainedbuf = NULL;
 #endif
 
-#ifndef OVERVIEW
+#ifndef OVERVIEW // non-overview case
 #ifdef JOIN // everything
 #ifdef PERF_COUNTERS
   if (my_tid == 0) {
@@ -1433,7 +1433,7 @@ void *prj_thread(void *param) {
   }
 #endif
 
-#ifndef OVERVIEW
+#ifndef OVERVIEW // non-overview case
 #ifdef PERF_COUNTERS
 #ifdef JOIN // everything
   if (my_tid == 0) {
@@ -1452,8 +1452,8 @@ void *prj_thread(void *param) {
 #endif
 #endif
 
+#ifdef OVERVIEW // overview counters
 #ifdef PERF_COUNTERS
-#ifdef OVERVIEW // everything
     if (my_tid == 0) {
         PCM_stop();
         auto curtime = std::chrono::steady_clock::now();

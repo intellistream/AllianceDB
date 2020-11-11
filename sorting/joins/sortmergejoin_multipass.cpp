@@ -148,7 +148,7 @@ void *sortmergejoin_multipass_thread(void *param) {
     START_MEASURE(args->timer)
 #endif
 
-#ifdef PERF_TOPDOWN
+#ifdef PROFILE_TOPDOWN
 #ifdef JOIN_THREAD
     if (my_tid == 0) {
         sleep(1);

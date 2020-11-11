@@ -136,7 +136,7 @@ void *sortmergejoin_multiway_thread(void *param) {
 
 //  MSG("Thread-%d started running ... \n", my_tid);
 
-#ifdef PERF_TOPDOWN
+#ifdef PROFILE_TOPDOWN
 #ifdef JOIN_THREAD
     sleep(1);
 #else
@@ -144,7 +144,7 @@ void *sortmergejoin_multiway_thread(void *param) {
 #endif
 #endif
 
-#ifdef OVERVIEW // partition only
+#ifdef OVERVIEW // overview counters
 #ifdef PERF_COUNTERS
     if (my_tid == 0) {
         PCM_initPerformanceMonitor(NULL, NULL);
@@ -401,18 +401,18 @@ void *sortmergejoin_multiway_thread(void *param) {
 #endif
 
 #ifdef OVERVIEW
-    #ifdef PERF_COUNTERS
-    BARRIER_ARRIVE(args->barrier, rv);
-    if (my_tid == 0) {
-        PCM_stop();
-        auto curtime = std::chrono::steady_clock::now();
-        string path = "/data1/xtra/time_end_" + std::to_string(args->exp_id) + ".txt";
-        auto fp = fopen(path.c_str(), "w");
-        fprintf(fp, "%ld\n", curtime);
-        PCM_log("========= results of Overview =========\n");
-        PCM_printResults();
-        PCM_cleanup();
-    }
+#ifdef PERF_COUNTERS
+BARRIER_ARRIVE(args->barrier, rv);
+if (my_tid == 0) {
+    PCM_stop();
+    auto curtime = std::chrono::steady_clock::now();
+    string path = "/data1/xtra/time_end_" + std::to_string(args->exp_id) + ".txt";
+    auto fp = fopen(path.c_str(), "w");
+    fprintf(fp, "%ld\n", curtime);
+    PCM_log("========= results of Overview =========\n");
+    PCM_printResults();
+    PCM_cleanup();
+}
 #endif
     BARRIER_ARRIVE(args->barrier, rv);
 #endif

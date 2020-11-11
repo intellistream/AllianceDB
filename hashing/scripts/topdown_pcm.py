@@ -1,3 +1,4 @@
+# profile intel topdown metrics using pcm custom events
 import getopt
 import os
 import sys

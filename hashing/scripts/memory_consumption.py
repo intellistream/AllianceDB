@@ -1,6 +1,8 @@
 import itertools as it
 import os
 from math import ceil
+from math import log10
+
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -153,6 +155,16 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
         leg.get_frame().set_linewidth(2)
         leg.get_frame().set_edgecolor("black")
 
+    x_coordinates = [0, 1000]
+    y_coordinates = [20480, 20480]
+    print(sum)
+    plt.plot(x_coordinates, y_coordinates,
+             color='black', linewidth=LINE_WIDTH,
+             marker=MARKERS[5], markersize=MARKER_SIZE,
+             markeredgewidth=2, markeredgecolor='k')  # this is the JM line.
+    plt.text(200, 20480+10000, "L3 Cache", fontproperties=LABEL_FP)
+
+    # plt.xscale('symlog')
     plt.xscale('symlog')
     # plt.yscale('log')
     # plt.xticks(x_values)
@@ -234,14 +246,21 @@ def ReadFile(id, sample_point):
                 # else:
                 #     col.append(0)
         # sample number of points:
-        for i in range(0, sample_point):
+        # base = int(log10(len(read)))
+        base = len(read)**0.1
+        for i in range(0, sample_point+1):
             if i == 0:
                 col.append(0)
                 coly.append(0)
             else:
+                # index = int(base**i)
+                # col.append((index)/100)
+                # print((index)/100)
+                # coly.append(int(read[index-1].split(": ")[1].split(" ")[0]))
+
                 index = int(len(read) * i / sample_point)
                 col.append(int(index / 100))
-                coly.append(int(read[index].split(": ")[1].split(" ")[0]))
+                coly.append(int(read[index-1].split(": ")[1].split(" ")[0]))
         x.append(col)
         y.append(coly)
         f.close()

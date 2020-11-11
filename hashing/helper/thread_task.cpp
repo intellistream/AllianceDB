@@ -38,7 +38,7 @@ void *THREAD_TASK_NOSHUFFLE(void *param) {
     arg_t *args = (arg_t *) param;
     int lock;
 
-#ifdef PERF_TOPDOWN
+#ifdef PROFILE_TOPDOWN
 #ifdef JOIN_THREAD
     // do nothing
 #else
@@ -142,7 +142,7 @@ void *THREAD_TASK_SHUFFLE(void *param) {
     arg_t *args = (arg_t *) param;
     int lock;
 
-#ifdef PERF_TOPDOWN
+#ifdef PROFILE_TOPDOWN
 #ifdef JOIN_THREAD
     // do nothing
 #else
@@ -465,7 +465,7 @@ void *THREAD_TASK_SHUFFLE_HS(void *param) {
     arg_t *args = (arg_t *) param;
     int lock;
 
-#ifdef PERF_TOPDOWN
+#ifdef PROFILE_TOPDOWN
 #ifdef JOIN_THREAD
     // do nothing
 #else
@@ -615,7 +615,7 @@ void *THREAD_TASK_SHUFFLE_HS(void *param) {
 void *THREAD_TASK_SHUFFLE_PMJHS(void *param) {
     arg_t *args = (arg_t *) param;
 
-#ifdef PERF_TOPDOWN
+#ifdef PROFILE_TOPDOWN
 #ifdef JOIN_THREAD
     // do nothing
 #else

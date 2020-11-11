@@ -19,15 +19,15 @@
 //#define JOIN_MATERIALIZE
 #define TIMING
 #define NO_JOIN
-#define PARTITION
+#define NO_PARTITION
 #define NO_SORT
-#define OVERVIEW
+#define NO_OVERVIEW
 
 // used for perf events counters
-#define PERF_TOPDOWN
-#define JOIN_THREAD
+#define NO_PROFILE_TOPDOWN
+#define NO_JOIN_THREAD
 
-#define NO_PERF_UARCH
+#define NO_PROFILE_MEMORY_CONSUMPTION
 
 #define DEBUG_SORT_CHECK 0
 #define scalarflag 0

@@ -42,8 +42,8 @@ function SetStockParameters() { #matches: 15595000. #inputs= 60527 + 77227
   WINDOW_SIZE=1000
   RSIZE=60527
   SSIZE=77227
-  RPATH=/data1/xtra/datasets/stock/cj_1000ms_1t.txt
-  SPATH=/data1/xtra/datasets/stock/sb_1000ms_1t.txt
+  RPATH=$exp_dir/datasets/stock/cj_1000ms_1t.txt
+  SPATH=$exp_dir/datasets/stock/sb_1000ms_1t.txt
   RKEY=0
   SKEY=0
   RTS=1
@@ -56,8 +56,8 @@ function SetRovioParameters() { #matches: 87856849382 #inputs= 2873604 + 2873604
   WINDOW_SIZE=1000
   RSIZE=2873604
   SSIZE=2873604
-  RPATH=/data1/xtra/datasets/rovio/1000ms_1t.txt
-  SPATH=/data1/xtra/datasets/rovio/1000ms_1t.txt
+  RPATH=$exp_dir/datasets/rovio/1000ms_1t.txt
+  SPATH=$exp_dir/datasets/rovio/1000ms_1t.txt
   RKEY=0
   SKEY=0
   RTS=3
@@ -70,8 +70,8 @@ function SetYSBParameters() { #matches: 10000000. #inputs= 1000 + 10000000
   WINDOW_SIZE=1000
   RSIZE=1000
   SSIZE=10000000
-  RPATH=/data1/xtra/datasets/YSB/campaigns_id.txt
-  SPATH=/data1/xtra/datasets/YSB/ad_events.txt
+  RPATH=$exp_dir/datasets/YSB/campaigns_id.txt
+  SPATH=$exp_dir/datasets/YSB/ad_events.txt
   RKEY=0
   SKEY=0
   RTS=0
@@ -84,8 +84,8 @@ function SetDEBSParameters() { #matches: 251033140 #inputs= 1000000 + 1000000
   WINDOW_SIZE=0
   RSIZE=1000000 #1000000
   SSIZE=1000000 #1000000
-  RPATH=/data1/xtra/datasets/DEBS/posts_key32_partitioned.csv
-  SPATH=/data1/xtra/datasets/DEBS/comments_key32_partitioned.csv
+  RPATH=$exp_dir/datasets/DEBS/posts_key32_partitioned.csv
+  SPATH=$exp_dir/datasets/DEBS/comments_key32_partitioned.csv
   RKEY=0
   SKEY=0
   RTS=0
@@ -330,8 +330,8 @@ for algo in m-way m-pass; do
       #    "Google") #Error yet.
       #      RSIZE=3747939
       #      SSIZE=11931801
-      #      RPATH=/data1/xtra/datasets/google/users_key32_partitioned.csv
-      #      SPATH=/data1/xtra/datasets/google/reviews_key32_partitioned.csv
+      #      RPATH=$exp_dir/datasets/google/users_key32_partitioned.csv
+      #      SPATH=$exp_dir/datasets/google/reviews_key32_partitioned.csv
       #      RKEY=1
       #      SKEY=1
       #      benchmarkRun
@@ -339,8 +339,8 @@ for algo in m-way m-pass; do
       #    "Amazon") #Error yet.
       #      RSIZE=10
       #      SSIZE=10
-      #      RPATH=/data1/xtra/datasets/amazon/amazon_question_partitioned.csv
-      #      SPATH=/data1/xtra/datasets/amazon/amazon_answer_partitioned.csv
+      #      RPATH=$exp_dir/datasets/amazon/amazon_question_partitioned.csv
+      #      SPATH=$exp_dir/datasets/amazon/amazon_answer_partitioned.csv
       #      RKEY=0
       #      SKEY=0
       #      benchmarkRun

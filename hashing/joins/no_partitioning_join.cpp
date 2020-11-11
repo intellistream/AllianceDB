@@ -157,7 +157,7 @@ void *npo_thread(void *param) {
   int rv;
   arg_t *args = (arg_t *)param;
 
-#ifdef PERF_TOPDOWN
+#ifdef PROFILE_TOPDOWN
 #ifdef JOIN_THREAD
 if(args->tid == 0){
     sleep(1);
@@ -259,7 +259,7 @@ return nullptr;
   args->threadresult->results = (void *)chainedbuf;
 #endif
 
-#ifndef OVERVIEW
+#ifndef OVERVIEW // only profile probe
 #ifdef PERF_COUNTERS
   if (args->tid == 0) {
     PCM_stop();
@@ -277,7 +277,7 @@ return nullptr;
 #endif
 #endif
 
-#ifdef OVERVIEW
+#ifdef OVERVIEW // profile overview
 #ifdef PERF_COUNTERS
   if (args->tid == 0) {
     PCM_stop();

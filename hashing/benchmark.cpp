@@ -209,15 +209,7 @@ benchmark(const param_t cmd_params) {
     //    string path = "/data1/xtra/datasets/Kim/data_distribution_zipf" + std::to_string(cmd_params.zipf_param) + ".txt";
     //    writefile(relR.payload, cmd_params);
 
-#ifdef PERF_UARCH
-    auto curtime = std::chrono::steady_clock::now();
-    // dump the pid outside, and attach vtune for performance measurement
-    string path = "/data1/xtra/sink_threadId.txt";
-    auto fp = fopen(path.c_str(), "w");
-    setbuf(fp,NULL);
-    fprintf(fp, "%d\n", getpid());
-    fflush(fp);
-
+#ifdef PROFILE_MEMORY_CONSUMPTION
     // create a thread for memory consumption
     pthread_t thread_id;
     uint32_t rv = pthread_create(&thread_id, nullptr, memory_calculator_thread, (void *) cmd_params.exp_id);

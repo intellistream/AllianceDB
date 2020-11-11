@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# prifile intel microarchitecture counters using VTune
 expDir=/data1/xtra
 
 id=300
