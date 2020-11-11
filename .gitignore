@@ -1,11 +1,15 @@
 
 hashing/Makefile
+sorting/Makefile
 
 hashing/cmake_install.cmake
+sorting/cmake_install.cmake
 
 hashing/CMakeCache.txt
+sorting/CMakeCache.txt
 
 hashing/AllianceDB.cbp
+sorting/AllianceDB.cbp
 
 hashing/cmake-build-debug-system/*
 
