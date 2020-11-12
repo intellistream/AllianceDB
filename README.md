@@ -5,22 +5,12 @@ All of our experiments can be automatically reproduced by calling a few pre-prep
 ## TODO
 
 1. correct name in all scripts (e.g., drawing which figure.).
-
-2. Figure 3 (a) legend.
-
-3. clean all data path, do not use fixed "/data1/xtra/...", both in scripts and code.
-
-4. move all control variables into a dedicated header file "control.hpp". Currently, they are scattered in multiple files including common_functions.h perf_counter.h
-
-5. create a auto-deploy scripts in the end.
-
-6. pcm related scripts shows following logs at first, need to avoid.
-
-   ```shell
-   [INFO] @ /tmp/tmp.AwnTLdwtaY/utils/perf_counters.cpp:115 Alternatively you can try to reset PMU configuration at your own risk. Try to reset? (y/n)
-   ```
-
-7. auto move pcm.cfg to exp_dir in a unfied scripts. (auto-deploy)
+2. clean all data path, do not use fixed "/data1/xtra/...", both in scripts and code.  - roughly done, need to be tested.
+3. move all control variables into a dedicated header file "control.hpp". Currently, they are scattered in multiple files including common_functions.h perf_counter.h, params.h
+4. `modprobe msr` should be applied before run pcm.
+5. draw figure scripts has not automated yet.
+6. create a auto-deploy scripts in the end.
+7. Auto install all required lib and tools. Auto config all required configurations.
 
 ## Third-party Lib
 
@@ -114,7 +104,7 @@ call ./draw.sh to generate figures.
 
 ## Datasets
 
-We have 4 real datasets that are compressed in [datasets.tar.gz](https://drive.google.com/file/d/1DJIES8AEIQSfw9HF4xxgZ9OHFiUxZijw/view?usp=sharing). Download and call tar -zvxf datasets.tar.gz to unzip those datasets.
+We have 4 real datasets that are compressed in [datasets.tar.gz](https://www.dropbox.com/s/64z4xtpyhhmhojp/datasets.tar.gz). Download and call tar -zvxf datasets.tar.gz to unzip those datasets.
 
 We extracted the useful columns of those datasets, the one is joined key and another is timestamp.
 
