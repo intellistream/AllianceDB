@@ -1,9 +1,7 @@
 #!/bin/bash
 exp_dir="/data1/xtra"
-L3_cache_size = 20971520
+L3_cache_size=20971520
 
-#TODO: all shell should add a input parameter for config
-#TODO: all scripts should have parameter as following
 # benchmark.sh -e $exp_secction -d $exp_dir -c $L3_cache_size
 #APP_BENCH,MICRO_BENCH,SCALE_STUDY,PROFILE_MICRO,PROFILE,PROFILE_MEMORY_CONSUMPTION,PROFILE_PMU_COUNTERS,PROFILE_TOPDOWN
 #helpFunction()
@@ -53,6 +51,7 @@ mkdir -p $exp_dir/results/timestamps
 
 # copy custom pmu events to experiment dir.
 # TODO: do we need to cupy a cpu-mappings.txt?
+# TODO: copy datasets to the experiment dir
 cp pcm* $exp_dir
 
 exp_secction="PROFILE_MEMORY_CONSUMPTION,PROFILE_PMU_COUNTERS"
