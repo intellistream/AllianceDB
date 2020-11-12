@@ -1,21 +1,85 @@
 #!/bin/bash
-#set -e
-## Create directories on your machine.
-exp_dir="/data1/xtra"
-mkdir -p $exp_dir/results/breakdown/partition_buildsort_probemerge_join
-mkdir -p $exp_dir/results/breakdown/partition_only
-mkdir -p $exp_dir/results/breakdown/partition_buildsort_only
-mkdir -p $exp_dir/results/breakdown/partition_buildsort_probemerge_only
-mkdir -p $exp_dir/results/breakdown/allIncludes
 
-mkdir -p $exp_dir/results/figure
-mkdir -p $exp_dir/results/gaps
-mkdir -p $exp_dir/results/latency
-mkdir -p $exp_dir/results/records
-mkdir -p $exp_dir/results/timestamps
+exp_dir="/data1/xtra"
+L3_cache_size=20971520
+# read arguments
+helpFunction()
+{
+   echo ""
+   echo "Usage: $0 -e exp_section -d exp_dir -c L3_cache_size"
+   echo -e "\t-e the experiment section you would like to run"
+   echo -e "\t-d the experiment results directory"
+   echo -e "\t-c the L3 cache size of the current CPU"
+   exit 1 # Exit script after printing help
+}
+
+while getopts "e:d:c:" opt
+do
+   case "$opt" in
+      e ) exp_secction="$OPTARG" ;;
+      d ) exp_dir="$OPTARG" ;;
+      c ) L3_cache_size="$OPTARG" ;;
+      ? ) helpFunction ;; # Print helpFunction in case parameter is non-existent
+   esac
+done
+
+# Print helpFunction in case parameters are empty
+if [ -z "$exp_secction" ] || [ -z "$exp_dir" ] || [ -z "$L3_cache_size" ]
+then
+   echo "Some or all of the parameters are empty";
+   helpFunction
+fi
+
+# Begin script in case all parameters are correct
+echo "$exp_secction"
+echo "$exp_dir"
+echo "$L3_cache_size"
+
+APP_BENCH=0
+MICRO_BENCH=0
+SCALE_STUDY=0
+PROFILE_MICRO=0
+PROFILE=0
+PROFILE_MEMORY_CONSUMPTION=0
+PROFILE_PMU_COUNTERS=0
+PROFILE_TOPDOWN=0
+# parse exp sections need to run
+IFS=','
+for exp_secions_name in $(echo "$exp_secction");
+do
+    echo "name = $exp_secions_name"
+    case "$exp_secions_name" in
+      "APP_BENCH")
+        APP_BENCH=1
+        ;;
+      "MICRO_BENCH"):
+        MICRO_BENCH=1
+        ;;
+      "SCALE_STUDY")
+        SCALE_STUDY=1
+        ;;
+      "PROFILE_MICRO")
+        PROFILE_MICRO=1
+        ;;
+      "PROFILE")
+        PROFILE=1
+        ;;
+      "PROFILE_MEMORY_CONSUMPTION")
+        PROFILE_MEMORY_CONSUMPTION=1
+        ;;
+      "PROFILE_PMU_COUNTERS")
+        PROFILE_PMU_COUNTERS=1
+        ;;
+      "PROFILE_TOPDOWN")
+        PROFILE_TOPDOWN=1
+        ;;
+    esac
+done
+
+echo "Total EXPS: ${exp_secction}"
 
 ## Set L3 Cache according to your machine.
-sed -i -e "s/#define L3_CACHE_SIZE [[:alnum:]]*/#define L3_CACHE_SIZE 20971520/g" ../utils/params.h
+sed -i -e "s/#define L3_CACHE_SIZE [[:alnum:]]*/#define L3_CACHE_SIZE $L3_cache_size/g" ../utils/params.h
 sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h
 sed -i -e "s/#define PROFILE_TOPDOWN/#define NO_PROFILE_TOPDOWN/g" ../utils/perf_counters.h
 sed -i -e "s/#define PROFILE_MEMORY_CONSUMPTION/#define NO_PROFILE_MEMORY_CONSUMPTION/g" ../utils/perf_counters.h
@@ -371,7 +435,7 @@ timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
 
 ## APP benchmark.
-APP_BENCH=0
+#APP_BENCH=0
 if [ $APP_BENCH == 1 ]; then
   sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h            #enable time measurement
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h #disable hardware counters
@@ -412,7 +476,7 @@ if [ $APP_BENCH == 1 ]; then
 fi
 
 ## MICRO benchmark.
-MICRO_BENCH=0
+#MICRO_BENCH=0
 if [ $MICRO_BENCH == 1 ]; then
   profile_breakdown=0        # set to 1 if we want to measure time breakdown!
   compile=$profile_breakdown # compile depends on whether we want to profile.
@@ -524,7 +588,7 @@ if [ $MICRO_BENCH == 1 ]; then
 fi
 
 ## SCLAE STUDY
-SCALE_STUDY=0
+#SCALE_STUDY=0
 if [ $SCALE_STUDY == 1 ]; then
   sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h            #enable time measurement
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h #disable hardware counters
@@ -595,7 +659,7 @@ fi
 #    ;;
 
 ## MICRO STUDY
-PROFILE_MICRO=0
+#PROFILE_MICRO=0
 if [ $PROFILE_MICRO == 1 ]; then
   sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h            #enable time measurement
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h #disable hardware counters
@@ -724,7 +788,7 @@ if [ $PROFILE_MICRO == 1 ]; then
   done
 fi
 
-PROFILE=0 ## Cache misses profiling, please run the program with sudo
+#PROFILE=0 ## Cache misses profiling, please run the program with sudo
 if [ $PROFILE == 1 ]; then
   sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h #disable time measurement
   sed -i -e "s/#define NO_PERF_COUNTERS/#define PERF_COUNTERS/g" ../utils/perf_counters.h
@@ -768,7 +832,7 @@ if [ $PROFILE == 1 ]; then
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h
 fi
 
-PROFILE_MEMORY_CONSUMPTION=1 ## profile memory consumption
+#PROFILE_MEMORY_CONSUMPTION=1 ## profile memory consumption
 if [ $PROFILE_MEMORY_CONSUMPTION == 1 ]; then
   sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h #disable time measurement
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h
@@ -808,7 +872,7 @@ if [ $PROFILE_MEMORY_CONSUMPTION == 1 ]; then
   sed -i -e "s/#define PROFILE_MEMORY_CONSUMPTION/#define NO_PROFILE_MEMORY_CONSUMPTION/g" ../joins/common_functions.h
 fi
 
-PROFILE_PMU_COUNTERS=1 # profile PMU counters using pcm
+#PROFILE_PMU_COUNTERS=1 # profile PMU counters using pcm
 if [ $PROFILE_PMU_COUNTERS == 1 ]; then
   sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h #disable time measurement
   sed -i -e "s/#define NO_PERF_COUNTERS/#define PERF_COUNTERS/g" ../utils/perf_counters.h
@@ -838,7 +902,7 @@ if [ $PROFILE_PMU_COUNTERS == 1 ]; then
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h
 fi
 
-PROFILE_TOPDOWN=1 ## profile intel topdown performance metrics using perf/pcm
+#PROFILE_TOPDOWN=1 ## profile intel topdown performance metrics using perf/pcm
 if [ $PROFILE_TOPDOWN == 1 ]; then
   sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h #disable time measurement
   sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h
@@ -892,5 +956,5 @@ if [ $PROFILE_TOPDOWN == 1 ]; then
   sed -i -e "s/#define PROFILE_TOPDOWN/#define NO_PROFILE_TOPDOWN/g" ../joins/common_functions.h
 fi
 
-./draw.sh
-python3 jobdone.py
+#./draw.sh
+#python3 jobdone.py
