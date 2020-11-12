@@ -108,7 +108,7 @@ function benchmarkRun() {
   echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -g $gap -o $exp_dir/results/breakdown/profile_$id.txt -I $id== "
   #echo 3 >/proc/sys/vm/drop_caches
   ../sorting -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -g $gap -o $exp_dir/results/breakdown/profile_$id.txt -I $id
-  if [[ $? -eq 139 ]]; the/home/myc/workspace/AllianceDB/sortingn echo "oops, sigsegv" exit 1; fi
+  if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit 1; fi
 }
 
 function benchmarkProfileRun() {
