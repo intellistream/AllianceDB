@@ -126,7 +126,7 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int
 }
 
 void writefile(relation_payload_t *relPl, const param_t cmd_params) {
-    string path = "/data1/xtra/datasets/Kim/data_distribution_zipf" + std::to_string(cmd_params.zipf_param) + ".txt";
+    string path = EXP_DIR "/datasets/Kim/data_distribution_zipf" + std::to_string(cmd_params.zipf_param) + ".txt";
     ofstream outputFile(path, std::ios::trunc);
     for (auto i = 0; i < relPl->num_tuples; i++) {
         outputFile << (std::to_string(relPl->ts[i]) + "\n");
@@ -139,7 +139,7 @@ memory_calculator_thread(void *args) {
     uint64_t exp_id = (uint64_t) args;
     struct rusage r_usage;
     int counter = 0;
-    string path = "/data1/xtra/results/breakdown/mem_stat_" + std::to_string(exp_id) + ".txt";
+    string path = EXP_DIR "/results/breakdown/mem_stat_" + std::to_string(exp_id) + ".txt";
     auto fp = fopen(path.c_str(), "w");
     setbuf(fp, NULL);
 
@@ -206,7 +206,7 @@ benchmark(const param_t cmd_params) {
     DEBUGMSG("relS [aligned:%d]: %s", is_aligned(relS.tuples, CACHE_LINE_SIZE),
              print_relation(relS.tuples, min((uint64_t) 1000, relS.num_tuples)).c_str());
 
-    //    string path = "/data1/xtra/datasets/Kim/data_distribution_zipf" + std::to_string(cmd_params.zipf_param) + ".txt";
+    //    string path = EXP_DIR "/datasets/Kim/data_distribution_zipf" + std::to_string(cmd_params.zipf_param) + ".txt";
     //    writefile(relR.payload, cmd_params);
 
 #ifdef PROFILE_MEMORY_CONSUMPTION

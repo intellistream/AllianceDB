@@ -267,7 +267,7 @@ main(int argc, char **argv) {
 #ifdef PROFILE_MEMORY_CONSUMPTION
     auto curtime = std::chrono::steady_clock::now();
     // dump the pid outside, and attach vtune for performance measurement
-    string path = "/data1/xtra/time_start_" + std::to_string(cmd_params.exp_id) + ".txt";
+    string path = EXP_DIR "/time_start_" + std::to_string(cmd_params.exp_id) + ".txt";
     auto fp = fopen(path.c_str(), "w");
     setbuf(fp,NULL);
     fprintf(fp, "%ld\n", curtime);

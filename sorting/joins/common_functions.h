@@ -15,6 +15,9 @@
 
 #include "../utils/perf_counters.h"      /* PCM_x */
 
+// path of experiment dir, all results will dump to here.
+#define EXP_DIR "/data1/xtra"
+
 //#define DEBUG
 //#define JOIN_MATERIALIZE
 #define TIMING

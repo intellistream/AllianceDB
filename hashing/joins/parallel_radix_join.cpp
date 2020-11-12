@@ -1039,7 +1039,7 @@ void *prj_thread(void *param) {
     PCM_initPerformanceMonitor(NULL, NULL);
     PCM_start();
       auto curtime = std::chrono::steady_clock::now();
-      string path = "/data1/xtra/time_start_" + std::to_string(args->exp_id) + ".txt";
+      string path = EXP_DIR "/time_start_" + std::to_string(args->exp_id) + ".txt";
       auto fp = fopen(path.c_str(), "w");
       fprintf(fp, "%ld\n", curtime);
       sleep(1);
@@ -1392,7 +1392,7 @@ void *prj_thread(void *param) {
     PCM_initPerformanceMonitor(NULL, NULL);
     PCM_start();
       auto curtime = std::chrono::steady_clock::now();
-      string path = "/data1/xtra/time_start_" + std::to_string(args->exp_id) + ".txt";
+      string path = EXP_DIR "/time_start_" + std::to_string(args->exp_id) + ".txt";
       auto fp = fopen(path.c_str(), "w");
       fprintf(fp, "%ld\n", curtime);
   }
@@ -1439,7 +1439,7 @@ void *prj_thread(void *param) {
   if (my_tid == 0) {
     PCM_stop();
       auto curtime = std::chrono::steady_clock::now();
-      string path = "/data1/xtra/time_end_" + std::to_string(args->exp_id) + ".txt";
+      string path = EXP_DIR "/time_end_" + std::to_string(args->exp_id) + ".txt";
       auto fp = fopen(path.c_str(), "w");
       fprintf(fp, "%ld\n", curtime);
     PCM_log("=========== Build+Probe profiling results =========\n");
@@ -1457,7 +1457,7 @@ void *prj_thread(void *param) {
     if (my_tid == 0) {
         PCM_stop();
         auto curtime = std::chrono::steady_clock::now();
-        string path = "/data1/xtra/time_end_" + std::to_string(args->exp_id) + ".txt";
+        string path = EXP_DIR "/time_end_" + std::to_string(args->exp_id) + ".txt";
         auto fp = fopen(path.c_str(), "w");
         fprintf(fp, "%ld\n", curtime);
         PCM_log("=========== overview profiling results =========\n");
@@ -1645,7 +1645,7 @@ result_t *join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf,
 #ifndef NO_TIMING
 
   std::string name = "PRJ_" + std::to_string(cmd_params.exp_id);
-  string path = "/data1/xtra/results/breakdown/" + name.append(".txt");
+  string path = EXP_DIR "/results/breakdown/" + name.append(".txt");
   auto fp = fopen(path.c_str(), "w");
   breakdown_global((relR->num_tuples + relS->num_tuples), nthreads,
                    args[0].timer,

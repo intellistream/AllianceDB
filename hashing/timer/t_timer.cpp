@@ -50,14 +50,14 @@ dump_timing(vector<double> vector, std::vector<double> vector_latency,
 
     //dump matches and inputs.
 
-    string path = "/data1/xtra/results/records/" + name + ".txt";
+    string path = EXP_DIR "/results/records/" + name + ".txt";
     ofstream outputFile(path, std::ios::trunc);
     outputFile << (std::to_string(inputs) + "\n");
     outputFile << (std::to_string(matches) + "\n");
     outputFile.close();
 
     //dump timestmap.
-    string path_ts = "/data1/xtra/results/timestamps/" + name + ".txt";
+    string path_ts = EXP_DIR "/results/timestamps/" + name + ".txt";
     ofstream outputFile_ts(path_ts, std::ios::trunc);
     for (auto &element : vector) {
         outputFile_ts << (std::to_string(element + lastTS) + "\n");
@@ -77,7 +77,7 @@ dump_timing(vector<double> vector, std::vector<double> vector_latency,
     fflush(stdout);
 
     //dump latency
-    string path_latency = "/data1/xtra/results/latency/" + name + ".txt";
+    string path_latency = EXP_DIR "/results/latency/" + name + ".txt";
     ofstream outputFile_latency(path_latency, std::ios::trunc);
     for (auto &element : vector_latency) {
         outputFile_latency << (std::to_string(element + lastTS) + "\n");
@@ -90,7 +90,7 @@ dump_timing(vector<double> vector, std::vector<double> vector_latency,
     );
 
     //dump gap
-    string path_gap = "/data1/xtra/results/gaps/" + name + ".txt";
+    string path_gap = EXP_DIR "/results/gaps/" + name + ".txt";
     ofstream outputFile_gap(path_gap, std::ios::trunc);
     for (auto &element : global_record_gap) {
         outputFile_gap << (std::to_string(element + lastTS) + "\n");
@@ -166,7 +166,7 @@ breakdown_global(int64_t total_results, int nthreads, double average_partition_t
     string path;
     std::string line;
 
-    path = "/data1/xtra/results/breakdown/partition_buildsort_probemerge_join/" + txtFile;
+    path = EXP_DIR "/results/breakdown/partition_buildsort_probemerge_join/" + txtFile;
     std::ifstream infile0(path);
     auto t0 = 0.0;
     while (std::getline(infile0, line)) {
@@ -183,7 +183,7 @@ breakdown_global(int64_t total_results, int nthreads, double average_partition_t
 
     if (txtFile.find("PMJ") != std::string::npos) {
         auto t1 = 0.0;
-        path = "/data1/xtra/results/breakdown/partition_buildsort_probemerge_only/" + txtFile;
+        path = EXP_DIR "/results/breakdown/partition_buildsort_probemerge_only/" + txtFile;
         std::ifstream infile(path);
         while (std::getline(infile, line)) {
             std::regex newlines_re("\n+");
@@ -195,7 +195,7 @@ breakdown_global(int64_t total_results, int nthreads, double average_partition_t
         join_time = average_partition_timer - wait_time - t1 / nthreads;
 
         auto t2 = 0.0;
-        path = "/data1/xtra/results/breakdown/partition_buildsort_only/" + txtFile;
+        path = EXP_DIR "/results/breakdown/partition_buildsort_only/" + txtFile;
         std::ifstream infile2(path);
         while (std::getline(infile2, line)) {
             DEBUGMSG("Partition 2:%s\n", line.c_str());
@@ -206,7 +206,7 @@ breakdown_global(int64_t total_results, int nthreads, double average_partition_t
         merge_time = average_partition_timer - wait_time - join_time - t2 / nthreads;//corrects for merge for PMJ.
 
     } else {
-        path = "/data1/xtra/results/breakdown/partition_buildsort_only/" + txtFile;
+        path = EXP_DIR "/results/breakdown/partition_buildsort_only/" + txtFile;
         std::ifstream infile2(path);
         auto t1 = 0.0;
         while (std::getline(infile2, line)) {
@@ -220,7 +220,7 @@ breakdown_global(int64_t total_results, int nthreads, double average_partition_t
         join_time = average_partition_timer - wait_time - t1 / nthreads;
     }
 
-    path = "/data1/xtra/results/breakdown/partition_only/" + txtFile;
+    path = EXP_DIR "/results/breakdown/partition_only/" + txtFile;
     std::ifstream infile3(path);
     auto t1 = 0.0;
     while (std::getline(infile3, line)) {
@@ -241,7 +241,7 @@ breakdown_global(int64_t total_results, int nthreads, double average_partition_t
     partition_time = t1 / nthreads;//corrects for partition_timer.
     DEBUGMSG("partition timer: %f\n", partition_time);
 
-    path = "/data1/xtra/results/breakdown/" + txtFile;
+    path = EXP_DIR "/results/breakdown/" + txtFile;
     auto fp = fopen(path.c_str(), "w");
 
     DEBUGMSG("[INFO] Cycles spent on each input\n"
@@ -285,7 +285,7 @@ void dump_partition_cost(T_TIMER *timer, _IO_FILE *pFile) {
 //        std::string line;
 //
 //        if (file_name.find("PMJ") != std::string::npos) {
-//            path = "/data1/xtra/results/breakdown/partition_buildsort_probemerge_only/" + file_name;
+//            path = EXP_DIR "/results/breakdown/partition_buildsort_probemerge_only/" + file_name;
 //            MSG("Reading%s\n", path.c_str());
 //            std::ifstream infile(path);
 //            while (std::getline(infile, line)) {
@@ -302,7 +302,7 @@ void dump_partition_cost(T_TIMER *timer, _IO_FILE *pFile) {
 //                lineid++;
 //            }
 //
-//            path = "/data1/xtra/results/breakdown/partition_buildsort_only/" + file_name;
+//            path = EXP_DIR "/results/breakdown/partition_buildsort_only/" + file_name;
 //            std::ifstream infile2(path);
 //            lineid = 0;
 //            while (std::getline(infile2, line)) {
@@ -317,7 +317,7 @@ void dump_partition_cost(T_TIMER *timer, _IO_FILE *pFile) {
 //                lineid++;
 //            }
 //        } else {//shj
-//            path = "/data1/xtra/results/breakdown/partition_buildsort_only/" + file_name;
+//            path = EXP_DIR "/results/breakdown/partition_buildsort_only/" + file_name;
 //            std::ifstream infile2(path);
 //            lineid = 0;
 //            while (std::getline(infile2, line)) {
@@ -337,7 +337,7 @@ void dump_partition_cost(T_TIMER *timer, _IO_FILE *pFile) {
 //                lineid++;
 //            }
 //        }
-//        path = "/data1/xtra/results/breakdown/partition_only/" + file_name;
+//        path = EXP_DIR "/results/breakdown/partition_only/" + file_name;
 //        std::ifstream infile3(path);
 //        lineid = 0;
 //        while (std::getline(infile3, line)) {

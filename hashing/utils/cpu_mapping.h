@@ -8,6 +8,8 @@
  *
  *
  */
+
+#include "../joins/common_functions.h"
 #ifndef CPU_MAPPING_H
 #define CPU_MAPPING_H
 
@@ -21,7 +23,7 @@
  * initialized from that file, otherwise it will be round-robin
  */
 #ifndef CUSTOM_CPU_MAPPING
-#define CUSTOM_CPU_MAPPING "/data1/xtra/cpu-mapping.txt"
+#define CUSTOM_CPU_MAPPING EXP_DIR "/cpu-mapping.txt"
 #endif
 
 

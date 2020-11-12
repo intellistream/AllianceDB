@@ -188,7 +188,7 @@ return nullptr;
       PCM_initPerformanceMonitor(NULL, NULL);
       PCM_start();
       auto curtime = std::chrono::steady_clock::now();
-      string path = "/data1/xtra/time_start_" + std::to_string(args->exp_id) + ".txt";
+      string path = EXP_DIR "/time_start_" + std::to_string(args->exp_id) + ".txt";
       auto fp = fopen(path.c_str(), "w");
       fprintf(fp, "%ld\n", curtime);
       sleep(1);
@@ -241,7 +241,7 @@ return nullptr;
     PCM_initPerformanceMonitor(NULL, NULL);
     PCM_start();
       auto curtime = std::chrono::steady_clock::now();
-      string path = "/data1/xtra/time_start_" + std::to_string(args->exp_id) + ".txt";
+      string path = EXP_DIR "/time_start_" + std::to_string(args->exp_id) + ".txt";
       auto fp = fopen(path.c_str(), "w");
       fprintf(fp, "%ld\n", curtime);
   }
@@ -264,7 +264,7 @@ return nullptr;
   if (args->tid == 0) {
     PCM_stop();
       auto curtime = std::chrono::steady_clock::now();
-      string path = "/data1/xtra/time_end_" + std::to_string(args->exp_id) + ".txt";
+      string path = EXP_DIR "/time_end_" + std::to_string(args->exp_id) + ".txt";
       auto fp = fopen(path.c_str(), "w");
       fprintf(fp, "%ld\n", curtime);
     PCM_log("========== Probe phase profiling results ==========\n");
@@ -282,7 +282,7 @@ return nullptr;
   if (args->tid == 0) {
     PCM_stop();
       auto curtime = std::chrono::steady_clock::now();
-      string path = "/data1/xtra/time_end_" + std::to_string(args->exp_id) + ".txt";
+      string path = EXP_DIR "/time_end_" + std::to_string(args->exp_id) + ".txt";
       auto fp = fopen(path.c_str(), "w");
       fprintf(fp, "%ld\n", curtime);
     PCM_log("========== overview profiling results ==========\n");
@@ -449,7 +449,7 @@ result_t *NPO(relation_t *relR, relation_t *relS, param_t cmd_params) {
   /* now print the timing results: */
 
   std::string name = "NPJ_" + std::to_string(cmd_params.exp_id);
-  string path = "/data1/xtra/results/breakdown/" + name.append(".txt");
+  string path = EXP_DIR "/results/breakdown/" + name.append(".txt");
   auto fp = fopen(path.c_str(), "w");
   breakdown_global((numR + numS), nthreads, args[0].timer,
                    cmd_params.ts == 0 ? 0 : cmd_params.window_size, fp);

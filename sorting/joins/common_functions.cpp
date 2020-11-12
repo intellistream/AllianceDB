@@ -240,7 +240,7 @@ sortmergejoin_initrun(relation_t *relR, relation_t *relS, joinconfig_t *joincfg,
 //           "relS->payload->ts[relR->num_tuples - 1].count() %ld,"
 //           "lastTS is:%ld\n", ts_R, ts_S, lastTS);
     std::string name = algoName + "_" + std::to_string(exp_id);
-    string path = "/data1/xtra/results/breakdown/" + name.append(".txt");
+    string path = EXP_DIR "/results/breakdown/" + name.append(".txt");
 //    MSG("%s",path.c_str())
     auto fp = fopen(path.c_str(), "w");
 //    for (i = 0; i < nthreads; i++) {

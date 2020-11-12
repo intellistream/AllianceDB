@@ -44,7 +44,7 @@ dump_timing(vector<double> vector, std::vector<double> vector_latency,
     int check99 = floor(n * 0.99);
 
 
-    string path = "/data1/xtra/results/records/" + name + ".txt";
+    string path = EXP_DIR "/results/records/" + name + ".txt";
     ofstream outputFile(path, std::ios::trunc);
     outputFile << (std::to_string(inputs) + "\n");
     outputFile << (std::to_string(matches) + "\n");
@@ -52,7 +52,7 @@ dump_timing(vector<double> vector, std::vector<double> vector_latency,
 
     //dump timestmap.
 
-    string path_ts = "/data1/xtra/results/timestamps/" + name + ".txt";
+    string path_ts = EXP_DIR "/results/timestamps/" + name + ".txt";
     ofstream outputFile_ts(path_ts, std::ios::trunc);
     auto begin = vector.begin().operator*();
     vector.erase(vector.begin());
@@ -77,7 +77,7 @@ dump_timing(vector<double> vector, std::vector<double> vector_latency,
 
 
     //dump latency
-    string path_latency = "/data1/xtra/results/latency/" + name + ".txt";
+    string path_latency = EXP_DIR "/results/latency/" + name + ".txt";
     ofstream outputFile_latency(path_latency, std::ios::trunc);
     for (auto &element : vector_latency) {
         outputFile_latency << (std::to_string(element + lastTS) + "\n");
@@ -89,7 +89,7 @@ dump_timing(vector<double> vector, std::vector<double> vector_latency,
     );
 
     //dump gap
-    string path_gap = "/data1/xtra/results/gaps/" + name + ".txt";
+    string path_gap = EXP_DIR "/results/gaps/" + name + ".txt";
     ofstream outputFile_gap(path_gap, std::ios::trunc);
     for (auto &element : global_record_gap) {
         outputFile_gap << (std::to_string(element + lastTS) + "\n");

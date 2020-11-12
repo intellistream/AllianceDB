@@ -8,6 +8,7 @@
  * (c) 2014, ETH Zurich, Systems Group
  *
  */
+#include "../joins/common_functions.h"
 #ifndef CPU_MAPPING_H
 #define CPU_MAPPING_H
 
@@ -22,7 +23,7 @@
  * and finally round-robin as last option.
  */
 #ifndef CUSTOM_CPU_MAPPING
-#define CUSTOM_CPU_MAPPING "/data1/xtra/cpu-mapping.txt"
+#define CUSTOM_CPU_MAPPING EXP_DIR"/cpu-mapping.txt"
 #endif
 
 /**

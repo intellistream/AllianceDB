@@ -61,7 +61,7 @@ t_param &finishing(int nthreads, t_param &param, uint64_t *startTS, param_t *cmd
 #ifndef NO_TIMING
 #ifndef JOIN //partition-only.
     std::string name = param.algo_name + "_" + std::to_string(param.exp_id);
-    string path = "/data1/xtra/results/breakdown/partition_only/" + name.append(".txt");
+    string path = EXP_DIR "/results/breakdown/partition_only/" + name.append(".txt");
     auto fp = fopen(path.c_str(), "w");
     /* now print the timing results: */
     for (i = 0; i < nthreads; i++) {
@@ -70,7 +70,7 @@ t_param &finishing(int nthreads, t_param &param, uint64_t *startTS, param_t *cmd
 #else
 #ifndef MERGE //build/sort only
     std::string name = param.algo_name + "_" + std::to_string(param.exp_id);
-    string path = "/data1/xtra/results/breakdown/partition_buildsort_only/" + name.append(".txt");
+    string path = EXP_DIR "/results/breakdown/partition_buildsort_only/" + name.append(".txt");
     auto fp = fopen(path.c_str(), "w");
     /* now print the timing results: */
     for (i = 0; i < nthreads; i++) {
@@ -79,7 +79,7 @@ t_param &finishing(int nthreads, t_param &param, uint64_t *startTS, param_t *cmd
 #else
 #ifndef MATCH //build/sort + probe/merge only
     std::string name = param.algo_name + "_" + std::to_string(param.exp_id);
-    string path = "/data1/xtra/results/breakdown/partition_buildsort_probemerge_only/" + name.append(".txt");
+    string path = EXP_DIR "/results/breakdown/partition_buildsort_probemerge_only/" + name.append(".txt");
     auto fp = fopen(path.c_str(), "w");
     /* now print the timing results: */
     for (i = 0; i < nthreads; i++) {
@@ -88,7 +88,7 @@ t_param &finishing(int nthreads, t_param &param, uint64_t *startTS, param_t *cmd
 #else
 #ifndef WAIT //everything except wait.
     std::string name = param.algo_name + "_" + std::to_string(param.exp_id);
-    string path = "/data1/xtra/results/breakdown/partition_buildsort_probemerge_join/" + name.append(".txt");
+    string path = EXP_DIR "/results/breakdown/partition_buildsort_probemerge_join/" + name.append(".txt");
     auto fp = fopen(path.c_str(), "w");
     /* now print the timing results: */
     for (i = 0; i < nthreads; i++) {
@@ -97,7 +97,7 @@ t_param &finishing(int nthreads, t_param &param, uint64_t *startTS, param_t *cmd
 #else //everything is defined.
     std::string name = param.algo_name + "_" + std::to_string(param.exp_id).append(".txt");
     /* now print the timing results: */
-    string path = "/data1/xtra/results/breakdown/allIncludes/" + name;
+    string path = EXP_DIR "/results/breakdown/allIncludes/" + name;
     auto fp = fopen(path.c_str(), "w");
     double average_partition_timer = 0.0;
     for (i = 0; i < nthreads; i++) {
