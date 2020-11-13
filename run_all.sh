@@ -20,7 +20,7 @@ mkdir -p $exp_dir/results/timestamps
 # TODO: copy datasets to the experiment dir
 cp pcm* $exp_dir
 
-exp_secction="PROFILE_MEMORY_CONSUMPTION,PROFILE_PMU_COUNTERS"
+exp_secction="APP_BENCH,MICRO_BENCH,SCALE_STUDY,PROFILE_MICRO,PROFILE,PROFILE_MEMORY_CONSUMPTION,PROFILE_PMU_COUNTERS"
 
 # execute experiment
 cd ./sorting/scripts || exit
