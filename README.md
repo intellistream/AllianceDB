@@ -4,7 +4,7 @@ All of our experiments can be automatically reproduced by calling a few pre-prep
 
 ## TODO
 
-1. correct name in all scripts (e.g., drawing which figure.).
+1. correct name in all scripts (e.g., drawing which figure.). draw.sh correct "Drawing Figure xxx".
 2. clean all data path, do not use fixed "/data1/xtra/...", both in scripts and code.  - roughly done, need to be tested.
 3. move all control variables into a dedicated header file "control.hpp". Currently, they are scattered in multiple files including common_functions.h perf_counter.h, params.h
 4. draw figure scripts has not automated yet.
