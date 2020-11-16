@@ -16,16 +16,17 @@ All of our experiments can be automatically reproduced by calling a few pre-prep
 1. tex font rendering:
 
 ```shell
-sudo apt-get install texlive-fonts-recommended texlive-fonts-extra
-sudo apt-get install dvipng
-sudo apt install font-manager
-sudo apt-get install cm-super
+sudo apt-get install -y texlive-fonts-recommended texlive-fonts-extra
+sudo apt-get install -y dvipng
+sudo apt install -y font-manager
+sudo apt-get install -y cm-super
 ```
 
 2. python3:
 
 ```shell
-sudo apt-get install python3
+sudo apt install -y python3
+sudo apt install -y python3-pip
 pip3 install numpy
 pip3 install matplotlib
 ```
@@ -33,26 +34,26 @@ pip3 install matplotlib
 3.  NUMA library
 
 ```shell
-sudo apt-get install -y libnuma-dev
+sudo apt install -y libnuma-dev
 ```
 
 4. Zlib
 
 ```shell
-sudo apt install zlib1g-dev
+sudo apt install -y zlib1g-dev
 ```
 
 5. python-tk
 
 ```shell
-sudo apt-get install python-tk
+sudo apt install -y python-tk
 ```
 
 6. perf
 
 ```shell
-sudo apt install linux-tools-common
-sudo apt install linux-tools-XXX # XXX is the kernel version of your linux, use uname -a to check it. e.g. 4.15.0-91-generic
+sudo apt install -y linux-tools-common
+sudo apt install -y linux-tools-XXX # XXX is the kernel version of your linux, use uname -a to check it. e.g. 4.15.0-91-generic
 sudo echo -1 > /proc/sys/kernel/perf_event_paranoid
 sudo modprobe msr
 ```
