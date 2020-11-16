@@ -11,6 +11,7 @@ All of our experiments can be automatically reproduced by calling a few pre-prep
 5. draw figure scripts has not automated yet.
 6. create a auto-deploy scripts in the end.
 7. Auto install all required lib and tools. Auto config all required configurations.
+8. All figure scripts still uses hardcoded path /data1/xtra.
 
 ## Third-party Lib
 
@@ -52,28 +53,21 @@ sudo apt-get install python-tk
 ### Prerequisite
 
 1. Profiling only supports Intel CPUs.
-2. Prepare cpu-mapping, and need to configure the path in hashing/cpu_mapping.txt. Do remember we have modified the path of CUSTOM_CPU_MAPPING, which reads this file and generate mapping of cpus.
-3. configure the results output path, ensure you have permissions to access and modify the files inside.
-4. configure cache size at utils/params.h
-5. where to run scripts? need to be at scripts folder.
-6. prepare real world datasets, move them to the `expDir/datasets`, currently, the datasets path in scripts are fixed, need to update to configurable
+2. Prepare cpu-mapping, and need to configure the path in hashing/cpu_mapping.txt. 
+3. configure the results output path `exp_dir`, ensure you have permissions to access and modify the files inside.
+4. configure cache size at `run_all.sh`.
+5. prepare real world datasets, move them to the `exp_dir/datasets`, currently, the datasets path in scripts are fixed, need to update to configurable
+6. `sudo bash run_all.sh`
+7. Default parameters
 
-### Setup
-
-1. TODO: test whether we can still run all experiments without Stock.
-
-2. TODO: add some instructions on how to run the scripts, such as how to configure cache size and other profiling strategies. Also, we may need to mention we need to run scripts at sorting/hashing folder.
-
-   | Parameters                       | Default         | Description                                   |
-   | -------------------------------- | --------------- | --------------------------------------------- |
-   | expDir                           | /data1/xtra     | path to save all results and generate figures |
-   | L3_CACHE_SIZE (rather important) | 20971520 (20MB) | size of l3 cache                              |
-   | PERF_COUNTERS/NO_PERF_COUNTERS   | No              | Unknown                                       |
-   | NO_TIMING/TIMING                 | No              | turn on/off breakdown timer                   |
-   | compile                          | 1               | compile the framework                         |
-   | Threads                          | 1 2 4 8         | experiments threads settings                  |
-
-3. TODO: run hashing first, and then run sorting, or we can write another scripts to launch all those scripts.
+| Parameters                       | Default         | Description                                   |
+| -------------------------------- | --------------- | --------------------------------------------- |
+| exp_dir                          | /data1/xtra     | path to save all results and generate figures |
+| L3_CACHE_SIZE (rather important) | 20971520 (20MB) | size of l3 cache                              |
+| PERF_COUNTERS/NO_PERF_COUNTERS   | No              | Unknown                                       |
+| NO_TIMING/TIMING                 | No              | turn on/off breakdown timer                   |
+| compile                          | 1               | compile the framework                         |
+| Threads                          | 1 2 4 8         | experiments threads settings                  |
 
 ### Step 1
 
