@@ -79,7 +79,7 @@ mv datasets $exp_dir
 | Parameters          | Default              | Description                                   |
 | ------------------- | -------------------- | --------------------------------------------- |
 | exp_dir             | /data1/xtra          | Path to save all results and generate figures |
-| L3_CACHE_SIZE       | 20971520 (20MB)      | Size of l3 cache                              |
+| L3_CACHE_SIZE       | 19922944 (19MB)      | Size of l3 cache                              |
 | Experiment Sections | All (e.g. APP_BENCH) | All experiments shown in our paper            |
 
 ## Datasets
