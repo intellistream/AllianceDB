@@ -50,6 +50,14 @@ sudo apt install zlib1g-dev
 sudo apt-get install python-tk
 ```
 
+6. perf
+
+```shell
+sudo apt install linux-tools-common
+sudo apt install linux-tools-XXX # XXX is the kernel version of your linux, use uname -a to check it. e.g. 4.15.0-91-generic
+sudo echo -1 > /proc/sys/kernel/perf_event_paranoid
+```
+
 ### Prerequisite
 
 1. Profiling only supports Intel CPUs.
