@@ -19,6 +19,8 @@ mkdir -p $exp_dir/results/timestamps
 # TODO: do we need to cupy a cpu-mappings.txt?
 # TODO: copy datasets to the experiment dir
 cp pcm* $exp_dir
+# set all scripts exp dir
+sed -i -e "s/exp_dir = .*/exp_dir = "\"${exp_dir//\//\\/}\""/g" ./hashing/scripts/*.py
 
 exp_secction="APP_BENCH,MICRO_BENCH,SCALE_STUDY,PROFILE_MICRO,PROFILE,PROFILE_MEMORY_CONSUMPTION,PROFILE_PMU_COUNTERS"
 

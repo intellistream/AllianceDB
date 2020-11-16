@@ -40,7 +40,9 @@ mpl.rcParams['xtick.labelsize'] = TICK_FONT_SIZE
 mpl.rcParams['ytick.labelsize'] = TICK_FONT_SIZE
 mpl.rcParams['font.family'] = OPT_FONT_NAME
 
-FIGURE_FOLDER = '/data1/xtra/results/figure'
+exp_dir = "/data1/xtra"
+
+FIGURE_FOLDER = exp_dir + '/results/figure'
 
 
 # there are some embedding problems if directly exporting the pdf figure using matplotlib.
@@ -80,7 +82,7 @@ def ReadFile(S, id):
     mingap = 0
     maxgap = 0
 
-    f = open("/data1/xtra/results/gaps/PRJ_{}.txt".format(id), "r")
+    f = open(exp_dir + "/results/gaps/PRJ_{}.txt".format(id), "r")
     cnt = 1
     read = f.readlines()
     for x in read:
@@ -94,7 +96,7 @@ def ReadFile(S, id):
                 mingap = value
         cnt += 1
 
-    f = open("/data1/xtra/results/gaps/NPJ_{}.txt".format(id), "r")
+    f = open(exp_dir + "/results/gaps/NPJ_{}.txt".format(id), "r")
     cnt = 1
     read = f.readlines()
     for x in read:
@@ -108,7 +110,7 @@ def ReadFile(S, id):
                 mingap = value
         cnt += 1
 
-    f = open("/data1/xtra/results/gaps/MPASS_{}.txt".format(id), "r")
+    f = open(exp_dir + "/results/gaps/MPASS_{}.txt".format(id), "r")
     cnt = 1
     read = f.readlines()
     for x in read:
@@ -122,7 +124,7 @@ def ReadFile(S, id):
                 mingap = value
         cnt += 1
 
-    f = open("/data1/xtra/results/gaps/MWAY_{}.txt".format(id), "r")
+    f = open(exp_dir + "/results/gaps/MWAY_{}.txt".format(id), "r")
     cnt = 1
     read = f.readlines()
     for x in read:
@@ -136,7 +138,7 @@ def ReadFile(S, id):
                 mingap = value
         cnt += 1
 
-    f = open("/data1/xtra/results/gaps/SHJ_JM_NP_{}.txt".format(id), "r")
+    f = open(exp_dir + "/results/gaps/SHJ_JM_NP_{}.txt".format(id), "r")
     cnt = 1
     read = f.readlines()
     for x in read:
@@ -150,7 +152,7 @@ def ReadFile(S, id):
                 mingap = value
         cnt += 1
 
-    f = open("/data1/xtra/results/gaps/SHJ_JBCR_NP_{}.txt".format(id), "r")
+    f = open(exp_dir + "/results/gaps/SHJ_JBCR_NP_{}.txt".format(id), "r")
     cnt = 1
     read = f.readlines()
     for x in read:
@@ -164,7 +166,7 @@ def ReadFile(S, id):
                 mingap = value
         cnt += 1
 
-    f = open("/data1/xtra/results/gaps/PMJ_JM_NP_{}.txt".format(id), "r")
+    f = open(exp_dir + "/results/gaps/PMJ_JM_NP_{}.txt".format(id), "r")
     cnt = 1
     read = f.readlines()
     for x in read:
@@ -178,7 +180,7 @@ def ReadFile(S, id):
                 mingap = value
         cnt += 1
 
-    f = open("/data1/xtra/results/gaps/PMJ_JBCR_NP_{}.txt".format(id), "r")
+    f = open(exp_dir + "/results/gaps/PMJ_JBCR_NP_{}.txt".format(id), "r")
     cnt = 1
     read = f.readlines()
     for x in read:

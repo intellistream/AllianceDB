@@ -33,7 +33,9 @@ matplotlib.rcParams['xtick.labelsize'] = TICK_FONT_SIZE
 matplotlib.rcParams['ytick.labelsize'] = TICK_FONT_SIZE
 matplotlib.rcParams['font.family'] = OPT_FONT_NAME
 
-FIGURE_FOLDER = '/data1/xtra/results/figure'
+exp_dir = "/data1/xtra"
+
+FIGURE_FOLDER = exp_dir + '/results/figure'
 
 
 def DrawLegend(legend_labels, filename):
@@ -149,7 +151,7 @@ def ReadFile():
 
     cnt = 0
     sum = 0
-    f = open("/data1/xtra/results/breakdown/SHJ_JM_P_{}.txt".format(133), "r")
+    f = open(exp_dir + "/results/breakdown/SHJ_JM_P_{}.txt".format(133), "r")
     read = f.readlines()
 
     for x in read:
@@ -167,7 +169,7 @@ def ReadFile():
 
     cnt = 0
     sum = 0
-    f = open("/data1/xtra/results/breakdown/SHJ_JM_NP_{}.txt".format(133), "r")
+    f = open(exp_dir + "/results/breakdown/SHJ_JM_NP_{}.txt".format(133), "r")
     read = f.readlines()
 
     for x in read:

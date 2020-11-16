@@ -40,7 +40,9 @@ mpl.rcParams['xtick.labelsize'] = TICK_FONT_SIZE
 mpl.rcParams['ytick.labelsize'] = TICK_FONT_SIZE
 mpl.rcParams['font.family'] = OPT_FONT_NAME
 
-FIGURE_FOLDER = '/data1/xtra/results/figure'
+exp_dir = "/data1/xtra"
+
+FIGURE_FOLDER = exp_dir + '/results/figure'
 
 
 # there are some embedding problems if directly exporting the pdf figure using matplotlib.
@@ -54,7 +56,7 @@ def getmaxts(id):
     w = 6
     bound = id + 1 * w
     for i in range(id, bound, 1):
-        file = '/data1/xtra/results/timestamps/PRJ_{}.txt'.format(i)
+        file = exp_dir + '/results/timestamps/PRJ_{}.txt'.format(i)
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
@@ -64,7 +66,7 @@ def getmaxts(id):
     return ts
 
 def getCount(id):
-    file = '/data1/xtra/results/timestamps/PRJ_{}.txt'.format(id)
+    file = exp_dir + '/results/timestamps/PRJ_{}.txt'.format(id)
     f = open(file, "r")
     read = f.readlines()
     return len(read)
@@ -76,7 +78,7 @@ def ReadFile(id):
 
 
     col = []
-    f = open("/data1/xtra/results/timestamps/SHJ_HS_P_{}.txt".format(38), "r")
+    f = open(exp_dir + "/results/timestamps/SHJ_HS_P_{}.txt".format(38), "r")
     read = f.readlines()
     for r in read:
         value = double(r.strip("\n"))  # timestamp.
@@ -87,7 +89,7 @@ def ReadFile(id):
     y_axis.append(coly)
 
     col = []
-    f = open("/data1/xtra/results/timestamps/SHJ_HS_P_{}.txt".format(39), "r")
+    f = open(exp_dir + "/results/timestamps/SHJ_HS_P_{}.txt".format(39), "r")
     read = f.readlines()
     for r in read:
         value = double(r.strip("\n"))  # timestamp.
@@ -98,7 +100,7 @@ def ReadFile(id):
     y_axis.append(coly)
 
     col = []
-    f = open("/data1/xtra/results/timestamps/SHJ_HS_P_{}.txt".format(41), "r")
+    f = open(exp_dir + "/results/timestamps/SHJ_HS_P_{}.txt".format(41), "r")
     read = f.readlines()
     for r in read:
         value = double(r.strip("\n"))  # timestamp.

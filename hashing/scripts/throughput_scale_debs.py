@@ -35,8 +35,9 @@ mpl.rcParams['xtick.labelsize'] = TICK_FONT_SIZE
 mpl.rcParams['ytick.labelsize'] = TICK_FONT_SIZE
 mpl.rcParams['font.family'] = OPT_FONT_NAME
 
-FIGURE_FOLDER = '/data1/xtra/results/figure'
+exp_dir = "/data1/xtra"
 
+FIGURE_FOLDER = exp_dir + '/results/figure'
 
 # there are some embedding problems if directly exporting the pdf figure using matplotlib.
 # so we generate the eps format first and convert it to pdf.
@@ -68,57 +69,57 @@ def ReadFile():
     col8 = []
     
     for id in it.chain(range(70, 74)):
-        file = '/data1/xtra/results/timestamps/PRJ_{}.txt'.format(id)
-        file2 = '/data1/xtra/results/records/PRJ_{}.txt'.format(id)
+        file = exp_dir + '/results/timestamps/PRJ_{}.txt'.format(id)
+        file2 = exp_dir + '/results/records/PRJ_{}.txt'.format(id)
         value = GetThroughput(file, file2)
         col1.append(value)
     y.append(col1)
 
     for id in it.chain(range(70, 74)):
-        file = '/data1/xtra/results/timestamps/NPJ_{}.txt'.format(id)
-        file2 = '/data1/xtra/results/records/NPJ_{}.txt'.format(id)
+        file = exp_dir + '/results/timestamps/NPJ_{}.txt'.format(id)
+        file2 = exp_dir + '/results/records/NPJ_{}.txt'.format(id)
         value = GetThroughput(file, file2)
         col2.append(value)
     y.append(col2)
 
     for id in it.chain(range(70, 74)):
-        file = '/data1/xtra/results/timestamps/MPASS_{}.txt'.format(id)
-        file2 = '/data1/xtra/results/records/MPASS_{}.txt'.format(id)
+        file = exp_dir + '/results/timestamps/MPASS_{}.txt'.format(id)
+        file2 = exp_dir + '/results/records/MPASS_{}.txt'.format(id)
         value = GetThroughput(file, file2)
         col3.append(value)
     y.append(col3)
 
     for id in it.chain(range(70, 74)):
-        file = '/data1/xtra/results/timestamps/MWAY_{}.txt'.format(id)
-        file2 = '/data1/xtra/results/records/MWAY_{}.txt'.format(id)
+        file = exp_dir + '/results/timestamps/MWAY_{}.txt'.format(id)
+        file2 = exp_dir + '/results/records/MWAY_{}.txt'.format(id)
         value = GetThroughput(file, file2)
         col4.append(value)
     y.append(col4)
 
     for id in it.chain(range(70, 74)):
-        file = '/data1/xtra/results/timestamps/SHJ_JM_NP_{}.txt'.format(id)
-        file2 = '/data1/xtra/results/records/SHJ_JM_NP_{}.txt'.format(id)
+        file = exp_dir + '/results/timestamps/SHJ_JM_NP_{}.txt'.format(id)
+        file2 = exp_dir + '/results/records/SHJ_JM_NP_{}.txt'.format(id)
         value = GetThroughput(file, file2)
         col5.append(value)
     y.append(col5)
 
     for id in it.chain(range(70, 74)):
-        file = '/data1/xtra/results/timestamps/SHJ_JBCR_NP_{}.txt'.format(id)
-        file2 = '/data1/xtra/results/records/SHJ_JBCR_NP_{}.txt'.format(id)
+        file = exp_dir + '/results/timestamps/SHJ_JBCR_NP_{}.txt'.format(id)
+        file2 = exp_dir + '/results/records/SHJ_JBCR_NP_{}.txt'.format(id)
         value = GetThroughput(file, file2)
         col6.append(value)
     y.append(col6)
 
     for id in it.chain(range(70, 74)):
-        file = '/data1/xtra/results/timestamps/PMJ_JM_NP_{}.txt'.format(id)
-        file2 = '/data1/xtra/results/records/PMJ_JM_NP_{}.txt'.format(id)
+        file = exp_dir + '/results/timestamps/PMJ_JM_NP_{}.txt'.format(id)
+        file2 = exp_dir + '/results/records/PMJ_JM_NP_{}.txt'.format(id)
         value = GetThroughput(file, file2)
         col7.append(value)
     y.append(col7)
 
     for id in it.chain(range(70, 74)):
-        file = '/data1/xtra/results/timestamps/PMJ_JBCR_NP_{}.txt'.format(id)
-        file2 = '/data1/xtra/results/records/PMJ_JBCR_NP_{}.txt'.format(id)
+        file = exp_dir + '/results/timestamps/PMJ_JBCR_NP_{}.txt'.format(id)
+        file2 = exp_dir + '/results/records/PMJ_JBCR_NP_{}.txt'.format(id)
         value = GetThroughput(file, file2)
         col8.append(value)
     y.append(col8)

@@ -33,8 +33,9 @@ matplotlib.rcParams['xtick.labelsize'] = TICK_FONT_SIZE
 matplotlib.rcParams['ytick.labelsize'] = TICK_FONT_SIZE
 matplotlib.rcParams['font.family'] = OPT_FONT_NAME
 
-FIGURE_FOLDER = '/data1/xtra/results/figure'
+exp_dir = "/data1/xtra"
 
+FIGURE_FOLDER = exp_dir + '/results/figure'
 
 # there are some embedding problems if directly exporting the pdf figure using matplotlib.
 # so we generate the eps format first and convert it to pdf.
@@ -147,7 +148,7 @@ def ReadFile(N):
     col5 = []
     col6 = []
 
-    f = open("/data1/xtra/results/timestamps/SHJ_JM_NP0.txt", "r")
+    f = open(exp_dir + "/results/timestamps/SHJ_JM_NP0.txt", "r")
     cnt = 1
     read = f.readlines()
     for x in read:
@@ -156,7 +157,7 @@ def ReadFile(N):
         cnt += 1
     y.append(col1)
 
-    f = open("/data1/xtra/results/SHJ_JBCR_NP_timestamps.txt", "r")
+    f = open(exp_dir + "/results/SHJ_JBCR_NP_timestamps.txt", "r")
     cnt = 1
     read = f.readlines()
     for x in read:
@@ -165,7 +166,7 @@ def ReadFile(N):
         cnt += 1
     y.append(col2)
 
-    f = open("/data1/xtra/results/PMJ_JM_NP_timestamps.txt", "r")
+    f = open(exp_dir + "/results/PMJ_JM_NP_timestamps.txt", "r")
     cnt = 1
     read = f.readlines()
     for x in read:
@@ -174,7 +175,7 @@ def ReadFile(N):
         cnt += 1
     y.append(col3)
 
-    f = open("/data1/xtra/results/PMJ_JBCR_NP_timestamps.txt", "r")
+    f = open(exp_dir + "/results/PMJ_JBCR_NP_timestamps.txt", "r")
     cnt = 1
     read = f.readlines()
     for x in read:
@@ -183,7 +184,7 @@ def ReadFile(N):
         cnt += 1
     y.append(col4)
 
-    f = open("/data1/xtra/results/PRJ_timestamps.txt", "r")
+    f = open(exp_dir + "/results/PRJ_timestamps.txt", "r")
     cnt = 1
     read = f.readlines()
     for x in read:
@@ -192,7 +193,7 @@ def ReadFile(N):
         cnt += 1
     y.append(col5)
 
-    f = open("/data1/xtra/results/NPJ_timestamps.txt", "r")
+    f = open(exp_dir + "/results/NPJ_timestamps.txt", "r")
     cnt = 1
     read = f.readlines()
     for x in read:

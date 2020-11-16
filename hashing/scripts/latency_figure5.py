@@ -39,8 +39,10 @@ rc('font',**{'family':'sans-serif',
              }
    )
 rc('text', usetex=True)
-FIGURE_FOLDER = '/data1/xtra/results/figure'
 
+exp_dir = "/data1/xtra"
+
+FIGURE_FOLDER = exp_dir + '/results/figure'
 
 # there are some embedding problems if directly exporting the pdf figure using matplotlib.
 # so we generate the eps format first and convert it to pdf.
@@ -160,7 +162,7 @@ def ReadFile():
     y.append(col9)
 
     for id in it.chain(range(20,25)):
-        file = '/data1/xtra/results/latency/PRJ_{}.txt'.format(id)
+        file = exp_dir + '/results/latency/PRJ_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(int(len(read) * 0.95)).strip("\n"))  # get the 99th timestamp
@@ -168,7 +170,7 @@ def ReadFile():
     y.append(col1)
 
     for id in it.chain(range(20,25)):
-        file = '/data1/xtra/results/latency/NPJ_{}.txt'.format(id)
+        file = exp_dir + '/results/latency/NPJ_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(int(len(read) * 0.95)).strip("\n"))  # get the 99th timestamp
@@ -176,7 +178,7 @@ def ReadFile():
     y.append(col2)
 
     for id in it.chain(range(20,25)):
-        file = '/data1/xtra/results/latency/MPASS_{}.txt'.format(id)
+        file = exp_dir + '/results/latency/MPASS_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(int(len(read) * 0.95)).strip("\n"))  # get the 99th timestamp
@@ -184,7 +186,7 @@ def ReadFile():
     y.append(col3)
 
     for id in it.chain(range(20,25)):
-        file = '/data1/xtra/results/latency/MWAY_{}.txt'.format(id)
+        file = exp_dir + '/results/latency/MWAY_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(int(len(read) * 0.95)).strip("\n"))  # get the 99th timestamp
@@ -194,7 +196,7 @@ def ReadFile():
     y.append(col9)  # this is a fake empty line to separate eager and lazy.
 
     for id in it.chain(range(20,25)):
-        file = '/data1/xtra/results/latency/SHJ_JM_NP_{}.txt'.format(id)
+        file = exp_dir + '/results/latency/SHJ_JM_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(int(len(read) * 0.95)).strip("\n"))  # get last timestamp
@@ -202,7 +204,7 @@ def ReadFile():
     y.append(col5)
 
     for id in it.chain(range(20,25)):
-        file = '/data1/xtra/results/latency/SHJ_JBCR_NP_{}.txt'.format(id)
+        file = exp_dir + '/results/latency/SHJ_JBCR_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(int(len(read) * 0.95)).strip("\n"))  # get last timestamp
@@ -210,7 +212,7 @@ def ReadFile():
     y.append(col6)
 
     for id in it.chain(range(20,25)):
-        file = '/data1/xtra/results/latency/PMJ_JM_NP_{}.txt'.format(id)
+        file = exp_dir + '/results/latency/PMJ_JM_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(int(len(read) * 0.95)).strip("\n"))  # get last timestamp
@@ -218,7 +220,7 @@ def ReadFile():
     y.append(col7)
 
     for id in it.chain(range(20,25)):
-        file = '/data1/xtra/results/latency/PMJ_JBCR_NP_{}.txt'.format(id)
+        file = exp_dir + '/results/latency/PMJ_JBCR_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(int(len(read) * 0.95)).strip("\n"))  # get last timestamp

@@ -35,7 +35,9 @@ mpl.rcParams['xtick.labelsize'] = TICK_FONT_SIZE
 mpl.rcParams['ytick.labelsize'] = TICK_FONT_SIZE
 mpl.rcParams['font.family'] = OPT_FONT_NAME
 
-FIGURE_FOLDER = '/data1/xtra/results/figure'
+exp_dir = "/data1/xtra"
+
+FIGURE_FOLDER = exp_dir + '/results/figure'
 
 
 # there are some embedding problems if directly exporting the pdf figure using matplotlib.
@@ -55,7 +57,7 @@ def ReadFile():
     col6 = []
 
     for id in it.chain(range(1, 5), range(0, 1)):
-        file = '/data1/xtra/results/timestamps/PRJ_{}.txt'.format(id)
+        file = exp_dir + '/results/timestamps/PRJ_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
@@ -63,7 +65,7 @@ def ReadFile():
         col1.append(value)
 
     for id in it.chain(range(1, 5), range(0, 1)):
-        file = '/data1/xtra/results/timestamps/NPJ_{}.txt'.format(id)
+        file = exp_dir + '/results/timestamps/NPJ_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
@@ -71,7 +73,7 @@ def ReadFile():
         col2.append(value)
 
     for id in it.chain(range(1, 5), range(0, 1)):
-        file = '/data1/xtra/results/timestamps/SHJ_JM_NP_{}.txt'.format(id)
+        file = exp_dir + '/results/timestamps/SHJ_JM_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
@@ -79,7 +81,7 @@ def ReadFile():
         col3.append(value)
 
     for id in it.chain(range(1, 5), range(0, 1)):
-        file = '/data1/xtra/results/timestamps/SHJ_JBCR_NP_{}.txt'.format(id)
+        file = exp_dir + '/results/timestamps/SHJ_JBCR_NP_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
@@ -87,7 +89,7 @@ def ReadFile():
         col4.append(value)
 
     # for id in it.chain(range(1, 5),  range(0,1)):
-    #     file = '/data1/xtra/results/timestamps/PMJ_JM_NP_{}.txt'.format(id)
+    #     file = exp_dir + '/results/timestamps/PMJ_JM_NP_{}.txt'.format(id)
     #     f = open(file, "r")
     #     read = f.readlines()
     #     x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
@@ -95,7 +97,7 @@ def ReadFile():
     #     col5.append(value)
     #
     # for id in it.chain(range(1, 5),  range(0,1)):
-    #     file = '/data1/xtra/results/timestamps/PMJ_JBCR_NP_{}.txt'.format(id)
+    #     file = exp_dir + '/results/timestamps/PMJ_JBCR_NP_{}.txt'.format(id)
     #     f = open(file, "r")
     #     read = f.readlines()
     #     x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp

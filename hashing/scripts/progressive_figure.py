@@ -40,8 +40,9 @@ mpl.rcParams['xtick.labelsize'] = TICK_FONT_SIZE
 mpl.rcParams['ytick.labelsize'] = TICK_FONT_SIZE
 mpl.rcParams['font.family'] = OPT_FONT_NAME
 
-FIGURE_FOLDER = '/data1/xtra/results/figure'
+exp_dir = "/data1/xtra"
 
+FIGURE_FOLDER = exp_dir + '/results/figure'
 
 # there are some embedding problems if directly exporting the pdf figure using matplotlib.
 # so we generate the eps format first and convert it to pdf.
@@ -53,56 +54,56 @@ def ConvertEpsToPdf(dir_filename):
 def getmaxts(id):
     ts = 0
 
-    file = '/data1/xtra/results/timestamps/PRJ_{}.txt'.format(id)
+    file = exp_dir + '/results/timestamps/PRJ_{}.txt'.format(id)
     f = open(file, "r")
     read = f.readlines()
     x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
     if (x > ts):
         ts = x
 
-    file = '/data1/xtra/results/timestamps/NPJ_{}.txt'.format(id)
+    file = exp_dir + '/results/timestamps/NPJ_{}.txt'.format(id)
     f = open(file, "r")
     read = f.readlines()
     x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
     if (x > ts):
         ts = x
 
-    file = '/data1/xtra/results/timestamps/MPASS_{}.txt'.format(id)
+    file = exp_dir + '/results/timestamps/MPASS_{}.txt'.format(id)
     f = open(file, "r")
     read = f.readlines()
     x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
     if (x > ts):
         ts = x
 
-    file = '/data1/xtra/results/timestamps/MWAY_{}.txt'.format(id)
+    file = exp_dir + '/results/timestamps/MWAY_{}.txt'.format(id)
     f = open(file, "r")
     read = f.readlines()
     x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
     if (x > ts):
         ts = x
 
-    file = '/data1/xtra/results/timestamps/SHJ_JM_NP_{}.txt'.format(id)
+    file = exp_dir + '/results/timestamps/SHJ_JM_NP_{}.txt'.format(id)
     f = open(file, "r")
     read = f.readlines()
     x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
     if (x > ts):
         ts = x
 
-    file = '/data1/xtra/results/timestamps/SHJ_JBCR_NP_{}.txt'.format(id)
+    file = exp_dir + '/results/timestamps/SHJ_JBCR_NP_{}.txt'.format(id)
     f = open(file, "r")
     read = f.readlines()
     x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
     if (x > ts):
         ts = x
 
-    file = '/data1/xtra/results/timestamps/PMJ_JM_NP_{}.txt'.format(id)
+    file = exp_dir + '/results/timestamps/PMJ_JM_NP_{}.txt'.format(id)
     f = open(file, "r")
     read = f.readlines()
     x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
     if (x > ts):
         ts = x
 
-    file = '/data1/xtra/results/timestamps/PMJ_JBCR_NP_{}.txt'.format(id)
+    file = exp_dir + '/results/timestamps/PMJ_JBCR_NP_{}.txt'.format(id)
     f = open(file, "r")
     read = f.readlines()
     x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
@@ -112,7 +113,7 @@ def getmaxts(id):
 
 
 def getCount(id):
-    file = '/data1/xtra/results/timestamps/PRJ_{}.txt'.format(id)
+    file = exp_dir + '/results/timestamps/PRJ_{}.txt'.format(id)
     f = open(file, "r")
     read = f.readlines()
     return len(read)
@@ -126,7 +127,7 @@ def ReadFile(id):
     empty_col = []
     empty_coly = []
     col = []
-    f = open("/data1/xtra/results/timestamps/NPJ_{}.txt".format(id), "r")
+    f = open(exp_dir + "/results/timestamps/NPJ_{}.txt".format(id), "r")
     read = f.readlines()
     for r in read:
         value = double(r.strip("\n"))  # timestamp.
@@ -144,7 +145,7 @@ def ReadFile(id):
     y_axis.append(coly)
 
     col = []
-    f = open("/data1/xtra/results/timestamps/PRJ_{}.txt".format(id), "r")
+    f = open(exp_dir + "/results/timestamps/PRJ_{}.txt".format(id), "r")
     read = f.readlines()
     for r in read:
         value = double(r.strip("\n"))  # timestamp.
@@ -156,7 +157,7 @@ def ReadFile(id):
     y_axis.append(coly)
 
     col = []
-    f = open("/data1/xtra/results/timestamps/MWAY_{}.txt".format(id), "r")
+    f = open(exp_dir + "/results/timestamps/MWAY_{}.txt".format(id), "r")
     read = f.readlines()
     for r in read:
         value = double(r.strip("\n"))  # timestamp.
@@ -168,7 +169,7 @@ def ReadFile(id):
     y_axis.append(coly)
 
     col = []
-    f = open("/data1/xtra/results/timestamps/MPASS_{}.txt".format(id), "r")
+    f = open(exp_dir + "/results/timestamps/MPASS_{}.txt".format(id), "r")
     read = f.readlines()
     for r in read:
         value = double(r.strip("\n"))  # timestamp.
@@ -183,7 +184,7 @@ def ReadFile(id):
     y_axis.append(empty_coly)
 
     col = []
-    f = open("/data1/xtra/results/timestamps/SHJ_JM_NP_{}.txt".format(id), "r")
+    f = open(exp_dir + "/results/timestamps/SHJ_JM_NP_{}.txt".format(id), "r")
     read = f.readlines()
     for r in read:
         value = double(r.strip("\n"))  # timestamp.
@@ -195,7 +196,7 @@ def ReadFile(id):
     y_axis.append(coly)
 
     col = []
-    f = open("/data1/xtra/results/timestamps/SHJ_JBCR_NP_{}.txt".format(id), "r")
+    f = open(exp_dir + "/results/timestamps/SHJ_JBCR_NP_{}.txt".format(id), "r")
     read = f.readlines()
     for r in read:
         value = double(r.strip("\n"))  # timestamp.
@@ -207,7 +208,7 @@ def ReadFile(id):
     y_axis.append(coly)
 
     col = []
-    f = open("/data1/xtra/results/timestamps/PMJ_JM_NP_{}.txt".format(id), "r")
+    f = open(exp_dir + "/results/timestamps/PMJ_JM_NP_{}.txt".format(id), "r")
     read = f.readlines()
     for r in read:
         value = double(r.strip("\n"))  # timestamp.
@@ -219,7 +220,7 @@ def ReadFile(id):
     y_axis.append(coly)
 
     col = []
-    f = open("/data1/xtra/results/timestamps/PMJ_JBCR_NP_{}.txt".format(id), "r")
+    f = open(exp_dir + "/results/timestamps/PMJ_JBCR_NP_{}.txt".format(id), "r")
     read = f.readlines()
     for r in read:
         value = double(r.strip("\n"))  # timestamp.

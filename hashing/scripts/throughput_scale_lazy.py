@@ -35,8 +35,9 @@ mpl.rcParams['xtick.labelsize'] = TICK_FONT_SIZE
 mpl.rcParams['ytick.labelsize'] = TICK_FONT_SIZE
 mpl.rcParams['font.family'] = OPT_FONT_NAME
 
-FIGURE_FOLDER = '/data1/xtra/results/figure'
+exp_dir = "/data1/xtra"
 
+FIGURE_FOLDER = exp_dir + '/results/figure'
 
 # there are some embedding problems if directly exporting the pdf figure using matplotlib.
 # so we generate the eps format first and convert it to pdf.
@@ -85,7 +86,7 @@ def ReadFile():
     col4 = []
 
     for id in it.chain(range(42, 46)):
-        file = '/data1/xtra/results/timestamps/MPASS_{}.txt'.format(id)
+        file = exp_dir + '/results/timestamps/MPASS_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
@@ -93,7 +94,7 @@ def ReadFile():
     y.append(normalize(col1))
 
     for id in it.chain(range(46, 50)):
-        file = '/data1/xtra/results/timestamps/MPASS_{}.txt'.format(id)
+        file = exp_dir + '/results/timestamps/MPASS_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
@@ -101,7 +102,7 @@ def ReadFile():
     y.append(normalize(col2))
 
     for id in it.chain(range(50, 54)):
-        file = '/data1/xtra/results/timestamps/MPASS_{}.txt'.format(id)
+        file = exp_dir + '/results/timestamps/MPASS_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp
@@ -109,7 +110,7 @@ def ReadFile():
     y.append(normalize(col3))
 
     for id in it.chain(range(54, 58)):
-        file = '/data1/xtra/results/timestamps/MPASS_{}.txt'.format(id)
+        file = exp_dir + '/results/timestamps/MPASS_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
         x = float(read.pop(len(read) - 1).strip("\n"))  # get last timestamp

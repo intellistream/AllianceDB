@@ -32,8 +32,9 @@ matplotlib.rcParams['xtick.labelsize'] = TICK_FONT_SIZE
 matplotlib.rcParams['ytick.labelsize'] = TICK_FONT_SIZE
 matplotlib.rcParams['font.family'] = OPT_FONT_NAME
 
-FIGURE_FOLDER = '/data1/xtra/results/figure'
+exp_dir = "/data1/xtra"
 
+FIGURE_FOLDER = exp_dir + '/results/figure'
 
 def DrawLegend(legend_labels, filename):
     fig = pylab.figure()
@@ -110,21 +111,21 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
 
 
 def GetL1MISS(id):
-    file = '/data1/xtra/results/breakdown/profile_{}.txt'.format(id)
+    file = exp_dir + '/results/breakdown/profile_{}.txt'.format(id)
     with open(file) as fi:
         for ln in fi:
             if ln.startswith("L2Hit"):
                 return float(ln[6:])
 
 def GetL2MISS(id):
-    file = '/data1/xtra/results/breakdown/profile_{}.txt'.format(id)
+    file = exp_dir + '/results/breakdown/profile_{}.txt'.format(id)
     with open(file) as fi:
         for ln in fi:
             if ln.startswith("L2Misses "):
                 return float(ln[9:])
 
 def GetL3MISS(id):
-    file = '/data1/xtra/results/breakdown/profile_{}.txt'.format(id)
+    file = exp_dir + '/results/breakdown/profile_{}.txt'.format(id)
     with open(file) as fi:
         for ln in fi:
             if ln.startswith("L3Misses "):
@@ -135,7 +136,7 @@ if __name__ == "__main__":
         'L1 miss', 'L2 miss', 'L3 miss'
     ]
     y_values = []
-    file = '/data1/xtra/results/records/NPJ_{}.txt'.format(40)
+    file = exp_dir + '/results/records/NPJ_{}.txt'.format(40)
     f = open(file, "r")
     read = f.readlines()
     inputs = float(read.pop(0).strip("\n"))  /1000 # get number of inputs (in k)

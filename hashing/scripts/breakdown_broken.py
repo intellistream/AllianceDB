@@ -36,7 +36,9 @@ matplotlib.rcParams['xtick.labelsize'] = TICK_FONT_SIZE
 matplotlib.rcParams['ytick.labelsize'] = TICK_FONT_SIZE
 matplotlib.rcParams['font.family'] = OPT_FONT_NAME
 
-FIGURE_FOLDER = '/data1/xtra/results/figure'
+exp_dir = "/data1/xtra"
+
+FIGURE_FOLDER = exp_dir + '/results/figure'
 
 
 # there are some embedding problems if directly exporting the pdf figure using matplotlib.
@@ -210,7 +212,7 @@ def ReadFile(id):
 
     cnt = 0
     linecnt = 0
-    f = open("/data1/xtra/results/breakdown/NPJ_{}.txt".format(id), "r")
+    f = open(exp_dir + "/results/breakdown/NPJ_{}.txt".format(id), "r")
     read = f.readlines()
     for x in read:
         value = double(x.strip("\n"))
@@ -223,7 +225,7 @@ def ReadFile(id):
 
     cnt = 0
     linecnt = 0
-    f = open("/data1/xtra/results/breakdown/PRJ_{}.txt".format(id), "r")
+    f = open(exp_dir + "/results/breakdown/PRJ_{}.txt".format(id), "r")
     read = f.readlines()
     for x in read:
         value = double(x.strip("\n"))
@@ -236,7 +238,7 @@ def ReadFile(id):
 
     cnt = 0
     linecnt = 0
-    f = open("/data1/xtra/results/breakdown/MWAY_{}.txt".format(id), "r")
+    f = open(exp_dir + "/results/breakdown/MWAY_{}.txt".format(id), "r")
     read = f.readlines()
     for x in read:
         value = double(x.strip("\n"))
@@ -249,7 +251,7 @@ def ReadFile(id):
 
     cnt = 0
     linecnt = 0
-    f = open("/data1/xtra/results/breakdown/MPASS_{}.txt".format(id), "r")
+    f = open(exp_dir + "/results/breakdown/MPASS_{}.txt".format(id), "r")
     read = f.readlines()
     for x in read:
         value = double(x.strip("\n"))
@@ -262,7 +264,7 @@ def ReadFile(id):
 
     cnt = 0
     linecnt = 0
-    f = open("/data1/xtra/results/breakdown/SHJ_JM_P_{}.txt".format(id), "r")
+    f = open(exp_dir + "/results/breakdown/SHJ_JM_P_{}.txt".format(id), "r")
     read = f.readlines()
     for _ in read:
         if (linecnt != 3):  ##skip sort.
@@ -272,7 +274,7 @@ def ReadFile(id):
 
     cnt = 0
     linecnt = 0
-    f = open("/data1/xtra/results/breakdown/SHJ_JM_P_{}.txt".format(id), "r")
+    f = open(exp_dir + "/results/breakdown/SHJ_JM_P_{}.txt".format(id), "r")
     read = f.readlines()
     for x in read:
         if (linecnt != 3):  ##skip sort.
@@ -285,7 +287,7 @@ def ReadFile(id):
 
     cnt = 0
     linecnt = 0
-    f = open("/data1/xtra/results/breakdown/SHJ_JBCR_P_{}.txt".format(id), "r")
+    f = open(exp_dir + "/results/breakdown/SHJ_JBCR_P_{}.txt".format(id), "r")
     read = f.readlines()
     for x in read:
         if (linecnt != 3):  ##skip sort.
@@ -298,7 +300,7 @@ def ReadFile(id):
 
     cnt = 0
     linecnt = 0
-    f = open("/data1/xtra/results/breakdown/PMJ_JM_P_{}.txt".format(id), "r")
+    f = open(exp_dir + "/results/breakdown/PMJ_JM_P_{}.txt".format(id), "r")
     read = f.readlines()
     for x in read:
         if (linecnt != 2):  ##skip build.
@@ -311,7 +313,7 @@ def ReadFile(id):
 
     cnt = 0
     linecnt = 0
-    f = open("/data1/xtra/results/breakdown/PMJ_JBCR_P_{}.txt".format(id), "r")
+    f = open(exp_dir + "/results/breakdown/PMJ_JBCR_P_{}.txt".format(id), "r")
     read = f.readlines()
     for x in read:
         if (linecnt != 2):  ##skip build.

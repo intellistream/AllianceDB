@@ -48,7 +48,9 @@ matplotlib.rcParams['font.family'] = OPT_FONT_NAME
 #    )
 # rc('text', usetex=True)
 
-FIGURE_FOLDER = '/data1/xtra/results/figure'
+exp_dir = "/data1/xtra"
+
+FIGURE_FOLDER = exp_dir + '/results/figure'
 
 
 # there are some embedding problems if directly exporting the pdf figure using matplotlib.
@@ -209,7 +211,7 @@ def ReadFile(id, sample_point):
             y.append(empty_coly)
         col = []
         coly = []
-        file = '/data1/xtra/results/breakdown/mem_stat_{}.txt'.format(i)
+        file = exp_dir + '/results/breakdown/mem_stat_{}.txt'.format(i)
         f = open(file, "r")
         read = f.readlines()
         # if i >= 300 and i<= 303: # lazy, progressive

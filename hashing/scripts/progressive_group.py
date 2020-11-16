@@ -39,7 +39,9 @@ mpl.rcParams['xtick.labelsize'] = TICK_FONT_SIZE
 mpl.rcParams['ytick.labelsize'] = TICK_FONT_SIZE
 mpl.rcParams['font.family'] = OPT_FONT_NAME
 
-FIGURE_FOLDER = '/data1/xtra/results/figure'
+exp_dir = "/data1/xtra"
+
+FIGURE_FOLDER = exp_dir + '/results/figure'
 
 
 # there are some embedding problems if directly exporting the pdf figure using matplotlib.
@@ -69,7 +71,7 @@ def ReadFile(S, id):
     w = 5
     bound = id + 1 * w
     for i in range(id, bound, 1):
-        f = open("/data1/xtra/results/timestamps/PMJ_JBCR_NP_{}.txt".format(i), "r")
+        f = open(exp_dir + "/results/timestamps/PMJ_JBCR_NP_{}.txt".format(i), "r")
         cnt = 1
         read = f.readlines()
         for x in read:
