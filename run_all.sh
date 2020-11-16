@@ -15,6 +15,36 @@ mkdir -p $exp_dir/results/latency
 mkdir -p $exp_dir/results/records
 mkdir -p $exp_dir/results/timestamps
 
+# read arguments
+helpFunction()
+{
+   echo ""
+   echo "Usage: $0 -d exp_dir -c L3_cache_size"
+   echo -e "\t-d the experiment results directory"
+   echo -e "\t-c the L3 cache size of the current CPU"
+   exit 1 # Exit script after printing help
+}
+
+while getopts "d:c:" opt
+do
+   case "$opt" in
+      d ) exp_dir="$OPTARG" ;;
+      c ) L3_cache_size="$OPTARG" ;;
+      ? ) helpFunction ;; # Print helpFunction in case parameter is non-existent
+   esac
+done
+
+# Print helpFunction in case parameters are empty
+if [ -z "$exp_dir" ] || [ -z "$L3_cache_size" ]
+then
+   echo "Some or all of the parameters are empty";
+   helpFunction
+fi
+
+# Begin script in case all parameters are correct
+echo "$exp_dir"
+echo "$L3_cache_size"
+
 # copy custom pmu events to experiment dir.
 # TODO: do we need to cupy a cpu-mappings.txt?
 # TODO: copy datasets to the experiment dir
