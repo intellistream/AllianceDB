@@ -13,6 +13,12 @@ All of our experiments can be automatically reproduced by calling a few pre-prep
 
 ## Third-party Lib
 
+1. cmake install
+
+```
+sudo apt install -y cmake
+```
+
 1. tex font rendering:
 
 ```shell
@@ -54,7 +60,7 @@ sudo apt install -y python-tk
 ```shell
 sudo apt install -y linux-tools-common
 sudo apt install -y linux-tools-XXX # XXX is the kernel version of your linux, use uname -a to check it. e.g. 4.15.0-91-generic
-sudo echo -1 > /proc/sys/kernel/perf_event_paranoid
+sudo echo -1 > /proc/sys/kernel/perf_event_paranoid # if permission denied, try to run this at root user.
 sudo modprobe msr
 ```
 
