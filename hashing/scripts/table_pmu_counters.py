@@ -18,7 +18,7 @@ def ReadFile(id, tuple_cnt):
     # Creates a list containing w lists, each of h items, all set to 0
     global UNC_ARB_TRK_OCCUPANCY, UNC_CLOCK_SOCKET
     global L1D_REPL, INST_RETIRED
-    w, h = 8, 11
+    w, h = 8, 10
     data = [[0 for x in range(w+1)] for y in range(h)]
 
     bound = id + 1 * w
@@ -88,14 +88,15 @@ def ReadFile(id, tuple_cnt):
         # data[8][j] = format(colomn["MEM_BAND"], '.6f')
         data[9][j] = format(colomn["CPU_UTIL"] * 100, '.3f')
         # data[10][j] = format(colomn["MEM_BAND_CAL"]/31872.0, '.6f')
-        data[10][j] = format(colomn["MEM_BAND_CAL"]/31872.0 * 100, '.3f')
+        # data[10][j] = format(colomn["MEM_BAND_CAL"]/31872.0 * 100, '.3f')
         j += 1
         colomn.clear()
 
     print(data)
 
 
-    col_name = ["TLBD Misses", "TLBI Misses", "L1I Misses", "L1D Misses", "L2 Misses", "L3 Misses", "Branch Mispred.", "Instr. Exec.", "Memory BW.(\%)", "CPU. Util.(\%)", "Memory BW.(CAL)"]
+    # col_name = ["TLBD Misses", "TLBI Misses", "L1I Misses", "L1D Misses", "L2 Misses", "L3 Misses", "Branch Mispred.", "Instr. Exec.", "Memory BW.(\%)", "CPU. Util.(\%)", "Memory BW.(CAL)"]
+    col_name = ["TLBD Misses", "TLBI Misses", "L1I Misses", "L1D Misses", "L2 Misses", "L3 Misses", "Branch Misp.", "Instr. Exec.", "Mem. BW.(\%)", "CPU. Util.(\%)"]
 
     i=0
     for val in data:

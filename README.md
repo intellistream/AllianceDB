@@ -22,10 +22,10 @@ sudo apt install -y cmake
 1. tex font rendering:
 
 ```shell
-sudo apt-get install -y texlive-fonts-recommended texlive-fonts-extra
-sudo apt-get install -y dvipng
+sudo apt install -y texlive-fonts-recommended texlive-fonts-extra
+sudo apt install -y dvipng
 sudo apt install -y font-manager
-sudo apt-get install -y cm-super
+sudo apt install -y cm-super
 ```
 
 2. python3:
@@ -116,5 +116,6 @@ Stock:
 
 ​	sb_1000ms_1t.txt: stockid|timestamp
 
+## Results
 
-
+All results are in `exp_dir/results/figures`.
