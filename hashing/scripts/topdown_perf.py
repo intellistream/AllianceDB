@@ -213,7 +213,7 @@ def ReadFile(id):
         uarch["Memory Bound"] = (column["CYCLE_ACTIVITY.STALLS_MEM_ANY"] + column["RESOURCE_STALLS.SB"])/clocks
         uarch["Core Bound"] = uarch["Backend Bound"] - uarch["Memory Bound"]
 
-        print(column)
+        # print(column)
         print(uarch)
 
         # y[0][j] = uarch["Frontend Bound"] * 100
