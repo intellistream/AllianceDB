@@ -93,7 +93,7 @@ python3 throughput_scale_lazy.py
 python3 throughput_scale_eager.py
 
 ## SIMD_STUDY
-echo "Drawing Figure 19..."
+echo "Drawing Figure 20..."
 python3 breakdown_simd.py
 # -- python3 profile_simd.py not in use anymore.
 
