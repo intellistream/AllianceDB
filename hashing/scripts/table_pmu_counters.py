@@ -25,7 +25,7 @@ def ReadFile(id, tuple_cnt):
     colomn = {}
     j = 0
     for i in range(id, bound, 1):
-        print(i)
+        # print(i)
         f = open(exp_dir + '/results/breakdown/profile_{}.txt'.format(i), "r")
         read = f.readlines()
         for line in read:
