@@ -73,7 +73,7 @@ def ReadFile(id, tuple_cnt):
         time_interval_s = (ts_end_ns - ts_start_ns) / 1E9
         colomn["MEM_BAND_CAL"] = (colomn["BytesFromMC"] + colomn["BytesWrittenToMC"]) / (time_interval_s*1000000)
 
-        print(colomn)
+        # print(colomn)
 
         data[0][j] = format(colomn["TLBD_Misses"], '.3f')
         data[1][j] = format(colomn["ITLB_MISSES"], '.3f')
@@ -92,7 +92,7 @@ def ReadFile(id, tuple_cnt):
         j += 1
         colomn.clear()
 
-    print(data)
+    # print(data)
 
 
     # col_name = ["TLBD Misses", "TLBI Misses", "L1I Misses", "L1D Misses", "L2 Misses", "L3 Misses", "Branch Mispred.", "Instr. Exec.", "Memory BW.(\%)", "CPU. Util.(\%)", "Memory BW.(CAL)"]
