@@ -5,11 +5,9 @@ All of our experiments can be automatically reproduced by calling a few pre-prep
 ## TODO
 
 1. correct name in all scripts (e.g., drawing which figure.). draw.sh correct "Drawing Figure xxx".
-2. clean all data path, do not use fixed "/data1/xtra/...", both in scripts and code.  - roughly done, need to be tested.
+2. PCM counters are unstable, always give -XXX cpu utilizations during end-to-end measurement.
 3. move all control variables into a dedicated header file "control.hpp". Currently, they are scattered in multiple files including common_functions.h perf_counter.h, params.h
-4. draw figure scripts has not automated yet.
-6. create a auto-deploy scripts in the end.
-7. Auto install all required lib and tools. Auto config all required configurations.
+4. Auto install all required lib and tools. Auto config all required configurations.
 
 ## Third-party Lib
 
