@@ -3107,7 +3107,7 @@ void populatePerfPMUs(unsigned socket_, const std::vector<int> & ids, std::vecto
     {
         // always return false to avoid the reset option and affect our exp results.
         // you can disable this one if you want to get more precise results.
-//        return false;
+        return false;
         // follow the "Performance Monitoring Unit Sharing Guide" by P. Irelan and Sh. Kuo
         for (int i = 0; i < (int)num_cores; ++i)
         {
