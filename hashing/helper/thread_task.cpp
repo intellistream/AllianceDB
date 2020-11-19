@@ -68,7 +68,7 @@ void *THREAD_TASK_NOSHUFFLE(void *param) {
       PCM_initPerformanceMonitor(NULL, NULL);
       PCM_start();
         auto curtime = std::chrono::steady_clock::now();
-        string path = EXP_DIR "/breakdown/time_start_" + std::to_string(args->exp_id) + ".txt";
+        string path = EXP_DIR "/results/breakdown/time_start_" + std::to_string(args->exp_id) + ".txt";
         auto fp = fopen(path.c_str(), "w");
         fprintf(fp, "%ld\n", curtime);
       MSG("Thread:%id initialized PCM", args->tid)
@@ -112,7 +112,7 @@ void *THREAD_TASK_NOSHUFFLE(void *param) {
       MSG("Thread:%id stops PCM", args->tid)
       PCM_stop();
         auto curtime = std::chrono::steady_clock::now();
-        string path = EXP_DIR "/breakdown/time_end_" + std::to_string(args->exp_id) + ".txt";
+        string path = EXP_DIR "/results/breakdown/time_end_" + std::to_string(args->exp_id) + ".txt";
         auto fp = fopen(path.c_str(), "w");
         fprintf(fp, "%ld\n", curtime);
       PCM_log("========== Entire phase profiling results ==========\n");
@@ -174,7 +174,7 @@ void *THREAD_TASK_SHUFFLE(void *param) {
       PCM_initPerformanceMonitor(NULL, NULL);
       PCM_start();
         auto curtime = std::chrono::steady_clock::now();
-        string path = EXP_DIR "/breakdown/time_start_" + std::to_string(args->exp_id) + ".txt";
+        string path = EXP_DIR "/results/breakdown/time_start_" + std::to_string(args->exp_id) + ".txt";
         auto fp = fopen(path.c_str(), "w");
         fprintf(fp, "%ld\n", curtime);
       MSG("Thread:%id initialized PCM", args->tid)
@@ -235,7 +235,7 @@ void *THREAD_TASK_SHUFFLE(void *param) {
       MSG("Thread:%id stops PCM", args->tid)
       PCM_stop();
         auto curtime = std::chrono::steady_clock::now();
-        string path = EXP_DIR "/breakdown/time_end_" + std::to_string(args->exp_id) + ".txt";
+        string path = EXP_DIR "/results/breakdown/time_end_" + std::to_string(args->exp_id) + ".txt";
         auto fp = fopen(path.c_str(), "w");
         fprintf(fp, "%ld\n", curtime);
       PCM_log("========== Entire phase profiling results ==========\n");
@@ -506,7 +506,7 @@ void *THREAD_TASK_SHUFFLE_HS(void *param) {
       PCM_initPerformanceMonitor(NULL, NULL);
       PCM_start();
         auto curtime = std::chrono::steady_clock::now();
-        string path = EXP_DIR "/breakdown/time_start_" + std::to_string(args->exp_id) + ".txt";
+        string path = EXP_DIR "/results/breakdown/time_start_" + std::to_string(args->exp_id) + ".txt";
         auto fp = fopen(path.c_str(), "w");
         fprintf(fp, "%ld\n", curtime);
     }
@@ -589,7 +589,7 @@ void *THREAD_TASK_SHUFFLE_HS(void *param) {
     if (args->tid == 0) {
       PCM_stop();
         auto curtime = std::chrono::steady_clock::now();
-        string path = EXP_DIR "/breakdown/time_end_" + std::to_string(args->exp_id) + ".txt";
+        string path = EXP_DIR "/results/breakdown/time_end_" + std::to_string(args->exp_id) + ".txt";
         auto fp = fopen(path.c_str(), "w");
         fprintf(fp, "%ld\n", curtime);
       PCM_log("========== Probe phase profiling results ==========\n");

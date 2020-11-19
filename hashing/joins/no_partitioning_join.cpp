@@ -188,7 +188,7 @@ return nullptr;
       PCM_initPerformanceMonitor(NULL, NULL);
       PCM_start();
       auto curtime = std::chrono::steady_clock::now();
-      string path = EXP_DIR "/breakdown/time_start_" + std::to_string(args->exp_id) + ".txt";
+      string path = EXP_DIR "/results/breakdown/time_start_" + std::to_string(args->exp_id) + ".txt";
       auto fp = fopen(path.c_str(), "w");
       fprintf(fp, "%ld\n", curtime);
       sleep(1);
@@ -241,7 +241,7 @@ return nullptr;
     PCM_initPerformanceMonitor(NULL, NULL);
     PCM_start();
       auto curtime = std::chrono::steady_clock::now();
-      string path = EXP_DIR "/breakdown/time_start_" + std::to_string(args->exp_id) + ".txt";
+      string path = EXP_DIR "/results/breakdown/time_start_" + std::to_string(args->exp_id) + ".txt";
       auto fp = fopen(path.c_str(), "w");
       fprintf(fp, "%ld\n", curtime);
   }
@@ -264,7 +264,7 @@ return nullptr;
   if (args->tid == 0) {
     PCM_stop();
       auto curtime = std::chrono::steady_clock::now();
-      string path = EXP_DIR "/breakdown/time_end_" + std::to_string(args->exp_id) + ".txt";
+      string path = EXP_DIR "/results/breakdown/time_end_" + std::to_string(args->exp_id) + ".txt";
       auto fp = fopen(path.c_str(), "w");
       fprintf(fp, "%ld\n", curtime);
     PCM_log("========== Probe phase profiling results ==========\n");
@@ -282,7 +282,7 @@ return nullptr;
   if (args->tid == 0) {
     PCM_stop();
       auto curtime = std::chrono::steady_clock::now();
-      string path = EXP_DIR "/breakdown/time_end_" + std::to_string(args->exp_id) + ".txt";
+      string path = EXP_DIR "/results/breakdown/time_end_" + std::to_string(args->exp_id) + ".txt";
       auto fp = fopen(path.c_str(), "w");
       fprintf(fp, "%ld\n", curtime);
     PCM_log("========== overview profiling results ==========\n");
