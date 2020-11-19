@@ -218,6 +218,35 @@ function ALL_ON() {
   sed -i -e "s/#define NO_OVERVIEW/#define OVERVIEW/g" ../joins/common_functions.h
 }
 
+# Different execution mode for different experiments
+
+function PCM() {
+  sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h #disable time measurement
+  sed -i -e "s/#define NO_PERF_COUNTERS/#define PERF_COUNTERS/g" ../utils/perf_counters.h
+  sed -i -e "s/#define PROFILE_TOPDOWN/#define NO_PROFILE_TOPDOWN/g" ../joins/common_functions.h
+  sed -i -e "s/#define PROFILE_MEMORY_CONSUMPTION/#define NO_PROFILE_MEMORY_CONSUMPTION/g" ../joins/common_functions.h
+}
+
+function PERF() {
+  sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h #disable time measurement
+  sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h
+  sed -i -e "s/#define NO_PROFILE_TOPDOWN/#define PROFILE_TOPDOWN/g" ../joins/common_functions.h
+  sed -i -e "s/#define PROFILE_MEMORY_CONSUMPTION/#define NO_PROFILE_MEMORY_CONSUMPTION/g" ../joins/common_functions.h
+}
+
+function MEM_MEASURE() {
+  sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h
+  sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h
+  sed -i -e "s/#define PROFILE_TOPDOWN/#define NO_PROFILE_TOPDOWN/g" ../joins/common_functions.h
+  sed -i -e "s/#define NO_PROFILE_MEMORY_CONSUMPTION/#define PROFILE_MEMORY_CONSUMPTION/g" ../joins/common_functions.h
+}
+
+function NORMAL() {
+  sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h #disable time measurement
+  sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h
+  sed -i -e "s/#define PROFILE_TOPDOWN/#define NO_PROFILE_TOPDOWN/g" ../joins/common_functions.h
+  sed -i -e "s/#define PROFILE_MEMORY_CONSUMPTION/#define NO_PROFILE_MEMORY_CONSUMPTION/g" ../joins/common_functions.h
+}
 
 function FULLBENCHRUN() {
   PARTITION_ONLY
@@ -439,8 +468,7 @@ output=test$timestamp.txt
 ## APP benchmark.
 #APP_BENCH=0
 if [ $APP_BENCH == 1 ]; then
-  sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h            #enable time measurement
-  sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h #disable hardware counters
+  NORMAL
   #compile depends on whether we want to profile.
   for profile_breakdown in 1; do
     compile=1
@@ -480,6 +508,7 @@ fi
 ## MICRO benchmark.
 #MICRO_BENCH=0
 if [ $MICRO_BENCH == 1 ]; then
+  NORMAL
   profile_breakdown=0        # set to 1 if we want to measure time breakdown!
   compile=$profile_breakdown # compile depends on whether we want to profile.
   for benchmark in "AR" "RAR" "AD" "KD" "WS" "DD"; do #
@@ -592,8 +621,7 @@ fi
 ## SCLAE STUDY
 #SCALE_STUDY=0
 if [ $SCALE_STUDY == 1 ]; then
-  sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h            #enable time measurement
-  sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h #disable hardware counters
+  NORMAL
   profile_breakdown=0                                                                     #compile depends on whether we want to profile.
   compile=0
   # general benchmark.
@@ -663,8 +691,7 @@ fi
 ## MICRO STUDY
 #PROFILE_MICRO=0
 if [ $PROFILE_MICRO == 1 ]; then
-  sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h            #enable time measurement
-  sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h #disable hardware counters
+  NORMAL
   profile_breakdown=1                                                                     #compile depends on whether we want to profile.
   compile=1                                                                               #enable compiling.
   #benchmark experiment only apply for hashing directory.
@@ -792,8 +819,7 @@ fi
 
 #PROFILE=0 ## Cache misses profiling, please run the program with sudo
 if [ $PROFILE == 1 ]; then
-  sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h #disable time measurement
-  sed -i -e "s/#define NO_PERF_COUNTERS/#define PERF_COUNTERS/g" ../utils/perf_counters.h
+  PCM
   profile_breakdown=0 # disable measure time breakdown!
   eager=1             #with eager
   compile=1
@@ -831,15 +857,12 @@ if [ $PROFILE == 1 ]; then
       let "id++"
     done
   done
-  sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h
+  NORMAL
 fi
 
 #PROFILE_MEMORY_CONSUMPTION=1 ## profile memory consumption
 if [ $PROFILE_MEMORY_CONSUMPTION == 1 ]; then
-  sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h #disable time measurement
-  sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h
-  sed -i -e "s/#define PROFILE_TOPDOWN/#define NO_PROFILE_TOPDOWN/g" ../joins/common_functions.h
-  sed -i -e "s/#define NO_PROFILE_MEMORY_CONSUMPTION/#define PROFILE_MEMORY_CONSUMPTION/g" ../joins/common_functions.h
+  MEM_MEASURE
   profile_breakdown=0
   compile=1
   compile
@@ -871,13 +894,12 @@ if [ $PROFILE_MEMORY_CONSUMPTION == 1 ]; then
       let "id++"
     done
   done
-  sed -i -e "s/#define PROFILE_MEMORY_CONSUMPTION/#define NO_PROFILE_MEMORY_CONSUMPTION/g" ../joins/common_functions.h
+  NORMAL
 fi
 
 #PROFILE_PMU_COUNTERS=1 # profile PMU counters using pcm
 if [ $PROFILE_PMU_COUNTERS == 1 ]; then
-  sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h #disable time measurement
-  sed -i -e "s/#define NO_PERF_COUNTERS/#define PERF_COUNTERS/g" ../utils/perf_counters.h
+  PCM
   profile_breakdown=0 # disable measure time breakdown!
   ALL_ON # eliminate wait phase
   compile=1
@@ -901,14 +923,12 @@ if [ $PROFILE_PMU_COUNTERS == 1 ]; then
       let "id++"
     done
   done
-  sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h
+  NORMAL
 fi
 
 #PROFILE_TOPDOWN=1 ## profile intel topdown performance metrics using perf/pcm
 if [ $PROFILE_TOPDOWN == 1 ]; then
-  sed -i -e "s/#define TIMING/#define NO_TIMING/g" ../joins/common_functions.h #disable time measurement
-  sed -i -e "s/#define PERF_COUNTERS/#define NO_PERF_COUNTERS/g" ../utils/perf_counters.h
-  sed -i -e "s/#define NO_PROFILE_TOPDOWN/#define PROFILE_TOPDOWN/g" ../joins/common_functions.h
+  PERF
 
   for benchmark in "Rovio"; do
     id=402
@@ -955,7 +975,7 @@ if [ $PROFILE_TOPDOWN == 1 ]; then
       let "id++"
     done
   done
-  sed -i -e "s/#define PROFILE_TOPDOWN/#define NO_PROFILE_TOPDOWN/g" ../joins/common_functions.h
+  NORMAL
 fi
 
 #./draw.sh
