@@ -165,7 +165,7 @@ void *sortmergejoin_multipass_thread(void *param) {
         PCM_initPerformanceMonitor(NULL, NULL);
         PCM_start();
         auto curtime = std::chrono::steady_clock::now();
-        string path = EXP_DIR "/time_start_" + std::to_string(args->exp_id) + ".txt";
+        string path = EXP_DIR "/breakdown/time_start_" + std::to_string(args->exp_id) + ".txt";
         auto fp = fopen(path.c_str(), "w");
         fprintf(fp, "%ld\n", curtime);
         sleep(1);
@@ -371,7 +371,7 @@ void *sortmergejoin_multipass_thread(void *param) {
     if (my_tid == 0) {
         PCM_stop();
         auto curtime = std::chrono::steady_clock::now();
-        string path = EXP_DIR "/time_end_" + std::to_string(args->exp_id) + ".txt";
+        string path = EXP_DIR "/breakdown/time_end_" + std::to_string(args->exp_id) + ".txt";
         auto fp = fopen(path.c_str(), "w");
         fprintf(fp, "%ld\n", curtime);
         PCM_log("========= results of Overview =========\n");

@@ -45,8 +45,8 @@ def ReadFile(id, tuple_cnt):
                 colomn["L2_Hit"] = float(line.split(" ")[1])/tuple_cnt
             elif line.startswith("L3Misses"):
                 colomn["L3_MISSES"] = float(line.split(" ")[1])/tuple_cnt
-                ts_start_ns = float(open(exp_dir + '/time_start_{}.txt'.format(i), "r").read())
-                ts_end_ns = float(open(exp_dir + '/time_end_{}.txt'.format(i), "r").read())
+                ts_start_ns = float(open(exp_dir + '/breakdown/time_start_{}.txt'.format(i), "r").read())
+                ts_end_ns = float(open(exp_dir + '/breakdown/time_end_{}.txt'.format(i), "r").read())
                 time_interval_s = (ts_end_ns - ts_start_ns) / 1E9
                 colomn["MEM_BAND_CAL"] = float(line.split(" ")[1]) * 64 / (time_interval_s*1000000)
             elif line.startswith("BR_MISP_EXEC"):
@@ -60,16 +60,16 @@ def ReadFile(id, tuple_cnt):
             elif line.startswith("BytesWrittenToMC"):
                 colomn["BytesWrittenToMC"] = float(line.split(" ")[1])
             elif line.startswith("CPUCycle"):
-                ts_start_ns = float(open(exp_dir + '/time_start_{}.txt'.format(i), "r").read())
-                ts_end_ns = float(open(exp_dir + '/time_end_{}.txt'.format(i), "r").read())
+                ts_start_ns = float(open(exp_dir + '/breakdown/time_start_{}.txt'.format(i), "r").read())
+                ts_end_ns = float(open(exp_dir + '/breakdown/time_end_{}.txt'.format(i), "r").read())
                 time_interval_s = (ts_end_ns - ts_start_ns) / 1E9
                 # system wide cpu utilization, should divided by the number of cores.
                 colomn["CPU_UTIL"] = float(line.split(" ")[1])/(time_interval_s*8)
 
         colomn["L1D_MISSES"] = colomn["L1_MISSES"] + colomn["HIT_LFB"] - colomn["L1I_MISSES"]
 
-        ts_start_ns = float(open(exp_dir + '/time_start_{}.txt'.format(i), "r").read())
-        ts_end_ns = float(open(exp_dir + '/time_end_{}.txt'.format(i), "r").read())
+        ts_start_ns = float(open(exp_dir + '/breakdown/time_start_{}.txt'.format(i), "r").read())
+        ts_end_ns = float(open(exp_dir + '/breakdown/time_end_{}.txt'.format(i), "r").read())
         time_interval_s = (ts_end_ns - ts_start_ns) / 1E9
         colomn["MEM_BAND_CAL"] = (colomn["BytesFromMC"] + colomn["BytesWrittenToMC"]) / (time_interval_s*1000000)
 
