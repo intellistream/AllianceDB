@@ -734,7 +734,7 @@ int main(int argc, char *argv[]) {
 #ifdef PROFILE_MEMORY_CONSUMPTION
     // create a thread for memory consumption
     pthread_t thread_id;
-    uint32_t rv = pthread_create(&thread_id, nullptr, memory_caall  lculator_thread, (void *) cmd_params.exp_id);
+    uint32_t rv = pthread_create(&thread_id, nullptr, memory_calculator_thread, (void *) cmd_params.exp_id);
     if (rv) {
         fprintf(stderr, "[ERROR] pthread_create() return code is %d\n", rv);
         exit(-1);
