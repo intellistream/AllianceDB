@@ -22,7 +22,7 @@
 //#define JOIN_MATERIALIZE
 #define TIMING
 #define JOIN
-#define ARTITION
+#define PARTITION
 #define SORT
 #define OVERVIEW
 
