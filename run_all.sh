@@ -2,19 +2,6 @@
 exp_dir="/data1/xtra"
 L3_cache_size=20971520
 
-## Create directories on your machine.
-mkdir -p $exp_dir/results/breakdown/partition_buildsort_probemerge_join
-mkdir -p $exp_dir/results/breakdown/partition_only
-mkdir -p $exp_dir/results/breakdown/partition_buildsort_only
-mkdir -p $exp_dir/results/breakdown/partition_buildsort_probemerge_only
-mkdir -p $exp_dir/results/breakdown/allIncludes
-
-mkdir -p $exp_dir/results/figure
-mkdir -p $exp_dir/results/gaps
-mkdir -p $exp_dir/results/latency
-mkdir -p $exp_dir/results/records
-mkdir -p $exp_dir/results/timestamps
-
 # read arguments
 helpFunction()
 {
@@ -44,6 +31,19 @@ fi
 # Begin script in case all parameters are correct
 echo "$exp_dir"
 echo "$L3_cache_size"
+
+## Create directories on your machine.
+mkdir -p $exp_dir/results/breakdown/partition_buildsort_probemerge_join
+mkdir -p $exp_dir/results/breakdown/partition_only
+mkdir -p $exp_dir/results/breakdown/partition_buildsort_only
+mkdir -p $exp_dir/results/breakdown/partition_buildsort_probemerge_only
+mkdir -p $exp_dir/results/breakdown/allIncludes
+
+mkdir -p $exp_dir/results/figure
+mkdir -p $exp_dir/results/gaps
+mkdir -p $exp_dir/results/latency
+mkdir -p $exp_dir/results/records
+mkdir -p $exp_dir/results/timestamps
 
 # copy custom pmu events to experiment dir.
 # TODO: do we need to cupy a cpu-mappings.txt?
