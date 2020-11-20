@@ -24,12 +24,12 @@ do
    esac
 done
 
-# Print helpFunction in case parameters are empty
-if [ -z "$exp_secction" ] || [ -z "$exp_dir" ] || [ -z "$L3_cache_size" ]
-then
-   echo "Some or all of the parameters are empty";
-   helpFunction
-fi
+## Print helpFunction in case parameters are empty
+#if [ -z "$exp_secction" ] || [ -z "$exp_dir" ] || [ -z "$L3_cache_size" ]
+#then
+#   echo "Some or all of the parameters are empty";
+#   helpFunction
+#fi
 
 # Begin script in case all parameters are correct
 echo "$exp_secction"
@@ -130,7 +130,7 @@ function benchmarkProfileRun() {
 
 function perfUarchBenchmarkRun() {
   #####native execution
-  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -g $gap -P $DD -W $FIXS -I $id =="
+  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -g $gap -o $exp_dir/results/breakdown/profile_$id.txt -I $id== "
   if [ ! -z "$PERF_OUTPUT" -a "$PERF_OUTPUT"!=" " ]; then
     perf stat -x, -a -e CPU_CLK_UNHALTED.THREAD,IDQ_UOPS_NOT_DELIVERED.CORE,UOPS_ISSUED.ANY,UOPS_RETIRED.RETIRE_SLOTS,INT_MISC.RECOVERY_CYCLES,CYCLE_ACTIVITY.STALLS_MEM_ANY,RESOURCE_STALLS.SB -o $PERF_OUTPUT \
      ../sorting -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -g $gap -I $id
@@ -649,6 +649,17 @@ if [ $PROFILE_PMU_COUNTERS == 1 ]; then
       "Rovio")
         ResetParameters
         SetRovioParameters
+        rm $exp_dir/results/breakdown/profile_$id.txt
+        PERF_CONF=$exp_dir/pcm.cfg
+        benchmarkProfileRun
+        PERF_CONF=$exp_dir/pcm2.cfg
+        benchmarkProfileRun
+        PERF_CONF=""
+        benchmarkProfileRun
+        ;;
+      "YSB")
+        ResetParameters
+        SetYSBParameters
         rm $exp_dir/results/breakdown/profile_$id.txt
         PERF_CONF=$exp_dir/pcm.cfg
         benchmarkProfileRun
