@@ -364,8 +364,8 @@ function SetDEBSParameters() { #matches: 251033140 #inputs= 1000000 + 1000000
   gap=251033
 }
 
-DEFAULT_WINDOW_SIZE= 100 #(ms) -- 0.1 seconds -- HS is too slow.
-DEFAULT_STEP_SIZE=12800  # |tuples| per ms. -- 128K per seconds. ## this controls the guranalrity of input stream.
+DEFAULT_WINDOW_SIZE=100 #(ms) -- 0.1 seconds -- HS is too slow.
+DEFAULT_STEP_SIZE=12800 # |tuples| per ms. -- 128K per seconds. ## this controls the guranalrity of input stream.
 function ResetParameters() {
   TS_DISTRIBUTION=0                # uniform time distribution
   ZIPF_FACTOR=0                    # uniform time distribution
