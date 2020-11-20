@@ -146,7 +146,7 @@ def ReadFile():
     col2 = []
 
     cnt = 0
-    f = open(exp_dir + "/results/breakdown/SHJ_JM_P_{}.txt".format(132), "r")
+    f = open(exp_dir + "/results/breakdown/SHJ_JM_NP_{}.txt".format(132), "r")
     read = f.readlines()
 
     for x in read:
@@ -161,7 +161,7 @@ def ReadFile():
     y_values.append(col1)
 
     cnt = 0
-    f = open(exp_dir + "/results/breakdown/SHJ_HS_P_{}.txt".format(132), "r")
+    f = open(exp_dir + "/results/breakdown/SHJ_HS_NP_{}.txt".format(132), "r")
     read = f.readlines()
 
     for x in read:
