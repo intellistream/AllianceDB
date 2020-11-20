@@ -25,7 +25,11 @@ SET (CMAKE_STATIC_LINKER_FLAGS -lnuma)
 SET (CMAKE_STATIC_LINKER_FLAGS -lrt)
 
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${./bin})
-SET(CMAKE_CXX_FLAGS "-Wall -Wextra")
+SET(CMAKE_CXX_FLAGS "-Wall -Wextra\
+    -Wno-unused-variable -Wno-macro-redefined\
+    -Wno-unused-function -Wno-unused-parameter\
+    -Wno-deprecated-register -Wno-unknown-pragmas\
+    -Wno-header-guard -Wno-sign-compare")
 SET(CMAKE_CXX_FLAGS_DEBUG "-g")
 SET(CMAKE_CXX_FLAGS_RELEASE "-O3")
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -msse4.2 -mavx2")

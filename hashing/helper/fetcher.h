@@ -81,7 +81,7 @@ public:
 
     fetch_t *next_tuple() override;
 
-    bool finish() { return false; };
+    bool finish() override { return false; };
 
     /**
      * Initialization
@@ -113,7 +113,7 @@ class HS_NP_Fetcher : public baseFetcher {
 public:
     fetch_t *next_tuple() override;
 
-    bool finish() { return false; };
+    bool finish() override { return false; };
 
     /**
      * Initialization
@@ -146,7 +146,7 @@ public:
 class JM_NP_Fetcher : public baseFetcher {
 public:
 
-    bool finish() {
+    bool finish() override {
         return state->current_index_R == state->end_index_R
                && state->current_index_S == state->end_index_S;
     }
@@ -229,7 +229,7 @@ public:
 class JB_NP_Fetcher : public baseFetcher {
 public:
 
-    bool finish() {
+    bool finish() override {
         return state->current_index_R == state->end_index_R
                && state->current_index_S == state->end_index_S;
     }

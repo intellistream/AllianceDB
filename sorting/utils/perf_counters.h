@@ -10,7 +10,7 @@
  */
 
 #ifndef PERF_COUNTERS_H
-#define PERF_COUNTERS_H
+#define NO_PERF_COUNTERS_H
 
 
 /** @defgroup PerformanceMonitoring Performance Monitoring Tools.
@@ -20,7 +20,7 @@
  * @{
  */
 
-#define PERF_COUNTERS
+#define NO_PERF_COUNTERS
 
 /** Is performance monitoring PER_CORE? */
 #ifndef PER_CORE

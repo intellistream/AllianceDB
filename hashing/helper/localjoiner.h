@@ -136,20 +136,20 @@ public:
 
     void
     join(int32_t tid, tuple_t *tuple, bool IStuple_R, int64_t *matches,
-            /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ void *pVoid);
+            /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ void *pVoid) override;
 
     void join(int32_t tid, tuple_t *fat_tuple, int fat_tuple_size, bool IStuple_R, int64_t *matches,
-            /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ void *pVoid);
+            /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ void *pVoid) override;
 
     long
     merge(int32_t tid, int64_t *matches, /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/
           void *pVoid) override;
 
-    void clean(int32_t tid, tuple_t *tuple, bool cleanR);
+    void clean(int32_t tid, tuple_t *tuple, bool cleanR) override;
 
-    void clean(int32_t tid, tuple_t *fat_tuple, int fat_tuple_size, bool cleanR);
+    void clean(int32_t tid, tuple_t *fat_tuple, int fat_tuple_size, bool cleanR) override;
 
-    void keep_tuple_single(tuple_t *tmp_rel, const int outerPtr, tuple_t *tuple, int fat_tuple_size);
+    void keep_tuple_single(tuple_t *tmp_rel, int outerPtr, tuple_t *tuple, int fat_tuple_size);
 
     void join_tuple_single(int32_t tid, tuple_t *tmp_rel, int *outerPtr, tuple_t *tuple, int fat_tuple_size,
                            int64_t *matches,

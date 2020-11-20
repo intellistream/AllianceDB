@@ -1,4 +1,4 @@
-# Install script for directory: /home/tony/AllianceDB/sorting
+# Install script for directory: /tmp/tmp.in6EmPrjF0
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -10,9 +10,9 @@ string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 if(NOT DEFINED CMAKE_INSTALL_CONFIG_NAME)
   if(BUILD_TYPE)
     string(REGEX REPLACE "^[^A-Za-z0-9_]+" ""
-            CMAKE_INSTALL_CONFIG_NAME "${BUILD_TYPE}")
+           CMAKE_INSTALL_CONFIG_NAME "${BUILD_TYPE}")
   else()
-    set(CMAKE_INSTALL_CONFIG_NAME "Release")
+    set(CMAKE_INSTALL_CONFIG_NAME "Debug")
   endif()
   message(STATUS "Install configuration: \"${CMAKE_INSTALL_CONFIG_NAME}\"")
 endif()
@@ -44,6 +44,6 @@ else()
 endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
-        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/tony/AllianceDB/sorting/${CMAKE_INSTALL_MANIFEST}"
-        "${CMAKE_INSTALL_MANIFEST_CONTENT}")
+       "${CMAKE_INSTALL_MANIFEST_FILES}")
+file(WRITE "/tmp/tmp.in6EmPrjF0/${CMAKE_INSTALL_MANIFEST}"
+     "${CMAKE_INSTALL_MANIFEST_CONTENT}")
