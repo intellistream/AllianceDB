@@ -2,81 +2,10 @@
 
 exp_dir="/data1/xtra"
 L3_cache_size=19922944
-# read arguments
-helpFunction()
-{
-   echo ""
-   echo "Usage: $0 -e exp_section -d exp_dir -c L3_cache_size"
-   echo -e "\t-e the experiment section you would like to run"
-   echo -e "\t-d the experiment results directory"
-   echo -e "\t-c the L3 cache size of the current CPU"
-   exit 1 # Exit script after printing help
-}
-
-while getopts "e:d:c:" opt
-do
-   case "$opt" in
-      e ) exp_secction="$OPTARG" ;;
-      d ) exp_dir="$OPTARG" ;;
-      c ) L3_cache_size="$OPTARG" ;;
-      ? ) helpFunction ;; # Print helpFunction in case parameter is non-existent
-   esac
-done
-
-## Print helpFunction in case parameters are empty
-#if [ -z "$exp_secction" ] || [ -z "$exp_dir" ] || [ -z "$L3_cache_size" ]
-#then
-#   echo "Some or all of the parameters are empty";
-#   helpFunction
-#fi
-
 # Begin script in case all parameters are correct
-echo "$exp_secction"
+
 echo "$exp_dir"
 echo "$L3_cache_size"
-
-APP_BENCH=0
-MICRO_BENCH=0
-SCALE_STUDY=0
-PROFILE_MICRO=0
-PROFILE=0
-PROFILE_MEMORY_CONSUMPTION=0
-PROFILE_PMU_COUNTERS=0
-PROFILE_TOPDOWN=0
-# parse exp sections need to run
-IFS=','
-for exp_secions_name in $(echo "$exp_secction");
-do
-    echo "name = $exp_secions_name"
-    case "$exp_secions_name" in
-      "APP_BENCH")
-        APP_BENCH=1
-        ;;
-      "MICRO_BENCH"):
-        MICRO_BENCH=1
-        ;;
-      "SCALE_STUDY")
-        SCALE_STUDY=1
-        ;;
-      "PROFILE_MICRO")
-        PROFILE_MICRO=1
-        ;;
-      "PROFILE")
-        PROFILE=1
-        ;;
-      "PROFILE_MEMORY_CONSUMPTION")
-        PROFILE_MEMORY_CONSUMPTION=1
-        ;;
-      "PROFILE_PMU_COUNTERS")
-        PROFILE_PMU_COUNTERS=1
-        ;;
-      "PROFILE_TOPDOWN")
-        PROFILE_TOPDOWN=1
-        ;;
-    esac
-done
-
-echo "Total EXPS: ${exp_secction}"
 
 ## Set L3 Cache according to your machine.
 sed -i -e "s/#define L3_CACHE_SIZE [[:alnum:]]*/#define L3_CACHE_SIZE $L3_cache_size/g" ../utils/params.h
@@ -142,10 +71,10 @@ function perfUarchBenchmarkRun() {
   echo 3 >/proc/sys/vm/drop_caches
   if [ ! -z "$PERF_OUTPUT" -a "$PERF_OUTPUT"!=" " ]; then
     perf stat -x, -a -e CPU_CLK_UNHALTED.THREAD,IDQ_UOPS_NOT_DELIVERED.CORE,UOPS_ISSUED.ANY,UOPS_RETIRED.RETIRE_SLOTS,INT_MISC.RECOVERY_CYCLES,CYCLE_ACTIVITY.STALLS_MEM_ANY,RESOURCE_STALLS.SB -o $PERF_OUTPUT \
-    ../hashing -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap
+      ../hashing -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap
   else
     perf stat -e CPU_CLK_UNHALTED.THREAD,IDQ_UOPS_NOT_DELIVERED.CORE,UOPS_ISSUED.ANY,UOPS_RETIRED.RETIRE_SLOTS,INT_MISC.RECOVERY_CYCLES,CYCLE_ACTIVITY.STALLS_MEM_ANY,RESOURCE_STALLS.SB \
-    ../hashing -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap
+      ../hashing -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap
   fi
   if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit -1; fi
 }
@@ -345,10 +274,10 @@ function SHJKIMRUN() {
 
 function RUNALL() {
   if [ $profile_breakdown == 1 ]; then
-    if [ $algo == SHJ_JM_P ] || [ $algo == SHJ_JM_NP ] || [ $algo == SHJ_JBCR_P ]|| [ $algo == SHJ_JBCR_NP ] ; then
+    if [ $algo == SHJ_JM_P ] || [ $algo == SHJ_JM_NP ] || [ $algo == SHJ_JBCR_P ] || [ $algo == SHJ_JBCR_NP ]; then
       SHJBENCHRUN
     else
-      if [ $algo == PMJ_JM_P ] || [ $algo == PMJ_JM_NP ] || [ $algo == PMJ_JBCR_P ] || [ $algo == PMJ_JBCR_NP ];  then
+      if [ $algo == PMJ_JM_P ] || [ $algo == PMJ_JM_NP ] || [ $algo == PMJ_JBCR_P ] || [ $algo == PMJ_JBCR_NP ]; then
         FULLBENCHRUN
       else
         benchmarkRun
@@ -363,7 +292,7 @@ function RUNALL() {
 
 function RUNALLMic() {
   if [ $profile_breakdown == 1 ]; then
-    if [ $algo == SHJ_JM_P ] || [ $algo == SHJ_JM_NP ] || [ $algo == SHJ_JBCR_P ] || [ $algo == SHJ_JBCR_NP ] || [ $algo == SHJ_HS_P ]|| [ $algo == SHJ_HS_NP ]; then
+    if [ $algo == SHJ_JM_P ] || [ $algo == SHJ_JM_NP ] || [ $algo == SHJ_JBCR_P ] || [ $algo == SHJ_JBCR_NP ] || [ $algo == SHJ_HS_P ] || [ $algo == SHJ_HS_NP ]; then
       SHJKIMRUN
     else
       if [ $algo == PMJ_JM_P ] || [ $algo == PMJ_JM_NP ] || [ $algo == PMJ_JBCR_P ] || [ $algo == PMJ_JBCR_NP ]; then
@@ -435,7 +364,7 @@ function SetDEBSParameters() { #matches: 251033140 #inputs= 1000000 + 1000000
   gap=251033
 }
 
-DEFAULT_WINDOW_SIZE=1000 #(ms) -- 1 seconds
+DEFAULT_WINDOW_SIZE= 100 #(ms) -- 0.1 seconds -- HS is too slow.
 DEFAULT_STEP_SIZE=12800  # |tuples| per ms. -- 128K per seconds. ## this controls the guranalrity of input stream.
 function ResetParameters() {
   TS_DISTRIBUTION=0                # uniform time distribution
@@ -466,24 +395,21 @@ timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
 
 ## MICRO STUDY
-#PROFILE_MICRO=0
-if [ $PROFILE_MICRO == 1 ]; then
-  NORMAL
-  profile_breakdown=1                                                                     #compile depends on whether we want to profile.
-  compile=1                                                                               #enable compiling.
-  #benchmark experiment only apply for hashing directory.
-  for benchmark in "HS_STUDY"; do #
-    case "$benchmark" in
-    "HS_STUDY")
-      id=132
-      ResetParameters
-      ts=0 # batch data.
-      algo="SHJ_HS_NP"
-      RUNALLMic
-      algo="SHJ_JM_NP"
-      RUNALLMic
-      python3 breakdown_hsstudy.py
-      ;;
-    esac
-  done
-fi
+NORMAL
+profile_breakdown=1 #compile depends on whether we want to profile.
+compile=1           #enable compiling.
+#benchmark experiment only apply for hashing directory.
+for benchmark in "HS_STUDY"; do #
+  case "$benchmark" in
+  "HS_STUDY")
+    id=132
+    ResetParameters
+    ts=0 # batch data.
+    algo="SHJ_HS_NP"
+    RUNALLMic
+    algo="SHJ_JM_NP"
+    RUNALLMic
+    python3 breakdown_hsstudy.py
+    ;;
+  esac
+done

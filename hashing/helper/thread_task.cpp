@@ -39,7 +39,7 @@ void *THREAD_TASK_NOSHUFFLE(void *param) {
     int lock;
 
 #ifdef PROFILE_TOPDOWN
-    #ifdef JOIN_THREAD
+#ifdef JOIN_THREAD
     // do nothing
 #else
     return nullptr;
@@ -64,14 +64,14 @@ void *THREAD_TASK_NOSHUFFLE(void *param) {
     fetcher->fetchStartTime = args->startTS; // set the fetch starting time.
 #ifdef PERF_COUNTERS
     if (args->tid == 0) {
-      MSG("Thread:%id initialize PCM", args->tid)
-      PCM_initPerformanceMonitor(NULL, NULL);
-      PCM_start();
+        DEBUGMSG("Thread:%id initialize PCM", args->tid)
+        PCM_initPerformanceMonitor(NULL, NULL);
+        PCM_start();
         auto curtime = std::chrono::steady_clock::now();
         string path = EXP_DIR "/results/breakdown/time_start_" + std::to_string(args->exp_id) + ".txt";
         auto fp = fopen(path.c_str(), "w");
         fprintf(fp, "%ld\n", curtime);
-      MSG("Thread:%id initialized PCM", args->tid)
+        DEBUGMSG("Thread:%id initialized PCM", args->tid)
     }
     BARRIER_ARRIVE(args->barrier, lock)
 #endif
@@ -109,16 +109,16 @@ void *THREAD_TASK_NOSHUFFLE(void *param) {
 
 #ifdef PERF_COUNTERS
     if (args->tid == 0) {
-      MSG("Thread:%id stops PCM", args->tid)
-      PCM_stop();
+        MSG("Thread:%id stops PCM", args->tid)
+        PCM_stop();
         auto curtime = std::chrono::steady_clock::now();
         string path = EXP_DIR "/results/breakdown/time_end_" + std::to_string(args->exp_id) + ".txt";
         auto fp = fopen(path.c_str(), "w");
         fprintf(fp, "%ld\n", curtime);
-      PCM_log("========== Entire phase profiling results ==========\n");
-      PCM_printResults();
-      PCM_log("===================================================\n");
-      PCM_cleanup();
+        PCM_log("========== Entire phase profiling results ==========\n");
+        PCM_printResults();
+        PCM_log("===================================================\n");
+        PCM_cleanup();
     }
 #endif
 
@@ -143,7 +143,7 @@ void *THREAD_TASK_SHUFFLE(void *param) {
     int lock;
 
 #ifdef PROFILE_TOPDOWN
-    #ifdef JOIN_THREAD
+#ifdef JOIN_THREAD
     // do nothing
 #else
     return nullptr;
@@ -170,14 +170,14 @@ void *THREAD_TASK_SHUFFLE(void *param) {
     fetcher->fetchStartTime = args->startTS; // set the fetch starting time.
 #ifdef PERF_COUNTERS
     if (args->tid == 0) {
-      MSG("Thread:%id initialize PCM", args->tid)
-      PCM_initPerformanceMonitor(NULL, NULL);
-      PCM_start();
+        MSG("Thread:%id initialize PCM", args->tid)
+        PCM_initPerformanceMonitor(NULL, NULL);
+        PCM_start();
         auto curtime = std::chrono::steady_clock::now();
         string path = EXP_DIR "/results/breakdown/time_start_" + std::to_string(args->exp_id) + ".txt";
         auto fp = fopen(path.c_str(), "w");
         fprintf(fp, "%ld\n", curtime);
-      MSG("Thread:%id initialized PCM", args->tid)
+        MSG("Thread:%id initialized PCM", args->tid)
     }
     BARRIER_ARRIVE(args->barrier, lock)
 #endif
@@ -232,16 +232,16 @@ void *THREAD_TASK_SHUFFLE(void *param) {
 #endif
 #ifdef PERF_COUNTERS
     if (args->tid == 0) {
-      MSG("Thread:%id stops PCM", args->tid)
-      PCM_stop();
+        MSG("Thread:%id stops PCM", args->tid)
+        PCM_stop();
         auto curtime = std::chrono::steady_clock::now();
         string path = EXP_DIR "/results/breakdown/time_end_" + std::to_string(args->exp_id) + ".txt";
         auto fp = fopen(path.c_str(), "w");
         fprintf(fp, "%ld\n", curtime);
-      PCM_log("========== Entire phase profiling results ==========\n");
-      PCM_printResults();
-      PCM_log("===================================================\n");
-      PCM_cleanup();
+        PCM_log("========== Entire phase profiling results ==========\n");
+        PCM_printResults();
+        PCM_log("===================================================\n");
+        PCM_cleanup();
     }
 #endif
     /* wait at a barrier until each thread finishes*/
@@ -466,7 +466,7 @@ void *THREAD_TASK_SHUFFLE_HS(void *param) {
     int lock;
 
 #ifdef PROFILE_TOPDOWN
-    #ifdef JOIN_THREAD
+#ifdef JOIN_THREAD
     // do nothing
 #else
     return nullptr;
@@ -503,13 +503,14 @@ void *THREAD_TASK_SHUFFLE_HS(void *param) {
     fetcher->fetchStartTime = args->startTS; // set the fetch starting time.
 #ifdef PERF_COUNTERS
     if (args->tid == 0) {
-      PCM_initPerformanceMonitor(NULL, NULL);
-      PCM_start();
+        PCM_initPerformanceMonitor(NULL, NULL);
+        PCM_start();
         auto curtime = std::chrono::steady_clock::now();
         string path = EXP_DIR "/results/breakdown/time_start_" + std::to_string(args->exp_id) + ".txt";
         auto fp = fopen(path.c_str(), "w");
         fprintf(fp, "%ld\n", curtime);
     }
+    BARRIER_ARRIVE(args->barrier, lock)
 #endif
 
     do {
@@ -587,15 +588,15 @@ void *THREAD_TASK_SHUFFLE_HS(void *param) {
 
 #ifdef PERF_COUNTERS
     if (args->tid == 0) {
-      PCM_stop();
+        PCM_stop();
         auto curtime = std::chrono::steady_clock::now();
         string path = EXP_DIR "/results/breakdown/time_end_" + std::to_string(args->exp_id) + ".txt";
         auto fp = fopen(path.c_str(), "w");
         fprintf(fp, "%ld\n", curtime);
-      PCM_log("========== Probe phase profiling results ==========\n");
-      PCM_printResults();
-      PCM_log("===================================================\n");
-      PCM_cleanup();
+        PCM_log("========== Probe phase profiling results ==========\n");
+        PCM_printResults();
+        PCM_log("===================================================\n");
+        PCM_cleanup();
     }
     /* Just to make sure we get consistent performance numbers */
     BARRIER_ARRIVE(args->barrier, lock);
@@ -616,7 +617,7 @@ void *THREAD_TASK_SHUFFLE_PMJHS(void *param) {
     arg_t *args = (arg_t *) param;
 
 #ifdef PROFILE_TOPDOWN
-    #ifdef JOIN_THREAD
+#ifdef JOIN_THREAD
     // do nothing
 #else
     return nullptr;
@@ -625,8 +626,8 @@ void *THREAD_TASK_SHUFFLE_PMJHS(void *param) {
 
 #ifdef PERF_COUNTERS
     if (args->tid == 0) {
-      PCM_initPerformanceMonitor(NULL, NULL);
-      PCM_start();
+        PCM_initPerformanceMonitor(NULL, NULL);
+        PCM_start();
     }
 #endif
 
@@ -638,9 +639,9 @@ void *THREAD_TASK_SHUFFLE_PMJHS(void *param) {
     int rv;
 #ifdef PERF_COUNTERS
     if (args->tid == 0) {
-      PCM_stop();
-      PCM_log("========== Build phase profiling results ==========\n");
-      PCM_printResults();
+        PCM_stop();
+        PCM_log("========== Build phase profiling results ==========\n");
+        PCM_printResults();
 //      PCM_cleanup();
     }
     /* Just to make sure we get consistent performance numbers */
@@ -713,11 +714,11 @@ void *THREAD_TASK_SHUFFLE_PMJHS(void *param) {
 
 #ifdef PERF_COUNTERS
     if (args->tid == 0) {
-      PCM_stop();
-      PCM_log("========== Probe phase profiling results ==========\n");
-      PCM_printResults();
-      PCM_log("===================================================\n");
-      PCM_cleanup();
+        PCM_stop();
+        PCM_log("========== Probe phase profiling results ==========\n");
+        PCM_printResults();
+        PCM_log("===================================================\n");
+        PCM_cleanup();
     }
     /* Just to make sure we get consistent performance numbers */
     BARRIER_ARRIVE(args->barrier, rv);
