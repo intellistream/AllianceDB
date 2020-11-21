@@ -174,7 +174,7 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
     # plt.xlim(0, 1000)
     plt.xlim(left=0)
     plt.ylim(bottom=0)
-    plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
+    plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0), useMathText=True)
     plt.grid(axis='y', color='gray')
     # figure.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
     figure.yaxis.set_major_locator(LinearLocator(3))
