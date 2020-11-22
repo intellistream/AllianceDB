@@ -88,12 +88,12 @@ python3 latency_radix.py
 python3 progressive_radix.py
 
 #### APP Scale.
-echo "Drawing Figure 21..."
+echo "Drawing Figure 20..."
 python3 throughput_scale_lazy.py
 python3 throughput_scale_eager.py
 
 ## SIMD_STUDY
-echo "Drawing Figure 20..."
+echo "Drawing Figure 21..."
 python3 breakdown_simd.py
 # -- python3 profile_simd.py not in use anymore.
 

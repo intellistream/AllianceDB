@@ -134,7 +134,6 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
     plt.ylim(bottom=0)
     yfmt = ScalarFormatterForceFormat()
     yfmt.set_powerlimits((0,0))
-
     figure.get_yaxis().set_major_formatter(yfmt)
     # plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
     plt.grid(axis='y', color='gray')
