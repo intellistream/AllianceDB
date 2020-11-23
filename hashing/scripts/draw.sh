@@ -16,6 +16,11 @@ for id in {38..41}; do
   python3 breakdown.py -i $id
 done
 
+### Profile..
+echo "Drawing Figure 8 (Please profile with sudo)..."
+python3 profile_ysb_partition.py
+python3 profile_ysb_probe.py
+
 ## MICRO BENCH
 #
 ### Impact of arrival rate
@@ -66,26 +71,31 @@ for id in 26 27; do
   python3 progressive_figure.py -i $id
 done
 
-### Sorting step study
-echo "Drawing Figure 15..."
-python3 breakdown_sort.py
-python3 latency_sort.py
-python3 progressive_sort.py
-
 ### Grouping step study
-echo "Drawing Figure 16..."
+echo "Drawing Figure 15..."
 python3 breakdown_group_shj.py
 python3 breakdown_group_pmj.py
 
 ## Impact of physical partition
-echo "Drawing Figure 17..."
+echo "Drawing Figure 16..."
 python3 breakdown_p_np_study.py
+
+### Sorting step study
+echo "Drawing Figure 17..."
+python3 breakdown_sort.py
+python3 latency_sort.py
+python3 progressive_sort.py
 
 ## Radix bit study
 echo "Drawing Figure 18..."
 python3 breakdown_radix.py
 python3 latency_radix.py
 python3 progressive_radix.py
+
+### Profile Intel Topdown metrics and memory consumption
+echo "Drawing Figure 19..."
+python3 memory_consumption.py
+python3 topdown_perf.py
 
 #### APP Scale.
 echo "Drawing Figure 20..."
@@ -96,16 +106,6 @@ python3 throughput_scale_eager.py
 echo "Drawing Figure 21..."
 python3 breakdown_simd.py
 # -- python3 profile_simd.py not in use anymore.
-
-### Profile..
-echo "Drawing Figure 8 (Please profile with sudo)..."
-python3 profile_ysb_partition.py
-python3 profile_ysb_probe.py
-
-### Profile Intel Topdown metrics and memory consumption
-echo "Drawing Figure 19..."
-python3 memory_consumption.py
-python3 topdown_perf.py
 
 ### Profile PMU counters
 echo "Calculating Table 5 and 6 (Please profile with sudo)..."
