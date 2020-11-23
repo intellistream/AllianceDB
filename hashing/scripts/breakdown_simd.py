@@ -90,10 +90,10 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, al
             handles, labels = figure.get_legend_handles_labels()
         if allow_legend == True:
             leg=plt.legend(handles[::-1], labels[::-1],
-                       loc='center',
+                       loc='right',
                        prop=LEGEND_FP,
-                       ncol=4,
-                       bbox_to_anchor=(0.5, 1.25),
+                       ncol=1,
+                       bbox_to_anchor=(1.22, 0.5),
                        handletextpad=0.1,
                        borderaxespad=0.0,
                        handlelength=1.8,
@@ -107,7 +107,6 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, al
     plt.xticks(index - 0.7 * width, x_values)
     yfmt = ScalarFormatterForceFormat()
     yfmt.set_powerlimits((0,0))
-
     figure.get_yaxis().set_major_formatter(yfmt)
     # plt.ticklabel_format(axis="y", style="sci", scilimits=(0,0), useMathText=True)
     plt.grid(axis='y', color='gray')

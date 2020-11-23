@@ -125,6 +125,10 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
         leg.get_frame().set_linewidth(2)
         leg.get_frame().set_edgecolor("black")
 
+
+    yfmt = ScalarFormatterForceFormat()
+    yfmt.set_powerlimits((0,0))
+    figure.get_yaxis().set_major_formatter(yfmt)
     # plt.xlim(0,)
     # plt.ylim(y_min, y_max)
     # plt.yscale('log')

@@ -50,6 +50,11 @@ class ScalarFormatterForceFormat(ScalarFormatter):
     def _set_format(self):  # Override function that finds format to use.
         self.format = "%1.1f"  # Give format here
 
+class ScalarFormatterForceFormat(ScalarFormatter):
+    def _set_format(self):  # Override function that finds format to use.
+        self.format = "%1.1f"  # Give format here
+
+
 # draw a line chart
 def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, allow_legend):
     # you may change the figure size on your own.
@@ -90,18 +95,18 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, al
         if allow_legend == True:
             handles, labels = figure.get_legend_handles_labels()
         if allow_legend == True:
-            leg=plt.legend(handles[::-1], labels[::-1],
-                       loc='center',
-                       prop=LEGEND_FP,
-                       ncol=1,
-                       # bbox_to_anchor=(0.5, 1.25),
-                       bbox_to_anchor=(1.2, 0.5),
-                       handletextpad=0.1,
-                       borderaxespad=0.0,
-                       handlelength=1.8,
-                       labelspacing=0.3,
-                       columnspacing=0.3,
-                       )
+            leg = plt.legend(handles[::-1], labels[::-1],
+                             loc='center',
+                             prop=LEGEND_FP,
+                             ncol=1,
+                             # bbox_to_anchor=(0.5, 1.25),
+                             bbox_to_anchor=(1.2, 0.5),
+                             handletextpad=0.1,
+                             borderaxespad=0.0,
+                             handlelength=1.8,
+                             labelspacing=0.3,
+                             columnspacing=0.3,
+                             )
             leg.get_frame().set_linewidth(2)
             leg.get_frame().set_edgecolor("black")
 
@@ -109,9 +114,9 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, al
     plt.xticks(index + 0.5 * width, x_values)
     yfmt = ScalarFormatterForceFormat()
     yfmt.set_powerlimits((0,0))
-
     figure.get_yaxis().set_major_formatter(yfmt)
     # plt.ticklabel_format(axis="y", style="sci", scilimits=(0,0), useMathText=True)
+
     plt.grid(axis='y', color='gray')
     figure.yaxis.set_major_locator(LinearLocator(3))
     # figure.yaxis.set_major_locator(LinearLocator(6))

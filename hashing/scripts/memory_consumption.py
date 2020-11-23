@@ -10,6 +10,7 @@ import pylab
 from matplotlib.font_manager import FontProperties
 from matplotlib.ticker import MaxNLocator, LinearLocator
 from matplotlib.ticker import PercentFormatter, LogLocator, ScalarFormatter
+
 from matplotlib import rc
 
 OPT_FONT_NAME = 'Helvetica'
@@ -177,10 +178,8 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
     # plt.xlim(0, 1000)
     plt.xlim(left=0)
     plt.ylim(bottom=0)
-
     yfmt = ScalarFormatterForceFormat()
     yfmt.set_powerlimits((0,0))
-
     figure.get_yaxis().set_major_formatter(yfmt)
     # plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0), useMathText=True, useOffset=1)
 

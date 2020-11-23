@@ -98,9 +98,9 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
 
     yfmt = ScalarFormatterForceFormat()
     yfmt.set_powerlimits((0,0))
-
     figure.get_yaxis().set_major_formatter(yfmt)
     # plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0), useMathText=True)
+
     plt.grid(axis='y', color='gray')
     figure.yaxis.set_major_locator(LinearLocator(3))
     # plt.grid(axis='y', color='gray')
