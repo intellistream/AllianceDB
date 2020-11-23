@@ -49,7 +49,6 @@ def ConvertEpsToPdf(dir_filename):
 class ScalarFormatterForceFormat(ScalarFormatter):
     def _set_format(self):  # Override function that finds format to use.
         self.format = "%1.1f"  # Give format here
-
 # draw a line chart
 def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, allow_legend):
     # you may change the figure size on your own.
@@ -110,8 +109,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, al
     yfmt = ScalarFormatterForceFormat()
     yfmt.set_powerlimits((0,0))
     figure.get_yaxis().set_major_formatter(yfmt)
-    # plt.ticklabel_format(axis="y", style="sci", scilimits=(0,0), useMathText=True)
-
+    plt.ticklabel_format(axis="y", style="sci", scilimits=(0,0), useMathText=True)
     plt.grid(axis='y', color='gray')
     figure.yaxis.set_major_locator(LinearLocator(3))
     # figure.yaxis.set_major_locator(LogLocator(base=10))

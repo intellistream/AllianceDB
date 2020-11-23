@@ -8,13 +8,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pylab
 from matplotlib.font_manager import FontProperties
-from matplotlib.ticker import LogLocator, LinearLocator, MaxNLocator, ScalarFormatter
+from matplotlib.ticker import LinearLocator, ScalarFormatter
 from numpy import double
 
 OPT_FONT_NAME = 'Helvetica'
-TICK_FONT_SIZE = 24
-LABEL_FONT_SIZE = 28
-LEGEND_FONT_SIZE = 30
+TICK_FONT_SIZE = 20
+LABEL_FONT_SIZE = 24
+LEGEND_FONT_SIZE = 26
 LABEL_FP = FontProperties(style='normal', size=LABEL_FONT_SIZE)
 LEGEND_FP = FontProperties(style='normal', size=LEGEND_FONT_SIZE)
 TICK_FP = FontProperties(style='normal', size=TICK_FONT_SIZE)
@@ -47,9 +47,6 @@ def ConvertEpsToPdf(dir_filename):
     os.system("epstopdf --outfile " + dir_filename + ".pdf " + dir_filename + ".eps")
     os.system("rm -rf " + dir_filename + ".eps")
 
-class ScalarFormatterForceFormat(ScalarFormatter):
-    def _set_format(self):  # Override function that finds format to use.
-        self.format = "%1.1f"  # Give format here
 
 class ScalarFormatterForceFormat(ScalarFormatter):
     def _set_format(self):  # Override function that finds format to use.
@@ -91,11 +88,10 @@ def DrawFigure(x_values, y_values, y_max, legend_labels, x_label, y_label, filen
                    shadow=False,
                    frameon=False, borderaxespad=0.0, handlelength=2, labelspacing=0.2)
     plt.ylim(bottom=0)
-
     yfmt = ScalarFormatterForceFormat()
-    yfmt.set_powerlimits((0,0))
+    yfmt.set_powerlimits((0, 0))
     figure.get_yaxis().set_major_formatter(yfmt)
-    # plt.ticklabel_format(axis="y", style="sci", scilimits=(0,0), useMathText=True)
+    plt.ticklabel_format(axis="y", style="sci", scilimits=(0,0), useMathText=True)
     plt.grid(axis='y', color='gray')
     figure.yaxis.set_major_locator(LinearLocator(3))
 

@@ -5,7 +5,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import pylab
 from matplotlib.font_manager import FontProperties
-from matplotlib.ticker import MaxNLocator, LinearLocator, ScalarFormatter
+from matplotlib.ticker import MaxNLocator, LinearLocator
 from matplotlib import rc
 OPT_FONT_NAME = 'Helvetica'
 TICK_FONT_SIZE = 20
@@ -84,9 +84,6 @@ def DrawLegend(legend_labels, filename):
     # no need to export eps in this case.
     figlegend.savefig(FIGURE_FOLDER + '/' + filename + '.pdf')
 
-class ScalarFormatterForceFormat(ScalarFormatter):
-    def _set_format(self):  # Override function that finds format to use.
-        self.format = "%1.1f"  # Give format here
 
 # draw a line chart
 def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, filename, allow_legend):
@@ -129,11 +126,7 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
     plt.xlim(x_min, x_max)
     plt.ylim(bottom=0)
     # plt.ylim(y_min, y_max)
-    yfmt = ScalarFormatterForceFormat()
-    yfmt.set_powerlimits((0,0))
-
-    figure.get_yaxis().set_major_formatter(yfmt)
-    # plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
+    plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
     plt.grid(axis='y', color='gray')
     figure.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
     figure.yaxis.set_major_locator(LinearLocator(3))

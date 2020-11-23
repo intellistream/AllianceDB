@@ -8,9 +8,8 @@ import matplotlib
 import matplotlib.pyplot as plt
 import pylab
 from matplotlib.font_manager import FontProperties
-from matplotlib.ticker import MaxNLocator, LinearLocator
-from matplotlib.ticker import PercentFormatter, LogLocator, ScalarFormatter
-
+from matplotlib.ticker import MaxNLocator, LinearLocator, ScalarFormatter
+from matplotlib.ticker import PercentFormatter, LogLocator
 from matplotlib import rc
 
 OPT_FONT_NAME = 'Helvetica'
@@ -181,8 +180,7 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
     yfmt = ScalarFormatterForceFormat()
     yfmt.set_powerlimits((0,0))
     figure.get_yaxis().set_major_formatter(yfmt)
-    # plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0), useMathText=True, useOffset=1)
-
+    plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0), useMathText=True)
     plt.grid(axis='y', color='gray')
     # figure.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
     figure.yaxis.set_major_locator(LinearLocator(3))
