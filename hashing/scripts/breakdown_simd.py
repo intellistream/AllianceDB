@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pylab
 from matplotlib.font_manager import FontProperties
-from matplotlib.ticker import LinearLocator, LogLocator, MaxNLocator
+from matplotlib.ticker import LinearLocator, LogLocator, MaxNLocator, ScalarFormatter
 from numpy import double
 
 OPT_FONT_NAME = 'Helvetica'
@@ -44,6 +44,9 @@ def ConvertEpsToPdf(dir_filename):
     os.system("epstopdf --outfile " + dir_filename + ".pdf " + dir_filename + ".eps")
     os.system("rm -rf " + dir_filename + ".eps")
 
+class ScalarFormatterForceFormat(ScalarFormatter):
+    def _set_format(self):  # Override function that finds format to use.
+        self.format = "%1.1f"  # Give format here
 
 # draw a line chart
 def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, allow_legend):
@@ -102,8 +105,11 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, al
 
     # you may need to tune the xticks position to get the best figure.
     plt.xticks(index - 0.7 * width, x_values)
+    yfmt = ScalarFormatterForceFormat()
+    yfmt.set_powerlimits((0,0))
 
-    plt.ticklabel_format(axis="y", style="sci", scilimits=(0,0), useMathText=True)
+    figure.get_yaxis().set_major_formatter(yfmt)
+    # plt.ticklabel_format(axis="y", style="sci", scilimits=(0,0), useMathText=True)
     plt.grid(axis='y', color='gray')
     figure.yaxis.set_major_locator(LinearLocator(3))
 

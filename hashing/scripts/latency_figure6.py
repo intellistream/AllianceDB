@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import pylab
 from matplotlib import rc
 from matplotlib.font_manager import FontProperties
-from matplotlib.ticker import MaxNLocator, LinearLocator
+from matplotlib.ticker import MaxNLocator, LinearLocator, ScalarFormatter
 
 OPT_FONT_NAME = 'Helvetica'
 TICK_FONT_SIZE = 20
@@ -87,6 +87,9 @@ def DrawLegend(legend_labels, filename):
     # no need to export eps in this case.
     figlegend.savefig(FIGURE_FOLDER + '/' + filename + '.pdf')
 
+class ScalarFormatterForceFormat(ScalarFormatter):
+    def _set_format(self):  # Override function that finds format to use.
+        self.format = "%1.1f"  # Give format here
 
 # draw a line chart
 def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, filename, allow_legend):
@@ -101,6 +104,9 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
 
     x_values = xvalues
     y_values = yvalues
+
+    print(x_values)
+    print(y_values)
 
     lines = [None] * (len(FIGURE_LABEL))
     for i in range(len(y_values)):
@@ -128,7 +134,11 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
     # you may control the limits on your own.
     # plt.xlim(x_min, x_max)
     plt.ylim(bottom=0)
-    plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
+    yfmt = ScalarFormatterForceFormat()
+    yfmt.set_powerlimits((0,0))
+
+    figure.get_yaxis().set_major_formatter(yfmt)
+    # plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
     plt.grid(axis='y', color='gray')
     figure.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
     figure.yaxis.set_major_locator(LinearLocator(3))
@@ -158,10 +168,11 @@ def ReadFile():
     col8 = []
     col9 = []
 
-    for id in it.chain(range(0, 5)):
+    for id in it.chain(range(0, 4)):
         col9.append(0)
     y.append(col9)
     for id in it.chain(range(25, 29)):
+        print(id)
         file = exp_dir + '/results/latency/NPJ_{}.txt'.format(id)
         f = open(file, "r")
         read = f.readlines()
