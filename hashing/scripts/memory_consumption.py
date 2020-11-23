@@ -13,8 +13,8 @@ from matplotlib.ticker import PercentFormatter, LogLocator
 from matplotlib import rc
 
 OPT_FONT_NAME = 'Helvetica'
-TICK_FONT_SIZE = 20
-LABEL_FONT_SIZE = 24
+TICK_FONT_SIZE = 24
+LABEL_FONT_SIZE = 28
 LEGEND_FONT_SIZE = 26
 LABEL_FP = FontProperties(style='normal', size=LABEL_FONT_SIZE)
 LEGEND_FP = FontProperties(style='normal', size=LEGEND_FONT_SIZE)

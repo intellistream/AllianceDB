@@ -11,8 +11,8 @@ from matplotlib.ticker import LinearLocator, ScalarFormatter
 from numpy import double
 
 OPT_FONT_NAME = 'Helvetica'
-TICK_FONT_SIZE = 20
-LABEL_FONT_SIZE = 24
+TICK_FONT_SIZE = 24
+LABEL_FONT_SIZE = 28
 LEGEND_FONT_SIZE = 26
 LABEL_FP = FontProperties(style='normal', size=LABEL_FONT_SIZE)
 LEGEND_FP = FontProperties(style='normal', size=LEGEND_FONT_SIZE)
@@ -97,7 +97,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, al
                              prop=LEGEND_FP,
                              ncol=1,
                              # bbox_to_anchor=(0.5, 1.25),
-                             bbox_to_anchor=(1.2, 0.5),
+                             bbox_to_anchor=(1.19, 0.5),
                              handletextpad=0.1,
                              borderaxespad=0.0,
                              handlelength=1.8,

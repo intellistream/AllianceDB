@@ -7,11 +7,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pylab
 from matplotlib.font_manager import FontProperties
+from matplotlib.ticker import MaxNLocator, LinearLocator, ScalarFormatter
 
 OPT_FONT_NAME = 'Helvetica'
-TICK_FONT_SIZE = 20
-LABEL_FONT_SIZE = 24
-LEGEND_FONT_SIZE = 26
+TICK_FONT_SIZE = 24
+LABEL_FONT_SIZE = 28
+LEGEND_FONT_SIZE = 30
 LABEL_FP = FontProperties(style='normal', size=LABEL_FONT_SIZE)
 LEGEND_FP = FontProperties(style='normal', size=LEGEND_FONT_SIZE)
 TICK_FP = FontProperties(style='normal', size=TICK_FONT_SIZE)
@@ -70,6 +71,9 @@ def DrawLegend(legend_labels, filename):
                      linewidth=3)
     figlegend.savefig(FIGURE_FOLDER + '/' + filename + '.pdf')
 
+class ScalarFormatterForceFormat(ScalarFormatter):
+    def _set_format(self):  # Override function that finds format to use.
+        self.format = "%1.1f"  # Give format here
 
 # draw a bar chart
 def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max, filename, allow_legend):
@@ -117,6 +121,9 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
 
     # you may need to tune the xticks position to get the best figure.
     plt.xticks(index + 1 * width, x_values)
+    yfmt = ScalarFormatterForceFormat()
+    yfmt.set_powerlimits((0, 0))
+    figure.get_yaxis().set_major_formatter(yfmt)
     plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0), useMathText=True)
     plt.grid(axis='y', color='gray')
     figure.yaxis.set_major_locator(pylab.LinearLocator(3))

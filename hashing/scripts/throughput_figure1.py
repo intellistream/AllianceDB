@@ -5,14 +5,14 @@ import matplotlib
 import matplotlib.pyplot as plt
 import pylab
 from matplotlib.font_manager import FontProperties
-from matplotlib.ticker import MaxNLocator, LinearLocator
+from matplotlib.ticker import MaxNLocator, LinearLocator, ScalarFormatter
 from matplotlib import rc
 
 
 OPT_FONT_NAME = 'Helvetica'
-TICK_FONT_SIZE = 20
-LABEL_FONT_SIZE = 24
-LEGEND_FONT_SIZE = 26
+TICK_FONT_SIZE = 24
+LABEL_FONT_SIZE = 28
+LEGEND_FONT_SIZE = 30
 LABEL_FP = FontProperties(style='normal', size=LABEL_FONT_SIZE)
 LEGEND_FP = FontProperties(style='normal', size=LEGEND_FONT_SIZE)
 TICK_FP = FontProperties(style='normal', size=TICK_FONT_SIZE)
@@ -90,7 +90,7 @@ def DrawLegend(legend_labels, filename):
     # no need to export eps in this case.
     figlegend.savefig(FIGURE_FOLDER + '/' + filename + '.pdf')
 
-class ScalarFormatterForceFormat(matplotlib.ticker.ScalarFormatter):
+class ScalarFormatterForceFormat(ScalarFormatter):
     def _set_format(self):  # Override function that finds format to use.
         self.format = "%1.1f"  # Give format here
 
@@ -134,6 +134,9 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
     plt.xlim(x_min, x_max)
     figure.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
     plt.ylim(bottom=0)
+    yfmt = ScalarFormatterForceFormat()
+    yfmt.set_powerlimits((0, 0))
+    figure.get_yaxis().set_major_formatter(yfmt)
     plt.ticklabel_format(axis="y", style="sci", scilimits=(0,0))
     plt.grid(axis='y', color='gray')
     figure.yaxis.set_major_locator(LinearLocator(3))

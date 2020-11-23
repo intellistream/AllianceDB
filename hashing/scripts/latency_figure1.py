@@ -9,9 +9,9 @@ from matplotlib.font_manager import FontProperties
 from matplotlib.ticker import MaxNLocator, LinearLocator, ScalarFormatter
 
 OPT_FONT_NAME = 'Helvetica'
-TICK_FONT_SIZE = 20
-LABEL_FONT_SIZE = 24
-LEGEND_FONT_SIZE = 26
+TICK_FONT_SIZE = 24
+LABEL_FONT_SIZE = 28
+LEGEND_FONT_SIZE = 30
 LABEL_FP = FontProperties(style='normal', size=LABEL_FONT_SIZE)
 LEGEND_FP = FontProperties(style='normal', size=LEGEND_FONT_SIZE)
 TICK_FP = FontProperties(style='normal', size=TICK_FONT_SIZE)
@@ -139,7 +139,7 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, x_min, x_max, 
     yfmt = ScalarFormatterForceFormat()
     yfmt.set_powerlimits((0, 0))
     figure.get_yaxis().set_major_formatter(yfmt)
-    # plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
+    plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0), useMathText=True)
     plt.grid(axis='y', color='gray')
     figure.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
     figure.yaxis.set_major_locator(LinearLocator(3))
