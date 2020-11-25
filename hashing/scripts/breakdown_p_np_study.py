@@ -113,8 +113,9 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
         leg = plt.legend(
             loc='center',
             prop=LEGEND_FP,
-            ncol=2,
-            bbox_to_anchor=(0.5, 1.3),
+            ncol=1,
+            # bbox_to_anchor=(0.5, 1.3),
+            bbox_to_anchor=(1.17, 0.5),
             handletextpad=0.2,
             borderaxespad=0.0,
             handlelength=1.8,
