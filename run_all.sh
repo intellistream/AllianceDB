@@ -33,8 +33,10 @@ fi
 echo "$exp_dir"
 echo "$L3_cache_size"
 
-## auto install all packages
+# update in case some package can be missing.
+sudo apt update
 
+## auto install all packages
 sudo apt install -y cmake
 sudo apt install -y texlive-fonts-recommended texlive-fonts-extra
 sudo apt install -y dvipng

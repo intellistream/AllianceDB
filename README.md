@@ -2,11 +2,9 @@
 
 All of our experiments can be automatically reproduced by calling a few pre-prepared scripts.
 
-## TODO
+## Versions
 
-1. cpu-mappings
-2. move all control variables into a dedicated header file "control.hpp". Currently, they are scattered in multiple files including common_functions.h perf_counter.h, params.h
-3. Auto install all required lib and tools. Auto config all required configurations.
+1. cmake > 3.10.0
 
 ## Third-party Lib
 
