@@ -4,6 +4,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import pylab
+from matplotlib import rc
 from matplotlib.font_manager import FontProperties
 from matplotlib.ticker import LinearLocator, ScalarFormatter
 
@@ -31,7 +32,14 @@ matplotlib.rcParams['pdf.use14corefonts'] = True
 matplotlib.rcParams['xtick.labelsize'] = TICK_FONT_SIZE
 matplotlib.rcParams['ytick.labelsize'] = TICK_FONT_SIZE
 matplotlib.rcParams['font.family'] = OPT_FONT_NAME
-
+rc('text.latex', preamble=r'\usepackage[cm]{sfmath}')
+rc('font', **{'family': 'sans-serif',
+              'sans-serif': ['Helvetica'],
+              'weight': 'bold',
+              'size': 22
+              }
+   )
+rc('text', usetex=True)
 exp_dir = "/data1/xtra"
 
 FIGURE_FOLDER = exp_dir + '/results/figure'
