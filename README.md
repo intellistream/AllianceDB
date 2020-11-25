@@ -4,8 +4,9 @@ All of our experiments can be automatically reproduced by calling a few pre-prep
 
 ## TODO
 
-1. move all control variables into a dedicated header file "control.hpp". Currently, they are scattered in multiple files including common_functions.h perf_counter.h, params.h
-4. Auto install all required lib and tools. Auto config all required configurations.
+1. cpu-mappings
+2. move all control variables into a dedicated header file "control.hpp". Currently, they are scattered in multiple files including common_functions.h perf_counter.h, params.h
+3. Auto install all required lib and tools. Auto config all required configurations.
 
 ## Third-party Lib
 
@@ -63,7 +64,7 @@ sudo modprobe msr
 ### Prerequisite
 
 1. Profiling only supports Intel CPUs.
-2. Prepare cpu-mapping, and need to configure the path in hashing/cpu_mapping.txt. 
+2. Prepare cpu-mapping, and need to configure the path in cpu_mapping.txt. 
 3. create `exp_dir` and configure the results output path `exp_dir` in `run_all.sh`.
 4. configure cache size at `run_all.sh`.
 5. prepare real world datasets, move them to the `exp_dir/datasets`, currently, the datasets path in scripts are fixed, need to update to configurable
