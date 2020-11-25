@@ -36,7 +36,7 @@ rc('text.latex', preamble=r'\usepackage[cm]{sfmath}')
 rc('font', **{'family': 'sans-serif',
               'sans-serif': ['Helvetica'],
               'weight': 'bold',
-              'size': 22
+              'size': 26
               }
    )
 rc('text', usetex=True)
