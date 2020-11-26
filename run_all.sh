@@ -78,7 +78,7 @@ mkdir -p $exp_dir/results/timestamps
 # copy custom pmu events to experiment dir.
 cp pcm* $exp_dir
 # copy cpu mappings to exp_dir
-cp cpu-mappings.txt $exp_dir
+cp cpu-mapping.txt $exp_dir
 # set all scripts exp dir
 sed -i -e "s/exp_dir = .*/exp_dir = "\"${exp_dir//\//\\/}\""/g" ./hashing/scripts/*.py
 
