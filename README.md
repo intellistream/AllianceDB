@@ -2,11 +2,17 @@
 
 All of our experiments can be automatically reproduced by calling a few pre-prepared scripts.
 
-## Versions
+## Prerequisite
 
-1. cmake > 3.10.0
+1. cmake > 3.10.0.
+2. Profiling only supports Intel CPUs.
+3. You may need to reset pmu once at first run, some pcm profiling results may be incorrect at this time.
+4. Prepare cpu-mapping, and need to configure the path in `cpu-mapping.txt`. 
+5. real world datasets will be moved to the `exp_dir/datasets` automatically by scripts.
+6. Our program should be running as root: `sudo bash run_all.sh -d /data1/xtra -c 19922944`.
+7. You can run any subset of the experiment sections by modifying the exp_section in `auto_run.sh`.
 
-## Third-party Lib
+## Third-party Lib (will be automatically installed in scripts)
 
 1. cmake install
 
@@ -59,23 +65,9 @@ sudo echo -1 > /proc/sys/kernel/perf_event_paranoid # if permission denied, try 
 sudo modprobe msr
 ```
 
-### Prerequisite
+### Configurations
 
-1. Profiling only supports Intel CPUs.
-2. Prepare cpu-mapping, and need to configure the path in cpu_mapping.txt. 
-3. create `exp_dir` and configure the results output path `exp_dir` in `run_all.sh`.
-4. configure cache size at `run_all.sh`.
-5. prepare real world datasets, move them to the `exp_dir/datasets`, currently, the datasets path in scripts are fixed, need to update to configurable
-
-```shell
-exp_dir="/data1/xtra"
-wget https://www.dropbox.com/s/64z4xtpyhhmhojp/datasets.tar.gz
-tar -zvxf datasets.tar.gz
-mv datasets $exp_dir
-```
-
-6. Our program should be running as root: `sudo bash run_all.sh`
-7. Default parameters:
+Default parameters:
 
 | Parameters          | Default              | Description                                   |
 | ------------------- | -------------------- | --------------------------------------------- |
@@ -113,4 +105,6 @@ Stock:
 
 ## Results
 
-All results are in `exp_dir/results/figures`.
+All results are in `exp_dir/results/`.
+
+All figures are in `exp_dir/results/figures`.
