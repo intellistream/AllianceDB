@@ -6,11 +6,11 @@ All of our experiments can be automatically reproduced by calling a few pre-prep
 
 1. cmake > 3.10.0.
 2. Profiling only supports Intel CPUs.
-3. You may need to reset pmu once at first run, some pcm profiling results may be incorrect at this time.
+3. You may need to reset pmu once at first run, some pcm profiling results may be incorrect at first time.
 4. Prepare cpu-mapping, and need to configure the path in `cpu-mapping.txt`. 
 5. real world datasets will be moved to the `exp_dir/datasets` automatically by scripts.
 6. Our program should be running as root: `sudo bash run_all.sh -d /data1/xtra -c 19922944`.
-7. You can run any subset of the experiment sections by modifying the exp_section in `auto_run.sh`.
+7. You can run any subset of the experiment sections by modifying the exp_section in `run_all.sh`.
 
 ## Third-party Lib (will be automatically installed in scripts)
 
