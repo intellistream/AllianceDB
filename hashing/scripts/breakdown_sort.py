@@ -105,7 +105,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, al
             leg.get_frame().set_edgecolor("black")
 
     # you may need to tune the xticks position to get the best figure.
-    plt.xticks(index + 1 * width, x_values)
+    plt.xticks(index + 0.6 * width, x_values)
     yfmt = ScalarFormatterForceFormat()
     yfmt.set_powerlimits((0,0))
     figure.get_yaxis().set_major_formatter(yfmt)

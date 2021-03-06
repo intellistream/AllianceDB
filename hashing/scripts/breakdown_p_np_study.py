@@ -206,7 +206,7 @@ if __name__ == "__main__":
 
     legend_labels = ['w/ Partition', 'w/o Partition']
 
-    DrawFigure(x_values, y_values, legend_labels, '', 'cycles per input', 0, 0,
+    DrawFigure(x_values, y_values, legend_labels, '', 'cycles per input tuple', 0, 0,
                'breakdown_p_np_study',
                True)
     # DrawLegend(legend_labels, 'profile_legend')

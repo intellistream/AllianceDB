@@ -13,7 +13,7 @@ from numpy import double
 OPT_FONT_NAME = 'Helvetica'
 TICK_FONT_SIZE = 24
 LABEL_FONT_SIZE = 28
-LEGEND_FONT_SIZE = 30
+LEGEND_FONT_SIZE = 26
 LABEL_FP = FontProperties(style='normal', size=LABEL_FONT_SIZE)
 LEGEND_FP = FontProperties(style='normal', size=LEGEND_FONT_SIZE)
 TICK_FP = FontProperties(style='normal', size=TICK_FONT_SIZE)
@@ -234,7 +234,7 @@ if __name__ == "__main__":
     legend_labels = ['partition', 'sort', 'merge', 'probe']  # , 'others'
 
     DrawFigure(x_values, y_values, sum, legend_labels,
-               'group size', 'cycles per input',
+               'group size', 'cycles per input tuple',
                'breakdown_group_pmj_figure', True)
 
     # DrawLegend(legend_labels, 'breakdown_radix_legend')
