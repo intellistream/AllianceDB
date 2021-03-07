@@ -342,7 +342,7 @@ if __name__ == "__main__":
     legend_labels = ['sort', 'merge']  # , 'others'
 
     DrawFigure(x_values, y_values, legend_labels,
-               '', 'cycles per input',
+               '', 'cycles per input tuple',
                'breakdown_simd_figure', True)
 
     # DrawLegend(legend_labels, 'breakdown_radix_legend')
