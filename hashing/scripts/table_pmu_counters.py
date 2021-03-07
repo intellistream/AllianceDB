@@ -10,6 +10,8 @@ from matplotlib.font_manager import FontProperties
 from matplotlib.ticker import LinearLocator, LogLocator, MaxNLocator
 from numpy import double
 
+matplotlib.rcParams['pdf.fonttype'] = 42
+
 exp_dir = "/data1/xtra"
 
 FIGURE_FOLDER = exp_dir + '/results/figure'

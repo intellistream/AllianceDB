@@ -34,6 +34,7 @@ mpl.rcParams['pdf.use14corefonts'] = True
 mpl.rcParams['xtick.labelsize'] = TICK_FONT_SIZE
 mpl.rcParams['ytick.labelsize'] = TICK_FONT_SIZE
 mpl.rcParams['font.family'] = OPT_FONT_NAME
+mpl.rcParams['pdf.fonttype'] = 42
 
 exp_dir = "/data1/xtra"
 

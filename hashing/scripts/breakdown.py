@@ -13,7 +13,7 @@ from numpy import double
 
 OPT_FONT_NAME = 'Helvetica'
 TICK_FONT_SIZE = 24
-LABEL_FONT_SIZE = 28
+LABEL_FONT_SIZE = 26
 LEGEND_FONT_SIZE = 30
 LABEL_FP = FontProperties(style='normal', size=LABEL_FONT_SIZE)
 LEGEND_FP = FontProperties(style='normal', size=LEGEND_FONT_SIZE)
@@ -35,6 +35,7 @@ matplotlib.rcParams['pdf.use14corefonts'] = True
 matplotlib.rcParams['xtick.labelsize'] = TICK_FONT_SIZE
 matplotlib.rcParams['ytick.labelsize'] = TICK_FONT_SIZE
 matplotlib.rcParams['font.family'] = OPT_FONT_NAME
+matplotlib.rcParams['pdf.fonttype'] = 42
 
 exp_dir = "/data1/xtra"
 
@@ -55,6 +56,10 @@ class ScalarFormatterForceFormat(ScalarFormatter):
 
 # draw a line chart
 def DrawFigure(x_values, y_values, y_max, legend_labels, x_label, y_label, filename, id, allow_legend):
+    # plt.rc('text', usetex=True)
+    # plt.rc('font', family='serif')
+    # plt.rcParams['pdf.fonttype'] = 42
+
     # you may change the figure size on your own.
     fig = plt.figure(figsize=(10, 4))
     figure = fig.add_subplot(111)
@@ -331,7 +336,7 @@ if __name__ == "__main__":
     legend_labels = ['wait', 'partition', 'build/sort', 'merge', 'probe', 'others']  #
     print(y_values)
     DrawFigure(x_values, y_values, ceil(max_value / 100) * 100, legend_labels, '',
-               'cycles per input',
+               'cycles per input tuple',
                'breakdown_figure{}'.format(id), id, False)
 
     DrawLegend(legend_labels, 'breakdown_legend')

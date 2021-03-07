@@ -32,6 +32,8 @@ matplotlib.rcParams['pdf.use14corefonts'] = True
 matplotlib.rcParams['xtick.labelsize'] = TICK_FONT_SIZE
 matplotlib.rcParams['ytick.labelsize'] = TICK_FONT_SIZE
 matplotlib.rcParams['font.family'] = OPT_FONT_NAME
+matplotlib.rcParams['pdf.fonttype'] = 42
+
 rc('text.latex', preamble=r'\usepackage[cm]{sfmath}')
 rc('font', **{'family': 'sans-serif',
               'sans-serif': ['Helvetica'],
@@ -151,7 +153,8 @@ if __name__ == "__main__":
     file = exp_dir + '/results/records/NPJ_{}.txt'.format(40)
     f = open(file, "r")
     read = f.readlines()
-    inputs = float(read.pop(0).strip("\n"))  /1000 # get number of inputs (in k)
+    # inputs = float(read.pop(0).strip("\n"))  /1000 # get number of inputs (in k)
+    inputs = float(read.pop(0).strip("\n")) # get number of inputs (in k)
 
     y_values.append([  # placeholders
         0 / inputs,  # L1
@@ -211,6 +214,8 @@ if __name__ == "__main__":
     legend_labels = ['Lazy:', 'NPJ', 'PRJ', 'MWAY', 'MPASS',
                      'Eager:', 'SHJ$^{JM}$', 'SHJ$^{JB}$', 'PMJ$^{JM}$', 'PMJ$^{JB}$']
 
-    DrawFigure(x_values, y_values, legend_labels, '', 'misses per k input', 0, 1, 'profile_ysb_partition',
+    print(y_values)
+
+    DrawFigure(x_values, y_values, legend_labels, '', 'misses per input tuple', 0, 1, 'profile_ysb_partition',
                False)
     # DrawLegend(legend_labels, 'profile_legend')
