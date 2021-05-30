@@ -4,7 +4,7 @@ If you use AllianceDB in your work, please cite our work.
 
 --
 
-- Intra-Window Join
+- Intra-Window Join *[Release at https://github.com/intellistream/AllianceDB/releases/tag/v1]*
 
   * **[SIGMOD]** Shuhao Zhang, Yancan Mao, Jiong He, Philipp M. Grulich, Steffen Zeuch, Bingsheng He, Richard T. B. Ma, and Volker Markl. Parallelizing Intra-Window Join on Multicores: An Experimental Study, SIGMOD, 2021
   ```
