@@ -2,20 +2,12 @@ cmake_minimum_required(VERSION 3.5)
 project(AllianceDB)
 set(CMAKE_CXX_STANDARD 11)
 
-# Download and unpack googletest at configure time
-#configure_file(CMakeLists.txt.in googletest-download/CMakeLists.txt)
-#execute_process(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" .
-#        WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/googletest-download"
-#        )
-#execute_process(COMMAND "${CMAKE_COMMAND}" --build .
-#        WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/googletest-download"
-#        )
-
 #####ADD NUMA########
 find_path(LIBNUMA_INCLUDE numa.h PATHS ${SEARCH_DIRS})
 find_library(LIBNUMA_LIB NAMES libnuma.so PATHS ${SEARCH_DIRS})
 if (LIBNUMA_INCLUDE-NOTFOUND)
     set(LIBNUMA_INCLUDE "" CACHE PATH "Directory where libnuma header files can be found (consider installing libnuma-dev)")
+    message("consider installing libnuma-dev")
 else ()
     include_directories(${LIBNUMA_INCLUDE})
 endif ()
