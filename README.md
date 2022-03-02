@@ -1,21 +1,52 @@
-AllianceDB is an open-source benchmark suite for evaluating and improving stream operation algorithms on modern hardwares.
+# Lazy Window Join
 
-If you use AllianceDB in your work, please cite our work.
+# Quick start
 
---
+```shell
+cd tools
+sh rmote-debug-setup.sh
+```
 
-- Intra-Window Join *[Release at https://github.com/intellistream/AllianceDB/releases/tag/v1]*
+> then use CLion remote debug with port: `1234`, username: `root`, password: `pass1234`.
 
-  * **[SIGMOD]** Shuhao Zhang, Yancan Mao, Jiong He, Philipp M. Grulich, Steffen Zeuch, Bingsheng He, Richard T. B. Ma, and Volker Markl. Parallelizing Intra-Window Join on Multicores: An Experimental Study, SIGMOD, 2021
-  ```
-  @article{IntraWJoin21,
-   author = {Zhang, Shuhao and Mao, Yancan and He, Jiong and Grulich, Philipp M and Zeuch, Steffen and He, Bingsheng and Ma, Richard TB and Markl, Volker},
-   title = {Parallelizing Intra-Window Join on Multicores: An Experimental Study},
-   booktitle = {Proceedings of the 2021 International Conference on Management of Data (SIGMOD '21), June 18--27, 2021, Virtual Event , China},
-   series = {SIGMOD '21},
-   year={2021},
-   isbn = {978-1-4503-8343-1/21/06},
-   url = {https://doi.org/10.1145/3448016.3452793},
-   doi = {10.1145/3448016.3452793},
-  }
-  ```
+> Change the `CONTAINER_NAME`, `PORT` and `ROOT_PASSWD` if needed.
+
+## Quick install G++11 on ubuntu older than hirsute
+
+```shell
+sudo add-apt-repository 'deb http://mirrors.kernel.org/ubuntu hirsute main universe'
+sudo apt-get update
+sudo apt install gcc-11 g++-11
+sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 11
+sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-11 11
+```
+
+## Requires Log4cxx native
+
+```shell
+sudo apt-get install -y liblog4cxx-dev
+```
+
+## Code Structure
+
+- benchmark -- application code to use the generated shared library
+- cmake -- cmake configuration files
+- docs -- any documents
+- include -- all the header files
+- src -- corresponding source files, will generate a shared library
+- test -- test code based on google test
+- tools -- script to start a remote-debug environment that contains all required libs.
+
+## How to build?
+###Native Compile
+mkdir build
+cd build && cmake ..
+make
+###Cross Compile
+mkdir CROSS_BUILD
+cd CROSS_BUILD
+export CC= {Full path and name of your cross C compiler}
+export CXX= {Full path and name of your cross CPP compiler}
+cmake .. -DENABLE_UNIT_TESTS=OFF
+make
+-please make sure your cross compiler also has the log4cxx

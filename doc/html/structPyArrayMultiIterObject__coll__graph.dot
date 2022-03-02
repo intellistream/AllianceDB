@@ -1,0 +1,21 @@
+digraph "PyArrayMultiIterObject"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="PyArrayMultiIterObject",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node2 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" iters" ,fontname="Helvetica"];
+  Node2 [label="PyArrayIterObject_tag",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structPyArrayIterObject__tag.html",tooltip=" "];
+  Node3 -> Node2 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" ao" ,fontname="Helvetica"];
+  Node3 [label="tagPyArrayObject_fields",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structtagPyArrayObject__fields.html",tooltip=" "];
+  Node4 -> Node3 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" descr" ,fontname="Helvetica"];
+  Node4 [label="_PyArray_Descr",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$struct__PyArray__Descr.html",tooltip=" "];
+  Node5 -> Node4 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" f" ,fontname="Helvetica"];
+  Node5 [label="PyArray_ArrFuncs",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structPyArray__ArrFuncs.html",tooltip=" "];
+  Node6 -> Node4 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" subarray" ,fontname="Helvetica"];
+  Node6 [label="_arr_descr",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$struct__arr__descr.html",tooltip=" "];
+  Node4 -> Node6 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" base" ,fontname="Helvetica"];
+  Node7 -> Node4 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" c_metadata" ,fontname="Helvetica"];
+  Node7 [label="NpyAuxData_tag",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structNpyAuxData__tag.html",tooltip=" "];
+  Node2 -> Node2 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" translate" ,fontname="Helvetica"];
+}

@@ -1,0 +1,15 @@
+digraph "include" {
+  compound=true
+  node [ fontsize="10", fontname="Helvetica"];
+  edge [ labelfontsize="10", labelfontname="Helvetica"];
+  subgraph clusterdir_d44c64559bbebec7f509842c48db8b23 {
+    graph [ bgcolor="#eeeeff", pencolor="black", label="" URL="dir_d44c64559bbebec7f509842c48db8b23.html"];
+    dir_d44c64559bbebec7f509842c48db8b23 [shape=plaintext label="include"];
+  dir_c257a94909c206d50efc94cbbe26f908 [shape=box label="JoinMethods" fillcolor="white" style="filled" URL="dir_c257a94909c206d50efc94cbbe26f908.html"];
+  dir_3a2146b16b7b7487199f0add244c9d6b [shape=box label="JoinProcessor" fillcolor="white" style="filled" URL="dir_3a2146b16b7b7487199f0add244c9d6b.html"];
+  dir_2d1d991c66e7a032b2ab80c11328e79c [shape=box label="Utils" fillcolor="white" style="filled" URL="dir_2d1d991c66e7a032b2ab80c11328e79c.html"];
+  dir_34445532ae09f585cee27beb5e8a4d84 [shape=box label="WindowSlider" fillcolor="white" style="filled" URL="dir_34445532ae09f585cee27beb5e8a4d84.html"];
+  }
+  dir_3a2146b16b7b7487199f0add244c9d6b->dir_2d1d991c66e7a032b2ab80c11328e79c [headlabel="1", labeldistance=1.5 headhref="dir_000004_000005.html"];
+  dir_c257a94909c206d50efc94cbbe26f908->dir_34445532ae09f585cee27beb5e8a4d84 [headlabel="2", labeldistance=1.5 headhref="dir_000003_000006.html"];
+}

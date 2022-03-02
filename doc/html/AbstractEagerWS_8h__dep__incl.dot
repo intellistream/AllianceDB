@@ -1,0 +1,17 @@
+digraph "include/WindowSlider/AbstractEagerWS.h"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="include/WindowSlider\l/AbstractEagerWS.h",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="include/JoinMethods\l/AbstractJoinMethod.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$AbstractJoinMethod_8h_source.html",tooltip=" "];
+  Node2 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="include/JoinMethods\l/CellJoin.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$CellJoin_8h_source.html",tooltip=" "];
+  Node2 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="include/JoinMethods\l/HandShakeJoin.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$HandShakeJoin_8h_source.html",tooltip=" "];
+  Node1 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 [label="include/WindowSlider\l/HandShakeWS.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$HandShakeWS_8h_source.html",tooltip=" "];
+  Node5 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+}

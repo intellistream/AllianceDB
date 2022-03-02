@@ -1,0 +1,8 @@
+digraph "Graphical Class Hierarchy"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node0 [label="testing::internal::\linternal_stream_operator\l_without_lexical_name_lookup\l::StreamPrinter",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structtesting_1_1internal_1_1internal__stream__operator__without__lexical__name__lookup_1_1StreamPrinter.html",tooltip=" "];
+}

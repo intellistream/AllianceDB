@@ -1,0 +1,10 @@
+digraph "Graphical Class Hierarchy"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node311 [label="IsRecursiveContainerImpl\l::type",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled",tooltip=" "];
+  Node311 -> Node0 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node0 [label="testing::internal::\lIsRecursiveContainer\< C \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structtesting_1_1internal_1_1IsRecursiveContainer.html",tooltip=" "];
+}

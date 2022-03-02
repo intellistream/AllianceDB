@@ -1,0 +1,20 @@
+digraph "Graphical Class Hierarchy"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node135 [label="MockClass",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled",tooltip=" "];
+  Node135 -> Node0 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node0 [label="testing::NaggyMock\l\< MockClass \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classtesting_1_1NaggyMock.html",tooltip=" "];
+  Node135 -> Node137 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node137 [label="testing::NiceMock\<\l MockClass \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classtesting_1_1NiceMock.html",tooltip=" "];
+  Node135 -> Node138 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node138 [label="testing::StrictMock\l\< MockClass \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classtesting_1_1StrictMock.html",tooltip=" "];
+  Node142 [label="testing::internal::\lNaggyMockImpl\< MockClass \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classtesting_1_1internal_1_1NaggyMockImpl.html",tooltip=" "];
+  Node142 -> Node0 [dir="back",color="firebrick4",fontsize="10",style="solid",fontname="Helvetica"];
+  Node146 [label="testing::internal::\lNiceMockImpl\< MockClass \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classtesting_1_1internal_1_1NiceMockImpl.html",tooltip=" "];
+  Node146 -> Node137 [dir="back",color="firebrick4",fontsize="10",style="solid",fontname="Helvetica"];
+  Node272 [label="testing::internal::\lStrictMockImpl\< MockClass \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classtesting_1_1internal_1_1StrictMockImpl.html",tooltip=" "];
+  Node272 -> Node138 [dir="back",color="firebrick4",fontsize="10",style="solid",fontname="Helvetica"];
+}

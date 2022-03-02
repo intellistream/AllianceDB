@@ -1,8 +1,0 @@
-/cmake-build-debug/
-/cmake-build-release/
-/cmake-build-debug-remote-host-sort/
-/cmake-build-release-remote-host-sort/
-/CMakeFiles/
-/CMakeCache.txt
-/sorting.cbp
-cmake-build-*/*

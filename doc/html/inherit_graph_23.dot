@@ -1,0 +1,10 @@
+digraph "Graphical Class Hierarchy"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node3 [label="_hash_32_or_64\<(size\l \> 4)\>",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled",tooltip=" "];
+  Node3 -> Node0 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node0 [label="moodycamel::details\l::hash_32_or_64\< size \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structmoodycamel_1_1details_1_1hash__32__or__64.html",tooltip=" "];
+}

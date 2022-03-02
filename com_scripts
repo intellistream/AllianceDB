@@ -1,0 +1,4 @@
+1. change into time-based window
+2. abstract the join method and creat a STL named AbstractJoinMethod
+3. change the celljoin by extending the AbstractJoinMethod
+4. try handshake join (not work fine yet)

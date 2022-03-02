@@ -1,0 +1,4 @@
+add_subdirectory(Utils)
+add_subdirectory(JoinMethods)
+add_subdirectory(WindowSlider)
+add_subdirectory(JoinProcessor)
