@@ -5,7 +5,7 @@
 #ifndef HYBRID_JOIN_HANDSHAKEJOIN_H
 #define HYBRID_JOIN_HANDSHAKEJOIN_H
 
-#include <JoinMethods/Types.h>
+#include <Common/Types.h>
 #include <JoinMethods/AbstractJoinMethod.h>
 #include <WindowSlider/HandShakeWS.h>
 namespace INTELLI {

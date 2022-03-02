@@ -4,7 +4,7 @@ digraph "Graphical Class Hierarchy"
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=record];
   rankdir="LR";
-  Node0 [label="INTELLI::AbstractEagerWS",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classINTELLI_1_1AbstractEagerWS.html",tooltip=" "];
+  Node0 [label="INTELLI::AbstractEagerWS",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classINTELLI_1_1AbstractEagerWS.html",tooltip="An abstraction of eager window slider, also inherited by other eager window slider."];
   Node0 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node1 [label="INTELLI::HandShakeWS",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classINTELLI_1_1HandShakeWS.html",tooltip=" "];
+  Node1 [label="INTELLI::HandShakeWS",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classINTELLI_1_1HandShakeWS.html",tooltip="The window slider especially for handshake join."];
 }

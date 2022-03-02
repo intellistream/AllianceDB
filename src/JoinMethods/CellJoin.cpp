@@ -4,7 +4,7 @@
 
 #include <JoinMethods/CellJoin.h>
 #include <thread>
-#include <JoinMethods/Types.h>
+#include <Common/Types.h>
 #include <iostream>
 #include <WindowSlider/AbstractEagerWS.h>
 //Variables that are shared among threads

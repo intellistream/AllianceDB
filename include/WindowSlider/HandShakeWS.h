@@ -6,7 +6,7 @@
 #define WINDOWSLIDER_HANDSHAKEWS_H_
 #include <cstdint>
 #include <vector>
-#include <JoinMethods/Types.h>
+#include <Common/Types.h>
 #include <Utils/SPSCQueue.hpp>
 #include <time.h>
 #include <numeric>
@@ -16,6 +16,16 @@
 using namespace INTELLI;
 using namespace std;
 namespace INTELLI {
+/**
+ *  @ingroup WindowSliders
+* @class HandShakeWS WindowSlider/HandShakeWS.h
+* @brief The window slider especially for handshake join
+* @author Tony Zeng
+* @note
+* init and run:
+ @see AbstractEagerWS
+*/
+/*! Class that is inherited using public inheritance */
 class HandShakeWS : public  AbstractEagerWS
 {
 private:

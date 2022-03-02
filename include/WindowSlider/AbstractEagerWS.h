@@ -2,14 +2,7 @@
 
 /*!
     An abstraction of eager window slider
-    \li To init and run, follow the functions below to start a WS
-   * setTimeBased: configure window type
-   * setWindowLen: configure window length
-   * setParallelSMP/setParallelAMP:set parallel executing behavior on SMP/AMP
-   * (setRunTimeScheduling)
-   * initJoinProcessors: to make the parallel join processors started
-   * use feedTupleS/feedTupleR to feed data
-   * (terminateJoinProcessors)
+
     \return 错误码，0表示成功，其它表示失败
     \todo add the result collection in the future
 
@@ -19,7 +12,7 @@
 #define WINDOWSLIDER_ABSTRACTEAGERWS_H_
 #include <cstdint>
 #include <vector>
-#include <JoinMethods/Types.h>
+#include <Common/Types.h>
 #include <Utils/SPSCQueue.hpp>
 #include <time.h>
 #include <numeric>
@@ -29,6 +22,24 @@ using namespace INTELLI;
 using namespace std;
 namespace INTELLI {
 //Note: "Upon every arrival of a tuple, the opposing window is re-partitioned to perform a parallel scan"
+/**
+ *  @defgroup WindowSliders WindowSliders
+ *  @{
+* @class AbstractEagerWS WindowSlider/AbstractEagerWS.h
+* @brief An abstraction of eager window slider, also inherited by other eager window slider
+* @author Tony Zeng
+* @note
+* detailed description:
+ To init and run, follow the functions below to start a WS
+   \li Configure the window type, time or count, @ref setTimeBased
+   \li Configure window length: @ref setWindowLen
+   \li Set parallel executing behavior on SMP,@ref setParallelSMP
+   \li Optional, (@ref setRunTimeScheduling)
+   \li To make the parallel join processors started, @ref initJoinProcessors
+   \li Feed tuples @ref feedTupleS or @ref feedTupleR
+   \li Terminate, by @ref terminateJoinProcessors
+*/
+/*! Class that is inherited using public inheritance */
 class AbstractEagerWS {
  private:
   /* data */
@@ -55,46 +66,60 @@ class AbstractEagerWS {
   //window expire
   void expireS(size_t cond);
   void expireR(size_t cond);
-  struct timeval timeSys;
+  struct timeval timeSys;  /*!< timeval structure from linux, <sys/time.h> */
  public:
   //generate the partition vector of offset
   vector<size_t> weightedPartitionSizeFinal(size_t inS); //reserved for AMP
   vector<size_t> avgPartitionSizeFinal(size_t inS); //for SMP
-  /* note: please follow the functions below to start a WS
-   * setTimeBased: configure window type
-   * setWindowLen: configure window length
-   * setParallelSMP/setParallelAMP:set parallel executing behavior on SMP/AMP
-   * (setRunTimeScheduling)
-   * initJoinProcessors: to make the parallel join processors started
-   * use feedTupleS/feedTupleR to feed data
-   * (terminateJoinProcessors)
+
+  /**
+   * @brief to configure the window type
+   * @param ts wether the slider is time-baesd
    */
-  // configure the window type
   void setTimeBased(bool ts) {
     timeBased = ts;
   }
-  //read the window type
+  /**
+   * @brief to read the window type
+   * @result wether the slider is time-baesd
+   */
   bool isTimeBased() {
     return timeBased;
   }
-  //runTime scheduling
+  /**
+   * @brief to configure the scheduling place
+   * @param r wether let runtime schedule
+   */
   void setRunTimeScheduling(bool r) {
     runTimeScheduling = r;
   }
+  /**
+   * @brief to read the scheduling type
+   * @result wether the runtime schedules
+   */
   bool isRunTimeScheduling() {
     return runTimeScheduling;
   }
-  // set the length of window
+  /**
+  * @brief to set the length of window
+  * @param wl the window length
+  */
   void setWindowLen(size_t wl) {
     windowLen = wl;
   }
-  //SMP partition
+  /**
+  * @brief to set the parallel level under SMP model
+  * @param threads to how many threads will run the join
+  */
   void setParallelSMP(size_t threads) {
     partitionWeight = std::vector<size_t>(threads);
     for (size_t i = 0; i < threads; i++) {
       partitionWeight[i] = 1;
     }
   }
+  /**
+ * @brief reset everything needed
+ */
   void reset() {
     countS = 0;
     countR = 0;
@@ -116,18 +141,46 @@ class AbstractEagerWS {
     return UtilityFunctions::timeLastUs(timeSys)/TIME_STEP;
   }
   //init with length of queue
+  /**
+ * @brief to init the slider with specific length of queue
+  * @param sLen the length of S queue
+   * @param rLen the length of R queue
+ */
   AbstractEagerWS(size_t sLen, size_t rLen);
   //feed the tuple S
+  /**
+* @brief to feed a tuple s
+ * @param ts the tuple s
+  * @note this function is thread-safe :)
+*/
   virtual void feedTupleS(TuplePtr ts);
   //feed the tuple R
+  /**
+* @brief to feed a tuple R
+ * @param tr the tuple r
+  * @note this function is thread-safe :)
+*/
   virtual void feedTupleR(TuplePtr tr);
   ~AbstractEagerWS();
 
   //init the join processors
+  /**
+ * @brief to init the initJoinProcessors
+  * @note only after this is called can we start to feed tuples
+ */
   void initJoinProcessors();
+  /**
+ * @brief to terminate the join processors
+ */
   void terminateJoinProcessors();
   void waitAckFromJoinProcessors();
   //get the join result
+  /**
+* @brief to get the result of join
+   *  @result how many tuples are joined
+ * @note only called after all join processors are stopped
+   * ,use @ref terminateJoinProcessors to achieve this
+*/
   size_t getJoinResult();
   //startTime
   size_t getStartTime()
@@ -141,3 +194,4 @@ class AbstractEagerWS {
 };
 }
 #endif
+/**@}*/

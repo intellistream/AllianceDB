@@ -4,7 +4,7 @@
 #include <gtest/gtest.h>
 #include <Utils/Logger.hpp>
 #include <Utils/UtilityFunctions.hpp>
-#include <JoinMethods/Types.h>
+#include <Common/Types.h>
 #include <JoinMethods/CommonFunctions.h>
 #include <JoinMethods/OneWayHashJoin.h>
 #include <JoinMethods/CellJoin.h>

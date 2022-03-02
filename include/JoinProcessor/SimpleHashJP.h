@@ -5,7 +5,7 @@
 #ifndef JOINPROCESSOR_SIMPLEHASHJP_H_
 #define JOINPROCESSOR_SIMPLEHASHJP_H_
 #include <thread>
-#include <JoinMethods/Types.h>
+#include <Common/Types.h>
 #include <Utils/UtilityFunctions.hpp>
 #include <barrier>
 using namespace INTELLI;

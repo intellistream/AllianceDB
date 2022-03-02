@@ -1,5 +1,0 @@
-var dir_85f9048555556a8475c516a0e35d92ce =
-[
-    [ "core", "dir_d68601d18e95b42281471ba2c019a544.html", "dir_d68601d18e95b42281471ba2c019a544" ],
-    [ "f2py", "dir_6d417b4ca554a44e7f44b47693b97a05.html", "dir_6d417b4ca554a44e7f44b47693b97a05" ]
-];

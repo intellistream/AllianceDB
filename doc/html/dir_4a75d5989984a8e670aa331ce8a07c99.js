@@ -1,4 +1,0 @@
-var dir_4a75d5989984a8e670aa331ce8a07c99 =
-[
-    [ "python3.9", "dir_f4506a215b407d85b37a6605f7c34899.html", "dir_f4506a215b407d85b37a6605f7c34899" ]
-];

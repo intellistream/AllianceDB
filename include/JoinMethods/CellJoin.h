@@ -6,7 +6,7 @@
 #ifndef HYBRID_JOIN_CELLJOIN_H
 #define HYBRID_JOIN_CELLJOIN_H
 
-#include <JoinMethods/Types.h>
+#include <Common/Types.h>
 #include <JoinMethods/AbstractJoinMethod.h>
 #include <WindowSlider/AbstractEagerWS.h>
 namespace INTELLI {

@@ -1,0 +1,11 @@
+digraph "include/WindowSlider" {
+  compound=true
+  node [ fontsize="10", fontname="Helvetica"];
+  edge [ labelfontsize="10", labelfontname="Helvetica"];
+  subgraph clusterdir_d44c64559bbebec7f509842c48db8b23 {
+    graph [ bgcolor="#ddddee", pencolor="black", label="include" fontname="Helvetica", fontsize="10", URL="dir_d44c64559bbebec7f509842c48db8b23.html"]
+  dir_4e88733bde07f70aee18672f1ff34c79 [shape=box label="Common" URL="dir_4e88733bde07f70aee18672f1ff34c79.html"];
+  dir_34445532ae09f585cee27beb5e8a4d84 [shape=box, label="WindowSlider", style="filled", fillcolor="#eeeeff", pencolor="black", URL="dir_34445532ae09f585cee27beb5e8a4d84.html"];
+  }
+  dir_34445532ae09f585cee27beb5e8a4d84->dir_4e88733bde07f70aee18672f1ff34c79 [headlabel="2", labeldistance=1.5 headhref="dir_000007_000003.html"];
+}

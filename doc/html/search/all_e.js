@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['thread_5fid_5fconverter_50',['thread_id_converter',['../structmoodycamel_1_1details_1_1thread__id__converter.html',1,'moodycamel::details']]],
-  ['todo_20list_51',['Todo List',['../todo.html',1,'']]],
-  ['tuple_52',['Tuple',['../classINTELLI_1_1Tuple.html',1,'INTELLI']]]
+  ['relationcouple_45',['RelationCouple',['../classINTELLI_1_1RelationCouple.html',1,'INTELLI']]],
+  ['reset_46',['reset',['../group__WindowSliders.html#ga04a85ac1613d92f0e0f3d7a72101771f',1,'INTELLI::AbstractEagerWS']]],
+  ['result_47',['Result',['../classINTELLI_1_1Result.html',1,'INTELLI']]]
 ];

@@ -9,7 +9,7 @@
 #include <list>
 #include <mutex>
 #include <unordered_map>
-#include <JoinMethods/Types.h>
+#include <Common/Types.h>
 #include <Utils/Logger.hpp>
 
 #ifndef EXEC

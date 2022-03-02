@@ -1,16 +1,16 @@
 var annotated_dup =
 [
     [ "INTELLI", null, [
-      [ "AbstractJoinMethod", "classINTELLI_1_1AbstractJoinMethod.html", null ],
-      [ "CellJoin", "classINTELLI_1_1CellJoin.html", null ],
-      [ "CommonFunction", "classINTELLI_1_1CommonFunction.html", "classINTELLI_1_1CommonFunction" ],
-      [ "HandShakeJoin", "classINTELLI_1_1HandShakeJoin.html", null ],
-      [ "OneWayHashJoin", "classINTELLI_1_1OneWayHashJoin.html", null ],
       [ "Tuple", "classINTELLI_1_1Tuple.html", "classINTELLI_1_1Tuple" ],
       [ "RelationCouple", "classINTELLI_1_1RelationCouple.html", "classINTELLI_1_1RelationCouple" ],
       [ "WindowCouple", "classINTELLI_1_1WindowCouple.html", "classINTELLI_1_1WindowCouple" ],
       [ "ConcurrentQWindowCouple", "classINTELLI_1_1ConcurrentQWindowCouple.html", "classINTELLI_1_1ConcurrentQWindowCouple" ],
       [ "Result", "classINTELLI_1_1Result.html", "classINTELLI_1_1Result" ],
+      [ "AbstractJoinMethod", "classINTELLI_1_1AbstractJoinMethod.html", null ],
+      [ "CellJoin", "classINTELLI_1_1CellJoin.html", null ],
+      [ "CommonFunction", "classINTELLI_1_1CommonFunction.html", "classINTELLI_1_1CommonFunction" ],
+      [ "HandShakeJoin", "classINTELLI_1_1HandShakeJoin.html", null ],
+      [ "OneWayHashJoin", "classINTELLI_1_1OneWayHashJoin.html", null ],
       [ "HandShakeHashJP", "classINTELLI_1_1HandShakeHashJP.html", "classINTELLI_1_1HandShakeHashJP" ],
       [ "SimpleHashJP", "classINTELLI_1_1SimpleHashJP.html", "classINTELLI_1_1SimpleHashJP" ],
       [ "SPSCQueue", "classINTELLI_1_1SPSCQueue.html", "classINTELLI_1_1SPSCQueue" ],

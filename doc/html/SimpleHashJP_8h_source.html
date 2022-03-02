@@ -104,7 +104,7 @@ $(document).ready(function(){initNavTree('SimpleHashJP_8h_source.html',''); init
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#ifndef JOINPROCESSOR_SIMPLEHASHJP_H_</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#define JOINPROCESSOR_SIMPLEHASHJP_H_</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &lt;thread&gt;</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &lt;JoinMethods/Types.h&gt;</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="Types_8h.html">Common/Types.h</a>&gt;</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="UtilityFunctions_8hpp.html">Utils/UtilityFunctions.hpp</a>&gt;</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;barrier&gt;</span></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keyword">using namespace </span>INTELLI;</div>
@@ -200,10 +200,10 @@ $(document).ready(function(){initNavTree('SimpleHashJP_8h_source.html',''); init
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    <span class="keywordflow">return</span> ru;</div>
 <div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  }</div>
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  <span class="comment">//outside feed a Tuple S</span></div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  <span class="keywordtype">void</span> feedTupleS(TuplePtr ts) {</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  <span class="keywordtype">void</span> feedTupleS(<a class="code" href="group__Common.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> ts) {</div>
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    tupleQueueS-&gt;push(ts);</div>
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  }</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  <span class="keywordtype">void</span> feedTupleR(TuplePtr tr) {</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  <span class="keywordtype">void</span> feedTupleR(<a class="code" href="group__Common.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> tr) {</div>
 <div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    tupleQueueR-&gt;push(tr);</div>
 <div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  }</div>
 <div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  <span class="comment">//outside feed a window</span></div>
@@ -247,8 +247,10 @@ $(document).ready(function(){initNavTree('SimpleHashJP_8h_source.html',''); init
 <div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;<span class="keyword">typedef</span>  std::shared_ptr&lt;SimpleHashJP&gt; SimpleHashJPPtr;</div>
 <div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;}</div>
 <div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;<span class="preprocessor">#endif </span><span class="comment">//HYBRID_JOIN_SRC_JOINPROCESSOR_SIMPLEHASHJP_H_</span></div>
+<div class="ttc" id="aTypes_8h_html"><div class="ttname"><a href="Types_8h.html">Types.h</a></div></div>
 <div class="ttc" id="aUtilityFunctions_8hpp_html"><div class="ttname"><a href="UtilityFunctions_8hpp.html">UtilityFunctions.hpp</a></div></div>
 <div class="ttc" id="aclassINTELLI_1_1SimpleHashJP_html"><div class="ttname"><a href="classINTELLI_1_1SimpleHashJP.html">INTELLI::SimpleHashJP</a></div><div class="ttdef"><b>Definition:</b> SimpleHashJP.h:18</div></div>
+<div class="ttc" id="agroup__Common_html_gaae6cb4c36125ed9faed4c1d55c85eef3"><div class="ttname"><a href="group__Common.html#gaae6cb4c36125ed9faed4c1d55c85eef3">INTELLI::TuplePtr</a></div><div class="ttdeci">std::shared_ptr&lt; class Tuple &gt; TuplePtr</div><div class="ttdef"><b>Definition:</b> Types.h:73</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
