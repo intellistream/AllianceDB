@@ -61,7 +61,7 @@
  * The AianceDB allows direct feeding of tuples, all you need is set up a WindowSlider
  * and then feed tuples.
  * You may wish to check @ref Common for data types, @ref WindowSliders for WindowSliders, these are all that
- * needed to be known as a starting user.
+ * needed to be known as a starting user. The running is as simple as something like @ref feedTupleS
  */
 
 namespace INTELLI {
