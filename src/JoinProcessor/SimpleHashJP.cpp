@@ -11,11 +11,11 @@ void INTELLI::SimpleHashJP::inlineRun() {
   //wait for new cmd
   //cout<<"join processor "<<sysId<<" start"<<endl;
   while (1) {
-    /*while (cmdQueueIn->empty()&&tupleQueueS->empty()&&tupleQueueR->) {
+    /*while (cmdQueueIn->empty()&&TupleQueuePtrLocalS->empty()&&TupleQueuePtrLocalR->) {
 
     }*/
     //cmd
-    if (tupleQueueS->empty() && tupleQueueR->empty()) {
+    if (TupleQueuePtrLocalS->empty() && TupleQueuePtrLocalR->empty()) {
       if (!cmdQueueIn->empty()) {
 
         join_cmd_t cmdIn = *cmdQueueIn->front();
@@ -31,9 +31,9 @@ void INTELLI::SimpleHashJP::inlineRun() {
 
 
     //tuple S and window R
-    while (!tupleQueueS->empty()) {
-      TuplePtr ts = *tupleQueueS->front();
-      tupleQueueS->pop();
+    while (!TupleQueuePtrLocalS->empty()) {
+      TuplePtr ts = *TupleQueuePtrLocalS->front();
+      TupleQueuePtrLocalS->pop();
       WindowOfTuples wr = *windowQueueR->front();
       windowQueueR->pop();
       //build R
@@ -60,9 +60,9 @@ void INTELLI::SimpleHashJP::inlineRun() {
     }
 
     //tuple R and window S
-    while (!tupleQueueR->empty()) {
-      TuplePtr tr = *tupleQueueR->front();
-      tupleQueueR->pop();
+    while (!TupleQueuePtrLocalR->empty()) {
+      TuplePtr tr = *TupleQueuePtrLocalR->front();
+      TupleQueuePtrLocalR->pop();
       WindowOfTuples ws = *windowQueueS->front();
       windowQueueS->pop();
       //build S

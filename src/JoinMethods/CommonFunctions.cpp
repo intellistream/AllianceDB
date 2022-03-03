@@ -4,7 +4,7 @@
 #include <JoinMethods/CommonFunctions.h>
 
 namespace INTELLI {
-void CommonFunction::buildRelation(tupleQueue &relation, const std::string &fileName) {
+void CommonFunction::buildRelation(TupleQueuePtrLocal &relation, const std::string &fileName) {
   std::fstream file;
   std::string buffer;
   file.open(fileName, std::ios::in);

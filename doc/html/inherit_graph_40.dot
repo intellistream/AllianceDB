@@ -4,5 +4,5 @@ digraph "Graphical Class Hierarchy"
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=record];
   rankdir="LR";
-  Node0 [label="std::DupicatedHashTable\l\< _Key, Tp, Hash, _SubKey \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classstd_1_1DupicatedHashTable.html",tooltip=" "];
+  Node0 [label="moodycamel::details\l::thread_id_converter\l\< thread_id_t \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structmoodycamel_1_1details_1_1thread__id__converter.html",tooltip=" "];
 }

@@ -1,6 +1,4 @@
 var searchData=
 [
-  ['welcome_77',['Welcome',['../index.html',1,'']]],
-  ['windowcouple_78',['WindowCouple',['../classINTELLI_1_1WindowCouple.html',1,'INTELLI']]],
-  ['windowsliders_79',['WindowSliders',['../group__WindowSliders.html',1,'']]]
+  ['valuetype_85',['valueType',['../group__Common.html#ga4bb66f4742171167ee336a06d8939bdf',1,'INTELLI']]]
 ];

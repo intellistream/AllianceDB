@@ -9,8 +9,8 @@
 #include <thread>
 #include <iostream>
 #include <WindowSlider/HandShakeWS.h>
-INTELLI::tupleQueue RecvQueueR[THREAD_NUMBER + 1];
-INTELLI::tupleQueue RecvQueueS[THREAD_NUMBER + 1];
+INTELLI::TupleQueuePtrLocal RecvQueueR[THREAD_NUMBER + 1];
+INTELLI::TupleQueuePtrLocal RecvQueueS[THREAD_NUMBER + 1];
 
 INTELLI::numberType threadJoinResultSHJ[THREAD_NUMBER];
 INTELLI::RelationCouple relationCoupleShared;
@@ -44,11 +44,11 @@ void INTELLI::HandShakeJoin::execute(INTELLI::Result &joinResult, INTELLI::Relat
 
 void
 INTELLI::HandShakeJoin::threadWork(int id, INTELLI::numberType windowSize) {
-  tupleQueue &threadLeftRecvQueueR = RecvQueueR[id];
-  tupleQueue &threadLeftSendQueueS = RecvQueueS[id];
-  tupleQueue &threadRightSendQueueR = RecvQueueR[id + 1];
-  tupleQueue &threadRightRecvQueueS = RecvQueueS[id + 1];
-  tupleQueue forwardedTuple;
+  TupleQueuePtrLocal &threadLeftRecvQueueR = RecvQueueR[id];
+  TupleQueuePtrLocal &threadLeftSendQueueS = RecvQueueS[id];
+  TupleQueuePtrLocal &threadRightSendQueueR = RecvQueueR[id + 1];
+  TupleQueuePtrLocal &threadRightRecvQueueS = RecvQueueS[id + 1];
+  TupleQueuePtrLocal forwardedTuple;
 
   INTELLI::WindowCouple windowCouple = INTELLI::WindowCouple(windowSize);
 

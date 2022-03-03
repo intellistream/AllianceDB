@@ -61,27 +61,20 @@
  * The AianceDB allows direct feeding of tuples, all you need is set up a WindowSlider
  * and then feed tuples.
  * You may wish to check @ref Common for data types, @ref WindowSliders for WindowSliders, these are all that
- * needed to be known as a starting user. The running is as simple as something like @ref feedTupleS
+ * needed to be known as a starting user.
  */
 
 namespace INTELLI {
 /**
- * @defgroup Common Common Datastructure
+ * @defgroup Common Common Datastructure and Functions
  *  @{
  */
 //Pointers
-typedef std::shared_ptr<class Tuple> TuplePtr;  /*!< The shared pointer to @ref Tuple */
-typedef std::shared_ptr<class RelationCouple> RelationCouplePtr;
 
-//Array Pointers
-typedef std::vector<TuplePtr> WindowOfTuples;
-//typedef std::SafeQueue<TuplePtr> tupleQueue;
-typedef std::SafeQueue<TuplePtr> tupleQueue;
-typedef moodycamel::ConcurrentQueue<TuplePtr> concurrentTupleQueue;
 
 //Alias
-typedef int keyType;    /*!< Type of the join key, default int */
-typedef int valueType;  /*!< Type of the payload, default int */
+typedef uint64_t keyType;    /*!< Type of the join key, default uint64_t */
+typedef uint64_t valueType;  /*!< Type of the payload, default uint64_t */
 typedef int numberType; //for counting the number of datagram (eg: tuples) in a struct
 typedef std::mutex mutex;
 typedef std::DupicatedHashTable<keyType, keyType> hashtable; /*!< allow key duplication */
@@ -102,27 +95,44 @@ class Tuple {
    * @brief construct with key
    * @param k the key
    */
-  explicit Tuple(keyType k);
+   Tuple(keyType k);
   /**
  * @brief construct with key and value
  * @param k the key
    *@param v the value of payload
  */
-  explicit Tuple(keyType k, valueType v);
+   Tuple(keyType k, valueType v);
   /**
  * @brief construct with key, value and subkey
  * @param k the key
    *@param v the value of payload
    * @param sk the subkey
  */
-  explicit Tuple(keyType k, valueType v, size_t sk);
+   Tuple(keyType k, valueType v, size_t sk);
   ~Tuple();
 };
+/**
+ * @cite TuplePtr
+ * @brief The class to describe a shared pointer to @ref Tuple
+ */
+typedef std::shared_ptr<class Tuple> TuplePtr;
+typedef std::shared_ptr<class RelationCouple> RelationCouplePtr;
 
+//Array Pointers
+typedef std::vector<TuplePtr> WindowOfTuples;
+
+//typedef std::SafeQueue<TuplePtr> TupleQueuePtrLocal;
+/**
+ * @typedef TupleQueuePtrLocal
+ * @brief To describe a local queue of TuplePtr
+ * @warning This is not thread-safe, only used for local data
+ */
+typedef std::queue<TuplePtr> TupleQueuePtrLocal;
+typedef moodycamel::ConcurrentQueue<TuplePtr> concurrentTupleQueue;
 class RelationCouple {
  public:
-  tupleQueue relationS;
-  tupleQueue relationR;
+  TupleQueuePtrLocal relationS;
+  TupleQueuePtrLocal relationR;
   RelationCouple();
   ~RelationCouple();
 };
@@ -130,8 +140,8 @@ class RelationCouple {
 class WindowCouple {
  public:
   //We use queue to implement a window, it stores the sequence of tuples.
-  tupleQueue windowS;
-  tupleQueue windowR;
+  TupleQueuePtrLocal windowS;
+  TupleQueuePtrLocal windowR;
   hashtable hashtableS;
   hashtable hashtableR;
 
@@ -175,11 +185,21 @@ class Result {
   Result operator++(int);
   void statPrinter();
 };
-//by tony zeng
+/**
+ *  @typedef TupleQueuePtr
+ * @brief To describe a queue of @ref TuplePtr under SPSCQueue
+ * @note This one is thread-safe
+ * @warning Must be inited by @ref newTupleQueuePtr before use
+ */
 typedef std::shared_ptr<INTELLI::SPSCQueue<INTELLI::TuplePtr>> TupleQueuePtr;
 typedef std::shared_ptr<std::queue<INTELLI::TuplePtr>> TupleQueueSelfPtr;
 typedef std::shared_ptr<INTELLI::SPSCQueue<vector<INTELLI::TuplePtr>>> WindowQueue;
-#define  newTupleQueue(n) make_shared<INTELLI::SPSCQueue<INTELLI::TuplePtr>>(n)
+/**
+ * @cite newTupleQueuePtr
+ * @brief To create a new TupleQueuePtr
+ * @param n The length of queue
+ */
+#define  newTupleQueuePtr(n) make_shared<INTELLI::SPSCQueue<INTELLI::TuplePtr>>(n)
 #define  newWindowQueue(n) make_shared<INTELLI::SPSCQueue<WindowOfTuples>>(n)
 typedef enum {
   CNT_BASED = 1,

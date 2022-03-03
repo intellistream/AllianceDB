@@ -24,6 +24,7 @@ var hierarchy =
     [ "INTELLI::ConcurrentQWindowCouple", "classINTELLI_1_1ConcurrentQWindowCouple.html", null ],
     [ "moodycamel::details::const_numeric_max< T >", "structmoodycamel_1_1details_1_1const__numeric__max.html", null ],
     [ "moodycamel::ConsumerToken", "structmoodycamel_1_1ConsumerToken.html", null ],
+    [ "INTELLI::DatasetTool", "classINTELLI_1_1DatasetTool.html", null ],
     [ "std::DupicatedHashTable< _Key, Tp, Hash, _SubKey >", "classstd_1_1DupicatedHashTable.html", null ],
     [ "std::DupicatedHashTable< keyType, keyType >", "classstd_1_1DupicatedHashTable.html", null ],
     [ "moodycamel::details::identity< T >", "structmoodycamel_1_1details_1_1identity.html", null ],
@@ -31,6 +32,7 @@ var hierarchy =
       [ "moodycamel::details::is_trivially_destructible< T >", "structmoodycamel_1_1details_1_1is__trivially__destructible.html", null ]
     ] ],
     [ "moodycamel::details::max_align_t", "unionmoodycamel_1_1details_1_1max__align__t.html", null ],
+    [ "INTELLI::MicroDataSet", "classINTELLI_1_1MicroDataSet.html", null ],
     [ "moodycamel::details::nomove_if< Enable >", "structmoodycamel_1_1details_1_1nomove__if.html", null ],
     [ "moodycamel::details::nomove_if< false >", "structmoodycamel_1_1details_1_1nomove__if_3_01false_01_4.html", null ],
     [ "INTELLI::OneWayHashJoin", "classINTELLI_1_1OneWayHashJoin.html", null ],
@@ -38,7 +40,6 @@ var hierarchy =
     [ "INTELLI::RelationCouple", "classINTELLI_1_1RelationCouple.html", null ],
     [ "INTELLI::Result", "classINTELLI_1_1Result.html", null ],
     [ "std::SafeQueue< T >", "classstd_1_1SafeQueue.html", null ],
-    [ "std::SafeQueue< TuplePtr >", "classstd_1_1SafeQueue.html", null ],
     [ "INTELLI::SimpleHashJP", "classINTELLI_1_1SimpleHashJP.html", [
       [ "INTELLI::HandShakeHashJP", "classINTELLI_1_1HandShakeHashJP.html", null ]
     ] ],

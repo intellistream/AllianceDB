@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['nomove_5fif_40',['nomove_if',['../structmoodycamel_1_1details_1_1nomove__if.html',1,'moodycamel::details']]],
-  ['nomove_5fif_3c_20false_20_3e_41',['nomove_if&lt; false &gt;',['../structmoodycamel_1_1details_1_1nomove__if_3_01false_01_4.html',1,'moodycamel::details']]]
+  ['max_5falign_5ft_41',['max_align_t',['../unionmoodycamel_1_1details_1_1max__align__t.html',1,'moodycamel::details']]],
+  ['microdataset_42',['MicroDataSet',['../classINTELLI_1_1MicroDataSet.html',1,'INTELLI']]],
+  ['microdataset_2eh_43',['MicroDataSet.h',['../MicroDataSet_8h.html',1,'']]]
 ];

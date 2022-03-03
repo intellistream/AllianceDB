@@ -6,8 +6,8 @@ using namespace INTELLI;
 AbstractEagerWS::AbstractEagerWS(size_t _sLen, size_t _rLen) {
   sLen = _sLen;
   rLen = _rLen;
-  tupleQueueS = newTupleQueue(sLen);
-  tupleQueueR = newTupleQueue(rLen);
+  TupleQueuePtrLocalS = newTupleQueuePtr(sLen);
+  TupleQueuePtrLocalR = newTupleQueuePtr(rLen);
   reset();
 }
 AbstractEagerWS::~AbstractEagerWS() {
@@ -27,15 +27,15 @@ void AbstractEagerWS::feedTupleS(TuplePtr ts) {
     expireR(countS);
     countS++;
   }
-  tupleQueueS->push(ts);
+  TupleQueuePtrLocalS->push(ts);
   // too few tuples in R
-  /*size_t rGet = tupleQueueR->size();
+  /*size_t rGet = TupleQueuePtrLocalR->size();
 
   if (rGet < threads) {
     WindowOfTuples  wr(rGet);
     // return;
     for (size_t i = 0; i < rGet; i++) {
-     wr[i]=(tupleQueueR->front()[i]);
+     wr[i]=(TupleQueuePtrLocalR->front()[i]);
     }
     //feed window r
     jps[0].feedWindowR(wr);
@@ -44,14 +44,14 @@ void AbstractEagerWS::feedTupleS(TuplePtr ts) {
     return;
   }*/
   //do the tuple S, window R join
-  partitionSizeFinal = avgPartitionSizeFinal(tupleQueueR->size());
+  partitionSizeFinal = avgPartitionSizeFinal(TupleQueuePtrLocalR->size());
   size_t rBase = 0;
   for (size_t tid = 0; tid < threads; tid++) {
     // partition window R
     size_t wrLen = partitionSizeFinal[tid];
     WindowOfTuples wr(wrLen);
     for (size_t i = 0; i < wrLen; i++) {
-      wr[i] = (tupleQueueR->front()[rBase + i]);
+      wr[i] = (TupleQueuePtrLocalR->front()[rBase + i]);
     }
     rBase += wrLen;
     //feed window r
@@ -73,15 +73,15 @@ void AbstractEagerWS::feedTupleR(TuplePtr tr) {
     expireS(countR);
     countR++;
   }
-  tupleQueueR->push(tr);
+  TupleQueuePtrLocalR->push(tr);
 
   // too few tuples in S
-  /*size_t sGet = tupleQueueS->size();
+  /*size_t sGet = TupleQueuePtrLocalS->size();
   if (sGet < threads) {
     WindowOfTuples ws(sGet);
     // return;
     for (size_t i = 0; i < sGet; i++) {
-      ws[i] = (tupleQueueS->front()[i]);
+      ws[i] = (TupleQueuePtrLocalS->front()[i]);
     }
     //feed window S
     jps[0].feedWindowS(ws);
@@ -90,14 +90,14 @@ void AbstractEagerWS::feedTupleR(TuplePtr tr) {
     return;
   }*/
   //do the tuple R, window s join
-  partitionSizeFinal = avgPartitionSizeFinal(tupleQueueS->size());
+  partitionSizeFinal = avgPartitionSizeFinal(TupleQueuePtrLocalS->size());
   size_t sBase = 0;
   for (size_t tid = 0; tid < threads; tid++) {
     //partition window S
     size_t wsLen = partitionSizeFinal[tid];
     WindowOfTuples ws(wsLen);
     for (size_t i = 0; i < wsLen; i++) {
-      ws[i] = (tupleQueueS->front()[sBase + i]);
+      ws[i] = (TupleQueuePtrLocalS->front()[sBase + i]);
     }
     sBase += wsLen;
     //feed window S
@@ -128,13 +128,13 @@ vector<size_t> AbstractEagerWS::avgPartitionSizeFinal(size_t inS) {
 }
 void AbstractEagerWS::expireR(size_t cond) {
   size_t distance = 0;
-  if (!tupleQueueR->empty()) {
-    TuplePtr tr = *tupleQueueR->front();
+  if (!TupleQueuePtrLocalR->empty()) {
+    TuplePtr tr = *TupleQueuePtrLocalR->front();
     distance = cond - tr->subKey;
     while (distance > windowLen) {
-      tupleQueueR->pop();
-      if (!tupleQueueR->empty()) {
-        tr = *tupleQueueR->front();
+      TupleQueuePtrLocalR->pop();
+      if (!TupleQueuePtrLocalR->empty()) {
+        tr = *TupleQueuePtrLocalR->front();
         distance = cond - tr->subKey;
       } else {
         distance = 0;
@@ -146,13 +146,13 @@ void AbstractEagerWS::expireR(size_t cond) {
 
 void AbstractEagerWS::expireS(size_t cond) {
   size_t distance = 0;
-  if (!tupleQueueS->empty()) {
-    TuplePtr ts = *tupleQueueS->front();
+  if (!TupleQueuePtrLocalS->empty()) {
+    TuplePtr ts = *TupleQueuePtrLocalS->front();
     distance = cond - ts->subKey;
     while (distance > windowLen) {
-      tupleQueueS->pop();
-      if (!tupleQueueS->empty()) {
-        ts = *tupleQueueS->front();
+      TupleQueuePtrLocalS->pop();
+      if (!TupleQueuePtrLocalS->empty()) {
+        ts = *TupleQueuePtrLocalS->front();
         distance = cond - ts->subKey;
       } else {
         distance = 0;

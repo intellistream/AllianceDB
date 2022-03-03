@@ -4,5 +4,5 @@ digraph "Graphical Class Hierarchy"
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=record];
   rankdir="LR";
-  Node0 [label="std::SafeQueue\< T \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classstd_1_1SafeQueue.html",tooltip=" "];
+  Node0 [label="std::DupicatedHashTable\l\< _Key, Tp, Hash, _SubKey \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classstd_1_1DupicatedHashTable.html",tooltip=" "];
 }

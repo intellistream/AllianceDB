@@ -4,5 +4,7 @@ digraph "Graphical Class Hierarchy"
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=record];
   rankdir="LR";
-  Node0 [label="moodycamel::details\l::nomove_if\< Enable \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structmoodycamel_1_1details_1_1nomove__if.html",tooltip=" "];
+  Node25 [label="std::is_trivially_destructible",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled",tooltip=" "];
+  Node25 -> Node0 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node0 [label="moodycamel::details\l::is_trivially_destructible\< T \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structmoodycamel_1_1details_1_1is__trivially__destructible.html",tooltip=" "];
 }

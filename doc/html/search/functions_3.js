@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['genrand_5freal3_137',['genrand_real3',['../classINTELLI_1_1UtilityFunctions.html#abe4f85da426f81d3937da370c18e40c7',1,'INTELLI::UtilityFunctions']]],
-  ['getjoinresult_138',['getJoinResult',['../group__WindowSliders.html#gaf3bf728650791ebadd5167e0eb9baabf',1,'INTELLI::AbstractEagerWS']]]
+  ['feedtupler_148',['feedTupleR',['../group__WindowSliders.html#ga8233887311c898253358fc02bc867b3a',1,'INTELLI::AbstractEagerWS::feedTupleR()'],['../classINTELLI_1_1HandShakeWS.html#a56f1d0664871f753b8028e94c3e0bee3',1,'INTELLI::HandShakeWS::feedTupleR()']]],
+  ['feedtuples_149',['feedTupleS',['../group__WindowSliders.html#gabf8a7eb31b5f89b23f5bb08f664a3890',1,'INTELLI::AbstractEagerWS::feedTupleS()'],['../classINTELLI_1_1HandShakeWS.html#ad80be5aa159752f6ae66617bab8fb255',1,'INTELLI::HandShakeWS::feedTupleS()']]]
 ];

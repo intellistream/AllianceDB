@@ -162,9 +162,9 @@ Macros</h2></td></tr>
 <tr class="memitem:aa81c3ef295c3349a82620c28b0795eca"><td class="memItemLeft" align="right" valign="top"><a id="aa81c3ef295c3349a82620c28b0795eca"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>DATASET_NAME</b>&#160;&#160;&#160;&quot;Test1&quot;</td></tr>
 <tr class="separator:aa81c3ef295c3349a82620c28b0795eca"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga04a0c5491c08b4ac79dfbe3647ae48ee"><td class="memItemLeft" align="right" valign="top">
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>newTupleQueue</b>(n)&#160;&#160;&#160;make_shared&lt;<a class="el" href="classINTELLI_1_1SPSCQueue.html">INTELLI::SPSCQueue</a>&lt;<a class="el" href="group__Common.html#gaae6cb4c36125ed9faed4c1d55c85eef3">INTELLI::TuplePtr</a>&gt;&gt;(n)</td></tr>
-<tr class="separator:ga04a0c5491c08b4ac79dfbe3647ae48ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa61c686bfb3154b7e49fba8766de1dc3"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Common.html#gaa61c686bfb3154b7e49fba8766de1dc3">newTupleQueuePtr</a>(n)&#160;&#160;&#160;make_shared&lt;<a class="el" href="classINTELLI_1_1SPSCQueue.html">INTELLI::SPSCQueue</a>&lt;<a class="el" href="group__Common.html#gaae6cb4c36125ed9faed4c1d55c85eef3">INTELLI::TuplePtr</a>&gt;&gt;(n)</td></tr>
+<tr class="memdesc:gaa61c686bfb3154b7e49fba8766de1dc3"><td class="mdescLeft">&#160;</td><td class="mdescRight">To create a new TupleQueuePtr.  <a href="group__Common.html#gaa61c686bfb3154b7e49fba8766de1dc3">More...</a><br /></td></tr>
+<tr class="separator:gaa61c686bfb3154b7e49fba8766de1dc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaf5f59d152e15e7c90ece6edf8847c674"><td class="memItemLeft" align="right" valign="top">
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>newWindowQueue</b>(n)&#160;&#160;&#160;make_shared&lt;<a class="el" href="classINTELLI_1_1SPSCQueue.html">INTELLI::SPSCQueue</a>&lt;WindowOfTuples&gt;&gt;(n)</td></tr>
 <tr class="separator:gaf5f59d152e15e7c90ece6edf8847c674"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -174,24 +174,10 @@ Macros</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:gaae6cb4c36125ed9faed4c1d55c85eef3"><td class="memItemLeft" align="right" valign="top">typedef std::shared_ptr&lt; class Tuple &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Common.html#gaae6cb4c36125ed9faed4c1d55c85eef3">INTELLI::TuplePtr</a></td></tr>
-<tr class="separator:gaae6cb4c36125ed9faed4c1d55c85eef3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga05eb76dbeb332596f2bc6b072995238c"><td class="memItemLeft" align="right" valign="top">
-typedef std::shared_ptr&lt; class RelationCouple &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>INTELLI::RelationCouplePtr</b></td></tr>
-<tr class="separator:ga05eb76dbeb332596f2bc6b072995238c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gabd17448abf49358f01eb32cacce34027"><td class="memItemLeft" align="right" valign="top">
-typedef std::vector&lt; TuplePtr &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>INTELLI::WindowOfTuples</b></td></tr>
-<tr class="separator:gabd17448abf49358f01eb32cacce34027"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga96962aa92bc847d930472575131ff156"><td class="memItemLeft" align="right" valign="top">
-typedef <a class="el" href="classstd_1_1SafeQueue.html">std::SafeQueue</a>&lt; TuplePtr &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>INTELLI::tupleQueue</b></td></tr>
-<tr class="separator:ga96962aa92bc847d930472575131ff156"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga5a0e941d2fedf8d1bb5dc2732a5b7706"><td class="memItemLeft" align="right" valign="top">
-typedef <a class="el" href="classmoodycamel_1_1ConcurrentQueue.html">moodycamel::ConcurrentQueue</a>&lt; TuplePtr &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>INTELLI::concurrentTupleQueue</b></td></tr>
-<tr class="separator:ga5a0e941d2fedf8d1bb5dc2732a5b7706"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga969c5edc5e40f1f78223ad5841953a51"><td class="memItemLeft" align="right" valign="top">typedef int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Common.html#ga969c5edc5e40f1f78223ad5841953a51">INTELLI::keyType</a></td></tr>
-<tr class="separator:ga969c5edc5e40f1f78223ad5841953a51"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaaabd699751981e2420df3a0c2884cb74"><td class="memItemLeft" align="right" valign="top">typedef int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Common.html#gaaabd699751981e2420df3a0c2884cb74">INTELLI::valueType</a></td></tr>
-<tr class="separator:gaaabd699751981e2420df3a0c2884cb74"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gabdecd0146153c8a29b021c48dfa300ce"><td class="memItemLeft" align="right" valign="top">typedef uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Common.html#gabdecd0146153c8a29b021c48dfa300ce">INTELLI::keyType</a></td></tr>
+<tr class="separator:gabdecd0146153c8a29b021c48dfa300ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga4bb66f4742171167ee336a06d8939bdf"><td class="memItemLeft" align="right" valign="top">typedef uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Common.html#ga4bb66f4742171167ee336a06d8939bdf">INTELLI::valueType</a></td></tr>
+<tr class="separator:ga4bb66f4742171167ee336a06d8939bdf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga0bf4a3f1dcb739406d62bdf9a9f9b663"><td class="memItemLeft" align="right" valign="top">
 typedef int&#160;</td><td class="memItemRight" valign="bottom"><b>INTELLI::numberType</b></td></tr>
 <tr class="separator:ga0bf4a3f1dcb739406d62bdf9a9f9b663"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -203,9 +189,24 @@ typedef std::mutex&#160;</td><td class="memItemRight" valign="bottom"><b>INTELLI
 <tr class="memitem:ga2b861ae9406fb1a5f5432853654982e8"><td class="memItemLeft" align="right" valign="top">
 typedef std::queue&lt; numberType &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>INTELLI::tupleKeyQueue</b></td></tr>
 <tr class="separator:ga2b861ae9406fb1a5f5432853654982e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaf6e36a8bb21540ad575c7863b3731285"><td class="memItemLeft" align="right" valign="top">
-typedef std::shared_ptr&lt; <a class="el" href="classINTELLI_1_1SPSCQueue.html">INTELLI::SPSCQueue</a>&lt; <a class="el" href="group__Common.html#gaae6cb4c36125ed9faed4c1d55c85eef3">INTELLI::TuplePtr</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>INTELLI::TupleQueuePtr</b></td></tr>
-<tr class="separator:gaf6e36a8bb21540ad575c7863b3731285"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaae6cb4c36125ed9faed4c1d55c85eef3"><td class="memItemLeft" align="right" valign="top">typedef std::shared_ptr&lt; class Tuple &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Common.html#gaae6cb4c36125ed9faed4c1d55c85eef3">INTELLI::TuplePtr</a></td></tr>
+<tr class="memdesc:gaae6cb4c36125ed9faed4c1d55c85eef3"><td class="mdescLeft">&#160;</td><td class="mdescRight">The class to describe a shared pointer to <a class="el" href="classINTELLI_1_1Tuple.html">Tuple</a>.  <a href="group__Common.html#gaae6cb4c36125ed9faed4c1d55c85eef3">More...</a><br /></td></tr>
+<tr class="separator:gaae6cb4c36125ed9faed4c1d55c85eef3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga05eb76dbeb332596f2bc6b072995238c"><td class="memItemLeft" align="right" valign="top">
+typedef std::shared_ptr&lt; class RelationCouple &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>INTELLI::RelationCouplePtr</b></td></tr>
+<tr class="separator:ga05eb76dbeb332596f2bc6b072995238c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gabd17448abf49358f01eb32cacce34027"><td class="memItemLeft" align="right" valign="top">
+typedef std::vector&lt; TuplePtr &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>INTELLI::WindowOfTuples</b></td></tr>
+<tr class="separator:gabd17448abf49358f01eb32cacce34027"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad3c66963f3d5983e39aef0042d18c70f"><td class="memItemLeft" align="right" valign="top">typedef std::queue&lt; TuplePtr &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Common.html#gad3c66963f3d5983e39aef0042d18c70f">INTELLI::TupleQueuePtrLocal</a></td></tr>
+<tr class="memdesc:gad3c66963f3d5983e39aef0042d18c70f"><td class="mdescLeft">&#160;</td><td class="mdescRight">To describe a local queue of TuplePtr.  <a href="group__Common.html#gad3c66963f3d5983e39aef0042d18c70f">More...</a><br /></td></tr>
+<tr class="separator:gad3c66963f3d5983e39aef0042d18c70f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga5a0e941d2fedf8d1bb5dc2732a5b7706"><td class="memItemLeft" align="right" valign="top">
+typedef <a class="el" href="classmoodycamel_1_1ConcurrentQueue.html">moodycamel::ConcurrentQueue</a>&lt; TuplePtr &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>INTELLI::concurrentTupleQueue</b></td></tr>
+<tr class="separator:ga5a0e941d2fedf8d1bb5dc2732a5b7706"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga37ae016912657f60f52760808d2c91a0"><td class="memItemLeft" align="right" valign="top">typedef std::shared_ptr&lt; <a class="el" href="classINTELLI_1_1SPSCQueue.html">INTELLI::SPSCQueue</a>&lt; <a class="el" href="group__Common.html#gaae6cb4c36125ed9faed4c1d55c85eef3">INTELLI::TuplePtr</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Common.html#ga37ae016912657f60f52760808d2c91a0">INTELLI::TupleQueuePtr</a></td></tr>
+<tr class="memdesc:ga37ae016912657f60f52760808d2c91a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">To describe a queue of TuplePtr under <a class="el" href="classINTELLI_1_1SPSCQueue.html">SPSCQueue</a>.  <a href="group__Common.html#ga37ae016912657f60f52760808d2c91a0">More...</a><br /></td></tr>
+<tr class="separator:ga37ae016912657f60f52760808d2c91a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga41e0c6e18caba82c36de57159b19783e"><td class="memItemLeft" align="right" valign="top">
 typedef std::shared_ptr&lt; std::queue&lt; <a class="el" href="group__Common.html#gaae6cb4c36125ed9faed4c1d55c85eef3">INTELLI::TuplePtr</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>INTELLI::TupleQueueSelfPtr</b></td></tr>
 <tr class="separator:ga41e0c6e18caba82c36de57159b19783e"><td class="memSeparator" colspan="2">&#160;</td></tr>

@@ -45,8 +45,8 @@ class AbstractEagerWS {
   /* data */
   std::vector<SimpleHashJPPtr> jps;
  protected:
-  TupleQueuePtr tupleQueueS;
-  TupleQueuePtr tupleQueueR;
+  TupleQueuePtr TupleQueuePtrLocalS;
+  TupleQueuePtr TupleQueuePtrLocalR;
   INTELLI::join_type_t myType = INTELLI::CNT_BASED;
   size_t countS, countR, timeStart;
 

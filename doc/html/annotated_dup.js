@@ -1,6 +1,7 @@
 var annotated_dup =
 [
     [ "INTELLI", null, [
+      [ "DatasetTool", "classINTELLI_1_1DatasetTool.html", "classINTELLI_1_1DatasetTool" ],
       [ "Tuple", "classINTELLI_1_1Tuple.html", "classINTELLI_1_1Tuple" ],
       [ "RelationCouple", "classINTELLI_1_1RelationCouple.html", "classINTELLI_1_1RelationCouple" ],
       [ "WindowCouple", "classINTELLI_1_1WindowCouple.html", "classINTELLI_1_1WindowCouple" ],
@@ -13,6 +14,7 @@ var annotated_dup =
       [ "OneWayHashJoin", "classINTELLI_1_1OneWayHashJoin.html", null ],
       [ "HandShakeHashJP", "classINTELLI_1_1HandShakeHashJP.html", "classINTELLI_1_1HandShakeHashJP" ],
       [ "SimpleHashJP", "classINTELLI_1_1SimpleHashJP.html", "classINTELLI_1_1SimpleHashJP" ],
+      [ "MicroDataSet", "classINTELLI_1_1MicroDataSet.html", null ],
       [ "SPSCQueue", "classINTELLI_1_1SPSCQueue.html", "classINTELLI_1_1SPSCQueue" ],
       [ "UtilityFunctions", "classINTELLI_1_1UtilityFunctions.html", "classINTELLI_1_1UtilityFunctions" ],
       [ "AbstractEagerWS", "classINTELLI_1_1AbstractEagerWS.html", "classINTELLI_1_1AbstractEagerWS" ],

@@ -1,7 +1,4 @@
 var searchData=
 [
-  ['setparallelsmp_144',['setParallelSMP',['../group__WindowSliders.html#ga4645ad24d94722cac1867ece2982cd39',1,'INTELLI::AbstractEagerWS']]],
-  ['setruntimescheduling_145',['setRunTimeScheduling',['../group__WindowSliders.html#gaab5a5693a58bfbdd46fdc5deda850995',1,'INTELLI::AbstractEagerWS']]],
-  ['settimebased_146',['setTimeBased',['../group__WindowSliders.html#ga15d2a848fa252259862dcc957594b6b7',1,'INTELLI::AbstractEagerWS']]],
-  ['setwindowlen_147',['setWindowLen',['../group__WindowSliders.html#ga951de93b32ae45f57aca7b8ff41515b7',1,'INTELLI::AbstractEagerWS']]]
+  ['load3vtext_154',['load3VText',['../classINTELLI_1_1DatasetTool.html#af3a16da68560c3a5022bb50446944d07',1,'INTELLI::DatasetTool::load3VText(TupleQueuePtrLocal &amp;relationPtr, const std::string &amp;fileName)'],['../classINTELLI_1_1DatasetTool.html#a8ebb053176a6c284074bc501a24402bc',1,'INTELLI::DatasetTool::load3VText(TupleQueuePtr &amp;relationPtr, const std::string &amp;fileName)']]]
 ];

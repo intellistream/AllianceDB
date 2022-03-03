@@ -31,8 +31,8 @@ class SimpleHashJP {
   CmdQueuePtr cmdQueueIn;
   CmdQueuePtr cmdQueueOut;
   //tuple Queue
-  TupleQueuePtr tupleQueueS;
-  TupleQueuePtr tupleQueueR;
+  TupleQueuePtr TupleQueuePtrLocalS;
+  TupleQueuePtr TupleQueuePtrLocalR;
   WindowQueue windowQueueS;
   WindowQueue windowQueueR;
   size_t windowLen = 0;
@@ -52,8 +52,8 @@ class SimpleHashJP {
 
   }
   void init(size_t sLen, size_t rLen, size_t _sysId) {
-    tupleQueueS = newTupleQueue(sLen);
-    tupleQueueR = newTupleQueue(rLen);
+    TupleQueuePtrLocalS = newTupleQueuePtr(sLen);
+    TupleQueuePtrLocalR = newTupleQueuePtr(rLen);
     windowQueueS = newWindowQueue(sLen);
     windowQueueR = newWindowQueue(rLen);
     cmdQueueIn = newCmdQueue(1);
@@ -102,10 +102,10 @@ class SimpleHashJP {
   }
   //outside feed a Tuple S
   void feedTupleS(TuplePtr ts) {
-    tupleQueueS->push(ts);
+    TupleQueuePtrLocalS->push(ts);
   }
   void feedTupleR(TuplePtr tr) {
-    tupleQueueR->push(tr);
+    TupleQueuePtrLocalR->push(tr);
   }
   //outside feed a window
   void feedWindowS(WindowOfTuples ws) {

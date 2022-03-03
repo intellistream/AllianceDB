@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['feedtupler_22',['feedTupleR',['../group__WindowSliders.html#ga22e6a9a3fe5683c32a898bedf3b26a65',1,'INTELLI::AbstractEagerWS::feedTupleR()'],['../classINTELLI_1_1HandShakeWS.html#a2608b916ae1538244f80441d5dbb5b76',1,'INTELLI::HandShakeWS::feedTupleR()']]],
-  ['feedtuples_23',['feedTupleS',['../group__WindowSliders.html#ga83da72fd77adb70658b594e1bfef197e',1,'INTELLI::AbstractEagerWS::feedTupleS()'],['../classINTELLI_1_1HandShakeWS.html#ac1b613529ef25dbc662a9d78febbd3b1',1,'INTELLI::HandShakeWS::feedTupleS()']]]
+  ['feedtupler_25',['feedTupleR',['../group__WindowSliders.html#ga8233887311c898253358fc02bc867b3a',1,'INTELLI::AbstractEagerWS::feedTupleR()'],['../classINTELLI_1_1HandShakeWS.html#a56f1d0664871f753b8028e94c3e0bee3',1,'INTELLI::HandShakeWS::feedTupleR()']]],
+  ['feedtuples_26',['feedTupleS',['../group__WindowSliders.html#gabf8a7eb31b5f89b23f5bb08f664a3890',1,'INTELLI::AbstractEagerWS::feedTupleS()'],['../classINTELLI_1_1HandShakeWS.html#ad80be5aa159752f6ae66617bab8fb255',1,'INTELLI::HandShakeWS::feedTupleS()']]]
 ];

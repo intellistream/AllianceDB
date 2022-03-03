@@ -41,7 +41,11 @@ var NAVTREE =
       ] ]
     ] ],
     [ "Files", "files.html", [
-      [ "File List", "files.html", "files_dup" ]
+      [ "File List", "files.html", "files_dup" ],
+      [ "File Members", "globals.html", [
+        [ "All", "globals.html", null ],
+        [ "Macros", "globals_defs.html", null ]
+      ] ]
     ] ]
   ] ]
 ];
@@ -49,7 +53,7 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "AbstractEagerWS_8h.html",
-"concurrentqueue_8h_source.html"
+"classstd_1_1SafeQueue.html#a5b57c7e39051e5e52c9a0fe702ce64bd"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

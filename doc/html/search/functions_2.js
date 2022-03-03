@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['feedtupler_135',['feedTupleR',['../group__WindowSliders.html#ga22e6a9a3fe5683c32a898bedf3b26a65',1,'INTELLI::AbstractEagerWS::feedTupleR()'],['../classINTELLI_1_1HandShakeWS.html#a2608b916ae1538244f80441d5dbb5b76',1,'INTELLI::HandShakeWS::feedTupleR()']]],
-  ['feedtuples_136',['feedTupleS',['../group__WindowSliders.html#ga83da72fd77adb70658b594e1bfef197e',1,'INTELLI::AbstractEagerWS::feedTupleS()'],['../classINTELLI_1_1HandShakeWS.html#ac1b613529ef25dbc662a9d78febbd3b1',1,'INTELLI::HandShakeWS::feedTupleS()']]]
+  ['combine3vvector_147',['combine3VVector',['../classINTELLI_1_1DatasetTool.html#af80e6a4af2679e4bbd5a39b1855466c6',1,'INTELLI::DatasetTool::combine3VVector(TupleQueuePtrLocal &amp;relationPtr, vector&lt; keyType &gt;vk, vector&lt; valueType &gt;vv, vector&lt; size_t &gt; vs)'],['../classINTELLI_1_1DatasetTool.html#a4685e8d5eb0ade9a845eb6de659ea588',1,'INTELLI::DatasetTool::combine3VVector(TupleQueuePtr &amp;relationPtr, vector&lt; keyType &gt;vk, vector&lt; valueType &gt;vv, vector&lt; size_t &gt; vs)']]]
 ];
