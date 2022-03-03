@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['windowsliders_176',['WindowSliders',['../group__WindowSliders.html',1,'']]]
+  ['windowsliders_180',['WindowSliders',['../group__WindowSliders.html',1,'']]]
 ];

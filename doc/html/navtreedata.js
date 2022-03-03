@@ -53,7 +53,7 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "AbstractEagerWS_8h.html",
-"classstd_1_1SafeQueue.html#a5b57c7e39051e5e52c9a0fe702ce64bd"
+"classstd_1_1SafeQueue.html#a520678ebcff0f272e4502cb926c70c14"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

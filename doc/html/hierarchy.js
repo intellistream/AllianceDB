@@ -2,7 +2,7 @@ var hierarchy =
 [
     [ "moodycamel::details::_hash_32_or_64< use32 >", "structmoodycamel_1_1details_1_1__hash__32__or__64.html", null ],
     [ "moodycamel::details::_hash_32_or_64< 1 >", "structmoodycamel_1_1details_1_1__hash__32__or__64_3_011_01_4.html", null ],
-    [ "_hash_32_or_64<(size > 4)>", null, [
+    [ "_hash_32_or_64<(size > 4)>", "class__hash__32__or__64_3_07size_01_4_014_08_4.html", [
       [ "moodycamel::details::hash_32_or_64< size >", "structmoodycamel_1_1details_1_1hash__32__or__64.html", null ]
     ] ],
     [ "INTELLI::AbstractEagerWS", "classINTELLI_1_1AbstractEagerWS.html", [
@@ -58,5 +58,7 @@ var hierarchy =
     [ "moodycamel::details::thread_id_converter< thread_id_t >", "structmoodycamel_1_1details_1_1thread__id__converter.html", null ],
     [ "INTELLI::Tuple", "classINTELLI_1_1Tuple.html", null ],
     [ "INTELLI::UtilityFunctions", "classINTELLI_1_1UtilityFunctions.html", null ],
-    [ "INTELLI::WindowCouple", "classINTELLI_1_1WindowCouple.html", null ]
+    [ "INTELLI::WindowCouple", "classINTELLI_1_1WindowCouple.html", null ],
+    [ "FreeList< Block >", "classFreeList_3_01Block_01_4.html", null ],
+    [ "unordered_map< keyType, std::vector< innerStore >, hash< keyType > >", "classunordered__map_3_01keyType_00_01std_1_1vector_3_01innerStore_01_4_00_01hash_3_01keyType_01_4_01_4.html", null ]
 ];

@@ -52,5 +52,6 @@ var annotated_dup =
     [ "std", null, [
       [ "DupicatedHashTable", "classstd_1_1DupicatedHashTable.html", "classstd_1_1DupicatedHashTable" ],
       [ "SafeQueue", "classstd_1_1SafeQueue.html", "classstd_1_1SafeQueue" ]
-    ] ]
+    ] ],
+    [ "_hash_32_or_64<(size > 4)>", "class__hash__32__or__64_3_07size_01_4_014_08_4.html", null ]
 ];

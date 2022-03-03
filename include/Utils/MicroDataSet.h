@@ -7,7 +7,7 @@ namespace INTELLI {
 /**
  * @defgroup InteliStream_Shared Shared Tool by all InteliStream component
  *  @{
- *  The MicroDataSet is designed to generate our Micro dataset, which is firstly introduce in our paper
+ *  The MicroDataSet is designed to generate our synthetic dataset Micro, which is firstly introduce in our following paper
  *  @verbatim
   @article{IntraWJoin21,
    author = {Zhang, Shuhao and Mao, Yancan and He, Jiong and Grulich, Philipp M and Zeuch, Steffen and He, Bingsheng and Ma, Richard TB and Markl, Volker},
@@ -20,9 +20,23 @@ namespace INTELLI {
    doi = {10.1145/3448016.3452793},
   }
   @endverbatim
+  @}
  */
+ /**
+  * @class MicroDataSet Utils/MicroDataSet.h
+  * @brief The all-in-one class to generate synthetic dataset Micro, under C++20 standard
+  */
 class  MicroDataSet{
+  /**
+   * @ingroup InteliStream_Shared
+   * @defgroup Micro_timestamp Time Stamp specific
+   * @{
+   * These functions are specialized to generate time stamp
+   */
 
+  /**
+   * @}
+   */
 };
 /**
  * @}

@@ -1,4 +1,4 @@
 var group__InteliStream__Shared =
 [
-    [ "MicroDataSet", "classINTELLI_1_1MicroDataSet.html", null ]
+    [ "Time Stamp specific", "group__Micro__timestamp.html", null ]
 ];

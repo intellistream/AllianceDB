@@ -121,7 +121,7 @@ var NAVTREEINDEX0 =
 "classINTELLI_1_1HandShakeWS.html#ac518a1842715b51757844d732ea0b655":[2,2,1,10],
 "classINTELLI_1_1HandShakeWS.html#ad3ad2b91800b21b5357024d874d337d4":[2,2,1,9],
 "classINTELLI_1_1HandShakeWS.html#ad80be5aa159752f6ae66617bab8fb255":[2,2,1,4],
-"classINTELLI_1_1MicroDataSet.html":[2,1,0],
+"classINTELLI_1_1MicroDataSet.html":[3,0,0,13],
 "classINTELLI_1_1OneWayHashJoin.html":[3,0,0,10],
 "classINTELLI_1_1RelationCouple.html":[2,0,2],
 "classINTELLI_1_1Result.html":[2,0,5],
@@ -189,6 +189,7 @@ var NAVTREEINDEX0 =
 "classINTELLI_1_1UtilityFunctions.html":[3,0,0,15],
 "classINTELLI_1_1UtilityFunctions.html#a78a11da91b40942cab878e473f43b790":[3,0,0,15,0],
 "classINTELLI_1_1WindowCouple.html":[2,0,3],
+"class__hash__32__or__64_3_07size_01_4_014_08_4.html":[3,0,3],
 "classes.html":[3,1],
 "classmoodycamel_1_1BlockingConcurrentQueue.html":[3,0,1,3],
 "classmoodycamel_1_1ConcurrentQueue.html":[3,0,1,2],
@@ -248,6 +249,5 @@ var NAVTREEINDEX0 =
 "classstd_1_1SafeQueue.html#a10450c5732dcf2a568904ea9ce37b4ad":[3,0,2,1,2],
 "classstd_1_1SafeQueue.html#a2db943b2104107354696fed728e4191a":[3,0,2,1,1],
 "classstd_1_1SafeQueue.html#a34a5a9c50fa1b287fd113f9163fe9c75":[3,0,2,1,6],
-"classstd_1_1SafeQueue.html#a3aa891208738a8413056f6861966aefd":[3,0,2,1,5],
-"classstd_1_1SafeQueue.html#a520678ebcff0f272e4502cb926c70c14":[3,0,2,1,7]
+"classstd_1_1SafeQueue.html#a3aa891208738a8413056f6861966aefd":[3,0,2,1,5]
 };
