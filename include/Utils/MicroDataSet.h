@@ -7,7 +7,7 @@ namespace INTELLI {
 /**
  * @defgroup InteliStream_Shared Shared Tool by all InteliStream component
  *  @{
- *  The MicroDataSet is designed to generate our synthetic dataset Micro, which is firstly introduce in our following paper
+ *  The MicroDataSet is designed to generate our synthetic dataset Micro, which is firstly introduced in our following paper
  *  @verbatim
   @article{IntraWJoin21,
    author = {Zhang, Shuhao and Mao, Yancan and He, Jiong and Grulich, Philipp M and Zeuch, Steffen and He, Bingsheng and Ma, Richard TB and Markl, Volker},
@@ -31,7 +31,8 @@ class  MicroDataSet{
    * @ingroup InteliStream_Shared
    * @defgroup Micro_timestamp Time Stamp specific
    * @{
-   * These functions are specialized to generate time stamp
+   * These functions are specialized to generate time stamp.
+   * @note The time stamps are usually following incremental order, so they deserve special function
    */
 
   /**
