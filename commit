@@ -1,0 +1,5 @@
+git checkout gh-pages
+git init
+git add .
+git commit -F com_scripts
+git push origin gh-pages
