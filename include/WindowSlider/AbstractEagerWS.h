@@ -3,7 +3,7 @@
 /*!
     An abstraction of eager window slider
 
-    \return 错误码，0表示成功，其它表示失败
+
     \todo add the result collection in the future
 
 */

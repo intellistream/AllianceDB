@@ -277,6 +277,33 @@ Google_Tests_run/fast:
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/Google_Tests_run.dir/build.make test/CMakeFiles/Google_Tests_run.dir/build
 .PHONY : Google_Tests_run/fast
 
+src/Common/DatasetTool.o: src/Common/DatasetTool.cpp.o
+
+.PHONY : src/Common/DatasetTool.o
+
+# target to build an object file
+src/Common/DatasetTool.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/Common/DatasetTool.cpp.o
+.PHONY : src/Common/DatasetTool.cpp.o
+
+src/Common/DatasetTool.i: src/Common/DatasetTool.cpp.i
+
+.PHONY : src/Common/DatasetTool.i
+
+# target to preprocess a source file
+src/Common/DatasetTool.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/Common/DatasetTool.cpp.i
+.PHONY : src/Common/DatasetTool.cpp.i
+
+src/Common/DatasetTool.s: src/Common/DatasetTool.cpp.s
+
+.PHONY : src/Common/DatasetTool.s
+
+# target to generate assembly for a file
+src/Common/DatasetTool.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/Common/DatasetTool.cpp.s
+.PHONY : src/Common/DatasetTool.cpp.s
+
 src/Common/Types.o: src/Common/Types.cpp.o
 
 .PHONY : src/Common/Types.o
@@ -493,6 +520,33 @@ src/JoinProcessor/SimpleHashJP.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/JoinProcessor/SimpleHashJP.cpp.s
 .PHONY : src/JoinProcessor/SimpleHashJP.cpp.s
 
+src/Utils/MicroDataset.o: src/Utils/MicroDataset.cpp.o
+
+.PHONY : src/Utils/MicroDataset.o
+
+# target to build an object file
+src/Utils/MicroDataset.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/Utils/MicroDataset.cpp.o
+.PHONY : src/Utils/MicroDataset.cpp.o
+
+src/Utils/MicroDataset.i: src/Utils/MicroDataset.cpp.i
+
+.PHONY : src/Utils/MicroDataset.i
+
+# target to preprocess a source file
+src/Utils/MicroDataset.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/Utils/MicroDataset.cpp.i
+.PHONY : src/Utils/MicroDataset.cpp.i
+
+src/Utils/MicroDataset.s: src/Utils/MicroDataset.cpp.s
+
+.PHONY : src/Utils/MicroDataset.s
+
+# target to generate assembly for a file
+src/Utils/MicroDataset.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/Utils/MicroDataset.cpp.s
+.PHONY : src/Utils/MicroDataset.cpp.s
+
 src/Utils/UtilityFunctions.o: src/Utils/UtilityFunctions.cpp.o
 
 .PHONY : src/Utils/UtilityFunctions.o
@@ -621,6 +675,9 @@ help:
 	@echo "... gmock_main"
 	@echo "... gtest"
 	@echo "... gtest_main"
+	@echo "... src/Common/DatasetTool.o"
+	@echo "... src/Common/DatasetTool.i"
+	@echo "... src/Common/DatasetTool.s"
 	@echo "... src/Common/Types.o"
 	@echo "... src/Common/Types.i"
 	@echo "... src/Common/Types.s"
@@ -645,6 +702,9 @@ help:
 	@echo "... src/JoinProcessor/SimpleHashJP.o"
 	@echo "... src/JoinProcessor/SimpleHashJP.i"
 	@echo "... src/JoinProcessor/SimpleHashJP.s"
+	@echo "... src/Utils/MicroDataset.o"
+	@echo "... src/Utils/MicroDataset.i"
+	@echo "... src/Utils/MicroDataset.s"
 	@echo "... src/Utils/UtilityFunctions.o"
 	@echo "... src/Utils/UtilityFunctions.i"
 	@echo "... src/Utils/UtilityFunctions.s"

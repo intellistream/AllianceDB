@@ -51,7 +51,7 @@ class DatasetTool{
    */
   void load3VText(TupleQueuePtr &relationPtr, const std::string &fileName);
   /**
-   * @brief To load TupleQueuePtrLocal from vector of corresponding vector
+   * @brief To load TupleQueuePtrLocal by combining 3 stand-alone vectors of key, value,subkey
    * @param relationPtr The output TupleQueuePtrLocal to store loaded data
    * @param vk Vector of key
    * @param vv Vector of value
@@ -60,7 +60,7 @@ class DatasetTool{
    */
   void combine3VVector(TupleQueuePtrLocal &relationPtr, vector<keyType>vk,vector<valueType>vv,vector<size_t> vs);
   /**
-   * @brief To load TupleQueuePtr from vector of corresponding vector
+   * @brief To load TupleQueuePtr by combining 3 stand-alone vectors of key, value,subkey
    * @param relationPtr The output TupleQueuePtr to store loaded data
    * @param vk Vector of key
    * @param vv Vector of value
@@ -68,6 +68,7 @@ class DatasetTool{
    * @note make sure the vector have equal size
    */
   void combine3VVector(TupleQueuePtr &relationPtr, vector<keyType>vk,vector<valueType>vv,vector<size_t> vs);
+
 };
 /**
  * @}

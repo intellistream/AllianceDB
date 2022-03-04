@@ -20,7 +20,7 @@ sorting.zip
 
 hashing/.idea/*
 sorting/.idea/*
-
+doc
 *.o
 
 cmake-build-*/

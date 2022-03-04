@@ -6,6 +6,10 @@
 
 #IncludeRegexTransform: 
 
+../include/Common/DatasetTool.h
+Common/Types.h
+-
+
 ../include/Common/Types.h
 cstdint
 -
@@ -40,22 +44,6 @@ Common/Types.h
 JoinMethods/AbstractJoinMethod.h
 -
 WindowSlider/AbstractEagerWS.h
--
-
-../include/JoinMethods/CommonFunctions.h
-iostream
--
-fstream
--
-list
--
-mutex
--
-unordered_map
--
-Common/Types.h
--
-Utils/Logger.hpp
 -
 
 ../include/JoinMethods/HandShakeJoin.h
@@ -108,6 +96,18 @@ log4cxx/fileappender.h
 log4cxx/logger.h
 -
 log4cxx/patternlayout.h
+-
+
+../include/Utils/MicroDataSet.h
+stdint.h
+-
+vector
+-
+stddef.h
+-
+stdlib.h
+-
+time.h
 -
 
 ../include/Utils/SPSCQueue.hpp
@@ -267,7 +267,7 @@ Utils/UtilityFunctions.hpp
 -
 Common/Types.h
 -
-JoinMethods/CommonFunctions.h
+Common/DatasetTool.h
 -
 JoinMethods/OneWayHashJoin.h
 -
@@ -276,6 +276,8 @@ JoinMethods/CellJoin.h
 JoinMethods/HandShakeJoin.h
 -
 Utils/SPSCQueue.hpp
+-
+Utils/MicroDataSet.h
 -
 WindowSlider/AbstractEagerWS.h
 -

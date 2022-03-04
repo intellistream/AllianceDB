@@ -27,7 +27,7 @@
 
 //Constants
 #ifndef WINDOW_SIZE
-#define WINDOW_SIZE 500
+#define WINDOW_SIZE 50
 #endif
 
 #ifndef THREAD_NUMBER
@@ -35,7 +35,7 @@
 #endif
 
 #ifndef TIME_STEP
-#define TIME_STEP 5// US
+#define TIME_STEP 10// US
 #endif
 #ifndef DATASET_NAME
 #define DATASET_NAME "Test1" //dataset name should be DATASET_NAME + "-R.txt" and DATASET_NAME + "-S.txt"
@@ -54,14 +54,38 @@
 #include "Utils/SPSCQueue.hpp"
 
 /**
- * @mainpage Welcome
+ * @mainpage Introduction
  * The AianceDB offers a wide range of stream join algorithms, supporting both inter and
  * intra window join.
- * @section Concepts
- * The AianceDB allows direct feeding of tuples, all you need is set up a WindowSlider
- * and then feed tuples.
- * You may wish to check @ref Common for data types, @ref WindowSliders for WindowSliders, these are all that
- * needed to be known as a starting user.
+ * @section sec_mj Major Parts
+ * Three major parts are composed to achieve ultra-fast stream window join, and they can be found in corresponding named
+ * folder under include or src
+ *
+ * @subsection JoinAlgo
+ * Here are specific algorithms to eventually deal with stream join, including hash or radix.
+ * All of these algos assume the tuples are batched, and the "window" is invisible to them. In another word,
+ * they achieve the intra-window join.
+ *
+ * @subsection JoinProcessor
+ * Here is the middle layer of the whole stream window join, i.e., to bridge the "window" and "join".
+ * One JoinProcessor may either eagerly do stream join on itself,
+ * or just accumulate the tuples and evoke JoinAlgo  for lazy join. JoinProcessors are managed by upper windowslider.
+ *
+ * @subsection WindowSlider
+ * Here is the top layer on all. Typically, the WindowSliders will:
+ * \li Directly receive user input by feedTupleS/R
+ * \li Globally manage the sliding window
+ * \li Pass tuple to and control its JoinProcessors.
+ *
+ * Please find them in @ref WindowSliders module
+ * @section sec_other Other Parts
+ * Besides the 3 above, Aliance DB has other parts to support its work, they are:
+ * @subsection subsec_common Common
+ * Common functions, data types for all aliance db component, and they are especially designed for aliance db.
+ * Please refer to @ref Common module.
+ * @subsection subsec_utils Utils
+ * Similar to @ref subsec_common, but they are not specialized for aliance db. On the contrary, they may be shared by other InteliStream
+ * programs or third-party programs. Please refer to @ref INTELLI_UTIL module.
  */
 
 namespace INTELLI {

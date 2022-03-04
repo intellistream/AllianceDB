@@ -12,6 +12,7 @@
 #include <JoinMethods/CellJoin.h>
 #include <JoinMethods/HandShakeJoin.h>
 #include <Utils/SPSCQueue.hpp>
+#include <Utils/MicroDataSet.h>
 #include <WindowSlider/AbstractEagerWS.h>
 using namespace std;
 using namespace INTELLI;
@@ -25,7 +26,7 @@ using namespace INTELLI;
 #endif
 int main() {
   //Setup Logs
-  setupLogging("benchmark.log", LOG_DEBUG);
+  /*setupLogging("benchmark.log", LOG_DEBUG);
   INTELLI::Result joinResult = INTELLI::Result();
   INTELLI::RelationCouple relationCouple = INTELLI::RelationCouple();
   string pwd = getcwd(NULL, 0); //Get current directory
@@ -40,7 +41,27 @@ int main() {
   INTELLI::ALGO_CLASS::EXEC;
   //Print result number
   INTELLI::UtilityFunctions::timerEnd(joinResult);
-  joinResult.statPrinter();
+  joinResult.statPrinter();*/
+ MicroDataSet mr(999);
+  DatasetTool dataSet;
+  size_t dLen=10000;
+  TupleQueuePtr tr= newTupleQueuePtr(dLen);
+  TupleQueuePtr ts= newTupleQueuePtr(dLen);
+  dataSet.combine3VVector(tr, mr.genRandInt<keyType>(dLen,50000,0),
+                              vector<valueType>(dLen),
+                          mr.genZipfTimeStamp<size_t>(dLen,5000,0.2)
+                          );
+  dataSet.store3VText(tr,"randKey-zipfTR.txt");
+  MicroDataSet ms=MicroDataSet(996);
+  dataSet.combine3VVector(ts, ms.genRandInt<keyType>(dLen,50000,0),
+                          vector<valueType>(500),
+                          ms.genZipfTimeStamp<size_t>(dLen,5000,0.2)
+  );
+  dataSet.store3VText(ts,"randKey-zipfTS.txt");
+
+
+  //vector <int32_t> ru=ms.genRandInt<int32_t>(50,10,-10);
+
   /*AbstractEagerWS es(100,100);
   es.setParallelSMP(10);
   vector<size_t >a=es.avgPartitionSizeFinal(1010);

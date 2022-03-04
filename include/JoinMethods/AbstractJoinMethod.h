@@ -1,6 +1,3 @@
-//
-// Created by tony on 01/03/22.
-//
 
 #ifndef JOINMETHODS_ABSTRACTJOINMETHOD_H_
 #define JOINMETHODS_ABSTRACTJOINMETHOD_H_
