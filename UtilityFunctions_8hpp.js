@@ -9,6 +9,5 @@ var UtilityFunctions_8hpp =
     [ "TIME_LAST_UNIT_MS", "UtilityFunctions_8hpp.html#a4cb0bb17521e28adf58ef8cad0169316", null ],
     [ "TIME_LAST_UNIT_US", "UtilityFunctions_8hpp.html#aa76b4e4988988c14da4e07ffadffc18e", null ],
     [ "TRUE", "UtilityFunctions_8hpp.html#aa8cecfc5c5c054d2875c03e77b7be15d", null ],
-    [ "UPPER_MASK", "UtilityFunctions_8hpp.html#a39bc458849360f8f371b54c4365d397f", null ],
-    [ "BarrierPtr", "UtilityFunctions_8hpp.html#aa976f754d849bbfef6fc2ec6369d7cef", null ]
+    [ "UPPER_MASK", "UtilityFunctions_8hpp.html#a39bc458849360f8f371b54c4365d397f", null ]
 ];

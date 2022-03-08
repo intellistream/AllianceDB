@@ -13,8 +13,8 @@ var group__Common =
     [ "RelationCouple", "classINTELLI_1_1RelationCouple.html", [
       [ "RelationCouple", "group__Common.html#gaa2fdfc3d8484e388ea75f467e38a159b", null ],
       [ "~RelationCouple", "group__Common.html#ga40a34c85fddd706166a4d16eed0db8dc", null ],
-      [ "relationR", "group__Common.html#ga7418fb54bcd04fe2c74579720d3f689d", null ],
-      [ "relationS", "group__Common.html#ga89570ccb05e564ba4aa4cbff00a7c381", null ]
+      [ "relationR", "group__Common.html#ga9647d1312c7adf7b6c3f3926b6d94049", null ],
+      [ "relationS", "group__Common.html#ga0da6e1c19aa3bb9b4745242b49012bb8", null ]
     ] ],
     [ "WindowCouple", "classINTELLI_1_1WindowCouple.html", [
       [ "WindowCouple", "group__Common.html#ga1816187ec23f9f93b8f5d7477df95c51", null ],
@@ -22,8 +22,8 @@ var group__Common =
       [ "hashtableR", "group__Common.html#ga928d937e168ca74c72721e8798ef589b", null ],
       [ "hashtableS", "group__Common.html#ga81593f7f060eaca6b09dc6b8e43da152", null ],
       [ "windowLock", "group__Common.html#gad37c97d27ecfbfe33691daf67dfefeb2", null ],
-      [ "windowR", "group__Common.html#gaeab60be5b1606aac14defec4b2b14ec6", null ],
-      [ "windowS", "group__Common.html#gaed43e83f24963ef958f74ae7483fedb2", null ],
+      [ "windowR", "group__Common.html#ga5ba73f732f4b09832b8c3cf891a094a8", null ],
+      [ "windowS", "group__Common.html#ga96f0f58a4317f6eebdd572d12e6f009e", null ],
       [ "windowSize", "group__Common.html#ga811fa277c903491674effd378c0712e9", null ],
       [ "windowSizeR", "group__Common.html#gaca22572ba002e5f31df74fdb2fc2b05b", null ],
       [ "windowSizeS", "group__Common.html#ga5ffdfa33a3a890e480cf030a0addbe65", null ]
@@ -49,12 +49,12 @@ var group__Common =
       [ "timeBegin", "group__Common.html#gab497781a0bc6f9aa9ffd18972c28ab6b", null ],
       [ "timeTaken", "group__Common.html#ga4b35ef41995499e89d39fdedaebe9aee", null ]
     ] ],
-    [ "newTupleQueuePtr", "group__Common.html#gaa61c686bfb3154b7e49fba8766de1dc3", null ],
+    [ "newTuplePtrQueue", "group__Common.html#ga816eaa68df86b9b5d2bc3e2063f6919e", null ],
     [ "hashtable", "group__Common.html#gaac770a310639269c01008063c55c638f", null ],
     [ "keyType", "group__Common.html#gabdecd0146153c8a29b021c48dfa300ce", null ],
     [ "TuplePtr", "group__Common.html#gaae6cb4c36125ed9faed4c1d55c85eef3", null ],
-    [ "TupleQueuePtr", "group__Common.html#ga37ae016912657f60f52760808d2c91a0", null ],
-    [ "TupleQueuePtrLocal", "group__Common.html#gad3c66963f3d5983e39aef0042d18c70f", null ],
+    [ "TuplePtrQueue", "group__Common.html#gaf4591ab3e423261c4770a506de62ca4c", null ],
+    [ "TuplePtrQueueLocal", "group__Common.html#gab867dce60ff57fe0f83898eff80f27cc", null ],
     [ "valueType", "group__Common.html#ga4bb66f4742171167ee336a06d8939bdf", null ],
     [ "Tuple", "group__Common.html#gabc02dc379b9bd407b3df03c30a952db4", null ],
     [ "Tuple", "group__Common.html#ga3f1ae0f48ce01d06105ba18587ad9e29", null ],

@@ -43,8 +43,8 @@ var group__WindowSliders =
       [ "timeMax", "group__WindowSliders.html#ga1acb445690fd61f718f1780ea328c2d3", null ],
       [ "timeStart", "group__WindowSliders.html#gaacc0c419ee960fc9c9a0e3853a748089", null ],
       [ "timeSys", "group__WindowSliders.html#gadd6f4c40c82cddd87ea02343ae394320", null ],
-      [ "TupleQueuePtrLocalR", "group__WindowSliders.html#gacbccfa35eba6dc7b073588737416e64f", null ],
-      [ "TupleQueuePtrLocalS", "group__WindowSliders.html#gac4eb97c80ee327276f44d587c17eee1e", null ],
+      [ "TuplePtrQueueLocalR", "group__WindowSliders.html#gaf22239feabaa8731b1c557f61ca995de", null ],
+      [ "TuplePtrQueueLocalS", "group__WindowSliders.html#ga21e60805ece7890f041aa334ea46eadf", null ],
       [ "windowLen", "group__WindowSliders.html#ga30bca31f48d1bbb50477746cdd5d5b11", null ]
     ] ],
     [ "HandShakeWS", "classINTELLI_1_1HandShakeWS.html", [

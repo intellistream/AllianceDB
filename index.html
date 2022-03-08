@@ -97,13 +97,13 @@ $(document).ready(function(){initNavTree('index.html',''); initResizable(); });
 <div class="title">Introduction </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>The AianceDB offers a wide range of stream join algorithms, supporting both inter and intra window join. </p>
+<div class="textblock"><p>The AllianceDB offers a wide range of stream join algorithms, supporting both inter and intra window join. </p>
 <h1><a class="anchor" id="sec_mj"></a>
 Major Parts</h1>
 <p>Three major parts are composed to achieve ultra-fast stream window join, and they can be found in corresponding named folder under include or src</p>
 <h2><a class="anchor" id="JoinAlgo"></a>
 JoinAlgo</h2>
-<p>Here are specific algorithms to eventually deal with stream join, including hash or radix. All of these algos assume the tuples are batched, and the "window" is invisible to them. In another word, they achieve the intra-window join.</p>
+<p>Here are specific algorithms to eventually deal with stream join, including hash or radix. All of these algos assume the tuples are batched, and the "window" is invisible to them. In another word, they achieve the intra-window join. Please refer to the <a class="el" href="group__INTELLI__JOINALGOS.html">The specific join algorithms</a> module.</p>
 <h2><a class="anchor" id="JoinProcessor"></a>
 JoinProcessor</h2>
 <p>Here is the middle layer of the whole stream window join, i.e., to bridge the "window" and "join". One JoinProcessor may either eagerly do stream join on itself, or just accumulate the tuples and evoke JoinAlgo for lazy join. JoinProcessors are managed by upper windowslider.</p>

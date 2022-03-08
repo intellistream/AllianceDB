@@ -2,9 +2,9 @@ var classINTELLI_1_1DatasetTool =
 [
     [ "DatasetTool", "classINTELLI_1_1DatasetTool.html#a8d8f59f58cc1941869ef4f08d0a80776", null ],
     [ "~DatasetTool", "classINTELLI_1_1DatasetTool.html#a0d5eed422cb3b848e43a665ec5d7f79c", null ],
-    [ "combine3VVector", "classINTELLI_1_1DatasetTool.html#a4685e8d5eb0ade9a845eb6de659ea588", null ],
-    [ "combine3VVector", "classINTELLI_1_1DatasetTool.html#af80e6a4af2679e4bbd5a39b1855466c6", null ],
-    [ "load3VText", "classINTELLI_1_1DatasetTool.html#a8ebb053176a6c284074bc501a24402bc", null ],
-    [ "load3VText", "classINTELLI_1_1DatasetTool.html#af3a16da68560c3a5022bb50446944d07", null ],
-    [ "store3VText", "classINTELLI_1_1DatasetTool.html#a7b5701ef2e38dc45ae0dabc3d445c26e", null ]
+    [ "combine3VVector", "classINTELLI_1_1DatasetTool.html#af507924a83997647632c788518f850ba", null ],
+    [ "combine3VVector", "classINTELLI_1_1DatasetTool.html#a5d6bf46813b7f8693168f11836532f60", null ],
+    [ "load3VText", "classINTELLI_1_1DatasetTool.html#a71cfc33255981c138ae639db3d640918", null ],
+    [ "load3VText", "classINTELLI_1_1DatasetTool.html#acce02eac4ebf0dcef0601c5badaed70f", null ],
+    [ "store3VText", "classINTELLI_1_1DatasetTool.html#ae26bad311cddc6007924cd7730df62e6", null ]
 ];

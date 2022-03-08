@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['microdataset_172',['MicroDataSet',['../group__INTELLI__UTIL__Micro.html#ga8dca5dd263ab0f0af10018a83ee491f4',1,'INTELLI::MicroDataSet::MicroDataSet()'],['../group__INTELLI__UTIL__Micro.html#ga66e1e0995e47ea85cfc38ad9a646ae5c',1,'INTELLI::MicroDataSet::MicroDataSet(uint64_t _seed)']]]
+  ['headstringcsv_225',['headStringCsv',['../group__NTELLI__UTIL__ThreadPerf__Results.html#gae455015e5b243f8c84ee38c036351943',1,'INTELLI::ThreadPerf']]],
+  ['headstringprintf_226',['headStringPrintf',['../group__NTELLI__UTIL__ThreadPerf__Results.html#gaf44543be7eb239fd66ba4f982d46d479',1,'INTELLI::ThreadPerf']]]
 ];

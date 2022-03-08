@@ -32,8 +32,8 @@ var classINTELLI_1_1SimpleHashJP =
     [ "sysId", "classINTELLI_1_1SimpleHashJP.html#a2ecd6fcb18d5fd57502fcf15d29ae407", null ],
     [ "threadPtr", "classINTELLI_1_1SimpleHashJP.html#a077b2f8e07371059e663f12377447b1b", null ],
     [ "timeBased", "classINTELLI_1_1SimpleHashJP.html#a8fd39cea9942f80aab718ab755328c76", null ],
-    [ "TupleQueuePtrLocalR", "classINTELLI_1_1SimpleHashJP.html#a5a295023d195de4e20af0a370f96643a", null ],
-    [ "TupleQueuePtrLocalS", "classINTELLI_1_1SimpleHashJP.html#a583c4ffb00aa5ca5e7677023251b6104", null ],
+    [ "TuplePtrQueueLocalR", "classINTELLI_1_1SimpleHashJP.html#a6f619b053172601c02727942cf58306b", null ],
+    [ "TuplePtrQueueLocalS", "classINTELLI_1_1SimpleHashJP.html#a9703c23d568cebcd5f123744b7f84690", null ],
     [ "windowLen", "classINTELLI_1_1SimpleHashJP.html#abe36f19c78371ce9304720027b1adce5", null ],
     [ "windowQueueR", "classINTELLI_1_1SimpleHashJP.html#a147d7bb7cb52ca352684d51ae88ca0cb", null ],
     [ "windowQueueS", "classINTELLI_1_1SimpleHashJP.html#ad426b9deacdd352ebd66a2bbb612624b", null ]

@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['relationcouple_59',['RelationCouple',['../classINTELLI_1_1RelationCouple.html',1,'INTELLI']]],
-  ['reset_60',['reset',['../group__WindowSliders.html#ga04a85ac1613d92f0e0f3d7a72101771f',1,'INTELLI::AbstractEagerWS']]],
-  ['result_61',['Result',['../classINTELLI_1_1Result.html',1,'INTELLI']]]
+  ['onewayhashjoin_77',['OneWayHashJoin',['../classINTELLI_1_1OneWayHashJoin.html',1,'INTELLI']]],
+  ['other_20common_20class_20or_20package_20under_20c_2b_2b20_20standard_78',['Other common class or package under C++20 standard',['../group__INTELLI__UTIL__OTHERC20.html',1,'']]]
 ];

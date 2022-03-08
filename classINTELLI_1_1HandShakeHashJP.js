@@ -21,8 +21,8 @@ var classINTELLI_1_1HandShakeHashJP =
     [ "leftJP", "classINTELLI_1_1HandShakeHashJP.html#ab85e045c735bebb80e90ae222819175d", null ],
     [ "rightJP", "classINTELLI_1_1HandShakeHashJP.html#a66a4b43adfb1f694bd60f4842d60061f", null ],
     [ "rQueue", "classINTELLI_1_1HandShakeHashJP.html#a1fc2159e9cb5c7100e98d2bb17a9cbe2", null ],
-    [ "selfWindowR", "classINTELLI_1_1HandShakeHashJP.html#a25949326962fd1b397eac844ec756b7f", null ],
-    [ "selfWindowS", "classINTELLI_1_1HandShakeHashJP.html#a6db73dda5ac6d61429d6539b54bf7ea9", null ],
+    [ "selfWindowR", "classINTELLI_1_1HandShakeHashJP.html#a7185271ab366f76439c127771f15bd4a", null ],
+    [ "selfWindowS", "classINTELLI_1_1HandShakeHashJP.html#ac9a795f44d5bbc5665655f93970fb1e2", null ],
     [ "sQueue", "classINTELLI_1_1HandShakeHashJP.html#a174fa8a83973dbaac6032a9623bab8be", null ],
     [ "timeOffsetR", "classINTELLI_1_1HandShakeHashJP.html#aaa315af10d1fbeaa55bfbc7e05830639", null ],
     [ "timeOffsetS", "classINTELLI_1_1HandShakeHashJP.html#abb8d3f20e34809f58dd341292c350653", null ]

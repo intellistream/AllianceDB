@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['timesys_184',['timeSys',['../group__WindowSliders.html#gadd6f4c40c82cddd87ea02343ae394320',1,'INTELLI::AbstractEagerWS']]]
+  ['record_255',['record',['../group__INTELLI__UTIL__ThreadPerf.html#ga0df62ab5a199d67b801f9d3badd58eff',1,'INTELLI::PerfPair']]],
+  ['ref_256',['ref',['../group__INTELLI__UTIL__ThreadPerf.html#ga83996eb4ec5295c0dbad750681266d95',1,'INTELLI::PerfPair']]]
 ];

@@ -1,4 +1,6 @@
 <map id="Shared Utils with other Intelli Stream programs" name="Shared Utils with other Intelli Stream programs">
-<area shape="rect" id="node1" href="$group__INTELLI__UTIL__Micro.html" title=" " alt="" coords="233,13,372,38"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,5,185,45"/>
+<area shape="rect" id="node1" href="$group__INTELLI__UTIL__Micro.html" title=" " alt="" coords="242,5,381,31"/>
+<area shape="rect" id="node2" href="$group__INTELLI__UTIL__OTHERC20.html" title=" " alt="" coords="233,55,389,109"/>
+<area shape="rect" id="node3" title=" " alt="" coords="5,62,185,102"/>
+<area shape="rect" id="node4" href="$group__INTELLI__UTIL__ThreadPerf.html" title=" " alt="" coords="236,133,387,159"/>
 </map>

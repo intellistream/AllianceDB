@@ -1,0 +1,4 @@
+<map id="INTELLI::AbstractC20Thread" name="INTELLI::AbstractC20Thread">
+<area shape="rect" id="node1" title="The base class and abstraction of C++20 thread, and it can be derived into other threads." alt="" coords="5,5,208,32"/>
+<area shape="rect" id="node2" href="$classINTELLI_1_1NPJ__thread.html" title="The thread used by NPJ." alt="" coords="32,80,181,107"/>
+</map>
