@@ -2,13 +2,13 @@ var annotated_dup =
 [
     [ "INTELLI", null, [
       [ "DatasetTool", "classINTELLI_1_1DatasetTool.html", "classINTELLI_1_1DatasetTool" ],
+      [ "MtBucket", "classINTELLI_1_1MtBucket.html", "classINTELLI_1_1MtBucket" ],
+      [ "MultiThreadHashTable", "classINTELLI_1_1MultiThreadHashTable.html", "classINTELLI_1_1MultiThreadHashTable" ],
       [ "Tuple", "classINTELLI_1_1Tuple.html", "classINTELLI_1_1Tuple" ],
       [ "RelationCouple", "classINTELLI_1_1RelationCouple.html", "classINTELLI_1_1RelationCouple" ],
       [ "WindowCouple", "classINTELLI_1_1WindowCouple.html", "classINTELLI_1_1WindowCouple" ],
       [ "ConcurrentQWindowCouple", "classINTELLI_1_1ConcurrentQWindowCouple.html", "classINTELLI_1_1ConcurrentQWindowCouple" ],
       [ "Result", "classINTELLI_1_1Result.html", "classINTELLI_1_1Result" ],
-      [ "MtBucket", "classINTELLI_1_1MtBucket.html", "classINTELLI_1_1MtBucket" ],
-      [ "MultiThreadHashTable", "classINTELLI_1_1MultiThreadHashTable.html", "classINTELLI_1_1MultiThreadHashTable" ],
       [ "NPJ_thread", "classINTELLI_1_1NPJ__thread.html", "classINTELLI_1_1NPJ__thread" ],
       [ "NPJ", "classINTELLI_1_1NPJ.html", "classINTELLI_1_1NPJ" ],
       [ "AbstractJoinMethod", "classINTELLI_1_1AbstractJoinMethod.html", null ],

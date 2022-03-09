@@ -130,8 +130,8 @@ $(document).ready(function(){initNavTree('SimpleHashJP_8h_source.html',''); init
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  CmdQueuePtr cmdQueueIn;</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  CmdQueuePtr cmdQueueOut;</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  <span class="comment">//tuple Queue</span></div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  <a class="code" href="group__Common.html#gaf4591ab3e423261c4770a506de62ca4c">TuplePtrQueue</a> TuplePtrQueueLocalS;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  <a class="code" href="group__Common.html#gaf4591ab3e423261c4770a506de62ca4c">TuplePtrQueue</a> TuplePtrQueueLocalR;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  <a class="code" href="group__INTELLI__COMMON__BASIC.html#gaf4591ab3e423261c4770a506de62ca4c">TuplePtrQueue</a> TuplePtrQueueLocalS;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  <a class="code" href="group__INTELLI__COMMON__BASIC.html#gaf4591ab3e423261c4770a506de62ca4c">TuplePtrQueue</a> TuplePtrQueueLocalR;</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  WindowQueue windowQueueS;</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  WindowQueue windowQueueR;</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  <span class="keywordtype">size_t</span> windowLen = 0;</div>
@@ -151,8 +151,8 @@ $(document).ready(function(){initNavTree('SimpleHashJP_8h_source.html',''); init
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160; </div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  }</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <span class="keywordtype">void</span> init(<span class="keywordtype">size_t</span> sLen, <span class="keywordtype">size_t</span> rLen, <span class="keywordtype">size_t</span> _sysId) {</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    TuplePtrQueueLocalS = <a class="code" href="group__Common.html#ga816eaa68df86b9b5d2bc3e2063f6919e">newTuplePtrQueue</a>(sLen);</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    TuplePtrQueueLocalR = <a class="code" href="group__Common.html#ga816eaa68df86b9b5d2bc3e2063f6919e">newTuplePtrQueue</a>(rLen);</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    TuplePtrQueueLocalS = <a class="code" href="group__INTELLI__COMMON__BASIC.html#ga816eaa68df86b9b5d2bc3e2063f6919e">newTuplePtrQueue</a>(sLen);</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    TuplePtrQueueLocalR = <a class="code" href="group__INTELLI__COMMON__BASIC.html#ga816eaa68df86b9b5d2bc3e2063f6919e">newTuplePtrQueue</a>(rLen);</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    windowQueueS = newWindowQueue(sLen);</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    windowQueueR = newWindowQueue(rLen);</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    cmdQueueIn = newCmdQueue(1);</div>
@@ -200,10 +200,10 @@ $(document).ready(function(){initNavTree('SimpleHashJP_8h_source.html',''); init
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    <span class="keywordflow">return</span> ru;</div>
 <div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  }</div>
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  <span class="comment">//outside feed a Tuple S</span></div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  <span class="keywordtype">void</span> feedTupleS(<a class="code" href="group__Common.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> ts) {</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  <span class="keywordtype">void</span> feedTupleS(<a class="code" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> ts) {</div>
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    TuplePtrQueueLocalS-&gt;push(ts);</div>
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  }</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  <span class="keywordtype">void</span> feedTupleR(<a class="code" href="group__Common.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> tr) {</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  <span class="keywordtype">void</span> feedTupleR(<a class="code" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> tr) {</div>
 <div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    TuplePtrQueueLocalR-&gt;push(tr);</div>
 <div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  }</div>
 <div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  <span class="comment">//outside feed a window</span></div>
@@ -249,9 +249,9 @@ $(document).ready(function(){initNavTree('SimpleHashJP_8h_source.html',''); init
 <div class="ttc" id="aTypes_8h_html"><div class="ttname"><a href="Types_8h.html">Types.h</a></div></div>
 <div class="ttc" id="aUtilityFunctions_8hpp_html"><div class="ttname"><a href="UtilityFunctions_8hpp.html">UtilityFunctions.hpp</a></div></div>
 <div class="ttc" id="aclassINTELLI_1_1SimpleHashJP_html"><div class="ttname"><a href="classINTELLI_1_1SimpleHashJP.html">INTELLI::SimpleHashJP</a></div><div class="ttdef"><b>Definition:</b> SimpleHashJP.h:18</div></div>
-<div class="ttc" id="agroup__Common_html_ga816eaa68df86b9b5d2bc3e2063f6919e"><div class="ttname"><a href="group__Common.html#ga816eaa68df86b9b5d2bc3e2063f6919e">newTuplePtrQueue</a></div><div class="ttdeci">#define newTuplePtrQueue(n)</div><div class="ttdoc">To create a new TuplePtrQueue.</div><div class="ttdef"><b>Definition:</b> Types.h:226</div></div>
-<div class="ttc" id="agroup__Common_html_gaae6cb4c36125ed9faed4c1d55c85eef3"><div class="ttname"><a href="group__Common.html#gaae6cb4c36125ed9faed4c1d55c85eef3">INTELLI::TuplePtr</a></div><div class="ttdeci">std::shared_ptr&lt; class Tuple &gt; TuplePtr</div><div class="ttdoc">The class to describe a shared pointer to Tuple.</div><div class="ttdef"><b>Definition:</b> Types.h:142</div></div>
-<div class="ttc" id="agroup__Common_html_gaf4591ab3e423261c4770a506de62ca4c"><div class="ttname"><a href="group__Common.html#gaf4591ab3e423261c4770a506de62ca4c">INTELLI::TuplePtrQueue</a></div><div class="ttdeci">std::shared_ptr&lt; INTELLI::SPSCQueue&lt; INTELLI::TuplePtr &gt; &gt; TuplePtrQueue</div><div class="ttdoc">To describe a queue of TuplePtr under SPSCQueue.</div><div class="ttdef"><b>Definition:</b> Types.h:218</div></div>
+<div class="ttc" id="agroup__INTELLI__COMMON__BASIC_html_ga816eaa68df86b9b5d2bc3e2063f6919e"><div class="ttname"><a href="group__INTELLI__COMMON__BASIC.html#ga816eaa68df86b9b5d2bc3e2063f6919e">newTuplePtrQueue</a></div><div class="ttdeci">#define newTuplePtrQueue(n)</div><div class="ttdoc">To create a new TuplePtrQueue.</div><div class="ttdef"><b>Definition:</b> Types.h:232</div></div>
+<div class="ttc" id="agroup__INTELLI__COMMON__BASIC_html_gaae6cb4c36125ed9faed4c1d55c85eef3"><div class="ttname"><a href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">INTELLI::TuplePtr</a></div><div class="ttdeci">std::shared_ptr&lt; class Tuple &gt; TuplePtr</div><div class="ttdoc">The class to describe a shared pointer to Tuple.</div><div class="ttdef"><b>Definition:</b> Types.h:148</div></div>
+<div class="ttc" id="agroup__INTELLI__COMMON__BASIC_html_gaf4591ab3e423261c4770a506de62ca4c"><div class="ttname"><a href="group__INTELLI__COMMON__BASIC.html#gaf4591ab3e423261c4770a506de62ca4c">INTELLI::TuplePtrQueue</a></div><div class="ttdeci">std::shared_ptr&lt; INTELLI::SPSCQueue&lt; INTELLI::TuplePtr &gt; &gt; TuplePtrQueue</div><div class="ttdoc">To describe a queue of TuplePtr under SPSCQueue.</div><div class="ttdef"><b>Definition:</b> Types.h:224</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

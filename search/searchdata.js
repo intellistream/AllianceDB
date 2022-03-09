@@ -7,7 +7,7 @@ var indexSectionsWithContent =
   4: "knprst",
   5: "hktv",
   6: "p",
-  7: "cgiostw",
+  7: "bcgiostw",
   8: "it"
 };
 

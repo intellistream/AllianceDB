@@ -98,14 +98,14 @@ $(document).ready(function(){initNavTree('classINTELLI_1_1MultiThreadHashTable.h
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="classINTELLI_1_1MultiThreadHashTable-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">INTELLI::MultiThreadHashTable Class Reference<div class="ingroups"><a class="el" href="group__INTELLI__JOINALGOS.html">The specific join algorithms</a> &raquo; <a class="el" href="group__INTELLI__JOINALGOS__NPJ.html">The no partition hash join (NPJ)</a> &raquo; <a class="el" href="group__INTELLI__JOINALGOS__NPJ__TB.html">The multithread hashtable</a></div></div>  </div>
+<div class="title">INTELLI::MultiThreadHashTable Class Reference<div class="ingroups"><a class="el" href="group__Common.html">Common Datastructure and Functions</a> &raquo; <a class="el" href="group__INTELLI__COMMON__TB.html">The multithread hashtable</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 
 <p>The multithread-supported hash table, holding buckets.  
  <a href="classINTELLI_1_1MultiThreadHashTable.html#details">More...</a></p>
 
-<p><code>#include &lt;<a class="el" href="MultiThreadHashTable_8h_source.html">JoinAlgo/NPJ/MultiThreadHashTable.h</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="MultiThreadHashTable_8h_source.html">Common/MultiThreadHashTable.h</a>&gt;</code></p>
 <div class="dynheader">
 Collaboration diagram for INTELLI::MultiThreadHashTable:</div>
 <div class="dyncontent">
@@ -122,13 +122,13 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:abd7a397a8e0292e781a0ef79fe33cd2d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classINTELLI_1_1MultiThreadHashTable.html#abd7a397a8e0292e781a0ef79fe33cd2d">MultiThreadHashTable</a> (size_t bks)</td></tr>
 <tr class="memdesc:abd7a397a8e0292e781a0ef79fe33cd2d"><td class="mdescLeft">&#160;</td><td class="mdescRight">pre-init with several buckets  <a href="classINTELLI_1_1MultiThreadHashTable.html#abd7a397a8e0292e781a0ef79fe33cd2d">More...</a><br /></td></tr>
 <tr class="separator:abd7a397a8e0292e781a0ef79fe33cd2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a490b1247ad1269c47ee84ca36dfc8f76"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classINTELLI_1_1MultiThreadHashTable.html#a490b1247ad1269c47ee84ca36dfc8f76">buildTable</a> (<a class="el" href="group__Common.html#gaf4591ab3e423261c4770a506de62ca4c">TuplePtrQueue</a> tps)</td></tr>
+<tr class="memitem:a490b1247ad1269c47ee84ca36dfc8f76"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classINTELLI_1_1MultiThreadHashTable.html#a490b1247ad1269c47ee84ca36dfc8f76">buildTable</a> (<a class="el" href="group__INTELLI__COMMON__BASIC.html#gaf4591ab3e423261c4770a506de62ca4c">TuplePtrQueue</a> tps)</td></tr>
 <tr class="memdesc:a490b1247ad1269c47ee84ca36dfc8f76"><td class="mdescLeft">&#160;</td><td class="mdescRight">build the hashtable from tuple queue  <a href="classINTELLI_1_1MultiThreadHashTable.html#a490b1247ad1269c47ee84ca36dfc8f76">More...</a><br /></td></tr>
 <tr class="separator:a490b1247ad1269c47ee84ca36dfc8f76"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab1d697cef603fbf1ecada2b13305b03d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classINTELLI_1_1MultiThreadHashTable.html#ab1d697cef603fbf1ecada2b13305b03d">buildTable</a> (<a class="el" href="group__Common.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> *tps, size_t len)</td></tr>
+<tr class="memitem:ab1d697cef603fbf1ecada2b13305b03d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classINTELLI_1_1MultiThreadHashTable.html#ab1d697cef603fbf1ecada2b13305b03d">buildTable</a> (<a class="el" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> *tps, size_t len)</td></tr>
 <tr class="memdesc:ab1d697cef603fbf1ecada2b13305b03d"><td class="mdescLeft">&#160;</td><td class="mdescRight">build the hashtable from tuple memory aray  <a href="classINTELLI_1_1MultiThreadHashTable.html#ab1d697cef603fbf1ecada2b13305b03d">More...</a><br /></td></tr>
 <tr class="separator:ab1d697cef603fbf1ecada2b13305b03d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a36281640798f038c6b8307a29cf0250f"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classINTELLI_1_1MultiThreadHashTable.html#a36281640798f038c6b8307a29cf0250f">probeTuple</a> (<a class="el" href="group__Common.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> tp)</td></tr>
+<tr class="memitem:a36281640798f038c6b8307a29cf0250f"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classINTELLI_1_1MultiThreadHashTable.html#a36281640798f038c6b8307a29cf0250f">probeTuple</a> (<a class="el" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> tp)</td></tr>
 <tr class="memdesc:a36281640798f038c6b8307a29cf0250f"><td class="mdescLeft">&#160;</td><td class="mdescRight">probe one tuple  <a href="classINTELLI_1_1MultiThreadHashTable.html#a36281640798f038c6b8307a29cf0250f">More...</a><br /></td></tr>
 <tr class="separator:a36281640798f038c6b8307a29cf0250f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -184,7 +184,7 @@ vector&lt; <a class="el" href="classINTELLI_1_1MtBucket.html">MtBucket</a> &gt;&
         <tr>
           <td class="memname">void INTELLI::MultiThreadHashTable::buildTable </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="group__Common.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> *&#160;</td>
           <td class="paramname"><em>tps</em>, </td>
         </tr>
         <tr>
@@ -223,7 +223,7 @@ vector&lt; <a class="el" href="classINTELLI_1_1MtBucket.html">MtBucket</a> &gt;&
         <tr>
           <td class="memname">void INTELLI::MultiThreadHashTable::buildTable </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="group__Common.html#gaf4591ab3e423261c4770a506de62ca4c">TuplePtrQueue</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="group__INTELLI__COMMON__BASIC.html#gaf4591ab3e423261c4770a506de62ca4c">TuplePtrQueue</a>&#160;</td>
           <td class="paramname"><em>tps</em></td><td>)</td>
           <td></td>
         </tr>
@@ -250,7 +250,7 @@ vector&lt; <a class="el" href="classINTELLI_1_1MtBucket.html">MtBucket</a> &gt;&
         <tr>
           <td class="memname">size_t INTELLI::MultiThreadHashTable::probeTuple </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="group__Common.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a>&#160;</td>
           <td class="paramname"><em>tp</em></td><td>)</td>
           <td></td>
         </tr>
@@ -269,7 +269,7 @@ vector&lt; <a class="el" href="classINTELLI_1_1MtBucket.html">MtBucket</a> &gt;&
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>include/JoinAlgo/NPJ/<a class="el" href="MultiThreadHashTable_8h_source.html">MultiThreadHashTable.h</a></li>
+<li>include/Common/<a class="el" href="MultiThreadHashTable_8h_source.html">MultiThreadHashTable.h</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

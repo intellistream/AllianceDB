@@ -97,14 +97,14 @@ $(document).ready(function(){initNavTree('classINTELLI_1_1MtBucket.html',''); in
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classINTELLI_1_1MtBucket-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">INTELLI::MtBucket Class Reference<div class="ingroups"><a class="el" href="group__INTELLI__JOINALGOS.html">The specific join algorithms</a> &raquo; <a class="el" href="group__INTELLI__JOINALGOS__NPJ.html">The no partition hash join (NPJ)</a> &raquo; <a class="el" href="group__INTELLI__JOINALGOS__NPJ__TB.html">The multithread hashtable</a></div></div>  </div>
+<div class="title">INTELLI::MtBucket Class Reference<div class="ingroups"><a class="el" href="group__Common.html">Common Datastructure and Functions</a> &raquo; <a class="el" href="group__INTELLI__COMMON__TB.html">The multithread hashtable</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 
 <p>The multithread-supported bucket.  
  <a href="classINTELLI_1_1MtBucket.html#details">More...</a></p>
 
-<p><code>#include &lt;<a class="el" href="MultiThreadHashTable_8h_source.html">JoinAlgo/NPJ/MultiThreadHashTable.h</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="MultiThreadHashTable_8h_source.html">Common/MultiThreadHashTable.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -116,11 +116,11 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classINTELLI_1_1MtBucket.html#aaf4579dcf07b4632f4c6cdb26ba674ab">unlock</a> ()</td></tr>
 <tr class="memdesc:aaf4579dcf07b4632f4c6cdb26ba674ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">unlock this bucket <br /></td></tr>
 <tr class="separator:aaf4579dcf07b4632f4c6cdb26ba674ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2440bfad0d6da038959bc71f37917266"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classINTELLI_1_1MtBucket.html#a2440bfad0d6da038959bc71f37917266">duplicatedInsert</a> (<a class="el" href="group__Common.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> tp)</td></tr>
+<tr class="memitem:a2440bfad0d6da038959bc71f37917266"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classINTELLI_1_1MtBucket.html#a2440bfad0d6da038959bc71f37917266">duplicatedInsert</a> (<a class="el" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> tp)</td></tr>
 <tr class="memdesc:a2440bfad0d6da038959bc71f37917266"><td class="mdescLeft">&#160;</td><td class="mdescRight">Insert a tuple, allowing key duplication.  <a href="classINTELLI_1_1MtBucket.html#a2440bfad0d6da038959bc71f37917266">More...</a><br /></td></tr>
 <tr class="separator:a2440bfad0d6da038959bc71f37917266"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a21a6dd5de282fc5ce52248bac9b7e6a0"><td class="memItemLeft" align="right" valign="top"><a id="a21a6dd5de282fc5ce52248bac9b7e6a0"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classINTELLI_1_1MtBucket.html#a21a6dd5de282fc5ce52248bac9b7e6a0">probeTuple</a> (<a class="el" href="group__Common.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> tp)</td></tr>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classINTELLI_1_1MtBucket.html#a21a6dd5de282fc5ce52248bac9b7e6a0">probeTuple</a> (<a class="el" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> tp)</td></tr>
 <tr class="memdesc:a21a6dd5de282fc5ce52248bac9b7e6a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">probe one tuple, just on the bucket <br /></td></tr>
 <tr class="separator:a21a6dd5de282fc5ce52248bac9b7e6a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -137,7 +137,7 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
         <tr>
           <td class="memname">void INTELLI::MtBucket::duplicatedInsert </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="group__Common.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a>&#160;</td>
           <td class="paramname"><em>tp</em></td><td>)</td>
           <td></td>
         </tr>
@@ -155,7 +155,7 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>include/JoinAlgo/NPJ/<a class="el" href="MultiThreadHashTable_8h_source.html">MultiThreadHashTable.h</a></li>
+<li>include/Common/<a class="el" href="MultiThreadHashTable_8h_source.html">MultiThreadHashTable.h</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

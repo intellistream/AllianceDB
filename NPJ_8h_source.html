@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>AllianceDB: include/JoinAlgo/NPJ/NPJ.h Source File</title>
+<title>AllianceDB: include/JoinAlgo/NPJ.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -104,79 +104,78 @@ $(document).ready(function(){initNavTree('NPJ_8h_source.html',''); initResizable
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160; </div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#ifndef _JOINALGO_NPJ_NPJ_H_</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#define _JOINALGO_NPJ_NPJ_H_</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="MultiThreadHashTable_8h.html">JoinAlgo/NPJ/MultiThreadHashTable.h</a>&gt;</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="MultiThreadHashTable_8h.html">Common/MultiThreadHashTable.h</a>&gt;</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="AbstractC20Thread_8h.html">Utils/AbstractC20Thread.h</a>&gt;</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;barrier&gt;</span></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keyword">namespace  </span>INTELLI{</div>
-<div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="classINTELLI_1_1NPJ__thread.html">   24</a></span>&#160; <span class="keyword">class </span><a class="code" href="classINTELLI_1_1NPJ__thread.html">NPJ_thread</a> : <span class="keyword">public</span>  <a class="code" href="classINTELLI_1_1AbstractC20Thread.html">AbstractC20Thread</a>{</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;   <a class="code" href="group__Common.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> *ts,*tr;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;   <span class="keywordtype">size_t</span> sLen=0,rLen=0;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;   <span class="keywordtype">int</span> cpu=-1;</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;   MultiThreadHashTablePtr table= <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;   <span class="keywordtype">size_t</span> result=0;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;   BarrierPtr buildBar = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;   std::shared_ptr&lt;std::thread&gt; threadPtr;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  <span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="group__INTELLI__JOINALGOS__NPJ__ALGO.html#ga196d6f5b13d5e64d034e8793bea1b5c8">   38</a></span>&#160;   <span class="keywordtype">void</span> <a class="code" href="group__INTELLI__JOINALGOS__NPJ__ALGO.html#ga196d6f5b13d5e64d034e8793bea1b5c8">inlineMain</a>();</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;   <a class="code" href="classINTELLI_1_1NPJ__thread.html">NPJ_thread</a>(){};</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;   ~<a class="code" href="classINTELLI_1_1NPJ__thread.html">NPJ_thread</a>(){};</div>
-<div class="line"><a name="l00052"></a><span class="lineno"><a class="line" href="group__INTELLI__JOINALGOS__NPJ__ALGO.html#ga7398a849b284af0697d910fcf8da5d73">   52</a></span>&#160;   <span class="keywordtype">void</span> <a class="code" href="group__INTELLI__JOINALGOS__NPJ__ALGO.html#ga7398a849b284af0697d910fcf8da5d73">init</a>(<a class="code" href="group__Common.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> *_ts,<a class="code" href="group__Common.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> *_tr,<span class="keywordtype">size_t</span> _sLen,<span class="keywordtype">size_t</span> _rLen,<span class="keywordtype">int</span> _cpu,MultiThreadHashTablePtr _table,BarrierPtr bar)</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;   {</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;     ts=_ts;</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;     tr=_tr;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;     sLen=_sLen;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;     rLen=_rLen;</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;     cpu=_cpu;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;     table=_table;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;     buildBar=bar;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;   }</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160; </div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;   <span class="keywordtype">size_t</span> getResult()</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;   {</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;     <span class="keywordflow">return</span> result;</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;   }</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;   <span class="keywordtype">void</span> waitBuildBar(<span class="keywordtype">void</span>) {</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;     <span class="keywordflow">if</span> (buildBar) {</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;       buildBar-&gt;arrive_and_wait();</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;     }</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;   }</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160; };</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160; </div>
-<div class="line"><a name="l00078"></a><span class="lineno"><a class="line" href="classINTELLI_1_1NPJ.html">   78</a></span>&#160;<span class="keyword">class </span><a class="code" href="classINTELLI_1_1NPJ.html">NPJ</a>{</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  vector&lt;NPJ_thread&gt; workers;</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <a class="code" href="classINTELLI_1_1NPJ.html">NPJ</a>(){}</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  ~<a class="code" href="classINTELLI_1_1NPJ.html">NPJ</a>(){}</div>
-<div class="line"><a name="l00092"></a><span class="lineno"><a class="line" href="group__INTELLI__JOINALGOS__NPJ__ALGO.html#ga69413854bcd3c624e91b5a7ed217a63d">   92</a></span>&#160;  <span class="keywordtype">size_t</span> <a class="code" href="group__INTELLI__JOINALGOS__NPJ__ALGO.html#ga69413854bcd3c624e91b5a7ed217a63d">join</a>(<a class="code" href="group__Common.html#gaf4591ab3e423261c4770a506de62ca4c">TuplePtrQueue</a> ts,<a class="code" href="group__Common.html#gaf4591ab3e423261c4770a506de62ca4c">TuplePtrQueue</a> tr,<span class="keywordtype">int</span> threads=1);</div>
-<div class="line"><a name="l00103"></a><span class="lineno"><a class="line" href="group__INTELLI__JOINALGOS__NPJ__ALGO.html#ga3c1c89607abb6d36cb2839c2a8c00305">  103</a></span>&#160;  <span class="keywordtype">size_t</span> <a class="code" href="group__INTELLI__JOINALGOS__NPJ__ALGO.html#ga3c1c89607abb6d36cb2839c2a8c00305">join</a>(<a class="code" href="group__Common.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> *ts,<a class="code" href="group__Common.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> *tr,<span class="keywordtype">size_t</span> tsLen,<span class="keywordtype">size_t</span> trLen,<span class="keywordtype">int</span>  threads=1);</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160; </div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;};</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;<span class="comment">/***</span></div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;<span class="comment"> * @}</span></div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;<span class="comment"> * @}</span></div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;}</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;<span class="preprocessor">#endif </span><span class="comment">//ALIANCEDB_INCLUDE_JOINALGO_NPJ_NPJ_H_</span></div>
+<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="classINTELLI_1_1NPJ__thread.html">   36</a></span>&#160; <span class="keyword">class </span><a class="code" href="classINTELLI_1_1NPJ__thread.html">NPJ_thread</a> : <span class="keyword">public</span>  <a class="code" href="classINTELLI_1_1AbstractC20Thread.html">AbstractC20Thread</a>{</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;   <a class="code" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> *ts,*tr;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;   <span class="keywordtype">size_t</span> sLen=0,rLen=0;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;   <span class="keywordtype">int</span> cpu=-1;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;   MultiThreadHashTablePtr table= <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;   <span class="keywordtype">size_t</span> result=0;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;   BarrierPtr buildBar = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;   std::shared_ptr&lt;std::thread&gt; threadPtr;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00050"></a><span class="lineno"><a class="line" href="group__INTELLI__JOINALGOS__NPJ.html#ga196d6f5b13d5e64d034e8793bea1b5c8">   50</a></span>&#160;   <span class="keywordtype">void</span> <a class="code" href="group__INTELLI__JOINALGOS__NPJ.html#ga196d6f5b13d5e64d034e8793bea1b5c8">inlineMain</a>();</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;   <a class="code" href="classINTELLI_1_1NPJ__thread.html">NPJ_thread</a>(){};</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;   ~<a class="code" href="classINTELLI_1_1NPJ__thread.html">NPJ_thread</a>(){};</div>
+<div class="line"><a name="l00064"></a><span class="lineno"><a class="line" href="group__INTELLI__JOINALGOS__NPJ.html#ga7398a849b284af0697d910fcf8da5d73">   64</a></span>&#160;   <span class="keywordtype">void</span> <a class="code" href="group__INTELLI__JOINALGOS__NPJ.html#ga7398a849b284af0697d910fcf8da5d73">init</a>(<a class="code" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> *_ts,<a class="code" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> *_tr,<span class="keywordtype">size_t</span> _sLen,<span class="keywordtype">size_t</span> _rLen,<span class="keywordtype">int</span> _cpu,MultiThreadHashTablePtr _table,BarrierPtr bar)</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;   {</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;     ts=_ts;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;     tr=_tr;</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;     sLen=_sLen;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;     rLen=_rLen;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;     cpu=_cpu;</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;     table=_table;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;     buildBar=bar;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;   }</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160; </div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;   <span class="keywordtype">size_t</span> getResult()</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;   {</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;     <span class="keywordflow">return</span> result;</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;   }</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;   <span class="keywordtype">void</span> waitBuildBar(<span class="keywordtype">void</span>) {</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;     <span class="keywordflow">if</span> (buildBar) {</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;       buildBar-&gt;arrive_and_wait();</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;     }</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;   }</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160; };</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160; </div>
+<div class="line"><a name="l00090"></a><span class="lineno"><a class="line" href="classINTELLI_1_1NPJ.html">   90</a></span>&#160;<span class="keyword">class </span><a class="code" href="classINTELLI_1_1NPJ.html">NPJ</a>{</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160; <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  vector&lt;NPJ_thread&gt; workers;</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;  <a class="code" href="classINTELLI_1_1NPJ.html">NPJ</a>(){}</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  ~<a class="code" href="classINTELLI_1_1NPJ.html">NPJ</a>(){}</div>
+<div class="line"><a name="l00104"></a><span class="lineno"><a class="line" href="group__INTELLI__JOINALGOS__NPJ.html#ga69413854bcd3c624e91b5a7ed217a63d">  104</a></span>&#160;  <span class="keywordtype">size_t</span> <a class="code" href="group__INTELLI__JOINALGOS__NPJ.html#ga69413854bcd3c624e91b5a7ed217a63d">join</a>(<a class="code" href="group__INTELLI__COMMON__BASIC.html#gaf4591ab3e423261c4770a506de62ca4c">TuplePtrQueue</a> ts,<a class="code" href="group__INTELLI__COMMON__BASIC.html#gaf4591ab3e423261c4770a506de62ca4c">TuplePtrQueue</a> tr,<span class="keywordtype">int</span> threads=1);</div>
+<div class="line"><a name="l00115"></a><span class="lineno"><a class="line" href="group__INTELLI__JOINALGOS__NPJ.html#ga3c1c89607abb6d36cb2839c2a8c00305">  115</a></span>&#160;  <span class="keywordtype">size_t</span> <a class="code" href="group__INTELLI__JOINALGOS__NPJ.html#ga3c1c89607abb6d36cb2839c2a8c00305">join</a>(<a class="code" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> *ts,<a class="code" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> *tr,<span class="keywordtype">size_t</span> tsLen,<span class="keywordtype">size_t</span> trLen,<span class="keywordtype">int</span>  threads=1);</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160; </div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;};</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;<span class="comment">/***</span></div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;<span class="comment"> * @}</span></div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;}</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;<span class="preprocessor">#endif </span><span class="comment">//ALIANCEDB_INCLUDE_JOINALGO_NPJ_NPJ_H_</span></div>
 <div class="ttc" id="aAbstractC20Thread_8h_html"><div class="ttname"><a href="AbstractC20Thread_8h.html">AbstractC20Thread.h</a></div></div>
 <div class="ttc" id="aMultiThreadHashTable_8h_html"><div class="ttname"><a href="MultiThreadHashTable_8h.html">MultiThreadHashTable.h</a></div></div>
 <div class="ttc" id="aclassINTELLI_1_1AbstractC20Thread_html"><div class="ttname"><a href="classINTELLI_1_1AbstractC20Thread.html">INTELLI::AbstractC20Thread</a></div><div class="ttdoc">The base class and abstraction of C++20 thread, and it can be derived into other threads.</div><div class="ttdef"><b>Definition:</b> AbstractC20Thread.h:28</div></div>
-<div class="ttc" id="aclassINTELLI_1_1NPJ__thread_html"><div class="ttname"><a href="classINTELLI_1_1NPJ__thread.html">INTELLI::NPJ_thread</a></div><div class="ttdoc">The thread used by NPJ.</div><div class="ttdef"><b>Definition:</b> NPJ.h:24</div></div>
-<div class="ttc" id="aclassINTELLI_1_1NPJ_html"><div class="ttname"><a href="classINTELLI_1_1NPJ.html">INTELLI::NPJ</a></div><div class="ttdoc">The top class package of NPJ, providing a &quot;join function&quot;.</div><div class="ttdef"><b>Definition:</b> NPJ.h:78</div></div>
-<div class="ttc" id="agroup__Common_html_gaae6cb4c36125ed9faed4c1d55c85eef3"><div class="ttname"><a href="group__Common.html#gaae6cb4c36125ed9faed4c1d55c85eef3">INTELLI::TuplePtr</a></div><div class="ttdeci">std::shared_ptr&lt; class Tuple &gt; TuplePtr</div><div class="ttdoc">The class to describe a shared pointer to Tuple.</div><div class="ttdef"><b>Definition:</b> Types.h:142</div></div>
-<div class="ttc" id="agroup__Common_html_gaf4591ab3e423261c4770a506de62ca4c"><div class="ttname"><a href="group__Common.html#gaf4591ab3e423261c4770a506de62ca4c">INTELLI::TuplePtrQueue</a></div><div class="ttdeci">std::shared_ptr&lt; INTELLI::SPSCQueue&lt; INTELLI::TuplePtr &gt; &gt; TuplePtrQueue</div><div class="ttdoc">To describe a queue of TuplePtr under SPSCQueue.</div><div class="ttdef"><b>Definition:</b> Types.h:218</div></div>
-<div class="ttc" id="agroup__INTELLI__JOINALGOS__NPJ__ALGO_html_ga196d6f5b13d5e64d034e8793bea1b5c8"><div class="ttname"><a href="group__INTELLI__JOINALGOS__NPJ__ALGO.html#ga196d6f5b13d5e64d034e8793bea1b5c8">INTELLI::NPJ_thread::inlineMain</a></div><div class="ttdeci">void inlineMain()</div><div class="ttdoc">The 'main' function of NPJ thread.</div></div>
-<div class="ttc" id="agroup__INTELLI__JOINALGOS__NPJ__ALGO_html_ga3c1c89607abb6d36cb2839c2a8c00305"><div class="ttname"><a href="group__INTELLI__JOINALGOS__NPJ__ALGO.html#ga3c1c89607abb6d36cb2839c2a8c00305">INTELLI::NPJ::join</a></div><div class="ttdeci">size_t join(TuplePtr *ts, TuplePtr *tr, size_t tsLen, size_t trLen, int threads=1)</div><div class="ttdoc">The function to execute join, legacy way.</div></div>
-<div class="ttc" id="agroup__INTELLI__JOINALGOS__NPJ__ALGO_html_ga69413854bcd3c624e91b5a7ed217a63d"><div class="ttname"><a href="group__INTELLI__JOINALGOS__NPJ__ALGO.html#ga69413854bcd3c624e91b5a7ed217a63d">INTELLI::NPJ::join</a></div><div class="ttdeci">size_t join(TuplePtrQueue ts, TuplePtrQueue tr, int threads=1)</div><div class="ttdoc">The function to execute join.</div></div>
-<div class="ttc" id="agroup__INTELLI__JOINALGOS__NPJ__ALGO_html_ga7398a849b284af0697d910fcf8da5d73"><div class="ttname"><a href="group__INTELLI__JOINALGOS__NPJ__ALGO.html#ga7398a849b284af0697d910fcf8da5d73">INTELLI::NPJ_thread::init</a></div><div class="ttdeci">void init(TuplePtr *_ts, TuplePtr *_tr, size_t _sLen, size_t _rLen, int _cpu, MultiThreadHashTablePtr _table, BarrierPtr bar)</div><div class="ttdoc">THe init function.</div><div class="ttdef"><b>Definition:</b> NPJ.h:52</div></div>
+<div class="ttc" id="aclassINTELLI_1_1NPJ__thread_html"><div class="ttname"><a href="classINTELLI_1_1NPJ__thread.html">INTELLI::NPJ_thread</a></div><div class="ttdoc">The thread used by NPJ.</div><div class="ttdef"><b>Definition:</b> NPJ.h:36</div></div>
+<div class="ttc" id="aclassINTELLI_1_1NPJ_html"><div class="ttname"><a href="classINTELLI_1_1NPJ.html">INTELLI::NPJ</a></div><div class="ttdoc">The top class package of NPJ, providing a &quot;join function&quot;.</div><div class="ttdef"><b>Definition:</b> NPJ.h:90</div></div>
+<div class="ttc" id="agroup__INTELLI__COMMON__BASIC_html_gaae6cb4c36125ed9faed4c1d55c85eef3"><div class="ttname"><a href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">INTELLI::TuplePtr</a></div><div class="ttdeci">std::shared_ptr&lt; class Tuple &gt; TuplePtr</div><div class="ttdoc">The class to describe a shared pointer to Tuple.</div><div class="ttdef"><b>Definition:</b> Types.h:148</div></div>
+<div class="ttc" id="agroup__INTELLI__COMMON__BASIC_html_gaf4591ab3e423261c4770a506de62ca4c"><div class="ttname"><a href="group__INTELLI__COMMON__BASIC.html#gaf4591ab3e423261c4770a506de62ca4c">INTELLI::TuplePtrQueue</a></div><div class="ttdeci">std::shared_ptr&lt; INTELLI::SPSCQueue&lt; INTELLI::TuplePtr &gt; &gt; TuplePtrQueue</div><div class="ttdoc">To describe a queue of TuplePtr under SPSCQueue.</div><div class="ttdef"><b>Definition:</b> Types.h:224</div></div>
+<div class="ttc" id="agroup__INTELLI__JOINALGOS__NPJ_html_ga196d6f5b13d5e64d034e8793bea1b5c8"><div class="ttname"><a href="group__INTELLI__JOINALGOS__NPJ.html#ga196d6f5b13d5e64d034e8793bea1b5c8">INTELLI::NPJ_thread::inlineMain</a></div><div class="ttdeci">void inlineMain()</div><div class="ttdoc">The 'main' function of NPJ thread.</div></div>
+<div class="ttc" id="agroup__INTELLI__JOINALGOS__NPJ_html_ga3c1c89607abb6d36cb2839c2a8c00305"><div class="ttname"><a href="group__INTELLI__JOINALGOS__NPJ.html#ga3c1c89607abb6d36cb2839c2a8c00305">INTELLI::NPJ::join</a></div><div class="ttdeci">size_t join(TuplePtr *ts, TuplePtr *tr, size_t tsLen, size_t trLen, int threads=1)</div><div class="ttdoc">The function to execute join, legacy way.</div></div>
+<div class="ttc" id="agroup__INTELLI__JOINALGOS__NPJ_html_ga69413854bcd3c624e91b5a7ed217a63d"><div class="ttname"><a href="group__INTELLI__JOINALGOS__NPJ.html#ga69413854bcd3c624e91b5a7ed217a63d">INTELLI::NPJ::join</a></div><div class="ttdeci">size_t join(TuplePtrQueue ts, TuplePtrQueue tr, int threads=1)</div><div class="ttdoc">The function to execute join.</div></div>
+<div class="ttc" id="agroup__INTELLI__JOINALGOS__NPJ_html_ga7398a849b284af0697d910fcf8da5d73"><div class="ttname"><a href="group__INTELLI__JOINALGOS__NPJ.html#ga7398a849b284af0697d910fcf8da5d73">INTELLI::NPJ_thread::init</a></div><div class="ttdeci">void init(TuplePtr *_ts, TuplePtr *_tr, size_t _sLen, size_t _rLen, int _cpu, MultiThreadHashTablePtr _table, BarrierPtr bar)</div><div class="ttdoc">THe init function.</div><div class="ttdef"><b>Definition:</b> NPJ.h:64</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_9f72c3cfa6554d4e333ec06b2b71ac0a.html">JoinAlgo</a></li><li class="navelem"><a class="el" href="dir_221837baefa007550d584cf2ef0019ea.html">NPJ</a></li><li class="navelem"><a class="el" href="NPJ_8h.html">NPJ.h</a></li>
+    <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_9f72c3cfa6554d4e333ec06b2b71ac0a.html">JoinAlgo</a></li><li class="navelem"><a class="el" href="NPJ_8h.html">NPJ.h</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>

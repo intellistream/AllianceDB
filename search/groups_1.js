@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['generic_267',['generic',['../group__MICRO__GENERIC.html',1,'']]],
-  ['get_20the_20perf_20results_268',['Get the perf results',['../group__NTELLI__UTIL__ThreadPerf__Results.html',1,'']]]
+  ['common_20datastructure_20and_20functions_267',['Common Datastructure and Functions',['../group__Common.html',1,'']]]
 ];

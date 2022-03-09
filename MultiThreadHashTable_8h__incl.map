@@ -1,6 +1,6 @@
-<map id="include/JoinAlgo/NPJ/MultiThreadHashTable.h" name="include/JoinAlgo/NPJ/MultiThreadHashTable.h">
-<area shape="rect" id="node1" title=" " alt="" coords="713,5,896,47"/>
-<area shape="rect" id="node2" href="$Types_8h.html" title=" " alt="" coords="572,95,707,121"/>
+<map id="include/Common/MultiThreadHashTable.h" name="include/Common/MultiThreadHashTable.h">
+<area shape="rect" id="node1" title=" " alt="" coords="697,5,912,47"/>
+<area shape="rect" id="node2" href="$Types_8h.html" title=" " alt="" coords="604,95,675,121"/>
 <area shape="rect" id="node5" title=" " alt="" coords="154,244,231,271"/>
 <area shape="rect" id="node6" title=" " alt="" coords="707,244,771,271"/>
 <area shape="rect" id="node24" title=" " alt="" coords="796,244,939,271"/>
