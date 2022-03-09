@@ -3,11 +3,11 @@
 //
 #include <JoinProcessor/HandShakeHashJP.h>
 using namespace INTELLI;
-void  HandShakeHashJP::setupQueue() {
-  TupleQueuePtrLocalS = newTupleQueuePtr(sQueue);
-  TupleQueuePtrLocalR = newTupleQueuePtr(rQueue);
-  selfWindowS = newTupleQueuePtr(sQueue);
-  selfWindowR = newTupleQueuePtr(rQueue);
+void HandShakeHashJP::setupQueue() {
+  TuplePtrQueueLocalS = newTuplePtrQueue(sQueue);
+  TuplePtrQueueLocalR = newTuplePtrQueue(rQueue);
+  selfWindowS = newTuplePtrQueue(sQueue);
+  selfWindowR = newTuplePtrQueue(rQueue);
   cmdQueueIn = newCmdQueue(1);
   cmdQueueOut = newCmdQueue(1);
 
@@ -17,11 +17,11 @@ void HandShakeHashJP::inlineRun() {
   UtilityFunctions::bind2Core(cpuBind);
   setupQueue();
   waitInitBar();
-  cout<<"jp "<<sysId<<" is ready,S="<<timeOffsetS<<", R= "<<timeOffsetR<<endl;
+  cout << "jp " << sysId << " is ready,S=" << timeOffsetS << ", R= " << timeOffsetR << endl;
 
   while (1) {
     //cmd
-    if (TupleQueuePtrLocalS->empty() && TupleQueuePtrLocalR->empty()) {
+    if (TuplePtrQueueLocalS->empty() && TuplePtrQueueLocalR->empty()) {
       if (!cmdQueueIn->empty()) {
 
         join_cmd_t cmdIn = *cmdQueueIn->front();
@@ -33,23 +33,20 @@ void HandShakeHashJP::inlineRun() {
         }
       }
     }
-    while (!TupleQueuePtrLocalR->empty())
-    { //cout<<"r is full"<<endl;
+    while (!TuplePtrQueueLocalR->empty()) { //cout<<"r is full"<<endl;
       paraseTupleR();
     }
-    while (!TupleQueuePtrLocalS->empty())
-    {//cout<<" s is full"<<endl;
+    while (!TuplePtrQueueLocalS->empty()) {//cout<<" s is full"<<endl;
       paraseTupleS();
     }
   }
 }
 void HandShakeHashJP::paraseTupleR() {
-  TuplePtr trIn = *TupleQueuePtrLocalR->front();
-  TupleQueuePtrLocalR->pop();
+  TuplePtr trIn = *TuplePtrQueueLocalR->front();
+  TuplePtrQueueLocalR->pop();
   size_t tNow;
-  if(isTimeBased())
-  {
-     tNow=getTimeStamp();
+  if (isTimeBased()) {
+    tNow = getTimeStamp();
     //cout<<tNow<<endl;
     //trIn->subKey=tNow;
     expireS(tNow);
@@ -72,8 +69,7 @@ void HandShakeHashJP::paraseTupleR() {
   }*/
   for (size_t i = 0; i < sSize; i++) {
     TuplePtr ts = selfWindowS->front()[i];
-    if(ts->key==trIn->key)
-    {
+    if (ts->key == trIn->key) {
       joinedResult++;
     }
   }
@@ -81,7 +77,7 @@ void HandShakeHashJP::paraseTupleR() {
   selfWindowR->push(trIn);
   expireR(tNow);
   // late expire of R
-  if(!isTimeBased()) {
+  if (!isTimeBased()) {
 
     /*if (selfWindowR->size()>windowLen)
     {   TuplePtr tr = *selfWindowR->front();
@@ -95,12 +91,11 @@ void HandShakeHashJP::paraseTupleR() {
   }
 }
 void HandShakeHashJP::paraseTupleS() {
-  TuplePtr tsIn = *TupleQueuePtrLocalS->front();
-  TupleQueuePtrLocalS->pop();
+  TuplePtr tsIn = *TuplePtrQueueLocalS->front();
+  TuplePtrQueueLocalS->pop();
   size_t tNow;
-  if(isTimeBased())
-  {
-   tNow=getTimeStamp();
+  if (isTimeBased()) {
+    tNow = getTimeStamp();
     //tsIn->subKey=tNow;
 
     expireR(tNow);
@@ -121,25 +116,24 @@ void HandShakeHashJP::paraseTupleS() {
    // printf("JP%ld:R[%ld](%ld) find %ld S matches\r\n", sysId, tsIn->subKey + 1, tsIn->key, matches);
   }*/
   for (size_t i = 0; i < rSize; i++) {
-    TuplePtr tr= selfWindowR->front()[i];
-     if(tr->key==tsIn->key)
-     {
-       joinedResult++;
-     }
+    TuplePtr tr = selfWindowR->front()[i];
+    if (tr->key == tsIn->key) {
+      joinedResult++;
+    }
   }
   selfWindowS->push(tsIn);
   expireS(tNow);
   // late expire of S
-  if(!isTimeBased()) {
+  if (!isTimeBased()) {
 
-   /* if (selfWindowS->size()>windowLen)
-    {   TuplePtr ts = *selfWindowS->front();
-      if(rightJP!= nullptr)
-      {
-        rightJP->feedTupleS(ts);
-      }
-      selfWindowS->pop();
-    }*/
+    /* if (selfWindowS->size()>windowLen)
+     {   TuplePtr ts = *selfWindowS->front();
+       if(rightJP!= nullptr)
+       {
+         rightJP->feedTupleS(ts);
+       }
+       selfWindowS->pop();
+     }*/
     expireS(countS);
   }
 
@@ -149,14 +143,13 @@ void HandShakeHashJP::expireS(size_t cond) {
   if (!selfWindowS->empty()) {
     TuplePtr ts = *selfWindowS->front();
     distance = cond - ts->subKey;
-   // cout<<ts->subKey<<cond<<endl;
-    while (distance > windowLen+timeOffsetS) {
+    // cout<<ts->subKey<<cond<<endl;
+    while (distance > windowLen + timeOffsetS) {
       selfWindowS->pop();
-      if(rightJP!= nullptr)
-      {
-       // printf("jp%d, send to S to right\r\n",sysId);
+      if (rightJP != nullptr) {
+        // printf("jp%d, send to S to right\r\n",sysId);
         rightJP->feedTupleS(ts);
-      } else{
+      } else {
         //printf("jp%d, no right\n",sysId);
       }
       if (!selfWindowS->empty()) {
@@ -172,16 +165,15 @@ void HandShakeHashJP::expireS(size_t cond) {
 void HandShakeHashJP::expireR(size_t cond) {
   size_t distance = 0;
   if (!selfWindowR->empty()) {
-    TuplePtr tr= *selfWindowR->front();
+    TuplePtr tr = *selfWindowR->front();
     distance = cond - tr->subKey;
-   // cout<<"expire R"<<cond<<":"<<distance<<endl;
-    while (distance > windowLen+timeOffsetR) {
+    // cout<<"expire R"<<cond<<":"<<distance<<endl;
+    while (distance > windowLen + timeOffsetR) {
       selfWindowR->pop();
 
-      if(leftJP!= nullptr)
-      {//("jp%d, send to R to left\r\n",sysId);
+      if (leftJP != nullptr) {//("jp%d, send to R to left\r\n",sysId);
         leftJP->feedTupleR(tr);
-      } else{
+      } else {
         //printf("jp%d, no left\n",sysId);
       }
       if (!selfWindowR->empty()) {
@@ -193,27 +185,25 @@ void HandShakeHashJP::expireR(size_t cond) {
     }
   }
 }
-void  HandShakeHashJP::feedTupleS(TuplePtr ts) {
-  if(!isTimeBased())
-  {
-    ts->subKey=countS;
+void HandShakeHashJP::feedTupleS(TuplePtr ts) {
+  if (!isTimeBased()) {
+    ts->subKey = countS;
     countS++;
-   // printf("JP %d, s=%d\r\n",sysId,countS);
-  } else{
+    // printf("JP %d, s=%d\r\n",sysId,countS);
+  } else {
     //ts->subKey=getTimeStamp();
   }
   SimpleHashJP::feedTupleS(ts);
 
 }
 
-void  HandShakeHashJP::feedTupleR(TuplePtr tr) {
-  if(!isTimeBased())
-  {
-    tr->subKey=countR;
+void HandShakeHashJP::feedTupleR(TuplePtr tr) {
+  if (!isTimeBased()) {
+    tr->subKey = countR;
     countR++;
-   // printf("JP %d, R=%d\r\n",sysId,countR);
-  } else{
-   //tr->subKey=getTimeStamp();
+    // printf("JP %d, R=%d\r\n",sysId,countR);
+  } else {
+    //tr->subKey=getTimeStamp();
   }
   SimpleHashJP::feedTupleR(tr);
 

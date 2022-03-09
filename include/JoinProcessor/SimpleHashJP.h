@@ -31,8 +31,8 @@ class SimpleHashJP {
   CmdQueuePtr cmdQueueIn;
   CmdQueuePtr cmdQueueOut;
   //tuple Queue
-  TupleQueuePtr TupleQueuePtrLocalS;
-  TupleQueuePtr TupleQueuePtrLocalR;
+  TuplePtrQueue TuplePtrQueueLocalS;
+  TuplePtrQueue TuplePtrQueueLocalR;
   WindowQueue windowQueueS;
   WindowQueue windowQueueR;
   size_t windowLen = 0;
@@ -52,8 +52,8 @@ class SimpleHashJP {
 
   }
   void init(size_t sLen, size_t rLen, size_t _sysId) {
-    TupleQueuePtrLocalS = newTupleQueuePtr(sLen);
-    TupleQueuePtrLocalR = newTupleQueuePtr(rLen);
+    TuplePtrQueueLocalS = newTuplePtrQueue(sLen);
+    TuplePtrQueueLocalR = newTuplePtrQueue(rLen);
     windowQueueS = newWindowQueue(sLen);
     windowQueueR = newWindowQueue(rLen);
     cmdQueueIn = newCmdQueue(1);
@@ -102,10 +102,10 @@ class SimpleHashJP {
   }
   //outside feed a Tuple S
   void feedTupleS(TuplePtr ts) {
-    TupleQueuePtrLocalS->push(ts);
+    TuplePtrQueueLocalS->push(ts);
   }
   void feedTupleR(TuplePtr tr) {
-    TupleQueuePtrLocalR->push(tr);
+    TuplePtrQueueLocalR->push(tr);
   }
   //outside feed a window
   void feedWindowS(WindowOfTuples ws) {
@@ -127,13 +127,12 @@ class SimpleHashJP {
     windowLen = wl;
   }
   //set the base line of time
-  void setTimeStart(struct timeval t)
-  {
-    timeStart=t;
+  void setTimeStart(struct timeval t) {
+    timeStart = t;
   }
   //
   size_t getTimeStamp() {
-    return UtilityFunctions::timeLastUs(timeStart)/TIME_STEP;
+    return UtilityFunctions::timeLastUs(timeStart) / TIME_STEP;
   }
   //init Barrier if need
   void setInitBar(BarrierPtr barPrev) {
@@ -145,6 +144,6 @@ class SimpleHashJP {
     }
   }
 };
-typedef  std::shared_ptr<SimpleHashJP> SimpleHashJPPtr;
+typedef std::shared_ptr<SimpleHashJP> SimpleHashJPPtr;
 }
 #endif //HYBRID_JOIN_SRC_JOINPROCESSOR_SIMPLEHASHJP_H_

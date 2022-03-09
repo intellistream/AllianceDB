@@ -9,6 +9,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/IntelliStream.dir/src/JoinProcessor/HandShakeHashJP.cpp.o"
   "CMakeFiles/IntelliStream.dir/src/JoinProcessor/SimpleHashJP.cpp.o"
   "CMakeFiles/IntelliStream.dir/src/Utils/MicroDataset.cpp.o"
+  "CMakeFiles/IntelliStream.dir/src/Utils/ThreadPerf.cpp.o"
   "CMakeFiles/IntelliStream.dir/src/Utils/UtilityFunctions.cpp.o"
   "CMakeFiles/IntelliStream.dir/src/Utils/concurrentqueue.cpp.o"
   "CMakeFiles/IntelliStream.dir/src/WindowSlider/AbstractEagerWS.cpp.o"

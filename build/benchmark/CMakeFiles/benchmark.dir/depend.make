@@ -14,6 +14,7 @@ benchmark/CMakeFiles/benchmark.dir/src/Benchmark.cpp.o: ../include/Utils/Logger.
 benchmark/CMakeFiles/benchmark.dir/src/Benchmark.cpp.o: ../include/Utils/MicroDataSet.h
 benchmark/CMakeFiles/benchmark.dir/src/Benchmark.cpp.o: ../include/Utils/SPSCQueue.hpp
 benchmark/CMakeFiles/benchmark.dir/src/Benchmark.cpp.o: ../include/Utils/SafeQueue.hpp
+benchmark/CMakeFiles/benchmark.dir/src/Benchmark.cpp.o: ../include/Utils/ThreadPerf.h
 benchmark/CMakeFiles/benchmark.dir/src/Benchmark.cpp.o: ../include/Utils/UtilityFunctions.hpp
 benchmark/CMakeFiles/benchmark.dir/src/Benchmark.cpp.o: ../include/Utils/concurrentqueue.h
 benchmark/CMakeFiles/benchmark.dir/src/Benchmark.cpp.o: ../include/WindowSlider/AbstractEagerWS.h

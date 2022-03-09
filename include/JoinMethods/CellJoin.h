@@ -10,7 +10,7 @@
 #include <JoinMethods/AbstractJoinMethod.h>
 #include <WindowSlider/AbstractEagerWS.h>
 namespace INTELLI {
-class CellJoin :public AbstractJoinMethod <AbstractEagerWS>{
+class CellJoin : public AbstractJoinMethod<AbstractEagerWS> {
  public:
   static void execute(Result &joinResult, RelationCouple &relationCouple);
   //static void test(Result &joinResult, RelationCouple &relationCouple);

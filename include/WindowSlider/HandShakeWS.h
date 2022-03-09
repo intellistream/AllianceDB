@@ -26,26 +26,22 @@ namespace INTELLI {
  @see AbstractEagerWS
 */
 /*! Class that is inherited using public inheritance */
-class HandShakeWS : public  AbstractEagerWS
-{
-private:
-    /* data *
-     */
+class HandShakeWS : public AbstractEagerWS {
+ private:
+  /* data *
+   */
  protected:
-  std::vector<HandShakeHashJPPtr>jpPtr;
+  std::vector<HandShakeHashJPPtr> jpPtr;
   INTELLI::BarrierPtr initBar;
-public:
-    HandShakeWS(/* args */)
-    {
-      reset();
-    }
-    ~HandShakeWS()
-    {
+ public:
+  HandShakeWS(/* args */) {
+    reset();
+  }
+  ~HandShakeWS() {
 
-    }
+  }
   //init with length of queue
-  HandShakeWS(size_t sLen, size_t rLen): AbstractEagerWS(sLen,rLen)
-  {
+  HandShakeWS(size_t sLen, size_t rLen) : AbstractEagerWS(sLen, rLen) {
 
   }
 
@@ -60,7 +56,6 @@ public:
   void feedTupleS(TuplePtr ts);
   void feedTupleR(TuplePtr tr);
 };
-
 
 }
 #endif //HYBRID_JOIN_INCLUDE_WINDOWSLIDER_HANDSHAKEWS_H_

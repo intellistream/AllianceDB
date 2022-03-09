@@ -4,7 +4,7 @@
 #include <JoinMethods/CommonFunctions.h>
 
 namespace INTELLI {
-void CommonFunction::buildRelation(TupleQueuePtrLocal &relation, const std::string &fileName) {
+void CommonFunction::buildRelation(TuplePtrQueueLocal &relation, const std::string &fileName) {
   std::fstream file;
   std::string buffer;
   file.open(fileName, std::ios::in);
@@ -12,10 +12,10 @@ void CommonFunction::buildRelation(TupleQueuePtrLocal &relation, const std::stri
   while (getline(file, buffer)) {
     keyType key;
     size_t ts;
-    sscanf(buffer.data(),"%ld,%ld",&key,&ts);
+    sscanf(buffer.data(), "%ld,%ld", &key, &ts);
     //keyType key = stoi(buffer);
-    TuplePtr tuple=std::make_shared<Tuple>(key);
-    tuple->subKey=ts;
+    TuplePtr tuple = std::make_shared<Tuple>(key);
+    tuple->subKey = ts;
     relation.push(tuple);
     //cout<<buffer<<":"<<tuple->key<<","<<tuple->subKey<<endl;
   }

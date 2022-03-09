@@ -11,11 +11,11 @@ void INTELLI::SimpleHashJP::inlineRun() {
   //wait for new cmd
   //cout<<"join processor "<<sysId<<" start"<<endl;
   while (1) {
-    /*while (cmdQueueIn->empty()&&TupleQueuePtrLocalS->empty()&&TupleQueuePtrLocalR->) {
+    /*while (cmdQueueIn->empty()&&TuplePtrQueueLocalS->empty()&&TuplePtrQueueLocalR->) {
 
     }*/
     //cmd
-    if (TupleQueuePtrLocalS->empty() && TupleQueuePtrLocalR->empty()) {
+    if (TuplePtrQueueLocalS->empty() && TuplePtrQueueLocalR->empty()) {
       if (!cmdQueueIn->empty()) {
 
         join_cmd_t cmdIn = *cmdQueueIn->front();
@@ -31,14 +31,14 @@ void INTELLI::SimpleHashJP::inlineRun() {
 
 
     //tuple S and window R
-    while (!TupleQueuePtrLocalS->empty()) {
-      TuplePtr ts = *TupleQueuePtrLocalS->front();
-      TupleQueuePtrLocalS->pop();
+    while (!TuplePtrQueueLocalS->empty()) {
+      TuplePtr ts = *TuplePtrQueueLocalS->front();
+      TuplePtrQueueLocalS->pop();
       WindowOfTuples wr = *windowQueueR->front();
       windowQueueR->pop();
       //build R
       size_t rSize = wr.size();
-     hashtable hashtableR;
+      hashtable hashtableR;
       for (size_t i = 0; i < rSize; i++) {
         TuplePtr tr = wr[i];
         hashtableR.emplace(tr->key, 0, tr->subKey);
@@ -60,9 +60,9 @@ void INTELLI::SimpleHashJP::inlineRun() {
     }
 
     //tuple R and window S
-    while (!TupleQueuePtrLocalR->empty()) {
-      TuplePtr tr = *TupleQueuePtrLocalR->front();
-      TupleQueuePtrLocalR->pop();
+    while (!TuplePtrQueueLocalR->empty()) {
+      TuplePtr tr = *TuplePtrQueueLocalR->front();
+      TuplePtrQueueLocalR->pop();
       WindowOfTuples ws = *windowQueueS->front();
       windowQueueS->pop();
       //build S
@@ -79,13 +79,13 @@ void INTELLI::SimpleHashJP::inlineRun() {
         joinedResult += matches;
         // printf("JP%ld:R[%ld](%ld) find %ld S matches\r\n", sysId, tr->subKey + 1, tr->key, matches);
       }
-     /* for (size_t i = 0; i < sSize; i++) {
-        TuplePtr ts=ws[i];
-        if(tr->key==ts->key)
-        {
-          joinedResult++;
-        }
-      }*/
+      /* for (size_t i = 0; i < sSize; i++) {
+         TuplePtr ts=ws[i];
+         if(tr->key==ts->key)
+         {
+           joinedResult++;
+         }
+       }*/
     }
   }
 }

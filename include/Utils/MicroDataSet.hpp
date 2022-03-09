@@ -3,8 +3,8 @@
 // Created by tony on 03/03/22.
 //
 
-#ifndef UTILS_MICRODATASET_H_
-#define UTILS_MICRODATASET_H_
+#ifndef _UTILS_MICRODATASET_H_
+#define _UTILS_MICRODATASET_H_
 #pragma once
 #include <stdint.h>
 #include <vector>
@@ -15,10 +15,11 @@
 #include <cmath>
 #include <iostream>
 using namespace std;
-namespace INTELLI{
+namespace INTELLI {
 /**
  * @defgroup INTELLI_UTIL Shared Utils with other Intelli Stream programs
  * @{
+ * @note The STL and static headers will be named as *.hpp, while *.h means there are real, fixed classes
  * @defgroup INTELLI_UTIL_Micro The Micro dataset
  * @{
  * This is the synthetic dataset Micro, firstly introduced in our SIGMOD 2021 paper
@@ -36,48 +37,47 @@ namespace INTELLI{
   @endverbatim
   */
 
- /**
- * @class MicroDataSet Utils/MicroDataSet.h
- * @brief The all-in-one class for the Micro dataset
- */
-class MicroDataSet{
+/**
+* @class MicroDataSet Utils/MicroDataSet.hpp
+* @brief The all-in-one class for the Micro dataset
+*/
+class MicroDataSet {
  private:
   std::random_device rd;
   std::default_random_engine e1;
-  bool hasSeed= false;
-  uint64_t  seed;
+  bool hasSeed = false;
+  uint64_t seed;
  public:
   /**
    * @brief default construction, with auto random generator
    */
-  MicroDataSet(){
+  MicroDataSet() {
 
   }
   /**
   * @brief  construction with seed
   * @param seed The seed for random generator
   */
-  MicroDataSet(uint64_t _seed)
-  {
-   seed=_seed;
-   hasSeed= true;
+  MicroDataSet(uint64_t _seed) {
+    seed = _seed;
+    hasSeed = true;
   }
-  ~MicroDataSet(){}
+  ~MicroDataSet() {}
   /** @defgroup MICRO_GENERIC generic
    * @{
    * The functions for general generation of Micro
    */
-   /**
-    * @brief To generate incremental alphabet, starting from 0 and end at len
-    * @tparam dType The data type in the alphabet, default uint32_t
-    * @param len The length of alphabet
-    * @return The output vector alphabet
-    */
-  template<class dType=uint32_t> vector<dType>genIncrementalAlphabet(size_t len)
-  {
+  /**
+   * @brief To generate incremental alphabet, starting from 0 and end at len
+   * @tparam dType The data type in the alphabet, default uint32_t
+   * @param len The length of alphabet
+   * @return The output vector alphabet
+   */
+  template<class dType=uint32_t>
+  vector<dType> genIncrementalAlphabet(size_t len) {
     vector<dType> ru(len);
     /* populate */
-    for (size_t i= 0; i < len; i++) {
+    for (size_t i = 0; i < len; i++) {
       ru[i] = i + 1;   /* don't let 0 be in the alphabet */
     }
     return ru;
@@ -90,28 +90,25 @@ class MicroDataSet{
    * @param fac The zipf factor, in [0,1]
    * @return the output vector
    */
-  template<class tsType=size_t> vector<tsType>genZipfInt(size_t len,tsType maxV,double fac)
-  {
-    vector<tsType>ret(len);
-    vector<tsType>alphabet=genIncrementalAlphabet<tsType>(maxV);
+  template<class tsType=size_t>
+  vector<tsType> genZipfInt(size_t len, tsType maxV, double fac) {
+    vector<tsType> ret(len);
+    vector<tsType> alphabet = genIncrementalAlphabet<tsType>(maxV);
     std::mt19937_64 gen;
-    if(!hasSeed)
-    {
-      gen=std::mt19937_64 (rd()); // 以 rd() 播种的标准 mersenne_twister_engine
-    }
-    else
-    {
-      gen=std::mt19937_64 (seed);
+    if (!hasSeed) {
+      gen = std::mt19937_64(rd()); // 以 rd() 播种的标准 mersenne_twister_engine
+    } else {
+      gen = std::mt19937_64(seed);
     }
 
     std::uniform_real_distribution<> dis(0, 1);
-    vector<double>lut= genZipfLut<double>(maxV,fac);
+    vector<double> lut = genZipfLut<double>(maxV, fac);
     for (size_t i = 0; i < len; i++) {
       /* take random number */
       double r = dis(gen);
       /* binary search in lookup table to determine item */
       size_t left = 0;
-      size_t right = maxV- 1;
+      size_t right = maxV - 1;
       size_t m;       /* middle between left and right */
       size_t pos;     /* position to take */
 
@@ -147,22 +144,18 @@ class MicroDataSet{
    * \li ranlux24: 24 bit
    * \li ranlux48:  48 bit
    */
-  template<class tsType=uint32_t,class genType=std::mt19937> vector<tsType>genRandInt(size_t len,tsType maxV,tsType minV=0)
-  {
+  template<class tsType=uint32_t, class genType=std::mt19937>
+  vector<tsType> genRandInt(size_t len, tsType maxV, tsType minV = 0) {
     genType gen;
-    if(!hasSeed)
-    {
-      gen=genType (rd());
-    }
-    else
-    {
-      gen=genType (seed);
+    if (!hasSeed) {
+      gen = genType(rd());
+    } else {
+      gen = genType(seed);
     }
     std::uniform_int_distribution<> dis(minV, maxV);
-    vector<tsType>ret(len);
-    for(size_t i=0;i<len;i++)
-    {
-      ret[i]=(tsType)dis(gen);
+    vector<tsType> ret(len);
+    for (size_t i = 0; i < len; i++) {
+      ret[i] = (tsType) dis(gen);
     }
     return ret;
   }
@@ -173,8 +166,8 @@ class MicroDataSet{
    * @param fac The zipf factor, in [0,1]
    * @return The output vector lut
    */
-  template<class dType=double > vector<dType>genZipfLut(size_t len,dType fac)
-  {
+  template<class dType=double>
+  vector<dType> genZipfLut(size_t len, dType fac) {
     dType scaling_factor;
     dType sum;
     vector<dType> lut(len);
@@ -185,8 +178,7 @@ class MicroDataSet{
      *
      */
     scaling_factor = 0.0;
-    for (size_t i = 1; i <= len; i++)
-    {scaling_factor += 1.0 / pow(i, fac);}
+    for (size_t i = 1; i <= len; i++) { scaling_factor += 1.0 / pow(i, fac); }
     /*
      * Generate the lookup table
      */
@@ -206,20 +198,20 @@ class MicroDataSet{
    * @{
    * This group is specialized for time stamps, as they should follow an incremental order
    */
-   /**
-   * @brief The function to generate a vector of timestamp which grows smoothly
-   * @tparam tsType The data type of time stamp, default is size_t
-   * @param len The length of output vector
-   * @param step Within the step, timestamp will remain the same
-   * @param interval The incremental value between two steps
-   * @return The vector of time stamp
-   */
-  template<class tsType=size_t> vector<tsType>genSmoothTimeStamp(size_t len,size_t step,size_t interval)
-  {
-    vector<tsType>ret(len);
+  /**
+  * @brief The function to generate a vector of timestamp which grows smoothly
+  * @tparam tsType The data type of time stamp, default is size_t
+  * @param len The length of output vector
+  * @param step Within the step, timestamp will remain the same
+  * @param interval The incremental value between two steps
+  * @return The vector of time stamp
+  */
+  template<class tsType=size_t>
+  vector<tsType> genSmoothTimeStamp(size_t len, size_t step, size_t interval) {
+    vector<tsType> ret(len);
     tsType ts = 0;
     for (auto i = 0; i < len; i++) {
-      if (i%(step) == 0) {
+      if (i % (step) == 0) {
         ts += interval;
       }
       ret[i] = ts;
@@ -235,9 +227,9 @@ class MicroDataSet{
    * @return the output vector
    * @see genZipfInt
    */
-  template<class tsType=size_t> vector<tsType>genZipfTimeStamp(size_t len,tsType maxTime,double fac)
-  {
-    vector<tsType>ret= genZipfInt<tsType>(len,maxTime,fac);
+  template<class tsType=size_t>
+  vector<tsType> genZipfTimeStamp(size_t len, tsType maxTime, double fac) {
+    vector<tsType> ret = genZipfInt<tsType>(len, maxTime, fac);
     std::sort(ret.begin(), ret.end()); //just incremental re-arrange
     return ret;
   }

@@ -10,21 +10,21 @@
 #include <Common/Types.h>
 #include <Utils/Logger.hpp>
 using namespace INTELLI;
-void DatasetTool::store3VText(TupleQueuePtr &relation, const std::string &fileName) {
+void DatasetTool::store3VText(TuplePtrQueue &relation, const std::string &fileName) {
   std::fstream file;
   std::string buffer;
   file.open(fileName, std::ios::out);
   if (!file.is_open()) INTELLI_ERROR("cannot open the file: " + fileName);
-  size_t i=0;
-  size_t allLen=relation->size();
-  for(i=0;i<allLen;i++)
-  { TuplePtr tp=relation->front()[i];
-    buffer=std::to_string(tp->key)+","+std::to_string(tp->payload)+","+std::to_string(tp->subKey);
-    file<<buffer<<endl;
+  size_t i = 0;
+  size_t allLen = relation->size();
+  for (i = 0; i < allLen; i++) {
+    TuplePtr tp = relation->front()[i];
+    buffer = std::to_string(tp->key) + "," + std::to_string(tp->payload) + "," + std::to_string(tp->subKey);
+    file << buffer << endl;
   }
   file.close();
 }
-void DatasetTool::load3VText(TupleQueuePtrLocal &relation, const std::string &fileName) {
+void DatasetTool::load3VText(TuplePtrQueueLocal &relation, const std::string &fileName) {
   std::fstream file;
   std::string buffer;
   file.open(fileName, std::ios::in);
@@ -33,17 +33,17 @@ void DatasetTool::load3VText(TupleQueuePtrLocal &relation, const std::string &fi
     keyType key;
     valueType v;
     size_t ts;
-    sscanf(buffer.data(),"%ld,%ld,%ld",&key,&v,&ts);
+    sscanf(buffer.data(), "%ld,%ld,%ld", &key, &v, &ts);
     //keyType key = stoi(buffer);
-    TuplePtr tuple=std::make_shared<Tuple>(key);
-    tuple->subKey=ts;
-    tuple->payload=v;
+    TuplePtr tuple = std::make_shared<Tuple>(key);
+    tuple->subKey = ts;
+    tuple->payload = v;
     relation.push(tuple);
     //cout<<buffer<<":"<<tuple->key<<","<<tuple->subKey<<endl;
   }
   file.close();
 }
-void DatasetTool::load3VText(TupleQueuePtr &relation, const std::string &fileName) {
+void DatasetTool::load3VText(TuplePtrQueue &relation, const std::string &fileName) {
   std::fstream file;
   std::string buffer;
   file.open(fileName, std::ios::in);
@@ -52,44 +52,42 @@ void DatasetTool::load3VText(TupleQueuePtr &relation, const std::string &fileNam
     keyType key;
     valueType v;
     size_t ts;
-    sscanf(buffer.data(),"%ld,%ld,%ld",&key,&v,&ts);
+    sscanf(buffer.data(), "%ld,%ld,%ld", &key, &v, &ts);
     //keyType key = stoi(buffer);
-    TuplePtr tuple=std::make_shared<Tuple>(key);
-    tuple->subKey=ts;
-    tuple->payload=v;
+    TuplePtr tuple = std::make_shared<Tuple>(key);
+    tuple->subKey = ts;
+    tuple->payload = v;
     relation->push(tuple);
     //cout<<buffer<<":"<<tuple->key<<","<<tuple->subKey<<endl;
   }
   file.close();
 }
-void DatasetTool::combine3VVector(TupleQueuePtrLocal &relation,
+void DatasetTool::combine3VVector(TuplePtrQueueLocal &relation,
                                   vector<keyType> vk,
                                   vector<valueType> vv,
                                   vector<size_t> vs) {
 
-size_t i=0;
-size_t allLen=vk.size();
-for(i=0;i<allLen;i++)
-{
-  TuplePtr tuple=std::make_shared<Tuple>(vk[i]);
-  tuple->payload=vv[i];
-  tuple->subKey=vs[i];
-  relation.push(tuple);
-}
+  size_t i = 0;
+  size_t allLen = vk.size();
+  for (i = 0; i < allLen; i++) {
+    TuplePtr tuple = std::make_shared<Tuple>(vk[i]);
+    tuple->payload = vv[i];
+    tuple->subKey = vs[i];
+    relation.push(tuple);
+  }
 
 }
-void DatasetTool::combine3VVector(TupleQueuePtr &relation,
+void DatasetTool::combine3VVector(TuplePtrQueue &relation,
                                   vector<keyType> vk,
                                   vector<valueType> vv,
                                   vector<size_t> vs) {
 
-  size_t i=0;
-  size_t allLen=vk.size();
-  for(i=0;i<allLen;i++)
-  {
-    TuplePtr tuple=std::make_shared<Tuple>(vk[i]);
-    tuple->payload=vv[i];
-    tuple->subKey=vs[i];
+  size_t i = 0;
+  size_t allLen = vk.size();
+  for (i = 0; i < allLen; i++) {
+    TuplePtr tuple = std::make_shared<Tuple>(vk[i]);
+    tuple->payload = vv[i];
+    tuple->subKey = vs[i];
     relation->push(tuple);
   }
 }

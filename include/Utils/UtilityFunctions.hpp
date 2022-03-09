@@ -43,8 +43,8 @@ class UtilityFunctions {
 
   static void timerEnd(Result &result);
 
-  static  size_t timeLast(size_t past,size_t unitTime);
-  static  size_t timeLastUs( struct timeval past);
+  static size_t timeLast(size_t past, size_t unitTime);
+  static size_t timeLastUs(struct timeval past);
   static void printTest(char const *name, int context);
   //bind to CPU
   /*!
@@ -56,8 +56,9 @@ class UtilityFunctions {
     */
   static int bind2Core(int id);
   //partition
-  static vector<size_t> avgPartitionSizeFinal(size_t inS,std::vector<size_t> partitionWeight);
+  static vector<size_t> avgPartitionSizeFinal(size_t inS, std::vector<size_t> partitionWeight);
   static vector<size_t> weightedPartitionSizeFinal(size_t inS, std::vector<size_t> partitionWeight);
+
 };
 }
 #endif //IntelliStream_SRC_UTILS_UTILITYFUNCTIONS_HPP_

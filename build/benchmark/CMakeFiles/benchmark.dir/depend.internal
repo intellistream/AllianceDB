@@ -15,6 +15,7 @@ benchmark/CMakeFiles/benchmark.dir/src/Benchmark.cpp.o
  ../include/Utils/MicroDataSet.h
  ../include/Utils/SPSCQueue.hpp
  ../include/Utils/SafeQueue.hpp
+ ../include/Utils/ThreadPerf.h
  ../include/Utils/UtilityFunctions.hpp
  ../include/Utils/concurrentqueue.h
  ../include/WindowSlider/AbstractEagerWS.h

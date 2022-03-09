@@ -1,4 +1,5 @@
 add_sources(
-       Types.cpp
+        Types.cpp
         DatasetTool.cpp
+        MultiThreadHashTable.cpp
 )

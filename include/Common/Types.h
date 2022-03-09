@@ -6,8 +6,8 @@
 #define UNUSED(x) (void)(x)
 #endif
 
-#ifndef INTELLISTREAM_TYPES_H
-#define INTELLISTREAM_TYPES_H
+#ifndef _INTELLISTREAM_TYPES_H
+#define _INTELLISTREAM_TYPES_H
 
 #ifndef ALGO_NAME
 
@@ -55,7 +55,7 @@
 
 /**
  * @mainpage Introduction
- * The AianceDB offers a wide range of stream join algorithms, supporting both inter and
+ * The AllianceDB offers a wide range of stream join algorithms, supporting both inter and
  * intra window join.
  * @section sec_mj Major Parts
  * Three major parts are composed to achieve ultra-fast stream window join, and they can be found in corresponding named
@@ -64,7 +64,7 @@
  * @subsection JoinAlgo
  * Here are specific algorithms to eventually deal with stream join, including hash or radix.
  * All of these algos assume the tuples are batched, and the "window" is invisible to them. In another word,
- * they achieve the intra-window join.
+ * they achieve the intra-window join. Please refer to the @ref INTELLI_JOINALGOS module.
  *
  * @subsection JoinProcessor
  * Here is the middle layer of the whole stream window join, i.e., to bridge the "window" and "join".
@@ -93,6 +93,11 @@ namespace INTELLI {
  * @defgroup Common Common Datastructure and Functions
  *  @{
  */
+/**
+* @defgroup INTELLI_COMMON_BASIC Basic definitions
+* @{
+* We define the classes of Tuple, window, queue, etc. here
+*/
 //Pointers
 
 
@@ -104,6 +109,7 @@ typedef std::mutex mutex;
 typedef std::DupicatedHashTable<keyType, keyType> hashtable; /*!< allow key duplication */
 
 typedef std::queue<numberType> tupleKeyQueue;
+
 /**
  * @class Tuple Common/Types.h
  * @brief The class to describe a tuple
@@ -119,20 +125,20 @@ class Tuple {
    * @brief construct with key
    * @param k the key
    */
-   Tuple(keyType k);
+  Tuple(keyType k);
   /**
  * @brief construct with key and value
  * @param k the key
    *@param v the value of payload
  */
-   Tuple(keyType k, valueType v);
+  Tuple(keyType k, valueType v);
   /**
  * @brief construct with key, value and subkey
  * @param k the key
    *@param v the value of payload
    * @param sk the subkey
  */
-   Tuple(keyType k, valueType v, size_t sk);
+  Tuple(keyType k, valueType v, size_t sk);
   ~Tuple();
 };
 /**
@@ -141,22 +147,22 @@ class Tuple {
  */
 typedef std::shared_ptr<class Tuple> TuplePtr;
 typedef std::shared_ptr<class RelationCouple> RelationCouplePtr;
-
+typedef std::shared_ptr<std::barrier<>> BarrierPtr;
 //Array Pointers
 typedef std::vector<TuplePtr> WindowOfTuples;
 
-//typedef std::SafeQueue<TuplePtr> TupleQueuePtrLocal;
+//typedef std::SafeQueue<TuplePtr> TuplePtrQueueLocal;
 /**
- * @typedef TupleQueuePtrLocal
+ * @typedef TuplePtrQueueLocal
  * @brief To describe a local queue of TuplePtr
  * @warning This is not thread-safe, only used for local data
  */
-typedef std::queue<TuplePtr> TupleQueuePtrLocal;
+typedef std::queue<TuplePtr> TuplePtrQueueLocal;
 typedef moodycamel::ConcurrentQueue<TuplePtr> concurrentTupleQueue;
 class RelationCouple {
  public:
-  TupleQueuePtrLocal relationS;
-  TupleQueuePtrLocal relationR;
+  TuplePtrQueueLocal relationS;
+  TuplePtrQueueLocal relationR;
   RelationCouple();
   ~RelationCouple();
 };
@@ -164,8 +170,8 @@ class RelationCouple {
 class WindowCouple {
  public:
   //We use queue to implement a window, it stores the sequence of tuples.
-  TupleQueuePtrLocal windowS;
-  TupleQueuePtrLocal windowR;
+  TuplePtrQueueLocal windowS;
+  TuplePtrQueueLocal windowR;
   hashtable hashtableS;
   hashtable hashtableR;
 
@@ -210,20 +216,20 @@ class Result {
   void statPrinter();
 };
 /**
- *  @typedef TupleQueuePtr
+ *  @typedef TuplePtrQueue
  * @brief To describe a queue of @ref TuplePtr under SPSCQueue
  * @note This one is thread-safe
- * @warning Must be inited by @ref newTupleQueuePtr before use
+ * @warning Must be inited by @ref newTuplePtrQueue before use
  */
-typedef std::shared_ptr<INTELLI::SPSCQueue<INTELLI::TuplePtr>> TupleQueuePtr;
+typedef std::shared_ptr<INTELLI::SPSCQueue<INTELLI::TuplePtr>> TuplePtrQueue;
 typedef std::shared_ptr<std::queue<INTELLI::TuplePtr>> TupleQueueSelfPtr;
 typedef std::shared_ptr<INTELLI::SPSCQueue<vector<INTELLI::TuplePtr>>> WindowQueue;
 /**
- * @cite newTupleQueuePtr
- * @brief To create a new TupleQueuePtr
+ * @cite newTuplePtrQueue
+ * @brief To create a new TuplePtrQueue
  * @param n The length of queue
  */
-#define  newTupleQueuePtr(n) make_shared<INTELLI::SPSCQueue<INTELLI::TuplePtr>>(n)
+#define  newTuplePtrQueue(n) make_shared<INTELLI::SPSCQueue<INTELLI::TuplePtr>>(n)
 #define  newWindowQueue(n) make_shared<INTELLI::SPSCQueue<WindowOfTuples>>(n)
 typedef enum {
   CNT_BASED = 1,
@@ -243,6 +249,8 @@ typedef enum {
 typedef std::shared_ptr<INTELLI::SPSCQueue<INTELLI::join_cmd_t>> CmdQueuePtr;
 #define  newCmdQueue(n) make_shared<INTELLI::SPSCQueue<INTELLI::join_cmd_t>>(n)
 }
-
+/**
+ * @}
+ */
 #endif //INTELLISTREAM_TYPES_H
 /**@}*/

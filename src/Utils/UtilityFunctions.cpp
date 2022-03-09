@@ -84,13 +84,13 @@ std::shared_ptr<std::barrier<>> INTELLI::UtilityFunctions::createBarrier(int cou
 
 void INTELLI::UtilityFunctions::timerStart(Result &result) {
   //result.timeTaken = clock();
-  gettimeofday(&result.timeBegin,NULL);
+  gettimeofday(&result.timeBegin, NULL);
 }
 
 void INTELLI::UtilityFunctions::timerEnd(Result &result) {
- // double start = result.timeTaken;
+  // double start = result.timeTaken;
   result.timeTaken = timeLastUs(result.timeBegin);
-  result.timeTaken/=1000.0;
+  result.timeTaken /= 1000.0;
 }
 
 void INTELLI::UtilityFunctions::printTest(char const *name, int context) {
@@ -109,8 +109,8 @@ int INTELLI::UtilityFunctions::bind2Core(int id) {
   return cpuId;
 }
 
-vector<size_t> INTELLI::UtilityFunctions::avgPartitionSizeFinal(size_t inS,std::vector<size_t> partitionWeight) {
-  size_t partitions=partitionWeight.size();
+vector<size_t> INTELLI::UtilityFunctions::avgPartitionSizeFinal(size_t inS, std::vector<size_t> partitionWeight) {
+  size_t partitions = partitionWeight.size();
   vector<size_t> partitionSizeFinals = vector<size_t>(partitions);
   size_t divideLen = inS / partitions;
   size_t tEnd = 0;
@@ -126,7 +126,7 @@ vector<size_t> INTELLI::UtilityFunctions::weightedPartitionSizeFinal(size_t inS,
   vector<size_t> partitionSizes;
   vector<size_t> partitionSizeFinals;
   size_t fraction = accumulate(partitionWeight.begin(), partitionWeight.end(), 0);
-  size_t tsize=0;
+  size_t tsize = 0;
   for (size_t i = 0; i < partitionWeight.size() - 1; i++) {
     tsize = inS * partitionWeight[i] / fraction;
     partitionSizes.push_back(tsize);

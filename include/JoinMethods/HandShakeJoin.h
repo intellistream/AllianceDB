@@ -9,11 +9,11 @@
 #include <JoinMethods/AbstractJoinMethod.h>
 #include <WindowSlider/HandShakeWS.h>
 namespace INTELLI {
-class HandShakeJoin: public AbstractJoinMethod<HandShakeWS>{
+class HandShakeJoin : public AbstractJoinMethod<HandShakeWS> {
  public:
   static void execute(Result &joinResult, RelationCouple &relationCouple);
   static void threadWork(int id, numberType windowSize);
- // static void test(Result &joinResult, RelationCouple &relationCouple);
+  // static void test(Result &joinResult, RelationCouple &relationCouple);
 };
 }
 

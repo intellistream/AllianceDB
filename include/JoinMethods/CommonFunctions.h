@@ -26,7 +26,7 @@ class CommonFunction {
    * be pushed to Window R and window S
    **/
  public:
-  void buildRelation(TupleQueuePtrLocal &relationPtr, const std::string &fileName);
+  void buildRelation(TuplePtrQueueLocal &relationPtr, const std::string &fileName);
 };
 }
 

@@ -1,0 +1,199 @@
+The system is: Linux - 5.13.0-30-generic - x86_64
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+Compiler: /home/tony/Platforms/bananapi/buildroot-2021.11.1/output/host/bin/arm-buildroot-linux-gnueabihf-g++ 
+Build flags: 
+Id flags:  
+
+The output was:
+0
+
+
+Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "a.out"
+
+The CXX compiler identification is GNU, found in "/home/tony/Projects/AllianceDB/armbuild/CMakeFiles/3.18.4/CompilerIdCXX/a.out"
+
+Detecting CXX compiler ABI info compiled with the following output:
+Change Dir: /home/tony/Projects/AllianceDB/armbuild/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake cmTC_fbf85/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_fbf85.dir/build.make CMakeFiles/cmTC_fbf85.dir/build
+gmake[1]: Entering directory '/home/tony/Projects/AllianceDB/armbuild/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_fbf85.dir/CMakeCXXCompilerABI.cpp.o
+/home/tony/Platforms/bananapi/buildroot-2021.11.1/output/host/bin/arm-buildroot-linux-gnueabihf-g++   -v -o CMakeFiles/cmTC_fbf85.dir/CMakeCXXCompilerABI.cpp.o -c /usr/share/cmake-3.18/Modules/CMakeCXXCompilerABI.cpp
+Using built-in specs.
+COLLECT_GCC=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/bin/arm-buildroot-linux-gnueabihf-g++.br_real
+Target: arm-buildroot-linux-gnueabihf
+Configured with: ./configure --prefix=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host --sysconfdir=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/etc --enable-static --target=arm-buildroot-linux-gnueabihf --with-sysroot=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot --enable-__cxa_atexit --with-gnu-ld --disable-libssp --disable-multilib --disable-decimal-float --with-gmp=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host --with-mpc=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host --with-mpfr=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host --with-pkgversion='Buildroot 2021.11.1' --with-bugurl=http://bugs.buildroot.net/ --without-zstd --disable-libquadmath --disable-libquadmath-support --enable-tls --enable-threads --without-isl --without-cloog --with-abi=aapcs-linux --with-cpu=cortex-a7 --with-fpu=neon-vfpv4 --with-float=hard --with-mode=arm --enable-languages=c,c++ --with-build-time-tools=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/bin --enable-shared --enable-libgomp
+Thread model: posix
+Supported LTO compression algorithms: zlib
+gcc version 11.2.0 (Buildroot 2021.11.1) 
+COLLECT_GCC_OPTIONS='-fstack-protector-strong' '-fPIE' '-pie' '-v' '-o' 'CMakeFiles/cmTC_fbf85.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mcpu=cortex-a7' '-mfloat-abi=hard' '-mfpu=neon-vfpv4' '-mabi=aapcs-linux' '-mtls-dialect=gnu' '-marm' '-mlibarch=armv7ve+simd' '-march=armv7ve+simd' '-dumpdir' 'CMakeFiles/cmTC_fbf85.dir/'
+ /home/tony/Platforms/bananapi/buildroot-2021.11.1/host/libexec/gcc/arm-buildroot-linux-gnueabihf/11.2.0/cc1plus -quiet -v -isysroot /home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot -D_GNU_SOURCE /usr/share/cmake-3.18/Modules/CMakeCXXCompilerABI.cpp -quiet -dumpdir CMakeFiles/cmTC_fbf85.dir/ -dumpbase CMakeCXXCompilerABI.cpp.cpp -dumpbase-ext .cpp -mcpu=cortex-a7 -mfloat-abi=hard -mfpu=neon-vfpv4 -mabi=aapcs-linux -mtls-dialect=gnu -marm -mlibarch=armv7ve+simd -march=armv7ve+simd -version -fstack-protector-strong -fPIE -o /tmp/cc6KTHDI.s
+GNU C++17 (Buildroot 2021.11.1) version 11.2.0 (arm-buildroot-linux-gnueabihf)
+	compiled by GNU C version 11.2.0, GMP version 6.2.1, MPFR version 4.1.0, MPC version 1.2.1, isl version none
+GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+ignoring nonexistent directory "/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot/usr/local/include"
+#include "..." search starts here:
+#include <...> search starts here:
+ /home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/../../../../arm-buildroot-linux-gnueabihf/include/c++/11.2.0
+ /home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/../../../../arm-buildroot-linux-gnueabihf/include/c++/11.2.0/arm-buildroot-linux-gnueabihf
+ /home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/../../../../arm-buildroot-linux-gnueabihf/include/c++/11.2.0/backward
+ /home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/include
+ /home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/include-fixed
+ /home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/../../../../arm-buildroot-linux-gnueabihf/include
+ /home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot/usr/include
+End of search list.
+GNU C++17 (Buildroot 2021.11.1) version 11.2.0 (arm-buildroot-linux-gnueabihf)
+	compiled by GNU C version 11.2.0, GMP version 6.2.1, MPFR version 4.1.0, MPC version 1.2.1, isl version none
+GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+Compiler executable checksum: b35dbabf2ac78d9eac1fcbfbbee99aed
+COLLECT_GCC_OPTIONS='-fstack-protector-strong' '-fPIE' '-pie' '-v' '-o' 'CMakeFiles/cmTC_fbf85.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mcpu=cortex-a7' '-mfloat-abi=hard' '-mfpu=neon-vfpv4' '-mabi=aapcs-linux' '-mtls-dialect=gnu' '-marm' '-mlibarch=armv7ve+simd' '-march=armv7ve+simd' '-dumpdir' 'CMakeFiles/cmTC_fbf85.dir/'
+ /home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/../../../../arm-buildroot-linux-gnueabihf/bin/as -v -march=armv7ve -mfloat-abi=hard -mfpu=neon-vfpv4 -meabi=5 -o CMakeFiles/cmTC_fbf85.dir/CMakeCXXCompilerABI.cpp.o /tmp/cc6KTHDI.s
+GNU assembler version 2.36.1 (arm-buildroot-linux-gnueabihf) using BFD version (GNU Binutils) 2.36.1
+COMPILER_PATH=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/libexec/gcc/arm-buildroot-linux-gnueabihf/11.2.0/:/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/libexec/gcc/arm-buildroot-linux-gnueabihf/11.2.0/:/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/libexec/gcc/arm-buildroot-linux-gnueabihf/:/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/:/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/:/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/../../../../arm-buildroot-linux-gnueabihf/bin/
+LIBRARY_PATH=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/:/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/../../../../arm-buildroot-linux-gnueabihf/lib/:/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot/lib/:/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot/usr/lib/
+COLLECT_GCC_OPTIONS='-fstack-protector-strong' '-fPIE' '-pie' '-v' '-o' 'CMakeFiles/cmTC_fbf85.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mcpu=cortex-a7' '-mfloat-abi=hard' '-mfpu=neon-vfpv4' '-mabi=aapcs-linux' '-mtls-dialect=gnu' '-marm' '-mlibarch=armv7ve+simd' '-march=armv7ve+simd' '-dumpdir' 'CMakeFiles/cmTC_fbf85.dir/CMakeCXXCompilerABI.cpp.'
+Linking CXX executable cmTC_fbf85
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_fbf85.dir/link.txt --verbose=1
+/home/tony/Platforms/bananapi/buildroot-2021.11.1/output/host/bin/arm-buildroot-linux-gnueabihf-g++  -v CMakeFiles/cmTC_fbf85.dir/CMakeCXXCompilerABI.cpp.o -o cmTC_fbf85 
+Using built-in specs.
+COLLECT_GCC=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/bin/arm-buildroot-linux-gnueabihf-g++.br_real
+COLLECT_LTO_WRAPPER=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/libexec/gcc/arm-buildroot-linux-gnueabihf/11.2.0/lto-wrapper
+Target: arm-buildroot-linux-gnueabihf
+Configured with: ./configure --prefix=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host --sysconfdir=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/etc --enable-static --target=arm-buildroot-linux-gnueabihf --with-sysroot=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot --enable-__cxa_atexit --with-gnu-ld --disable-libssp --disable-multilib --disable-decimal-float --with-gmp=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host --with-mpc=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host --with-mpfr=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host --with-pkgversion='Buildroot 2021.11.1' --with-bugurl=http://bugs.buildroot.net/ --without-zstd --disable-libquadmath --disable-libquadmath-support --enable-tls --enable-threads --without-isl --without-cloog --with-abi=aapcs-linux --with-cpu=cortex-a7 --with-fpu=neon-vfpv4 --with-float=hard --with-mode=arm --enable-languages=c,c++ --with-build-time-tools=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/bin --enable-shared --enable-libgomp
+Thread model: posix
+Supported LTO compression algorithms: zlib
+gcc version 11.2.0 (Buildroot 2021.11.1) 
+COMPILER_PATH=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/libexec/gcc/arm-buildroot-linux-gnueabihf/11.2.0/:/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/libexec/gcc/arm-buildroot-linux-gnueabihf/11.2.0/:/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/libexec/gcc/arm-buildroot-linux-gnueabihf/:/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/:/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/:/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/../../../../arm-buildroot-linux-gnueabihf/bin/
+LIBRARY_PATH=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/:/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/../../../../arm-buildroot-linux-gnueabihf/lib/:/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot/lib/:/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot/usr/lib/
+COLLECT_GCC_OPTIONS='-fstack-protector-strong' '-fPIE' '-pie' '-v' '-o' 'cmTC_fbf85' '-shared-libgcc' '-mcpu=cortex-a7' '-mfloat-abi=hard' '-mfpu=neon-vfpv4' '-mabi=aapcs-linux' '-mtls-dialect=gnu' '-marm' '-mlibarch=armv7ve+simd' '-march=armv7ve+simd' '-dumpdir' 'cmTC_fbf85.'
+ /home/tony/Platforms/bananapi/buildroot-2021.11.1/host/libexec/gcc/arm-buildroot-linux-gnueabihf/11.2.0/collect2 -plugin /home/tony/Platforms/bananapi/buildroot-2021.11.1/host/libexec/gcc/arm-buildroot-linux-gnueabihf/11.2.0/liblto_plugin.so -plugin-opt=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/libexec/gcc/arm-buildroot-linux-gnueabihf/11.2.0/lto-wrapper -plugin-opt=-fresolution=/tmp/ccLY9BNH.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --sysroot=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot --eh-frame-hdr -dynamic-linker /lib/ld-linux-armhf.so.3 -X -m armelf_linux_eabi -pie -o cmTC_fbf85 /home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot/usr/lib/Scrt1.o /home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot/usr/lib/crti.o /home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/crtbeginS.o -L/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0 -L/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/../../../../arm-buildroot-linux-gnueabihf/lib -L/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot/lib -L/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot/usr/lib -z now -z relro CMakeFiles/cmTC_fbf85.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/crtendS.o /home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot/usr/lib/crtn.o
+COLLECT_GCC_OPTIONS='-fstack-protector-strong' '-fPIE' '-pie' '-v' '-o' 'cmTC_fbf85' '-shared-libgcc' '-mcpu=cortex-a7' '-mfloat-abi=hard' '-mfpu=neon-vfpv4' '-mabi=aapcs-linux' '-mtls-dialect=gnu' '-marm' '-mlibarch=armv7ve+simd' '-march=armv7ve+simd' '-dumpdir' 'cmTC_fbf85.'
+gmake[1]: Leaving directory '/home/tony/Projects/AllianceDB/armbuild/CMakeFiles/CMakeTmp'
+
+
+
+Parsed CXX implicit include dir info from above output: rv=done
+  found start of include info
+  found start of implicit include info
+    add: [/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/../../../../arm-buildroot-linux-gnueabihf/include/c++/11.2.0]
+    add: [/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/../../../../arm-buildroot-linux-gnueabihf/include/c++/11.2.0/arm-buildroot-linux-gnueabihf]
+    add: [/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/../../../../arm-buildroot-linux-gnueabihf/include/c++/11.2.0/backward]
+    add: [/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/include]
+    add: [/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/include-fixed]
+    add: [/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/../../../../arm-buildroot-linux-gnueabihf/include]
+    add: [/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot/usr/include]
+  end of search list found
+  collapse include dir [/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/../../../../arm-buildroot-linux-gnueabihf/include/c++/11.2.0] ==> [/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/include/c++/11.2.0]
+  collapse include dir [/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/../../../../arm-buildroot-linux-gnueabihf/include/c++/11.2.0/arm-buildroot-linux-gnueabihf] ==> [/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/include/c++/11.2.0/arm-buildroot-linux-gnueabihf]
+  collapse include dir [/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/../../../../arm-buildroot-linux-gnueabihf/include/c++/11.2.0/backward] ==> [/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/include/c++/11.2.0/backward]
+  collapse include dir [/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/include] ==> [/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/include]
+  collapse include dir [/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/include-fixed] ==> [/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/include-fixed]
+  collapse include dir [/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/../../../../arm-buildroot-linux-gnueabihf/include] ==> [/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/include]
+  collapse include dir [/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot/usr/include] ==> [/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot/usr/include]
+  implicit include dirs: [/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/include/c++/11.2.0;/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/include/c++/11.2.0/arm-buildroot-linux-gnueabihf;/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/include/c++/11.2.0/backward;/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/include;/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/include-fixed;/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/include;/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot/usr/include]
+
+
+Parsed CXX implicit link information from above output:
+  link line regex: [^( *|.*[/\])(arm-buildroot-linux-gnueabihf-ld|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\]+-)?ld|collect2)[^/\]*( |$)]
+  ignore line: [Change Dir: /home/tony/Projects/AllianceDB/armbuild/CMakeFiles/CMakeTmp]
+  ignore line: []
+  ignore line: [Run Build Command(s):/usr/bin/gmake cmTC_fbf85/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_fbf85.dir/build.make CMakeFiles/cmTC_fbf85.dir/build]
+  ignore line: [gmake[1]: Entering directory '/home/tony/Projects/AllianceDB/armbuild/CMakeFiles/CMakeTmp']
+  ignore line: [Building CXX object CMakeFiles/cmTC_fbf85.dir/CMakeCXXCompilerABI.cpp.o]
+  ignore line: [/home/tony/Platforms/bananapi/buildroot-2021.11.1/output/host/bin/arm-buildroot-linux-gnueabihf-g++   -v -o CMakeFiles/cmTC_fbf85.dir/CMakeCXXCompilerABI.cpp.o -c /usr/share/cmake-3.18/Modules/CMakeCXXCompilerABI.cpp]
+  ignore line: [Using built-in specs.]
+  ignore line: [COLLECT_GCC=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/bin/arm-buildroot-linux-gnueabihf-g++.br_real]
+  ignore line: [Target: arm-buildroot-linux-gnueabihf]
+  ignore line: [Configured with: ./configure --prefix=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host --sysconfdir=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/etc --enable-static --target=arm-buildroot-linux-gnueabihf --with-sysroot=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot --enable-__cxa_atexit --with-gnu-ld --disable-libssp --disable-multilib --disable-decimal-float --with-gmp=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host --with-mpc=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host --with-mpfr=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host --with-pkgversion='Buildroot 2021.11.1' --with-bugurl=http://bugs.buildroot.net/ --without-zstd --disable-libquadmath --disable-libquadmath-support --enable-tls --enable-threads --without-isl --without-cloog --with-abi=aapcs-linux --with-cpu=cortex-a7 --with-fpu=neon-vfpv4 --with-float=hard --with-mode=arm --enable-languages=c,c++ --with-build-time-tools=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/bin --enable-shared --enable-libgomp]
+  ignore line: [Thread model: posix]
+  ignore line: [Supported LTO compression algorithms: zlib]
+  ignore line: [gcc version 11.2.0 (Buildroot 2021.11.1) ]
+  ignore line: [COLLECT_GCC_OPTIONS='-fstack-protector-strong' '-fPIE' '-pie' '-v' '-o' 'CMakeFiles/cmTC_fbf85.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mcpu=cortex-a7' '-mfloat-abi=hard' '-mfpu=neon-vfpv4' '-mabi=aapcs-linux' '-mtls-dialect=gnu' '-marm' '-mlibarch=armv7ve+simd' '-march=armv7ve+simd' '-dumpdir' 'CMakeFiles/cmTC_fbf85.dir/']
+  ignore line: [ /home/tony/Platforms/bananapi/buildroot-2021.11.1/host/libexec/gcc/arm-buildroot-linux-gnueabihf/11.2.0/cc1plus -quiet -v -isysroot /home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot -D_GNU_SOURCE /usr/share/cmake-3.18/Modules/CMakeCXXCompilerABI.cpp -quiet -dumpdir CMakeFiles/cmTC_fbf85.dir/ -dumpbase CMakeCXXCompilerABI.cpp.cpp -dumpbase-ext .cpp -mcpu=cortex-a7 -mfloat-abi=hard -mfpu=neon-vfpv4 -mabi=aapcs-linux -mtls-dialect=gnu -marm -mlibarch=armv7ve+simd -march=armv7ve+simd -version -fstack-protector-strong -fPIE -o /tmp/cc6KTHDI.s]
+  ignore line: [GNU C++17 (Buildroot 2021.11.1) version 11.2.0 (arm-buildroot-linux-gnueabihf)]
+  ignore line: [	compiled by GNU C version 11.2.0  GMP version 6.2.1  MPFR version 4.1.0  MPC version 1.2.1  isl version none]
+  ignore line: [GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072]
+  ignore line: [ignoring nonexistent directory "/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot/usr/local/include"]
+  ignore line: [#include "..." search starts here:]
+  ignore line: [#include <...> search starts here:]
+  ignore line: [ /home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/../../../../arm-buildroot-linux-gnueabihf/include/c++/11.2.0]
+  ignore line: [ /home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/../../../../arm-buildroot-linux-gnueabihf/include/c++/11.2.0/arm-buildroot-linux-gnueabihf]
+  ignore line: [ /home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/../../../../arm-buildroot-linux-gnueabihf/include/c++/11.2.0/backward]
+  ignore line: [ /home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/include]
+  ignore line: [ /home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/include-fixed]
+  ignore line: [ /home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/../../../../arm-buildroot-linux-gnueabihf/include]
+  ignore line: [ /home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot/usr/include]
+  ignore line: [End of search list.]
+  ignore line: [GNU C++17 (Buildroot 2021.11.1) version 11.2.0 (arm-buildroot-linux-gnueabihf)]
+  ignore line: [	compiled by GNU C version 11.2.0  GMP version 6.2.1  MPFR version 4.1.0  MPC version 1.2.1  isl version none]
+  ignore line: [GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072]
+  ignore line: [Compiler executable checksum: b35dbabf2ac78d9eac1fcbfbbee99aed]
+  ignore line: [COLLECT_GCC_OPTIONS='-fstack-protector-strong' '-fPIE' '-pie' '-v' '-o' 'CMakeFiles/cmTC_fbf85.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mcpu=cortex-a7' '-mfloat-abi=hard' '-mfpu=neon-vfpv4' '-mabi=aapcs-linux' '-mtls-dialect=gnu' '-marm' '-mlibarch=armv7ve+simd' '-march=armv7ve+simd' '-dumpdir' 'CMakeFiles/cmTC_fbf85.dir/']
+  ignore line: [ /home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/../../../../arm-buildroot-linux-gnueabihf/bin/as -v -march=armv7ve -mfloat-abi=hard -mfpu=neon-vfpv4 -meabi=5 -o CMakeFiles/cmTC_fbf85.dir/CMakeCXXCompilerABI.cpp.o /tmp/cc6KTHDI.s]
+  ignore line: [GNU assembler version 2.36.1 (arm-buildroot-linux-gnueabihf) using BFD version (GNU Binutils) 2.36.1]
+  ignore line: [COMPILER_PATH=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/libexec/gcc/arm-buildroot-linux-gnueabihf/11.2.0/:/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/libexec/gcc/arm-buildroot-linux-gnueabihf/11.2.0/:/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/libexec/gcc/arm-buildroot-linux-gnueabihf/:/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/:/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/:/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/../../../../arm-buildroot-linux-gnueabihf/bin/]
+  ignore line: [LIBRARY_PATH=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/:/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/../../../../arm-buildroot-linux-gnueabihf/lib/:/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot/lib/:/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot/usr/lib/]
+  ignore line: [COLLECT_GCC_OPTIONS='-fstack-protector-strong' '-fPIE' '-pie' '-v' '-o' 'CMakeFiles/cmTC_fbf85.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mcpu=cortex-a7' '-mfloat-abi=hard' '-mfpu=neon-vfpv4' '-mabi=aapcs-linux' '-mtls-dialect=gnu' '-marm' '-mlibarch=armv7ve+simd' '-march=armv7ve+simd' '-dumpdir' 'CMakeFiles/cmTC_fbf85.dir/CMakeCXXCompilerABI.cpp.']
+  ignore line: [Linking CXX executable cmTC_fbf85]
+  ignore line: [/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_fbf85.dir/link.txt --verbose=1]
+  ignore line: [/home/tony/Platforms/bananapi/buildroot-2021.11.1/output/host/bin/arm-buildroot-linux-gnueabihf-g++  -v CMakeFiles/cmTC_fbf85.dir/CMakeCXXCompilerABI.cpp.o -o cmTC_fbf85 ]
+  ignore line: [Using built-in specs.]
+  ignore line: [COLLECT_GCC=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/bin/arm-buildroot-linux-gnueabihf-g++.br_real]
+  ignore line: [COLLECT_LTO_WRAPPER=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/libexec/gcc/arm-buildroot-linux-gnueabihf/11.2.0/lto-wrapper]
+  ignore line: [Target: arm-buildroot-linux-gnueabihf]
+  ignore line: [Configured with: ./configure --prefix=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host --sysconfdir=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/etc --enable-static --target=arm-buildroot-linux-gnueabihf --with-sysroot=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot --enable-__cxa_atexit --with-gnu-ld --disable-libssp --disable-multilib --disable-decimal-float --with-gmp=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host --with-mpc=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host --with-mpfr=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host --with-pkgversion='Buildroot 2021.11.1' --with-bugurl=http://bugs.buildroot.net/ --without-zstd --disable-libquadmath --disable-libquadmath-support --enable-tls --enable-threads --without-isl --without-cloog --with-abi=aapcs-linux --with-cpu=cortex-a7 --with-fpu=neon-vfpv4 --with-float=hard --with-mode=arm --enable-languages=c,c++ --with-build-time-tools=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/bin --enable-shared --enable-libgomp]
+  ignore line: [Thread model: posix]
+  ignore line: [Supported LTO compression algorithms: zlib]
+  ignore line: [gcc version 11.2.0 (Buildroot 2021.11.1) ]
+  ignore line: [COMPILER_PATH=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/libexec/gcc/arm-buildroot-linux-gnueabihf/11.2.0/:/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/libexec/gcc/arm-buildroot-linux-gnueabihf/11.2.0/:/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/libexec/gcc/arm-buildroot-linux-gnueabihf/:/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/:/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/:/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/../../../../arm-buildroot-linux-gnueabihf/bin/]
+  ignore line: [LIBRARY_PATH=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/:/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/../../../../arm-buildroot-linux-gnueabihf/lib/:/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot/lib/:/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot/usr/lib/]
+  ignore line: [COLLECT_GCC_OPTIONS='-fstack-protector-strong' '-fPIE' '-pie' '-v' '-o' 'cmTC_fbf85' '-shared-libgcc' '-mcpu=cortex-a7' '-mfloat-abi=hard' '-mfpu=neon-vfpv4' '-mabi=aapcs-linux' '-mtls-dialect=gnu' '-marm' '-mlibarch=armv7ve+simd' '-march=armv7ve+simd' '-dumpdir' 'cmTC_fbf85.']
+  link line: [ /home/tony/Platforms/bananapi/buildroot-2021.11.1/host/libexec/gcc/arm-buildroot-linux-gnueabihf/11.2.0/collect2 -plugin /home/tony/Platforms/bananapi/buildroot-2021.11.1/host/libexec/gcc/arm-buildroot-linux-gnueabihf/11.2.0/liblto_plugin.so -plugin-opt=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/libexec/gcc/arm-buildroot-linux-gnueabihf/11.2.0/lto-wrapper -plugin-opt=-fresolution=/tmp/ccLY9BNH.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --sysroot=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot --eh-frame-hdr -dynamic-linker /lib/ld-linux-armhf.so.3 -X -m armelf_linux_eabi -pie -o cmTC_fbf85 /home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot/usr/lib/Scrt1.o /home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot/usr/lib/crti.o /home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/crtbeginS.o -L/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0 -L/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/../../../../arm-buildroot-linux-gnueabihf/lib -L/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot/lib -L/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot/usr/lib -z now -z relro CMakeFiles/cmTC_fbf85.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/crtendS.o /home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot/usr/lib/crtn.o]
+    arg [/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/libexec/gcc/arm-buildroot-linux-gnueabihf/11.2.0/collect2] ==> ignore
+    arg [-plugin] ==> ignore
+    arg [/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/libexec/gcc/arm-buildroot-linux-gnueabihf/11.2.0/liblto_plugin.so] ==> ignore
+    arg [-plugin-opt=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/libexec/gcc/arm-buildroot-linux-gnueabihf/11.2.0/lto-wrapper] ==> ignore
+    arg [-plugin-opt=-fresolution=/tmp/ccLY9BNH.res] ==> ignore
+    arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+    arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+    arg [-plugin-opt=-pass-through=-lc] ==> ignore
+    arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+    arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+    arg [--sysroot=/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot] ==> ignore
+    arg [--eh-frame-hdr] ==> ignore
+    arg [-dynamic-linker] ==> ignore
+    arg [/lib/ld-linux-armhf.so.3] ==> ignore
+    arg [-X] ==> ignore
+    arg [-m] ==> ignore
+    arg [armelf_linux_eabi] ==> ignore
+    arg [-pie] ==> ignore
+    arg [-o] ==> ignore
+    arg [cmTC_fbf85] ==> ignore
+    arg [/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot/usr/lib/Scrt1.o] ==> ignore
+    arg [/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot/usr/lib/crti.o] ==> ignore
+    arg [/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/crtbeginS.o] ==> ignore
+    arg [-L/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0] ==> dir [/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0]
+    arg [-L/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/../../../../arm-buildroot-linux-gnueabihf/lib] ==> dir [/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/../../../../arm-buildroot-linux-gnueabihf/lib]
+    arg [-L/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot/lib] ==> dir [/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot/lib]
+    arg [-L/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot/usr/lib] ==> dir [/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot/usr/lib]
+    arg [-znow] ==> ignore
+    arg [-zrelro] ==> ignore
+    arg [CMakeFiles/cmTC_fbf85.dir/CMakeCXXCompilerABI.cpp.o] ==> ignore
+    arg [-lstdc++] ==> lib [stdc++]
+    arg [-lm] ==> lib [m]
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [-lgcc] ==> lib [gcc]
+    arg [-lc] ==> lib [c]
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [-lgcc] ==> lib [gcc]
+    arg [/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/crtendS.o] ==> ignore
+    arg [/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot/usr/lib/crtn.o] ==> ignore
+  collapse library dir [/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0] ==> [/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0]
+  collapse library dir [/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0/../../../../arm-buildroot-linux-gnueabihf/lib] ==> [/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/lib]
+  collapse library dir [/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot/lib] ==> [/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot/lib]
+  collapse library dir [/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot/usr/lib] ==> [/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot/usr/lib]
+  implicit libs: [stdc++;m;gcc_s;gcc;c;gcc_s;gcc]
+  implicit dirs: [/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/lib/gcc/arm-buildroot-linux-gnueabihf/11.2.0;/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/lib;/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot/lib;/home/tony/Platforms/bananapi/buildroot-2021.11.1/host/arm-buildroot-linux-gnueabihf/sysroot/usr/lib]
+  implicit fwks: []
+
+

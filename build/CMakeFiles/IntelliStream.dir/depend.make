@@ -93,6 +93,9 @@ CMakeFiles/IntelliStream.dir/src/JoinProcessor/SimpleHashJP.cpp.o: ../src/JoinPr
 CMakeFiles/IntelliStream.dir/src/Utils/MicroDataset.cpp.o: ../include/Utils/MicroDataSet.h
 CMakeFiles/IntelliStream.dir/src/Utils/MicroDataset.cpp.o: ../src/Utils/MicroDataset.cpp
 
+CMakeFiles/IntelliStream.dir/src/Utils/ThreadPerf.cpp.o: ../include/Utils/ThreadPerf.h
+CMakeFiles/IntelliStream.dir/src/Utils/ThreadPerf.cpp.o: ../src/Utils/ThreadPerf.cpp
+
 CMakeFiles/IntelliStream.dir/src/Utils/UtilityFunctions.cpp.o: ../include/Common/Types.h
 CMakeFiles/IntelliStream.dir/src/Utils/UtilityFunctions.cpp.o: ../include/Utils/DupicatedHashTable.hpp
 CMakeFiles/IntelliStream.dir/src/Utils/UtilityFunctions.cpp.o: ../include/Utils/SPSCQueue.hpp

@@ -19,8 +19,8 @@ However, the find(key) will return the vector of the duplicated keys.
 You can use the find(key)[index] to get the index-th value in the vector
 date:20220207
 */
-template<typename _Key, typename Tp,
-    typename Hash = hash<_Key>,
+template<typename Key, typename Tp,
+    typename Hash = hash<Key>,
     typename _SubKey=size_t
     /*typename _Pred = equal_to<_Key>,
     typename _Alloc = allocator<std::pair<const _Key, _Tp>>*/>
@@ -42,16 +42,16 @@ class DupicatedHashTable {
     }
   };
   /* data */
-  unordered_map<_Key, std::vector<innerStore>, Hash/*,_Pred,_Alloc*/ > map;
+  unordered_map<Key, std::vector<innerStore>, Hash/*,_Pred,_Alloc*/ > map;
  public:
   DupicatedHashTable(/* args */) {
-    map = unordered_map<_Key, std::vector<innerStore> >();
+    map = unordered_map<Key, std::vector<innerStore> >();
   }
   ~DupicatedHashTable() = default;
   //the empty()
   bool empty() const noexcept { return map.empty(); }
   //the emplace, return the key duplication index of emplaced item
-  size_t emplace(_Key key, Tp value) {
+  size_t emplace(Key key, Tp value) {
     if (map.find(key) == map.end()) {
       std::vector<innerStore> vecKey = std::vector<innerStore>();
       vecKey.push_back(innerStore(value));
@@ -64,7 +64,7 @@ class DupicatedHashTable {
     }
 
   }
-  size_t emplace(_Key key, Tp value, _SubKey sk) {
+  size_t emplace(Key key, Tp value, _SubKey sk) {
     auto findru = map.find(key);
     if (findru == map.end()) {
       std::vector<innerStore> vecKey = std::vector<innerStore>();
@@ -78,7 +78,7 @@ class DupicatedHashTable {
     }
 
   }
-  auto find(_Key key) {
+  auto find(Key key) {
     return map.find(key);
   }
   auto begin() {
@@ -91,11 +91,11 @@ class DupicatedHashTable {
     return map.size();
   }
   //everything in this key will be erased
-  auto erase(_Key key) {
+  auto erase(Key key) {
     return map.erase(key);
   }
   //only try to erase the specific duplicated item (if it exists)
-  bool eraseWithSubKey(_Key key, _SubKey sk) {  // map.erase(key);
+  bool eraseWithSubKey(Key key, _SubKey sk) {  // map.erase(key);
     auto k = map.find(key);
     if (k == map.end()) {
       return false;
@@ -117,7 +117,7 @@ class DupicatedHashTable {
     }
     return true;
   }
-  bool erase(_Key key, size_t duplication) {
+  bool erase(Key key, size_t duplication) {
     auto k = map.find(key);
     if (k == map.end()) {
       return false;
@@ -135,7 +135,7 @@ class DupicatedHashTable {
     return true;
   }
   //only try to erase the specific duplicated item from start to end (if they exist)
-  bool erase(_Key key, size_t duplicationS, size_t duplicationE) {
+  bool erase(Key key, size_t duplicationS, size_t duplicationE) {
     auto k = map.find(key);
     if (duplicationS > duplicationE) {
       return false;

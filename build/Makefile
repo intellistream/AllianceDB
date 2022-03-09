@@ -547,6 +547,33 @@ src/Utils/MicroDataset.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/Utils/MicroDataset.cpp.s
 .PHONY : src/Utils/MicroDataset.cpp.s
 
+src/Utils/ThreadPerf.o: src/Utils/ThreadPerf.cpp.o
+
+.PHONY : src/Utils/ThreadPerf.o
+
+# target to build an object file
+src/Utils/ThreadPerf.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/Utils/ThreadPerf.cpp.o
+.PHONY : src/Utils/ThreadPerf.cpp.o
+
+src/Utils/ThreadPerf.i: src/Utils/ThreadPerf.cpp.i
+
+.PHONY : src/Utils/ThreadPerf.i
+
+# target to preprocess a source file
+src/Utils/ThreadPerf.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/Utils/ThreadPerf.cpp.i
+.PHONY : src/Utils/ThreadPerf.cpp.i
+
+src/Utils/ThreadPerf.s: src/Utils/ThreadPerf.cpp.s
+
+.PHONY : src/Utils/ThreadPerf.s
+
+# target to generate assembly for a file
+src/Utils/ThreadPerf.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/Utils/ThreadPerf.cpp.s
+.PHONY : src/Utils/ThreadPerf.cpp.s
+
 src/Utils/UtilityFunctions.o: src/Utils/UtilityFunctions.cpp.o
 
 .PHONY : src/Utils/UtilityFunctions.o
@@ -705,6 +732,9 @@ help:
 	@echo "... src/Utils/MicroDataset.o"
 	@echo "... src/Utils/MicroDataset.i"
 	@echo "... src/Utils/MicroDataset.s"
+	@echo "... src/Utils/ThreadPerf.o"
+	@echo "... src/Utils/ThreadPerf.i"
+	@echo "... src/Utils/ThreadPerf.s"
 	@echo "... src/Utils/UtilityFunctions.o"
 	@echo "... src/Utils/UtilityFunctions.i"
 	@echo "... src/Utils/UtilityFunctions.s"

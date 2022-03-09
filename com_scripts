@@ -1,2 +1,4 @@
-1. Adjust the code structure into 4 folders
-2. Add the MicroDataSet.h into Utils
+1. Adjust the code structure into 5 folders
+2. Add the ThreadPerf into Utils
+3. Add the MultiThreadHashTable into Common
+4. Add the NPJ into JoinAlgo

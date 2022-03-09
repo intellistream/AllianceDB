@@ -45,8 +45,8 @@ class AbstractEagerWS {
   /* data */
   std::vector<SimpleHashJPPtr> jps;
  protected:
-  TupleQueuePtr TupleQueuePtrLocalS;
-  TupleQueuePtr TupleQueuePtrLocalR;
+  TuplePtrQueue TuplePtrQueueLocalS;
+  TuplePtrQueue TuplePtrQueueLocalR;
   INTELLI::join_type_t myType = INTELLI::CNT_BASED;
   size_t countS, countR, timeStart;
 
@@ -124,7 +124,7 @@ class AbstractEagerWS {
     countS = 0;
     countR = 0;
     timeStart = clock();
-    gettimeofday(&timeSys,NULL);
+    gettimeofday(&timeSys, NULL);
   }
 
   //if _timeMax>0, the slider will use time stamp, otherwise, it just counts the s and r
@@ -138,7 +138,7 @@ class AbstractEagerWS {
   }
   size_t getTimeStamp() {
 
-    return UtilityFunctions::timeLastUs(timeSys)/TIME_STEP;
+    return UtilityFunctions::timeLastUs(timeSys) / TIME_STEP;
   }
   //init with length of queue
   /**
@@ -183,12 +183,10 @@ class AbstractEagerWS {
 */
   size_t getJoinResult();
   //startTime
-  size_t getStartTime()
-  {
+  size_t getStartTime() {
     return timeStart;
   }
-  struct timeval getSysTime()
-  {
+  struct timeval getSysTime() {
     return timeSys;
   }
 };

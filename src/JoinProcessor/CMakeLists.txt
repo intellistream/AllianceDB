@@ -1,4 +1,4 @@
 add_sources(
         SimpleHashJP.cpp
-       HandShakeHashJP.cpp
+        HandShakeHashJP.cpp
 )

@@ -19,60 +19,54 @@ date:20220228
 class HandShakeHashJP : public SimpleHashJP {
  protected:
   /* data */
-  HandShakeHashJPPtr leftJP= nullptr;
-  HandShakeHashJPPtr rightJP= nullptr;
-  TupleQueuePtr selfWindowS,selfWindowR;
-  size_t countR=0,countS=0;
-  size_t timeOffsetS,timeOffsetR;
-  size_t rQueue=0,sQueue=0;
-  void  setupQueue();
+  HandShakeHashJPPtr leftJP = nullptr;
+  HandShakeHashJPPtr rightJP = nullptr;
+  TuplePtrQueue selfWindowS, selfWindowR;
+  size_t countR = 0, countS = 0;
+  size_t timeOffsetS, timeOffsetR;
+  size_t rQueue = 0, sQueue = 0;
+  void setupQueue();
   void expireS(size_t cond);
-  void  expireR(size_t cond);
+  void expireR(size_t cond);
 
  public:
-   void setLeft(HandShakeHashJPPtr l)
-  {
-    leftJP=l;
+  void setLeft(HandShakeHashJPPtr l) {
+    leftJP = l;
   }
-  void setRight(HandShakeHashJPPtr r)
-  {
-    rightJP=r;
+  void setRight(HandShakeHashJPPtr r) {
+    rightJP = r;
   }
-  void start()
-  {  countR=0;
-     countS=0;
-     SimpleHashJP::start();
+  void start() {
+    countR = 0;
+    countS = 0;
+    SimpleHashJP::start();
   }
   void inlineRun();
-  HandShakeHashJP(/* args */)
-  {
+  HandShakeHashJP(/* args */) {
 
   }
-  ~HandShakeHashJP()
-  {
+  ~HandShakeHashJP() {
 
   }
-  void setTimeOffset(size_t ts,size_t tr)
-  {
-    timeOffsetS=ts;
-    timeOffsetR=tr;
+  void setTimeOffset(size_t ts, size_t tr) {
+    timeOffsetS = ts;
+    timeOffsetR = tr;
   }
   void paraseTupleS();
   void paraseTupleR();
-  void  setNeighborJP(HandShakeHashJPPtr l,HandShakeHashJPPtr r)
-  {
-    leftJP=l;
-    rightJP=r;
+  void setNeighborJP(HandShakeHashJPPtr l, HandShakeHashJPPtr r) {
+    leftJP = l;
+    rightJP = r;
   }
   void init(size_t sLen, size_t rLen, size_t _sysId) {
-    rQueue=rLen;
-    sQueue=sLen;
+    rQueue = rLen;
+    sQueue = sLen;
     joinedResult = 0;
     sysId = _sysId;
   }
-  void feedTupleS(TuplePtr ts) ;
+  void feedTupleS(TuplePtr ts);
 
-  void feedTupleR(TuplePtr tr) ;
+  void feedTupleR(TuplePtr tr);
 
 };
 
