@@ -100,7 +100,7 @@ add_subdirectory(src)
 # Add Library
 get_sources(IntelliStream_SOURCE_FILES)
 get_headers(IntelliStream_HEADER_FILES)
-add_library(IntelliStream SHARED ${IntelliStream_SOURCE_FILES} ${IntelliStream_HEADER_FILES} ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_BINARY_DIR} src/JoinMethods/AbstractJoinMethod.cpp src/JoinMethods/AbstractJoinMethod.cpp include/JoinMethods/AbstractJoinMethod.h include/Common/DatasetTool.h src/Common/DatasetTool.cpp src/Utils/MicroDataset.cpp include/Utils/MicroDataSet.hpp include/Utils/MicroDataSet.hpp include/Common/MultiThreadHashTable.h src/Common/MultiThreadHashTable.cpp include/JoinAlgo/NPJ.h src/JoinAlgo/NPJ.cpp include/Utils/AbstractC20Thread.h src/Utils/AbstractC20Thread.cpp)
+add_library(IntelliStream SHARED ${IntelliStream_SOURCE_FILES} ${IntelliStream_HEADER_FILES} ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 target_include_directories(IntelliStream PUBLIC "include")
 target_include_directories(IntelliStream PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
 target_link_libraries(IntelliStream PUBLIC ${LIBRARIES})

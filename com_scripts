@@ -1,4 +1,1 @@
-1. Adjust the code structure into 5 folders
-2. Add the ThreadPerf into Utils
-3. Add the MultiThreadHashTable into Common
-4. Add the NPJ into JoinAlgo
+1. Reconstruct the legacy "JoinMethods" as "TestBench" in benchmark program

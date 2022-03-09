@@ -5,7 +5,7 @@
 // Created by Wang Chenyu on 15/12/21.
 //
 
-#include <JoinMethods/HandShakeJoin.h>
+#include <TestBench/HandShakeJoin.h>
 #include <thread>
 #include <iostream>
 #include <WindowSlider/HandShakeWS.h>

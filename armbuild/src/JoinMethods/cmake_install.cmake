@@ -1,4 +1,4 @@
-# Install script for directory: /home/tony/Projects/AllianceDB/src/JoinMethods
+# Install script for directory: /home/tony/Projects/AllianceDB/src/TestBench
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

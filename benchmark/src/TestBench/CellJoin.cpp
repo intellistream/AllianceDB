@@ -2,11 +2,11 @@
 // Created by Wang Chenyu on 13/10/21.
 //
 
-#include <JoinMethods/CellJoin.h>
+#include <TestBench/CellJoin.h>
 #include <thread>
 #include <Common/Types.h>
 #include <iostream>
-#include <WindowSlider/AbstractEagerWS.h>
+#include "WindowSlider/AbstractEagerWS.h"
 //Variables that are shared among threads
 INTELLI::tupleKeyQueue deliveryR[THREAD_NUMBER]; //Used to send R tuple to all worker threads
 INTELLI::tupleKeyQueue deliveryS[THREAD_NUMBER]; //Used to send S tuple to all worker threads

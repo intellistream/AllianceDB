@@ -6,7 +6,7 @@
 #define HYBRID_JOIN_HANDSHAKEJOIN_H
 
 #include <Common/Types.h>
-#include <JoinMethods/AbstractJoinMethod.h>
+#include <TestBench/AbstractJoinMethod.h>
 #include <WindowSlider/HandShakeWS.h>
 namespace INTELLI {
 class HandShakeJoin : public AbstractJoinMethod<HandShakeWS> {

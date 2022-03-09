@@ -8,9 +8,9 @@
 #include <Utils/UtilityFunctions.hpp>
 #include <Common/Types.h>
 #include <Common/DatasetTool.h>
-#include <JoinMethods/OneWayHashJoin.h>
-#include <JoinMethods/CellJoin.h>
-#include <JoinMethods/HandShakeJoin.h>
+#include <TestBench/OneWayHashJoin.h>
+#include <TestBench/CellJoin.h>
+#include <TestBench/HandShakeJoin.h>
 #include <Utils/SPSCQueue.hpp>
 #include <Utils/MicroDataSet.hpp>
 #include  <Utils/ThreadPerf.h>

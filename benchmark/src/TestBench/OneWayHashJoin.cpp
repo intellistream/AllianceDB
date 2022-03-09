@@ -2,7 +2,7 @@
 // Created by Wang Chenyu on 4/9/21.
 //
 
-#include <JoinMethods/OneWayHashJoin.h>
+#include <TestBench/OneWayHashJoin.h>
 #include <iostream>
 
 void INTELLI::OneWayHashJoin::execute(INTELLI::Result &joinResult, INTELLI::RelationCouple &relationCouple) {

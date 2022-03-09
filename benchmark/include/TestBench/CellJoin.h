@@ -7,7 +7,7 @@
 #define HYBRID_JOIN_CELLJOIN_H
 
 #include <Common/Types.h>
-#include <JoinMethods/AbstractJoinMethod.h>
+#include <TestBench/AbstractJoinMethod.h>
 #include <WindowSlider/AbstractEagerWS.h>
 namespace INTELLI {
 class CellJoin : public AbstractJoinMethod<AbstractEagerWS> {
