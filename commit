@@ -1,6 +1,6 @@
-
-git checkout universal_stream_join
+export MY_BRANCH=lazy-slider
+git checkout $MY_BRANCH
 git init
 git add .
 git commit -F com_scripts
-git push origin universal_stream_join
+git push origin $MY_BRANCH
