@@ -2,11 +2,11 @@
 // Created by tony on 2022/2/8.
 //
 
-#include <JoinProcessor/SimpleHashJP.h>
+#include <JoinProcessor/CellJoinJP.h>
 
 using namespace INTELLI;
 using namespace std;
-void INTELLI::SimpleHashJP::inlineRun() {
+void INTELLI::CellJoinJP::inlineMain() {
   //first bind to the core
   UtilityFunctions::bind2Core(cpuBind);
   //wait for new cmd
@@ -52,7 +52,7 @@ void INTELLI::SimpleHashJP::inlineRun() {
         joinedResult += matches;
         //printf("JP%ld:S[%ld](%ld) find %ld R matches\r\n", sysId, ts->subKey + 1, ts->key, matches);
       }*/
-      joinedResult+=myAlgo->findAlgo(JOINALGO_NPJ)->join(&wr[0],ts,rSize,4);
+      joinedResult+=myAlgo->findAlgo(JOINALGO_NPJ)->join(&wr[0],ts,rSize,2);
       /*for (size_t i = 0; i < rSize; i++) {
         TuplePtr tr=wr[i];
         if(tr->key==ts->key)
@@ -83,7 +83,7 @@ void INTELLI::SimpleHashJP::inlineRun() {
         joinedResult += matches;
         // printf("JP%ld:R[%ld](%ld) find %ld S matches\r\n", sysId, tr->subKey + 1, tr->key, matches);
       }*/
-      joinedResult+=myAlgo->findAlgo(JOINALGO_NPJ)->join(&ws[0],tr,sSize,4);
+      joinedResult+=myAlgo->findAlgo(JOINALGO_NPJ)->join(&ws[0],tr,sSize,2);
       /* for (size_t i = 0; i < sSize; i++) {
          TuplePtr ts=ws[i];
          if(tr->key==ts->key)

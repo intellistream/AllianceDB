@@ -13,8 +13,8 @@ benchmark/CMakeFiles/benchmark.dir/src/Benchmark.cpp.o: ../include/JoinAlgo/Join
 benchmark/CMakeFiles/benchmark.dir/src/Benchmark.cpp.o: ../include/JoinAlgo/NPJ.h
 benchmark/CMakeFiles/benchmark.dir/src/Benchmark.cpp.o: ../include/JoinProcessor/AbstractJP.h
 benchmark/CMakeFiles/benchmark.dir/src/Benchmark.cpp.o: ../include/JoinProcessor/AbstractLazyJP.h
+benchmark/CMakeFiles/benchmark.dir/src/Benchmark.cpp.o: ../include/JoinProcessor/CellJoinJP.h
 benchmark/CMakeFiles/benchmark.dir/src/Benchmark.cpp.o: ../include/JoinProcessor/HandShakeHashJP.h
-benchmark/CMakeFiles/benchmark.dir/src/Benchmark.cpp.o: ../include/JoinProcessor/SimpleHashJP.h
 benchmark/CMakeFiles/benchmark.dir/src/Benchmark.cpp.o: ../include/Utils/AbstractC20Thread.h
 benchmark/CMakeFiles/benchmark.dir/src/Benchmark.cpp.o: ../include/Utils/C20Buffers.hpp
 benchmark/CMakeFiles/benchmark.dir/src/Benchmark.cpp.o: ../include/Utils/DupicatedHashTable.hpp
@@ -35,7 +35,10 @@ benchmark/CMakeFiles/benchmark.dir/src/TestBench/AbstractJoinMethod.cpp.o: ../be
 benchmark/CMakeFiles/benchmark.dir/src/TestBench/AbstractJoinMethod.cpp.o: ../include/Common/Types.h
 benchmark/CMakeFiles/benchmark.dir/src/TestBench/AbstractJoinMethod.cpp.o: ../include/JoinAlgo/AbstractJoinAlgo.h
 benchmark/CMakeFiles/benchmark.dir/src/TestBench/AbstractJoinMethod.cpp.o: ../include/JoinAlgo/JoinAlgoTable.h
-benchmark/CMakeFiles/benchmark.dir/src/TestBench/AbstractJoinMethod.cpp.o: ../include/JoinProcessor/SimpleHashJP.h
+benchmark/CMakeFiles/benchmark.dir/src/TestBench/AbstractJoinMethod.cpp.o: ../include/JoinProcessor/AbstractJP.h
+benchmark/CMakeFiles/benchmark.dir/src/TestBench/AbstractJoinMethod.cpp.o: ../include/JoinProcessor/CellJoinJP.h
+benchmark/CMakeFiles/benchmark.dir/src/TestBench/AbstractJoinMethod.cpp.o: ../include/Utils/AbstractC20Thread.h
+benchmark/CMakeFiles/benchmark.dir/src/TestBench/AbstractJoinMethod.cpp.o: ../include/Utils/C20Buffers.hpp
 benchmark/CMakeFiles/benchmark.dir/src/TestBench/AbstractJoinMethod.cpp.o: ../include/Utils/DupicatedHashTable.hpp
 benchmark/CMakeFiles/benchmark.dir/src/TestBench/AbstractJoinMethod.cpp.o: ../include/Utils/SPSCQueue.hpp
 benchmark/CMakeFiles/benchmark.dir/src/TestBench/AbstractJoinMethod.cpp.o: ../include/Utils/SafeQueue.hpp
@@ -50,7 +53,10 @@ benchmark/CMakeFiles/benchmark.dir/src/TestBench/CellJoin.cpp.o: ../benchmark/in
 benchmark/CMakeFiles/benchmark.dir/src/TestBench/CellJoin.cpp.o: ../include/Common/Types.h
 benchmark/CMakeFiles/benchmark.dir/src/TestBench/CellJoin.cpp.o: ../include/JoinAlgo/AbstractJoinAlgo.h
 benchmark/CMakeFiles/benchmark.dir/src/TestBench/CellJoin.cpp.o: ../include/JoinAlgo/JoinAlgoTable.h
-benchmark/CMakeFiles/benchmark.dir/src/TestBench/CellJoin.cpp.o: ../include/JoinProcessor/SimpleHashJP.h
+benchmark/CMakeFiles/benchmark.dir/src/TestBench/CellJoin.cpp.o: ../include/JoinProcessor/AbstractJP.h
+benchmark/CMakeFiles/benchmark.dir/src/TestBench/CellJoin.cpp.o: ../include/JoinProcessor/CellJoinJP.h
+benchmark/CMakeFiles/benchmark.dir/src/TestBench/CellJoin.cpp.o: ../include/Utils/AbstractC20Thread.h
+benchmark/CMakeFiles/benchmark.dir/src/TestBench/CellJoin.cpp.o: ../include/Utils/C20Buffers.hpp
 benchmark/CMakeFiles/benchmark.dir/src/TestBench/CellJoin.cpp.o: ../include/Utils/DupicatedHashTable.hpp
 benchmark/CMakeFiles/benchmark.dir/src/TestBench/CellJoin.cpp.o: ../include/Utils/SPSCQueue.hpp
 benchmark/CMakeFiles/benchmark.dir/src/TestBench/CellJoin.cpp.o: ../include/Utils/SafeQueue.hpp
@@ -65,8 +71,11 @@ benchmark/CMakeFiles/benchmark.dir/src/TestBench/HandShakeJoin.cpp.o: ../benchma
 benchmark/CMakeFiles/benchmark.dir/src/TestBench/HandShakeJoin.cpp.o: ../include/Common/Types.h
 benchmark/CMakeFiles/benchmark.dir/src/TestBench/HandShakeJoin.cpp.o: ../include/JoinAlgo/AbstractJoinAlgo.h
 benchmark/CMakeFiles/benchmark.dir/src/TestBench/HandShakeJoin.cpp.o: ../include/JoinAlgo/JoinAlgoTable.h
+benchmark/CMakeFiles/benchmark.dir/src/TestBench/HandShakeJoin.cpp.o: ../include/JoinProcessor/AbstractJP.h
+benchmark/CMakeFiles/benchmark.dir/src/TestBench/HandShakeJoin.cpp.o: ../include/JoinProcessor/CellJoinJP.h
 benchmark/CMakeFiles/benchmark.dir/src/TestBench/HandShakeJoin.cpp.o: ../include/JoinProcessor/HandShakeHashJP.h
-benchmark/CMakeFiles/benchmark.dir/src/TestBench/HandShakeJoin.cpp.o: ../include/JoinProcessor/SimpleHashJP.h
+benchmark/CMakeFiles/benchmark.dir/src/TestBench/HandShakeJoin.cpp.o: ../include/Utils/AbstractC20Thread.h
+benchmark/CMakeFiles/benchmark.dir/src/TestBench/HandShakeJoin.cpp.o: ../include/Utils/C20Buffers.hpp
 benchmark/CMakeFiles/benchmark.dir/src/TestBench/HandShakeJoin.cpp.o: ../include/Utils/DupicatedHashTable.hpp
 benchmark/CMakeFiles/benchmark.dir/src/TestBench/HandShakeJoin.cpp.o: ../include/Utils/SPSCQueue.hpp
 benchmark/CMakeFiles/benchmark.dir/src/TestBench/HandShakeJoin.cpp.o: ../include/Utils/SafeQueue.hpp

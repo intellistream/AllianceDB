@@ -9,7 +9,7 @@ test/CMakeFiles/Google_Tests_run.dir/SystemTest/SimpleTest.cpp.o: ../include/Joi
 test/CMakeFiles/Google_Tests_run.dir/SystemTest/SimpleTest.cpp.o: ../include/JoinAlgo/NPJ.h
 test/CMakeFiles/Google_Tests_run.dir/SystemTest/SimpleTest.cpp.o: ../include/JoinProcessor/AbstractJP.h
 test/CMakeFiles/Google_Tests_run.dir/SystemTest/SimpleTest.cpp.o: ../include/JoinProcessor/AbstractLazyJP.h
-test/CMakeFiles/Google_Tests_run.dir/SystemTest/SimpleTest.cpp.o: ../include/JoinProcessor/SimpleHashJP.h
+test/CMakeFiles/Google_Tests_run.dir/SystemTest/SimpleTest.cpp.o: ../include/JoinProcessor/CellJoinJP.h
 test/CMakeFiles/Google_Tests_run.dir/SystemTest/SimpleTest.cpp.o: ../include/Utils/AbstractC20Thread.h
 test/CMakeFiles/Google_Tests_run.dir/SystemTest/SimpleTest.cpp.o: ../include/Utils/C20Buffers.hpp
 test/CMakeFiles/Google_Tests_run.dir/SystemTest/SimpleTest.cpp.o: ../include/Utils/DupicatedHashTable.hpp

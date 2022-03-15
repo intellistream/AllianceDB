@@ -105,6 +105,8 @@ Utils/AbstractC20Thread.h
 -
 Utils/C20Buffers.hpp
 -
+JoinAlgo/JoinAlgoTable.h
+-
 memory
 -
 
@@ -116,13 +118,7 @@ JoinAlgo/JoinAlgoTable.h
 JoinAlgo/NPJ.h
 -
 
-../include/JoinProcessor/HandShakeHashJP.h
-JoinProcessor/SimpleHashJP.h
--
-memory
--
-
-../include/JoinProcessor/SimpleHashJP.h
+../include/JoinProcessor/CellJoinJP.h
 thread
 -
 Common/Types.h
@@ -131,7 +127,13 @@ Utils/UtilityFunctions.hpp
 -
 barrier
 -
-JoinAlgo/JoinAlgoTable.h
+JoinProcessor/AbstractJP.h
+-
+
+../include/JoinProcessor/HandShakeHashJP.h
+JoinProcessor/CellJoinJP.h
+-
+memory
 -
 
 ../include/Utils/AbstractC20Thread.h
@@ -349,7 +351,9 @@ internal/concurrentqueue_internal_debug.h
 ../include/WindowSlider/AbstractEagerWS.h
 WindowSlider/AbstractWS.h
 -
-JoinProcessor/SimpleHashJP.h
+JoinProcessor/CellJoinJP.h
+-
+Utils/AbstractC20Thread.h
 -
 
 ../include/WindowSlider/AbstractLazyWS.h

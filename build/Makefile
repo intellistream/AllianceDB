@@ -493,6 +493,33 @@ src/JoinProcessor/AbstractLazyJP.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/JoinProcessor/AbstractLazyJP.cpp.s
 .PHONY : src/JoinProcessor/AbstractLazyJP.cpp.s
 
+src/JoinProcessor/CellJoinJP.o: src/JoinProcessor/CellJoinJP.cpp.o
+
+.PHONY : src/JoinProcessor/CellJoinJP.o
+
+# target to build an object file
+src/JoinProcessor/CellJoinJP.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/JoinProcessor/CellJoinJP.cpp.o
+.PHONY : src/JoinProcessor/CellJoinJP.cpp.o
+
+src/JoinProcessor/CellJoinJP.i: src/JoinProcessor/CellJoinJP.cpp.i
+
+.PHONY : src/JoinProcessor/CellJoinJP.i
+
+# target to preprocess a source file
+src/JoinProcessor/CellJoinJP.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/JoinProcessor/CellJoinJP.cpp.i
+.PHONY : src/JoinProcessor/CellJoinJP.cpp.i
+
+src/JoinProcessor/CellJoinJP.s: src/JoinProcessor/CellJoinJP.cpp.s
+
+.PHONY : src/JoinProcessor/CellJoinJP.s
+
+# target to generate assembly for a file
+src/JoinProcessor/CellJoinJP.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/JoinProcessor/CellJoinJP.cpp.s
+.PHONY : src/JoinProcessor/CellJoinJP.cpp.s
+
 src/JoinProcessor/HandShakeHashJP.o: src/JoinProcessor/HandShakeHashJP.cpp.o
 
 .PHONY : src/JoinProcessor/HandShakeHashJP.o
@@ -519,33 +546,6 @@ src/JoinProcessor/HandShakeHashJP.s: src/JoinProcessor/HandShakeHashJP.cpp.s
 src/JoinProcessor/HandShakeHashJP.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/JoinProcessor/HandShakeHashJP.cpp.s
 .PHONY : src/JoinProcessor/HandShakeHashJP.cpp.s
-
-src/JoinProcessor/SimpleHashJP.o: src/JoinProcessor/SimpleHashJP.cpp.o
-
-.PHONY : src/JoinProcessor/SimpleHashJP.o
-
-# target to build an object file
-src/JoinProcessor/SimpleHashJP.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/JoinProcessor/SimpleHashJP.cpp.o
-.PHONY : src/JoinProcessor/SimpleHashJP.cpp.o
-
-src/JoinProcessor/SimpleHashJP.i: src/JoinProcessor/SimpleHashJP.cpp.i
-
-.PHONY : src/JoinProcessor/SimpleHashJP.i
-
-# target to preprocess a source file
-src/JoinProcessor/SimpleHashJP.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/JoinProcessor/SimpleHashJP.cpp.i
-.PHONY : src/JoinProcessor/SimpleHashJP.cpp.i
-
-src/JoinProcessor/SimpleHashJP.s: src/JoinProcessor/SimpleHashJP.cpp.s
-
-.PHONY : src/JoinProcessor/SimpleHashJP.s
-
-# target to generate assembly for a file
-src/JoinProcessor/SimpleHashJP.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/JoinProcessor/SimpleHashJP.cpp.s
-.PHONY : src/JoinProcessor/SimpleHashJP.cpp.s
 
 src/Utils/AbstractC20Thread.o: src/Utils/AbstractC20Thread.cpp.o
 
@@ -834,12 +834,12 @@ help:
 	@echo "... src/JoinProcessor/AbstractLazyJP.o"
 	@echo "... src/JoinProcessor/AbstractLazyJP.i"
 	@echo "... src/JoinProcessor/AbstractLazyJP.s"
+	@echo "... src/JoinProcessor/CellJoinJP.o"
+	@echo "... src/JoinProcessor/CellJoinJP.i"
+	@echo "... src/JoinProcessor/CellJoinJP.s"
 	@echo "... src/JoinProcessor/HandShakeHashJP.o"
 	@echo "... src/JoinProcessor/HandShakeHashJP.i"
 	@echo "... src/JoinProcessor/HandShakeHashJP.s"
-	@echo "... src/JoinProcessor/SimpleHashJP.o"
-	@echo "... src/JoinProcessor/SimpleHashJP.i"
-	@echo "... src/JoinProcessor/SimpleHashJP.s"
 	@echo "... src/Utils/AbstractC20Thread.o"
 	@echo "... src/Utils/AbstractC20Thread.i"
 	@echo "... src/Utils/AbstractC20Thread.s"

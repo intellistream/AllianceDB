@@ -12,7 +12,8 @@
 #define WINDOWSLIDER_ABSTRACTEAGERWS_H_
 
 #include <WindowSlider/AbstractWS.h>
-#include <JoinProcessor/SimpleHashJP.h>
+#include <JoinProcessor/CellJoinJP.h>
+#include <Utils/AbstractC20Thread.h>
 using namespace INTELLI;
 using namespace std;
 namespace INTELLI {
@@ -31,13 +32,14 @@ namespace INTELLI {
  /**
   * @ingroup WINDOWSLIDER_EAGER
 * @class AbstractEagerWS WindowSlider/AbstractEagerWS.h
-* @brief An abstraction of eager window slider, also inherited by other eager window slider
+* @brief An abstraction of eager window slider (i.e., the CellJoin), also inherited by other eager window slider
 * @author Tony Zeng
 * @note
 * detailed description:
  To init and run, follow the functions below to start a WS
    \li Configure the window type, time or count, @ref setTimeBased
    \li Configure window length: @ref setWindowLen
+   \li Configure slide length: @ref setSlideLen (default is 1 if not called)
    \li Set parallel executing behavior on SMP,@ref setParallelSMP
    \li Optional, (@ref setRunTimeScheduling)
    \li To make the parallel join processors started, @ref initJoinProcessors
@@ -45,13 +47,32 @@ namespace INTELLI {
    \li Terminate, by @ref terminateJoinProcessors
 *
 */
-class AbstractEagerWS: public AbstractWS{
+class AbstractEagerWS: public AbstractWS,public AbstractC20Thread{
  private:
   /* data */
-  std::vector<SimpleHashJPPtr> jps;
+  std::vector<CellJoinJPPtr> jps;
  protected:
   void expireS(size_t cond);
   void expireR(size_t cond);
+  TuplePtrQueue TuplePtrQueueLocalS;
+  TuplePtrQueue TuplePtrQueueLocalR;
+  virtual  void inlineMain();
+  /**
+   * @brief deliver tuple s to join processors
+   * @param ts The tuple s
+   */
+  void deliverTupleS(TuplePtr ts);
+  /**
+* @brief deliver tuple r to join processors
+* @param ts The tuple r
+*/
+  void deliverTupleR(TuplePtr tr);
+  /**
+   * @brief To get the possible oldest a time stamp belongs to
+   * @param ts The time stamp
+   * @return The window number, start from 0
+   */
+  size_t oldestWindowBelong(size_t ts);
  public:
   //generate the partition vector of offset
   vector<size_t> weightedPartitionSizeFinal(size_t inS); //reserved for AMP
@@ -59,6 +80,7 @@ class AbstractEagerWS: public AbstractWS{
 
   AbstractEagerWS() {
     reset();
+    nameTag="CellJoin";
   }
 
   //init with length of queue
@@ -69,19 +91,7 @@ class AbstractEagerWS: public AbstractWS{
  */
   AbstractEagerWS(size_t sLen, size_t rLen);
   //feed the tuple S
-  /**
-* @brief to feed a tuple s
- * @param ts the tuple s
-  * @note this function is thread-safe :)
-*/
-  virtual void feedTupleS(TuplePtr ts);
-  //feed the tuple R
-  /**
-* @brief to feed a tuple R
- * @param tr the tuple r
-  * @note this function is thread-safe :)
-*/
-  virtual void feedTupleR(TuplePtr tr);
+
   ~AbstractEagerWS();
 
   //init the join processors
@@ -103,14 +113,7 @@ class AbstractEagerWS: public AbstractWS{
    * ,use @ref terminateJoinProcessors to achieve this
 */
   size_t getJoinResult();
-  /**
-  * @brief set the length of slide
-  * @param sli The assigned length
-  */
-  void setSlideLen(size_t sli)
-  {
-   cout<<sli<<endl;
-  }
+
   //startTime
 };
 }

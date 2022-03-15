@@ -180,18 +180,18 @@ CMakeFiles/IntelliStream.dir/src/JoinProcessor/AbstractLazyJP.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/IntelliStream.dir/src/JoinProcessor/AbstractLazyJP.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/tony/Projects/AllianceDB/src/JoinProcessor/AbstractLazyJP.cpp -o CMakeFiles/IntelliStream.dir/src/JoinProcessor/AbstractLazyJP.cpp.s
 
-CMakeFiles/IntelliStream.dir/src/JoinProcessor/SimpleHashJP.cpp.o: CMakeFiles/IntelliStream.dir/flags.make
-CMakeFiles/IntelliStream.dir/src/JoinProcessor/SimpleHashJP.cpp.o: ../src/JoinProcessor/SimpleHashJP.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/tony/Projects/AllianceDB/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/IntelliStream.dir/src/JoinProcessor/SimpleHashJP.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/IntelliStream.dir/src/JoinProcessor/SimpleHashJP.cpp.o -c /home/tony/Projects/AllianceDB/src/JoinProcessor/SimpleHashJP.cpp
+CMakeFiles/IntelliStream.dir/src/JoinProcessor/CellJoinJP.cpp.o: CMakeFiles/IntelliStream.dir/flags.make
+CMakeFiles/IntelliStream.dir/src/JoinProcessor/CellJoinJP.cpp.o: ../src/JoinProcessor/CellJoinJP.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/tony/Projects/AllianceDB/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/IntelliStream.dir/src/JoinProcessor/CellJoinJP.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/IntelliStream.dir/src/JoinProcessor/CellJoinJP.cpp.o -c /home/tony/Projects/AllianceDB/src/JoinProcessor/CellJoinJP.cpp
 
-CMakeFiles/IntelliStream.dir/src/JoinProcessor/SimpleHashJP.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/IntelliStream.dir/src/JoinProcessor/SimpleHashJP.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/tony/Projects/AllianceDB/src/JoinProcessor/SimpleHashJP.cpp > CMakeFiles/IntelliStream.dir/src/JoinProcessor/SimpleHashJP.cpp.i
+CMakeFiles/IntelliStream.dir/src/JoinProcessor/CellJoinJP.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/IntelliStream.dir/src/JoinProcessor/CellJoinJP.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/tony/Projects/AllianceDB/src/JoinProcessor/CellJoinJP.cpp > CMakeFiles/IntelliStream.dir/src/JoinProcessor/CellJoinJP.cpp.i
 
-CMakeFiles/IntelliStream.dir/src/JoinProcessor/SimpleHashJP.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/IntelliStream.dir/src/JoinProcessor/SimpleHashJP.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/tony/Projects/AllianceDB/src/JoinProcessor/SimpleHashJP.cpp -o CMakeFiles/IntelliStream.dir/src/JoinProcessor/SimpleHashJP.cpp.s
+CMakeFiles/IntelliStream.dir/src/JoinProcessor/CellJoinJP.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/IntelliStream.dir/src/JoinProcessor/CellJoinJP.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/tony/Projects/AllianceDB/src/JoinProcessor/CellJoinJP.cpp -o CMakeFiles/IntelliStream.dir/src/JoinProcessor/CellJoinJP.cpp.s
 
 CMakeFiles/IntelliStream.dir/src/JoinProcessor/HandShakeHashJP.cpp.o: CMakeFiles/IntelliStream.dir/flags.make
 CMakeFiles/IntelliStream.dir/src/JoinProcessor/HandShakeHashJP.cpp.o: ../src/JoinProcessor/HandShakeHashJP.cpp
@@ -333,7 +333,7 @@ IntelliStream_OBJECTS = \
 "CMakeFiles/IntelliStream.dir/src/JoinAlgo/NPJ.cpp.o" \
 "CMakeFiles/IntelliStream.dir/src/JoinProcessor/AbstractJP.cpp.o" \
 "CMakeFiles/IntelliStream.dir/src/JoinProcessor/AbstractLazyJP.cpp.o" \
-"CMakeFiles/IntelliStream.dir/src/JoinProcessor/SimpleHashJP.cpp.o" \
+"CMakeFiles/IntelliStream.dir/src/JoinProcessor/CellJoinJP.cpp.o" \
 "CMakeFiles/IntelliStream.dir/src/JoinProcessor/HandShakeHashJP.cpp.o" \
 "CMakeFiles/IntelliStream.dir/src/WindowSlider/AbstractWS.cpp.o" \
 "CMakeFiles/IntelliStream.dir/src/WindowSlider/AbstractEagerWS.cpp.o" \
@@ -356,7 +356,7 @@ libIntelliStream.so: CMakeFiles/IntelliStream.dir/src/JoinAlgo/AbstractJoinAlgo.
 libIntelliStream.so: CMakeFiles/IntelliStream.dir/src/JoinAlgo/NPJ.cpp.o
 libIntelliStream.so: CMakeFiles/IntelliStream.dir/src/JoinProcessor/AbstractJP.cpp.o
 libIntelliStream.so: CMakeFiles/IntelliStream.dir/src/JoinProcessor/AbstractLazyJP.cpp.o
-libIntelliStream.so: CMakeFiles/IntelliStream.dir/src/JoinProcessor/SimpleHashJP.cpp.o
+libIntelliStream.so: CMakeFiles/IntelliStream.dir/src/JoinProcessor/CellJoinJP.cpp.o
 libIntelliStream.so: CMakeFiles/IntelliStream.dir/src/JoinProcessor/HandShakeHashJP.cpp.o
 libIntelliStream.so: CMakeFiles/IntelliStream.dir/src/WindowSlider/AbstractWS.cpp.o
 libIntelliStream.so: CMakeFiles/IntelliStream.dir/src/WindowSlider/AbstractEagerWS.cpp.o

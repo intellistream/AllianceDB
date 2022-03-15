@@ -108,7 +108,7 @@ void  AbstractLazyWS::inlineMain() {
       size_t timeDivTuple=UtilityFunctions::to_periodical(tr->subKey,period);
       for (size_t tid = 0; tid < windowCnt; tid++) {
         size_t windowBase=slideLen*tid;
-        if(timeDivTuple>=windowBase&&timeDivTuple<=windowBase+windowLen)
+        if(timeDivTuple>=windowBase&&timeDivTuple<windowBase+windowLen)
         {
           jps[tid]->feedTupleR(tr);
         }

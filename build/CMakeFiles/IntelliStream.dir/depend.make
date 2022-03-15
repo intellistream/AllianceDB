@@ -59,6 +59,8 @@ CMakeFiles/IntelliStream.dir/src/JoinAlgo/NPJ.cpp.o: ../include/Utils/concurrent
 CMakeFiles/IntelliStream.dir/src/JoinAlgo/NPJ.cpp.o: ../src/JoinAlgo/NPJ.cpp
 
 CMakeFiles/IntelliStream.dir/src/JoinProcessor/AbstractJP.cpp.o: ../include/Common/Types.h
+CMakeFiles/IntelliStream.dir/src/JoinProcessor/AbstractJP.cpp.o: ../include/JoinAlgo/AbstractJoinAlgo.h
+CMakeFiles/IntelliStream.dir/src/JoinProcessor/AbstractJP.cpp.o: ../include/JoinAlgo/JoinAlgoTable.h
 CMakeFiles/IntelliStream.dir/src/JoinProcessor/AbstractJP.cpp.o: ../include/JoinProcessor/AbstractJP.h
 CMakeFiles/IntelliStream.dir/src/JoinProcessor/AbstractJP.cpp.o: ../include/Utils/AbstractC20Thread.h
 CMakeFiles/IntelliStream.dir/src/JoinProcessor/AbstractJP.cpp.o: ../include/Utils/C20Buffers.hpp
@@ -85,28 +87,34 @@ CMakeFiles/IntelliStream.dir/src/JoinProcessor/AbstractLazyJP.cpp.o: ../include/
 CMakeFiles/IntelliStream.dir/src/JoinProcessor/AbstractLazyJP.cpp.o: ../include/Utils/concurrentqueue.h
 CMakeFiles/IntelliStream.dir/src/JoinProcessor/AbstractLazyJP.cpp.o: ../src/JoinProcessor/AbstractLazyJP.cpp
 
+CMakeFiles/IntelliStream.dir/src/JoinProcessor/CellJoinJP.cpp.o: ../include/Common/Types.h
+CMakeFiles/IntelliStream.dir/src/JoinProcessor/CellJoinJP.cpp.o: ../include/JoinAlgo/AbstractJoinAlgo.h
+CMakeFiles/IntelliStream.dir/src/JoinProcessor/CellJoinJP.cpp.o: ../include/JoinAlgo/JoinAlgoTable.h
+CMakeFiles/IntelliStream.dir/src/JoinProcessor/CellJoinJP.cpp.o: ../include/JoinProcessor/AbstractJP.h
+CMakeFiles/IntelliStream.dir/src/JoinProcessor/CellJoinJP.cpp.o: ../include/JoinProcessor/CellJoinJP.h
+CMakeFiles/IntelliStream.dir/src/JoinProcessor/CellJoinJP.cpp.o: ../include/Utils/AbstractC20Thread.h
+CMakeFiles/IntelliStream.dir/src/JoinProcessor/CellJoinJP.cpp.o: ../include/Utils/C20Buffers.hpp
+CMakeFiles/IntelliStream.dir/src/JoinProcessor/CellJoinJP.cpp.o: ../include/Utils/DupicatedHashTable.hpp
+CMakeFiles/IntelliStream.dir/src/JoinProcessor/CellJoinJP.cpp.o: ../include/Utils/SPSCQueue.hpp
+CMakeFiles/IntelliStream.dir/src/JoinProcessor/CellJoinJP.cpp.o: ../include/Utils/SafeQueue.hpp
+CMakeFiles/IntelliStream.dir/src/JoinProcessor/CellJoinJP.cpp.o: ../include/Utils/UtilityFunctions.hpp
+CMakeFiles/IntelliStream.dir/src/JoinProcessor/CellJoinJP.cpp.o: ../include/Utils/concurrentqueue.h
+CMakeFiles/IntelliStream.dir/src/JoinProcessor/CellJoinJP.cpp.o: ../src/JoinProcessor/CellJoinJP.cpp
+
 CMakeFiles/IntelliStream.dir/src/JoinProcessor/HandShakeHashJP.cpp.o: ../include/Common/Types.h
 CMakeFiles/IntelliStream.dir/src/JoinProcessor/HandShakeHashJP.cpp.o: ../include/JoinAlgo/AbstractJoinAlgo.h
 CMakeFiles/IntelliStream.dir/src/JoinProcessor/HandShakeHashJP.cpp.o: ../include/JoinAlgo/JoinAlgoTable.h
+CMakeFiles/IntelliStream.dir/src/JoinProcessor/HandShakeHashJP.cpp.o: ../include/JoinProcessor/AbstractJP.h
+CMakeFiles/IntelliStream.dir/src/JoinProcessor/HandShakeHashJP.cpp.o: ../include/JoinProcessor/CellJoinJP.h
 CMakeFiles/IntelliStream.dir/src/JoinProcessor/HandShakeHashJP.cpp.o: ../include/JoinProcessor/HandShakeHashJP.h
-CMakeFiles/IntelliStream.dir/src/JoinProcessor/HandShakeHashJP.cpp.o: ../include/JoinProcessor/SimpleHashJP.h
+CMakeFiles/IntelliStream.dir/src/JoinProcessor/HandShakeHashJP.cpp.o: ../include/Utils/AbstractC20Thread.h
+CMakeFiles/IntelliStream.dir/src/JoinProcessor/HandShakeHashJP.cpp.o: ../include/Utils/C20Buffers.hpp
 CMakeFiles/IntelliStream.dir/src/JoinProcessor/HandShakeHashJP.cpp.o: ../include/Utils/DupicatedHashTable.hpp
 CMakeFiles/IntelliStream.dir/src/JoinProcessor/HandShakeHashJP.cpp.o: ../include/Utils/SPSCQueue.hpp
 CMakeFiles/IntelliStream.dir/src/JoinProcessor/HandShakeHashJP.cpp.o: ../include/Utils/SafeQueue.hpp
 CMakeFiles/IntelliStream.dir/src/JoinProcessor/HandShakeHashJP.cpp.o: ../include/Utils/UtilityFunctions.hpp
 CMakeFiles/IntelliStream.dir/src/JoinProcessor/HandShakeHashJP.cpp.o: ../include/Utils/concurrentqueue.h
 CMakeFiles/IntelliStream.dir/src/JoinProcessor/HandShakeHashJP.cpp.o: ../src/JoinProcessor/HandShakeHashJP.cpp
-
-CMakeFiles/IntelliStream.dir/src/JoinProcessor/SimpleHashJP.cpp.o: ../include/Common/Types.h
-CMakeFiles/IntelliStream.dir/src/JoinProcessor/SimpleHashJP.cpp.o: ../include/JoinAlgo/AbstractJoinAlgo.h
-CMakeFiles/IntelliStream.dir/src/JoinProcessor/SimpleHashJP.cpp.o: ../include/JoinAlgo/JoinAlgoTable.h
-CMakeFiles/IntelliStream.dir/src/JoinProcessor/SimpleHashJP.cpp.o: ../include/JoinProcessor/SimpleHashJP.h
-CMakeFiles/IntelliStream.dir/src/JoinProcessor/SimpleHashJP.cpp.o: ../include/Utils/DupicatedHashTable.hpp
-CMakeFiles/IntelliStream.dir/src/JoinProcessor/SimpleHashJP.cpp.o: ../include/Utils/SPSCQueue.hpp
-CMakeFiles/IntelliStream.dir/src/JoinProcessor/SimpleHashJP.cpp.o: ../include/Utils/SafeQueue.hpp
-CMakeFiles/IntelliStream.dir/src/JoinProcessor/SimpleHashJP.cpp.o: ../include/Utils/UtilityFunctions.hpp
-CMakeFiles/IntelliStream.dir/src/JoinProcessor/SimpleHashJP.cpp.o: ../include/Utils/concurrentqueue.h
-CMakeFiles/IntelliStream.dir/src/JoinProcessor/SimpleHashJP.cpp.o: ../src/JoinProcessor/SimpleHashJP.cpp
 
 CMakeFiles/IntelliStream.dir/src/Utils/AbstractC20Thread.cpp.o: ../include/Utils/AbstractC20Thread.h
 CMakeFiles/IntelliStream.dir/src/Utils/AbstractC20Thread.cpp.o: ../src/Utils/AbstractC20Thread.cpp
@@ -131,7 +139,10 @@ CMakeFiles/IntelliStream.dir/src/Utils/concurrentqueue.cpp.o: ../src/Utils/concu
 CMakeFiles/IntelliStream.dir/src/WindowSlider/AbstractEagerWS.cpp.o: ../include/Common/Types.h
 CMakeFiles/IntelliStream.dir/src/WindowSlider/AbstractEagerWS.cpp.o: ../include/JoinAlgo/AbstractJoinAlgo.h
 CMakeFiles/IntelliStream.dir/src/WindowSlider/AbstractEagerWS.cpp.o: ../include/JoinAlgo/JoinAlgoTable.h
-CMakeFiles/IntelliStream.dir/src/WindowSlider/AbstractEagerWS.cpp.o: ../include/JoinProcessor/SimpleHashJP.h
+CMakeFiles/IntelliStream.dir/src/WindowSlider/AbstractEagerWS.cpp.o: ../include/JoinProcessor/AbstractJP.h
+CMakeFiles/IntelliStream.dir/src/WindowSlider/AbstractEagerWS.cpp.o: ../include/JoinProcessor/CellJoinJP.h
+CMakeFiles/IntelliStream.dir/src/WindowSlider/AbstractEagerWS.cpp.o: ../include/Utils/AbstractC20Thread.h
+CMakeFiles/IntelliStream.dir/src/WindowSlider/AbstractEagerWS.cpp.o: ../include/Utils/C20Buffers.hpp
 CMakeFiles/IntelliStream.dir/src/WindowSlider/AbstractEagerWS.cpp.o: ../include/Utils/DupicatedHashTable.hpp
 CMakeFiles/IntelliStream.dir/src/WindowSlider/AbstractEagerWS.cpp.o: ../include/Utils/SPSCQueue.hpp
 CMakeFiles/IntelliStream.dir/src/WindowSlider/AbstractEagerWS.cpp.o: ../include/Utils/SafeQueue.hpp
@@ -171,8 +182,11 @@ CMakeFiles/IntelliStream.dir/src/WindowSlider/AbstractWS.cpp.o: ../src/WindowSli
 CMakeFiles/IntelliStream.dir/src/WindowSlider/HandShakeWS.cpp.o: ../include/Common/Types.h
 CMakeFiles/IntelliStream.dir/src/WindowSlider/HandShakeWS.cpp.o: ../include/JoinAlgo/AbstractJoinAlgo.h
 CMakeFiles/IntelliStream.dir/src/WindowSlider/HandShakeWS.cpp.o: ../include/JoinAlgo/JoinAlgoTable.h
+CMakeFiles/IntelliStream.dir/src/WindowSlider/HandShakeWS.cpp.o: ../include/JoinProcessor/AbstractJP.h
+CMakeFiles/IntelliStream.dir/src/WindowSlider/HandShakeWS.cpp.o: ../include/JoinProcessor/CellJoinJP.h
 CMakeFiles/IntelliStream.dir/src/WindowSlider/HandShakeWS.cpp.o: ../include/JoinProcessor/HandShakeHashJP.h
-CMakeFiles/IntelliStream.dir/src/WindowSlider/HandShakeWS.cpp.o: ../include/JoinProcessor/SimpleHashJP.h
+CMakeFiles/IntelliStream.dir/src/WindowSlider/HandShakeWS.cpp.o: ../include/Utils/AbstractC20Thread.h
+CMakeFiles/IntelliStream.dir/src/WindowSlider/HandShakeWS.cpp.o: ../include/Utils/C20Buffers.hpp
 CMakeFiles/IntelliStream.dir/src/WindowSlider/HandShakeWS.cpp.o: ../include/Utils/DupicatedHashTable.hpp
 CMakeFiles/IntelliStream.dir/src/WindowSlider/HandShakeWS.cpp.o: ../include/Utils/SPSCQueue.hpp
 CMakeFiles/IntelliStream.dir/src/WindowSlider/HandShakeWS.cpp.o: ../include/Utils/SafeQueue.hpp

@@ -45,6 +45,7 @@ class AbstractLazyWS: public  AbstractWS,public AbstractC20Thread{
   AbstractLazyWS()
   {
     reset();
+    nameTag="LWJ";
   }
 
   /**
@@ -54,7 +55,7 @@ class AbstractLazyWS: public  AbstractWS,public AbstractC20Thread{
  */
   AbstractLazyWS(size_t sLen, size_t rLen): AbstractWS(sLen,rLen)
   {
-
+    nameTag="LWJ";
   }
 
   //init the join processors
@@ -83,21 +84,6 @@ class AbstractLazyWS: public  AbstractWS,public AbstractC20Thread{
 */
   virtual size_t getJoinResult();
 
-  /**
-* @brief to feed a tuple s
-* @param ts the tuple s
- * @note this function is thread-safe :)
-
-  virtual void feedTupleS(TuplePtr ts);
-
-  //feed the tuple R
-  /**
-* @brief to feed a tuple R
- * @param tr the tuple r
-  * @note this function is thread-safe :)
-
-  virtual void feedTupleR(TuplePtr tr);
-*/
 };
 }
 /**

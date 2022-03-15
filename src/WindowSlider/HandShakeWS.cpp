@@ -22,7 +22,7 @@ void HandShakeWS::initJoinProcessors() {
     }
     jpPtr[tid]->setInitBar(initBar);
     jpPtr[tid]->setTimeBased(isTimeBased());
-    jpPtr[tid]->setTimeStart(timeSys);
+    //jpPtr[tid]->setTimeStart(timeSys);
   }
   for (size_t tid = 0; tid < threads; tid++) {
 
@@ -55,7 +55,7 @@ void HandShakeWS::terminateJoinProcessors() {
   }
   waitAckFromJoinProcessors();
   for (size_t tid = 0; tid < threads; tid++) {
-    jpPtr[tid]->join();
+    jpPtr[tid]->joinThread();
   }
   isRunning = false;
 }

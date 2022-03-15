@@ -10,7 +10,7 @@ test/CMakeFiles/Google_Tests_run.dir/SystemTest/SimpleTest.cpp.o
  ../include/JoinAlgo/NPJ.h
  ../include/JoinProcessor/AbstractJP.h
  ../include/JoinProcessor/AbstractLazyJP.h
- ../include/JoinProcessor/SimpleHashJP.h
+ ../include/JoinProcessor/CellJoinJP.h
  ../include/Utils/AbstractC20Thread.h
  ../include/Utils/C20Buffers.hpp
  ../include/Utils/DupicatedHashTable.hpp

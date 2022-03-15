@@ -60,6 +60,8 @@ CMakeFiles/IntelliStream.dir/src/JoinAlgo/NPJ.cpp.o
  /home/tony/Projects/AllianceDB/src/JoinAlgo/NPJ.cpp
 CMakeFiles/IntelliStream.dir/src/JoinProcessor/AbstractJP.cpp.o
  ../include/Common/Types.h
+ ../include/JoinAlgo/AbstractJoinAlgo.h
+ ../include/JoinAlgo/JoinAlgoTable.h
  ../include/JoinProcessor/AbstractJP.h
  ../include/Utils/AbstractC20Thread.h
  ../include/Utils/C20Buffers.hpp
@@ -85,29 +87,35 @@ CMakeFiles/IntelliStream.dir/src/JoinProcessor/AbstractLazyJP.cpp.o
  ../include/Utils/UtilityFunctions.hpp
  ../include/Utils/concurrentqueue.h
  /home/tony/Projects/AllianceDB/src/JoinProcessor/AbstractLazyJP.cpp
+CMakeFiles/IntelliStream.dir/src/JoinProcessor/CellJoinJP.cpp.o
+ ../include/Common/Types.h
+ ../include/JoinAlgo/AbstractJoinAlgo.h
+ ../include/JoinAlgo/JoinAlgoTable.h
+ ../include/JoinProcessor/AbstractJP.h
+ ../include/JoinProcessor/CellJoinJP.h
+ ../include/Utils/AbstractC20Thread.h
+ ../include/Utils/C20Buffers.hpp
+ ../include/Utils/DupicatedHashTable.hpp
+ ../include/Utils/SPSCQueue.hpp
+ ../include/Utils/SafeQueue.hpp
+ ../include/Utils/UtilityFunctions.hpp
+ ../include/Utils/concurrentqueue.h
+ /home/tony/Projects/AllianceDB/src/JoinProcessor/CellJoinJP.cpp
 CMakeFiles/IntelliStream.dir/src/JoinProcessor/HandShakeHashJP.cpp.o
  ../include/Common/Types.h
  ../include/JoinAlgo/AbstractJoinAlgo.h
  ../include/JoinAlgo/JoinAlgoTable.h
+ ../include/JoinProcessor/AbstractJP.h
+ ../include/JoinProcessor/CellJoinJP.h
  ../include/JoinProcessor/HandShakeHashJP.h
- ../include/JoinProcessor/SimpleHashJP.h
+ ../include/Utils/AbstractC20Thread.h
+ ../include/Utils/C20Buffers.hpp
  ../include/Utils/DupicatedHashTable.hpp
  ../include/Utils/SPSCQueue.hpp
  ../include/Utils/SafeQueue.hpp
  ../include/Utils/UtilityFunctions.hpp
  ../include/Utils/concurrentqueue.h
  /home/tony/Projects/AllianceDB/src/JoinProcessor/HandShakeHashJP.cpp
-CMakeFiles/IntelliStream.dir/src/JoinProcessor/SimpleHashJP.cpp.o
- ../include/Common/Types.h
- ../include/JoinAlgo/AbstractJoinAlgo.h
- ../include/JoinAlgo/JoinAlgoTable.h
- ../include/JoinProcessor/SimpleHashJP.h
- ../include/Utils/DupicatedHashTable.hpp
- ../include/Utils/SPSCQueue.hpp
- ../include/Utils/SafeQueue.hpp
- ../include/Utils/UtilityFunctions.hpp
- ../include/Utils/concurrentqueue.h
- /home/tony/Projects/AllianceDB/src/JoinProcessor/SimpleHashJP.cpp
 CMakeFiles/IntelliStream.dir/src/Utils/AbstractC20Thread.cpp.o
  ../include/Utils/AbstractC20Thread.h
  /home/tony/Projects/AllianceDB/src/Utils/AbstractC20Thread.cpp
@@ -132,7 +140,10 @@ CMakeFiles/IntelliStream.dir/src/WindowSlider/AbstractEagerWS.cpp.o
  ../include/Common/Types.h
  ../include/JoinAlgo/AbstractJoinAlgo.h
  ../include/JoinAlgo/JoinAlgoTable.h
- ../include/JoinProcessor/SimpleHashJP.h
+ ../include/JoinProcessor/AbstractJP.h
+ ../include/JoinProcessor/CellJoinJP.h
+ ../include/Utils/AbstractC20Thread.h
+ ../include/Utils/C20Buffers.hpp
  ../include/Utils/DupicatedHashTable.hpp
  ../include/Utils/SPSCQueue.hpp
  ../include/Utils/SafeQueue.hpp
@@ -172,8 +183,11 @@ CMakeFiles/IntelliStream.dir/src/WindowSlider/HandShakeWS.cpp.o
  ../include/Common/Types.h
  ../include/JoinAlgo/AbstractJoinAlgo.h
  ../include/JoinAlgo/JoinAlgoTable.h
+ ../include/JoinProcessor/AbstractJP.h
+ ../include/JoinProcessor/CellJoinJP.h
  ../include/JoinProcessor/HandShakeHashJP.h
- ../include/JoinProcessor/SimpleHashJP.h
+ ../include/Utils/AbstractC20Thread.h
+ ../include/Utils/C20Buffers.hpp
  ../include/Utils/DupicatedHashTable.hpp
  ../include/Utils/SPSCQueue.hpp
  ../include/Utils/SafeQueue.hpp
