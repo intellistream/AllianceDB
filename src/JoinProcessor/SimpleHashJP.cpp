@@ -2,11 +2,11 @@
 // Created by tony on 2022/2/8.
 //
 
-#include <JoinProcessor/CellJoinJP.h>
+#include <JoinProcessor/SimpleHashJP.h>
 
 using namespace INTELLI;
 using namespace std;
-void INTELLI::CellJoinJP::inlineMain() {
+void INTELLI::SimpleHashJP::inlineRun() {
   //first bind to the core
   UtilityFunctions::bind2Core(cpuBind);
   //wait for new cmd

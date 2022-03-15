@@ -43,7 +43,7 @@ int main() {
   dataSet.load3VText(relationCouple.relationS, fileSName);
   joinResult.streamSize = relationCouple.relationR.size();
 
-  AbstractJoinMethod<AbstractEagerWS> lwj;
+  AbstractJoinMethod<AbstractLazyWS> lwj;
  // INTELLI::UtilityFunctions::timerStart(joinResult);
   lwj.test(joinResult,relationCouple);
 

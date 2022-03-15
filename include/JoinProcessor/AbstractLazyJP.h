@@ -63,7 +63,7 @@ class AbstractLazyJP :public AbstractJP{
   bool sWindowReady= false;
   bool rWindowReady= false;
   bool isLastJp= false;
-
+  JoinAlgoTablePtr myAlgo;
 
   virtual void inlineMain();
   /**
@@ -87,7 +87,7 @@ class AbstractLazyJP :public AbstractJP{
    AbstractJP::init(sLen,rLen,_sysId);
    windowS=C20Buffer<TuplePtr>(sLen);
     windowR=C20Buffer<TuplePtr>(rLen);
-
+    myAlgo=newJoinAlgoTable();
   }
   /**
    * @brief set the parameters of lazy window
@@ -101,10 +101,6 @@ class AbstractLazyJP :public AbstractJP{
     windowLen=wlen;
     period=per;
   }
-  /**
-   * @brief To indicate if this one is the last join processor
-   * @param val
-   */
   void setLastJp(bool val)
   {
     isLastJp=val;

@@ -193,7 +193,7 @@ void HandShakeHashJP::feedTupleS(TuplePtr ts) {
   } else {
     //ts->subKey=getTimeStamp();
   }
-  CellJoinJP::feedTupleS(ts);
+  SimpleHashJP::feedTupleS(ts);
 
 }
 
@@ -205,6 +205,6 @@ void HandShakeHashJP::feedTupleR(TuplePtr tr) {
   } else {
     //tr->subKey=getTimeStamp();
   }
-  CellJoinJP::feedTupleR(tr);
+  SimpleHashJP::feedTupleR(tr);
 
 }

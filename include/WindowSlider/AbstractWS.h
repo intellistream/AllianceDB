@@ -30,7 +30,6 @@ namespace INTELLI {
 To init and run, follow the functions below to start a WS
   \li Configure the window type, time or count, @ref setTimeBased
   \li Configure window length: @ref setWindowLen
-  \li Configure slide length: @ref setSlideLen (default is 1 if not called)
   \li Set parallel executing behavior on SMP,@ref setParallelSMP
   \li Optional, (@ref setRunTimeScheduling)
   \li To make the parallel join processors started, @ref initJoinProcessors
@@ -58,7 +57,6 @@ class AbstractWS {
   TuplePtrQueue TuplePtrQueueInS;
   TuplePtrQueue TuplePtrQueueInR;
   string nameTag;
-
  public:
 
   /**

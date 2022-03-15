@@ -59,8 +59,6 @@ class AbstractC20Thread{
     threadPtr->join();
   }
 
-
-
 };
 
 }

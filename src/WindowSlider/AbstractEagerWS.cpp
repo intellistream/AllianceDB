@@ -3,11 +3,12 @@
 //
 #include <WindowSlider/AbstractEagerWS.h>
 using namespace INTELLI;
-AbstractEagerWS::AbstractEagerWS(size_t _sLen, size_t _rLen): AbstractWS(_sLen,_rLen) {
-
-  TuplePtrQueueLocalS = newTuplePtrQueue(sLen);
-  TuplePtrQueueLocalR = newTuplePtrQueue(rLen);
-  //reset();
+AbstractEagerWS::AbstractEagerWS(size_t _sLen, size_t _rLen) {
+  sLen = _sLen;
+  rLen = _rLen;
+  TuplePtrQueueInS = newTuplePtrQueue(sLen);
+  TuplePtrQueueInR = newTuplePtrQueue(rLen);
+  reset();
   nameTag="CellJoin";
 }
 AbstractEagerWS::~AbstractEagerWS() {
@@ -22,26 +23,43 @@ size_t AbstractEagerWS::oldestWindowBelong(size_t ts) {
   }
   return ((ts-windowLen)/slideLen)+1;
 }
-void AbstractEagerWS::deliverTupleS(TuplePtr ts) {
+void AbstractEagerWS::feedTupleS(TuplePtr ts) {
   if (timeBased) //use time stamp, S and R share the same time system
   {
     size_t timeNow = ts->subKey;
+    //  ts->subKey = timeNow;
+    //expireS(timeNow);
     expireR(timeNow);
-  } else {
+  } else { //use simple arrival count, the cnt of S and R are seperated
     ts->subKey = countS;
     expireR(countS);
     countS++;
   }
-  TuplePtrQueueLocalS->push(ts);
+  TuplePtrQueueInS->push(ts);
+  // too few tuples in R
+  /*size_t rGet = TuplePtrQueueInR->size();
 
-  partitionSizeFinal = avgPartitionSizeFinal( TuplePtrQueueLocalR->size());
+  if (rGet < threads) {
+    WindowOfTuples  wr(rGet);
+    // return;
+    for (size_t i = 0; i < rGet; i++) {
+     wr[i]=(TuplePtrQueueInR->front()[i]);
+    }
+    //feed window r
+    jps[0].feedWindowR(wr);
+    //feed tuple s
+    jps[0].feedTupleS(ts);
+    return;
+  }*/
+  //do the tuple S, window R join
+  partitionSizeFinal = avgPartitionSizeFinal(TuplePtrQueueInR->size());
   size_t rBase = 0;
   for (size_t tid = 0; tid < threads; tid++) {
     // partition window R
     size_t wrLen = partitionSizeFinal[tid];
     WindowOfTuples wr(wrLen);
     for (size_t i = 0; i < wrLen; i++) {
-      wr[i] = ( TuplePtrQueueLocalR->front()[rBase + i]);
+      wr[i] = (TuplePtrQueueInR->front()[rBase + i]);
     }
     rBase += wrLen;
     //feed window r
@@ -51,25 +69,43 @@ void AbstractEagerWS::deliverTupleS(TuplePtr ts) {
   }
   //waitAckFromJoinProcessors();
 }
-void AbstractEagerWS::deliverTupleR(TuplePtr tr)  {
+void AbstractEagerWS::feedTupleR(TuplePtr tr) {
   if (timeBased) //use time stamp
   {
     size_t timeNow = tr->subKey;
+    // tr->subKey = timeNow;
     expireS(timeNow);
+    //expireR(timeNow);
   } else {
     tr->subKey = countR;
     expireS(countR);
     countR++;
   }
-  TuplePtrQueueLocalR->push(tr);
-  partitionSizeFinal = avgPartitionSizeFinal( TuplePtrQueueLocalS->size());
+  TuplePtrQueueInR->push(tr);
+
+  // too few tuples in S
+  /*size_t sGet = TuplePtrQueueInS->size();
+  if (sGet < threads) {
+    WindowOfTuples ws(sGet);
+    // return;
+    for (size_t i = 0; i < sGet; i++) {
+      ws[i] = (TuplePtrQueueInS->front()[i]);
+    }
+    //feed window S
+    jps[0].feedWindowS(ws);
+    //feed tuple R
+    jps[0].feedTupleR(tr);
+    return;
+  }*/
+  //do the tuple R, window s join
+  partitionSizeFinal = avgPartitionSizeFinal(TuplePtrQueueInS->size());
   size_t sBase = 0;
   for (size_t tid = 0; tid < threads; tid++) {
     //partition window S
     size_t wsLen = partitionSizeFinal[tid];
     WindowOfTuples ws(wsLen);
     for (size_t i = 0; i < wsLen; i++) {
-      ws[i] = ( TuplePtrQueueLocalS->front()[sBase + i]);
+      ws[i] = (TuplePtrQueueInS->front()[sBase + i]);
     }
     sBase += wsLen;
     //feed window S
@@ -103,14 +139,14 @@ void AbstractEagerWS::expireR(size_t ts) {
   size_t windowNo= oldestWindowBelong(ts);
   size_t startTime=windowNo*slideLen;
 
-  if (! TuplePtrQueueLocalR->empty()) {
-    TuplePtr tr = * TuplePtrQueueLocalR->front();
+  if (!TuplePtrQueueInR->empty()) {
+    TuplePtr tr = *TuplePtrQueueInR->front();
     pos = tr->subKey;
   //  cout<<"pos="+ to_string(pos)+", startTime="+ to_string(slideLen)<<endl;
     while (pos <startTime) {
-      TuplePtrQueueLocalR->pop();
-      if (! TuplePtrQueueLocalR->empty()) {
-        tr = * TuplePtrQueueLocalR->front();
+      TuplePtrQueueInR->pop();
+      if (!TuplePtrQueueInR->empty()) {
+        tr = *TuplePtrQueueInR->front();
         pos = tr->subKey;
       } else {
         pos = startTime;
@@ -124,13 +160,13 @@ void AbstractEagerWS::expireS(size_t ts) {
   size_t pos = 0;
   size_t windowNo= oldestWindowBelong(ts);
   size_t startTime=windowNo*slideLen;
-  if (! TuplePtrQueueLocalS->empty()) {
-    TuplePtr ts = * TuplePtrQueueLocalS->front();
+  if (!TuplePtrQueueInS->empty()) {
+    TuplePtr ts = *TuplePtrQueueInS->front();
     pos = ts->subKey;
     while (pos < startTime) {
-      TuplePtrQueueLocalS->pop();
-      if (! TuplePtrQueueLocalS->empty()) {
-        ts = * TuplePtrQueueLocalS->front();
+      TuplePtrQueueInS->pop();
+      if (!TuplePtrQueueInS->empty()) {
+        ts = *TuplePtrQueueInS->front();
         pos =ts->subKey;
       } else {
         pos = startTime;
@@ -142,18 +178,17 @@ void AbstractEagerWS::expireS(size_t ts) {
 void AbstractEagerWS::initJoinProcessors() {
   threads = partitionWeight.size();
   cout << "enable " << threads << " threads" << endl;
-  jps = std::vector<CellJoinJPPtr>(threads);
+  jps = std::vector<SimpleHashJPPtr>(threads);
   for (size_t tid = 0; tid < threads; tid++) {
-    jps[tid] = make_shared<CellJoinJP>();
+    jps[tid] = make_shared<SimpleHashJP>();
     jps[tid]->init(sLen, rLen, tid);
     if (isRunTimeScheduling()) {
       jps[tid]->setCore(tid);
     }
 
-    jps[tid]->startThread();
+    jps[tid]->start();
   }
   isRunning = true;
-  this->startThread();
 }
 void AbstractEagerWS::terminateJoinProcessors() {
   for (size_t tid = 0; tid < threads; tid++) {
@@ -162,10 +197,9 @@ void AbstractEagerWS::terminateJoinProcessors() {
   }
   waitAckFromJoinProcessors();
   for (size_t tid = 0; tid < threads; tid++) {
-    jps[tid]->joinThread();
+    jps[tid]->join();
   }
   isRunning = false;
-  this->joinThread();
 }
 void AbstractEagerWS::waitAckFromJoinProcessors() {
   for (size_t tid = 0; tid < threads; tid++) {
@@ -182,25 +216,9 @@ void AbstractEagerWS::waitAckFromJoinProcessors() {
 size_t AbstractEagerWS::getJoinResult() {
   size_t ru = 0;
   for (size_t tid = 0; tid < threads; tid++) {
+
     ru += jps[tid]->getJoinedResult();
     cout << "JP" << tid << " : " << jps[tid]->getJoinedResult() << endl;
   }
   return ru;
-}
-void AbstractEagerWS::inlineMain() {
-  while (isRunning)
-  {
-    while (!TuplePtrQueueInS->empty())
-    {
-      TuplePtr ts = *TuplePtrQueueInS->front();
-      TuplePtrQueueInS->pop();
-      deliverTupleS(ts);
-    }
-    while (!TuplePtrQueueInR->empty())
-    {
-      TuplePtr tr = *TuplePtrQueueInR->front();
-      TuplePtrQueueInR->pop();
-      deliverTupleR(tr);
-    }
-  }
 }
