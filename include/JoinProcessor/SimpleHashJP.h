@@ -8,6 +8,7 @@
 #include <Common/Types.h>
 #include <Utils/UtilityFunctions.hpp>
 #include <barrier>
+#include <JoinAlgo/JoinAlgoTable.h>
 using namespace INTELLI;
 using namespace std;
 namespace INTELLI {
@@ -31,13 +32,14 @@ class SimpleHashJP {
   CmdQueuePtr cmdQueueIn;
   CmdQueuePtr cmdQueueOut;
   //tuple Queue
-  TuplePtrQueue TuplePtrQueueLocalS;
-  TuplePtrQueue TuplePtrQueueLocalR;
+  TuplePtrQueue TuplePtrQueueInS;
+  TuplePtrQueue TuplePtrQueueInR;
   WindowQueue windowQueueS;
   WindowQueue windowQueueR;
   size_t windowLen = 0;
   bool timeBased = false;
   int cpuBind = -1;
+  JoinAlgoTablePtr myAlgo;
   //response of my self
   void sendResponseCmd(join_cmd_t cmd) {
     cmdQueueOut->push(cmd);
@@ -52,14 +54,15 @@ class SimpleHashJP {
 
   }
   void init(size_t sLen, size_t rLen, size_t _sysId) {
-    TuplePtrQueueLocalS = newTuplePtrQueue(sLen);
-    TuplePtrQueueLocalR = newTuplePtrQueue(rLen);
+   TuplePtrQueueInS = newTuplePtrQueue(sLen);
+   TuplePtrQueueInR = newTuplePtrQueue(rLen);
     windowQueueS = newWindowQueue(sLen);
     windowQueueR = newWindowQueue(rLen);
     cmdQueueIn = newCmdQueue(1);
     cmdQueueOut = newCmdQueue(1);
     joinedResult = 0;
     sysId = _sysId;
+    myAlgo=newJoinAlgoTable();
   }
   /*SimpleHashJP(size_t sLen,size_t rLen,size_t _sysId)
   {
@@ -102,10 +105,10 @@ class SimpleHashJP {
   }
   //outside feed a Tuple S
   void feedTupleS(TuplePtr ts) {
-    TuplePtrQueueLocalS->push(ts);
+   TuplePtrQueueInS->push(ts);
   }
   void feedTupleR(TuplePtr tr) {
-    TuplePtrQueueLocalR->push(tr);
+   TuplePtrQueueInR->push(tr);
   }
   //outside feed a window
   void feedWindowS(WindowOfTuples ws) {

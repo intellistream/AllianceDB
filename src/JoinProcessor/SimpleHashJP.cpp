@@ -3,6 +3,7 @@
 //
 
 #include <JoinProcessor/SimpleHashJP.h>
+
 using namespace INTELLI;
 using namespace std;
 void INTELLI::SimpleHashJP::inlineRun() {
@@ -11,11 +12,11 @@ void INTELLI::SimpleHashJP::inlineRun() {
   //wait for new cmd
   //cout<<"join processor "<<sysId<<" start"<<endl;
   while (1) {
-    /*while (cmdQueueIn->empty()&&TuplePtrQueueLocalS->empty()&&TuplePtrQueueLocalR->) {
+    /*while (cmdQueueIn->empty()&&TuplePtrQueueIn->empty()&&TuplePtrQueueInR->) {
 
     }*/
     //cmd
-    if (TuplePtrQueueLocalS->empty() && TuplePtrQueueLocalR->empty()) {
+    if (TuplePtrQueueInS->empty() && TuplePtrQueueInR->empty()) {
       if (!cmdQueueIn->empty()) {
 
         join_cmd_t cmdIn = *cmdQueueIn->front();
@@ -31,13 +32,14 @@ void INTELLI::SimpleHashJP::inlineRun() {
 
 
     //tuple S and window R
-    while (!TuplePtrQueueLocalS->empty()) {
-      TuplePtr ts = *TuplePtrQueueLocalS->front();
-      TuplePtrQueueLocalS->pop();
+    while (!TuplePtrQueueInS->empty()) {
+      TuplePtr ts = *TuplePtrQueueInS->front();
+      TuplePtrQueueInS->pop();
       WindowOfTuples wr = *windowQueueR->front();
       windowQueueR->pop();
-      //build R
       size_t rSize = wr.size();
+      //build R
+     /* size_t rSize = wr.size();
       hashtable hashtableR;
       for (size_t i = 0; i < rSize; i++) {
         TuplePtr tr = wr[i];
@@ -49,7 +51,8 @@ void INTELLI::SimpleHashJP::inlineRun() {
         size_t matches = findMatchR->second.size();
         joinedResult += matches;
         //printf("JP%ld:S[%ld](%ld) find %ld R matches\r\n", sysId, ts->subKey + 1, ts->key, matches);
-      }
+      }*/
+      joinedResult+=myAlgo->findAlgo(JOINALGO_NPJ)->join(&wr[0],ts,rSize,4);
       /*for (size_t i = 0; i < rSize; i++) {
         TuplePtr tr=wr[i];
         if(tr->key==ts->key)
@@ -60,13 +63,14 @@ void INTELLI::SimpleHashJP::inlineRun() {
     }
 
     //tuple R and window S
-    while (!TuplePtrQueueLocalR->empty()) {
-      TuplePtr tr = *TuplePtrQueueLocalR->front();
-      TuplePtrQueueLocalR->pop();
+    while (!TuplePtrQueueInR->empty()) {
+      TuplePtr tr = *TuplePtrQueueInR->front();
+      TuplePtrQueueInR->pop();
       WindowOfTuples ws = *windowQueueS->front();
       windowQueueS->pop();
-      //build S
       size_t sSize = ws.size();
+      //build S
+     /* size_t sSize = ws.size();
       hashtable hashtableS;
       for (size_t i = 0; i < sSize; i++) {
         TuplePtr ts = ws[i];
@@ -78,7 +82,8 @@ void INTELLI::SimpleHashJP::inlineRun() {
         size_t matches = findMatchS->second.size();
         joinedResult += matches;
         // printf("JP%ld:R[%ld](%ld) find %ld S matches\r\n", sysId, tr->subKey + 1, tr->key, matches);
-      }
+      }*/
+      joinedResult+=myAlgo->findAlgo(JOINALGO_NPJ)->join(&ws[0],tr,sSize,4);
       /* for (size_t i = 0; i < sSize; i++) {
          TuplePtr ts=ws[i];
          if(tr->key==ts->key)

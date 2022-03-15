@@ -89,19 +89,64 @@ benchmark/CMakeFiles/benchmark.dir/src/Benchmark.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/benchmark.dir/src/Benchmark.cpp.s"
 	cd /home/tony/Projects/AllianceDB/build/benchmark && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/tony/Projects/AllianceDB/benchmark/src/Benchmark.cpp -o CMakeFiles/benchmark.dir/src/Benchmark.cpp.s
 
+benchmark/CMakeFiles/benchmark.dir/src/TestBench/AbstractJoinMethod.cpp.o: benchmark/CMakeFiles/benchmark.dir/flags.make
+benchmark/CMakeFiles/benchmark.dir/src/TestBench/AbstractJoinMethod.cpp.o: ../benchmark/src/TestBench/AbstractJoinMethod.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/tony/Projects/AllianceDB/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object benchmark/CMakeFiles/benchmark.dir/src/TestBench/AbstractJoinMethod.cpp.o"
+	cd /home/tony/Projects/AllianceDB/build/benchmark && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/benchmark.dir/src/TestBench/AbstractJoinMethod.cpp.o -c /home/tony/Projects/AllianceDB/benchmark/src/TestBench/AbstractJoinMethod.cpp
+
+benchmark/CMakeFiles/benchmark.dir/src/TestBench/AbstractJoinMethod.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/benchmark.dir/src/TestBench/AbstractJoinMethod.cpp.i"
+	cd /home/tony/Projects/AllianceDB/build/benchmark && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/tony/Projects/AllianceDB/benchmark/src/TestBench/AbstractJoinMethod.cpp > CMakeFiles/benchmark.dir/src/TestBench/AbstractJoinMethod.cpp.i
+
+benchmark/CMakeFiles/benchmark.dir/src/TestBench/AbstractJoinMethod.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/benchmark.dir/src/TestBench/AbstractJoinMethod.cpp.s"
+	cd /home/tony/Projects/AllianceDB/build/benchmark && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/tony/Projects/AllianceDB/benchmark/src/TestBench/AbstractJoinMethod.cpp -o CMakeFiles/benchmark.dir/src/TestBench/AbstractJoinMethod.cpp.s
+
+benchmark/CMakeFiles/benchmark.dir/src/TestBench/HandShakeJoin.cpp.o: benchmark/CMakeFiles/benchmark.dir/flags.make
+benchmark/CMakeFiles/benchmark.dir/src/TestBench/HandShakeJoin.cpp.o: ../benchmark/src/TestBench/HandShakeJoin.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/tony/Projects/AllianceDB/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object benchmark/CMakeFiles/benchmark.dir/src/TestBench/HandShakeJoin.cpp.o"
+	cd /home/tony/Projects/AllianceDB/build/benchmark && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/benchmark.dir/src/TestBench/HandShakeJoin.cpp.o -c /home/tony/Projects/AllianceDB/benchmark/src/TestBench/HandShakeJoin.cpp
+
+benchmark/CMakeFiles/benchmark.dir/src/TestBench/HandShakeJoin.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/benchmark.dir/src/TestBench/HandShakeJoin.cpp.i"
+	cd /home/tony/Projects/AllianceDB/build/benchmark && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/tony/Projects/AllianceDB/benchmark/src/TestBench/HandShakeJoin.cpp > CMakeFiles/benchmark.dir/src/TestBench/HandShakeJoin.cpp.i
+
+benchmark/CMakeFiles/benchmark.dir/src/TestBench/HandShakeJoin.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/benchmark.dir/src/TestBench/HandShakeJoin.cpp.s"
+	cd /home/tony/Projects/AllianceDB/build/benchmark && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/tony/Projects/AllianceDB/benchmark/src/TestBench/HandShakeJoin.cpp -o CMakeFiles/benchmark.dir/src/TestBench/HandShakeJoin.cpp.s
+
+benchmark/CMakeFiles/benchmark.dir/src/TestBench/CellJoin.cpp.o: benchmark/CMakeFiles/benchmark.dir/flags.make
+benchmark/CMakeFiles/benchmark.dir/src/TestBench/CellJoin.cpp.o: ../benchmark/src/TestBench/CellJoin.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/tony/Projects/AllianceDB/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object benchmark/CMakeFiles/benchmark.dir/src/TestBench/CellJoin.cpp.o"
+	cd /home/tony/Projects/AllianceDB/build/benchmark && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/benchmark.dir/src/TestBench/CellJoin.cpp.o -c /home/tony/Projects/AllianceDB/benchmark/src/TestBench/CellJoin.cpp
+
+benchmark/CMakeFiles/benchmark.dir/src/TestBench/CellJoin.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/benchmark.dir/src/TestBench/CellJoin.cpp.i"
+	cd /home/tony/Projects/AllianceDB/build/benchmark && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/tony/Projects/AllianceDB/benchmark/src/TestBench/CellJoin.cpp > CMakeFiles/benchmark.dir/src/TestBench/CellJoin.cpp.i
+
+benchmark/CMakeFiles/benchmark.dir/src/TestBench/CellJoin.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/benchmark.dir/src/TestBench/CellJoin.cpp.s"
+	cd /home/tony/Projects/AllianceDB/build/benchmark && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/tony/Projects/AllianceDB/benchmark/src/TestBench/CellJoin.cpp -o CMakeFiles/benchmark.dir/src/TestBench/CellJoin.cpp.s
+
 # Object files for target benchmark
 benchmark_OBJECTS = \
-"CMakeFiles/benchmark.dir/src/Benchmark.cpp.o"
+"CMakeFiles/benchmark.dir/src/Benchmark.cpp.o" \
+"CMakeFiles/benchmark.dir/src/TestBench/AbstractJoinMethod.cpp.o" \
+"CMakeFiles/benchmark.dir/src/TestBench/HandShakeJoin.cpp.o" \
+"CMakeFiles/benchmark.dir/src/TestBench/CellJoin.cpp.o"
 
 # External object files for target benchmark
 benchmark_EXTERNAL_OBJECTS =
 
 benchmark/benchmark: benchmark/CMakeFiles/benchmark.dir/src/Benchmark.cpp.o
+benchmark/benchmark: benchmark/CMakeFiles/benchmark.dir/src/TestBench/AbstractJoinMethod.cpp.o
+benchmark/benchmark: benchmark/CMakeFiles/benchmark.dir/src/TestBench/HandShakeJoin.cpp.o
+benchmark/benchmark: benchmark/CMakeFiles/benchmark.dir/src/TestBench/CellJoin.cpp.o
 benchmark/benchmark: benchmark/CMakeFiles/benchmark.dir/build.make
 benchmark/benchmark: libIntelliStream.so
 benchmark/benchmark: /usr/lib/x86_64-linux-gnu/liblog4cxx.so
 benchmark/benchmark: benchmark/CMakeFiles/benchmark.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/tony/Projects/AllianceDB/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable benchmark"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/tony/Projects/AllianceDB/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable benchmark"
 	cd /home/tony/Projects/AllianceDB/build/benchmark && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/benchmark.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

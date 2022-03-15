@@ -16,7 +16,10 @@
 #include  <Utils/ThreadPerf.h>
 #include <WindowSlider/AbstractEagerWS.h>
 
-#include <JoinAlgo/NPJ.h>
+#include <JoinAlgo/JoinAlgoTable.h>
+#include <Utils/C20Buffers.hpp>
+#include <WindowSlider/AbstractLazyWS.h>
+#include <JoinProcessor/AbstractLazyJP.h>
 using namespace std;
 using namespace INTELLI;
 
@@ -29,7 +32,7 @@ using namespace INTELLI;
 #endif
 int main() {
   //Setup Logs
-  /*setupLogging("benchmark.log", LOG_DEBUG);
+  setupLogging("benchmark.log", LOG_DEBUG);
   INTELLI::Result joinResult = INTELLI::Result();
   INTELLI::RelationCouple relationCouple = INTELLI::RelationCouple();
   string pwd = getcwd(NULL, 0); //Get current directory
@@ -39,13 +42,15 @@ int main() {
   dataSet.load3VText(relationCouple.relationR, fileRName);
   dataSet.load3VText(relationCouple.relationS, fileSName);
   joinResult.streamSize = relationCouple.relationR.size();
-  INTELLI::UtilityFunctions::timerStart(joinResult);
-  INTELLI::ALGO_CLASS::TESTMODULE;
-  INTELLI::ALGO_CLASS::EXEC;
+
+  AbstractJoinMethod<AbstractLazyWS> lwj;
+ // INTELLI::UtilityFunctions::timerStart(joinResult);
+  lwj.test(joinResult,relationCouple);
+
   //Print result number
-  INTELLI::UtilityFunctions::timerEnd(joinResult);
-  joinResult.statPrinter();*/
-  MicroDataSet mr(999);
+ // INTELLI::UtilityFunctions::timerEnd(joinResult);
+  joinResult.statPrinter();
+  /*MicroDataSet mr(999);
   DatasetTool dataSet;
   size_t dLen = 100000;
   TuplePtrQueue tr = newTuplePtrQueue(dLen);
@@ -70,22 +75,25 @@ int main() {
   cout << tp.headStringPrintf() << endl;
   cout << tp.resultStringPrintf() << endl;
  // cout << tp.getResultByName("instructions") << endl;
-  MultiThreadHashTable mht(dLen/2);
+  JoinAlgoTable jat;
 
   tp.start();
-  NPJ npj0;
-  size_t matches=npj0.join(ts,tr,1);
+  auto npj0=jat.findAlgo(JOINALGO_NPJ);
+  cout<<npj0->getAlgoName()<<endl;
+  size_t matches=npj0->join(ts,tr,1);
   tp.end();
   //printf("single thread, %ld us,%ld matches\r\n",tp.getResultById(-1),matches);
   cout<<"1 thread,"+ to_string(tp.getResultById(-1))+"us "+ to_string(matches)+" matches"<<endl;
-  int ths=4;
+  int ths=8;
   tp.start();
-  matches=npj0.join(ts,tr,ths);
+  matches=npj0->join(ts,tr,ths);
   tp.end();
   cout<<to_string(ths)+" thread,"+ to_string(tp.getResultById(-1))+"us "+ to_string(matches)+" matches"<<endl;
   cout<<matches<<endl;
+
+
   //vector <int32_t> ru=ms.genRandInt<int32_t>(50,10,-10);
-  cout<<sizeof(MtBucket)<<endl;
+  //cout<<sizeof(MtBucket)<<endl;
   /*AbstractEagerWS es(100,100);
   es.setParallelSMP(10);
   vector<size_t >a=es.avgPartitionSizeFinal(1010);

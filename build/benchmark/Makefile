@@ -228,6 +228,87 @@ src/Benchmark.cpp.s:
 	cd /home/tony/Projects/AllianceDB/build && $(MAKE) $(MAKESILENT) -f benchmark/CMakeFiles/benchmark.dir/build.make benchmark/CMakeFiles/benchmark.dir/src/Benchmark.cpp.s
 .PHONY : src/Benchmark.cpp.s
 
+src/TestBench/AbstractJoinMethod.o: src/TestBench/AbstractJoinMethod.cpp.o
+
+.PHONY : src/TestBench/AbstractJoinMethod.o
+
+# target to build an object file
+src/TestBench/AbstractJoinMethod.cpp.o:
+	cd /home/tony/Projects/AllianceDB/build && $(MAKE) $(MAKESILENT) -f benchmark/CMakeFiles/benchmark.dir/build.make benchmark/CMakeFiles/benchmark.dir/src/TestBench/AbstractJoinMethod.cpp.o
+.PHONY : src/TestBench/AbstractJoinMethod.cpp.o
+
+src/TestBench/AbstractJoinMethod.i: src/TestBench/AbstractJoinMethod.cpp.i
+
+.PHONY : src/TestBench/AbstractJoinMethod.i
+
+# target to preprocess a source file
+src/TestBench/AbstractJoinMethod.cpp.i:
+	cd /home/tony/Projects/AllianceDB/build && $(MAKE) $(MAKESILENT) -f benchmark/CMakeFiles/benchmark.dir/build.make benchmark/CMakeFiles/benchmark.dir/src/TestBench/AbstractJoinMethod.cpp.i
+.PHONY : src/TestBench/AbstractJoinMethod.cpp.i
+
+src/TestBench/AbstractJoinMethod.s: src/TestBench/AbstractJoinMethod.cpp.s
+
+.PHONY : src/TestBench/AbstractJoinMethod.s
+
+# target to generate assembly for a file
+src/TestBench/AbstractJoinMethod.cpp.s:
+	cd /home/tony/Projects/AllianceDB/build && $(MAKE) $(MAKESILENT) -f benchmark/CMakeFiles/benchmark.dir/build.make benchmark/CMakeFiles/benchmark.dir/src/TestBench/AbstractJoinMethod.cpp.s
+.PHONY : src/TestBench/AbstractJoinMethod.cpp.s
+
+src/TestBench/CellJoin.o: src/TestBench/CellJoin.cpp.o
+
+.PHONY : src/TestBench/CellJoin.o
+
+# target to build an object file
+src/TestBench/CellJoin.cpp.o:
+	cd /home/tony/Projects/AllianceDB/build && $(MAKE) $(MAKESILENT) -f benchmark/CMakeFiles/benchmark.dir/build.make benchmark/CMakeFiles/benchmark.dir/src/TestBench/CellJoin.cpp.o
+.PHONY : src/TestBench/CellJoin.cpp.o
+
+src/TestBench/CellJoin.i: src/TestBench/CellJoin.cpp.i
+
+.PHONY : src/TestBench/CellJoin.i
+
+# target to preprocess a source file
+src/TestBench/CellJoin.cpp.i:
+	cd /home/tony/Projects/AllianceDB/build && $(MAKE) $(MAKESILENT) -f benchmark/CMakeFiles/benchmark.dir/build.make benchmark/CMakeFiles/benchmark.dir/src/TestBench/CellJoin.cpp.i
+.PHONY : src/TestBench/CellJoin.cpp.i
+
+src/TestBench/CellJoin.s: src/TestBench/CellJoin.cpp.s
+
+.PHONY : src/TestBench/CellJoin.s
+
+# target to generate assembly for a file
+src/TestBench/CellJoin.cpp.s:
+	cd /home/tony/Projects/AllianceDB/build && $(MAKE) $(MAKESILENT) -f benchmark/CMakeFiles/benchmark.dir/build.make benchmark/CMakeFiles/benchmark.dir/src/TestBench/CellJoin.cpp.s
+.PHONY : src/TestBench/CellJoin.cpp.s
+
+src/TestBench/HandShakeJoin.o: src/TestBench/HandShakeJoin.cpp.o
+
+.PHONY : src/TestBench/HandShakeJoin.o
+
+# target to build an object file
+src/TestBench/HandShakeJoin.cpp.o:
+	cd /home/tony/Projects/AllianceDB/build && $(MAKE) $(MAKESILENT) -f benchmark/CMakeFiles/benchmark.dir/build.make benchmark/CMakeFiles/benchmark.dir/src/TestBench/HandShakeJoin.cpp.o
+.PHONY : src/TestBench/HandShakeJoin.cpp.o
+
+src/TestBench/HandShakeJoin.i: src/TestBench/HandShakeJoin.cpp.i
+
+.PHONY : src/TestBench/HandShakeJoin.i
+
+# target to preprocess a source file
+src/TestBench/HandShakeJoin.cpp.i:
+	cd /home/tony/Projects/AllianceDB/build && $(MAKE) $(MAKESILENT) -f benchmark/CMakeFiles/benchmark.dir/build.make benchmark/CMakeFiles/benchmark.dir/src/TestBench/HandShakeJoin.cpp.i
+.PHONY : src/TestBench/HandShakeJoin.cpp.i
+
+src/TestBench/HandShakeJoin.s: src/TestBench/HandShakeJoin.cpp.s
+
+.PHONY : src/TestBench/HandShakeJoin.s
+
+# target to generate assembly for a file
+src/TestBench/HandShakeJoin.cpp.s:
+	cd /home/tony/Projects/AllianceDB/build && $(MAKE) $(MAKESILENT) -f benchmark/CMakeFiles/benchmark.dir/build.make benchmark/CMakeFiles/benchmark.dir/src/TestBench/HandShakeJoin.cpp.s
+.PHONY : src/TestBench/HandShakeJoin.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -245,6 +326,15 @@ help:
 	@echo "... src/Benchmark.o"
 	@echo "... src/Benchmark.i"
 	@echo "... src/Benchmark.s"
+	@echo "... src/TestBench/AbstractJoinMethod.o"
+	@echo "... src/TestBench/AbstractJoinMethod.i"
+	@echo "... src/TestBench/AbstractJoinMethod.s"
+	@echo "... src/TestBench/CellJoin.o"
+	@echo "... src/TestBench/CellJoin.i"
+	@echo "... src/TestBench/CellJoin.s"
+	@echo "... src/TestBench/HandShakeJoin.o"
+	@echo "... src/TestBench/HandShakeJoin.i"
+	@echo "... src/TestBench/HandShakeJoin.s"
 .PHONY : help
 
 

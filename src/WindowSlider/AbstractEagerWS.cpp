@@ -6,8 +6,8 @@ using namespace INTELLI;
 AbstractEagerWS::AbstractEagerWS(size_t _sLen, size_t _rLen) {
   sLen = _sLen;
   rLen = _rLen;
-  TuplePtrQueueLocalS = newTuplePtrQueue(sLen);
-  TuplePtrQueueLocalR = newTuplePtrQueue(rLen);
+  TuplePtrQueueInS = newTuplePtrQueue(sLen);
+  TuplePtrQueueInR = newTuplePtrQueue(rLen);
   reset();
 }
 AbstractEagerWS::~AbstractEagerWS() {
@@ -27,15 +27,15 @@ void AbstractEagerWS::feedTupleS(TuplePtr ts) {
     expireR(countS);
     countS++;
   }
-  TuplePtrQueueLocalS->push(ts);
+  TuplePtrQueueInS->push(ts);
   // too few tuples in R
-  /*size_t rGet = TuplePtrQueueLocalR->size();
+  /*size_t rGet = TuplePtrQueueInR->size();
 
   if (rGet < threads) {
     WindowOfTuples  wr(rGet);
     // return;
     for (size_t i = 0; i < rGet; i++) {
-     wr[i]=(TuplePtrQueueLocalR->front()[i]);
+     wr[i]=(TuplePtrQueueInR->front()[i]);
     }
     //feed window r
     jps[0].feedWindowR(wr);
@@ -44,14 +44,14 @@ void AbstractEagerWS::feedTupleS(TuplePtr ts) {
     return;
   }*/
   //do the tuple S, window R join
-  partitionSizeFinal = avgPartitionSizeFinal(TuplePtrQueueLocalR->size());
+  partitionSizeFinal = avgPartitionSizeFinal(TuplePtrQueueInR->size());
   size_t rBase = 0;
   for (size_t tid = 0; tid < threads; tid++) {
     // partition window R
     size_t wrLen = partitionSizeFinal[tid];
     WindowOfTuples wr(wrLen);
     for (size_t i = 0; i < wrLen; i++) {
-      wr[i] = (TuplePtrQueueLocalR->front()[rBase + i]);
+      wr[i] = (TuplePtrQueueInR->front()[rBase + i]);
     }
     rBase += wrLen;
     //feed window r
@@ -73,15 +73,15 @@ void AbstractEagerWS::feedTupleR(TuplePtr tr) {
     expireS(countR);
     countR++;
   }
-  TuplePtrQueueLocalR->push(tr);
+  TuplePtrQueueInR->push(tr);
 
   // too few tuples in S
-  /*size_t sGet = TuplePtrQueueLocalS->size();
+  /*size_t sGet = TuplePtrQueueInS->size();
   if (sGet < threads) {
     WindowOfTuples ws(sGet);
     // return;
     for (size_t i = 0; i < sGet; i++) {
-      ws[i] = (TuplePtrQueueLocalS->front()[i]);
+      ws[i] = (TuplePtrQueueInS->front()[i]);
     }
     //feed window S
     jps[0].feedWindowS(ws);
@@ -90,14 +90,14 @@ void AbstractEagerWS::feedTupleR(TuplePtr tr) {
     return;
   }*/
   //do the tuple R, window s join
-  partitionSizeFinal = avgPartitionSizeFinal(TuplePtrQueueLocalS->size());
+  partitionSizeFinal = avgPartitionSizeFinal(TuplePtrQueueInS->size());
   size_t sBase = 0;
   for (size_t tid = 0; tid < threads; tid++) {
     //partition window S
     size_t wsLen = partitionSizeFinal[tid];
     WindowOfTuples ws(wsLen);
     for (size_t i = 0; i < wsLen; i++) {
-      ws[i] = (TuplePtrQueueLocalS->front()[sBase + i]);
+      ws[i] = (TuplePtrQueueInS->front()[sBase + i]);
     }
     sBase += wsLen;
     //feed window S
@@ -128,13 +128,13 @@ vector<size_t> AbstractEagerWS::avgPartitionSizeFinal(size_t inS) {
 }
 void AbstractEagerWS::expireR(size_t cond) {
   size_t distance = 0;
-  if (!TuplePtrQueueLocalR->empty()) {
-    TuplePtr tr = *TuplePtrQueueLocalR->front();
+  if (!TuplePtrQueueInR->empty()) {
+    TuplePtr tr = *TuplePtrQueueInR->front();
     distance = cond - tr->subKey;
     while (distance > windowLen) {
-      TuplePtrQueueLocalR->pop();
-      if (!TuplePtrQueueLocalR->empty()) {
-        tr = *TuplePtrQueueLocalR->front();
+      TuplePtrQueueInR->pop();
+      if (!TuplePtrQueueInR->empty()) {
+        tr = *TuplePtrQueueInR->front();
         distance = cond - tr->subKey;
       } else {
         distance = 0;
@@ -146,13 +146,13 @@ void AbstractEagerWS::expireR(size_t cond) {
 
 void AbstractEagerWS::expireS(size_t cond) {
   size_t distance = 0;
-  if (!TuplePtrQueueLocalS->empty()) {
-    TuplePtr ts = *TuplePtrQueueLocalS->front();
+  if (!TuplePtrQueueInS->empty()) {
+    TuplePtr ts = *TuplePtrQueueInS->front();
     distance = cond - ts->subKey;
     while (distance > windowLen) {
-      TuplePtrQueueLocalS->pop();
-      if (!TuplePtrQueueLocalS->empty()) {
-        ts = *TuplePtrQueueLocalS->front();
+      TuplePtrQueueInS->pop();
+      if (!TuplePtrQueueInS->empty()) {
+        ts = *TuplePtrQueueInS->front();
         distance = cond - ts->subKey;
       } else {
         distance = 0;

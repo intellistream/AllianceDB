@@ -28,23 +28,19 @@ using namespace INTELLI;
 void MtBucket::duplicatedInsert(TuplePtr tp) {
   MtBucketPtr nxt;
   nxt = this->next;
-  if(this->count==BUCKET_SIZE)
-  {
-    if(nxt== nullptr||nxt->count == BUCKET_SIZE)
-    {
-      MtBucketPtr b= make_shared<MtBucket>();
+  if (this->count == BUCKET_SIZE) {
+    if (nxt == nullptr || nxt->count == BUCKET_SIZE) {
+      MtBucketPtr b = make_shared<MtBucket>();
       b->next = this->next;
       b->count = 1;
-      b->tuples[0]=tp;
-      this->next=b;
-    }
-    else {
-      nxt->tuples[nxt->count]=tp;
+      b->tuples[0] = tp;
+      this->next = b;
+    } else {
+      nxt->tuples[nxt->count] = tp;
       nxt->count++;
     }
-  }
-  else {
-    this->tuples[this->count]=tp;
+  } else {
+    this->tuples[this->count] = tp;
     this->count++;
   }
   /*if (this->count >= BUCKET_SIZE) {
@@ -58,61 +54,58 @@ void MtBucket::duplicatedInsert(TuplePtr tp) {
   }*/
 
   //this->tuples[0].push_back(tp);
- /*size_t allLen=this->tuples.size();
-  for(size_t index_ht = 0; index_ht < allLen; index_ht++)
-  {
-      if(this->tuples[index_ht][0]->key==tp->key) {
-        this->tuples[index_ht].push_back(tp);
-        return;
-      }
-  }
- // cout<<"new key"<<endl;
-  MtTuplePtr newCell;
-  newCell.push_back(tp);
-  this->tuples.push_back(newCell);*/
+  /*size_t allLen=this->tuples.size();
+   for(size_t index_ht = 0; index_ht < allLen; index_ht++)
+   {
+       if(this->tuples[index_ht][0]->key==tp->key) {
+         this->tuples[index_ht].push_back(tp);
+         return;
+       }
+   }
+  // cout<<"new key"<<endl;
+   MtTuplePtr newCell;
+   newCell.push_back(tp);
+   this->tuples.push_back(newCell);*/
   //this->count++;
 }
 size_t MtBucket::probeTuple(TuplePtr tp) {
 // size_t allLen=this->count;
- size_t matches=0;
-  MtBucket* b=this;
-  while (1)
-  {
+  size_t matches = 0;
+  MtBucket *b = this;
+  while (1) {
     for (size_t index_ht = 0; index_ht < b->count; index_ht++) {
       if (tp->key == b->tuples[index_ht]->key) {
         matches++;
       }
     }
-    if(b->next== nullptr)
-    {
-      return  matches;
+    if (b->next == nullptr) {
+      return matches;
     }
-    b=b->next.get();
+    b = b->next.get();
   }
   return 0;
 }
 //init with buckets
-MultiThreadHashTable::MultiThreadHashTable(size_t bksr){
-size_t bks=bksr;
-NEXT_POW_2(bks);
+MultiThreadHashTable::MultiThreadHashTable(size_t bksr) {
+  size_t bks = bksr;
+  NEXT_POW_2(bks);
   //creat the buckets
-buckets=vector<MtBucket>(bks);
+  buckets = vector<MtBucket>(bks);
 
-this->skip_bits = 0; /* the default for modulo hash */
-  this->hash_mask = (bks- 1) << this->skip_bits;
+  this->skip_bits = 0; /* the default for modulo hash */
+  this->hash_mask = (bks - 1) << this->skip_bits;
 }
 void MultiThreadHashTable::buildTable(TuplePtrQueue tps) {
   size_t i;
   const uint32_t hashmask = this->hash_mask;
   const uint32_t skipbits = this->skip_bits;
-  size_t allLen=tps->size();
-  for(i=0;i<allLen;i++)
-  {
+  size_t allLen = tps->size();
+  for (i = 0; i < allLen; i++) {
     TuplePtr nowTuple;
     MtBucket *curr;
-    nowTuple=tps->front()[i]; //read [i]
+    nowTuple = tps->front()[i]; //read [i]
     int32_t idx = HASH(nowTuple->key, hashmask, skipbits); //get the hash value
-    curr=&buckets[idx];
+    curr = &buckets[idx];
     curr->lock();
 
     /*if (curr->count >= BUCKET_SIZE) {
@@ -125,21 +118,20 @@ void MultiThreadHashTable::buildTable(TuplePtrQueue tps) {
       curr->count++;
     }*/
     curr->duplicatedInsert(nowTuple);
-   curr->unlock();
+    curr->unlock();
   }
 }
 void MultiThreadHashTable::buildTable(TuplePtr *tps, size_t len) {
   size_t i;
   const uint32_t hashmask = this->hash_mask;
   const uint32_t skipbits = this->skip_bits;
-  size_t allLen=len;
-  for(i=0;i<allLen;i++)
-  {
+  size_t allLen = len;
+  for (i = 0; i < allLen; i++) {
     TuplePtr nowTuple;
-    MtBucket* curr;
-    nowTuple=tps[i]; //read [i]
+    MtBucket *curr;
+    nowTuple = tps[i]; //read [i]
     int32_t idx = HASH(nowTuple->key, hashmask, skipbits); //get the hash value
-    curr=&buckets[idx];
+    curr = &buckets[idx];
     curr->lock();
     curr->duplicatedInsert(nowTuple);
     curr->unlock();

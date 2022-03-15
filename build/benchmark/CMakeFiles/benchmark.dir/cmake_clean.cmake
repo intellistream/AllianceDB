@@ -1,5 +1,8 @@
 file(REMOVE_RECURSE
   "CMakeFiles/benchmark.dir/src/Benchmark.cpp.o"
+  "CMakeFiles/benchmark.dir/src/TestBench/AbstractJoinMethod.cpp.o"
+  "CMakeFiles/benchmark.dir/src/TestBench/CellJoin.cpp.o"
+  "CMakeFiles/benchmark.dir/src/TestBench/HandShakeJoin.cpp.o"
   "benchmark"
   "benchmark.pdb"
 )

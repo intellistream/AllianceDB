@@ -43,7 +43,7 @@ class AbstractC20Thread{
   /**
    * @brief to start this thread
    */
-  void start()
+  void startThread()
   {
     auto fun = [this]() {
       inlineMain();
@@ -54,7 +54,7 @@ class AbstractC20Thread{
   /**
    * @brief the thread join function
    */
-  void join()
+  void joinThread()
   {
     threadPtr->join();
   }

@@ -180,27 +180,27 @@ benchmark/clean: benchmark/CMakeFiles/benchmark.dir/clean
 
 # Recursive "all" directory target.
 src/all: src/Utils/all
-src/all: src/JoinMethods/all
 src/all: src/WindowSlider/all
 src/all: src/JoinProcessor/all
+src/all: src/JoinAlgo/all
 src/all: src/Common/all
 
 .PHONY : src/all
 
 # Recursive "preinstall" directory target.
 src/preinstall: src/Utils/preinstall
-src/preinstall: src/JoinMethods/preinstall
 src/preinstall: src/WindowSlider/preinstall
 src/preinstall: src/JoinProcessor/preinstall
+src/preinstall: src/JoinAlgo/preinstall
 src/preinstall: src/Common/preinstall
 
 .PHONY : src/preinstall
 
 # Recursive "clean" directory target.
 src/clean: src/Utils/clean
-src/clean: src/JoinMethods/clean
 src/clean: src/WindowSlider/clean
 src/clean: src/JoinProcessor/clean
+src/clean: src/JoinAlgo/clean
 src/clean: src/Common/clean
 
 .PHONY : src/clean
@@ -224,22 +224,22 @@ src/Common/clean:
 .PHONY : src/Common/clean
 
 #=============================================================================
-# Directory level rules for directory src/JoinMethods
+# Directory level rules for directory src/JoinAlgo
 
 # Recursive "all" directory target.
-src/JoinMethods/all:
+src/JoinAlgo/all:
 
-.PHONY : src/JoinMethods/all
+.PHONY : src/JoinAlgo/all
 
 # Recursive "preinstall" directory target.
-src/JoinMethods/preinstall:
+src/JoinAlgo/preinstall:
 
-.PHONY : src/JoinMethods/preinstall
+.PHONY : src/JoinAlgo/preinstall
 
 # Recursive "clean" directory target.
-src/JoinMethods/clean:
+src/JoinAlgo/clean:
 
-.PHONY : src/JoinMethods/clean
+.PHONY : src/JoinAlgo/clean
 
 #=============================================================================
 # Directory level rules for directory src/JoinProcessor
@@ -320,12 +320,12 @@ test/clean: test/CMakeFiles/Google_Tests_run.dir/clean
 CMakeFiles/IntelliStream.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/tony/Projects/AllianceDB/build/CMakeFiles --progress-num=3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18 "Built target IntelliStream"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/tony/Projects/AllianceDB/build/CMakeFiles --progress-num=3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22 "Built target IntelliStream"
 .PHONY : CMakeFiles/IntelliStream.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/IntelliStream.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/tony/Projects/AllianceDB/build/CMakeFiles 16
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/tony/Projects/AllianceDB/build/CMakeFiles 20
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/IntelliStream.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/tony/Projects/AllianceDB/build/CMakeFiles 0
 .PHONY : CMakeFiles/IntelliStream.dir/rule
@@ -348,7 +348,7 @@ _deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/all: _deps/googletes
 _deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/all: _deps/googletest-build/googletest/CMakeFiles/gtest.dir/all
 	$(MAKE) $(MAKESILENT) -f _deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/build.make _deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/depend
 	$(MAKE) $(MAKESILENT) -f _deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/build.make _deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/tony/Projects/AllianceDB/build/CMakeFiles --progress-num=23,24 "Built target gmock_main"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/tony/Projects/AllianceDB/build/CMakeFiles --progress-num=30,31 "Built target gmock_main"
 .PHONY : _deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/all
 
 # Build rule for subdir invocation for target.
@@ -375,7 +375,7 @@ _deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/clean:
 _deps/googletest-build/googlemock/CMakeFiles/gmock.dir/all: _deps/googletest-build/googletest/CMakeFiles/gtest.dir/all
 	$(MAKE) $(MAKESILENT) -f _deps/googletest-build/googlemock/CMakeFiles/gmock.dir/build.make _deps/googletest-build/googlemock/CMakeFiles/gmock.dir/depend
 	$(MAKE) $(MAKESILENT) -f _deps/googletest-build/googlemock/CMakeFiles/gmock.dir/build.make _deps/googletest-build/googlemock/CMakeFiles/gmock.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/tony/Projects/AllianceDB/build/CMakeFiles --progress-num=21,22 "Built target gmock"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/tony/Projects/AllianceDB/build/CMakeFiles --progress-num=28,29 "Built target gmock"
 .PHONY : _deps/googletest-build/googlemock/CMakeFiles/gmock.dir/all
 
 # Build rule for subdir invocation for target.
@@ -402,7 +402,7 @@ _deps/googletest-build/googlemock/CMakeFiles/gmock.dir/clean:
 _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/all: _deps/googletest-build/googletest/CMakeFiles/gtest.dir/all
 	$(MAKE) $(MAKESILENT) -f _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/build.make _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/depend
 	$(MAKE) $(MAKESILENT) -f _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/build.make _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/tony/Projects/AllianceDB/build/CMakeFiles --progress-num=27,28 "Built target gtest_main"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/tony/Projects/AllianceDB/build/CMakeFiles --progress-num=34,35 "Built target gtest_main"
 .PHONY : _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/all
 
 # Build rule for subdir invocation for target.
@@ -429,7 +429,7 @@ _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/clean:
 _deps/googletest-build/googletest/CMakeFiles/gtest.dir/all:
 	$(MAKE) $(MAKESILENT) -f _deps/googletest-build/googletest/CMakeFiles/gtest.dir/build.make _deps/googletest-build/googletest/CMakeFiles/gtest.dir/depend
 	$(MAKE) $(MAKESILENT) -f _deps/googletest-build/googletest/CMakeFiles/gtest.dir/build.make _deps/googletest-build/googletest/CMakeFiles/gtest.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/tony/Projects/AllianceDB/build/CMakeFiles --progress-num=25,26 "Built target gtest"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/tony/Projects/AllianceDB/build/CMakeFiles --progress-num=32,33 "Built target gtest"
 .PHONY : _deps/googletest-build/googletest/CMakeFiles/gtest.dir/all
 
 # Build rule for subdir invocation for target.
@@ -456,12 +456,12 @@ _deps/googletest-build/googletest/CMakeFiles/gtest.dir/clean:
 benchmark/CMakeFiles/benchmark.dir/all: CMakeFiles/IntelliStream.dir/all
 	$(MAKE) $(MAKESILENT) -f benchmark/CMakeFiles/benchmark.dir/build.make benchmark/CMakeFiles/benchmark.dir/depend
 	$(MAKE) $(MAKESILENT) -f benchmark/CMakeFiles/benchmark.dir/build.make benchmark/CMakeFiles/benchmark.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/tony/Projects/AllianceDB/build/CMakeFiles --progress-num=19,20 "Built target benchmark"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/tony/Projects/AllianceDB/build/CMakeFiles --progress-num=23,24,25,26,27 "Built target benchmark"
 .PHONY : benchmark/CMakeFiles/benchmark.dir/all
 
 # Build rule for subdir invocation for target.
 benchmark/CMakeFiles/benchmark.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/tony/Projects/AllianceDB/build/CMakeFiles 18
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/tony/Projects/AllianceDB/build/CMakeFiles 25
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 benchmark/CMakeFiles/benchmark.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/tony/Projects/AllianceDB/build/CMakeFiles 0
 .PHONY : benchmark/CMakeFiles/benchmark.dir/rule
@@ -490,7 +490,7 @@ test/CMakeFiles/Google_Tests_run.dir/all: _deps/googletest-build/googletest/CMak
 
 # Build rule for subdir invocation for target.
 test/CMakeFiles/Google_Tests_run.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/tony/Projects/AllianceDB/build/CMakeFiles 22
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/tony/Projects/AllianceDB/build/CMakeFiles 26
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/Google_Tests_run.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/tony/Projects/AllianceDB/build/CMakeFiles 0
 .PHONY : test/CMakeFiles/Google_Tests_run.dir/rule

@@ -304,6 +304,33 @@ src/Common/DatasetTool.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/Common/DatasetTool.cpp.s
 .PHONY : src/Common/DatasetTool.cpp.s
 
+src/Common/MultiThreadHashTable.o: src/Common/MultiThreadHashTable.cpp.o
+
+.PHONY : src/Common/MultiThreadHashTable.o
+
+# target to build an object file
+src/Common/MultiThreadHashTable.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/Common/MultiThreadHashTable.cpp.o
+.PHONY : src/Common/MultiThreadHashTable.cpp.o
+
+src/Common/MultiThreadHashTable.i: src/Common/MultiThreadHashTable.cpp.i
+
+.PHONY : src/Common/MultiThreadHashTable.i
+
+# target to preprocess a source file
+src/Common/MultiThreadHashTable.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/Common/MultiThreadHashTable.cpp.i
+.PHONY : src/Common/MultiThreadHashTable.cpp.i
+
+src/Common/MultiThreadHashTable.s: src/Common/MultiThreadHashTable.cpp.s
+
+.PHONY : src/Common/MultiThreadHashTable.s
+
+# target to generate assembly for a file
+src/Common/MultiThreadHashTable.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/Common/MultiThreadHashTable.cpp.s
+.PHONY : src/Common/MultiThreadHashTable.cpp.s
+
 src/Common/Types.o: src/Common/Types.cpp.o
 
 .PHONY : src/Common/Types.o
@@ -331,140 +358,140 @@ src/Common/Types.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/Common/Types.cpp.s
 .PHONY : src/Common/Types.cpp.s
 
-src/JoinMethods/AbstractJoinMethod.o: src/JoinMethods/AbstractJoinMethod.cpp.o
+src/JoinAlgo/AbstractJoinAlgo.o: src/JoinAlgo/AbstractJoinAlgo.cpp.o
 
-.PHONY : src/JoinMethods/AbstractJoinMethod.o
-
-# target to build an object file
-src/JoinMethods/AbstractJoinMethod.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/JoinMethods/AbstractJoinMethod.cpp.o
-.PHONY : src/JoinMethods/AbstractJoinMethod.cpp.o
-
-src/JoinMethods/AbstractJoinMethod.i: src/JoinMethods/AbstractJoinMethod.cpp.i
-
-.PHONY : src/JoinMethods/AbstractJoinMethod.i
-
-# target to preprocess a source file
-src/JoinMethods/AbstractJoinMethod.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/JoinMethods/AbstractJoinMethod.cpp.i
-.PHONY : src/JoinMethods/AbstractJoinMethod.cpp.i
-
-src/JoinMethods/AbstractJoinMethod.s: src/JoinMethods/AbstractJoinMethod.cpp.s
-
-.PHONY : src/JoinMethods/AbstractJoinMethod.s
-
-# target to generate assembly for a file
-src/JoinMethods/AbstractJoinMethod.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/JoinMethods/AbstractJoinMethod.cpp.s
-.PHONY : src/JoinMethods/AbstractJoinMethod.cpp.s
-
-src/JoinMethods/CellJoin.o: src/JoinMethods/CellJoin.cpp.o
-
-.PHONY : src/JoinMethods/CellJoin.o
+.PHONY : src/JoinAlgo/AbstractJoinAlgo.o
 
 # target to build an object file
-src/JoinMethods/CellJoin.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/JoinMethods/CellJoin.cpp.o
-.PHONY : src/JoinMethods/CellJoin.cpp.o
+src/JoinAlgo/AbstractJoinAlgo.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/JoinAlgo/AbstractJoinAlgo.cpp.o
+.PHONY : src/JoinAlgo/AbstractJoinAlgo.cpp.o
 
-src/JoinMethods/CellJoin.i: src/JoinMethods/CellJoin.cpp.i
+src/JoinAlgo/AbstractJoinAlgo.i: src/JoinAlgo/AbstractJoinAlgo.cpp.i
 
-.PHONY : src/JoinMethods/CellJoin.i
+.PHONY : src/JoinAlgo/AbstractJoinAlgo.i
 
 # target to preprocess a source file
-src/JoinMethods/CellJoin.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/JoinMethods/CellJoin.cpp.i
-.PHONY : src/JoinMethods/CellJoin.cpp.i
+src/JoinAlgo/AbstractJoinAlgo.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/JoinAlgo/AbstractJoinAlgo.cpp.i
+.PHONY : src/JoinAlgo/AbstractJoinAlgo.cpp.i
 
-src/JoinMethods/CellJoin.s: src/JoinMethods/CellJoin.cpp.s
+src/JoinAlgo/AbstractJoinAlgo.s: src/JoinAlgo/AbstractJoinAlgo.cpp.s
 
-.PHONY : src/JoinMethods/CellJoin.s
+.PHONY : src/JoinAlgo/AbstractJoinAlgo.s
 
 # target to generate assembly for a file
-src/JoinMethods/CellJoin.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/JoinMethods/CellJoin.cpp.s
-.PHONY : src/JoinMethods/CellJoin.cpp.s
+src/JoinAlgo/AbstractJoinAlgo.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/JoinAlgo/AbstractJoinAlgo.cpp.s
+.PHONY : src/JoinAlgo/AbstractJoinAlgo.cpp.s
 
-src/JoinMethods/CommonFunctions.o: src/JoinMethods/CommonFunctions.cpp.o
+src/JoinAlgo/JoinAlgoTable.o: src/JoinAlgo/JoinAlgoTable.cpp.o
 
-.PHONY : src/JoinMethods/CommonFunctions.o
+.PHONY : src/JoinAlgo/JoinAlgoTable.o
 
 # target to build an object file
-src/JoinMethods/CommonFunctions.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/JoinMethods/CommonFunctions.cpp.o
-.PHONY : src/JoinMethods/CommonFunctions.cpp.o
+src/JoinAlgo/JoinAlgoTable.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/JoinAlgo/JoinAlgoTable.cpp.o
+.PHONY : src/JoinAlgo/JoinAlgoTable.cpp.o
 
-src/JoinMethods/CommonFunctions.i: src/JoinMethods/CommonFunctions.cpp.i
+src/JoinAlgo/JoinAlgoTable.i: src/JoinAlgo/JoinAlgoTable.cpp.i
 
-.PHONY : src/JoinMethods/CommonFunctions.i
+.PHONY : src/JoinAlgo/JoinAlgoTable.i
 
 # target to preprocess a source file
-src/JoinMethods/CommonFunctions.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/JoinMethods/CommonFunctions.cpp.i
-.PHONY : src/JoinMethods/CommonFunctions.cpp.i
+src/JoinAlgo/JoinAlgoTable.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/JoinAlgo/JoinAlgoTable.cpp.i
+.PHONY : src/JoinAlgo/JoinAlgoTable.cpp.i
 
-src/JoinMethods/CommonFunctions.s: src/JoinMethods/CommonFunctions.cpp.s
+src/JoinAlgo/JoinAlgoTable.s: src/JoinAlgo/JoinAlgoTable.cpp.s
 
-.PHONY : src/JoinMethods/CommonFunctions.s
+.PHONY : src/JoinAlgo/JoinAlgoTable.s
 
 # target to generate assembly for a file
-src/JoinMethods/CommonFunctions.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/JoinMethods/CommonFunctions.cpp.s
-.PHONY : src/JoinMethods/CommonFunctions.cpp.s
+src/JoinAlgo/JoinAlgoTable.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/JoinAlgo/JoinAlgoTable.cpp.s
+.PHONY : src/JoinAlgo/JoinAlgoTable.cpp.s
 
-src/JoinMethods/HandShakeJoin.o: src/JoinMethods/HandShakeJoin.cpp.o
+src/JoinAlgo/NPJ.o: src/JoinAlgo/NPJ.cpp.o
 
-.PHONY : src/JoinMethods/HandShakeJoin.o
+.PHONY : src/JoinAlgo/NPJ.o
 
 # target to build an object file
-src/JoinMethods/HandShakeJoin.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/JoinMethods/HandShakeJoin.cpp.o
-.PHONY : src/JoinMethods/HandShakeJoin.cpp.o
+src/JoinAlgo/NPJ.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/JoinAlgo/NPJ.cpp.o
+.PHONY : src/JoinAlgo/NPJ.cpp.o
 
-src/JoinMethods/HandShakeJoin.i: src/JoinMethods/HandShakeJoin.cpp.i
+src/JoinAlgo/NPJ.i: src/JoinAlgo/NPJ.cpp.i
 
-.PHONY : src/JoinMethods/HandShakeJoin.i
+.PHONY : src/JoinAlgo/NPJ.i
 
 # target to preprocess a source file
-src/JoinMethods/HandShakeJoin.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/JoinMethods/HandShakeJoin.cpp.i
-.PHONY : src/JoinMethods/HandShakeJoin.cpp.i
+src/JoinAlgo/NPJ.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/JoinAlgo/NPJ.cpp.i
+.PHONY : src/JoinAlgo/NPJ.cpp.i
 
-src/JoinMethods/HandShakeJoin.s: src/JoinMethods/HandShakeJoin.cpp.s
+src/JoinAlgo/NPJ.s: src/JoinAlgo/NPJ.cpp.s
 
-.PHONY : src/JoinMethods/HandShakeJoin.s
+.PHONY : src/JoinAlgo/NPJ.s
 
 # target to generate assembly for a file
-src/JoinMethods/HandShakeJoin.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/JoinMethods/HandShakeJoin.cpp.s
-.PHONY : src/JoinMethods/HandShakeJoin.cpp.s
+src/JoinAlgo/NPJ.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/JoinAlgo/NPJ.cpp.s
+.PHONY : src/JoinAlgo/NPJ.cpp.s
 
-src/JoinMethods/OneWayHashJoin.o: src/JoinMethods/OneWayHashJoin.cpp.o
+src/JoinProcessor/AbstractJP.o: src/JoinProcessor/AbstractJP.cpp.o
 
-.PHONY : src/JoinMethods/OneWayHashJoin.o
+.PHONY : src/JoinProcessor/AbstractJP.o
 
 # target to build an object file
-src/JoinMethods/OneWayHashJoin.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/JoinMethods/OneWayHashJoin.cpp.o
-.PHONY : src/JoinMethods/OneWayHashJoin.cpp.o
+src/JoinProcessor/AbstractJP.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/JoinProcessor/AbstractJP.cpp.o
+.PHONY : src/JoinProcessor/AbstractJP.cpp.o
 
-src/JoinMethods/OneWayHashJoin.i: src/JoinMethods/OneWayHashJoin.cpp.i
+src/JoinProcessor/AbstractJP.i: src/JoinProcessor/AbstractJP.cpp.i
 
-.PHONY : src/JoinMethods/OneWayHashJoin.i
+.PHONY : src/JoinProcessor/AbstractJP.i
 
 # target to preprocess a source file
-src/JoinMethods/OneWayHashJoin.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/JoinMethods/OneWayHashJoin.cpp.i
-.PHONY : src/JoinMethods/OneWayHashJoin.cpp.i
+src/JoinProcessor/AbstractJP.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/JoinProcessor/AbstractJP.cpp.i
+.PHONY : src/JoinProcessor/AbstractJP.cpp.i
 
-src/JoinMethods/OneWayHashJoin.s: src/JoinMethods/OneWayHashJoin.cpp.s
+src/JoinProcessor/AbstractJP.s: src/JoinProcessor/AbstractJP.cpp.s
 
-.PHONY : src/JoinMethods/OneWayHashJoin.s
+.PHONY : src/JoinProcessor/AbstractJP.s
 
 # target to generate assembly for a file
-src/JoinMethods/OneWayHashJoin.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/JoinMethods/OneWayHashJoin.cpp.s
-.PHONY : src/JoinMethods/OneWayHashJoin.cpp.s
+src/JoinProcessor/AbstractJP.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/JoinProcessor/AbstractJP.cpp.s
+.PHONY : src/JoinProcessor/AbstractJP.cpp.s
+
+src/JoinProcessor/AbstractLazyJP.o: src/JoinProcessor/AbstractLazyJP.cpp.o
+
+.PHONY : src/JoinProcessor/AbstractLazyJP.o
+
+# target to build an object file
+src/JoinProcessor/AbstractLazyJP.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/JoinProcessor/AbstractLazyJP.cpp.o
+.PHONY : src/JoinProcessor/AbstractLazyJP.cpp.o
+
+src/JoinProcessor/AbstractLazyJP.i: src/JoinProcessor/AbstractLazyJP.cpp.i
+
+.PHONY : src/JoinProcessor/AbstractLazyJP.i
+
+# target to preprocess a source file
+src/JoinProcessor/AbstractLazyJP.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/JoinProcessor/AbstractLazyJP.cpp.i
+.PHONY : src/JoinProcessor/AbstractLazyJP.cpp.i
+
+src/JoinProcessor/AbstractLazyJP.s: src/JoinProcessor/AbstractLazyJP.cpp.s
+
+.PHONY : src/JoinProcessor/AbstractLazyJP.s
+
+# target to generate assembly for a file
+src/JoinProcessor/AbstractLazyJP.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/JoinProcessor/AbstractLazyJP.cpp.s
+.PHONY : src/JoinProcessor/AbstractLazyJP.cpp.s
 
 src/JoinProcessor/HandShakeHashJP.o: src/JoinProcessor/HandShakeHashJP.cpp.o
 
@@ -519,6 +546,33 @@ src/JoinProcessor/SimpleHashJP.s: src/JoinProcessor/SimpleHashJP.cpp.s
 src/JoinProcessor/SimpleHashJP.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/JoinProcessor/SimpleHashJP.cpp.s
 .PHONY : src/JoinProcessor/SimpleHashJP.cpp.s
+
+src/Utils/AbstractC20Thread.o: src/Utils/AbstractC20Thread.cpp.o
+
+.PHONY : src/Utils/AbstractC20Thread.o
+
+# target to build an object file
+src/Utils/AbstractC20Thread.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/Utils/AbstractC20Thread.cpp.o
+.PHONY : src/Utils/AbstractC20Thread.cpp.o
+
+src/Utils/AbstractC20Thread.i: src/Utils/AbstractC20Thread.cpp.i
+
+.PHONY : src/Utils/AbstractC20Thread.i
+
+# target to preprocess a source file
+src/Utils/AbstractC20Thread.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/Utils/AbstractC20Thread.cpp.i
+.PHONY : src/Utils/AbstractC20Thread.cpp.i
+
+src/Utils/AbstractC20Thread.s: src/Utils/AbstractC20Thread.cpp.s
+
+.PHONY : src/Utils/AbstractC20Thread.s
+
+# target to generate assembly for a file
+src/Utils/AbstractC20Thread.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/Utils/AbstractC20Thread.cpp.s
+.PHONY : src/Utils/AbstractC20Thread.cpp.s
 
 src/Utils/MicroDataset.o: src/Utils/MicroDataset.cpp.o
 
@@ -655,6 +709,60 @@ src/WindowSlider/AbstractEagerWS.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/WindowSlider/AbstractEagerWS.cpp.s
 .PHONY : src/WindowSlider/AbstractEagerWS.cpp.s
 
+src/WindowSlider/AbstractLazyWS.o: src/WindowSlider/AbstractLazyWS.cpp.o
+
+.PHONY : src/WindowSlider/AbstractLazyWS.o
+
+# target to build an object file
+src/WindowSlider/AbstractLazyWS.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/WindowSlider/AbstractLazyWS.cpp.o
+.PHONY : src/WindowSlider/AbstractLazyWS.cpp.o
+
+src/WindowSlider/AbstractLazyWS.i: src/WindowSlider/AbstractLazyWS.cpp.i
+
+.PHONY : src/WindowSlider/AbstractLazyWS.i
+
+# target to preprocess a source file
+src/WindowSlider/AbstractLazyWS.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/WindowSlider/AbstractLazyWS.cpp.i
+.PHONY : src/WindowSlider/AbstractLazyWS.cpp.i
+
+src/WindowSlider/AbstractLazyWS.s: src/WindowSlider/AbstractLazyWS.cpp.s
+
+.PHONY : src/WindowSlider/AbstractLazyWS.s
+
+# target to generate assembly for a file
+src/WindowSlider/AbstractLazyWS.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/WindowSlider/AbstractLazyWS.cpp.s
+.PHONY : src/WindowSlider/AbstractLazyWS.cpp.s
+
+src/WindowSlider/AbstractWS.o: src/WindowSlider/AbstractWS.cpp.o
+
+.PHONY : src/WindowSlider/AbstractWS.o
+
+# target to build an object file
+src/WindowSlider/AbstractWS.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/WindowSlider/AbstractWS.cpp.o
+.PHONY : src/WindowSlider/AbstractWS.cpp.o
+
+src/WindowSlider/AbstractWS.i: src/WindowSlider/AbstractWS.cpp.i
+
+.PHONY : src/WindowSlider/AbstractWS.i
+
+# target to preprocess a source file
+src/WindowSlider/AbstractWS.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/WindowSlider/AbstractWS.cpp.i
+.PHONY : src/WindowSlider/AbstractWS.cpp.i
+
+src/WindowSlider/AbstractWS.s: src/WindowSlider/AbstractWS.cpp.s
+
+.PHONY : src/WindowSlider/AbstractWS.s
+
+# target to generate assembly for a file
+src/WindowSlider/AbstractWS.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/IntelliStream.dir/build.make CMakeFiles/IntelliStream.dir/src/WindowSlider/AbstractWS.cpp.s
+.PHONY : src/WindowSlider/AbstractWS.cpp.s
+
 src/WindowSlider/HandShakeWS.o: src/WindowSlider/HandShakeWS.cpp.o
 
 .PHONY : src/WindowSlider/HandShakeWS.o
@@ -705,30 +813,36 @@ help:
 	@echo "... src/Common/DatasetTool.o"
 	@echo "... src/Common/DatasetTool.i"
 	@echo "... src/Common/DatasetTool.s"
+	@echo "... src/Common/MultiThreadHashTable.o"
+	@echo "... src/Common/MultiThreadHashTable.i"
+	@echo "... src/Common/MultiThreadHashTable.s"
 	@echo "... src/Common/Types.o"
 	@echo "... src/Common/Types.i"
 	@echo "... src/Common/Types.s"
-	@echo "... src/JoinMethods/AbstractJoinMethod.o"
-	@echo "... src/JoinMethods/AbstractJoinMethod.i"
-	@echo "... src/JoinMethods/AbstractJoinMethod.s"
-	@echo "... src/JoinMethods/CellJoin.o"
-	@echo "... src/JoinMethods/CellJoin.i"
-	@echo "... src/JoinMethods/CellJoin.s"
-	@echo "... src/JoinMethods/CommonFunctions.o"
-	@echo "... src/JoinMethods/CommonFunctions.i"
-	@echo "... src/JoinMethods/CommonFunctions.s"
-	@echo "... src/JoinMethods/HandShakeJoin.o"
-	@echo "... src/JoinMethods/HandShakeJoin.i"
-	@echo "... src/JoinMethods/HandShakeJoin.s"
-	@echo "... src/JoinMethods/OneWayHashJoin.o"
-	@echo "... src/JoinMethods/OneWayHashJoin.i"
-	@echo "... src/JoinMethods/OneWayHashJoin.s"
+	@echo "... src/JoinAlgo/AbstractJoinAlgo.o"
+	@echo "... src/JoinAlgo/AbstractJoinAlgo.i"
+	@echo "... src/JoinAlgo/AbstractJoinAlgo.s"
+	@echo "... src/JoinAlgo/JoinAlgoTable.o"
+	@echo "... src/JoinAlgo/JoinAlgoTable.i"
+	@echo "... src/JoinAlgo/JoinAlgoTable.s"
+	@echo "... src/JoinAlgo/NPJ.o"
+	@echo "... src/JoinAlgo/NPJ.i"
+	@echo "... src/JoinAlgo/NPJ.s"
+	@echo "... src/JoinProcessor/AbstractJP.o"
+	@echo "... src/JoinProcessor/AbstractJP.i"
+	@echo "... src/JoinProcessor/AbstractJP.s"
+	@echo "... src/JoinProcessor/AbstractLazyJP.o"
+	@echo "... src/JoinProcessor/AbstractLazyJP.i"
+	@echo "... src/JoinProcessor/AbstractLazyJP.s"
 	@echo "... src/JoinProcessor/HandShakeHashJP.o"
 	@echo "... src/JoinProcessor/HandShakeHashJP.i"
 	@echo "... src/JoinProcessor/HandShakeHashJP.s"
 	@echo "... src/JoinProcessor/SimpleHashJP.o"
 	@echo "... src/JoinProcessor/SimpleHashJP.i"
 	@echo "... src/JoinProcessor/SimpleHashJP.s"
+	@echo "... src/Utils/AbstractC20Thread.o"
+	@echo "... src/Utils/AbstractC20Thread.i"
+	@echo "... src/Utils/AbstractC20Thread.s"
 	@echo "... src/Utils/MicroDataset.o"
 	@echo "... src/Utils/MicroDataset.i"
 	@echo "... src/Utils/MicroDataset.s"
@@ -744,6 +858,12 @@ help:
 	@echo "... src/WindowSlider/AbstractEagerWS.o"
 	@echo "... src/WindowSlider/AbstractEagerWS.i"
 	@echo "... src/WindowSlider/AbstractEagerWS.s"
+	@echo "... src/WindowSlider/AbstractLazyWS.o"
+	@echo "... src/WindowSlider/AbstractLazyWS.i"
+	@echo "... src/WindowSlider/AbstractLazyWS.s"
+	@echo "... src/WindowSlider/AbstractWS.o"
+	@echo "... src/WindowSlider/AbstractWS.i"
+	@echo "... src/WindowSlider/AbstractWS.s"
 	@echo "... src/WindowSlider/HandShakeWS.o"
 	@echo "... src/WindowSlider/HandShakeWS.i"
 	@echo "... src/WindowSlider/HandShakeWS.s"

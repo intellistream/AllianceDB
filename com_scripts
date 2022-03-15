@@ -1,1 +1,5 @@
-issue #29
+issue #29:
+1. Add a JoinAlgoTable in JoinAlgo, to access all supported algos
+2. Rewrite the existing classes of eager join (just briefly done)
+3. First version of lazy window join slider and processor (No sharing)
+4. Upgrade the NPJ accordingly

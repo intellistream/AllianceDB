@@ -27,7 +27,7 @@
 
 //Constants
 #ifndef WINDOW_SIZE
-#define WINDOW_SIZE 50
+#define WINDOW_SIZE 500
 #endif
 
 #ifndef THREAD_NUMBER
@@ -63,13 +63,15 @@
  *
  * @subsection JoinAlgo
  * Here are specific algorithms to eventually deal with stream join, including hash or radix.
- * All of these algos assume the tuples are batched, and the "window" is invisible to them. In another word,
- * they achieve the intra-window join. Please refer to the @ref INTELLI_JOINALGOS module.
+ * All of these algos assume there is no window, in another word,
+ * they achieve the intra-window join.
+ * Please refer to the @ref INTELLI_JOINALGOS module.
  *
  * @subsection JoinProcessor
  * Here is the middle layer of the whole stream window join, i.e., to bridge the "window" and "join".
- * One JoinProcessor may either eagerly do stream join on itself,
+ * One JoinProcessor may either eagerly do stream join,
  * or just accumulate the tuples and evoke JoinAlgo  for lazy join. JoinProcessors are managed by upper windowslider.
+ * Please refer to the @ref JOINPROCESSOR module.
  *
  * @subsection WindowSlider
  * Here is the top layer on all. Typically, the WindowSliders will:
@@ -77,7 +79,7 @@
  * \li Globally manage the sliding window
  * \li Pass tuple to and control its JoinProcessors.
  *
- * Please find them in @ref WindowSliders module
+ * Please find them in @ref WINDOWSLIDER module
  * @section sec_other Other Parts
  * Besides the 3 above, Aliance DB has other parts to support its work, they are:
  * @subsection subsec_common Common
@@ -151,18 +153,18 @@ typedef std::shared_ptr<std::barrier<>> BarrierPtr;
 //Array Pointers
 typedef std::vector<TuplePtr> WindowOfTuples;
 
-//typedef std::SafeQueue<TuplePtr> TuplePtrQueueLocal;
+//typedef std::SafeQueue<TuplePtr> TuplePtrQueueIn;
 /**
- * @typedef TuplePtrQueueLocal
+ * @typedef TuplePtrQueueIn
  * @brief To describe a local queue of TuplePtr
  * @warning This is not thread-safe, only used for local data
  */
-typedef std::queue<TuplePtr> TuplePtrQueueLocal;
+typedef std::queue<TuplePtr> TuplePtrQueueIn;
 typedef moodycamel::ConcurrentQueue<TuplePtr> concurrentTupleQueue;
 class RelationCouple {
  public:
-  TuplePtrQueueLocal relationS;
-  TuplePtrQueueLocal relationR;
+  TuplePtrQueueIn relationS;
+  TuplePtrQueueIn relationR;
   RelationCouple();
   ~RelationCouple();
 };
@@ -170,8 +172,8 @@ class RelationCouple {
 class WindowCouple {
  public:
   //We use queue to implement a window, it stores the sequence of tuples.
-  TuplePtrQueueLocal windowS;
-  TuplePtrQueueLocal windowR;
+  TuplePtrQueueIn windowS;
+  TuplePtrQueueIn windowR;
   hashtable hashtableS;
   hashtable hashtableR;
 
@@ -209,6 +211,8 @@ class Result {
  public:
   numberType joinNumber;
   numberType streamSize;
+  string algoName;
+  string dataSetName;
   double timeTaken;
   struct timeval timeBegin;
   explicit Result();
