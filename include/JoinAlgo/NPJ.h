@@ -8,11 +8,12 @@
 #include <Common/MultiThreadHashTable.h>
 #include <Utils/AbstractC20Thread.h>
 #include <barrier>
+#include <JoinAlgo/AbstractJoinAlgo.h>
+#include <JoinAlgo/NPJ.h>
 namespace  INTELLI{
 /**
-* @defgroup INTELLI_JOINALGOS The specific join algorithms
+* @ingroup INTELLI_JOINALGOS
 * @{
-* State-of-art joins algorithms, most for intra-window join
 * @defgroup INTELLI_JOINALGOS_NPJ The no partition hash join (NPJ)
 * @{
 *NPJ is a parallel version of the
@@ -87,11 +88,14 @@ build phase, all threads populate a shared hash table with all tuples
  * @class NPJ JoinAlgo/NPJ.h
  * @brief The top class package of NPJ, providing a "join function"
  */
-class NPJ{
+class NPJ:public AbstractJoinAlgo{
+
  private:
   vector<NPJ_thread> workers;
  public:
-  NPJ(){}
+  NPJ(){
+    setAlgoName("NPJ");
+  }
   ~NPJ(){}
   /**
    * @brief The function to execute join
@@ -101,7 +105,7 @@ class NPJ{
    * @return The joined tuples
    * @todo Add AMP and NUMA support in the future, so far only generic SMP
    */
-  size_t join(TuplePtrQueue ts,TuplePtrQueue tr,int threads=1);
+  virtual size_t join(TuplePtrQueue ts,TuplePtrQueue tr,int threads=1);
   /**
    * @brief The function to execute join, legacy way
    * @param ts The tuples of stream S, legacy pointer
@@ -112,9 +116,90 @@ class NPJ{
    * @return The joined tuples
    * @warning This is a legacy function, avoid using it if possible
    */
-  size_t join(TuplePtr *ts,TuplePtr *tr,size_t tsLen,size_t trLen,int  threads=1);
+  virtual size_t join(TuplePtr *ts,TuplePtr *tr,size_t tsLen,size_t trLen,int  threads=1);
+  /**
+  * @brief The function to execute join, batch of one, tuple of another
+  * @param ts The tuples of stream S, legacy pointer
+  * @param tr The tuples of stream R, one tuple
+  * @param tsLen The length of S
+  * @param threads The parallel threads
+  * @return The joined tuples
+  * @warning This is a legacy function, avoid using it if possible
+  */
+  virtual size_t join(TuplePtr *ts,TuplePtr tr,size_t tsLen,int  threads=1);
+
+  /**
+  * @brief The function to execute join, batch of one, tuple of another
+  * @param ts The tuples of stream S
+  * @param tr The tuple of stream R
+  * @param threads The parallel threads
+  * @return The joined tuples
+  */
+  virtual size_t join(TuplePtrQueue ts,TuplePtr tr,int threads=1);
 
 };
+
+typedef std::shared_ptr<NPJ> NPJPtr;
+#define  newNPJ() make_shared<NPJ>()
+
+
+/**
+ * @class NPJSingle JoinAlgo/NPJ.h
+ * @brief The top class package of single threadNPJ, providing a "join function"
+ */
+class NPJSingle:public AbstractJoinAlgo{
+
+ private:
+
+ public:
+  NPJSingle(){
+    setAlgoName("NPJSingle");
+  }
+  ~NPJSingle(){}
+  /**
+   * @brief The function to execute join
+   * @param ts The tuples of stream S
+   * @param tr The tuples of stream R
+   * @param threads The parallel threads
+   * @return The joined tuples
+   * @todo Add AMP and NUMA support in the future, so far only generic SMP
+   */
+  virtual size_t join(TuplePtrQueue ts,TuplePtrQueue tr,int threads=1);
+  /**
+   * @brief The function to execute join, legacy way
+   * @param ts The tuples of stream S, legacy pointer
+   * @param tr The tuples of stream R, legacy pointer
+   * @param tsLen The length of S
+   * @param trLen The length of R
+   * @param threads The parallel threads
+   * @return The joined tuples
+   * @warning This is a legacy function, avoid using it if possible
+   */
+  virtual size_t join(TuplePtr *ts,TuplePtr *tr,size_t tsLen,size_t trLen,int  threads=1);
+  /**
+  * @brief The function to execute join, batch of one, tuple of another
+  * @param ts The tuples of stream S, legacy pointer
+  * @param tr The tuples of stream R, one tuple
+  * @param tsLen The length of S
+  * @param threads The parallel threads
+  * @return The joined tuples
+  * @warning This is a legacy function, avoid using it if possible
+  */
+  virtual size_t join(TuplePtr *ts,TuplePtr tr,size_t tsLen,int  threads=1);
+
+  /**
+  * @brief The function to execute join, batch of one, tuple of another
+  * @param ts The tuples of stream S
+  * @param tr The tuple of stream R
+  * @param threads The parallel threads
+  * @return The joined tuples
+  */
+  virtual size_t join(TuplePtrQueue ts,TuplePtr tr,int threads=1);
+
+};
+
+typedef std::shared_ptr<NPJSingle> NPJSinglePtr;
+#define  newNPJSingle() make_shared<NPJSingle>()
 /***
  * @}
  */

@@ -6,6 +6,7 @@
 #define JOINPROCESSOR_HANDSHAKEHASHJP_H_
 #include <JoinProcessor/SimpleHashJP.h>
 #include <memory>
+
 using namespace std;
 using namespace INTELLI;
 namespace INTELLI {

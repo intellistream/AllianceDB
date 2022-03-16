@@ -44,7 +44,7 @@ void INTELLI::Result::statPrinter() {
             << resetiosflags(std::ios::right) << std::endl;
   std::cout << BAR << std::endl;
   std::string statNames[] = {"AlgoName", "DatasetName", "StreamSize", "WindowSize", "Result", "TimeTaken"};
-  std::string values[] = {ALGO_NAME, DATASET_NAME, std::to_string(streamSize), std::to_string(WINDOW_SIZE),
+  std::string values[] = {algoName, DATASET_NAME, std::to_string(streamSize), std::to_string(WINDOW_SIZE),
                           std::to_string(joinNumber), std::to_string(timeTaken) + "ms"};
 
   for (int i = 0; i < 6; ++i) {

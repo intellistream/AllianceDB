@@ -4,8 +4,8 @@
 #include <JoinProcessor/HandShakeHashJP.h>
 using namespace INTELLI;
 void HandShakeHashJP::setupQueue() {
-  TuplePtrQueueLocalS = newTuplePtrQueue(sQueue);
-  TuplePtrQueueLocalR = newTuplePtrQueue(rQueue);
+  TuplePtrQueueInS = newTuplePtrQueue(sQueue);
+  TuplePtrQueueInR = newTuplePtrQueue(rQueue);
   selfWindowS = newTuplePtrQueue(sQueue);
   selfWindowR = newTuplePtrQueue(rQueue);
   cmdQueueIn = newCmdQueue(1);
@@ -21,7 +21,7 @@ void HandShakeHashJP::inlineRun() {
 
   while (1) {
     //cmd
-    if (TuplePtrQueueLocalS->empty() && TuplePtrQueueLocalR->empty()) {
+    if (TuplePtrQueueInS->empty() && TuplePtrQueueInR->empty()) {
       if (!cmdQueueIn->empty()) {
 
         join_cmd_t cmdIn = *cmdQueueIn->front();
@@ -33,17 +33,17 @@ void HandShakeHashJP::inlineRun() {
         }
       }
     }
-    while (!TuplePtrQueueLocalR->empty()) { //cout<<"r is full"<<endl;
+    while (!TuplePtrQueueInR->empty()) { //cout<<"r is full"<<endl;
       paraseTupleR();
     }
-    while (!TuplePtrQueueLocalS->empty()) {//cout<<" s is full"<<endl;
+    while (!TuplePtrQueueInS->empty()) {//cout<<" s is full"<<endl;
       paraseTupleS();
     }
   }
 }
 void HandShakeHashJP::paraseTupleR() {
-  TuplePtr trIn = *TuplePtrQueueLocalR->front();
-  TuplePtrQueueLocalR->pop();
+  TuplePtr trIn = *TuplePtrQueueInR->front();
+  TuplePtrQueueInR->pop();
   size_t tNow;
   if (isTimeBased()) {
     tNow = getTimeStamp();
@@ -91,8 +91,8 @@ void HandShakeHashJP::paraseTupleR() {
   }
 }
 void HandShakeHashJP::paraseTupleS() {
-  TuplePtr tsIn = *TuplePtrQueueLocalS->front();
-  TuplePtrQueueLocalS->pop();
+  TuplePtr tsIn = *TuplePtrQueueInS->front();
+  TuplePtrQueueInS->pop();
   size_t tNow;
   if (isTimeBased()) {
     tNow = getTimeStamp();

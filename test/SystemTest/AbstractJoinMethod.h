@@ -14,7 +14,6 @@ class AbstractJoinMethod {
     size_t sLen = relationCouple.relationS.size();
     size_t rLen = relationCouple.relationR.size();
     wsType windowSlider(sLen, rLen);
-    joinResult.algoName=windowSlider.getName();
     windowSlider.setParallelSMP(THREAD_NUMBER);
     // windowSlider.setStopCondition(0, sLen, rLen);
     windowSlider.setTimeBased(true);

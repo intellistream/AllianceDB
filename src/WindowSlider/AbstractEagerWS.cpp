@@ -6,19 +6,27 @@ using namespace INTELLI;
 AbstractEagerWS::AbstractEagerWS(size_t _sLen, size_t _rLen) {
   sLen = _sLen;
   rLen = _rLen;
-  TuplePtrQueueLocalS = newTuplePtrQueue(sLen);
-  TuplePtrQueueLocalR = newTuplePtrQueue(rLen);
+  TuplePtrQueueInS = newTuplePtrQueue(sLen);
+  TuplePtrQueueInR = newTuplePtrQueue(rLen);
   reset();
+  nameTag="CellJoin";
 }
 AbstractEagerWS::~AbstractEagerWS() {
   if (isRunning) {
     terminateJoinProcessors();
   }
 }
+size_t AbstractEagerWS::oldestWindowBelong(size_t ts) {
+  if(ts<windowLen)
+  {
+    return 0;
+  }
+  return ((ts-windowLen)/slideLen)+1;
+}
 void AbstractEagerWS::feedTupleS(TuplePtr ts) {
   if (timeBased) //use time stamp, S and R share the same time system
   {
-    size_t timeNow = getTimeStamp();
+    size_t timeNow = ts->subKey;
     //  ts->subKey = timeNow;
     //expireS(timeNow);
     expireR(timeNow);
@@ -27,15 +35,15 @@ void AbstractEagerWS::feedTupleS(TuplePtr ts) {
     expireR(countS);
     countS++;
   }
-  TuplePtrQueueLocalS->push(ts);
+  TuplePtrQueueInS->push(ts);
   // too few tuples in R
-  /*size_t rGet = TuplePtrQueueLocalR->size();
+  /*size_t rGet = TuplePtrQueueInR->size();
 
   if (rGet < threads) {
     WindowOfTuples  wr(rGet);
     // return;
     for (size_t i = 0; i < rGet; i++) {
-     wr[i]=(TuplePtrQueueLocalR->front()[i]);
+     wr[i]=(TuplePtrQueueInR->front()[i]);
     }
     //feed window r
     jps[0].feedWindowR(wr);
@@ -44,14 +52,14 @@ void AbstractEagerWS::feedTupleS(TuplePtr ts) {
     return;
   }*/
   //do the tuple S, window R join
-  partitionSizeFinal = avgPartitionSizeFinal(TuplePtrQueueLocalR->size());
+  partitionSizeFinal = avgPartitionSizeFinal(TuplePtrQueueInR->size());
   size_t rBase = 0;
   for (size_t tid = 0; tid < threads; tid++) {
     // partition window R
     size_t wrLen = partitionSizeFinal[tid];
     WindowOfTuples wr(wrLen);
     for (size_t i = 0; i < wrLen; i++) {
-      wr[i] = (TuplePtrQueueLocalR->front()[rBase + i]);
+      wr[i] = (TuplePtrQueueInR->front()[rBase + i]);
     }
     rBase += wrLen;
     //feed window r
@@ -64,7 +72,7 @@ void AbstractEagerWS::feedTupleS(TuplePtr ts) {
 void AbstractEagerWS::feedTupleR(TuplePtr tr) {
   if (timeBased) //use time stamp
   {
-    size_t timeNow = getTimeStamp();
+    size_t timeNow = tr->subKey;
     // tr->subKey = timeNow;
     expireS(timeNow);
     //expireR(timeNow);
@@ -73,15 +81,15 @@ void AbstractEagerWS::feedTupleR(TuplePtr tr) {
     expireS(countR);
     countR++;
   }
-  TuplePtrQueueLocalR->push(tr);
+  TuplePtrQueueInR->push(tr);
 
   // too few tuples in S
-  /*size_t sGet = TuplePtrQueueLocalS->size();
+  /*size_t sGet = TuplePtrQueueInS->size();
   if (sGet < threads) {
     WindowOfTuples ws(sGet);
     // return;
     for (size_t i = 0; i < sGet; i++) {
-      ws[i] = (TuplePtrQueueLocalS->front()[i]);
+      ws[i] = (TuplePtrQueueInS->front()[i]);
     }
     //feed window S
     jps[0].feedWindowS(ws);
@@ -90,14 +98,14 @@ void AbstractEagerWS::feedTupleR(TuplePtr tr) {
     return;
   }*/
   //do the tuple R, window s join
-  partitionSizeFinal = avgPartitionSizeFinal(TuplePtrQueueLocalS->size());
+  partitionSizeFinal = avgPartitionSizeFinal(TuplePtrQueueInS->size());
   size_t sBase = 0;
   for (size_t tid = 0; tid < threads; tid++) {
     //partition window S
     size_t wsLen = partitionSizeFinal[tid];
     WindowOfTuples ws(wsLen);
     for (size_t i = 0; i < wsLen; i++) {
-      ws[i] = (TuplePtrQueueLocalS->front()[sBase + i]);
+      ws[i] = (TuplePtrQueueInS->front()[sBase + i]);
     }
     sBase += wsLen;
     //feed window S
@@ -126,36 +134,42 @@ vector<size_t> AbstractEagerWS::avgPartitionSizeFinal(size_t inS) {
   return partitionSizeFinals;*/
   return INTELLI::UtilityFunctions::avgPartitionSizeFinal(inS, partitionWeight);
 }
-void AbstractEagerWS::expireR(size_t cond) {
-  size_t distance = 0;
-  if (!TuplePtrQueueLocalR->empty()) {
-    TuplePtr tr = *TuplePtrQueueLocalR->front();
-    distance = cond - tr->subKey;
-    while (distance > windowLen) {
-      TuplePtrQueueLocalR->pop();
-      if (!TuplePtrQueueLocalR->empty()) {
-        tr = *TuplePtrQueueLocalR->front();
-        distance = cond - tr->subKey;
+void AbstractEagerWS::expireR(size_t ts) {
+  size_t pos = 0;
+  size_t windowNo= oldestWindowBelong(ts);
+  size_t startTime=windowNo*slideLen;
+
+  if (!TuplePtrQueueInR->empty()) {
+    TuplePtr tr = *TuplePtrQueueInR->front();
+    pos = tr->subKey;
+  //  cout<<"pos="+ to_string(pos)+", startTime="+ to_string(slideLen)<<endl;
+    while (pos <startTime) {
+      TuplePtrQueueInR->pop();
+      if (!TuplePtrQueueInR->empty()) {
+        tr = *TuplePtrQueueInR->front();
+        pos = tr->subKey;
       } else {
-        distance = 0;
+        pos = startTime;
       }
     }
   }
 
 }
 
-void AbstractEagerWS::expireS(size_t cond) {
-  size_t distance = 0;
-  if (!TuplePtrQueueLocalS->empty()) {
-    TuplePtr ts = *TuplePtrQueueLocalS->front();
-    distance = cond - ts->subKey;
-    while (distance > windowLen) {
-      TuplePtrQueueLocalS->pop();
-      if (!TuplePtrQueueLocalS->empty()) {
-        ts = *TuplePtrQueueLocalS->front();
-        distance = cond - ts->subKey;
+void AbstractEagerWS::expireS(size_t ts) {
+  size_t pos = 0;
+  size_t windowNo= oldestWindowBelong(ts);
+  size_t startTime=windowNo*slideLen;
+  if (!TuplePtrQueueInS->empty()) {
+    TuplePtr ts = *TuplePtrQueueInS->front();
+    pos = ts->subKey;
+    while (pos < startTime) {
+      TuplePtrQueueInS->pop();
+      if (!TuplePtrQueueInS->empty()) {
+        ts = *TuplePtrQueueInS->front();
+        pos =ts->subKey;
       } else {
-        distance = 0;
+        pos = startTime;
       }
     }
   }

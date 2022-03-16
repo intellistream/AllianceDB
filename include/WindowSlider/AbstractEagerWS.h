@@ -10,21 +10,26 @@
 
 #ifndef WINDOWSLIDER_ABSTRACTEAGERWS_H_
 #define WINDOWSLIDER_ABSTRACTEAGERWS_H_
-#include <cstdint>
-#include <vector>
-#include <Common/Types.h>
-#include <Utils/SPSCQueue.hpp>
-#include <time.h>
-#include <numeric>
-#include <JoinProcessor/SimpleHashJP.h>
 
+#include <WindowSlider/AbstractWS.h>
+#include <JoinProcessor/SimpleHashJP.h>
 using namespace INTELLI;
 using namespace std;
 namespace INTELLI {
 //Note: "Upon every arrival of a tuple, the opposing window is re-partitioned to perform a parallel scan"
 /**
- *  @defgroup WindowSliders WindowSliders
- *  @{
+ *@defgroup WINDOWSLIDER WindowSliders
+ * @{
+ **/
+/**
+ * @defgroup WINDOWSLIDER_EAGER eager window slider
+ * @{
+ * The eager sliders that follow tuple-wide update, i.e., they process each tuples upon it arrives
+ * @}
+ * @}
+ */
+ /**
+  * @ingroup WINDOWSLIDER_EAGER
 * @class AbstractEagerWS WindowSlider/AbstractEagerWS.h
 * @brief An abstraction of eager window slider, also inherited by other eager window slider
 * @author Tony Zeng
@@ -38,108 +43,31 @@ namespace INTELLI {
    \li To make the parallel join processors started, @ref initJoinProcessors
    \li Feed tuples @ref feedTupleS or @ref feedTupleR
    \li Terminate, by @ref terminateJoinProcessors
+*
 */
-/*! Class that is inherited using public inheritance */
-class AbstractEagerWS {
+class AbstractEagerWS: public AbstractWS{
  private:
   /* data */
   std::vector<SimpleHashJPPtr> jps;
  protected:
-  TuplePtrQueue TuplePtrQueueLocalS;
-  TuplePtrQueue TuplePtrQueueLocalR;
-  INTELLI::join_type_t myType = INTELLI::CNT_BASED;
-  size_t countS, countR, timeStart;
-
-  size_t timeMax, sMax, rMax;
-  size_t windowLen = 0;
-  void updateWindowS();
-  void updateWindowR();
-  //partition
-  std::vector<size_t> partitionWeight;
-  std::vector<size_t> partitionSizeFinal;
-
-  size_t threads;
-  size_t sLen, rLen;
-  bool runTimeScheduling = false;
-  bool timeBased = false;
-  bool isRunning = false;
-  //window expire
   void expireS(size_t cond);
   void expireR(size_t cond);
-  struct timeval timeSys;  /*!< timeval structure from linux, <sys/time.h> */
+  /**
+   * @brief To get the possible oldest a time stamp belongs to
+   * @param ts The time stamp
+   * @return The window number, start from 0
+   */
+  size_t oldestWindowBelong(size_t ts);
  public:
   //generate the partition vector of offset
   vector<size_t> weightedPartitionSizeFinal(size_t inS); //reserved for AMP
   vector<size_t> avgPartitionSizeFinal(size_t inS); //for SMP
 
-  /**
-   * @brief to configure the window type
-   * @param ts wether the slider is time-baesd
-   */
-  void setTimeBased(bool ts) {
-    timeBased = ts;
-  }
-  /**
-   * @brief to read the window type
-   * @result wether the slider is time-baesd
-   */
-  bool isTimeBased() {
-    return timeBased;
-  }
-  /**
-   * @brief to configure the scheduling place
-   * @param r wether let runtime schedule
-   */
-  void setRunTimeScheduling(bool r) {
-    runTimeScheduling = r;
-  }
-  /**
-   * @brief to read the scheduling type
-   * @result wether the runtime schedules
-   */
-  bool isRunTimeScheduling() {
-    return runTimeScheduling;
-  }
-  /**
-  * @brief to set the length of window
-  * @param wl the window length
-  */
-  void setWindowLen(size_t wl) {
-    windowLen = wl;
-  }
-  /**
-  * @brief to set the parallel level under SMP model
-  * @param threads to how many threads will run the join
-  */
-  void setParallelSMP(size_t threads) {
-    partitionWeight = std::vector<size_t>(threads);
-    for (size_t i = 0; i < threads; i++) {
-      partitionWeight[i] = 1;
-    }
-  }
-  /**
- * @brief reset everything needed
- */
-  void reset() {
-    countS = 0;
-    countR = 0;
-    timeStart = clock();
-    gettimeofday(&timeSys, NULL);
-  }
-
-  //if _timeMax>0, the slider will use time stamp, otherwise, it just counts the s and r
-  void setStopCondition(size_t _timeMax, size_t _sMax, size_t _rMax) {
-    timeMax = _timeMax;
-    sMax = _sMax;
-    rMax = _rMax;
-  }
   AbstractEagerWS() {
     reset();
+    nameTag="CellJoin";
   }
-  size_t getTimeStamp() {
 
-    return UtilityFunctions::timeLastUs(timeSys) / TIME_STEP;
-  }
   //init with length of queue
   /**
  * @brief to init the slider with specific length of queue
@@ -182,14 +110,12 @@ class AbstractEagerWS {
    * ,use @ref terminateJoinProcessors to achieve this
 */
   size_t getJoinResult();
+
   //startTime
-  size_t getStartTime() {
-    return timeStart;
-  }
-  struct timeval getSysTime() {
-    return timeSys;
-  }
 };
 }
 #endif
+/**
+ * @}
+ */
 /**@}*/

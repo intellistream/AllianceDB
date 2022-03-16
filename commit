@@ -1,6 +1,0 @@
-
-git checkout universal_stream_join
-git init
-git add .
-git commit -F com_scripts
-git push origin universal_stream_join

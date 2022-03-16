@@ -17,7 +17,7 @@ using namespace INTELLI;
 using namespace std;
 namespace INTELLI {
 /**
- *  @ingroup WindowSliders
+ *  @ingroup WINDOWSLIDER_EAGER
 * @class HandShakeWS WindowSlider/HandShakeWS.h
 * @brief The window slider especially for handshake join
 * @author Tony Zeng

@@ -30,3 +30,5 @@ cmake-build-*/
 venv/
 
 .idea/
+build/
+*build/
