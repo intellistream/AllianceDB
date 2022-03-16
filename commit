@@ -1,4 +1,4 @@
-export MY_BRANCH=lazy-slider
+export MY_BRANCH=#30_CellJoin
 git checkout $MY_BRANCH
 git init
 git add .

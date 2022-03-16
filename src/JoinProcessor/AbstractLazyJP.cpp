@@ -33,11 +33,11 @@ void AbstractLazyJP::moveRtoBuffer() {
     {
       cout<<to_string(timeDivTuple)+","+to_string(sysId*slide+windowLen)<<endl;
     }*/
-    if(trIn== nullptr)
+   /* if(trIn== nullptr)
     {
       rWindowReady= true;
       return;
-    }
+    }*/
 
     windowR.append(trIn);
  //  cout<<"jp "+ to_string(sysId)+":R not ready"+to_string(windowR.size())<<endl;
@@ -62,8 +62,28 @@ void AbstractLazyJP::inlineMain() {
       }
     }
     else if(status==LWJ_COLLECTING)
-    {
-      size_t timeStampSys=getTimeStamp();
+    { size_t timeStampSys;
+      size_t rLen=TuplePtrQueueInR->size();
+      size_t sLen=TuplePtrQueueInS->size();
+      // get the max system time
+      if(rLen>=1&&sLen>=1) {
+        //so we can directly use the time stamp of the most recent tuple
+        TuplePtr trMax = TuplePtrQueueInR->front()[rLen - 1];
+        TuplePtr tsMax = TuplePtrQueueInS->front()[sLen- 1];
+        if(trMax->subKey>tsMax->subKey)
+        {
+          timeStampSys=trMax->subKey;
+        } else{
+          timeStampSys=tsMax->subKey;
+        }
+      }
+      else
+      {
+        // no tuple, use system API
+
+        timeStampSys=getTimeStamp();
+      }
+      //size_t timeStampSys=getTimeStamp();
       size_t timeDivSys=UtilityFunctions::to_periodical(timeStampSys,period);
       //check if this window ends
       if(!isLastJp)
