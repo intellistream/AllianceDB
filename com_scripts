@@ -1,6 +1,3 @@
-issue #29:
-1. Add a JoinAlgoTable in JoinAlgo, to access all supported algos
-2. Rewrite the existing classes of eager join (just briefly done)
-3. First version of lazy window join slider and processor (No sharing)
-4. Upgrade the NPJ accordingly
-5. Remove the build folder
+issue #30:
+1. Configurable slide for CellJoin
+2. Fixed some bugs
