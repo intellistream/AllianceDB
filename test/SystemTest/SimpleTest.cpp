@@ -30,11 +30,12 @@ TEST(SystemTest, SimpleTest
   dataSet.load3VText(relationCouple.relationS, fileSName);
   joinResult.streamSize = relationCouple.relationR.size();
 
-  AbstractJoinMethod<AbstractLazyWS> lwj;
+  AbstractJoinMethod<AbstractEagerWS> ewj;
   // INTELLI::UtilityFunctions::timerStart(joinResult);
-  lwj.test(joinResult, relationCouple);
+  ewj.test(joinResult, relationCouple);
 
   //Print result number
   // INTELLI::UtilityFunctions::timerEnd(joinResult);
   joinResult.statPrinter();
+  ASSERT_TRUE(joinResult.joinNumber>0);
 }
