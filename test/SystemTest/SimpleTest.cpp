@@ -32,7 +32,7 @@ TEST(SystemTest, SimpleTest
 
   AbstractJoinMethod<AbstractLazyWS> lwj;
   // INTELLI::UtilityFunctions::timerStart(joinResult);
-  lwj.test(joinResult,relationCouple);
+  lwj.test(joinResult, relationCouple);
 
   //Print result number
   // INTELLI::UtilityFunctions::timerEnd(joinResult);

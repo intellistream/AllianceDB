@@ -3,12 +3,12 @@
 //
 #include <JoinAlgo/JoinAlgoTable.h>
 #include <JoinAlgo/NPJ.h>
-using  namespace  INTELLI;
+using namespace INTELLI;
 JoinAlgoTable::JoinAlgoTable() {
 //  NPJ npj;
-  algos={newAbstractJoinAlgo(), \
+  algos = {newAbstractJoinAlgo(), \
           newNPJ(), \
          newNPJSingle()
-         };
+  };
   //cout<<algos[1]->getAlgoName()<<endl;
 }

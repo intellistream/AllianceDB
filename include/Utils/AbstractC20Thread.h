@@ -18,33 +18,31 @@
 * @{
  * This package covers some common C++20 new features, such as std::thread to ease the programming
 */
-namespace  INTELLI{
+namespace INTELLI {
 /**
  * @ingroup INTELLI_UTIL_OTHERC20
  * @class AbstractC20Thread  Utils/AbstractC20Thread.h
  * @brief The base class and abstraction of C++20 thread,
  * and it can be derived into other threads
  */
-class AbstractC20Thread{
+class AbstractC20Thread {
  protected:
   /**
    * @brief The inline 'main" function of thread, as an interface
    * @note Normally re-write this in derived classes
    */
-  virtual void inlineMain()
-  {
+  virtual void inlineMain() {
 
   }
 
   std::shared_ptr<std::thread> threadPtr;
  public:
-  AbstractC20Thread(){}
-  ~AbstractC20Thread(){}
+  AbstractC20Thread() {}
+  ~AbstractC20Thread() {}
   /**
    * @brief to start this thread
    */
-  void startThread()
-  {
+  void startThread() {
     auto fun = [this]() {
       inlineMain();
     };
@@ -54,12 +52,9 @@ class AbstractC20Thread{
   /**
    * @brief the thread join function
    */
-  void joinThread()
-  {
+  void joinThread() {
     threadPtr->join();
   }
-
-
 
 };
 

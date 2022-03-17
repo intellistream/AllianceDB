@@ -31,7 +31,7 @@ namespace INTELLI {
   * @class CellJoinJP JoinProcessor/CellJoinJP.h
   * @brief The class of  cell join join processor
   */
-class CellJoinJP: public AbstractJP{
+class CellJoinJP : public AbstractJP {
  private:
   /* data */
   struct timeval timeStart;
@@ -49,7 +49,7 @@ class CellJoinJP: public AbstractJP{
 
   }
   void init(size_t sLen, size_t rLen, size_t _sysId) {
-   AbstractJP::init(sLen,rLen,_sysId);
+    AbstractJP::init(sLen, rLen, _sysId);
     windowQueueS = newWindowQueue(sLen);
     windowQueueR = newWindowQueue(rLen);
   }

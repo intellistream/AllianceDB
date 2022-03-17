@@ -15,12 +15,12 @@ namespace INTELLI {
  *@defgroup WINDOWSLIDER WindowSliders
  * @{
  **/
- /**
-  * @defgroup WINDOWSLIDER_BASE Common base for lazy and eager
-  * @{
-  * @}
-  * @}
-  */
+/**
+ * @defgroup WINDOWSLIDER_BASE Common base for lazy and eager
+ * @{
+ * @}
+ * @}
+ */
 /**
  * @ingroup WINDOWSLIDER_BASE
 * @class AbstractWS WindowSlider/AbstractWS.h
@@ -45,7 +45,7 @@ class AbstractWS {
   INTELLI::join_type_t myType = INTELLI::CNT_BASED;
   size_t countS, countR;
   size_t windowLen = 0;
-  size_t slideLen=1;
+  size_t slideLen = 1;
   //partition
   std::vector<size_t> partitionWeight;
   std::vector<size_t> partitionSizeFinal;
@@ -100,16 +100,14 @@ class AbstractWS {
   * @brief set the length of slide
   * @param sli The assigned length
   */
-  void setSlideLen(size_t sli)
-  {
-    slideLen=sli;
+  void setSlideLen(size_t sli) {
+    slideLen = sli;
   }
   /**
    * @brief get the length of slide
    * @result the length of slide
    */
-  size_t getSlideLen()
-  {
+  size_t getSlideLen() {
     return slideLen;
   }
   /**
@@ -156,8 +154,7 @@ class AbstractWS {
  * @param ts the tuple s
   * @note this function is thread-safe :)
 */
-  virtual void feedTupleS(TuplePtr ts)
-  {
+  virtual void feedTupleS(TuplePtr ts) {
     //assert(ts);
     TuplePtrQueueInS->push(ts);
   }
@@ -167,8 +164,7 @@ class AbstractWS {
  * @param tr the tuple r
   * @note this function is thread-safe :)
 */
-  virtual void feedTupleR(TuplePtr tr)
-  {
+  virtual void feedTupleR(TuplePtr tr) {
     //assert(tr);
     TuplePtrQueueInR->push(tr);
   }
@@ -179,22 +175,19 @@ class AbstractWS {
  * @brief to init the initJoinProcessors
   * @note only after this is called can we start to feed tuples
  */
-  virtual void initJoinProcessors()
-  {
+  virtual void initJoinProcessors() {
 
   }
   /**
  * @brief to terminate the join processors
  */
-  virtual void terminateJoinProcessors()
-  {
+  virtual void terminateJoinProcessors() {
 
   }
   /**
  * @brief to wait the response of join processors
  */
-  virtual void waitAckFromJoinProcessors()
-  {
+  virtual void waitAckFromJoinProcessors() {
 
   }
   //get the join result
@@ -204,8 +197,7 @@ class AbstractWS {
  * @note only called after all join processors are stopped
    * ,use @ref terminateJoinProcessors to achieve this
 */
-  virtual size_t getJoinResult()
-  {
+  virtual size_t getJoinResult() {
     return 0;
   }
   /**
@@ -219,8 +211,7 @@ class AbstractWS {
   * @brief get the name of the slider
   * @return the nameTag;
   */
-  string getName()
-  {
+  string getName() {
     return nameTag;
   }
 };

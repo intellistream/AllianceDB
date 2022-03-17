@@ -16,7 +16,7 @@ if (BUILD_BENCHMARKS)
     message("---Building benchmarks ${source_dir}")
     include_directories("${source_dir}/include/")
     include_directories("include/")
-    set (TEST_BENCH_SRC "src/TestBench/AbstractJoinMethod.cpp"
+    set(TEST_BENCH_SRC "src/TestBench/AbstractJoinMethod.cpp"
             "src/TestBench/HandShakeJoin.cpp"
             "src/TestBench/CellJoin.cpp"
             )

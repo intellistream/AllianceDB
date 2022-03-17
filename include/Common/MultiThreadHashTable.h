@@ -6,18 +6,18 @@
 #include <memory>
 #include <condition_variable>
 #include <mutex>
-namespace INTELLI{
+namespace INTELLI {
 
- /**
-  * @ingroup Common
-  * @defgroup INTELLI_COMMON_TB The multithread hashtable
-  * @{
-  * The hashtable achieves thread-safe by std::mutex. Instead of locking the whole table, only the bucketed to be inserted will be locked, which
-  * reduces waiting
-  */
+/**
+ * @ingroup Common
+ * @defgroup INTELLI_COMMON_TB The multithread hashtable
+ * @{
+ * The hashtable achieves thread-safe by std::mutex. Instead of locking the whole table, only the bucketed to be inserted will be locked, which
+ * reduces waiting
+ */
 #define  BUCKET_SIZE 4
 class MtBucket;
-typedef std::shared_ptr<MtBucket>MtBucketPtr;
+typedef std::shared_ptr<MtBucket> MtBucketPtr;
 //typedef vector<TuplePtr> MtTuplePtr;
 typedef TuplePtr MtTuplePtr;
 /**
@@ -27,13 +27,13 @@ typedef TuplePtr MtTuplePtr;
  * maybe this is a more cache-aware way
  *
  */
-class MtBucket{
+class MtBucket {
  private:
   std::mutex m_mut;
   //vector<MtTuplePtr>tuples;
   TuplePtr tuples[BUCKET_SIZE];
-  MtBucketPtr next= nullptr;
-  size_t count=0;
+  MtBucketPtr next = nullptr;
+  size_t count = 0;
  public:
   /*MtBucket(){
   }
@@ -41,13 +41,13 @@ class MtBucket{
   /**
    * @brief lock this bucket
    */
-  void lock(){
+  void lock() {
     while (!m_mut.try_lock());
   }
   /**
    * @brief unlock this bucket
    */
-  void unlock(){
+  void unlock() {
     m_mut.unlock();
   }
   /**
@@ -72,20 +72,20 @@ class MtBucket{
  * @brief The multithread-supported hash table, holding buckets
  * @todo Improve the efficiency of build phase
  */
-class MultiThreadHashTable{
+class MultiThreadHashTable {
  private:
 
  public:
   uint32_t hash_mask;
   uint32_t skip_bits;
-  vector<MtBucket>buckets;
-  MultiThreadHashTable(){}
+  vector<MtBucket> buckets;
+  MultiThreadHashTable() {}
   /**
    * @brief pre-init with several buckets
    * @param bks the number of buckets
    */
   MultiThreadHashTable(size_t bks);
-  ~MultiThreadHashTable(){}
+  ~MultiThreadHashTable() {}
   /**
    * @brief build the hashtable from tuple queue
    * @param tps the tuple queue
@@ -99,7 +99,7 @@ class MultiThreadHashTable{
  * @note This is thread-safe
  * @warning This function with pointer is NOT intended for API, but only inline use
  */
-  void buildTable(TuplePtr *tps,size_t len);
+  void buildTable(TuplePtr *tps, size_t len);
   /**
    * @brief probe one tuple
    * @param tp Tge tuple

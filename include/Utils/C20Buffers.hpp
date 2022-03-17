@@ -18,34 +18,33 @@
 * @{
  * This package covers some common C++20 new features, such as std::thread to ease the programming
 */
-namespace  INTELLI{
+namespace INTELLI {
 /**
  * @ingroup INTELLI_UTIL_OTHERC20
  * @class C20Buffer Utils/C20Buffers.hpp
  * @tparam dataType The type of your buffering element
  */
-template<typename dataType>class C20Buffer{
+template<typename dataType>
+class C20Buffer {
  protected:
-  size_t pos=0;
+  size_t pos = 0;
  public:
   std::vector<dataType> area;
   /**
   * @brief reset this buffer, set pos back to 0
   */
-  void reset()
-  {
-    pos=0;
+  void reset() {
+    pos = 0;
   }
-  C20Buffer(){reset();}
-  ~C20Buffer(){}
+  C20Buffer() { reset(); }
+  ~C20Buffer() {}
 
   /**
    * @brief Init with original length of buffer
    * @param len THe original length of buffer
    */
-  C20Buffer(size_t len)
-  {
-    area=std::vector<dataType>(len);
+  C20Buffer(size_t len) {
+    area = std::vector<dataType>(len);
     reset();
   }
   /**
@@ -54,8 +53,7 @@ template<typename dataType>class C20Buffer{
    * @note: This is NOT the size of valid data
    * @see size
    */
-  size_t bufferSize()
-  {
+  size_t bufferSize() {
     return area.size();
   }
   /**
@@ -64,16 +62,14 @@ template<typename dataType>class C20Buffer{
   * @note: This is NOT the size of total buffer
    * @see bufferSize
   */
-  size_t size()
-  {
-    return  pos;
+  size_t size() {
+    return pos;
   }
   /**
    * @brief To get the original memory area ponter of data
    * @return The memory area address (pointer) that stores the data
    */
-  dataType *data()
-  {
+  dataType *data() {
     return &area[0];
   }
   /**
@@ -82,8 +78,7 @@ template<typename dataType>class C20Buffer{
    * @return The memory area address (pointer) that stores the data
    * @warning Please ensure the offset is NOT larger than the area.size()-1
    */
-  dataType *data(size_t offset)
-  {
+  dataType *data(size_t offset) {
     return &area[offset];
   }
   /**
@@ -92,8 +87,7 @@ template<typename dataType>class C20Buffer{
    * @note Exceed length will lead to a push_back in vector
    * @return The valid size after this append
    */
-  size_t append(dataType da)
-  {
+  size_t append(dataType da) {
     /*if(pos<area.size())
     {
       area[pos]=da;
@@ -104,9 +98,9 @@ template<typename dataType>class C20Buffer{
       area.push_back(da);
       pos=area.size();
     }*/
-    area[pos]=da;
+    area[pos] = da;
     pos++;
-    return  pos;
+    return pos;
   }
 };
 /**

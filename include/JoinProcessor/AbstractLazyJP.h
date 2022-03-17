@@ -9,7 +9,7 @@
 #include <JoinProcessor/AbstractJP.h>
 #include <JoinAlgo/JoinAlgoTable.h>
 #include <JoinAlgo/NPJ.h>
-namespace  INTELLI {
+namespace INTELLI {
 class AbstractLazyJP;
 /**
  * @ingroup JOINPROCESSOR JoinProcessors
@@ -28,11 +28,11 @@ class AbstractLazyJP;
  * @enum lwj_status_t JoinProcessor/AbstractLazyJP.h
  * @brief The status of lazy join processor
  */
-typedef enum{
+typedef enum {
   /**
    * IDLE, no collecting and no processing
    */
-  LWJ_IDLE=0,
+  LWJ_IDLE = 0,
   /**
    * COLLECTING tuples, meaning this window is not prepared
    */
@@ -41,8 +41,7 @@ typedef enum{
    * PROCESSING tuples
    */
   LWJ_PROCESSING,
-}lwj_status_t;
-
+} lwj_status_t;
 
 /**
  * @ingroup JOINPROCESSOR_LAZY
@@ -51,19 +50,18 @@ typedef enum{
   */
 typedef std::shared_ptr<AbstractLazyJP> AbstractLazyJPPtr;
 #define  newAbstractLazyJP() make_shared<AbstractLazyJP>()
-class AbstractLazyJP :public AbstractJP{
+class AbstractLazyJP : public AbstractJP {
  protected:
 
   C20Buffer<TuplePtr> windowS;
   C20Buffer<TuplePtr> windowR;
-   lwj_status_t status=LWJ_IDLE;
+  lwj_status_t status = LWJ_IDLE;
   size_t slide = 0;
-  size_t windowLen=0;
-  size_t  period=0;
-  bool sWindowReady= false;
-  bool rWindowReady= false;
-  bool isLastJp= false;
-
+  size_t windowLen = 0;
+  size_t period = 0;
+  bool sWindowReady = false;
+  bool rWindowReady = false;
+  bool isLastJp = false;
 
   virtual void inlineMain();
   /**
@@ -75,8 +73,8 @@ class AbstractLazyJP :public AbstractJP{
    */
   void moveRtoBuffer();
  public:
-  AbstractLazyJP(){}
-  ~ AbstractLazyJP(){}
+  AbstractLazyJP() {}
+  ~ AbstractLazyJP() {}
   /**
     * @brief init the join processor with buffer/queue length and id
     * @param sLen The length of S queue and buffer
@@ -84,9 +82,9 @@ class AbstractLazyJP :public AbstractJP{
     * @param _sysId The system id
     */
   virtual void init(size_t sLen, size_t rLen, size_t _sysId) {
-   AbstractJP::init(sLen,rLen,_sysId);
-   windowS=C20Buffer<TuplePtr>(sLen);
-    windowR=C20Buffer<TuplePtr>(rLen);
+    AbstractJP::init(sLen, rLen, _sysId);
+    windowS = C20Buffer<TuplePtr>(sLen);
+    windowR = C20Buffer<TuplePtr>(rLen);
 
   }
   /**
@@ -95,19 +93,17 @@ class AbstractLazyJP :public AbstractJP{
    * @param wlen The window length
    * @param per The period in system
    */
-  void setLazyWindow(size_t sli,size_t wlen,size_t per)
-  {
-    slide=sli;
-    windowLen=wlen;
-    period=per;
+  void setLazyWindow(size_t sli, size_t wlen, size_t per) {
+    slide = sli;
+    windowLen = wlen;
+    period = per;
   }
   /**
    * @brief To indicate if this one is the last join processor
    * @param val
    */
-  void setLastJp(bool val)
-  {
-    isLastJp=val;
+  void setLastJp(bool val) {
+    isLastJp = val;
   }
 };
 

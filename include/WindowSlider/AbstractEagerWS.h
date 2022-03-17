@@ -29,25 +29,25 @@ namespace INTELLI {
  * @}
  * @}
  */
- /**
-  * @ingroup WINDOWSLIDER_EAGER
+/**
+ * @ingroup WINDOWSLIDER_EAGER
 * @class AbstractEagerWS WindowSlider/AbstractEagerWS.h
 * @brief An abstraction of eager window slider (i.e., the CellJoin), also inherited by other eager window slider
 * @author Tony Zeng
 * @note
 * detailed description:
- To init and run, follow the functions below to start a WS
-   \li Configure the window type, time or count, @ref setTimeBased
-   \li Configure window length: @ref setWindowLen
-   \li Configure slide length: @ref setSlideLen (default is 1 if not called)
-   \li Set parallel executing behavior on SMP,@ref setParallelSMP
-   \li Optional, (@ref setRunTimeScheduling)
-   \li To make the parallel join processors started, @ref initJoinProcessors
-   \li Feed tuples @ref feedTupleS or @ref feedTupleR
-   \li Terminate, by @ref terminateJoinProcessors
+To init and run, follow the functions below to start a WS
+  \li Configure the window type, time or count, @ref setTimeBased
+  \li Configure window length: @ref setWindowLen
+  \li Configure slide length: @ref setSlideLen (default is 1 if not called)
+  \li Set parallel executing behavior on SMP,@ref setParallelSMP
+  \li Optional, (@ref setRunTimeScheduling)
+  \li To make the parallel join processors started, @ref initJoinProcessors
+  \li Feed tuples @ref feedTupleS or @ref feedTupleR
+  \li Terminate, by @ref terminateJoinProcessors
 *
 */
-class AbstractEagerWS: public AbstractWS,public AbstractC20Thread{
+class AbstractEagerWS : public AbstractWS, public AbstractC20Thread {
  private:
   /* data */
   std::vector<CellJoinJPPtr> jps;
@@ -56,7 +56,7 @@ class AbstractEagerWS: public AbstractWS,public AbstractC20Thread{
   void expireR(size_t cond);
   TuplePtrQueue TuplePtrQueueLocalS;
   TuplePtrQueue TuplePtrQueueLocalR;
-  virtual  void inlineMain();
+  virtual void inlineMain();
   /**
    * @brief deliver tuple s to join processors
    * @param ts The tuple s
@@ -80,7 +80,7 @@ class AbstractEagerWS: public AbstractWS,public AbstractC20Thread{
 
   AbstractEagerWS() {
     reset();
-    nameTag="CellJoin";
+    nameTag = "CellJoin";
   }
 
   //init with length of queue

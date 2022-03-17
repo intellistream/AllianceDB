@@ -48,7 +48,7 @@ size_t NPJ::join(TuplePtr *ts, TuplePtr *tr, size_t tsLen, size_t trLen, int thr
   size_t rBegin = 0;
   //creat table
 
-  MultiThreadHashTablePtr table = make_shared<MultiThreadHashTable>(tsLen / 2+1); // at least there is one element
+  MultiThreadHashTablePtr table = make_shared<MultiThreadHashTable>(tsLen / 2 + 1); // at least there is one element
   tp.end();
   // create barrier
 
@@ -87,7 +87,7 @@ size_t NPJ::join(TuplePtr *ts, TuplePtr tr, size_t tsLen, int threads) {
   vector<size_t> partitionS = UtilityFunctions::avgPartitionSizeFinal(tsLen, vector<size_t>(threads));
   size_t sBegin = 0;
   //creat table
-  MultiThreadHashTablePtr table = make_shared<MultiThreadHashTable>(tsLen / 2+1);
+  MultiThreadHashTablePtr table = make_shared<MultiThreadHashTable>(tsLen / 2 + 1);
   // create barrier
   INTELLI::BarrierPtr buildBar = std::make_shared<std::barrier<>>(threads);
   //cout << ("init time ") + to_string(tp.getResultById(-1)) << endl;
@@ -116,9 +116,9 @@ size_t NPJ::join(TuplePtrQueue ts, TuplePtr tr, int threads) {
   return join(ts->front(), tr, ts->size(), threads);
 }
 size_t NPJSingle::join(TuplePtr *ts, TuplePtr *tr, size_t tsLen, size_t trLen, int threads) {
-  assert(threads>0);
-  size_t result=0;
-  MultiThreadHashTable table(tsLen/2+1);
+  assert(threads > 0);
+  size_t result = 0;
+  MultiThreadHashTable table(tsLen / 2 + 1);
   table.buildTable(ts, tsLen);
   for (size_t i = 0; i < trLen; i++) {
     result += table.probeTuple(tr[i]);
@@ -129,9 +129,9 @@ size_t NPJSingle::join(TuplePtrQueue ts, TuplePtrQueue tr, int threads) {
   return join(ts->front(), tr->front(), ts->size(), tr->size(), threads);
 }
 size_t NPJSingle::join(TuplePtr *ts, TuplePtr tr, size_t tsLen, int threads) {
-  assert(threads>0);
-  size_t result=0;
-  MultiThreadHashTable table(tsLen/2+1);
+  assert(threads > 0);
+  size_t result = 0;
+  MultiThreadHashTable table(tsLen / 2 + 1);
   table.buildTable(ts, tsLen);
   result += table.probeTuple(tr);
   return result;
