@@ -1,6 +1,0 @@
-export MY_BRANCH=#30_CellJoin
-git checkout $MY_BRANCH
-git init
-git add .
-git commit -F com_scripts
-git push origin $MY_BRANCH
