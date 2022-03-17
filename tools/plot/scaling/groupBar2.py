@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pylab
 from matplotlib.font_manager import FontProperties
-from matplotlib.ticker import LogLocator,LinearLocator
+from matplotlib.ticker import LogLocator, LinearLocator
 
 OPT_FONT_NAME = 'Helvetica'
 TICK_FONT_SIZE = 24
@@ -18,9 +18,11 @@ TICK_FP = FontProperties(style='normal', size=TICK_FONT_SIZE)
 
 MARKERS = (["", 'o', 's', 'v', "^", "", "h", "<", ">", "+", "d", "<", "|", "", "+", "_"])
 # you may want to change the color map for different figures
-COLOR_MAP = ('#FFFFFF', '#B03A2E', '#2874A6', '#239B56', '#7D3C98', '#00FFFF', '#F1C40F', '#F5CBA7', '#82E0AA', '#AEB6BF', '#AA4499')
+COLOR_MAP = (
+'#FFFFFF', '#B03A2E', '#2874A6', '#239B56', '#7D3C98', '#00FFFF', '#F1C40F', '#F5CBA7', '#82E0AA', '#AEB6BF', '#AA4499')
 # you may want to change the patterns for different figures
-PATTERNS = (["", "////", "\\\\", "//", "o", "", "||", "-", "//", "\\", "o", "O", "////", ".", "|||", "o", "---", "+", "\\\\", "*"])
+PATTERNS = (
+["", "////", "\\\\", "//", "o", "", "||", "-", "//", "\\", "o", "O", "////", ".", "|||", "o", "---", "+", "\\\\", "*"])
 LABEL_WEIGHT = 'bold'
 LINE_COLORS = COLOR_MAP
 LINE_WIDTH = 3.0
@@ -37,6 +39,7 @@ matplotlib.rcParams['pdf.fonttype'] = 42
 exp_dir = "/data1/xtra"
 
 FIGURE_FOLDER = exp_dir + '/results/figure'
+
 
 def DrawLegend(legend_labels, filename):
     fig = pylab.figure()
@@ -65,6 +68,7 @@ def DrawLegend(legend_labels, filename):
                      )
     figlegend.savefig(FIGURE_FOLDER + '/' + filename + '.pdf')
 
+
 # draw a bar chart
 def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max, filename, allow_legend):
     # you may change the figure size on your own.
@@ -85,7 +89,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
                           y_values[i], width,
                           hatch=PATTERNS[i],
                           color=LINE_COLORS[i],
-                          label=FIGURE_LABEL[i],edgecolor='black', linewidth=3)
+                          label=FIGURE_LABEL[i], edgecolor='black', linewidth=3)
 
     # sometimes you may not want to draw legends.
     if allow_legend == True:
@@ -105,14 +109,14 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
                    )
 
     # you may need to tune the xticks position to get the best figure.
-    plt.xticks(index + 3* width, x_values,rotation = 30)
-    
+    plt.xticks(index + 3 * width, x_values, rotation=30)
+
     # plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
     # plt.grid(axis='y', color='gray')
     # figure.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
 
     # you may need to tune the xticks position to get the best figure.
-   # plt.yscale('log')
+    # plt.yscale('log')
     #
     # plt.grid(axis='y', color='gray')
     figure.yaxis.set_major_locator(LinearLocator(10))
@@ -124,6 +128,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
     plt.ylabel(y_label, fontproperties=LABEL_FP)
 
     plt.savefig(filename + ".pdf", bbox_inches='tight')
+
 
 # example for reading csv file
 def ReadFile():
@@ -208,6 +213,7 @@ def ReadFile():
         col8.append(x)
     y.append(col8)
     return y
+
 
 if __name__ == "__main__":
     x_values = ["Stock", "Rovio", "YSB", "DEBS"]

@@ -70,8 +70,8 @@
  * @subsection JoinProcessor
  * Here is the middle layer of the whole stream window join, i.e., to bridge the "window" and "join".
  * One JoinProcessor may either eagerly do stream join,
- * or just accumulate the tuples and evoke JoinAlgo  for lazy join. JoinProcessors are managed by upper windowslider.
- * Please refer to the @ref JOINPROCESSOR module.
+ * or just accumulate the tuples and evoke JoinAlgo  for lazy join. JoinProcessors are managed by upper windowslider. Please refer to the @ref JOINPROCESSOR module.
+ *
  *
  * @subsection WindowSlider
  * Here is the top layer on all. Typically, the WindowSliders will:
