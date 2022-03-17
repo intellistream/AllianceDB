@@ -1,0 +1,6 @@
+<map id="WindowSliders" name="WindowSliders">
+<area shape="rect" id="node1" href="$group__WINDOWSLIDER__BASE.html" title=" " alt="" coords="172,5,341,45"/>
+<area shape="rect" id="node2" href="$group__WINDOWSLIDER__EAGER.html" title=" " alt="" coords="180,70,333,95"/>
+<area shape="rect" id="node3" title=" " alt="" coords="5,70,124,95"/>
+<area shape="rect" id="node4" href="$group__WINDOWSLIDER__LAZY.html" title=" " alt="" coords="185,119,328,145"/>
+</map>

@@ -119,7 +119,7 @@ $(document).ready(function(){initNavTree('UtilityFunctions_8hpp_source.html','')
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#define TRUE 1</span></div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#define FALSE 0</span></div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#include &lt;sys/time.h&gt;</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="keyword">namespace </span>INTELLI {</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespaceINTELLI.html">INTELLI</a> {</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="keyword">typedef</span> std::shared_ptr&lt;std::barrier&lt;&gt;&gt; BarrierPtr;</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#define TIME_LAST_UNIT_MS 1000</span></div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#define TIME_LAST_UNIT_US 1000000</span></div>
@@ -150,14 +150,25 @@ $(document).ready(function(){initNavTree('UtilityFunctions_8hpp_source.html','')
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <span class="comment">//partition</span></div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <span class="keyword">static</span> vector&lt;size_t&gt; avgPartitionSizeFinal(<span class="keywordtype">size_t</span> inS, std::vector&lt;size_t&gt; partitionWeight);</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  <span class="keyword">static</span> vector&lt;size_t&gt; weightedPartitionSizeFinal(<span class="keywordtype">size_t</span> inS, std::vector&lt;size_t&gt; partitionWeight);</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160; </div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;};</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;}</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="preprocessor">#endif </span><span class="comment">//IntelliStream_SRC_UTILS_UTILITYFUNCTIONS_HPP_</span></div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="keyword">static</span> <span class="keywordtype">size_t</span> to_periodical(<span class="keywordtype">size_t</span> val, <span class="keywordtype">size_t</span> period) {</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <span class="keywordflow">if</span> (val &lt; period) {</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;      <span class="keywordflow">return</span> val;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    }</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <span class="keywordtype">size_t</span> ru = val % period;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <span class="comment">/* if(ru==0)</span></div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="comment">     {</span></div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="comment">       return  period;</span></div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="comment">     }*/</span></div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    <span class="keywordflow">return</span> ru;</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  }</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;};</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;}</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="preprocessor">#endif </span><span class="comment">//IntelliStream_SRC_UTILS_UTILITYFUNCTIONS_HPP_</span></div>
 <div class="ttc" id="aTypes_8h_html"><div class="ttname"><a href="Types_8h.html">Types.h</a></div></div>
-<div class="ttc" id="aclassINTELLI_1_1Result_html"><div class="ttname"><a href="classINTELLI_1_1Result.html">INTELLI::Result</a></div><div class="ttdef"><b>Definition:</b> Types.h:208</div></div>
+<div class="ttc" id="aclassINTELLI_1_1Result_html"><div class="ttname"><a href="classINTELLI_1_1Result.html">INTELLI::Result</a></div><div class="ttdef"><b>Definition:</b> Types.h:210</div></div>
 <div class="ttc" id="aclassINTELLI_1_1UtilityFunctions_html"><div class="ttname"><a href="classINTELLI_1_1UtilityFunctions.html">INTELLI::UtilityFunctions</a></div><div class="ttdef"><b>Definition:</b> UtilityFunctions.hpp:27</div></div>
 <div class="ttc" id="aclassINTELLI_1_1UtilityFunctions_html_a6dcd6ddbf5b214446802dc6a5da568d5"><div class="ttname"><a href="classINTELLI_1_1UtilityFunctions.html#a6dcd6ddbf5b214446802dc6a5da568d5">INTELLI::UtilityFunctions::bind2Core</a></div><div class="ttdeci">static int bind2Core(int id)</div></div>
+<div class="ttc" id="anamespaceINTELLI_html"><div class="ttname"><a href="namespaceINTELLI.html">INTELLI</a></div><div class="ttdef"><b>Definition:</b> DatasetTool.h:10</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

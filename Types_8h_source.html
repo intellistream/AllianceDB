@@ -126,7 +126,7 @@ $(document).ready(function(){initNavTree('Types_8h_source.html',''); initResizab
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160; </div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="comment">//Constants</span></div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#ifndef WINDOW_SIZE</span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#define WINDOW_SIZE 50</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#define WINDOW_SIZE 500</span></div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160; </div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor">#ifndef THREAD_NUMBER</span></div>
@@ -152,138 +152,141 @@ $(document).ready(function(){initNavTree('Types_8h_source.html',''); initResizab
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="preprocessor">#include &quot;Utils/SafeQueue.hpp&quot;</span></div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="preprocessor">#include &quot;Utils/SPSCQueue.hpp&quot;</span></div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160; </div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="keyword">namespace </span>INTELLI {</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;<span class="comment">//Pointers</span></div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160; </div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160; </div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;<span class="comment">//Alias</span></div>
-<div class="line"><a name="l00105"></a><span class="lineno"><a class="line" href="group__INTELLI__COMMON__BASIC.html#gabdecd0146153c8a29b021c48dfa300ce">  105</a></span>&#160;<span class="keyword">typedef</span> uint64_t <a class="code" href="group__INTELLI__COMMON__BASIC.html#gabdecd0146153c8a29b021c48dfa300ce">keyType</a>;    </div>
-<div class="line"><a name="l00106"></a><span class="lineno"><a class="line" href="group__INTELLI__COMMON__BASIC.html#ga4bb66f4742171167ee336a06d8939bdf">  106</a></span>&#160;<span class="keyword">typedef</span> uint64_t <a class="code" href="group__INTELLI__COMMON__BASIC.html#ga4bb66f4742171167ee336a06d8939bdf">valueType</a>;  </div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;<span class="keyword">typedef</span> <span class="keywordtype">int</span> numberType; <span class="comment">//for counting the number of datagram (eg: tuples) in a struct</span></div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;<span class="keyword">typedef</span> std::mutex mutex;</div>
-<div class="line"><a name="l00109"></a><span class="lineno"><a class="line" href="group__INTELLI__COMMON__BASIC.html#gaac770a310639269c01008063c55c638f">  109</a></span>&#160;<span class="keyword">typedef</span> <a class="code" href="classstd_1_1DupicatedHashTable.html">std::DupicatedHashTable&lt;keyType, keyType&gt;</a> <a class="code" href="group__INTELLI__COMMON__BASIC.html#gaac770a310639269c01008063c55c638f">hashtable</a>; </div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;<span class="keyword">typedef</span> std::queue&lt;numberType&gt; tupleKeyQueue;</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160; </div>
-<div class="line"><a name="l00117"></a><span class="lineno"><a class="line" href="classINTELLI_1_1Tuple.html">  117</a></span>&#160;<span class="keyword">class </span><a class="code" href="classINTELLI_1_1Tuple.html">Tuple</a> {</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00119"></a><span class="lineno"><a class="line" href="group__INTELLI__COMMON__BASIC.html#ga84e1622df3ca7ac338470aaebaccad0c">  119</a></span>&#160;  <a class="code" href="group__INTELLI__COMMON__BASIC.html#gabdecd0146153c8a29b021c48dfa300ce">keyType</a> <a class="code" href="group__INTELLI__COMMON__BASIC.html#ga84e1622df3ca7ac338470aaebaccad0c">key</a>; </div>
-<div class="line"><a name="l00120"></a><span class="lineno"><a class="line" href="group__INTELLI__COMMON__BASIC.html#ga53563c8a8e699e52fd90af2cb1e5a726">  120</a></span>&#160;  <a class="code" href="group__INTELLI__COMMON__BASIC.html#ga4bb66f4742171167ee336a06d8939bdf">valueType</a> <a class="code" href="group__INTELLI__COMMON__BASIC.html#ga53563c8a8e699e52fd90af2cb1e5a726">payload</a>; </div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;  <span class="comment">// The subKey can be either time-stamp or arrival count, which is assigned by join system</span></div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;  <span class="comment">// We use the subKey to do tuple expiration, which covers both count-based and time-based window</span></div>
-<div class="line"><a name="l00123"></a><span class="lineno"><a class="line" href="group__INTELLI__COMMON__BASIC.html#ga44323184f95dee40b6ad4dd0aea6c817">  123</a></span>&#160;  <span class="keywordtype">size_t</span> <a class="code" href="group__INTELLI__COMMON__BASIC.html#ga44323184f95dee40b6ad4dd0aea6c817">subKey</a> = 0;</div>
-<div class="line"><a name="l00128"></a><span class="lineno"><a class="line" href="group__INTELLI__COMMON__BASIC.html#gabc02dc379b9bd407b3df03c30a952db4">  128</a></span>&#160;  <a class="code" href="group__INTELLI__COMMON__BASIC.html#gabc02dc379b9bd407b3df03c30a952db4">Tuple</a>(<a class="code" href="group__INTELLI__COMMON__BASIC.html#gabdecd0146153c8a29b021c48dfa300ce">keyType</a> k);</div>
-<div class="line"><a name="l00134"></a><span class="lineno"><a class="line" href="group__INTELLI__COMMON__BASIC.html#ga3f1ae0f48ce01d06105ba18587ad9e29">  134</a></span>&#160;  <a class="code" href="group__INTELLI__COMMON__BASIC.html#ga3f1ae0f48ce01d06105ba18587ad9e29">Tuple</a>(<a class="code" href="group__INTELLI__COMMON__BASIC.html#gabdecd0146153c8a29b021c48dfa300ce">keyType</a> k, <a class="code" href="group__INTELLI__COMMON__BASIC.html#ga4bb66f4742171167ee336a06d8939bdf">valueType</a> v);</div>
-<div class="line"><a name="l00141"></a><span class="lineno"><a class="line" href="group__INTELLI__COMMON__BASIC.html#ga278dea8fe2b45b8cceccc1677ca8e740">  141</a></span>&#160;  <a class="code" href="group__INTELLI__COMMON__BASIC.html#ga278dea8fe2b45b8cceccc1677ca8e740">Tuple</a>(<a class="code" href="group__INTELLI__COMMON__BASIC.html#gabdecd0146153c8a29b021c48dfa300ce">keyType</a> k, <a class="code" href="group__INTELLI__COMMON__BASIC.html#ga4bb66f4742171167ee336a06d8939bdf">valueType</a> v, <span class="keywordtype">size_t</span> sk);</div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;  ~<a class="code" href="classINTELLI_1_1Tuple.html">Tuple</a>();</div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;};</div>
-<div class="line"><a name="l00148"></a><span class="lineno"><a class="line" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">  148</a></span>&#160;<span class="keyword">typedef</span> std::shared_ptr&lt;class Tuple&gt; <a class="code" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a>;</div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;<span class="keyword">typedef</span> std::shared_ptr&lt;class RelationCouple&gt; RelationCouplePtr;</div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;<span class="keyword">typedef</span> std::shared_ptr&lt;std::barrier&lt;&gt;&gt; BarrierPtr;</div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;<span class="comment">//Array Pointers</span></div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;<span class="keyword">typedef</span> std::vector&lt;TuplePtr&gt; WindowOfTuples;</div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160; </div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;<span class="comment">//typedef std::SafeQueue&lt;TuplePtr&gt; TuplePtrQueueLocal;</span></div>
-<div class="line"><a name="l00160"></a><span class="lineno"><a class="line" href="group__INTELLI__COMMON__BASIC.html#gab867dce60ff57fe0f83898eff80f27cc">  160</a></span>&#160;<span class="comment"></span><span class="keyword">typedef</span> std::queue&lt;TuplePtr&gt; <a class="code" href="group__INTELLI__COMMON__BASIC.html#gab867dce60ff57fe0f83898eff80f27cc">TuplePtrQueueLocal</a>;</div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;<span class="keyword">typedef</span> <a class="code" href="classmoodycamel_1_1ConcurrentQueue.html">moodycamel::ConcurrentQueue&lt;TuplePtr&gt;</a> <a class="code" href="classmoodycamel_1_1ConcurrentQueue.html">concurrentTupleQueue</a>;</div>
-<div class="line"><a name="l00162"></a><span class="lineno"><a class="line" href="classINTELLI_1_1RelationCouple.html">  162</a></span>&#160;<span class="keyword">class </span><a class="code" href="classINTELLI_1_1RelationCouple.html">RelationCouple</a> {</div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;  <a class="code" href="group__INTELLI__COMMON__BASIC.html#gab867dce60ff57fe0f83898eff80f27cc">TuplePtrQueueLocal</a> relationS;</div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;  <a class="code" href="group__INTELLI__COMMON__BASIC.html#gab867dce60ff57fe0f83898eff80f27cc">TuplePtrQueueLocal</a> relationR;</div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;  <a class="code" href="classINTELLI_1_1RelationCouple.html">RelationCouple</a>();</div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;  ~<a class="code" href="classINTELLI_1_1RelationCouple.html">RelationCouple</a>();</div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;};</div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160; </div>
-<div class="line"><a name="l00170"></a><span class="lineno"><a class="line" href="classINTELLI_1_1WindowCouple.html">  170</a></span>&#160;<span class="keyword">class </span><a class="code" href="classINTELLI_1_1WindowCouple.html">WindowCouple</a> {</div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;  <span class="comment">//We use queue to implement a window, it stores the sequence of tuples.</span></div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;  <a class="code" href="group__INTELLI__COMMON__BASIC.html#gab867dce60ff57fe0f83898eff80f27cc">TuplePtrQueueLocal</a> windowS;</div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;  <a class="code" href="group__INTELLI__COMMON__BASIC.html#gab867dce60ff57fe0f83898eff80f27cc">TuplePtrQueueLocal</a> windowR;</div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;  <a class="code" href="classstd_1_1DupicatedHashTable.html">hashtable</a> hashtableS;</div>
-<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;  <a class="code" href="classstd_1_1DupicatedHashTable.html">hashtable</a> hashtableR;</div>
-<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160; </div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;  numberType windowSize;</div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;  numberType windowSizeR;</div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;  numberType windowSizeS;</div>
-<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160; </div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;  mutex windowLock;</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespaceINTELLI.html">INTELLI</a> {</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;<span class="comment">//Pointers</span></div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160; </div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160; </div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;<span class="comment">//Alias</span></div>
+<div class="line"><a name="l00107"></a><span class="lineno"><a class="line" href="group__INTELLI__COMMON__BASIC.html#gabdecd0146153c8a29b021c48dfa300ce">  107</a></span>&#160;<span class="keyword">typedef</span> uint64_t <a class="code" href="group__INTELLI__COMMON__BASIC.html#gabdecd0146153c8a29b021c48dfa300ce">keyType</a>;    </div>
+<div class="line"><a name="l00108"></a><span class="lineno"><a class="line" href="group__INTELLI__COMMON__BASIC.html#ga4bb66f4742171167ee336a06d8939bdf">  108</a></span>&#160;<span class="keyword">typedef</span> uint64_t <a class="code" href="group__INTELLI__COMMON__BASIC.html#ga4bb66f4742171167ee336a06d8939bdf">valueType</a>;  </div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;<span class="keyword">typedef</span> <span class="keywordtype">int</span> numberType; <span class="comment">//for counting the number of datagram (eg: tuples) in a struct</span></div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;<span class="keyword">typedef</span> std::mutex mutex;</div>
+<div class="line"><a name="l00111"></a><span class="lineno"><a class="line" href="group__INTELLI__COMMON__BASIC.html#gaac770a310639269c01008063c55c638f">  111</a></span>&#160;<span class="keyword">typedef</span> <a class="code" href="classstd_1_1DupicatedHashTable.html">std::DupicatedHashTable&lt;keyType, keyType&gt;</a> <a class="code" href="group__INTELLI__COMMON__BASIC.html#gaac770a310639269c01008063c55c638f">hashtable</a>; </div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;<span class="keyword">typedef</span> std::queue&lt;numberType&gt; tupleKeyQueue;</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160; </div>
+<div class="line"><a name="l00119"></a><span class="lineno"><a class="line" href="classINTELLI_1_1Tuple.html">  119</a></span>&#160;<span class="keyword">class </span><a class="code" href="classINTELLI_1_1Tuple.html">Tuple</a> {</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00121"></a><span class="lineno"><a class="line" href="group__INTELLI__COMMON__BASIC.html#ga84e1622df3ca7ac338470aaebaccad0c">  121</a></span>&#160;  <a class="code" href="group__INTELLI__COMMON__BASIC.html#gabdecd0146153c8a29b021c48dfa300ce">keyType</a> <a class="code" href="group__INTELLI__COMMON__BASIC.html#ga84e1622df3ca7ac338470aaebaccad0c">key</a>; </div>
+<div class="line"><a name="l00122"></a><span class="lineno"><a class="line" href="group__INTELLI__COMMON__BASIC.html#ga53563c8a8e699e52fd90af2cb1e5a726">  122</a></span>&#160;  <a class="code" href="group__INTELLI__COMMON__BASIC.html#ga4bb66f4742171167ee336a06d8939bdf">valueType</a> <a class="code" href="group__INTELLI__COMMON__BASIC.html#ga53563c8a8e699e52fd90af2cb1e5a726">payload</a>; </div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;  <span class="comment">// The subKey can be either time-stamp or arrival count, which is assigned by join system</span></div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;  <span class="comment">// We use the subKey to do tuple expiration, which covers both count-based and time-based window</span></div>
+<div class="line"><a name="l00125"></a><span class="lineno"><a class="line" href="group__INTELLI__COMMON__BASIC.html#ga44323184f95dee40b6ad4dd0aea6c817">  125</a></span>&#160;  <span class="keywordtype">size_t</span> <a class="code" href="group__INTELLI__COMMON__BASIC.html#ga44323184f95dee40b6ad4dd0aea6c817">subKey</a> = 0;</div>
+<div class="line"><a name="l00130"></a><span class="lineno"><a class="line" href="group__INTELLI__COMMON__BASIC.html#gabc02dc379b9bd407b3df03c30a952db4">  130</a></span>&#160;  <a class="code" href="group__INTELLI__COMMON__BASIC.html#gabc02dc379b9bd407b3df03c30a952db4">Tuple</a>(<a class="code" href="group__INTELLI__COMMON__BASIC.html#gabdecd0146153c8a29b021c48dfa300ce">keyType</a> k);</div>
+<div class="line"><a name="l00136"></a><span class="lineno"><a class="line" href="group__INTELLI__COMMON__BASIC.html#ga3f1ae0f48ce01d06105ba18587ad9e29">  136</a></span>&#160;  <a class="code" href="group__INTELLI__COMMON__BASIC.html#ga3f1ae0f48ce01d06105ba18587ad9e29">Tuple</a>(<a class="code" href="group__INTELLI__COMMON__BASIC.html#gabdecd0146153c8a29b021c48dfa300ce">keyType</a> k, <a class="code" href="group__INTELLI__COMMON__BASIC.html#ga4bb66f4742171167ee336a06d8939bdf">valueType</a> v);</div>
+<div class="line"><a name="l00143"></a><span class="lineno"><a class="line" href="group__INTELLI__COMMON__BASIC.html#ga278dea8fe2b45b8cceccc1677ca8e740">  143</a></span>&#160;  <a class="code" href="group__INTELLI__COMMON__BASIC.html#ga278dea8fe2b45b8cceccc1677ca8e740">Tuple</a>(<a class="code" href="group__INTELLI__COMMON__BASIC.html#gabdecd0146153c8a29b021c48dfa300ce">keyType</a> k, <a class="code" href="group__INTELLI__COMMON__BASIC.html#ga4bb66f4742171167ee336a06d8939bdf">valueType</a> v, <span class="keywordtype">size_t</span> sk);</div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;  ~<a class="code" href="classINTELLI_1_1Tuple.html">Tuple</a>();</div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;};</div>
+<div class="line"><a name="l00150"></a><span class="lineno"><a class="line" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">  150</a></span>&#160;<span class="keyword">typedef</span> std::shared_ptr&lt;class Tuple&gt; <a class="code" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a>;</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;<span class="keyword">typedef</span> std::shared_ptr&lt;class RelationCouple&gt; RelationCouplePtr;</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;<span class="keyword">typedef</span> std::shared_ptr&lt;std::barrier&lt;&gt;&gt; BarrierPtr;</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;<span class="comment">//Array Pointers</span></div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;<span class="keyword">typedef</span> std::vector&lt;TuplePtr&gt; WindowOfTuples;</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160; </div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;<span class="comment">//typedef std::SafeQueue&lt;TuplePtr&gt; TuplePtrQueueIn;</span></div>
+<div class="line"><a name="l00162"></a><span class="lineno"><a class="line" href="group__INTELLI__COMMON__BASIC.html#gab7c953fa95834060df1b58a358cf5319">  162</a></span>&#160;<span class="comment"></span><span class="keyword">typedef</span> std::queue&lt;TuplePtr&gt; <a class="code" href="group__INTELLI__COMMON__BASIC.html#gab7c953fa95834060df1b58a358cf5319">TuplePtrQueueIn</a>;</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;<span class="keyword">typedef</span> <a class="code" href="classmoodycamel_1_1ConcurrentQueue.html">moodycamel::ConcurrentQueue&lt;TuplePtr&gt;</a> <a class="code" href="classmoodycamel_1_1ConcurrentQueue.html">concurrentTupleQueue</a>;</div>
+<div class="line"><a name="l00164"></a><span class="lineno"><a class="line" href="classINTELLI_1_1RelationCouple.html">  164</a></span>&#160;<span class="keyword">class </span><a class="code" href="classINTELLI_1_1RelationCouple.html">RelationCouple</a> {</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;  <a class="code" href="group__INTELLI__COMMON__BASIC.html#gab7c953fa95834060df1b58a358cf5319">TuplePtrQueueIn</a> relationS;</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;  <a class="code" href="group__INTELLI__COMMON__BASIC.html#gab7c953fa95834060df1b58a358cf5319">TuplePtrQueueIn</a> relationR;</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;  <a class="code" href="classINTELLI_1_1RelationCouple.html">RelationCouple</a>();</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;  ~<a class="code" href="classINTELLI_1_1RelationCouple.html">RelationCouple</a>();</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;};</div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160; </div>
+<div class="line"><a name="l00172"></a><span class="lineno"><a class="line" href="classINTELLI_1_1WindowCouple.html">  172</a></span>&#160;<span class="keyword">class </span><a class="code" href="classINTELLI_1_1WindowCouple.html">WindowCouple</a> {</div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;  <span class="comment">//We use queue to implement a window, it stores the sequence of tuples.</span></div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;  <a class="code" href="group__INTELLI__COMMON__BASIC.html#gab7c953fa95834060df1b58a358cf5319">TuplePtrQueueIn</a> windowS;</div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;  <a class="code" href="group__INTELLI__COMMON__BASIC.html#gab7c953fa95834060df1b58a358cf5319">TuplePtrQueueIn</a> windowR;</div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;  <a class="code" href="classstd_1_1DupicatedHashTable.html">hashtable</a> hashtableS;</div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;  <a class="code" href="classstd_1_1DupicatedHashTable.html">hashtable</a> hashtableR;</div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160; </div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;  numberType windowSize;</div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;  numberType windowSizeR;</div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;  numberType windowSizeS;</div>
 <div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160; </div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;  <a class="code" href="classINTELLI_1_1WindowCouple.html">WindowCouple</a>(numberType windowSize);</div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;  <a class="code" href="classINTELLI_1_1WindowCouple.html">WindowCouple</a>(numberType windowSizeR, numberType windowSizeS);</div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;};</div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160; </div>
-<div class="line"><a name="l00188"></a><span class="lineno"><a class="line" href="classINTELLI_1_1ConcurrentQWindowCouple.html">  188</a></span>&#160;<span class="keyword">class </span><a class="code" href="classINTELLI_1_1ConcurrentQWindowCouple.html">ConcurrentQWindowCouple</a> {</div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;  <span class="comment">//We use queue to implement a window, it stores the sequence of tuples.</span></div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;  <span class="comment">//Concurrent Q but not concurrent hashtable</span></div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;  <span class="comment">//A sub-window that can be obtained from other threads</span></div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;  <a class="code" href="classmoodycamel_1_1ConcurrentQueue.html">concurrentTupleQueue</a> windowS;</div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;  <a class="code" href="classmoodycamel_1_1ConcurrentQueue.html">concurrentTupleQueue</a> windowR;</div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;  <a class="code" href="classstd_1_1DupicatedHashTable.html">hashtable</a> hashtableS;</div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;  <a class="code" href="classstd_1_1DupicatedHashTable.html">hashtable</a> hashtableR;</div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160; </div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;  numberType windowSize;</div>
-<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;  numberType windowSizeR;</div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;  numberType windowSizeS;</div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160; </div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;  mutex windowLock;</div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;  mutex windowLock;</div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160; </div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;  <a class="code" href="classINTELLI_1_1WindowCouple.html">WindowCouple</a>(numberType windowSize);</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;  <a class="code" href="classINTELLI_1_1WindowCouple.html">WindowCouple</a>(numberType windowSizeR, numberType windowSizeS);</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;};</div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160; </div>
+<div class="line"><a name="l00190"></a><span class="lineno"><a class="line" href="classINTELLI_1_1ConcurrentQWindowCouple.html">  190</a></span>&#160;<span class="keyword">class </span><a class="code" href="classINTELLI_1_1ConcurrentQWindowCouple.html">ConcurrentQWindowCouple</a> {</div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;  <span class="comment">//We use queue to implement a window, it stores the sequence of tuples.</span></div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;  <span class="comment">//Concurrent Q but not concurrent hashtable</span></div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;  <span class="comment">//A sub-window that can be obtained from other threads</span></div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;  <a class="code" href="classmoodycamel_1_1ConcurrentQueue.html">concurrentTupleQueue</a> windowS;</div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;  <a class="code" href="classmoodycamel_1_1ConcurrentQueue.html">concurrentTupleQueue</a> windowR;</div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;  <a class="code" href="classstd_1_1DupicatedHashTable.html">hashtable</a> hashtableS;</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;  <a class="code" href="classstd_1_1DupicatedHashTable.html">hashtable</a> hashtableR;</div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160; </div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;  numberType windowSize;</div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;  numberType windowSizeR;</div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;  numberType windowSizeS;</div>
 <div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160; </div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;  <a class="code" href="classINTELLI_1_1ConcurrentQWindowCouple.html">ConcurrentQWindowCouple</a>(numberType windowSize);</div>
-<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;  <a class="code" href="classINTELLI_1_1ConcurrentQWindowCouple.html">ConcurrentQWindowCouple</a>(numberType windowSizeR, numberType windowSizeS);</div>
-<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;};</div>
-<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160; </div>
-<div class="line"><a name="l00208"></a><span class="lineno"><a class="line" href="classINTELLI_1_1Result.html">  208</a></span>&#160;<span class="keyword">class </span><a class="code" href="classINTELLI_1_1Result.html">Result</a> {</div>
-<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;  numberType joinNumber;</div>
-<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;  numberType streamSize;</div>
-<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;  <span class="keywordtype">double</span> timeTaken;</div>
-<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;  <span class="keyword">struct </span>timeval timeBegin;</div>
-<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;  <span class="keyword">explicit</span> <a class="code" href="classINTELLI_1_1Result.html">Result</a>();</div>
-<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;  <a class="code" href="classINTELLI_1_1Result.html">Result</a> operator++(<span class="keywordtype">int</span>);</div>
-<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;  <span class="keywordtype">void</span> statPrinter();</div>
-<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;};</div>
-<div class="line"><a name="l00224"></a><span class="lineno"><a class="line" href="group__INTELLI__COMMON__BASIC.html#gaf4591ab3e423261c4770a506de62ca4c">  224</a></span>&#160;<span class="keyword">typedef</span> std::shared_ptr&lt;INTELLI::SPSCQueue&lt;INTELLI::TuplePtr&gt;&gt; <a class="code" href="group__INTELLI__COMMON__BASIC.html#gaf4591ab3e423261c4770a506de62ca4c">TuplePtrQueue</a>;</div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;<span class="keyword">typedef</span> std::shared_ptr&lt;std::queue&lt;INTELLI::TuplePtr&gt;&gt; TupleQueueSelfPtr;</div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;<span class="keyword">typedef</span> std::shared_ptr&lt;INTELLI::SPSCQueue&lt;vector&lt;INTELLI::TuplePtr&gt;&gt;&gt; WindowQueue;</div>
-<div class="line"><a name="l00232"></a><span class="lineno"><a class="line" href="group__INTELLI__COMMON__BASIC.html#ga816eaa68df86b9b5d2bc3e2063f6919e">  232</a></span>&#160;<span class="preprocessor">#define  newTuplePtrQueue(n) make_shared&lt;INTELLI::SPSCQueue&lt;INTELLI::TuplePtr&gt;&gt;(n)</span></div>
-<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;<span class="preprocessor">#define  newWindowQueue(n) make_shared&lt;INTELLI::SPSCQueue&lt;WindowOfTuples&gt;&gt;(n)</span></div>
-<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;<span class="keyword">typedef</span> <span class="keyword">enum</span> {</div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;  CNT_BASED = 1,</div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;  TIME_STAMP_BASED = 2,</div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;} join_type_t;</div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;  mutex windowLock;</div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160; </div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;  <a class="code" href="classINTELLI_1_1ConcurrentQWindowCouple.html">ConcurrentQWindowCouple</a>(numberType windowSize);</div>
+<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;  <a class="code" href="classINTELLI_1_1ConcurrentQWindowCouple.html">ConcurrentQWindowCouple</a>(numberType windowSizeR, numberType windowSizeS);</div>
+<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;};</div>
+<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160; </div>
+<div class="line"><a name="l00210"></a><span class="lineno"><a class="line" href="classINTELLI_1_1Result.html">  210</a></span>&#160;<span class="keyword">class </span><a class="code" href="classINTELLI_1_1Result.html">Result</a> {</div>
+<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;  numberType joinNumber;</div>
+<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;  numberType streamSize;</div>
+<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;  <span class="keywordtype">string</span> algoName;</div>
+<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;  <span class="keywordtype">string</span> dataSetName;</div>
+<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;  <span class="keywordtype">double</span> timeTaken;</div>
+<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;  <span class="keyword">struct </span>timeval timeBegin;</div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;  <span class="keyword">explicit</span> <a class="code" href="classINTELLI_1_1Result.html">Result</a>();</div>
+<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;  <a class="code" href="classINTELLI_1_1Result.html">Result</a> operator++(<span class="keywordtype">int</span>);</div>
+<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;  <span class="keywordtype">void</span> statPrinter();</div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;};</div>
+<div class="line"><a name="l00228"></a><span class="lineno"><a class="line" href="group__INTELLI__COMMON__BASIC.html#gaf4591ab3e423261c4770a506de62ca4c">  228</a></span>&#160;<span class="keyword">typedef</span> std::shared_ptr&lt;INTELLI::SPSCQueue&lt;INTELLI::TuplePtr&gt;&gt; <a class="code" href="group__INTELLI__COMMON__BASIC.html#gaf4591ab3e423261c4770a506de62ca4c">TuplePtrQueue</a>;</div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;<span class="keyword">typedef</span> std::shared_ptr&lt;std::queue&lt;INTELLI::TuplePtr&gt;&gt; TupleQueueSelfPtr;</div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;<span class="keyword">typedef</span> std::shared_ptr&lt;INTELLI::SPSCQueue&lt;vector&lt;INTELLI::TuplePtr&gt;&gt;&gt; WindowQueue;</div>
+<div class="line"><a name="l00236"></a><span class="lineno"><a class="line" href="group__INTELLI__COMMON__BASIC.html#ga816eaa68df86b9b5d2bc3e2063f6919e">  236</a></span>&#160;<span class="preprocessor">#define  newTuplePtrQueue(n) make_shared&lt;INTELLI::SPSCQueue&lt;INTELLI::TuplePtr&gt;&gt;(n)</span></div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;<span class="preprocessor">#define  newWindowQueue(n) make_shared&lt;INTELLI::SPSCQueue&lt;WindowOfTuples&gt;&gt;(n)</span></div>
 <div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;<span class="keyword">typedef</span> <span class="keyword">enum</span> {</div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;  CMD_ACK = 1,</div>
-<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;  CMD_STOP = 2,</div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;  <span class="comment">//S is a window, R is a Tuple</span></div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;  CMD_NEXT_WSTR,</div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;  CMD_NEXT_WSTS,</div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;  CMD_NEXT_TSWR,</div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;  CMD_NEXT_TSTR,</div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;  CMD_NEXT_TS_ONLY,</div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;  CMD_NEXT_TR_ONLY,</div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;} join_cmd_t;</div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;<span class="keyword">typedef</span> std::shared_ptr&lt;INTELLI::SPSCQueue&lt;INTELLI::join_cmd_t&gt;&gt; CmdQueuePtr;</div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;<span class="preprocessor">#define  newCmdQueue(n) make_shared&lt;INTELLI::SPSCQueue&lt;INTELLI::join_cmd_t&gt;&gt;(n)</span></div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;}</div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;<span class="preprocessor">#endif </span><span class="comment">//INTELLISTREAM_TYPES_H</span></div>
-<div class="ttc" id="aclassINTELLI_1_1ConcurrentQWindowCouple_html"><div class="ttname"><a href="classINTELLI_1_1ConcurrentQWindowCouple.html">INTELLI::ConcurrentQWindowCouple</a></div><div class="ttdef"><b>Definition:</b> Types.h:188</div></div>
-<div class="ttc" id="aclassINTELLI_1_1RelationCouple_html"><div class="ttname"><a href="classINTELLI_1_1RelationCouple.html">INTELLI::RelationCouple</a></div><div class="ttdef"><b>Definition:</b> Types.h:162</div></div>
-<div class="ttc" id="aclassINTELLI_1_1Result_html"><div class="ttname"><a href="classINTELLI_1_1Result.html">INTELLI::Result</a></div><div class="ttdef"><b>Definition:</b> Types.h:208</div></div>
-<div class="ttc" id="aclassINTELLI_1_1Tuple_html"><div class="ttname"><a href="classINTELLI_1_1Tuple.html">INTELLI::Tuple</a></div><div class="ttdoc">The class to describe a tuple.</div><div class="ttdef"><b>Definition:</b> Types.h:117</div></div>
-<div class="ttc" id="aclassINTELLI_1_1WindowCouple_html"><div class="ttname"><a href="classINTELLI_1_1WindowCouple.html">INTELLI::WindowCouple</a></div><div class="ttdef"><b>Definition:</b> Types.h:170</div></div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;  CNT_BASED = 1,</div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;  TIME_STAMP_BASED = 2,</div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;} join_type_t;</div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;<span class="keyword">typedef</span> <span class="keyword">enum</span> {</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;  CMD_ACK = 1,</div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;  CMD_STOP = 2,</div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;  <span class="comment">//S is a window, R is a Tuple</span></div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;  CMD_NEXT_WSTR,</div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;  CMD_NEXT_WSTS,</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;  CMD_NEXT_TSWR,</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;  CMD_NEXT_TSTR,</div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;  CMD_NEXT_TS_ONLY,</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;  CMD_NEXT_TR_ONLY,</div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;} join_cmd_t;</div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;<span class="keyword">typedef</span> std::shared_ptr&lt;INTELLI::SPSCQueue&lt;INTELLI::join_cmd_t&gt;&gt; CmdQueuePtr;</div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;<span class="preprocessor">#define  newCmdQueue(n) make_shared&lt;INTELLI::SPSCQueue&lt;INTELLI::join_cmd_t&gt;&gt;(n)</span></div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;}</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;<span class="preprocessor">#endif </span><span class="comment">//INTELLISTREAM_TYPES_H</span></div>
+<div class="ttc" id="aclassINTELLI_1_1ConcurrentQWindowCouple_html"><div class="ttname"><a href="classINTELLI_1_1ConcurrentQWindowCouple.html">INTELLI::ConcurrentQWindowCouple</a></div><div class="ttdef"><b>Definition:</b> Types.h:190</div></div>
+<div class="ttc" id="aclassINTELLI_1_1RelationCouple_html"><div class="ttname"><a href="classINTELLI_1_1RelationCouple.html">INTELLI::RelationCouple</a></div><div class="ttdef"><b>Definition:</b> Types.h:164</div></div>
+<div class="ttc" id="aclassINTELLI_1_1Result_html"><div class="ttname"><a href="classINTELLI_1_1Result.html">INTELLI::Result</a></div><div class="ttdef"><b>Definition:</b> Types.h:210</div></div>
+<div class="ttc" id="aclassINTELLI_1_1Tuple_html"><div class="ttname"><a href="classINTELLI_1_1Tuple.html">INTELLI::Tuple</a></div><div class="ttdoc">The class to describe a tuple.</div><div class="ttdef"><b>Definition:</b> Types.h:119</div></div>
+<div class="ttc" id="aclassINTELLI_1_1WindowCouple_html"><div class="ttname"><a href="classINTELLI_1_1WindowCouple.html">INTELLI::WindowCouple</a></div><div class="ttdef"><b>Definition:</b> Types.h:172</div></div>
 <div class="ttc" id="aclassmoodycamel_1_1ConcurrentQueue_html"><div class="ttname"><a href="classmoodycamel_1_1ConcurrentQueue.html">moodycamel::ConcurrentQueue&lt; TuplePtr &gt;</a></div></div>
 <div class="ttc" id="aclassstd_1_1DupicatedHashTable_html"><div class="ttname"><a href="classstd_1_1DupicatedHashTable.html">std::DupicatedHashTable&lt; keyType, keyType &gt;</a></div></div>
 <div class="ttc" id="agroup__INTELLI__COMMON__BASIC_html_ga278dea8fe2b45b8cceccc1677ca8e740"><div class="ttname"><a href="group__INTELLI__COMMON__BASIC.html#ga278dea8fe2b45b8cceccc1677ca8e740">INTELLI::Tuple::Tuple</a></div><div class="ttdeci">Tuple(keyType k, valueType v, size_t sk)</div><div class="ttdoc">construct with key, value and subkey</div></div>
 <div class="ttc" id="agroup__INTELLI__COMMON__BASIC_html_ga3f1ae0f48ce01d06105ba18587ad9e29"><div class="ttname"><a href="group__INTELLI__COMMON__BASIC.html#ga3f1ae0f48ce01d06105ba18587ad9e29">INTELLI::Tuple::Tuple</a></div><div class="ttdeci">Tuple(keyType k, valueType v)</div><div class="ttdoc">construct with key and value</div></div>
-<div class="ttc" id="agroup__INTELLI__COMMON__BASIC_html_ga44323184f95dee40b6ad4dd0aea6c817"><div class="ttname"><a href="group__INTELLI__COMMON__BASIC.html#ga44323184f95dee40b6ad4dd0aea6c817">INTELLI::Tuple::subKey</a></div><div class="ttdeci">size_t subKey</div><div class="ttdef"><b>Definition:</b> Types.h:123</div></div>
-<div class="ttc" id="agroup__INTELLI__COMMON__BASIC_html_ga4bb66f4742171167ee336a06d8939bdf"><div class="ttname"><a href="group__INTELLI__COMMON__BASIC.html#ga4bb66f4742171167ee336a06d8939bdf">INTELLI::valueType</a></div><div class="ttdeci">uint64_t valueType</div><div class="ttdef"><b>Definition:</b> Types.h:106</div></div>
-<div class="ttc" id="agroup__INTELLI__COMMON__BASIC_html_ga53563c8a8e699e52fd90af2cb1e5a726"><div class="ttname"><a href="group__INTELLI__COMMON__BASIC.html#ga53563c8a8e699e52fd90af2cb1e5a726">INTELLI::Tuple::payload</a></div><div class="ttdeci">valueType payload</div><div class="ttdef"><b>Definition:</b> Types.h:120</div></div>
-<div class="ttc" id="agroup__INTELLI__COMMON__BASIC_html_ga84e1622df3ca7ac338470aaebaccad0c"><div class="ttname"><a href="group__INTELLI__COMMON__BASIC.html#ga84e1622df3ca7ac338470aaebaccad0c">INTELLI::Tuple::key</a></div><div class="ttdeci">keyType key</div><div class="ttdef"><b>Definition:</b> Types.h:119</div></div>
-<div class="ttc" id="agroup__INTELLI__COMMON__BASIC_html_gaac770a310639269c01008063c55c638f"><div class="ttname"><a href="group__INTELLI__COMMON__BASIC.html#gaac770a310639269c01008063c55c638f">INTELLI::hashtable</a></div><div class="ttdeci">std::DupicatedHashTable&lt; keyType, keyType &gt; hashtable</div><div class="ttdef"><b>Definition:</b> Types.h:109</div></div>
-<div class="ttc" id="agroup__INTELLI__COMMON__BASIC_html_gaae6cb4c36125ed9faed4c1d55c85eef3"><div class="ttname"><a href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">INTELLI::TuplePtr</a></div><div class="ttdeci">std::shared_ptr&lt; class Tuple &gt; TuplePtr</div><div class="ttdoc">The class to describe a shared pointer to Tuple.</div><div class="ttdef"><b>Definition:</b> Types.h:148</div></div>
-<div class="ttc" id="agroup__INTELLI__COMMON__BASIC_html_gab867dce60ff57fe0f83898eff80f27cc"><div class="ttname"><a href="group__INTELLI__COMMON__BASIC.html#gab867dce60ff57fe0f83898eff80f27cc">INTELLI::TuplePtrQueueLocal</a></div><div class="ttdeci">std::queue&lt; TuplePtr &gt; TuplePtrQueueLocal</div><div class="ttdoc">To describe a local queue of TuplePtr.</div><div class="ttdef"><b>Definition:</b> Types.h:160</div></div>
+<div class="ttc" id="agroup__INTELLI__COMMON__BASIC_html_ga44323184f95dee40b6ad4dd0aea6c817"><div class="ttname"><a href="group__INTELLI__COMMON__BASIC.html#ga44323184f95dee40b6ad4dd0aea6c817">INTELLI::Tuple::subKey</a></div><div class="ttdeci">size_t subKey</div><div class="ttdef"><b>Definition:</b> Types.h:125</div></div>
+<div class="ttc" id="agroup__INTELLI__COMMON__BASIC_html_ga4bb66f4742171167ee336a06d8939bdf"><div class="ttname"><a href="group__INTELLI__COMMON__BASIC.html#ga4bb66f4742171167ee336a06d8939bdf">INTELLI::valueType</a></div><div class="ttdeci">uint64_t valueType</div><div class="ttdef"><b>Definition:</b> Types.h:108</div></div>
+<div class="ttc" id="agroup__INTELLI__COMMON__BASIC_html_ga53563c8a8e699e52fd90af2cb1e5a726"><div class="ttname"><a href="group__INTELLI__COMMON__BASIC.html#ga53563c8a8e699e52fd90af2cb1e5a726">INTELLI::Tuple::payload</a></div><div class="ttdeci">valueType payload</div><div class="ttdef"><b>Definition:</b> Types.h:122</div></div>
+<div class="ttc" id="agroup__INTELLI__COMMON__BASIC_html_ga84e1622df3ca7ac338470aaebaccad0c"><div class="ttname"><a href="group__INTELLI__COMMON__BASIC.html#ga84e1622df3ca7ac338470aaebaccad0c">INTELLI::Tuple::key</a></div><div class="ttdeci">keyType key</div><div class="ttdef"><b>Definition:</b> Types.h:121</div></div>
+<div class="ttc" id="agroup__INTELLI__COMMON__BASIC_html_gaac770a310639269c01008063c55c638f"><div class="ttname"><a href="group__INTELLI__COMMON__BASIC.html#gaac770a310639269c01008063c55c638f">INTELLI::hashtable</a></div><div class="ttdeci">std::DupicatedHashTable&lt; keyType, keyType &gt; hashtable</div><div class="ttdef"><b>Definition:</b> Types.h:111</div></div>
+<div class="ttc" id="agroup__INTELLI__COMMON__BASIC_html_gaae6cb4c36125ed9faed4c1d55c85eef3"><div class="ttname"><a href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">INTELLI::TuplePtr</a></div><div class="ttdeci">std::shared_ptr&lt; class Tuple &gt; TuplePtr</div><div class="ttdoc">The class to describe a shared pointer to Tuple.</div><div class="ttdef"><b>Definition:</b> Types.h:150</div></div>
+<div class="ttc" id="agroup__INTELLI__COMMON__BASIC_html_gab7c953fa95834060df1b58a358cf5319"><div class="ttname"><a href="group__INTELLI__COMMON__BASIC.html#gab7c953fa95834060df1b58a358cf5319">INTELLI::TuplePtrQueueIn</a></div><div class="ttdeci">std::queue&lt; TuplePtr &gt; TuplePtrQueueIn</div><div class="ttdoc">To describe a local queue of TuplePtr.</div><div class="ttdef"><b>Definition:</b> Types.h:162</div></div>
 <div class="ttc" id="agroup__INTELLI__COMMON__BASIC_html_gabc02dc379b9bd407b3df03c30a952db4"><div class="ttname"><a href="group__INTELLI__COMMON__BASIC.html#gabc02dc379b9bd407b3df03c30a952db4">INTELLI::Tuple::Tuple</a></div><div class="ttdeci">Tuple(keyType k)</div><div class="ttdoc">construct with key</div></div>
-<div class="ttc" id="agroup__INTELLI__COMMON__BASIC_html_gabdecd0146153c8a29b021c48dfa300ce"><div class="ttname"><a href="group__INTELLI__COMMON__BASIC.html#gabdecd0146153c8a29b021c48dfa300ce">INTELLI::keyType</a></div><div class="ttdeci">uint64_t keyType</div><div class="ttdef"><b>Definition:</b> Types.h:105</div></div>
-<div class="ttc" id="agroup__INTELLI__COMMON__BASIC_html_gaf4591ab3e423261c4770a506de62ca4c"><div class="ttname"><a href="group__INTELLI__COMMON__BASIC.html#gaf4591ab3e423261c4770a506de62ca4c">INTELLI::TuplePtrQueue</a></div><div class="ttdeci">std::shared_ptr&lt; INTELLI::SPSCQueue&lt; INTELLI::TuplePtr &gt; &gt; TuplePtrQueue</div><div class="ttdoc">To describe a queue of TuplePtr under SPSCQueue.</div><div class="ttdef"><b>Definition:</b> Types.h:224</div></div>
+<div class="ttc" id="agroup__INTELLI__COMMON__BASIC_html_gabdecd0146153c8a29b021c48dfa300ce"><div class="ttname"><a href="group__INTELLI__COMMON__BASIC.html#gabdecd0146153c8a29b021c48dfa300ce">INTELLI::keyType</a></div><div class="ttdeci">uint64_t keyType</div><div class="ttdef"><b>Definition:</b> Types.h:107</div></div>
+<div class="ttc" id="agroup__INTELLI__COMMON__BASIC_html_gaf4591ab3e423261c4770a506de62ca4c"><div class="ttname"><a href="group__INTELLI__COMMON__BASIC.html#gaf4591ab3e423261c4770a506de62ca4c">INTELLI::TuplePtrQueue</a></div><div class="ttdeci">std::shared_ptr&lt; INTELLI::SPSCQueue&lt; INTELLI::TuplePtr &gt; &gt; TuplePtrQueue</div><div class="ttdoc">To describe a queue of TuplePtr under SPSCQueue.</div><div class="ttdef"><b>Definition:</b> Types.h:228</div></div>
+<div class="ttc" id="anamespaceINTELLI_html"><div class="ttname"><a href="namespaceINTELLI.html">INTELLI</a></div><div class="ttdef"><b>Definition:</b> DatasetTool.h:10</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

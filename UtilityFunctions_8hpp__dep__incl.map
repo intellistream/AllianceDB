@@ -1,10 +1,14 @@
 <map id="include/Utils/UtilityFunctions.hpp" name="include/Utils/UtilityFunctions.hpp">
-<area shape="rect" id="node1" title=" " alt="" coords="61,5,299,32"/>
-<area shape="rect" id="node2" href="$SimpleHashJP_8h_source.html" title=" " alt="" coords="100,80,260,121"/>
-<area shape="rect" id="node3" href="$HandShakeHashJP_8h_source.html" title=" " alt="" coords="7,169,167,211"/>
-<area shape="rect" id="node6" href="$AbstractEagerWS_8h.html" title=" " alt="" coords="192,169,355,211"/>
-<area shape="rect" id="node4" href="$HandShakeWS_8h_source.html" title=" " alt="" coords="5,259,168,300"/>
-<area shape="rect" id="node5" href="$HandShakeJoin_8h_source.html" title=" " alt="" coords="75,348,229,389"/>
-<area shape="rect" id="node7" href="$AbstractJoinMethod_8h_source.html" title=" " alt="" coords="192,259,357,300"/>
-<area shape="rect" id="node8" href="$CellJoin_8h_source.html" title=" " alt="" coords="258,348,411,389"/>
+<area shape="rect" id="node1" title=" " alt="" coords="220,5,457,32"/>
+<area shape="rect" id="node2" href="$AbstractJP_8h_source.html" title=" " alt="" coords="141,80,301,121"/>
+<area shape="rect" id="node5" href="$CellJoinJP_8h.html" title=" " alt="" coords="377,169,537,211"/>
+<area shape="rect" id="node12" href="$AbstractWS_8h.html" title=" " alt="" coords="191,169,353,211"/>
+<area shape="rect" id="node3" href="$AbstractLazyJP_8h.html" title=" " alt="" coords="7,169,167,211"/>
+<area shape="rect" id="node4" href="$AbstractLazyWS_8h.html" title=" " alt="" coords="5,259,168,300"/>
+<area shape="rect" id="node6" href="$HandShakeHashJP_8h_source.html" title=" " alt="" coords="392,259,552,300"/>
+<area shape="rect" id="node9" href="$AbstractEagerWS_8h.html" title=" " alt="" coords="192,259,355,300"/>
+<area shape="rect" id="node7" href="$HandShakeWS_8h_source.html" title=" " alt="" coords="397,348,560,389"/>
+<area shape="rect" id="node8" href="$HandShakeJoin_8h_source.html" title=" " alt="" coords="340,437,556,479"/>
+<area shape="rect" id="node10" href="$AbstractJoinMethod_8h_source.html" title=" " alt="" coords="157,348,373,389"/>
+<area shape="rect" id="node11" href="$CellJoin_8h_source.html" title=" " alt="" coords="71,437,287,479"/>
 </map>

@@ -38,6 +38,15 @@ var NAVTREE =
     ] ],
     [ "Todo List", "todo.html", null ],
     [ "Modules", "modules.html", "modules" ],
+    [ "Namespaces", "namespaces.html", [
+      [ "Namespace List", "namespaces.html", "namespaces_dup" ],
+      [ "Namespace Members", "namespacemembers.html", [
+        [ "All", "namespacemembers.html", null ],
+        [ "Typedefs", "namespacemembers_type.html", null ],
+        [ "Enumerations", "namespacemembers_enum.html", null ],
+        [ "Enumerator", "namespacemembers_eval.html", null ]
+      ] ]
+    ] ],
     [ "Classes", "annotated.html", [
       [ "Class List", "annotated.html", "annotated_dup" ],
       [ "Class Index", "classes.html", null ],
@@ -61,8 +70,9 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "AbstractC20Thread_8h.html",
-"classINTELLI_1_1SimpleHashJP.html#ab6cd7a885f858d37e11db1946a882a22",
-"group__NTELLI__UTIL__ThreadPerf__Results.html#gaa6c2aed702a3307ef832206e52494840"
+"classINTELLI_1_1AbstractWS.html#aa75957a9d95d21034dbcd9289970c295",
+"group__INTELLI__COMMON__BASIC.html#ga05eb76dbeb332596f2bc6b072995238c",
+"group__WINDOWSLIDER__LAZY.html#ga2b9652863a8d58a307fe91e5dcc4978d"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

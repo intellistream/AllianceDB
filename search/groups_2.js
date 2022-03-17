@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['generic_268',['generic',['../group__MICRO__GENERIC.html',1,'']]],
-  ['get_20the_20perf_20results_269',['Get the perf results',['../group__NTELLI__UTIL__ThreadPerf__Results.html',1,'']]]
+  ['eager_20join_20processor_392',['eager join processor',['../group__JOINPROCESSOR__EAGER.html',1,'']]],
+  ['eager_20window_20slider_393',['eager window slider',['../group__WINDOWSLIDER__EAGER.html',1,'']]]
 ];

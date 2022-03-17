@@ -1,0 +1,6 @@
+<map id="JoinProcessors" name="JoinProcessors">
+<area shape="rect" id="node1" title=" " alt="" coords="5,70,121,95"/>
+<area shape="rect" id="node2" href="$group__JOINPROCESSOR__BASE.html" title=" " alt="" coords="169,5,333,45"/>
+<area shape="rect" id="node3" href="$group__JOINPROCESSOR__EAGER.html" title=" " alt="" coords="174,70,329,95"/>
+<area shape="rect" id="node4" href="$group__JOINPROCESSOR__LAZY.html" title=" " alt="" coords="179,119,323,145"/>
+</map>

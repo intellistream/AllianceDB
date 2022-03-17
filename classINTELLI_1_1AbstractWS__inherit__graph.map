@@ -1,0 +1,6 @@
+<map id="INTELLI::AbstractWS" name="INTELLI::AbstractWS">
+<area shape="rect" id="node1" title="An abstraction of window slider, also inherited by both eager and lazy." alt="" coords="129,5,283,32"/>
+<area shape="rect" id="node2" href="$classINTELLI_1_1AbstractEagerWS.html" title="An abstraction of eager window slider (i.e., the CellJoin), also inherited by other eager window slid..." alt="" coords="5,80,196,107"/>
+<area shape="rect" id="node4" href="$classINTELLI_1_1AbstractLazyWS.html" title="An abstraction of lazy window slider, also inherited by other lazy window slider." alt="" coords="220,80,403,107"/>
+<area shape="rect" id="node3" href="$classINTELLI_1_1HandShakeWS.html" title="The window slider especially for handshake join." alt="" coords="15,155,187,181"/>
+</map>

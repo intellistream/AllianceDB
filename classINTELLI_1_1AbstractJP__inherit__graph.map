@@ -1,0 +1,7 @@
+<map id="INTELLI::AbstractJP" name="INTELLI::AbstractJP">
+<area shape="rect" id="node1" title="The basic class of join processor." alt="" coords="111,80,255,107"/>
+<area shape="rect" id="node3" href="$classINTELLI_1_1AbstractLazyJP.html" title="The basic class of lazy join processor." alt="" coords="5,155,180,181"/>
+<area shape="rect" id="node4" href="$classINTELLI_1_1CellJoinJP.html" title="The class of cell join join processor." alt="" coords="205,155,343,181"/>
+<area shape="rect" id="node2" href="$classINTELLI_1_1AbstractC20Thread.html" title="The base class and abstraction of C++20 thread, and it can be derived into other threads." alt="" coords="82,5,285,32"/>
+<area shape="rect" id="node5" href="$classINTELLI_1_1HandShakeHashJP.html" title=" " alt="" coords="176,229,372,256"/>
+</map>

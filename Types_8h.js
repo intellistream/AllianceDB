@@ -21,7 +21,7 @@ var Types_8h =
     [ "tupleKeyQueue", "Types_8h.html#ga2b861ae9406fb1a5f5432853654982e8", null ],
     [ "TuplePtr", "Types_8h.html#gaae6cb4c36125ed9faed4c1d55c85eef3", null ],
     [ "TuplePtrQueue", "Types_8h.html#gaf4591ab3e423261c4770a506de62ca4c", null ],
-    [ "TuplePtrQueueLocal", "Types_8h.html#gab867dce60ff57fe0f83898eff80f27cc", null ],
+    [ "TuplePtrQueueIn", "Types_8h.html#gab7c953fa95834060df1b58a358cf5319", null ],
     [ "TupleQueueSelfPtr", "Types_8h.html#ga41e0c6e18caba82c36de57159b19783e", null ],
     [ "valueType", "Types_8h.html#ga4bb66f4742171167ee336a06d8939bdf", null ],
     [ "WindowOfTuples", "Types_8h.html#gabd17448abf49358f01eb32cacce34027", null ],

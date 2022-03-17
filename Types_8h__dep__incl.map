@@ -1,16 +1,21 @@
 <map id="include/Common/Types.h" name="include/Common/Types.h">
-<area shape="rect" id="node1" title=" " alt="" coords="633,5,819,32"/>
+<area shape="rect" id="node1" title=" " alt="" coords="775,5,960,32"/>
 <area shape="rect" id="node2" href="$DatasetTool_8h.html" title=" " alt="" coords="5,87,231,114"/>
-<area shape="rect" id="node3" href="$MultiThreadHashTable_8h.html" title=" " alt="" coords="255,80,469,121"/>
-<area shape="rect" id="node5" href="$AbstractJoinMethod_8h_source.html" title=" " alt="" coords="589,348,754,389"/>
-<area shape="rect" id="node6" href="$CellJoin_8h_source.html" title=" " alt="" coords="595,437,748,479"/>
-<area shape="rect" id="node7" href="$HandShakeJoin_8h_source.html" title=" " alt="" coords="944,437,1097,479"/>
-<area shape="rect" id="node8" href="$CommonFunctions_8h_source.html" title=" " alt="" coords="647,80,805,121"/>
-<area shape="rect" id="node9" href="$OneWayHashJoin_8h_source.html" title=" " alt="" coords="829,80,983,121"/>
-<area shape="rect" id="node10" href="$SimpleHashJP_8h_source.html" title=" " alt="" coords="941,169,1101,211"/>
-<area shape="rect" id="node12" href="$HandShakeWS_8h_source.html" title=" " alt="" coords="939,348,1102,389"/>
-<area shape="rect" id="node13" href="$AbstractEagerWS_8h.html" title=" " alt="" coords="710,259,873,300"/>
-<area shape="rect" id="node14" href="$UtilityFunctions_8hpp.html" title=" " alt="" coords="1058,87,1295,114"/>
-<area shape="rect" id="node4" href="$NPJ_8h.html" title=" " alt="" coords="280,177,444,203"/>
-<area shape="rect" id="node11" href="$HandShakeHashJP_8h_source.html" title=" " alt="" coords="941,259,1101,300"/>
+<area shape="rect" id="node3" href="$MultiThreadHashTable_8h.html" title=" " alt="" coords="305,80,520,121"/>
+<area shape="rect" id="node6" href="$AbstractLazyWS_8h.html" title=" " alt="" coords="501,437,663,479"/>
+<area shape="rect" id="node7" href="$AbstractJoinAlgo_8h.html" title=" " alt="" coords="545,80,729,121"/>
+<area shape="rect" id="node9" href="$AbstractJP_8h_source.html" title=" " alt="" coords="619,259,779,300"/>
+<area shape="rect" id="node10" href="$CellJoinJP_8h.html" title=" " alt="" coords="974,348,1134,389"/>
+<area shape="rect" id="node12" href="$HandShakeWS_8h_source.html" title=" " alt="" coords="885,527,1047,568"/>
+<area shape="rect" id="node13" href="$HandShakeJoin_8h_source.html" title=" " alt="" coords="999,616,1215,657"/>
+<area shape="rect" id="node15" href="$AbstractJoinMethod_8h_source.html" title=" " alt="" coords="1193,527,1409,568"/>
+<area shape="rect" id="node16" href="$CellJoin_8h_source.html" title=" " alt="" coords="1239,616,1455,657"/>
+<area shape="rect" id="node17" href="$UtilityFunctions_8hpp.html" title=" " alt="" coords="905,177,1142,203"/>
+<area shape="rect" id="node18" href="$AbstractWS_8h.html" title=" " alt="" coords="854,259,1017,300"/>
+<area shape="rect" id="node19" href="$OneWayHashJoin_8h_source.html" title=" " alt="" coords="1483,80,1699,121"/>
+<area shape="rect" id="node4" href="$NPJ_8h.html" title=" " alt="" coords="333,177,497,203"/>
+<area shape="rect" id="node5" href="$AbstractLazyJP_8h.html" title=" " alt="" coords="502,348,662,389"/>
+<area shape="rect" id="node8" href="$JoinAlgoTable_8h_source.html" title=" " alt="" coords="545,169,728,211"/>
+<area shape="rect" id="node11" href="$HandShakeHashJP_8h_source.html" title=" " alt="" coords="846,437,1006,479"/>
+<area shape="rect" id="node14" href="$AbstractEagerWS_8h.html" title=" " alt="" coords="1030,437,1193,479"/>
 </map>

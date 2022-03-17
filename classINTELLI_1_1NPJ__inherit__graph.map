@@ -1,0 +1,4 @@
+<map id="INTELLI::NPJ" name="INTELLI::NPJ">
+<area shape="rect" id="node1" title="The top class package of NPJ, providing a &quot;join function&quot;." alt="" coords="48,80,148,107"/>
+<area shape="rect" id="node2" href="$classINTELLI_1_1AbstractJoinAlgo.html" title="The abstraction to describe a join algorithm, providing virtual function of join." alt="" coords="5,5,191,32"/>
+</map>

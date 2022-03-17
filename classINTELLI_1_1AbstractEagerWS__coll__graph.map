@@ -1,9 +1,13 @@
 <map id="INTELLI::AbstractEagerWS" name="INTELLI::AbstractEagerWS">
-<area shape="rect" id="node1" title="An abstraction of eager window slider, also inherited by other eager window slider." alt="" coords="363,303,553,329"/>
-<area shape="rect" id="node2" title=" " alt="" coords="42,13,137,40"/>
-<area shape="rect" id="node3" title=" " alt="" coords="24,73,155,100"/>
-<area shape="rect" id="node4" title=" " alt="" coords="59,265,119,292"/>
-<area shape="rect" id="node5" title=" " alt="" coords="64,337,115,364"/>
-<area shape="rect" id="node6" title=" " alt="" coords="33,388,146,415"/>
-<area shape="rect" id="node7" title=" " alt="" coords="5,439,173,495"/>
+<area shape="rect" id="node1" title="An abstraction of eager window slider (i.e., the CellJoin), also inherited by other eager window slid..." alt="" coords="621,483,812,509"/>
+<area shape="rect" id="node2" href="$classINTELLI_1_1AbstractWS.html" title="An abstraction of window slider, also inherited by both eager and lazy." alt="" coords="394,296,547,323"/>
+<area shape="rect" id="node3" title=" " alt="" coords="71,15,130,41"/>
+<area shape="rect" id="node4" title=" " alt="" coords="53,65,148,92"/>
+<area shape="rect" id="node5" title=" " alt="" coords="35,125,166,152"/>
+<area shape="rect" id="node6" title=" " alt="" coords="71,259,131,285"/>
+<area shape="rect" id="node7" title=" " alt="" coords="75,331,126,357"/>
+<area shape="rect" id="node8" title=" " alt="" coords="44,381,157,408"/>
+<area shape="rect" id="node9" title=" " alt="" coords="17,449,185,505"/>
+<area shape="rect" id="node10" href="$classINTELLI_1_1AbstractC20Thread.html" title="The base class and abstraction of C++20 thread, and it can be derived into other threads." alt="" coords="369,544,572,571"/>
+<area shape="rect" id="node11" title=" " alt="" coords="5,544,196,571"/>
 </map>

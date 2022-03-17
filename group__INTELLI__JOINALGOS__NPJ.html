@@ -118,6 +118,9 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classINTELLI_1_1NPJ.html">INTELLI::NPJ</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The top class package of <a class="el" href="classINTELLI_1_1NPJ.html" title="The top class package of NPJ, providing a &quot;join function&quot;.">NPJ</a>, providing a "join function".  <a href="classINTELLI_1_1NPJ.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classINTELLI_1_1NPJSingle.html">INTELLI::NPJSingle</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The top class package of single threadNPJ, providing a "join function".  <a href="classINTELLI_1_1NPJSingle.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -133,12 +136,42 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>INTELLI::NPJ_thread
 <tr class="memitem:ga0a8f9403ab36f85547f6922284e59220"><td class="memItemLeft" align="right" valign="top"><a id="ga0a8f9403ab36f85547f6922284e59220"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>INTELLI::NPJ_thread::waitBuildBar</b> (void)</td></tr>
 <tr class="separator:ga0a8f9403ab36f85547f6922284e59220"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga69413854bcd3c624e91b5a7ed217a63d"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__INTELLI__JOINALGOS__NPJ.html#ga69413854bcd3c624e91b5a7ed217a63d">INTELLI::NPJ::join</a> (<a class="el" href="group__INTELLI__COMMON__BASIC.html#gaf4591ab3e423261c4770a506de62ca4c">TuplePtrQueue</a> ts, <a class="el" href="group__INTELLI__COMMON__BASIC.html#gaf4591ab3e423261c4770a506de62ca4c">TuplePtrQueue</a> tr, int threads=1)</td></tr>
-<tr class="memdesc:ga69413854bcd3c624e91b5a7ed217a63d"><td class="mdescLeft">&#160;</td><td class="mdescRight">The function to execute join.  <a href="group__INTELLI__JOINALGOS__NPJ.html#ga69413854bcd3c624e91b5a7ed217a63d">More...</a><br /></td></tr>
-<tr class="separator:ga69413854bcd3c624e91b5a7ed217a63d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga3c1c89607abb6d36cb2839c2a8c00305"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__INTELLI__JOINALGOS__NPJ.html#ga3c1c89607abb6d36cb2839c2a8c00305">INTELLI::NPJ::join</a> (<a class="el" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> *ts, <a class="el" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> *tr, size_t tsLen, size_t trLen, int threads=1)</td></tr>
-<tr class="memdesc:ga3c1c89607abb6d36cb2839c2a8c00305"><td class="mdescLeft">&#160;</td><td class="mdescRight">The function to execute join, legacy way.  <a href="group__INTELLI__JOINALGOS__NPJ.html#ga3c1c89607abb6d36cb2839c2a8c00305">More...</a><br /></td></tr>
-<tr class="separator:ga3c1c89607abb6d36cb2839c2a8c00305"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga01b4a9b9c7a649e5dadb56f498ecedb4"><td class="memItemLeft" align="right" valign="top">virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__INTELLI__JOINALGOS__NPJ.html#ga01b4a9b9c7a649e5dadb56f498ecedb4">INTELLI::NPJ::join</a> (<a class="el" href="group__INTELLI__COMMON__BASIC.html#gaf4591ab3e423261c4770a506de62ca4c">TuplePtrQueue</a> ts, <a class="el" href="group__INTELLI__COMMON__BASIC.html#gaf4591ab3e423261c4770a506de62ca4c">TuplePtrQueue</a> tr, int threads=1)</td></tr>
+<tr class="memdesc:ga01b4a9b9c7a649e5dadb56f498ecedb4"><td class="mdescLeft">&#160;</td><td class="mdescRight">The function to execute join.  <a href="group__INTELLI__JOINALGOS__NPJ.html#ga01b4a9b9c7a649e5dadb56f498ecedb4">More...</a><br /></td></tr>
+<tr class="separator:ga01b4a9b9c7a649e5dadb56f498ecedb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga6d949de9ffeb4d3644d0acbac2bbf5c3"><td class="memItemLeft" align="right" valign="top">virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__INTELLI__JOINALGOS__NPJ.html#ga6d949de9ffeb4d3644d0acbac2bbf5c3">INTELLI::NPJ::join</a> (<a class="el" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> *ts, <a class="el" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> *tr, size_t tsLen, size_t trLen, int threads=1)</td></tr>
+<tr class="memdesc:ga6d949de9ffeb4d3644d0acbac2bbf5c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">The function to execute join, legacy way.  <a href="group__INTELLI__JOINALGOS__NPJ.html#ga6d949de9ffeb4d3644d0acbac2bbf5c3">More...</a><br /></td></tr>
+<tr class="separator:ga6d949de9ffeb4d3644d0acbac2bbf5c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga53a698496eb015b54ef78ce404635d7b"><td class="memItemLeft" align="right" valign="top">virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__INTELLI__JOINALGOS__NPJ.html#ga53a698496eb015b54ef78ce404635d7b">INTELLI::NPJ::join</a> (<a class="el" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> *ts, <a class="el" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> tr, size_t tsLen, int threads=1)</td></tr>
+<tr class="memdesc:ga53a698496eb015b54ef78ce404635d7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">The function to execute join, batch of one, tuple of another.  <a href="group__INTELLI__JOINALGOS__NPJ.html#ga53a698496eb015b54ef78ce404635d7b">More...</a><br /></td></tr>
+<tr class="separator:ga53a698496eb015b54ef78ce404635d7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8c722c2b1ace18aed12b3798441c6c86"><td class="memItemLeft" align="right" valign="top">virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__INTELLI__JOINALGOS__NPJ.html#ga8c722c2b1ace18aed12b3798441c6c86">INTELLI::NPJ::join</a> (<a class="el" href="group__INTELLI__COMMON__BASIC.html#gaf4591ab3e423261c4770a506de62ca4c">TuplePtrQueue</a> ts, <a class="el" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> tr, int threads=1)</td></tr>
+<tr class="memdesc:ga8c722c2b1ace18aed12b3798441c6c86"><td class="mdescLeft">&#160;</td><td class="mdescRight">The function to execute join, batch of one, tuple of another.  <a href="group__INTELLI__JOINALGOS__NPJ.html#ga8c722c2b1ace18aed12b3798441c6c86">More...</a><br /></td></tr>
+<tr class="separator:ga8c722c2b1ace18aed12b3798441c6c86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga666d280999e501c323c25bb6e9fada16"><td class="memItemLeft" align="right" valign="top">virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__INTELLI__JOINALGOS__NPJ.html#ga666d280999e501c323c25bb6e9fada16">INTELLI::NPJSingle::join</a> (<a class="el" href="group__INTELLI__COMMON__BASIC.html#gaf4591ab3e423261c4770a506de62ca4c">TuplePtrQueue</a> ts, <a class="el" href="group__INTELLI__COMMON__BASIC.html#gaf4591ab3e423261c4770a506de62ca4c">TuplePtrQueue</a> tr, int threads=1)</td></tr>
+<tr class="memdesc:ga666d280999e501c323c25bb6e9fada16"><td class="mdescLeft">&#160;</td><td class="mdescRight">The function to execute join.  <a href="group__INTELLI__JOINALGOS__NPJ.html#ga666d280999e501c323c25bb6e9fada16">More...</a><br /></td></tr>
+<tr class="separator:ga666d280999e501c323c25bb6e9fada16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga5ace50d447d12578c6e677f770b49b99"><td class="memItemLeft" align="right" valign="top">virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__INTELLI__JOINALGOS__NPJ.html#ga5ace50d447d12578c6e677f770b49b99">INTELLI::NPJSingle::join</a> (<a class="el" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> *ts, <a class="el" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> *tr, size_t tsLen, size_t trLen, int threads=1)</td></tr>
+<tr class="memdesc:ga5ace50d447d12578c6e677f770b49b99"><td class="mdescLeft">&#160;</td><td class="mdescRight">The function to execute join, legacy way.  <a href="group__INTELLI__JOINALGOS__NPJ.html#ga5ace50d447d12578c6e677f770b49b99">More...</a><br /></td></tr>
+<tr class="separator:ga5ace50d447d12578c6e677f770b49b99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gafdd056bb5db51baeacbd573323387cbd"><td class="memItemLeft" align="right" valign="top">virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__INTELLI__JOINALGOS__NPJ.html#gafdd056bb5db51baeacbd573323387cbd">INTELLI::NPJSingle::join</a> (<a class="el" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> *ts, <a class="el" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> tr, size_t tsLen, int threads=1)</td></tr>
+<tr class="memdesc:gafdd056bb5db51baeacbd573323387cbd"><td class="mdescLeft">&#160;</td><td class="mdescRight">The function to execute join, batch of one, tuple of another.  <a href="group__INTELLI__JOINALGOS__NPJ.html#gafdd056bb5db51baeacbd573323387cbd">More...</a><br /></td></tr>
+<tr class="separator:gafdd056bb5db51baeacbd573323387cbd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga28fe2ff670627a2904b0c0eefe154484"><td class="memItemLeft" align="right" valign="top">virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__INTELLI__JOINALGOS__NPJ.html#ga28fe2ff670627a2904b0c0eefe154484">INTELLI::NPJSingle::join</a> (<a class="el" href="group__INTELLI__COMMON__BASIC.html#gaf4591ab3e423261c4770a506de62ca4c">TuplePtrQueue</a> ts, <a class="el" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> tr, int threads=1)</td></tr>
+<tr class="memdesc:ga28fe2ff670627a2904b0c0eefe154484"><td class="mdescLeft">&#160;</td><td class="mdescRight">The function to execute join, batch of one, tuple of another.  <a href="group__INTELLI__JOINALGOS__NPJ.html#ga28fe2ff670627a2904b0c0eefe154484">More...</a><br /></td></tr>
+<tr class="separator:ga28fe2ff670627a2904b0c0eefe154484"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gada61b6e4a9b2031cc88401aadca61a56"><td class="memItemLeft" align="right" valign="top"><a id="gada61b6e4a9b2031cc88401aadca61a56"></a>
+typedef std::shared_ptr&lt; <a class="el" href="classINTELLI_1_1NPJ.html">NPJ</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>INTELLI::NPJPtr</b></td></tr>
+<tr class="separator:gada61b6e4a9b2031cc88401aadca61a56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8cbacf14d20384784929c1ec9acfd3de"><td class="memItemLeft" align="right" valign="top"><a id="ga8cbacf14d20384784929c1ec9acfd3de"></a>
+typedef std::shared_ptr&lt; <a class="el" href="classINTELLI_1_1NPJSingle.html">NPJSingle</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>INTELLI::NPJSinglePtr</b></td></tr>
+<tr class="separator:ga8cbacf14d20384784929c1ec9acfd3de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gae1d1b3b8205d21c3e1d42215d1afb733"><td class="memItemLeft" align="right" valign="top"><a id="gae1d1b3b8205d21c3e1d42215d1afb733"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>newNPJ</b>()&#160;&#160;&#160;make_shared&lt;NPJ&gt;()</td></tr>
+<tr class="separator:gae1d1b3b8205d21c3e1d42215d1afb733"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga3b6d949c3ce38b062821a26974ec8e55"><td class="memItemLeft" align="right" valign="top"><a id="ga3b6d949c3ce38b062821a26974ec8e55"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>newNPJSingle</b>()&#160;&#160;&#160;make_shared&lt;NPJSingle&gt;()</td></tr>
+<tr class="separator:ga3b6d949c3ce38b062821a26974ec8e55"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p><a class="el" href="classINTELLI_1_1NPJ.html" title="The top class package of NPJ, providing a &quot;join function&quot;.">NPJ</a> is a parallel version of the canonical hash join algorithm. Both input relations are divided into equisized portions to be assigned to a number of threads. In the build phase, all threads populate a shared hash table with all tuples of R. After synchronization via a barrier, all threads enter the probe phase, and concurrently find matching join tuples in their assigned portions of S. </p>
@@ -253,14 +286,17 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>INTELLI::NPJ_thread::
 
 </div>
 </div>
-<a id="ga3c1c89607abb6d36cb2839c2a8c00305"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga3c1c89607abb6d36cb2839c2a8c00305">&#9670;&nbsp;</a></span>join() <span class="overload">[1/2]</span></h2>
+<a id="ga6d949de9ffeb4d3644d0acbac2bbf5c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga6d949de9ffeb4d3644d0acbac2bbf5c3">&#9670;&nbsp;</a></span>join() <span class="overload">[1/8]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">size_t INTELLI::NPJ::join </td>
+          <td class="memname">virtual size_t INTELLI::NPJ::join </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> *&#160;</td>
           <td class="paramname"><em>ts</em>, </td>
@@ -295,6 +331,11 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>INTELLI::NPJ_thread::
           <td></td><td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>The function to execute join, legacy way. </p>
@@ -311,16 +352,327 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>INTELLI::NPJ_thread::
 <dl class="section return"><dt>Returns</dt><dd>The joined tuples </dd></dl>
 <dl class="section warning"><dt>Warning</dt><dd>This is a legacy function, avoid using it if possible </dd></dl>
 
+<p>Reimplemented from <a class="el" href="classINTELLI_1_1AbstractJoinAlgo.html#a40e7fb7c27ea102e3d4e063d4ff7f72f">INTELLI::AbstractJoinAlgo</a>.</p>
+
 </div>
 </div>
-<a id="ga69413854bcd3c624e91b5a7ed217a63d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga69413854bcd3c624e91b5a7ed217a63d">&#9670;&nbsp;</a></span>join() <span class="overload">[2/2]</span></h2>
+<a id="ga5ace50d447d12578c6e677f770b49b99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga5ace50d447d12578c6e677f770b49b99">&#9670;&nbsp;</a></span>join() <span class="overload">[2/8]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">size_t INTELLI::NPJ::join </td>
+          <td class="memname">virtual size_t INTELLI::NPJSingle::join </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> *&#160;</td>
+          <td class="paramname"><em>ts</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> *&#160;</td>
+          <td class="paramname"><em>tr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>tsLen</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>trLen</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>threads</em> = <code>1</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The function to execute join, legacy way. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ts</td><td>The tuples of stream S, legacy pointer </td></tr>
+    <tr><td class="paramname">tr</td><td>The tuples of stream R, legacy pointer </td></tr>
+    <tr><td class="paramname">tsLen</td><td>The length of S </td></tr>
+    <tr><td class="paramname">trLen</td><td>The length of R </td></tr>
+    <tr><td class="paramname">threads</td><td>The parallel threads </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The joined tuples </dd></dl>
+<dl class="section warning"><dt>Warning</dt><dd>This is a legacy function, avoid using it if possible </dd></dl>
+
+<p>Reimplemented from <a class="el" href="classINTELLI_1_1AbstractJoinAlgo.html#a40e7fb7c27ea102e3d4e063d4ff7f72f">INTELLI::AbstractJoinAlgo</a>.</p>
+
+</div>
+</div>
+<a id="ga53a698496eb015b54ef78ce404635d7b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga53a698496eb015b54ef78ce404635d7b">&#9670;&nbsp;</a></span>join() <span class="overload">[3/8]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual size_t INTELLI::NPJ::join </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> *&#160;</td>
+          <td class="paramname"><em>ts</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a>&#160;</td>
+          <td class="paramname"><em>tr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>tsLen</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>threads</em> = <code>1</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The function to execute join, batch of one, tuple of another. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ts</td><td>The tuples of stream S, legacy pointer </td></tr>
+    <tr><td class="paramname">tr</td><td>The tuples of stream R, one tuple </td></tr>
+    <tr><td class="paramname">tsLen</td><td>The length of S </td></tr>
+    <tr><td class="paramname">threads</td><td>The parallel threads </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The joined tuples </dd></dl>
+<dl class="section warning"><dt>Warning</dt><dd>This is a legacy function, avoid using it if possible </dd></dl>
+
+<p>Reimplemented from <a class="el" href="classINTELLI_1_1AbstractJoinAlgo.html#ac50e9362a02dc2696eb9938128c5c743">INTELLI::AbstractJoinAlgo</a>.</p>
+
+</div>
+</div>
+<a id="gafdd056bb5db51baeacbd573323387cbd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gafdd056bb5db51baeacbd573323387cbd">&#9670;&nbsp;</a></span>join() <span class="overload">[4/8]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual size_t INTELLI::NPJSingle::join </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> *&#160;</td>
+          <td class="paramname"><em>ts</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a>&#160;</td>
+          <td class="paramname"><em>tr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>tsLen</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>threads</em> = <code>1</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The function to execute join, batch of one, tuple of another. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ts</td><td>The tuples of stream S, legacy pointer </td></tr>
+    <tr><td class="paramname">tr</td><td>The tuples of stream R, one tuple </td></tr>
+    <tr><td class="paramname">tsLen</td><td>The length of S </td></tr>
+    <tr><td class="paramname">threads</td><td>The parallel threads </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The joined tuples </dd></dl>
+<dl class="section warning"><dt>Warning</dt><dd>This is a legacy function, avoid using it if possible </dd></dl>
+
+<p>Reimplemented from <a class="el" href="classINTELLI_1_1AbstractJoinAlgo.html#ac50e9362a02dc2696eb9938128c5c743">INTELLI::AbstractJoinAlgo</a>.</p>
+
+</div>
+</div>
+<a id="ga8c722c2b1ace18aed12b3798441c6c86"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga8c722c2b1ace18aed12b3798441c6c86">&#9670;&nbsp;</a></span>join() <span class="overload">[5/8]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual size_t INTELLI::NPJ::join </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__INTELLI__COMMON__BASIC.html#gaf4591ab3e423261c4770a506de62ca4c">TuplePtrQueue</a>&#160;</td>
+          <td class="paramname"><em>ts</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a>&#160;</td>
+          <td class="paramname"><em>tr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>threads</em> = <code>1</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The function to execute join, batch of one, tuple of another. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ts</td><td>The tuples of stream S </td></tr>
+    <tr><td class="paramname">tr</td><td>The tuple of stream R </td></tr>
+    <tr><td class="paramname">threads</td><td>The parallel threads </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The joined tuples </dd></dl>
+
+<p>Reimplemented from <a class="el" href="classINTELLI_1_1AbstractJoinAlgo.html#a7767422890905ad754f68f2beaf9b9ee">INTELLI::AbstractJoinAlgo</a>.</p>
+
+</div>
+</div>
+<a id="ga28fe2ff670627a2904b0c0eefe154484"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga28fe2ff670627a2904b0c0eefe154484">&#9670;&nbsp;</a></span>join() <span class="overload">[6/8]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual size_t INTELLI::NPJSingle::join </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__INTELLI__COMMON__BASIC.html#gaf4591ab3e423261c4770a506de62ca4c">TuplePtrQueue</a>&#160;</td>
+          <td class="paramname"><em>ts</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a>&#160;</td>
+          <td class="paramname"><em>tr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>threads</em> = <code>1</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The function to execute join, batch of one, tuple of another. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ts</td><td>The tuples of stream S </td></tr>
+    <tr><td class="paramname">tr</td><td>The tuple of stream R </td></tr>
+    <tr><td class="paramname">threads</td><td>The parallel threads </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The joined tuples </dd></dl>
+
+<p>Reimplemented from <a class="el" href="classINTELLI_1_1AbstractJoinAlgo.html#a7767422890905ad754f68f2beaf9b9ee">INTELLI::AbstractJoinAlgo</a>.</p>
+
+</div>
+</div>
+<a id="ga01b4a9b9c7a649e5dadb56f498ecedb4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga01b4a9b9c7a649e5dadb56f498ecedb4">&#9670;&nbsp;</a></span>join() <span class="overload">[7/8]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual size_t INTELLI::NPJ::join </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group__INTELLI__COMMON__BASIC.html#gaf4591ab3e423261c4770a506de62ca4c">TuplePtrQueue</a>&#160;</td>
           <td class="paramname"><em>ts</em>, </td>
@@ -343,6 +695,11 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>INTELLI::NPJ_thread::
           <td></td><td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>The function to execute join. </p>
@@ -355,7 +712,65 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>INTELLI::NPJ_thread::
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The joined tuples </dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000002">Todo:</a></b></dt><dd>Add AMP and NUMA support in the future, so far only generic SMP </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000003">Todo:</a></b></dt><dd>Add AMP and NUMA support in the future, so far only generic SMP </dd></dl>
+
+<p>Reimplemented from <a class="el" href="classINTELLI_1_1AbstractJoinAlgo.html#ab2a38be956a451121269420fe769107c">INTELLI::AbstractJoinAlgo</a>.</p>
+
+</div>
+</div>
+<a id="ga666d280999e501c323c25bb6e9fada16"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga666d280999e501c323c25bb6e9fada16">&#9670;&nbsp;</a></span>join() <span class="overload">[8/8]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual size_t INTELLI::NPJSingle::join </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__INTELLI__COMMON__BASIC.html#gaf4591ab3e423261c4770a506de62ca4c">TuplePtrQueue</a>&#160;</td>
+          <td class="paramname"><em>ts</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__INTELLI__COMMON__BASIC.html#gaf4591ab3e423261c4770a506de62ca4c">TuplePtrQueue</a>&#160;</td>
+          <td class="paramname"><em>tr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>threads</em> = <code>1</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The function to execute join. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ts</td><td>The tuples of stream S </td></tr>
+    <tr><td class="paramname">tr</td><td>The tuples of stream R </td></tr>
+    <tr><td class="paramname">threads</td><td>The parallel threads </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The joined tuples </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000004">Todo:</a></b></dt><dd>Add AMP and NUMA support in the future, so far only generic SMP </dd></dl>
+
+<p>Reimplemented from <a class="el" href="classINTELLI_1_1AbstractJoinAlgo.html#ab2a38be956a451121269420fe769107c">INTELLI::AbstractJoinAlgo</a>.</p>
 
 </div>
 </div>

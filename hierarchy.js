@@ -6,10 +6,21 @@ var hierarchy =
       [ "moodycamel::details::hash_32_or_64< size >", "structmoodycamel_1_1details_1_1hash__32__or__64.html", null ]
     ] ],
     [ "INTELLI::AbstractC20Thread", "classINTELLI_1_1AbstractC20Thread.html", [
+      [ "INTELLI::AbstractEagerWS", "classINTELLI_1_1AbstractEagerWS.html", [
+        [ "INTELLI::HandShakeWS", "classINTELLI_1_1HandShakeWS.html", null ]
+      ] ],
+      [ "INTELLI::AbstractJP", "classINTELLI_1_1AbstractJP.html", [
+        [ "INTELLI::AbstractLazyJP", "classINTELLI_1_1AbstractLazyJP.html", null ],
+        [ "INTELLI::CellJoinJP", "classINTELLI_1_1CellJoinJP.html", [
+          [ "INTELLI::HandShakeHashJP", "classINTELLI_1_1HandShakeHashJP.html", null ]
+        ] ]
+      ] ],
+      [ "INTELLI::AbstractLazyWS", "classINTELLI_1_1AbstractLazyWS.html", null ],
       [ "INTELLI::NPJ_thread", "classINTELLI_1_1NPJ__thread.html", null ]
     ] ],
-    [ "INTELLI::AbstractEagerWS", "classINTELLI_1_1AbstractEagerWS.html", [
-      [ "INTELLI::HandShakeWS", "classINTELLI_1_1HandShakeWS.html", null ]
+    [ "INTELLI::AbstractJoinAlgo", "classINTELLI_1_1AbstractJoinAlgo.html", [
+      [ "INTELLI::NPJ", "classINTELLI_1_1NPJ.html", null ],
+      [ "INTELLI::NPJSingle", "classINTELLI_1_1NPJSingle.html", null ]
     ] ],
     [ "INTELLI::AbstractJoinMethod< wsType >", "classINTELLI_1_1AbstractJoinMethod.html", null ],
     [ "INTELLI::AbstractJoinMethod< AbstractEagerWS >", "classINTELLI_1_1AbstractJoinMethod.html", [
@@ -18,8 +29,13 @@ var hierarchy =
     [ "INTELLI::AbstractJoinMethod< HandShakeWS >", "classINTELLI_1_1AbstractJoinMethod.html", [
       [ "INTELLI::HandShakeJoin", "classINTELLI_1_1HandShakeJoin.html", null ]
     ] ],
+    [ "INTELLI::AbstractWS", "classINTELLI_1_1AbstractWS.html", [
+      [ "INTELLI::AbstractEagerWS", "classINTELLI_1_1AbstractEagerWS.html", null ],
+      [ "INTELLI::AbstractLazyWS", "classINTELLI_1_1AbstractLazyWS.html", null ]
+    ] ],
     [ "moodycamel::BlockingConcurrentQueue< T, Traits >", "classmoodycamel_1_1BlockingConcurrentQueue.html", null ],
-    [ "INTELLI::CommonFunction", "classINTELLI_1_1CommonFunction.html", null ],
+    [ "INTELLI::C20Buffer< dataType >", "classINTELLI_1_1C20Buffer.html", null ],
+    [ "INTELLI::C20Buffer< TuplePtr >", "classINTELLI_1_1C20Buffer.html", null ],
     [ "moodycamel::ConcurrentQueue< T, Traits >", "classmoodycamel_1_1ConcurrentQueue.html", null ],
     [ "moodycamel::ConcurrentQueue< TuplePtr >", "classmoodycamel_1_1ConcurrentQueue.html", null ],
     [ "moodycamel::ConcurrentQueueDefaultTraits", "structmoodycamel_1_1ConcurrentQueueDefaultTraits.html", null ],
@@ -34,13 +50,13 @@ var hierarchy =
     [ "std::is_trivially_destructible", null, [
       [ "moodycamel::details::is_trivially_destructible< T >", "structmoodycamel_1_1details_1_1is__trivially__destructible.html", null ]
     ] ],
+    [ "INTELLI::JoinAlgoTable", "classINTELLI_1_1JoinAlgoTable.html", null ],
     [ "moodycamel::details::max_align_t", "unionmoodycamel_1_1details_1_1max__align__t.html", null ],
     [ "INTELLI::MicroDataSet", "classINTELLI_1_1MicroDataSet.html", null ],
     [ "INTELLI::MtBucket", "classINTELLI_1_1MtBucket.html", null ],
     [ "INTELLI::MultiThreadHashTable", "classINTELLI_1_1MultiThreadHashTable.html", null ],
     [ "moodycamel::details::nomove_if< Enable >", "structmoodycamel_1_1details_1_1nomove__if.html", null ],
     [ "moodycamel::details::nomove_if< false >", "structmoodycamel_1_1details_1_1nomove__if_3_01false_01_4.html", null ],
-    [ "INTELLI::NPJ", "classINTELLI_1_1NPJ.html", null ],
     [ "INTELLI::OneWayHashJoin", "classINTELLI_1_1OneWayHashJoin.html", null ],
     [ "INTELLI::PerfEntry", "classINTELLI_1_1PerfEntry.html", null ],
     [ "INTELLI::PerfPair", "classINTELLI_1_1PerfPair.html", null ],
@@ -49,9 +65,6 @@ var hierarchy =
     [ "INTELLI::RelationCouple", "classINTELLI_1_1RelationCouple.html", null ],
     [ "INTELLI::Result", "classINTELLI_1_1Result.html", null ],
     [ "std::SafeQueue< T >", "classstd_1_1SafeQueue.html", null ],
-    [ "INTELLI::SimpleHashJP", "classINTELLI_1_1SimpleHashJP.html", [
-      [ "INTELLI::HandShakeHashJP", "classINTELLI_1_1HandShakeHashJP.html", null ]
-    ] ],
     [ "INTELLI::SPSCQueue< T, Allocator >", "classINTELLI_1_1SPSCQueue.html", null ],
     [ "moodycamel::details::static_is_lock_free< bool >", "structmoodycamel_1_1details_1_1static__is__lock__free_3_01bool_01_4.html", null ],
     [ "moodycamel::details::static_is_lock_free< U * >", "structmoodycamel_1_1details_1_1static__is__lock__free_3_01U_01_5_01_4.html", null ],

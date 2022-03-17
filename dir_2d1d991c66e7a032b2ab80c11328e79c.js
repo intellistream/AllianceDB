@@ -1,6 +1,7 @@
 var dir_2d1d991c66e7a032b2ab80c11328e79c =
 [
     [ "AbstractC20Thread.h", "AbstractC20Thread_8h.html", null ],
+    [ "C20Buffers.hpp", "C20Buffers_8hpp.html", "C20Buffers_8hpp" ],
     [ "concurrentqueue.h", "concurrentqueue_8h_source.html", null ],
     [ "DupicatedHashTable.hpp", "DupicatedHashTable_8hpp_source.html", null ],
     [ "Logger.hpp", "Logger_8hpp_source.html", null ],

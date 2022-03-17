@@ -107,42 +107,40 @@ $(document).ready(function(){initNavTree('AbstractC20Thread_8h_source.html','');
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &lt;thread&gt;</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keyword">namespace  </span>INTELLI{</div>
-<div class="line"><a name="l00028"></a><span class="lineno"><a class="line" href="classINTELLI_1_1AbstractC20Thread.html">   28</a></span>&#160;<span class="keyword">class </span><a class="code" href="classINTELLI_1_1AbstractC20Thread.html">AbstractC20Thread</a>{</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespaceINTELLI.html">INTELLI</a> {</div>
+<div class="line"><a name="l00028"></a><span class="lineno"><a class="line" href="classINTELLI_1_1AbstractC20Thread.html">   28</a></span>&#160;<span class="keyword">class </span><a class="code" href="classINTELLI_1_1AbstractC20Thread.html">AbstractC20Thread</a> {</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160; <span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00034"></a><span class="lineno"><a class="line" href="classINTELLI_1_1AbstractC20Thread.html#a01a2c2b58a19777dc8814076efdb2552">   34</a></span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classINTELLI_1_1AbstractC20Thread.html#a01a2c2b58a19777dc8814076efdb2552">inlineMain</a>()</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  {</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160; </div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  }</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160; </div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  std::shared_ptr&lt;std::thread&gt; threadPtr;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  <a class="code" href="classINTELLI_1_1AbstractC20Thread.html">AbstractC20Thread</a>(){}</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  ~AbstractC20Thread(){}</div>
-<div class="line"><a name="l00046"></a><span class="lineno"><a class="line" href="classINTELLI_1_1AbstractC20Thread.html#a1026373c6fb6698cd8740b38df3453b2">   46</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classINTELLI_1_1AbstractC20Thread.html#a1026373c6fb6698cd8740b38df3453b2">start</a>()</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  {</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="keyword">auto</span> fun = [<span class="keyword">this</span>]() {</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;      <a class="code" href="classINTELLI_1_1AbstractC20Thread.html#a01a2c2b58a19777dc8814076efdb2552">inlineMain</a>();</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    };</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    threadPtr = std::make_shared&lt;std::thread&gt;(fun);</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="comment">// table=make_shared&lt;MultiThreadHashTable&gt;(5000);</span></div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  }</div>
-<div class="line"><a name="l00057"></a><span class="lineno"><a class="line" href="classINTELLI_1_1AbstractC20Thread.html#af513ceb6103f5f3ab19e994ea65b16ac">   57</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classINTELLI_1_1AbstractC20Thread.html#af513ceb6103f5f3ab19e994ea65b16ac">join</a>()</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  {</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    threadPtr-&gt;join();</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  }</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160; </div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;};</div>
+<div class="line"><a name="l00034"></a><span class="lineno"><a class="line" href="classINTELLI_1_1AbstractC20Thread.html#a01a2c2b58a19777dc8814076efdb2552">   34</a></span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classINTELLI_1_1AbstractC20Thread.html#a01a2c2b58a19777dc8814076efdb2552">inlineMain</a>() {</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160; </div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  }</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160; </div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  std::shared_ptr&lt;std::thread&gt; threadPtr;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <a class="code" href="classINTELLI_1_1AbstractC20Thread.html">AbstractC20Thread</a>() {}</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  ~AbstractC20Thread() {}</div>
+<div class="line"><a name="l00045"></a><span class="lineno"><a class="line" href="classINTELLI_1_1AbstractC20Thread.html#a37df714f21a13ce2f5b6879adf6e002a">   45</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classINTELLI_1_1AbstractC20Thread.html#a37df714f21a13ce2f5b6879adf6e002a">startThread</a>() {</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="keyword">auto</span> fun = [<span class="keyword">this</span>]() {</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;      <a class="code" href="classINTELLI_1_1AbstractC20Thread.html#a01a2c2b58a19777dc8814076efdb2552">inlineMain</a>();</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    };</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    threadPtr = std::make_shared&lt;std::thread&gt;(fun);</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="comment">// table=make_shared&lt;MultiThreadHashTable&gt;(5000);</span></div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  }</div>
+<div class="line"><a name="l00055"></a><span class="lineno"><a class="line" href="classINTELLI_1_1AbstractC20Thread.html#aaee52a094251c8a4160cdefd661de099">   55</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classINTELLI_1_1AbstractC20Thread.html#aaee52a094251c8a4160cdefd661de099">joinThread</a>() {</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    threadPtr-&gt;join();</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  }</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160; </div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;};</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160; </div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;}</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160; </div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160; </div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;}</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160; </div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160; </div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160; </div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="preprocessor">#endif </span><span class="comment">//ALIANCEDB_INCLUDE_UTILS_ABSTRACTTHREAD_H_</span></div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160; </div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="preprocessor">#endif </span><span class="comment">//ALIANCEDB_INCLUDE_UTILS_ABSTRACTTHREAD_H_</span></div>
 <div class="ttc" id="aclassINTELLI_1_1AbstractC20Thread_html"><div class="ttname"><a href="classINTELLI_1_1AbstractC20Thread.html">INTELLI::AbstractC20Thread</a></div><div class="ttdoc">The base class and abstraction of C++20 thread, and it can be derived into other threads.</div><div class="ttdef"><b>Definition:</b> AbstractC20Thread.h:28</div></div>
 <div class="ttc" id="aclassINTELLI_1_1AbstractC20Thread_html_a01a2c2b58a19777dc8814076efdb2552"><div class="ttname"><a href="classINTELLI_1_1AbstractC20Thread.html#a01a2c2b58a19777dc8814076efdb2552">INTELLI::AbstractC20Thread::inlineMain</a></div><div class="ttdeci">virtual void inlineMain()</div><div class="ttdoc">The inline 'main&quot; function of thread, as an interface.</div><div class="ttdef"><b>Definition:</b> AbstractC20Thread.h:34</div></div>
-<div class="ttc" id="aclassINTELLI_1_1AbstractC20Thread_html_a1026373c6fb6698cd8740b38df3453b2"><div class="ttname"><a href="classINTELLI_1_1AbstractC20Thread.html#a1026373c6fb6698cd8740b38df3453b2">INTELLI::AbstractC20Thread::start</a></div><div class="ttdeci">void start()</div><div class="ttdoc">to start this thread</div><div class="ttdef"><b>Definition:</b> AbstractC20Thread.h:46</div></div>
-<div class="ttc" id="aclassINTELLI_1_1AbstractC20Thread_html_af513ceb6103f5f3ab19e994ea65b16ac"><div class="ttname"><a href="classINTELLI_1_1AbstractC20Thread.html#af513ceb6103f5f3ab19e994ea65b16ac">INTELLI::AbstractC20Thread::join</a></div><div class="ttdeci">void join()</div><div class="ttdoc">the thread join function</div><div class="ttdef"><b>Definition:</b> AbstractC20Thread.h:57</div></div>
+<div class="ttc" id="aclassINTELLI_1_1AbstractC20Thread_html_a37df714f21a13ce2f5b6879adf6e002a"><div class="ttname"><a href="classINTELLI_1_1AbstractC20Thread.html#a37df714f21a13ce2f5b6879adf6e002a">INTELLI::AbstractC20Thread::startThread</a></div><div class="ttdeci">void startThread()</div><div class="ttdoc">to start this thread</div><div class="ttdef"><b>Definition:</b> AbstractC20Thread.h:45</div></div>
+<div class="ttc" id="aclassINTELLI_1_1AbstractC20Thread_html_aaee52a094251c8a4160cdefd661de099"><div class="ttname"><a href="classINTELLI_1_1AbstractC20Thread.html#aaee52a094251c8a4160cdefd661de099">INTELLI::AbstractC20Thread::joinThread</a></div><div class="ttdeci">void joinThread()</div><div class="ttdoc">the thread join function</div><div class="ttdef"><b>Definition:</b> AbstractC20Thread.h:55</div></div>
+<div class="ttc" id="anamespaceINTELLI_html"><div class="ttname"><a href="namespaceINTELLI.html">INTELLI</a></div><div class="ttdef"><b>Definition:</b> DatasetTool.h:10</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

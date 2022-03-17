@@ -1,6 +1,6 @@
 var annotated_dup =
 [
-    [ "INTELLI", null, [
+    [ "INTELLI", "namespaceINTELLI.html", [
       [ "DatasetTool", "classINTELLI_1_1DatasetTool.html", "classINTELLI_1_1DatasetTool" ],
       [ "MtBucket", "classINTELLI_1_1MtBucket.html", "classINTELLI_1_1MtBucket" ],
       [ "MultiThreadHashTable", "classINTELLI_1_1MultiThreadHashTable.html", "classINTELLI_1_1MultiThreadHashTable" ],
@@ -9,16 +9,17 @@ var annotated_dup =
       [ "WindowCouple", "classINTELLI_1_1WindowCouple.html", "classINTELLI_1_1WindowCouple" ],
       [ "ConcurrentQWindowCouple", "classINTELLI_1_1ConcurrentQWindowCouple.html", "classINTELLI_1_1ConcurrentQWindowCouple" ],
       [ "Result", "classINTELLI_1_1Result.html", "classINTELLI_1_1Result" ],
+      [ "AbstractJoinAlgo", "classINTELLI_1_1AbstractJoinAlgo.html", "classINTELLI_1_1AbstractJoinAlgo" ],
+      [ "JoinAlgoTable", "classINTELLI_1_1JoinAlgoTable.html", "classINTELLI_1_1JoinAlgoTable" ],
       [ "NPJ_thread", "classINTELLI_1_1NPJ__thread.html", "classINTELLI_1_1NPJ__thread" ],
       [ "NPJ", "classINTELLI_1_1NPJ.html", "classINTELLI_1_1NPJ" ],
-      [ "AbstractJoinMethod", "classINTELLI_1_1AbstractJoinMethod.html", null ],
-      [ "CellJoin", "classINTELLI_1_1CellJoin.html", null ],
-      [ "CommonFunction", "classINTELLI_1_1CommonFunction.html", "classINTELLI_1_1CommonFunction" ],
-      [ "HandShakeJoin", "classINTELLI_1_1HandShakeJoin.html", null ],
-      [ "OneWayHashJoin", "classINTELLI_1_1OneWayHashJoin.html", null ],
+      [ "NPJSingle", "classINTELLI_1_1NPJSingle.html", "classINTELLI_1_1NPJSingle" ],
+      [ "AbstractJP", "classINTELLI_1_1AbstractJP.html", "classINTELLI_1_1AbstractJP" ],
+      [ "AbstractLazyJP", "classINTELLI_1_1AbstractLazyJP.html", "classINTELLI_1_1AbstractLazyJP" ],
+      [ "CellJoinJP", "classINTELLI_1_1CellJoinJP.html", "classINTELLI_1_1CellJoinJP" ],
       [ "HandShakeHashJP", "classINTELLI_1_1HandShakeHashJP.html", "classINTELLI_1_1HandShakeHashJP" ],
-      [ "SimpleHashJP", "classINTELLI_1_1SimpleHashJP.html", "classINTELLI_1_1SimpleHashJP" ],
       [ "AbstractC20Thread", "classINTELLI_1_1AbstractC20Thread.html", "classINTELLI_1_1AbstractC20Thread" ],
+      [ "C20Buffer", "classINTELLI_1_1C20Buffer.html", "classINTELLI_1_1C20Buffer" ],
       [ "MicroDataSet", "classINTELLI_1_1MicroDataSet.html", "classINTELLI_1_1MicroDataSet" ],
       [ "SPSCQueue", "classINTELLI_1_1SPSCQueue.html", "classINTELLI_1_1SPSCQueue" ],
       [ "PerfEntry", "classINTELLI_1_1PerfEntry.html", "classINTELLI_1_1PerfEntry" ],
@@ -27,7 +28,13 @@ var annotated_dup =
       [ "ThreadPerf", "classINTELLI_1_1ThreadPerf.html", "classINTELLI_1_1ThreadPerf" ],
       [ "UtilityFunctions", "classINTELLI_1_1UtilityFunctions.html", "classINTELLI_1_1UtilityFunctions" ],
       [ "AbstractEagerWS", "classINTELLI_1_1AbstractEagerWS.html", "classINTELLI_1_1AbstractEagerWS" ],
-      [ "HandShakeWS", "classINTELLI_1_1HandShakeWS.html", "classINTELLI_1_1HandShakeWS" ]
+      [ "AbstractLazyWS", "classINTELLI_1_1AbstractLazyWS.html", "classINTELLI_1_1AbstractLazyWS" ],
+      [ "AbstractWS", "classINTELLI_1_1AbstractWS.html", "classINTELLI_1_1AbstractWS" ],
+      [ "HandShakeWS", "classINTELLI_1_1HandShakeWS.html", "classINTELLI_1_1HandShakeWS" ],
+      [ "AbstractJoinMethod", "classINTELLI_1_1AbstractJoinMethod.html", null ],
+      [ "CellJoin", "classINTELLI_1_1CellJoin.html", null ],
+      [ "HandShakeJoin", "classINTELLI_1_1HandShakeJoin.html", null ],
+      [ "OneWayHashJoin", "classINTELLI_1_1OneWayHashJoin.html", null ]
     ] ],
     [ "moodycamel", null, [
       [ "details", null, [
