@@ -44,11 +44,19 @@ int main() {
   joinResult.streamSize = relationCouple.relationR.size();
 
   AbstractJoinMethod<AbstractLazyWS> lwj;
- // INTELLI::UtilityFunctions::timerStart(joinResult);
-  lwj.test(joinResult,relationCouple);
-
+  // INTELLI::UtilityFunctions::timerStart(joinResult);
+  lwj.test(joinResult, relationCouple);
   //Print result number
- // INTELLI::UtilityFunctions::timerEnd(joinResult);
+  // INTELLI::UtilityFunctions::timerEnd(joinResult);
+  joinResult.statPrinter();
+  dataSet.load3VText(relationCouple.relationR, fileRName);
+  dataSet.load3VText(relationCouple.relationS, fileSName);
+  joinResult.streamSize = relationCouple.relationR.size();
+  AbstractJoinMethod<AbstractEagerWS> ewj;
+  // INTELLI::UtilityFunctions::timerStart(joinResult);
+  ewj.test(joinResult, relationCouple);
+  //Print result number
+  // INTELLI::UtilityFunctions::timerEnd(joinResult);
   joinResult.statPrinter();
   /*MicroDataSet mr(999);
   DatasetTool dataSet;

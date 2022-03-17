@@ -10,9 +10,9 @@
 #include <barrier>
 #include <Utils/AbstractC20Thread.h>
 #include <Utils/C20Buffers.hpp>
-
+#include <JoinAlgo/JoinAlgoTable.h>
 #include <memory>
-namespace  INTELLI {
+namespace INTELLI {
 class AbstractLazyJP;
 /**
  * @defgroup JOINPROCESSOR JoinProcessors
@@ -35,7 +35,7 @@ class AbstractLazyJP;
   * @brief The basic class of join processor
   * @note first @ref init the JP before @ref startThread
   */
-class AbstractJP :public AbstractC20Thread{
+class AbstractJP : public AbstractC20Thread {
  protected:
   TuplePtrQueue TuplePtrQueueInS;
   TuplePtrQueue TuplePtrQueueInR;
@@ -47,6 +47,7 @@ class AbstractJP :public AbstractC20Thread{
   bool timeBased = false;
   size_t windowLen = 0;
   size_t joinedResult = 0;
+  JoinAlgoTablePtr myAlgo;
   //response of my self
   void sendResponseCmd(join_cmd_t cmd) {
     cmdQueueOut->push(cmd);
@@ -59,8 +60,7 @@ class AbstractJP :public AbstractC20Thread{
    * @param cmd The desired command
    * @return true if such command exists
    */
-  bool testCmd(join_cmd_t cmd)
-  {
+  bool testCmd(join_cmd_t cmd) {
     if (!cmdQueueIn->empty()) {
       join_cmd_t cmdIn = *cmdQueueIn->front();
       cmdQueueIn->pop();
@@ -74,15 +74,13 @@ class AbstractJP :public AbstractC20Thread{
    * @brief The 'main' function of AbstractP
    * @note This is a re-implementation of AbstractC20Thread
    */
-  virtual void inlineMain()
-  {
+  virtual void inlineMain() {
 
   }
 
-
  public:
-  AbstractJP(){}
-  ~ AbstractJP(){}
+  AbstractJP() {}
+  ~ AbstractJP() {}
   /**
    * @brief input an outside command
    * @param cmd The Command
@@ -112,6 +110,7 @@ class AbstractJP :public AbstractC20Thread{
     cmdQueueIn = newCmdQueue(1);
     cmdQueueOut = newCmdQueue(1);
     sysId = _sysId;
+    myAlgo = newJoinAlgoTable();
   }
   /**
   * @brief to configure the window type
@@ -152,9 +151,8 @@ class AbstractJP :public AbstractC20Thread{
    * @brief set the timeval struct
    * @param tv The struct to be set
    */
-  void setTimeVal(struct timeval tv)
-  {
-    timeSys=tv;
+  void setTimeVal(struct timeval tv) {
+    timeSys = tv;
   }
   /**
    * @brief Get the time stamp
@@ -169,6 +167,14 @@ class AbstractJP :public AbstractC20Thread{
    */
   size_t getJoinedResult() {
     return joinedResult;
+  }
+  int cpuBind = -1;
+  /**
+   * @brief bind to specific core
+   * @param id The core id
+   */
+  void setCore(int id) {
+    cpuBind = id;
   }
 };
 

@@ -1,7 +1,7 @@
 add_sources(
         AbstractJP.cpp
         AbstractLazyJP.cpp
-        SimpleHashJP.cpp
+        CellJoinJP.cpp
         HandShakeHashJP.cpp
 
 )

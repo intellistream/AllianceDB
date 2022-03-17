@@ -4,7 +4,7 @@
 #pragma once
 #ifndef JOINPROCESSOR_HANDSHAKEHASHJP_H_
 #define JOINPROCESSOR_HANDSHAKEHASHJP_H_
-#include <JoinProcessor/SimpleHashJP.h>
+#include <JoinProcessor/CellJoinJP.h>
 #include <memory>
 
 using namespace std;
@@ -17,7 +17,7 @@ description: join processor for handshake hash join
 note: S->, R<-
 date:20220228
 */
-class HandShakeHashJP : public SimpleHashJP {
+class HandShakeHashJP : public CellJoinJP {
  protected:
   /* data */
   HandShakeHashJPPtr leftJP = nullptr;
@@ -40,7 +40,7 @@ class HandShakeHashJP : public SimpleHashJP {
   void start() {
     countR = 0;
     countS = 0;
-    SimpleHashJP::start();
+    CellJoinJP::startThread();
   }
   void inlineRun();
   HandShakeHashJP(/* args */) {

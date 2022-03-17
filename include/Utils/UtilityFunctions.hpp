@@ -58,17 +58,15 @@ class UtilityFunctions {
   //partition
   static vector<size_t> avgPartitionSizeFinal(size_t inS, std::vector<size_t> partitionWeight);
   static vector<size_t> weightedPartitionSizeFinal(size_t inS, std::vector<size_t> partitionWeight);
-  static size_t to_periodical(size_t val, size_t period)
-  {
-    if(val<period)
-    {
+  static size_t to_periodical(size_t val, size_t period) {
+    if (val < period) {
       return val;
     }
-    size_t ru=val%period;
-   /* if(ru==0)
-    {
-      return  period;
-    }*/
+    size_t ru = val % period;
+    /* if(ru==0)
+     {
+       return  period;
+     }*/
     return ru;
   }
 };

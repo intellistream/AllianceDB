@@ -13,11 +13,11 @@ namespace INTELLI {
  * @defgroup WINDOWSLIDER WindowSliders
  * @{
  */
- /**
-  * @defgroup WINDOWSLIDER_LAZY lazy window slider
-  * @{
-  * The lazy sliders that follow window-wide update, i.e., they can process tuples after each window is collected
-  */
+/**
+ * @defgroup WINDOWSLIDER_LAZY lazy window slider
+ * @{
+ * The lazy sliders that follow window-wide update, i.e., they can process tuples after each window is collected
+ */
 /**
 * @class AbstractLazyWS WindowSlider/AbstractLazyWS.h
 * @brief An abstraction of lazy window slider, also inherited by other lazy window slider
@@ -34,18 +34,17 @@ To init and run, follow the functions below to start a WS
  \li Feed tuples @ref feedTupleS or @ref feedTupleR
  \li Terminate, by @ref terminateJoinProcessors
 */
-class AbstractLazyWS: public  AbstractWS,public AbstractC20Thread{
+class AbstractLazyWS : public AbstractWS, public AbstractC20Thread {
  protected:
   vector<AbstractLazyJPPtr> jps;
-  size_t period=0;
-  size_t windowCnt=0;
-  virtual  void inlineMain();
+  size_t period = 0;
+  size_t windowCnt = 0;
+  virtual void inlineMain();
 
  public:
-  AbstractLazyWS()
-  {
+  AbstractLazyWS() {
     reset();
-    nameTag="LWJ";
+    nameTag = "LWJ";
   }
 
   /**
@@ -53,9 +52,8 @@ class AbstractLazyWS: public  AbstractWS,public AbstractC20Thread{
   * @param sLen the length of S queue
    * @param rLen the length of R queue
  */
-  AbstractLazyWS(size_t sLen, size_t rLen): AbstractWS(sLen,rLen)
-  {
-    nameTag="LWJ";
+  AbstractLazyWS(size_t sLen, size_t rLen) : AbstractWS(sLen, rLen) {
+    nameTag = "LWJ";
   }
 
   //init the join processors

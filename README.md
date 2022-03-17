@@ -67,7 +67,8 @@ https://intellistream.github.io/AllianceDB/
 
 ### Local generate
 
-You can also re-generate them locally, if you have the doxygen and graphviz. Following are how to install them in ubuntu 21.10
+You can also re-generate them locally, if you have the doxygen and graphviz. Following are how to install them in ubuntu
+21.10
 
 ```shell
 sudo apt-get install doxygen

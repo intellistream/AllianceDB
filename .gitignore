@@ -28,7 +28,9 @@ cmake-build-*/
 .clion*
 
 venv/
-
-.idea/
 build/
 *build/
+com_scripts
+commit
+.idea/
+.vscode/

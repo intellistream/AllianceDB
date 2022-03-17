@@ -100,7 +100,7 @@ add_subdirectory(src)
 # Add Library
 get_sources(IntelliStream_SOURCE_FILES)
 get_headers(IntelliStream_HEADER_FILES)
-add_library(IntelliStream SHARED ${IntelliStream_SOURCE_FILES} ${IntelliStream_HEADER_FILES} ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_BINARY_DIR} src/JoinProcessor/AbstractJP.cpp include/JoinProcessor/AbstractJP.h)
+add_library(IntelliStream SHARED ${IntelliStream_SOURCE_FILES} ${IntelliStream_HEADER_FILES} ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 target_include_directories(IntelliStream PUBLIC "include")
 target_include_directories(IntelliStream PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
 target_link_libraries(IntelliStream PUBLIC ${LIBRARIES})

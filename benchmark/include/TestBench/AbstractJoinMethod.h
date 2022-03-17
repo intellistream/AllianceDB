@@ -14,7 +14,7 @@ class AbstractJoinMethod {
     size_t sLen = relationCouple.relationS.size();
     size_t rLen = relationCouple.relationR.size();
     wsType windowSlider(sLen, rLen);
-    joinResult.algoName=windowSlider.getName();
+    joinResult.algoName = windowSlider.getName();
     windowSlider.setParallelSMP(THREAD_NUMBER);
     // windowSlider.setStopCondition(0, sLen, rLen);
     windowSlider.setTimeBased(true);
@@ -24,7 +24,7 @@ class AbstractJoinMethod {
     windowSlider.initJoinProcessors();
     //size_t timeBase=windowSlider.getStartTime();
     //cout<<"system start at "<<timeBase<<endl;
-   struct timeval timeSys = windowSlider.getSysTime();
+    struct timeval timeSys = windowSlider.getSysTime();
     size_t cnt = 0;
     INTELLI::UtilityFunctions::timerStart(joinResult);
     while (!relationCouple.relationR.empty() || !relationCouple.relationS.empty()) {
@@ -47,7 +47,7 @@ class AbstractJoinMethod {
       }
       // cout<<"process tuple"<<cnt<<endl;
       cnt++;
-      usleep(TIME_STEP/2);
+      usleep(TIME_STEP / 2);
     }
     cout << "end of tuple feeding" << endl;
     joinResult.joinNumber = 0;
