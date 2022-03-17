@@ -17,8 +17,6 @@ if (BUILD_BENCHMARKS)
     include_directories("${source_dir}/include/")
     include_directories("include/")
     set(TEST_BENCH_SRC "src/TestBench/AbstractJoinMethod.cpp"
-            "src/TestBench/HandShakeJoin.cpp"
-            "src/TestBench/CellJoin.cpp"
             )
     add_executable(benchmark "src/Benchmark.cpp" ${TEST_BENCH_SRC})
     target_link_libraries(benchmark IntelliStream)
