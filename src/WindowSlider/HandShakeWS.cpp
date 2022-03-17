@@ -8,14 +8,14 @@ void HandShakeWS::initJoinProcessors() {
   threads = partitionWeight.size();
   cout << "enable " << threads << " threads" << endl;
   initBar = std::make_shared<std::barrier<>>(threads + 1);
-  jpPtr = std::vector<HandShakeHashJPPtr>(threads);
+  jpPtr = std::vector<HandShakeJPPtr>(threads);
   //partition at the beginning
   //return;
   vector<size_t> parVec = UtilityFunctions::avgPartitionSizeFinal(windowLen, partitionWeight);
   size_t timeOffsetS = 0;
   size_t timeOffsetR = 0;
   for (size_t tid = 0; tid < threads; tid++) {
-    jpPtr[tid] = make_shared<HandShakeHashJP>();
+    jpPtr[tid] = make_shared<HandShakeJP>();
     jpPtr[tid]->init(sLen, rLen, tid);
     if (isRunTimeScheduling()) {
       jpPtr[tid]->setCore(tid);
@@ -42,10 +42,10 @@ void HandShakeWS::initJoinProcessors() {
     cout << "JP " << tid << "window len=" << parVec[tid] << endl;
     //jpPtr[tid]->start();
 
-    jpPtr[tid]->start();
+    //jpPtr[tid]->start();
 
   }
-  initBar->arrive_and_wait();
+  // initBar->arrive_and_wait();
   isRunning = true;
 }
 void HandShakeWS::terminateJoinProcessors() {
@@ -80,7 +80,8 @@ size_t HandShakeWS::getJoinResult() {
   return ru;
 }
 void HandShakeWS::feedTupleS(TuplePtr ts) {
-  if (timeBased) //use time stamp, S and R share the same time system
+  assert(ts);
+  /*if (timeBased) //use time stamp, S and R share the same time system
   {
     size_t timeNow = getTimeStamp();
     ts->subKey = timeNow;
@@ -88,17 +89,18 @@ void HandShakeWS::feedTupleS(TuplePtr ts) {
     ts->subKey = countS;
     countS++;
   }
-  jpPtr[0]->feedTupleS(ts);
+  jpPtr[0]->feedTupleS(ts);*/
 }
 
 void HandShakeWS::feedTupleR(TuplePtr tr) {
-  if (timeBased) //use time stamp
-  {
-    size_t timeNow = getTimeStamp();
-    tr->subKey = timeNow;
-  } else {
-    tr->subKey = countR;
-    countR++;
-  }
-  jpPtr[threads - 1]->feedTupleR(tr);
+  assert(tr);
+  /* if (timeBased) //use time stamp
+   {
+     size_t timeNow = getTimeStamp();
+     tr->subKey = timeNow;
+   } else {
+     tr->subKey = countR;
+     countR++;
+   }
+   jpPtr[threads - 1]->feedTupleR(tr);*/
 }

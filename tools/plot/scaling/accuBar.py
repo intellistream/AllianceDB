@@ -48,20 +48,23 @@ def ConvertEpsToPdf(dir_filename):
     os.system("epstopdf --outfile " + dir_filename + ".pdf " + dir_filename + ".eps")
     os.system("rm -rf " + dir_filename + ".eps")
 
+
 class ScalarFormatterForceFormat(ScalarFormatter):
     def _set_format(self):  # Override function that finds format to use.
         self.format = "%1.1f"  # Give format here
+
+
 # draw a line chart
-def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, allow_legend,title):
+def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, allow_legend, title):
     # you may change the figure size on your own.
-   
+
     fig = plt.figure(figsize=(16, 9))
     figure = fig.add_subplot(111)
 
     FIGURE_LABEL = legend_labels
 
-    #if not os.path.exists(FIGURE_FOLDER):
-     #   os.makedirs(FIGURE_FOLDER)
+    # if not os.path.exists(FIGURE_FOLDER):
+    #   os.makedirs(FIGURE_FOLDER)
 
     # values in the x_xis
     index = np.arange(len(x_values))
@@ -94,15 +97,15 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, al
         if allow_legend == True:
             leg = plt.legend(handles[::-1], labels[::-1],
                              loc='upper center',
-                             #prop=#LEGEND_FP,
-                             #ncol=3,
-                             #bbox_to_anchor=(0.5, 1.25),
+                             # prop=#LEGEND_FP,
+                             # ncol=3,
+                             # bbox_to_anchor=(0.5, 1.25),
                              # bbox_to_anchor=(1.17, 0.5),
-                             #handletextpad=0.1,
-                             #borderaxespad=0.0,
-                             #handlelength=1.8,
-                             #labelspacing=0.3,
-                             #columnspacing=0.3,
+                             # handletextpad=0.1,
+                             # borderaxespad=0.0,
+                             # handlelength=1.8,
+                             # labelspacing=0.3,
+                             # columnspacing=0.3,
                              )
             leg.get_frame().set_linewidth(2)
             leg.get_frame().set_edgecolor("black")
@@ -110,9 +113,9 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, al
     # you may need to tune the xticks position to get the best figure.
     plt.xticks(index + 0.6 * width, x_values)
     yfmt = ScalarFormatterForceFormat()
-    yfmt.set_powerlimits((0,0))
+    yfmt.set_powerlimits((0, 0))
     figure.get_yaxis().set_major_formatter(yfmt)
-    plt.ticklabel_format(axis="y", style="sci", scilimits=(0,0), useMathText=True)
+    plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0), useMathText=True)
     plt.grid(axis='y', color='gray')
     figure.yaxis.set_major_locator(LinearLocator(3))
     # figure.yaxis.set_major_locator(LogLocator(base=10))
@@ -126,9 +129,10 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, al
 
     size = fig.get_size_inches()
     dpi = fig.get_dpi()
-    plt.title(title,fontproperties=TITLE_FP)
+    plt.title(title, fontproperties=TITLE_FP)
     plt.savefig(filename + ".pdf", bbox_inches='tight', format='pdf')
-    
+
+
 def DrawLegend(legend_labels, filename):
     fig = pylab.figure()
     ax1 = fig.add_subplot(111)
@@ -163,7 +167,7 @@ def normalize(y_values):
     y_norm_values = []
 
     for i in range(len(y_values)):
-        y_norm_values.append(np.array(y_values[i]) / (y_total_values )*100)
+        y_norm_values.append(np.array(y_values[i]) / (y_total_values) * 100)
     return y_norm_values
 
 
@@ -232,13 +236,13 @@ if __name__ == "__main__":
 
     # DrawLegend(legend_labels, 'breakdown_radix_legend')
 
-def DrawPercentageFigure(x_values, y_values, legend_labels, x_label, y_label, filename, allow_legend,title):
-     # you may change the figure size on your own.
+
+def DrawPercentageFigure(x_values, y_values, legend_labels, x_label, y_label, filename, allow_legend, title):
+    # you may change the figure size on your own.
     fig = plt.figure(figsize=(9, 3))
     figure = fig.add_subplot(111)
 
     FIGURE_LABEL = legend_labels
-
 
     # values in the x_xis
     index = np.arange(len(x_values))
@@ -321,4 +325,4 @@ def DrawPercentageFigure(x_values, y_values, legend_labels, x_label, y_label, fi
     size = fig.get_size_inches()
     dpi = fig.get_dpi()
 
-    plt.savefig( filename + ".pdf", bbox_inches='tight', format='pdf')
+    plt.savefig(filename + ".pdf", bbox_inches='tight', format='pdf')

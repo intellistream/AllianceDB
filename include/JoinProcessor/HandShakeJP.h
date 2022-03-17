@@ -2,26 +2,26 @@
 // Created by tony on 2022/2/9.
 //
 #pragma once
-#ifndef JOINPROCESSOR_HANDSHAKEHASHJP_H_
-#define JOINPROCESSOR_HANDSHAKEHASHJP_H_
+#ifndef JOINPROCESSOR_HANDSHAKEJP_H_
+#define JOINPROCESSOR_HANDSHAKEJP_H_
 #include <JoinProcessor/CellJoinJP.h>
 #include <memory>
 
 using namespace std;
 using namespace INTELLI;
 namespace INTELLI {
-class HandShakeHashJP;
-typedef std::shared_ptr<HandShakeHashJP> HandShakeHashJPPtr;
+class HandShakeJP;
+typedef std::shared_ptr<HandShakeJP> HandShakeJPPtr;
 /*class:HandShakeHashJP
 description: join processor for handshake hash join
 note: S->, R<-
 date:20220228
 */
-class HandShakeHashJP : public CellJoinJP {
+class HandShakeJP : public CellJoinJP {
  protected:
   /* data */
-  HandShakeHashJPPtr leftJP = nullptr;
-  HandShakeHashJPPtr rightJP = nullptr;
+  HandShakeJPPtr leftJP = nullptr;
+  HandShakeJPPtr rightJP = nullptr;
   TuplePtrQueue selfWindowS, selfWindowR;
   size_t countR = 0, countS = 0;
   size_t timeOffsetS, timeOffsetR;
@@ -29,24 +29,19 @@ class HandShakeHashJP : public CellJoinJP {
   void setupQueue();
   void expireS(size_t cond);
   void expireR(size_t cond);
-
+  virtual void inlineMain();
  public:
-  void setLeft(HandShakeHashJPPtr l) {
+  void setLeft(HandShakeJPPtr l) {
     leftJP = l;
   }
-  void setRight(HandShakeHashJPPtr r) {
+  void setRight(HandShakeJPPtr r) {
     rightJP = r;
   }
-  void start() {
-    countR = 0;
-    countS = 0;
-    CellJoinJP::startThread();
-  }
-  void inlineRun();
-  HandShakeHashJP(/* args */) {
+
+  HandShakeJP(/* args */) {
 
   }
-  ~HandShakeHashJP() {
+  ~HandShakeJP() {
 
   }
   void setTimeOffset(size_t ts, size_t tr) {
@@ -55,7 +50,7 @@ class HandShakeHashJP : public CellJoinJP {
   }
   void paraseTupleS();
   void paraseTupleR();
-  void setNeighborJP(HandShakeHashJPPtr l, HandShakeHashJPPtr r) {
+  void setNeighborJP(HandShakeJPPtr l, HandShakeJPPtr r) {
     leftJP = l;
     rightJP = r;
   }
