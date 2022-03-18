@@ -67,12 +67,7 @@ class AbstractEagerWS : public AbstractWS, public AbstractC20Thread {
 * @param ts The tuple r
 */
   void deliverTupleR(TuplePtr tr);
-  /**
-   * @brief To get the possible oldest a time stamp belongs to
-   * @param ts The time stamp
-   * @return The window number, start from 0
-   */
-  size_t oldestWindowBelong(size_t ts);
+
  public:
   //generate the partition vector of offset
   vector<size_t> weightedPartitionSizeFinal(size_t inS); //reserved for AMP

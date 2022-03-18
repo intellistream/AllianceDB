@@ -7,7 +7,7 @@ AbstractEagerWS::AbstractEagerWS(size_t _sLen, size_t _rLen) : AbstractWS(_sLen,
 
   TuplePtrQueueLocalS = newTuplePtrQueue(sLen);
   TuplePtrQueueLocalR = newTuplePtrQueue(rLen);
-  //reset();
+  reset();
   nameTag = "CellJoin";
 }
 AbstractEagerWS::~AbstractEagerWS() {
@@ -15,12 +15,13 @@ AbstractEagerWS::~AbstractEagerWS() {
     terminateJoinProcessors();
   }
 }
+/*
 size_t AbstractEagerWS::oldestWindowBelong(size_t ts) {
   if (ts < windowLen) {
     return 0;
   }
   return ((ts - windowLen) / slideLen) + 1;
-}
+}*/
 void AbstractEagerWS::deliverTupleS(TuplePtr ts) {
   if (timeBased) //use time stamp, S and R share the same time system
   {
@@ -182,7 +183,7 @@ size_t AbstractEagerWS::getJoinResult() {
   size_t ru = 0;
   for (size_t tid = 0; tid < threads; tid++) {
     ru += jps[tid]->getJoinedResult();
-    cout << "JP" << tid << " : " << jps[tid]->getJoinedResult() << endl;
+   // cout << "JP" << tid << " : " << jps[tid]->getJoinedResult() << endl;
   }
   return ru;
 }

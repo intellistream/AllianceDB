@@ -58,7 +58,18 @@ class AbstractWS {
   TuplePtrQueue TuplePtrQueueInS;
   TuplePtrQueue TuplePtrQueueInR;
   string nameTag;
-
+/**
+   * @brief To get the possible oldest a time stamp belongs to
+   * @param ts The time stamp
+   * @return The window number, start from 0
+   */
+  size_t oldestWindowBelong(size_t ts)
+  {
+    if (ts < windowLen) {
+      return 0;
+    }
+    return ((ts - windowLen) / slideLen) + 1;
+  }
  public:
 
   /**
@@ -75,6 +86,7 @@ class AbstractWS {
   bool isTimeBased() {
     return timeBased;
   }
+
   /**
    * @brief to configure the scheduling place
    * @param r wether let runtime schedule
@@ -206,6 +218,14 @@ class AbstractWS {
    */
   struct timeval getSysTime() {
     return timeSys;
+  }
+  /**
+  * @brief Set the time structure value ,the timeSys member
+  * @param tv The value
+  */
+  void setSysTime(struct timeval tv)
+  {
+     timeSys=tv;
   }
   /**
   * @brief get the name of the slider

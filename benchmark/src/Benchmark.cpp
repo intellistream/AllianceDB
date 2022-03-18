@@ -20,6 +20,8 @@
 #include <Utils/C20Buffers.hpp>
 #include <WindowSlider/AbstractLazyWS.h>
 #include <JoinProcessor/AbstractLazyJP.h>
+#include <WindowSlider/VerifyWS.h>
+#include <Common/VerifyBench.h>
 using namespace std;
 using namespace INTELLI;
 
@@ -39,11 +41,11 @@ int main() {
   string fileRName = pwd + "/datasets/" + DATASET_NAME + "-R.txt";
   string fileSName = pwd + "/datasets/" + DATASET_NAME + "-S.txt";
   INTELLI::DatasetTool dataSet;
-  dataSet.load3VText(relationCouple.relationR, fileRName);
+  /*dataSet.load3VText(relationCouple.relationR, fileRName);
   dataSet.load3VText(relationCouple.relationS, fileSName);
-  joinResult.streamSize = relationCouple.relationR.size();
+  joinResult.streamSize = relationCouple.relationR.size();*/
 
-  AbstractJoinMethod<AbstractLazyWS> lwj;
+  /*AbstractJoinMethod<AbstractLazyWS> lwj;
   // INTELLI::UtilityFunctions::timerStart(joinResult);
   lwj.test(joinResult, relationCouple);
   //Print result number
@@ -57,7 +59,15 @@ int main() {
   ewj.test(joinResult, relationCouple);
   //Print result number
   // INTELLI::UtilityFunctions::timerEnd(joinResult);
-  joinResult.statPrinter();
+  joinResult.statPrinter();*/
+  //AbstractJoinMethod<VerifyWS> vj;
+  dataSet.load3VText(relationCouple.relationR, fileRName);
+  dataSet.load3VText(relationCouple.relationS, fileSName);
+  joinResult.streamSize = relationCouple.relationR.size();
+  VerifyBench <AbstractEagerWS> vb_cell;
+  vb_cell.test(joinResult, relationCouple,4,500,500);
+  /*vj.test(joinResult, relationCouple);
+  joinResult.statPrinter();*
   /*MicroDataSet mr(999);
   DatasetTool dataSet;
   size_t dLen = 100000;
