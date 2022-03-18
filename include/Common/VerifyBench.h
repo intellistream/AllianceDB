@@ -15,11 +15,11 @@ namespace INTELLI {
  * @ref VerifyWS.
  * @}
  */
- /**
-  * @ingroup INTELLI_COMMON_VERIFY
-  * @class VerifyBench  Common/VerifyBench.h
-  * @tparam wsType The class of window slider you want to test
-  */
+/**
+ * @ingroup INTELLI_COMMON_VERIFY
+ * @class VerifyBench  Common/VerifyBench.h
+ * @tparam wsType The class of window slider you want to test
+ */
 template<class wsType=AbstractEagerWS>
 class VerifyBench {
  public:
@@ -32,13 +32,18 @@ class VerifyBench {
    * @param slideLen The slide of window,  default WINDOW_SIZE
    * @return bool, to indicate whether the verification can pass.
    */
-  static bool test(Result &joinResult, RelationCouple &relationCouple,size_t threads=THREAD_NUMBER,size_t windowLen=WINDOW_SIZE,size_t slideLen=WINDOW_SIZE) {
+  static bool test(Result &joinResult,
+                   RelationCouple &relationCouple,
+                   size_t threads = THREAD_NUMBER,
+                   size_t windowLen = WINDOW_SIZE,
+                   size_t slideLen = WINDOW_SIZE) {
     //wsType windowSlider to be verified
     size_t sLen = relationCouple.relationS.size();
     size_t rLen = relationCouple.relationR.size();
     wsType windowSlider(sLen, rLen);
     joinResult.algoName = windowSlider.getName();
-    cout<<"verify algo:"+  joinResult.algoName+", threads="+ to_string(threads)+" windowLen="+ to_string(windowLen)+", slideLen="+ to_string(slideLen) <<endl;
+    cout << "verify algo:" + joinResult.algoName + ", threads=" + to_string(threads) + " windowLen="
+        + to_string(windowLen) + ", slideLen=" + to_string(slideLen) << endl;
     windowSlider.setParallelSMP(threads);
     // windowSlider.setStopCondition(0, sLen, rLen);
     windowSlider.setTimeBased(true);
@@ -49,7 +54,7 @@ class VerifyBench {
 
     // The verifyws as the reference
 
-    VerifyWS vfSlider(sLen,rLen);
+    VerifyWS vfSlider(sLen, rLen);
     vfSlider.setParallelSMP(threads);
     vfSlider.setTimeBased(true);
     vfSlider.setWindowLen(windowLen);
@@ -93,13 +98,12 @@ class VerifyBench {
     vfSlider.terminateJoinProcessors();
     joinResult.joinNumber = windowSlider.getJoinResult();
     INTELLI::UtilityFunctions::timerEnd(joinResult);
-    if(vfSlider.getJoinResult()==windowSlider.getJoinResult())
-    { cout<<"Congratulations, the result "+ to_string(joinResult.joinNumber)+ " is correct!"<<endl;
+    if (vfSlider.getJoinResult() == windowSlider.getJoinResult()) {
+      cout << "Congratulations, the result " + to_string(joinResult.joinNumber) + " is correct!" << endl;
       return true;
-    }
-    else
-    {
-      cout<<"Ops, ot matched, expecting "+ to_string(vfSlider.getJoinResult())+"but return "+to_string(windowSlider.getJoinResult())<<endl;
+    } else {
+      cout << "Ops, ot matched, expecting " + to_string(vfSlider.getJoinResult()) + "but return "
+          + to_string(windowSlider.getJoinResult()) << endl;
       return false;
     }
   }

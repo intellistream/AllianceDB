@@ -64,8 +64,8 @@ int main() {
   dataSet.load3VText(relationCouple.relationR, fileRName);
   dataSet.load3VText(relationCouple.relationS, fileSName);
   joinResult.streamSize = relationCouple.relationR.size();
-  VerifyBench <AbstractEagerWS> vb_cell;
-  vb_cell.test(joinResult, relationCouple,4,500,500);
+  VerifyBench<AbstractEagerWS> vb_cell;
+  vb_cell.test(joinResult, relationCouple, 4, 500, 500);
   /*vj.test(joinResult, relationCouple);
   joinResult.statPrinter();*
   /*MicroDataSet mr(999);

@@ -183,7 +183,7 @@ size_t AbstractEagerWS::getJoinResult() {
   size_t ru = 0;
   for (size_t tid = 0; tid < threads; tid++) {
     ru += jps[tid]->getJoinedResult();
-   // cout << "JP" << tid << " : " << jps[tid]->getJoinedResult() << endl;
+    // cout << "JP" << tid << " : " << jps[tid]->getJoinedResult() << endl;
   }
   return ru;
 }

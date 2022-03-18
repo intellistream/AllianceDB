@@ -26,7 +26,7 @@ To init and run, follow the functions below to start a WS
   \li Feed tuples @ref feedTupleS or @ref feedTupleR
   \li Terminate, by @ref terminateJoinProcessors
 */
-class VerifyWS:public AbstractWS, public AbstractC20Thread{
+class VerifyWS : public AbstractWS, public AbstractC20Thread {
  protected:
   TuplePtrQueue TuplePtrQueueLocalS;
   TuplePtrQueue TuplePtrQueueLocalR;
@@ -48,18 +48,15 @@ class VerifyWS:public AbstractWS, public AbstractC20Thread{
 /**
  * @brief reset everything needed
  */
-  void reset()
-  {
+  void reset() {
     AbstractWS::reset();
-    joinResults=0;
+    joinResults = 0;
   }
-  VerifyWS()
-  {
+  VerifyWS() {
     reset();
     nameTag = "VerifyJoin";
   }
-  ~VerifyWS()
-  {
+  ~VerifyWS() {
 
   }
   /**

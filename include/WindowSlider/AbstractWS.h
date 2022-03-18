@@ -63,8 +63,7 @@ class AbstractWS {
    * @param ts The time stamp
    * @return The window number, start from 0
    */
-  size_t oldestWindowBelong(size_t ts)
-  {
+  size_t oldestWindowBelong(size_t ts) {
     if (ts < windowLen) {
       return 0;
     }
@@ -223,9 +222,8 @@ class AbstractWS {
   * @brief Set the time structure value ,the timeSys member
   * @param tv The value
   */
-  void setSysTime(struct timeval tv)
-  {
-     timeSys=tv;
+  void setSysTime(struct timeval tv) {
+    timeSys = tv;
   }
   /**
   * @brief get the name of the slider

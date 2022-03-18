@@ -4,7 +4,7 @@
 
 #include <WindowSlider/VerifyWS.h>
 using namespace INTELLI;
-VerifyWS::VerifyWS(size_t sLen, size_t rLen): AbstractWS(sLen, rLen) {
+VerifyWS::VerifyWS(size_t sLen, size_t rLen) : AbstractWS(sLen, rLen) {
   TuplePtrQueueLocalS = newTuplePtrQueue(sLen);
   TuplePtrQueueLocalR = newTuplePtrQueue(rLen);
   reset();
@@ -31,11 +31,9 @@ void VerifyWS::deliverTupleS(TuplePtr ts) {
   }
   TuplePtrQueueLocalS->push(ts);
   //single thread join window r and tuple s
-  size_t rSize=TuplePtrQueueLocalR->size();
-  for(size_t i=0;i<rSize;i++)
-  {
-    if(TuplePtrQueueLocalR->front()[i]->key==ts->key)
-    {
+  size_t rSize = TuplePtrQueueLocalR->size();
+  for (size_t i = 0; i < rSize; i++) {
+    if (TuplePtrQueueLocalR->front()[i]->key == ts->key) {
       joinResults++;
     }
   }
@@ -53,11 +51,9 @@ void VerifyWS::deliverTupleR(TuplePtr tr) {
   }
   TuplePtrQueueLocalR->push(tr);
   //single thread join window s and tuple r
-  size_t sSize=TuplePtrQueueLocalS->size();
-  for(size_t i=0;i<sSize;i++)
-  {
-    if(TuplePtrQueueLocalS->front()[i]->key==tr->key)
-    {
+  size_t sSize = TuplePtrQueueLocalS->size();
+  for (size_t i = 0; i < sSize; i++) {
+    if (TuplePtrQueueLocalS->front()[i]->key == tr->key) {
       joinResults++;
     }
   }
@@ -107,7 +103,7 @@ void VerifyWS::expireS(size_t ts) {
 void VerifyWS::initJoinProcessors() {
   threads = partitionWeight.size();
   cout << "enable " << threads << " threads" << endl;
-  cout<< "warning, this is just a single thread WS"<<endl;
+  cout << "warning, this is just a single thread WS" << endl;
   isRunning = true;
   this->startThread();
 }
