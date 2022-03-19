@@ -252,6 +252,7 @@ typedef enum {
 } join_cmd_t;
 typedef std::shared_ptr<INTELLI::SPSCQueue<INTELLI::join_cmd_t>> CmdQueuePtr;
 #define  newCmdQueue(n) make_shared<INTELLI::SPSCQueue<INTELLI::join_cmd_t>>(n)
+
 }
 /**
  * @}

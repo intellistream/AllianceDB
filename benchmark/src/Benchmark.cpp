@@ -42,16 +42,16 @@ int main() {
   string fileRName = pwd + "/datasets/" + DATASET_NAME + "-R.txt";
   string fileSName = pwd + "/datasets/" + DATASET_NAME + "-S.txt";
   INTELLI::DatasetTool dataSet;
-  /*dataSet.load3VText(relationCouple.relationR, fileRName);
+  dataSet.load3VText(relationCouple.relationR, fileRName);
   dataSet.load3VText(relationCouple.relationS, fileSName);
-  joinResult.streamSize = relationCouple.relationR.size();*/
-
-  /*AbstractJoinMethod<AbstractLazyWS> lwj;
+  joinResult.streamSize = relationCouple.relationR.size();
+  AbstractJoinMethod<VerifyWS> ewj;
   // INTELLI::UtilityFunctions::timerStart(joinResult);
-  lwj.test(joinResult, relationCouple);
+  ewj.test(joinResult, relationCouple);
   //Print result number
   // INTELLI::UtilityFunctions::timerEnd(joinResult);
   joinResult.statPrinter();
+  /*
   dataSet.load3VText(relationCouple.relationR, fileRName);
   dataSet.load3VText(relationCouple.relationS, fileSName);
   joinResult.streamSize = relationCouple.relationR.size();
@@ -62,7 +62,7 @@ int main() {
   // INTELLI::UtilityFunctions::timerEnd(joinResult);
   joinResult.statPrinter();*/
   //AbstractJoinMethod<VerifyWS> vj;
-  dataSet.load3VText(relationCouple.relationR, fileRName);
+  /*dataSet.load3VText(relationCouple.relationR, fileRName);
   dataSet.load3VText(relationCouple.relationS, fileSName);
   joinResult.streamSize = relationCouple.relationR.size();
   VerifyBench<SplitJoinWS> vb_split;
@@ -71,12 +71,7 @@ int main() {
   dataSet.load3VText(relationCouple.relationR, fileRName);
   dataSet.load3VText(relationCouple.relationS, fileSName);
   joinResult.streamSize = relationCouple.relationR.size();
-  vb_split.test(joinResult, relationCouple, 8, 500, 50);
-
-  // AbstractJoinMethod<SplitJoinWS> ewj;
-  // INTELLI::UtilityFunctions::timerStart(joinResult);
-  // ewj.test(joinResult, relationCouple);
-  //joinResult.statPrinter();
+  vb_sp
   /*VerifyBench<AbstractEagerWS> vb_cell;
   vb_cell.test(joinResult, relationCouple, 4, 500, 500);*/
   /*vj.test(joinResult, relationCouple);

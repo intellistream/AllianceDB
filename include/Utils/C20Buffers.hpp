@@ -8,6 +8,11 @@
 
 #include <vector>
 #include <memory>
+#if defined(__GNUC__) && (__GNUC__ >= 4)
+#define ADB_memcpy(dst, src, size) __builtin_memcpy(dst, src, size)
+#else
+#define ADB_memcpy(dst, src, size) memcpy(dst, src, size)
+#endif
 /**
  * @ingroup INTELLI_UTIL Shared Utils with other Intelli Stream programs
  * @{
@@ -100,6 +105,19 @@ class C20Buffer {
     }*/
     area[pos] = da;
     pos++;
+    return pos;
+  }
+  /**
+  * @brief Append the data to the buffer
+  * @param da Data to be appended, a buffer
+   * @param len the length of data
+  * @note Exceed length will lead to a push_back in vector
+  * @return The valid size after this append
+  */
+  size_t append(dataType *da,size_t len)
+  {
+    ADB_memcpy(&area[pos],da,len*sizeof(dataType));
+    pos+=len;
     return pos;
   }
 };
