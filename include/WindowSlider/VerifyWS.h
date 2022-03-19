@@ -30,6 +30,8 @@ class VerifyWS : public AbstractWS, public AbstractC20Thread {
  protected:
   TuplePtrQueue TuplePtrQueueLocalS;
   TuplePtrQueue TuplePtrQueueLocalR;
+  C20Buffer<TuplePtr> windowS;
+  C20Buffer<TuplePtr> windowR;
   size_t joinResults;
   virtual void inlineMain();
   /**

@@ -7,6 +7,8 @@ using namespace INTELLI;
 VerifyWS::VerifyWS(size_t sLen, size_t rLen) : AbstractWS(sLen, rLen) {
   TuplePtrQueueLocalS = newTuplePtrQueue(sLen);
   TuplePtrQueueLocalR = newTuplePtrQueue(rLen);
+  windowS = C20Buffer<TuplePtr>(sLen);
+  windowR = C20Buffer<TuplePtr>(rLen);
   reset();
   nameTag = "VerifyJoin";
   //555
@@ -51,6 +53,8 @@ void VerifyWS::deliverTupleR(TuplePtr tr) {
     countR++;
   }
   TuplePtrQueueLocalR->push(tr);
+  windowR.reset();
+
   //single thread join window s and tuple r
   size_t sSize = TuplePtrQueueLocalS->size();
   for (size_t i = 0; i < sSize; i++) {

@@ -72,6 +72,7 @@ int main() {
   dataSet.load3VText(relationCouple.relationS, fileSName);
   joinResult.streamSize = relationCouple.relationR.size();
   vb_split.test(joinResult, relationCouple, 8, 500, 50);
+
   // AbstractJoinMethod<SplitJoinWS> ewj;
   // INTELLI::UtilityFunctions::timerStart(joinResult);
   // ewj.test(joinResult, relationCouple);
