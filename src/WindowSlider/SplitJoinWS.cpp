@@ -3,18 +3,18 @@
 //
 
 #include <WindowSlider/SplitJoinWS.h>
-SplitJoinWS::SplitJoinWS(size_t sLen, size_t rLen): AbstractWS(sLen, rLen) {
+SplitJoinWS::SplitJoinWS(size_t sLen, size_t rLen) : AbstractWS(sLen, rLen) {
   reset();
   nameTag = "SplitJoin";
 }
-void  SplitJoinWS::initJoinProcessors() {
+void SplitJoinWS::initJoinProcessors() {
   threads = partitionWeight.size();
   cout << "enable " << threads << " threads" << endl;
   jps = std::vector<SplitJoinJPPtr>(threads);
   for (size_t tid = 0; tid < threads; tid++) {
     jps[tid] = make_shared<SplitJoinJP>();
     jps[tid]->init(sLen, rLen, tid);
-    jps[tid]->setGlobalWindow(windowLen,slideLen);
+    jps[tid]->setGlobalWindow(windowLen, slideLen);
     jps[tid]->setMaxSCnt(threads);
     if (isRunTimeScheduling()) {
       jps[tid]->setCore(tid);
@@ -24,7 +24,7 @@ void  SplitJoinWS::initJoinProcessors() {
   isRunning = true;
   this->startThread();
 }
-void  SplitJoinWS::terminateJoinProcessors() {
+void SplitJoinWS::terminateJoinProcessors() {
   for (size_t tid = 0; tid < threads; tid++) {
     //join_cmd_t cmd=CMD_STOP;
     jps[tid]->inputCmd(CMD_STOP);

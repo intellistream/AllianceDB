@@ -19,23 +19,22 @@ namespace INTELLI {
   * @class SplitJoinJP JoinProcessor/SplitJoinJP.h
   * @brief The class of  split join join processor
   */
-class SplitJoinJP: public AbstractJP{
+class SplitJoinJP : public AbstractJP {
  protected:
   virtual void inlineMain();
   TuplePtrQueue TuplePtrQueueLocalS;
   TuplePtrQueue TuplePtrQueueLocalR;
-  size_t sCnt=0;
-  size_t sMax=0;
+  size_t sCnt = 0;
+  size_t sMax = 0;
   void expireS(size_t cond);
   void expireR(size_t cond);
   void joinS(TuplePtr ts);
   void joinR(TuplePtr tr);
  public:
-  SplitJoinJP()
-  {
+  SplitJoinJP() {
 
   }
-  ~SplitJoinJP(){
+  ~SplitJoinJP() {
 
   }
   /**
@@ -46,17 +45,16 @@ class SplitJoinJP: public AbstractJP{
  */
   void init(size_t sLen, size_t rLen, size_t _sysId) {
     AbstractJP::init(sLen, rLen, _sysId);
-    TuplePtrQueueLocalS= newTuplePtrQueue(sLen);
-    TuplePtrQueueLocalR= newTuplePtrQueue(rLen);
-    sCnt=0;
+    TuplePtrQueueLocalS = newTuplePtrQueue(sLen);
+    TuplePtrQueueLocalR = newTuplePtrQueue(rLen);
+    sCnt = 0;
   }
   /**
    * @brief Set the max value of sCnt variable
    * @param ms The max value
    */
-  void setMaxSCnt(size_t ms)
-  {
-    sMax=ms;
+  void setMaxSCnt(size_t ms) {
+    sMax = ms;
   }
 };
 typedef std::shared_ptr<SplitJoinJP> SplitJoinJPPtr;

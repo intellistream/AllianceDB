@@ -46,8 +46,8 @@ class AbstractJP : public AbstractC20Thread {
   struct timeval timeSys;  /*!< timeval structure from linux, <sys/time.h> */
   bool timeBased = false;
   size_t windowLen = 0;
-  size_t windowLenGlobal=0;
-  size_t slideLenGlobal=0;
+  size_t windowLenGlobal = 0;
+  size_t slideLenGlobal = 0;
   size_t joinedResult = 0;
   JoinAlgoTablePtr myAlgo;
   //response of my self
@@ -150,10 +150,9 @@ class AbstractJP : public AbstractC20Thread {
    * @param wlen window length
    * @param sli slide
    */
-  void setGlobalWindow(size_t wlen,size_t sli)
-  {
-    windowLenGlobal=wlen;
-    slideLenGlobal=sli;
+  void setGlobalWindow(size_t wlen, size_t sli) {
+    windowLenGlobal = wlen;
+    slideLenGlobal = sli;
   }
   /**
    * @brief feed a tuple s into the s input queue

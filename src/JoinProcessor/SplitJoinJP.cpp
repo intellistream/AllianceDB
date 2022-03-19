@@ -15,23 +15,25 @@ void SplitJoinJP::joinS(TuplePtr ts) {
       joinedResult++;
     }
   }*/
- joinedResult += myAlgo->findAlgo(JOINALGO_NESTEDLOOP)->join(TuplePtrQueueLocalR->front(), ts,TuplePtrQueueLocalR->size(),  2);
+  joinedResult +=
+      myAlgo->findAlgo(JOINALGO_NESTEDLOOP)->join(TuplePtrQueueLocalR->front(), ts, TuplePtrQueueLocalR->size(), 2);
 }
 void SplitJoinJP::joinR(TuplePtr tr) {
-    size_t timeNow = tr->subKey;
-    expireS(timeNow);
+  size_t timeNow = tr->subKey;
+  expireS(timeNow);
   TuplePtrQueueLocalR->push(tr);
-  joinedResult += myAlgo->findAlgo(JOINALGO_NESTEDLOOP)->join(TuplePtrQueueLocalS->front(), tr, TuplePtrQueueLocalS->size(), 2);
+  joinedResult +=
+      myAlgo->findAlgo(JOINALGO_NESTEDLOOP)->join(TuplePtrQueueLocalS->front(), tr, TuplePtrQueueLocalS->size(), 2);
   //single thread join window s and tuple r
- /*size_t sSize = TuplePtrQueueLocalS->size();
-  for (size_t i = 0; i < sSize; i++) {
-    if (TuplePtrQueueLocalS->front()[i]->key == tr->key) {
-      joinedResult++;
-    }
-  }*/
+  /*size_t sSize = TuplePtrQueueLocalS->size();
+   for (size_t i = 0; i < sSize; i++) {
+     if (TuplePtrQueueLocalS->front()[i]->key == tr->key) {
+       joinedResult++;
+     }
+   }*/
 
 }
-void  SplitJoinJP::expireS(size_t cond) {
+void SplitJoinJP::expireS(size_t cond) {
   size_t pos = 0;
   size_t windowNo = oldestWindowBelong(cond);
   size_t startTime = windowNo * slideLenGlobal;
@@ -49,7 +51,7 @@ void  SplitJoinJP::expireS(size_t cond) {
     }
   }
 }
-void  SplitJoinJP::expireR(size_t cond) {
+void SplitJoinJP::expireR(size_t cond) {
   size_t pos = 0;
   size_t windowNo = oldestWindowBelong(cond);
   size_t startTime = windowNo * slideLenGlobal;
@@ -69,7 +71,7 @@ void  SplitJoinJP::expireR(size_t cond) {
     }
   }
 }
-void  SplitJoinJP::inlineMain() {
+void SplitJoinJP::inlineMain() {
   UtilityFunctions::bind2Core(cpuBind);
   while (1) {
     //stop cmd
@@ -79,7 +81,7 @@ void  SplitJoinJP::inlineMain() {
         cmdQueueIn->pop();
         if (cmdIn == CMD_STOP) {
           sendAck();
-         // cout << "join processor " << sysId << " end" << endl;
+          // cout << "join processor " << sysId << " end" << endl;
           return;
         }
       }
@@ -89,13 +91,12 @@ void  SplitJoinJP::inlineMain() {
       TuplePtr ts = *TuplePtrQueueInS->front();
       TuplePtrQueueInS->pop();
       sCnt++;
-      if(sCnt==sysId+1) //should process this S
+      if (sCnt == sysId + 1) //should process this S
       {
         joinS(ts);
       }
-      if(sCnt==sMax)
-      {
-        sCnt=0;
+      if (sCnt == sMax) {
+        sCnt = 0;
       }
     }
     while (!TuplePtrQueueInR->empty()) {

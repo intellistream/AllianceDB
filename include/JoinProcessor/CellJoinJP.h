@@ -34,7 +34,7 @@ namespace INTELLI {
 class CellJoinJP : public AbstractJP {
  private:
   /* data */
- // struct timeval timeStart;
+  // struct timeval timeStart;
 
   // hashtable hashtableS,hashtableR;
  protected:

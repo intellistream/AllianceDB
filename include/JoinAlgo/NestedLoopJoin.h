@@ -22,13 +22,12 @@ namespace INTELLI {
  *  @brief The top class package of Nested Loop Join providing a "join function"
  *  @note Just single thread, the threads parameter is useless
  */
-class NestedLoopJoin : public AbstractJoinAlgo{
+class NestedLoopJoin : public AbstractJoinAlgo {
  public:
-  NestedLoopJoin()
-  {
+  NestedLoopJoin() {
     setAlgoName("NestedLoopJoin");
   }
-  ~NestedLoopJoin(){}
+  ~NestedLoopJoin() {}
   /**
    * @brief The function to execute join, legacy way
    * @param ts The tuples of stream S, legacy pointer
@@ -59,7 +58,7 @@ class NestedLoopJoin : public AbstractJoinAlgo{
    * @return The joined tuples
    * @todo Add AMP and NUMA support in the future, so far only generic SMP
    */
-  virtual size_t join(TuplePtrQueue ts, TuplePtrQueue tr, int threads = 1) ;
+  virtual size_t join(TuplePtrQueue ts, TuplePtrQueue tr, int threads = 1);
   /**
   * @brief The function to execute join, batch of one, tuple of another
   * @param ts The tuples of stream S
@@ -67,7 +66,7 @@ class NestedLoopJoin : public AbstractJoinAlgo{
   * @param threads The parallel threads
   * @return The joined tuples
   */
-  virtual size_t join(TuplePtrQueue ts, TuplePtr tr, int threads = 1) ;
+  virtual size_t join(TuplePtrQueue ts, TuplePtr tr, int threads = 1);
 };
 typedef std::shared_ptr<NestedLoopJoin> NestedLoopJoinPtr;
 #define  newNestedLoopJoin() make_shared<NestedLoopJoin>()

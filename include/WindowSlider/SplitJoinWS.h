@@ -29,7 +29,7 @@ To init and run, follow the functions below to start a WS
   \li Terminate, by @ref terminateJoinProcessors
 *
 */
-class SplitJoinWS: public AbstractWS, public AbstractC20Thread {
+class SplitJoinWS : public AbstractWS, public AbstractC20Thread {
  private:
   /* data */
   std::vector<SplitJoinJPPtr> jps;
@@ -45,8 +45,7 @@ class SplitJoinWS: public AbstractWS, public AbstractC20Thread {
 */
   void deliverTupleR(TuplePtr tr);
  public:
-  SplitJoinWS()
-  {
+  SplitJoinWS() {
     reset();
     nameTag = "SplitJoin";
   }
@@ -57,7 +56,7 @@ class SplitJoinWS: public AbstractWS, public AbstractC20Thread {
 */
   SplitJoinWS(size_t sLen, size_t rLen);
 
-  ~SplitJoinWS(){}
+  ~SplitJoinWS() {}
   /**
 * @brief to init the initJoinProcessors
  * @note only after this is called can we start to feed tuples

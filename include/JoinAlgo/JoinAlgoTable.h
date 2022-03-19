@@ -75,7 +75,7 @@ typedef enum {
   /**
    * The 1 for NestedLoop
    */
-  JOINALGO_NESTEDLOOP=1,
+  JOINALGO_NESTEDLOOP = 1,
   /**
    * =2 for @ref NPJ
    */
