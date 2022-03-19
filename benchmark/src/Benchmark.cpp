@@ -44,20 +44,22 @@ int main() {
   INTELLI::DatasetTool dataSet;
   dataSet.load3VText(relationCouple.relationR, fileRName);
   dataSet.load3VText(relationCouple.relationS, fileSName);
-  joinResult.streamSize = relationCouple.relationR.size();
+  VerifyBench<SplitJoinWS> vb_split;
+  vb_split.test(joinResult, relationCouple, 4, 500, 500);
+  /*joinResult.streamSize = relationCouple.relationR.size();
   AbstractJoinMethod<VerifyWS> ewj;
   // INTELLI::UtilityFunctions::timerStart(joinResult);
   ewj.test(joinResult, relationCouple);
   //Print result number
   // INTELLI::UtilityFunctions::timerEnd(joinResult);
   joinResult.statPrinter();
-  /*
+
   dataSet.load3VText(relationCouple.relationR, fileRName);
   dataSet.load3VText(relationCouple.relationS, fileSName);
   joinResult.streamSize = relationCouple.relationR.size();
-  AbstractJoinMethod<AbstractEagerWS> ewj;
+  AbstractJoinMethod<SplitJoinWS> ewj2;
   // INTELLI::UtilityFunctions::timerStart(joinResult);
-  ewj.test(joinResult, relationCouple);
+  ewj2.test(joinResult, relationCouple);
   //Print result number
   // INTELLI::UtilityFunctions::timerEnd(joinResult);
   joinResult.statPrinter();*/
@@ -71,9 +73,9 @@ int main() {
   dataSet.load3VText(relationCouple.relationR, fileRName);
   dataSet.load3VText(relationCouple.relationS, fileSName);
   joinResult.streamSize = relationCouple.relationR.size();
-  vb_sp
-  /*VerifyBench<AbstractEagerWS> vb_cell;
-  vb_cell.test(joinResult, relationCouple, 4, 500, 500);*/
+
+  VerifyBench<AbstractEagerWS> vb_cell;
+  vb_cell.test(joinResult, relationCouple, 4, 500, 500);
   /*vj.test(joinResult, relationCouple);
   joinResult.statPrinter();*
   /*MicroDataSet mr(999);

@@ -85,17 +85,24 @@ class VerifyBench {
         if (timeFeed >= ts->subKey) {
           relationCouple.relationS.pop();
           windowSlider.feedTupleS(ts);
-          vfSlider.feedTupleS(ts);
+         vfSlider.feedTupleS(ts);
         }
 
       }
       // cout<<"process tuple"<<cnt<<endl;
       cnt++;
-      //usleep(TIME_STEP / 2);
+      usleep(TIME_STEP / 2);
     }
+
+
     cout << "end of tuple feeding" << endl;
     joinResult.joinNumber = 0;
     windowSlider.terminateJoinProcessors();
+
+
+
+
+
     vfSlider.terminateJoinProcessors();
     joinResult.joinNumber = windowSlider.getJoinResult();
     INTELLI::UtilityFunctions::timerEnd(joinResult);
