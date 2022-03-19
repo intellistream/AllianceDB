@@ -15,6 +15,7 @@ void SplitJoinJP::joinS(TuplePtr ts) {
       joinedResult++;
     }
   }
+ // usleep(60);
   /*joinedResult +=
       myAlgo->findAlgo(JOINALGO_NESTEDLOOP)->join(TuplePtrQueueLocalR->front(), ts, TuplePtrQueueLocalR->size(), 2);*/
 }
@@ -31,7 +32,7 @@ void SplitJoinJP::joinR(TuplePtr tr) {
        joinedResult++;
      }
    }
-
+// usleep(60);
 }
 void SplitJoinJP::expireS(size_t cond) {
   size_t pos = 0;

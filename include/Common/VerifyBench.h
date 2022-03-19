@@ -72,8 +72,9 @@ class VerifyBench {
       size_t timeFeed = UtilityFunctions::timeLastUs(timeSys) / TIME_STEP;
       if (!relationCouple.relationR.empty()) {
         INTELLI::TuplePtr tr = relationCouple.relationR.front();
+        //
         if (timeFeed >= tr->subKey) {
-          // cout<<"feed r:"<<timeSys<<endl;
+         // cout<<to_string(timeFeed)+","+ to_string(tr->subKey)<<endl;
           relationCouple.relationR.pop();
           windowSlider.feedTupleR(tr);
           vfSlider.feedTupleR(tr);
