@@ -90,7 +90,7 @@ class VerifyBench {
       }
       // cout<<"process tuple"<<cnt<<endl;
       cnt++;
-      usleep(TIME_STEP / 2);
+      //usleep(TIME_STEP / 2);
     }
     cout << "end of tuple feeding" << endl;
     joinResult.joinNumber = 0;
