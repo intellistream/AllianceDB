@@ -1,0 +1,17 @@
+[33m0a085a9[m[33m ([m[1;36mHEAD -> [m[1;32m#18_split_join[m[33m, [m[1;31morigin/universal_stream_join[m[33m, [m[1;31morigin/#18_split_join[m[33m)[m HEAD@{2022-03-19 14:17:25 +0800}: checkout: moving from #35_verify to #18_split_join
+[33m4a2b1ef[m[33m ([m[1;32m#35_verify[m[33m)[m HEAD@{2022-03-19 14:16:59 +0800}: commit: issue #35
+[33m0101282[m[33m ([m[1;31morigin/#35_verify[m[33m)[m HEAD@{2022-03-18 11:43:18 +0800}: commit: issue #35
+[33mb97e7ce[m HEAD@{2022-03-18 11:43:18 +0800}: checkout: moving from #35_verify to #35_verify
+[33mb97e7ce[m HEAD@{2022-03-18 11:37:28 +0800}: commit: issue #35
+[33m7ab27ec[m HEAD@{2022-03-18 11:37:28 +0800}: checkout: moving from #35_verify to #35_verify
+[33m7ab27ec[m HEAD@{2022-03-18 11:35:29 +0800}: commit: issue #35
+[33mb031275[m HEAD@{2022-03-18 11:35:29 +0800}: checkout: moving from #35_verify to #35_verify
+[33mb031275[m HEAD@{2022-03-17 18:56:31 +0800}: commit: issue #35
+[33m02c9f11[m HEAD@{2022-03-17 18:56:31 +0800}: checkout: moving from #35_verify to #35_verify
+[33m02c9f11[m HEAD@{2022-03-17 18:47:29 +0800}: commit: issue #35
+[33m8e9f090[m HEAD@{2022-03-17 18:47:29 +0800}: checkout: moving from #35_verify to #35_verify
+[33m8e9f090[m HEAD@{2022-03-17 18:43:02 +0800}: commit: issue #35
+[33m4ca9958[m HEAD@{2022-03-17 18:43:02 +0800}: checkout: moving from universal_stream_join to #35_verify
+[33mcbe2e45[m[33m ([m[1;32muniversal_stream_join[m[33m)[m HEAD@{2022-03-17 18:38:47 +0800}: checkout: moving from universal_stream_join to universal_stream_join
+[33mcbe2e45[m[33m ([m[1;32muniversal_stream_join[m[33m)[m HEAD@{2022-03-17 18:38:11 +0800}: commit: issue #35
+[33m892a15d[m HEAD@{2022-03-17 18:37:54 +0800}: clone: from github.com:intellistream/AllianceDB.git

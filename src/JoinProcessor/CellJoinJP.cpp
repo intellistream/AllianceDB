@@ -18,7 +18,6 @@ void INTELLI::CellJoinJP::inlineMain() {
     //cmd
     if (TuplePtrQueueInS->empty() && TuplePtrQueueInR->empty()) {
       if (!cmdQueueIn->empty()) {
-
         join_cmd_t cmdIn = *cmdQueueIn->front();
         cmdQueueIn->pop();
         if (cmdIn == CMD_STOP) {
@@ -27,7 +26,6 @@ void INTELLI::CellJoinJP::inlineMain() {
           return;
         }
       }
-
     }
 
 

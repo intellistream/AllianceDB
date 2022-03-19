@@ -3,8 +3,8 @@
 // Created by tony on 2022/2/8.
 //
 
-#ifndef JOINPROCESSOR_SIMPLEHASHJP_H_
-#define JOINPROCESSOR_SIMPLEHASHJP_H_
+#ifndef _JOINPROCESSOR_CELLJOINJP_H_
+#define _JOINPROCESSOR_CELLJOINJP_H_
 #include <thread>
 #include <Common/Types.h>
 #include <Utils/UtilityFunctions.hpp>
@@ -34,7 +34,7 @@ namespace INTELLI {
 class CellJoinJP : public AbstractJP {
  private:
   /* data */
-  struct timeval timeStart;
+ // struct timeval timeStart;
 
   // hashtable hashtableS,hashtableR;
  protected:
@@ -48,6 +48,12 @@ class CellJoinJP : public AbstractJP {
   CellJoinJP() {
 
   }
+  /**
+ * @brief init the join processor with buffer/queue length and id
+ * @param sLen The length of S queue and buffer
+ * @param rLen The length of R queue and buffer
+ * @param _sysId The system id
+ */
   void init(size_t sLen, size_t rLen, size_t _sysId) {
     AbstractJP::init(sLen, rLen, _sysId);
     windowQueueS = newWindowQueue(sLen);

@@ -37,6 +37,7 @@ void VerifyWS::deliverTupleS(TuplePtr ts) {
       joinResults++;
     }
   }
+ // joinResults=myAlgo->findAlgo(JOINALGO_NPJ_SINGLE)->join(TuplePtrQueueLocalR->front(),ts,TuplePtrQueueLocalR->size(),1);
   //waitAckFromJoinProcessors();
 }
 void VerifyWS::deliverTupleR(TuplePtr tr) {
@@ -57,6 +58,9 @@ void VerifyWS::deliverTupleR(TuplePtr tr) {
       joinResults++;
     }
   }
+ // joinResults=myAlgo->findAlgo(JOINALGO_NPJ_SINGLE)->join(TuplePtrQueueLocalS->front(),tr,TuplePtrQueueLocalS->size(),1);
+
+  //joinResults=nlj.
 }
 
 void VerifyWS::expireR(size_t ts) {

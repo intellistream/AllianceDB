@@ -73,13 +73,17 @@ typedef enum {
    */
   JOINALGO_NULL = 0,
   /**
-   * =1 for @ref NPJ
+   * The 1 for NestedLoop
    */
-  JOINALGO_NPJ = 1,
+  JOINALGO_NESTEDLOOP=1,
   /**
-  * =2 for @ref NPJSingle
+   * =2 for @ref NPJ
+   */
+  JOINALGO_NPJ = 2,
+  /**
+  * =3 for @ref NPJSingle
   */
-  JOINALGO_NPJ_SINGLE = 2,
+  JOINALGO_NPJ_SINGLE = 3,
 } join_algo_index_t;
 }
 #endif //ALIANCEDB_INCLUDE_JOINALGO_JOINALGOTABLE_H_

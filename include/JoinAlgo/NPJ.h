@@ -9,7 +9,6 @@
 #include <Utils/AbstractC20Thread.h>
 #include <barrier>
 #include <JoinAlgo/AbstractJoinAlgo.h>
-#include <JoinAlgo/NPJ.h>
 namespace INTELLI {
 /**
 * @ingroup INTELLI_JOINALGOS

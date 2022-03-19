@@ -21,6 +21,7 @@
 #include <WindowSlider/AbstractLazyWS.h>
 #include <JoinProcessor/AbstractLazyJP.h>
 #include <WindowSlider/VerifyWS.h>
+#include <WindowSlider/SplitJoinWS.h>
 #include <Common/VerifyBench.h>
 using namespace std;
 using namespace INTELLI;
@@ -64,8 +65,19 @@ int main() {
   dataSet.load3VText(relationCouple.relationR, fileRName);
   dataSet.load3VText(relationCouple.relationS, fileSName);
   joinResult.streamSize = relationCouple.relationR.size();
-  VerifyBench<AbstractEagerWS> vb_cell;
-  vb_cell.test(joinResult, relationCouple, 4, 500, 500);
+  VerifyBench<SplitJoinWS> vb_split;
+  vb_split.test(joinResult, relationCouple, 4, 500, 500);
+
+  dataSet.load3VText(relationCouple.relationR, fileRName);
+  dataSet.load3VText(relationCouple.relationS, fileSName);
+  joinResult.streamSize = relationCouple.relationR.size();
+  vb_split.test(joinResult, relationCouple, 8, 500, 50);
+ // AbstractJoinMethod<SplitJoinWS> ewj;
+  // INTELLI::UtilityFunctions::timerStart(joinResult);
+ // ewj.test(joinResult, relationCouple);
+  //joinResult.statPrinter();
+  /*VerifyBench<AbstractEagerWS> vb_cell;
+  vb_cell.test(joinResult, relationCouple, 4, 500, 500);*/
   /*vj.test(joinResult, relationCouple);
   joinResult.statPrinter();*
   /*MicroDataSet mr(999);

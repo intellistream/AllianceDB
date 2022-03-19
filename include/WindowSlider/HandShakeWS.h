@@ -2,15 +2,15 @@
 // Created by tony on 28/02/22.
 //
 
-#ifndef WINDOWSLIDER_HANDSHAKEWS_H_
-#define WINDOWSLIDER_HANDSHAKEWS_H_
+#ifndef _WINDOWSLIDER_HANDSHAKEWS_H_
+#define _WINDOWSLIDER_HANDSHAKEWS_H_
 #include <cstdint>
 #include <vector>
 #include <Common/Types.h>
 #include <Utils/SPSCQueue.hpp>
 #include <time.h>
 #include <numeric>
-#include <JoinProcessor/HandShakeJP.h>
+#include <JoinProcessor/HandShakeHashJP.h>
 #include <WindowSlider/AbstractEagerWS.h>
 
 using namespace INTELLI;
@@ -31,7 +31,7 @@ class HandShakeWS : public AbstractEagerWS {
   /* data *
    */
  protected:
-  std::vector<HandShakeJPPtr> jpPtr;
+  std::vector<HandShakeHashJPPtr> jpPtr;
   INTELLI::BarrierPtr initBar;
  public:
   HandShakeWS(/* args */) {

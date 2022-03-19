@@ -46,6 +46,8 @@ class AbstractJP : public AbstractC20Thread {
   struct timeval timeSys;  /*!< timeval structure from linux, <sys/time.h> */
   bool timeBased = false;
   size_t windowLen = 0;
+  size_t windowLenGlobal=0;
+  size_t slideLenGlobal=0;
   size_t joinedResult = 0;
   JoinAlgoTablePtr myAlgo;
   //response of my self
@@ -77,7 +79,17 @@ class AbstractJP : public AbstractC20Thread {
   virtual void inlineMain() {
 
   }
-
+  /**
+    * @brief To get the possible oldest a time stamp belongs to
+    * @param ts The time stamp
+    * @return The window number, start from 0
+    */
+  size_t oldestWindowBelong(size_t ts) {
+    if (ts < windowLenGlobal) {
+      return 0;
+    }
+    return ((ts - windowLenGlobal) / slideLenGlobal) + 1;
+  }
  public:
   AbstractJP() {}
   ~ AbstractJP() {}
@@ -101,7 +113,7 @@ class AbstractJP : public AbstractC20Thread {
   /**
    * @brief init the join processor with buffer/queue length and id
    * @param sLen The length of S queue and buffer
-   * @param rLen The length of S queue and buffer
+   * @param rLen The length of R queue and buffer
    * @param _sysId The system id
    */
   virtual void init(size_t sLen, size_t rLen, size_t _sysId) {
@@ -132,6 +144,16 @@ class AbstractJP : public AbstractC20Thread {
   */
   void setWindowLen(size_t wl) {
     windowLen = wl;
+  }
+  /**
+   * @brief set the window parameters of global window
+   * @param wlen window length
+   * @param sli slide
+   */
+  void setGlobalWindow(size_t wlen,size_t sli)
+  {
+    windowLenGlobal=wlen;
+    slideLenGlobal=sli;
   }
   /**
    * @brief feed a tuple s into the s input queue
