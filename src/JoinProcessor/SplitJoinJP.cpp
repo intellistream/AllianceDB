@@ -9,28 +9,28 @@ void SplitJoinJP::joinS(TuplePtr ts) {
   expireR(timeNow);
   //single thread join window r and tuple s
   TuplePtrQueueLocalS->push(ts);
-/* size_t rSize = TuplePtrQueueLocalR->size();
+ size_t rSize = TuplePtrQueueLocalR->size();
   for (size_t i = 0; i < rSize; i++) {
     if (TuplePtrQueueLocalR->front()[i]->key == ts->key) {
       joinedResult++;
     }
-  }*/
-  joinedResult +=
-      myAlgo->findAlgo(JOINALGO_NESTEDLOOP)->join(TuplePtrQueueLocalR->front(), ts, TuplePtrQueueLocalR->size(), 2);
+  }
+  /*joinedResult +=
+      myAlgo->findAlgo(JOINALGO_NESTEDLOOP)->join(TuplePtrQueueLocalR->front(), ts, TuplePtrQueueLocalR->size(), 2);*/
 }
 void SplitJoinJP::joinR(TuplePtr tr) {
   size_t timeNow = tr->subKey;
   expireS(timeNow);
   TuplePtrQueueLocalR->push(tr);
-  joinedResult +=
-      myAlgo->findAlgo(JOINALGO_NESTEDLOOP)->join(TuplePtrQueueLocalS->front(), tr, TuplePtrQueueLocalS->size(), 2);
+  /*joinedResult +=
+      myAlgo->findAlgo(JOINALGO_NESTEDLOOP)->join(TuplePtrQueueLocalS->front(), tr, TuplePtrQueueLocalS->size(), 2);*/
   //single thread join window s and tuple r
-  /*size_t sSize = TuplePtrQueueLocalS->size();
+  size_t sSize = TuplePtrQueueLocalS->size();
    for (size_t i = 0; i < sSize; i++) {
      if (TuplePtrQueueLocalS->front()[i]->key == tr->key) {
        joinedResult++;
      }
-   }*/
+   }
 
 }
 void SplitJoinJP::expireS(size_t cond) {
