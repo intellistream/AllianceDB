@@ -44,7 +44,7 @@ int main() {
   INTELLI::DatasetTool dataSet;
   dataSet.load3VText(relationCouple.relationR, fileRName);
   dataSet.load3VText(relationCouple.relationS, fileSName);
-  VerifyBench<SplitJoinWS> vb_split;
+  VerifyBench<AbstractLazyWS> vb_split;
   vb_split.test(joinResult, relationCouple, 4, 500, 500);
   /*joinResult.streamSize = relationCouple.relationR.size();
   AbstractJoinMethod<VerifyWS> ewj;
