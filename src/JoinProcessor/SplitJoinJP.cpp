@@ -61,13 +61,15 @@ void SplitJoinJP::expireS(size_t cond) {
   if(TuplePtrQueueLocalS->size()>0)
   {
     size_t allLen=TuplePtrQueueLocalS->size();
+    //windowS.append(&TuplePtrQueueLocalS->front()[0],allLen);
     //size_t validLen=0;
     for(size_t i=0;i<allLen;i++)
     {  TuplePtr tp = TuplePtrQueueLocalS->front()[i];
-      if(tp->subKey<=cond)
+     /* if(tp->subKey<=cond)
       {
-        windowS.append(tp);
-      }
+
+      }*/
+      windowS.append(tp);
     }
     //windowS.append(TuplePtrQueueLocalS->front(),validLen);
   }
@@ -98,10 +100,11 @@ void SplitJoinJP::expireR(size_t cond) {
     //size_t validLen=0;
     for(size_t i=0;i<allLen;i++)
     {  TuplePtr tp = TuplePtrQueueLocalR->front()[i];
-      if(tp->subKey<=cond)
+      /*if(tp->subKey<=cond)
       {
         windowR.append(tp);
-      }
+      }*/
+      windowR.append(tp);
     }
     //windowS.append(TuplePtrQueueLocalS->front(),validLen);
   }
