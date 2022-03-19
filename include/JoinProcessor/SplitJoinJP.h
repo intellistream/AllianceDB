@@ -24,8 +24,8 @@ class SplitJoinJP : public AbstractJP {
   virtual void inlineMain();
   TuplePtrQueue TuplePtrQueueLocalS;
   TuplePtrQueue TuplePtrQueueLocalR;
-  WindowQueue windowQueueS;
-  WindowQueue windowQueueR;
+  C20Buffer<TuplePtr> windowS;
+  C20Buffer<TuplePtr> windowR;
   size_t sCnt = 0;
   size_t sMax = 0;
   void expireS(size_t cond);
@@ -49,7 +49,8 @@ class SplitJoinJP : public AbstractJP {
     AbstractJP::init(sLen, rLen, _sysId);
     TuplePtrQueueLocalS = newTuplePtrQueue(sLen);
     TuplePtrQueueLocalR = newTuplePtrQueue(rLen);
-
+    windowS = C20Buffer<TuplePtr>(sLen);
+    windowR = C20Buffer<TuplePtr>(rLen);
     sCnt = 0;
   }
   /**
