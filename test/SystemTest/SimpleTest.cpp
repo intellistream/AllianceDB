@@ -32,7 +32,7 @@ TEST(SystemTest, SimpleTest
   dataSet.load3VText(relationCouple.relationR, fileRName);
   dataSet.load3VText(relationCouple.relationS, fileSName);
   joinResult.streamSize = relationCouple.relationR.size();
-  VerifyBench<AbstractEagerWS> vb_ewj;
+  VerifyBench<SplitJoinWS> vb_ewj;
   ASSERT_TRUE(vb_ewj.test(joinResult, relationCouple, 1));
   dataSet.load3VText(relationCouple.relationR, fileRName);
   dataSet.load3VText(relationCouple.relationS, fileSName);
