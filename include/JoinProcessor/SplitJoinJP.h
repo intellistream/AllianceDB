@@ -60,6 +60,20 @@ class SplitJoinJP : public AbstractJP {
   void setMaxSCnt(size_t ms) {
     sMax = ms;
   }
+  /**
+   * @brief feed a tuple s into the s input queue
+   * @param ts The tuple
+   */
+  virtual void feedTupleS(TuplePtr ts) {
+    sCnt++;
+    if (sCnt == sysId + 1) //should process this S
+    {
+      TuplePtrQueueInS->push(ts);
+    }
+    if (sCnt == sMax) {
+      sCnt = 0;
+    }
+  }
 };
 typedef std::shared_ptr<SplitJoinJP> SplitJoinJPPtr;
 }

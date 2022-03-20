@@ -158,14 +158,14 @@ class AbstractJP : public AbstractC20Thread {
    * @brief feed a tuple s into the s input queue
    * @param ts The tuple
    */
-  void feedTupleS(TuplePtr ts) {
+  virtual void feedTupleS(TuplePtr ts) {
     TuplePtrQueueInS->push(ts);
   }
   /**
  * @brief feed a tuple r into the r input queue
  * @param tr The tuple
  */
-  void feedTupleR(TuplePtr tr) {
+  virtual void feedTupleR(TuplePtr tr) {
     TuplePtrQueueInR->push(tr);
   }
   /**
