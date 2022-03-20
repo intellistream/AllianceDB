@@ -45,7 +45,7 @@ int main() {
   dataSet.load3VText(relationCouple.relationR, fileRName);
   dataSet.load3VText(relationCouple.relationS, fileSName);
   VerifyBench<SplitJoinWS> vb_split;
-  vb_split.test(joinResult, relationCouple, 4, 500, 50);
+  vb_split.test(joinResult, relationCouple, 8, 500, 50);
   /*joinResult.streamSize = relationCouple.relationR.size();
   AbstractJoinMethod<VerifyWS> ewj;
   // INTELLI::UtilityFunctions::timerStart(joinResult);

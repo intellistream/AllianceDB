@@ -36,13 +36,13 @@ TEST(SystemTest, SimpleTest
   ASSERT_TRUE(vb_ewj.test(joinResult, relationCouple, 1));
   dataSet.load3VText(relationCouple.relationR, fileRName);
   dataSet.load3VText(relationCouple.relationS, fileSName);
-  ASSERT_TRUE(vb_ewj.test(joinResult, relationCouple, 2));
+  /*ASSERT_TRUE(vb_ewj.test(joinResult, relationCouple, 2));
   dataSet.load3VText(relationCouple.relationR, fileRName);
   dataSet.load3VText(relationCouple.relationS, fileSName);
   ASSERT_TRUE(vb_ewj.test(joinResult, relationCouple, 4));
   dataSet.load3VText(relationCouple.relationR, fileRName);
   dataSet.load3VText(relationCouple.relationS, fileSName);
-  ASSERT_TRUE(vb_ewj.test(joinResult, relationCouple, 4,500,50));
+  ASSERT_TRUE(vb_ewj.test(joinResult, relationCouple, 4,500,50));*/
   /* AbstractJoinMethod<AbstractEagerWS> ewj;
    // INTELLI::UtilityFunctions::timerStart(joinResult);
    ewj.test(joinResult, relationCouple);
