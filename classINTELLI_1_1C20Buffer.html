@@ -139,6 +139,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memitem:aef7bc60086c2e7b4cbe65a2a37f38039"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classINTELLI_1_1C20Buffer.html#aef7bc60086c2e7b4cbe65a2a37f38039">append</a> (dataType da)</td></tr>
 <tr class="memdesc:aef7bc60086c2e7b4cbe65a2a37f38039"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append the data to the buffer.  <a href="classINTELLI_1_1C20Buffer.html#aef7bc60086c2e7b4cbe65a2a37f38039">More...</a><br /></td></tr>
 <tr class="separator:aef7bc60086c2e7b4cbe65a2a37f38039"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29d6f38ed0163cbded23ed74ba9dc606"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classINTELLI_1_1C20Buffer.html#a29d6f38ed0163cbded23ed74ba9dc606">append</a> (dataType *da, size_t len)</td></tr>
+<tr class="memdesc:a29d6f38ed0163cbded23ed74ba9dc606"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append the data to the buffer.  <a href="classINTELLI_1_1C20Buffer.html#a29d6f38ed0163cbded23ed74ba9dc606">More...</a><br /></td></tr>
+<tr class="separator:a29d6f38ed0163cbded23ed74ba9dc606"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -200,8 +203,57 @@ template&lt;typename dataType &gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a29d6f38ed0163cbded23ed74ba9dc606"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29d6f38ed0163cbded23ed74ba9dc606">&#9670;&nbsp;</a></span>append() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename dataType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t <a class="el" href="classINTELLI_1_1C20Buffer.html">INTELLI::C20Buffer</a>&lt; dataType &gt;::append </td>
+          <td>(</td>
+          <td class="paramtype">dataType *&#160;</td>
+          <td class="paramname"><em>da</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>len</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Append the data to the buffer. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">da</td><td>Data to be appended, a buffer </td></tr>
+    <tr><td class="paramname">len</td><td>the length of data </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>Exceed length will lead to a push_back in vector </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The valid size after this append </dd></dl>
+
+</div>
+</div>
 <a id="aef7bc60086c2e7b4cbe65a2a37f38039"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aef7bc60086c2e7b4cbe65a2a37f38039">&#9670;&nbsp;</a></span>append()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#aef7bc60086c2e7b4cbe65a2a37f38039">&#9670;&nbsp;</a></span>append() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">

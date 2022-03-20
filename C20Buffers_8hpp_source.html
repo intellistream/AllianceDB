@@ -107,61 +107,73 @@ $(document).ready(function(){initNavTree('C20Buffers_8hpp_source.html',''); init
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160; </div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespaceINTELLI.html">INTELLI</a> {</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">typename</span> dataType&gt;</div>
-<div class="line"><a name="l00028"></a><span class="lineno"><a class="line" href="classINTELLI_1_1C20Buffer.html">   28</a></span>&#160;<span class="keyword">class </span><a class="code" href="classINTELLI_1_1C20Buffer.html">C20Buffer</a> {</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160; <span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  <span class="keywordtype">size_t</span> pos = 0;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  std::vector&lt;dataType&gt; area;</div>
-<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="classINTELLI_1_1C20Buffer.html#a8f65947545ed427886513a1879e4bc8d">   36</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classINTELLI_1_1C20Buffer.html#a8f65947545ed427886513a1879e4bc8d">reset</a>() {</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    pos = 0;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  }</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  <a class="code" href="classINTELLI_1_1C20Buffer.html">C20Buffer</a>() { <a class="code" href="classINTELLI_1_1C20Buffer.html#a8f65947545ed427886513a1879e4bc8d">reset</a>(); }</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  ~C20Buffer() {}</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160; </div>
-<div class="line"><a name="l00046"></a><span class="lineno"><a class="line" href="classINTELLI_1_1C20Buffer.html#a90433c6fe0375734b41dfd3beea85d32">   46</a></span>&#160;  <a class="code" href="classINTELLI_1_1C20Buffer.html#a90433c6fe0375734b41dfd3beea85d32">C20Buffer</a>(<span class="keywordtype">size_t</span> len) {</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    area = std::vector&lt;dataType&gt;(len);</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <a class="code" href="classINTELLI_1_1C20Buffer.html#a8f65947545ed427886513a1879e4bc8d">reset</a>();</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  }</div>
-<div class="line"><a name="l00056"></a><span class="lineno"><a class="line" href="classINTELLI_1_1C20Buffer.html#a15222895fb78fcbefc619dfac9eb5118">   56</a></span>&#160;  <span class="keywordtype">size_t</span> <a class="code" href="classINTELLI_1_1C20Buffer.html#a15222895fb78fcbefc619dfac9eb5118">bufferSize</a>() {</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="keywordflow">return</span> area.size();</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  }</div>
-<div class="line"><a name="l00065"></a><span class="lineno"><a class="line" href="classINTELLI_1_1C20Buffer.html#ab7526325e9cbbbd8b2aa529c85283566">   65</a></span>&#160;  <span class="keywordtype">size_t</span> <a class="code" href="classINTELLI_1_1C20Buffer.html#ab7526325e9cbbbd8b2aa529c85283566">size</a>() {</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <span class="keywordflow">return</span> pos;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  }</div>
-<div class="line"><a name="l00072"></a><span class="lineno"><a class="line" href="classINTELLI_1_1C20Buffer.html#ac2f2caad92bf1003a556a5d8e4044ba3">   72</a></span>&#160;  dataType *<a class="code" href="classINTELLI_1_1C20Buffer.html#ac2f2caad92bf1003a556a5d8e4044ba3">data</a>() {</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <span class="keywordflow">return</span> &amp;area[0];</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  }</div>
-<div class="line"><a name="l00081"></a><span class="lineno"><a class="line" href="classINTELLI_1_1C20Buffer.html#add450143620129aa3d8f47cb1517c815">   81</a></span>&#160;  dataType *<a class="code" href="classINTELLI_1_1C20Buffer.html#add450143620129aa3d8f47cb1517c815">data</a>(<span class="keywordtype">size_t</span> offset) {</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="keywordflow">return</span> &amp;area[offset];</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  }</div>
-<div class="line"><a name="l00090"></a><span class="lineno"><a class="line" href="classINTELLI_1_1C20Buffer.html#aef7bc60086c2e7b4cbe65a2a37f38039">   90</a></span>&#160;  <span class="keywordtype">size_t</span> <a class="code" href="classINTELLI_1_1C20Buffer.html#aef7bc60086c2e7b4cbe65a2a37f38039">append</a>(dataType da) {</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    <span class="comment">/*if(pos&lt;area.size())</span></div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="comment">    {</span></div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="comment">      area[pos]=da;</span></div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<span class="comment">      pos++;</span></div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;<span class="comment">    }</span></div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="comment">    else</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#if defined(__GNUC__) &amp;&amp; (__GNUC__ &gt;= 4)</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#define ADB_memcpy(dst, src, size) __builtin_memcpy(dst, src, size)</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#else</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#define ADB_memcpy(dst, src, size) memcpy(dst, src, size)</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespaceINTELLI.html">INTELLI</a> {</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">typename</span> dataType&gt;</div>
+<div class="line"><a name="l00033"></a><span class="lineno"><a class="line" href="classINTELLI_1_1C20Buffer.html">   33</a></span>&#160;<span class="keyword">class </span><a class="code" href="classINTELLI_1_1C20Buffer.html">C20Buffer</a> {</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160; <span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  <span class="keywordtype">size_t</span> pos = 0;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  std::vector&lt;dataType&gt; area;</div>
+<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="classINTELLI_1_1C20Buffer.html#a8f65947545ed427886513a1879e4bc8d">   41</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classINTELLI_1_1C20Buffer.html#a8f65947545ed427886513a1879e4bc8d">reset</a>() {</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    pos = 0;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  }</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <a class="code" href="classINTELLI_1_1C20Buffer.html">C20Buffer</a>() { <a class="code" href="classINTELLI_1_1C20Buffer.html#a8f65947545ed427886513a1879e4bc8d">reset</a>(); }</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  ~C20Buffer() {}</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160; </div>
+<div class="line"><a name="l00051"></a><span class="lineno"><a class="line" href="classINTELLI_1_1C20Buffer.html#a90433c6fe0375734b41dfd3beea85d32">   51</a></span>&#160;  <a class="code" href="classINTELLI_1_1C20Buffer.html#a90433c6fe0375734b41dfd3beea85d32">C20Buffer</a>(<span class="keywordtype">size_t</span> len) {</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    area = std::vector&lt;dataType&gt;(len);</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <a class="code" href="classINTELLI_1_1C20Buffer.html#a8f65947545ed427886513a1879e4bc8d">reset</a>();</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  }</div>
+<div class="line"><a name="l00061"></a><span class="lineno"><a class="line" href="classINTELLI_1_1C20Buffer.html#a15222895fb78fcbefc619dfac9eb5118">   61</a></span>&#160;  <span class="keywordtype">size_t</span> <a class="code" href="classINTELLI_1_1C20Buffer.html#a15222895fb78fcbefc619dfac9eb5118">bufferSize</a>() {</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <span class="keywordflow">return</span> area.size();</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  }</div>
+<div class="line"><a name="l00070"></a><span class="lineno"><a class="line" href="classINTELLI_1_1C20Buffer.html#ab7526325e9cbbbd8b2aa529c85283566">   70</a></span>&#160;  <span class="keywordtype">size_t</span> <a class="code" href="classINTELLI_1_1C20Buffer.html#ab7526325e9cbbbd8b2aa529c85283566">size</a>() {</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    <span class="keywordflow">return</span> pos;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  }</div>
+<div class="line"><a name="l00077"></a><span class="lineno"><a class="line" href="classINTELLI_1_1C20Buffer.html#ac2f2caad92bf1003a556a5d8e4044ba3">   77</a></span>&#160;  dataType *<a class="code" href="classINTELLI_1_1C20Buffer.html#ac2f2caad92bf1003a556a5d8e4044ba3">data</a>() {</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <span class="keywordflow">return</span> &amp;area[0];</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  }</div>
+<div class="line"><a name="l00086"></a><span class="lineno"><a class="line" href="classINTELLI_1_1C20Buffer.html#add450143620129aa3d8f47cb1517c815">   86</a></span>&#160;  dataType *<a class="code" href="classINTELLI_1_1C20Buffer.html#add450143620129aa3d8f47cb1517c815">data</a>(<span class="keywordtype">size_t</span> offset) {</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    <span class="keywordflow">return</span> &amp;area[offset];</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  }</div>
+<div class="line"><a name="l00095"></a><span class="lineno"><a class="line" href="classINTELLI_1_1C20Buffer.html#aef7bc60086c2e7b4cbe65a2a37f38039">   95</a></span>&#160;  <span class="keywordtype">size_t</span> <a class="code" href="classINTELLI_1_1C20Buffer.html#aef7bc60086c2e7b4cbe65a2a37f38039">append</a>(dataType da) {</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <span class="comment">/*if(pos&lt;area.size())</span></div>
 <div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="comment">    {</span></div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;<span class="comment">      area.push_back(da);</span></div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;<span class="comment">      pos=area.size();</span></div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;<span class="comment">    }*/</span></div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    area[pos] = da;</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    pos++;</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    <span class="keywordflow">return</span> pos;</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  }</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;};</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;}</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;<span class="preprocessor">#endif </span><span class="comment">//ALIANCEDB_INCLUDE_UTILS_C20BUFFERS_HPP_</span></div>
-<div class="ttc" id="aclassINTELLI_1_1C20Buffer_html"><div class="ttname"><a href="classINTELLI_1_1C20Buffer.html">INTELLI::C20Buffer</a></div><div class="ttdef"><b>Definition:</b> C20Buffers.hpp:28</div></div>
-<div class="ttc" id="aclassINTELLI_1_1C20Buffer_html_a15222895fb78fcbefc619dfac9eb5118"><div class="ttname"><a href="classINTELLI_1_1C20Buffer.html#a15222895fb78fcbefc619dfac9eb5118">INTELLI::C20Buffer::bufferSize</a></div><div class="ttdeci">size_t bufferSize()</div><div class="ttdoc">To get how many elements are allowed in the buffer.</div><div class="ttdef"><b>Definition:</b> C20Buffers.hpp:56</div></div>
-<div class="ttc" id="aclassINTELLI_1_1C20Buffer_html_a8f65947545ed427886513a1879e4bc8d"><div class="ttname"><a href="classINTELLI_1_1C20Buffer.html#a8f65947545ed427886513a1879e4bc8d">INTELLI::C20Buffer::reset</a></div><div class="ttdeci">void reset()</div><div class="ttdoc">reset this buffer, set pos back to 0</div><div class="ttdef"><b>Definition:</b> C20Buffers.hpp:36</div></div>
-<div class="ttc" id="aclassINTELLI_1_1C20Buffer_html_a90433c6fe0375734b41dfd3beea85d32"><div class="ttname"><a href="classINTELLI_1_1C20Buffer.html#a90433c6fe0375734b41dfd3beea85d32">INTELLI::C20Buffer::C20Buffer</a></div><div class="ttdeci">C20Buffer(size_t len)</div><div class="ttdoc">Init with original length of buffer.</div><div class="ttdef"><b>Definition:</b> C20Buffers.hpp:46</div></div>
-<div class="ttc" id="aclassINTELLI_1_1C20Buffer_html_ab7526325e9cbbbd8b2aa529c85283566"><div class="ttname"><a href="classINTELLI_1_1C20Buffer.html#ab7526325e9cbbbd8b2aa529c85283566">INTELLI::C20Buffer::size</a></div><div class="ttdeci">size_t size()</div><div class="ttdoc">To get how many VALID elements are existed in the buffer.</div><div class="ttdef"><b>Definition:</b> C20Buffers.hpp:65</div></div>
-<div class="ttc" id="aclassINTELLI_1_1C20Buffer_html_ac2f2caad92bf1003a556a5d8e4044ba3"><div class="ttname"><a href="classINTELLI_1_1C20Buffer.html#ac2f2caad92bf1003a556a5d8e4044ba3">INTELLI::C20Buffer::data</a></div><div class="ttdeci">dataType * data()</div><div class="ttdoc">To get the original memory area ponter of data.</div><div class="ttdef"><b>Definition:</b> C20Buffers.hpp:72</div></div>
-<div class="ttc" id="aclassINTELLI_1_1C20Buffer_html_add450143620129aa3d8f47cb1517c815"><div class="ttname"><a href="classINTELLI_1_1C20Buffer.html#add450143620129aa3d8f47cb1517c815">INTELLI::C20Buffer::data</a></div><div class="ttdeci">dataType * data(size_t offset)</div><div class="ttdoc">To get the original memory area ponter of data, with offset.</div><div class="ttdef"><b>Definition:</b> C20Buffers.hpp:81</div></div>
-<div class="ttc" id="aclassINTELLI_1_1C20Buffer_html_aef7bc60086c2e7b4cbe65a2a37f38039"><div class="ttname"><a href="classINTELLI_1_1C20Buffer.html#aef7bc60086c2e7b4cbe65a2a37f38039">INTELLI::C20Buffer::append</a></div><div class="ttdeci">size_t append(dataType da)</div><div class="ttdoc">Append the data to the buffer.</div><div class="ttdef"><b>Definition:</b> C20Buffers.hpp:90</div></div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;<span class="comment">      area[pos]=da;</span></div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;<span class="comment">      pos++;</span></div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;<span class="comment">    }</span></div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;<span class="comment">    else</span></div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;<span class="comment">    {</span></div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;<span class="comment">      area.push_back(da);</span></div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;<span class="comment">      pos=area.size();</span></div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;<span class="comment">    }*/</span></div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    area[pos] = da;</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    pos++;</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    <span class="keywordflow">return</span> pos;</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  }</div>
+<div class="line"><a name="l00117"></a><span class="lineno"><a class="line" href="classINTELLI_1_1C20Buffer.html#a29d6f38ed0163cbded23ed74ba9dc606">  117</a></span>&#160;  <span class="keywordtype">size_t</span> <a class="code" href="classINTELLI_1_1C20Buffer.html#a29d6f38ed0163cbded23ed74ba9dc606">append</a>(dataType *da,<span class="keywordtype">size_t</span> len)</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;  {</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;    ADB_memcpy(&amp;area[pos],da,len*<span class="keyword">sizeof</span>(dataType));</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;    pos+=len;</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;    <span class="keywordflow">return</span> pos;</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;  }</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;};</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;}</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;<span class="preprocessor">#endif </span><span class="comment">//ALIANCEDB_INCLUDE_UTILS_C20BUFFERS_HPP_</span></div>
+<div class="ttc" id="aclassINTELLI_1_1C20Buffer_html"><div class="ttname"><a href="classINTELLI_1_1C20Buffer.html">INTELLI::C20Buffer</a></div><div class="ttdef"><b>Definition:</b> C20Buffers.hpp:33</div></div>
+<div class="ttc" id="aclassINTELLI_1_1C20Buffer_html_a15222895fb78fcbefc619dfac9eb5118"><div class="ttname"><a href="classINTELLI_1_1C20Buffer.html#a15222895fb78fcbefc619dfac9eb5118">INTELLI::C20Buffer::bufferSize</a></div><div class="ttdeci">size_t bufferSize()</div><div class="ttdoc">To get how many elements are allowed in the buffer.</div><div class="ttdef"><b>Definition:</b> C20Buffers.hpp:61</div></div>
+<div class="ttc" id="aclassINTELLI_1_1C20Buffer_html_a29d6f38ed0163cbded23ed74ba9dc606"><div class="ttname"><a href="classINTELLI_1_1C20Buffer.html#a29d6f38ed0163cbded23ed74ba9dc606">INTELLI::C20Buffer::append</a></div><div class="ttdeci">size_t append(dataType *da, size_t len)</div><div class="ttdoc">Append the data to the buffer.</div><div class="ttdef"><b>Definition:</b> C20Buffers.hpp:117</div></div>
+<div class="ttc" id="aclassINTELLI_1_1C20Buffer_html_a8f65947545ed427886513a1879e4bc8d"><div class="ttname"><a href="classINTELLI_1_1C20Buffer.html#a8f65947545ed427886513a1879e4bc8d">INTELLI::C20Buffer::reset</a></div><div class="ttdeci">void reset()</div><div class="ttdoc">reset this buffer, set pos back to 0</div><div class="ttdef"><b>Definition:</b> C20Buffers.hpp:41</div></div>
+<div class="ttc" id="aclassINTELLI_1_1C20Buffer_html_a90433c6fe0375734b41dfd3beea85d32"><div class="ttname"><a href="classINTELLI_1_1C20Buffer.html#a90433c6fe0375734b41dfd3beea85d32">INTELLI::C20Buffer::C20Buffer</a></div><div class="ttdeci">C20Buffer(size_t len)</div><div class="ttdoc">Init with original length of buffer.</div><div class="ttdef"><b>Definition:</b> C20Buffers.hpp:51</div></div>
+<div class="ttc" id="aclassINTELLI_1_1C20Buffer_html_ab7526325e9cbbbd8b2aa529c85283566"><div class="ttname"><a href="classINTELLI_1_1C20Buffer.html#ab7526325e9cbbbd8b2aa529c85283566">INTELLI::C20Buffer::size</a></div><div class="ttdeci">size_t size()</div><div class="ttdoc">To get how many VALID elements are existed in the buffer.</div><div class="ttdef"><b>Definition:</b> C20Buffers.hpp:70</div></div>
+<div class="ttc" id="aclassINTELLI_1_1C20Buffer_html_ac2f2caad92bf1003a556a5d8e4044ba3"><div class="ttname"><a href="classINTELLI_1_1C20Buffer.html#ac2f2caad92bf1003a556a5d8e4044ba3">INTELLI::C20Buffer::data</a></div><div class="ttdeci">dataType * data()</div><div class="ttdoc">To get the original memory area ponter of data.</div><div class="ttdef"><b>Definition:</b> C20Buffers.hpp:77</div></div>
+<div class="ttc" id="aclassINTELLI_1_1C20Buffer_html_add450143620129aa3d8f47cb1517c815"><div class="ttname"><a href="classINTELLI_1_1C20Buffer.html#add450143620129aa3d8f47cb1517c815">INTELLI::C20Buffer::data</a></div><div class="ttdeci">dataType * data(size_t offset)</div><div class="ttdoc">To get the original memory area ponter of data, with offset.</div><div class="ttdef"><b>Definition:</b> C20Buffers.hpp:86</div></div>
+<div class="ttc" id="aclassINTELLI_1_1C20Buffer_html_aef7bc60086c2e7b4cbe65a2a37f38039"><div class="ttname"><a href="classINTELLI_1_1C20Buffer.html#aef7bc60086c2e7b4cbe65a2a37f38039">INTELLI::C20Buffer::append</a></div><div class="ttdeci">size_t append(dataType da)</div><div class="ttdoc">Append the data to the buffer.</div><div class="ttdef"><b>Definition:</b> C20Buffers.hpp:95</div></div>
 <div class="ttc" id="anamespaceINTELLI_html"><div class="ttname"><a href="namespaceINTELLI.html">INTELLI</a></div><div class="ttdef"><b>Definition:</b> DatasetTool.h:10</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

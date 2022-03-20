@@ -13,14 +13,18 @@ var hierarchy =
         [ "INTELLI::AbstractLazyJP", "classINTELLI_1_1AbstractLazyJP.html", null ],
         [ "INTELLI::CellJoinJP", "classINTELLI_1_1CellJoinJP.html", [
           [ "INTELLI::HandShakeHashJP", "classINTELLI_1_1HandShakeHashJP.html", null ]
-        ] ]
+        ] ],
+        [ "INTELLI::SplitJoinJP", "classINTELLI_1_1SplitJoinJP.html", null ]
       ] ],
       [ "INTELLI::AbstractLazyWS", "classINTELLI_1_1AbstractLazyWS.html", null ],
-      [ "INTELLI::NPJ_thread", "classINTELLI_1_1NPJ__thread.html", null ]
+      [ "INTELLI::NPJ_thread", "classINTELLI_1_1NPJ__thread.html", null ],
+      [ "INTELLI::SplitJoinWS", "classINTELLI_1_1SplitJoinWS.html", null ],
+      [ "INTELLI::VerifyWS", "classINTELLI_1_1VerifyWS.html", null ]
     ] ],
     [ "INTELLI::AbstractJoinAlgo", "classINTELLI_1_1AbstractJoinAlgo.html", [
       [ "INTELLI::NPJ", "classINTELLI_1_1NPJ.html", null ],
-      [ "INTELLI::NPJSingle", "classINTELLI_1_1NPJSingle.html", null ]
+      [ "INTELLI::NPJSingle", "classINTELLI_1_1NPJSingle.html", null ],
+      [ "INTELLI::NestedLoopJoin", "classINTELLI_1_1NestedLoopJoin.html", null ]
     ] ],
     [ "INTELLI::AbstractJoinMethod< wsType >", "classINTELLI_1_1AbstractJoinMethod.html", null ],
     [ "INTELLI::AbstractJoinMethod< AbstractEagerWS >", "classINTELLI_1_1AbstractJoinMethod.html", [
@@ -31,7 +35,9 @@ var hierarchy =
     ] ],
     [ "INTELLI::AbstractWS", "classINTELLI_1_1AbstractWS.html", [
       [ "INTELLI::AbstractEagerWS", "classINTELLI_1_1AbstractEagerWS.html", null ],
-      [ "INTELLI::AbstractLazyWS", "classINTELLI_1_1AbstractLazyWS.html", null ]
+      [ "INTELLI::AbstractLazyWS", "classINTELLI_1_1AbstractLazyWS.html", null ],
+      [ "INTELLI::SplitJoinWS", "classINTELLI_1_1SplitJoinWS.html", null ],
+      [ "INTELLI::VerifyWS", "classINTELLI_1_1VerifyWS.html", null ]
     ] ],
     [ "moodycamel::BlockingConcurrentQueue< T, Traits >", "classmoodycamel_1_1BlockingConcurrentQueue.html", null ],
     [ "INTELLI::C20Buffer< dataType >", "classINTELLI_1_1C20Buffer.html", null ],
@@ -81,6 +87,7 @@ var hierarchy =
     [ "INTELLI::ThreadPerf", "classINTELLI_1_1ThreadPerf.html", null ],
     [ "INTELLI::Tuple", "classINTELLI_1_1Tuple.html", null ],
     [ "INTELLI::UtilityFunctions", "classINTELLI_1_1UtilityFunctions.html", null ],
+    [ "INTELLI::VerifyBench< wsType >", "classINTELLI_1_1VerifyBench.html", null ],
     [ "INTELLI::WindowCouple", "classINTELLI_1_1WindowCouple.html", null ],
     [ "FreeList< Block >", "classFreeList_3_01Block_01_4.html", null ],
     [ "unordered_map< keyType, std::vector< innerStore >, hash< keyType > >", "classunordered__map_3_01keyType_00_01std_1_1vector_3_01innerStore_01_4_00_01hash_3_01keyType_01_4_01_4.html", null ]

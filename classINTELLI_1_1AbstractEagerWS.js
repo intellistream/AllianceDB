@@ -11,7 +11,6 @@ var classINTELLI_1_1AbstractEagerWS =
     [ "getJoinResult", "classINTELLI_1_1AbstractEagerWS.html#ab52b4d84a044eda2373c75de834ec33f", null ],
     [ "initJoinProcessors", "classINTELLI_1_1AbstractEagerWS.html#a6d738ae8710d91c3a308a03c33ca7f46", null ],
     [ "inlineMain", "classINTELLI_1_1AbstractEagerWS.html#af365f0a910be67fec2eafb7dfd5abbfd", null ],
-    [ "oldestWindowBelong", "classINTELLI_1_1AbstractEagerWS.html#ac4c4b693a4334c68d748eb1779016205", null ],
     [ "terminateJoinProcessors", "classINTELLI_1_1AbstractEagerWS.html#ac7b4649ea209b11bc7a63fa6c4adf5e3", null ],
     [ "waitAckFromJoinProcessors", "classINTELLI_1_1AbstractEagerWS.html#a5bb123ffbbe7c54290415dde2467ba2e", null ],
     [ "weightedPartitionSizeFinal", "classINTELLI_1_1AbstractEagerWS.html#a3140be365c4b114396da561a958f89ea", null ],

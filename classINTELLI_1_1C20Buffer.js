@@ -3,6 +3,7 @@ var classINTELLI_1_1C20Buffer =
     [ "C20Buffer", "classINTELLI_1_1C20Buffer.html#af876d67d22ddc2003c5f4df33eba1d38", null ],
     [ "~C20Buffer", "classINTELLI_1_1C20Buffer.html#aaef344ca68097df0fe20c4a7c86209af", null ],
     [ "C20Buffer", "classINTELLI_1_1C20Buffer.html#a90433c6fe0375734b41dfd3beea85d32", null ],
+    [ "append", "classINTELLI_1_1C20Buffer.html#a29d6f38ed0163cbded23ed74ba9dc606", null ],
     [ "append", "classINTELLI_1_1C20Buffer.html#aef7bc60086c2e7b4cbe65a2a37f38039", null ],
     [ "bufferSize", "classINTELLI_1_1C20Buffer.html#a15222895fb78fcbefc619dfac9eb5118", null ],
     [ "data", "classINTELLI_1_1C20Buffer.html#ac2f2caad92bf1003a556a5d8e4044ba3", null ],

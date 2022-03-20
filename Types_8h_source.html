@@ -134,7 +134,7 @@ $(document).ready(function(){initNavTree('Types_8h_source.html',''); initResizab
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160; </div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="preprocessor">#ifndef TIME_STEP</span></div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="preprocessor">#define TIME_STEP 10</span><span class="comment">// US</span></div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="preprocessor">#define TIME_STEP 30</span><span class="comment">// US</span></div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="preprocessor">#ifndef DATASET_NAME</span></div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="preprocessor">#define DATASET_NAME &quot;Test1&quot;</span> <span class="comment">//dataset name should be DATASET_NAME + &quot;-R.txt&quot; and DATASET_NAME + &quot;-S.txt&quot;</span></div>
@@ -265,8 +265,9 @@ $(document).ready(function(){initNavTree('Types_8h_source.html',''); initResizab
 <div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;} join_cmd_t;</div>
 <div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;<span class="keyword">typedef</span> std::shared_ptr&lt;INTELLI::SPSCQueue&lt;INTELLI::join_cmd_t&gt;&gt; CmdQueuePtr;</div>
 <div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;<span class="preprocessor">#define  newCmdQueue(n) make_shared&lt;INTELLI::SPSCQueue&lt;INTELLI::join_cmd_t&gt;&gt;(n)</span></div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;}</div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;<span class="preprocessor">#endif </span><span class="comment">//INTELLISTREAM_TYPES_H</span></div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160; </div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;}</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;<span class="preprocessor">#endif </span><span class="comment">//INTELLISTREAM_TYPES_H</span></div>
 <div class="ttc" id="aclassINTELLI_1_1ConcurrentQWindowCouple_html"><div class="ttname"><a href="classINTELLI_1_1ConcurrentQWindowCouple.html">INTELLI::ConcurrentQWindowCouple</a></div><div class="ttdef"><b>Definition:</b> Types.h:190</div></div>
 <div class="ttc" id="aclassINTELLI_1_1RelationCouple_html"><div class="ttname"><a href="classINTELLI_1_1RelationCouple.html">INTELLI::RelationCouple</a></div><div class="ttdef"><b>Definition:</b> Types.h:164</div></div>
 <div class="ttc" id="aclassINTELLI_1_1Result_html"><div class="ttname"><a href="classINTELLI_1_1Result.html">INTELLI::Result</a></div><div class="ttdef"><b>Definition:</b> Types.h:210</div></div>

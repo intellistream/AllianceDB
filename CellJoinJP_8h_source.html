@@ -102,8 +102,8 @@ $(document).ready(function(){initNavTree('CellJoinJP_8h_source.html',''); initRe
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment">// Created by tony on 2022/2/8.</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment">//</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160; </div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#ifndef JOINPROCESSOR_SIMPLEHASHJP_H_</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#define JOINPROCESSOR_SIMPLEHASHJP_H_</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#ifndef _JOINPROCESSOR_CELLJOINJP_H_</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#define _JOINPROCESSOR_CELLJOINJP_H_</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &lt;thread&gt;</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="Types_8h.html">Common/Types.h</a>&gt;</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="UtilityFunctions_8hpp.html">Utils/UtilityFunctions.hpp</a>&gt;</span></div>
@@ -116,7 +116,7 @@ $(document).ready(function(){initNavTree('CellJoinJP_8h_source.html',''); initRe
 <div class="line"><a name="l00034"></a><span class="lineno"><a class="line" href="classINTELLI_1_1CellJoinJP.html">   34</a></span>&#160;<span class="keyword">class </span><a class="code" href="classINTELLI_1_1CellJoinJP.html">CellJoinJP</a> : <span class="keyword">public</span> <a class="code" href="classINTELLI_1_1AbstractJP.html">AbstractJP</a> {</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160; <span class="keyword">private</span>:</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  <span class="comment">/* data */</span></div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  <span class="keyword">struct </span>timeval timeStart;</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  <span class="comment">// struct timeval timeStart;</span></div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160; </div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  <span class="comment">// hashtable hashtableS,hashtableR;</span></div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160; <span class="keyword">protected</span>:</div>
@@ -130,50 +130,50 @@ $(document).ready(function(){initNavTree('CellJoinJP_8h_source.html',''); initRe
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  <a class="code" href="classINTELLI_1_1CellJoinJP.html">CellJoinJP</a>() {</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160; </div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  }</div>
-<div class="line"><a name="l00051"></a><span class="lineno"><a class="line" href="classINTELLI_1_1CellJoinJP.html#a33fa35f2226b14a04777b863d24a55ed">   51</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classINTELLI_1_1CellJoinJP.html#a33fa35f2226b14a04777b863d24a55ed">init</a>(<span class="keywordtype">size_t</span> sLen, <span class="keywordtype">size_t</span> rLen, <span class="keywordtype">size_t</span> _sysId) {</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <a class="code" href="classINTELLI_1_1AbstractJP.html#a659ef72dcf210bb0bc9b90da235266de">AbstractJP::init</a>(sLen, rLen, _sysId);</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    windowQueueS = newWindowQueue(sLen);</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    windowQueueR = newWindowQueue(rLen);</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  }</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  <span class="comment">/*SimpleHashJP(size_t sLen,size_t rLen,size_t _sysId)</span></div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="comment">  {</span></div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="comment"></span> </div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="comment">  }*/</span></div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  ~<a class="code" href="classINTELLI_1_1CellJoinJP.html">CellJoinJP</a>() {</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160; </div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  }</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  <span class="comment">//outside feed a window</span></div>
-<div class="line"><a name="l00068"></a><span class="lineno"><a class="line" href="classINTELLI_1_1CellJoinJP.html#a29952f3ecd19d0c291552d3e5b355305">   68</a></span>&#160;<span class="comment"></span>  <span class="keywordtype">void</span> <a class="code" href="classINTELLI_1_1CellJoinJP.html#a29952f3ecd19d0c291552d3e5b355305">feedWindowS</a>(WindowOfTuples ws) {</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    windowQueueS-&gt;push(ws);</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  }</div>
-<div class="line"><a name="l00075"></a><span class="lineno"><a class="line" href="classINTELLI_1_1CellJoinJP.html#a00f47ab064c152064d60f9c9aa51994d">   75</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classINTELLI_1_1CellJoinJP.html#a00f47ab064c152064d60f9c9aa51994d">feedWindowR</a>(WindowOfTuples wr) {</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    windowQueueR-&gt;push(wr);</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  }</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <span class="comment">// co</span></div>
-<div class="line"><a name="l00083"></a><span class="lineno"><a class="line" href="classINTELLI_1_1CellJoinJP.html#a079a5970d585630a577a471b063ffd57">   83</a></span>&#160;<span class="comment"></span>  <span class="keywordtype">void</span> <a class="code" href="classINTELLI_1_1CellJoinJP.html#a079a5970d585630a577a471b063ffd57">setInitBar</a>(BarrierPtr barPrev) {</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    initBar = barPrev;</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  }</div>
-<div class="line"><a name="l00089"></a><span class="lineno"><a class="line" href="classINTELLI_1_1CellJoinJP.html#af3aabe27cdccec9c33ab5851d4d1d8ea">   89</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classINTELLI_1_1CellJoinJP.html#af3aabe27cdccec9c33ab5851d4d1d8ea">waitInitBar</a>(<span class="keywordtype">void</span>) {</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    <span class="keywordflow">if</span> (initBar) {</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;      initBar-&gt;arrive_and_wait();</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    }</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  }</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;};</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;<span class="keyword">typedef</span> std::shared_ptr&lt;CellJoinJP&gt; CellJoinJPPtr;</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160; </div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;}</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;<span class="preprocessor">#endif </span><span class="comment">//HYBRID_JOIN_SRC_JOINPROCESSOR_SIMPLEHASHJP_H_</span></div>
+<div class="line"><a name="l00057"></a><span class="lineno"><a class="line" href="classINTELLI_1_1CellJoinJP.html#a33fa35f2226b14a04777b863d24a55ed">   57</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classINTELLI_1_1CellJoinJP.html#a33fa35f2226b14a04777b863d24a55ed">init</a>(<span class="keywordtype">size_t</span> sLen, <span class="keywordtype">size_t</span> rLen, <span class="keywordtype">size_t</span> _sysId) {</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <a class="code" href="classINTELLI_1_1AbstractJP.html#a659ef72dcf210bb0bc9b90da235266de">AbstractJP::init</a>(sLen, rLen, _sysId);</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    windowQueueS = newWindowQueue(sLen);</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    windowQueueR = newWindowQueue(rLen);</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  }</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <span class="comment">/*SimpleHashJP(size_t sLen,size_t rLen,size_t _sysId)</span></div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="comment">  {</span></div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="comment"></span> </div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="comment">  }*/</span></div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  ~<a class="code" href="classINTELLI_1_1CellJoinJP.html">CellJoinJP</a>() {</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160; </div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  }</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  <span class="comment">//outside feed a window</span></div>
+<div class="line"><a name="l00074"></a><span class="lineno"><a class="line" href="classINTELLI_1_1CellJoinJP.html#a29952f3ecd19d0c291552d3e5b355305">   74</a></span>&#160;<span class="comment"></span>  <span class="keywordtype">void</span> <a class="code" href="classINTELLI_1_1CellJoinJP.html#a29952f3ecd19d0c291552d3e5b355305">feedWindowS</a>(WindowOfTuples ws) {</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    windowQueueS-&gt;push(ws);</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  }</div>
+<div class="line"><a name="l00081"></a><span class="lineno"><a class="line" href="classINTELLI_1_1CellJoinJP.html#a00f47ab064c152064d60f9c9aa51994d">   81</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classINTELLI_1_1CellJoinJP.html#a00f47ab064c152064d60f9c9aa51994d">feedWindowR</a>(WindowOfTuples wr) {</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    windowQueueR-&gt;push(wr);</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  }</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <span class="comment">// co</span></div>
+<div class="line"><a name="l00089"></a><span class="lineno"><a class="line" href="classINTELLI_1_1CellJoinJP.html#a079a5970d585630a577a471b063ffd57">   89</a></span>&#160;<span class="comment"></span>  <span class="keywordtype">void</span> <a class="code" href="classINTELLI_1_1CellJoinJP.html#a079a5970d585630a577a471b063ffd57">setInitBar</a>(BarrierPtr barPrev) {</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    initBar = barPrev;</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  }</div>
+<div class="line"><a name="l00095"></a><span class="lineno"><a class="line" href="classINTELLI_1_1CellJoinJP.html#af3aabe27cdccec9c33ab5851d4d1d8ea">   95</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classINTELLI_1_1CellJoinJP.html#af3aabe27cdccec9c33ab5851d4d1d8ea">waitInitBar</a>(<span class="keywordtype">void</span>) {</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <span class="keywordflow">if</span> (initBar) {</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;      initBar-&gt;arrive_and_wait();</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    }</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  }</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;};</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;<span class="keyword">typedef</span> std::shared_ptr&lt;CellJoinJP&gt; CellJoinJPPtr;</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160; </div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;}</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;<span class="preprocessor">#endif </span><span class="comment">//HYBRID_JOIN_SRC_JOINPROCESSOR_SIMPLEHASHJP_H_</span></div>
 <div class="ttc" id="aTypes_8h_html"><div class="ttname"><a href="Types_8h.html">Types.h</a></div></div>
 <div class="ttc" id="aUtilityFunctions_8hpp_html"><div class="ttname"><a href="UtilityFunctions_8hpp.html">UtilityFunctions.hpp</a></div></div>
 <div class="ttc" id="aclassINTELLI_1_1AbstractJP_html"><div class="ttname"><a href="classINTELLI_1_1AbstractJP.html">INTELLI::AbstractJP</a></div><div class="ttdoc">The basic class of join processor.</div><div class="ttdef"><b>Definition:</b> AbstractJP.h:38</div></div>
-<div class="ttc" id="aclassINTELLI_1_1AbstractJP_html_a659ef72dcf210bb0bc9b90da235266de"><div class="ttname"><a href="classINTELLI_1_1AbstractJP.html#a659ef72dcf210bb0bc9b90da235266de">INTELLI::AbstractJP::init</a></div><div class="ttdeci">virtual void init(size_t sLen, size_t rLen, size_t _sysId)</div><div class="ttdoc">init the join processor with buffer/queue length and id</div><div class="ttdef"><b>Definition:</b> AbstractJP.h:107</div></div>
+<div class="ttc" id="aclassINTELLI_1_1AbstractJP_html_a659ef72dcf210bb0bc9b90da235266de"><div class="ttname"><a href="classINTELLI_1_1AbstractJP.html#a659ef72dcf210bb0bc9b90da235266de">INTELLI::AbstractJP::init</a></div><div class="ttdeci">virtual void init(size_t sLen, size_t rLen, size_t _sysId)</div><div class="ttdoc">init the join processor with buffer/queue length and id</div><div class="ttdef"><b>Definition:</b> AbstractJP.h:119</div></div>
 <div class="ttc" id="aclassINTELLI_1_1CellJoinJP_html"><div class="ttname"><a href="classINTELLI_1_1CellJoinJP.html">INTELLI::CellJoinJP</a></div><div class="ttdoc">The class of cell join join processor.</div><div class="ttdef"><b>Definition:</b> CellJoinJP.h:34</div></div>
-<div class="ttc" id="aclassINTELLI_1_1CellJoinJP_html_a00f47ab064c152064d60f9c9aa51994d"><div class="ttname"><a href="classINTELLI_1_1CellJoinJP.html#a00f47ab064c152064d60f9c9aa51994d">INTELLI::CellJoinJP::feedWindowR</a></div><div class="ttdeci">void feedWindowR(WindowOfTuples wr)</div><div class="ttdoc">Directly feed a window of tuples.</div><div class="ttdef"><b>Definition:</b> CellJoinJP.h:75</div></div>
-<div class="ttc" id="aclassINTELLI_1_1CellJoinJP_html_a079a5970d585630a577a471b063ffd57"><div class="ttname"><a href="classINTELLI_1_1CellJoinJP.html#a079a5970d585630a577a471b063ffd57">INTELLI::CellJoinJP::setInitBar</a></div><div class="ttdeci">void setInitBar(BarrierPtr barPrev)</div><div class="ttdoc">Set up the init barrier.</div><div class="ttdef"><b>Definition:</b> CellJoinJP.h:83</div></div>
+<div class="ttc" id="aclassINTELLI_1_1CellJoinJP_html_a00f47ab064c152064d60f9c9aa51994d"><div class="ttname"><a href="classINTELLI_1_1CellJoinJP.html#a00f47ab064c152064d60f9c9aa51994d">INTELLI::CellJoinJP::feedWindowR</a></div><div class="ttdeci">void feedWindowR(WindowOfTuples wr)</div><div class="ttdoc">Directly feed a window of tuples.</div><div class="ttdef"><b>Definition:</b> CellJoinJP.h:81</div></div>
+<div class="ttc" id="aclassINTELLI_1_1CellJoinJP_html_a079a5970d585630a577a471b063ffd57"><div class="ttname"><a href="classINTELLI_1_1CellJoinJP.html#a079a5970d585630a577a471b063ffd57">INTELLI::CellJoinJP::setInitBar</a></div><div class="ttdeci">void setInitBar(BarrierPtr barPrev)</div><div class="ttdoc">Set up the init barrier.</div><div class="ttdef"><b>Definition:</b> CellJoinJP.h:89</div></div>
 <div class="ttc" id="aclassINTELLI_1_1CellJoinJP_html_a24eaa17611556c5d0bf49a9bab21b36c"><div class="ttname"><a href="classINTELLI_1_1CellJoinJP.html#a24eaa17611556c5d0bf49a9bab21b36c">INTELLI::CellJoinJP::inlineMain</a></div><div class="ttdeci">virtual void inlineMain()</div><div class="ttdoc">The 'main' function of AbstractP.</div></div>
-<div class="ttc" id="aclassINTELLI_1_1CellJoinJP_html_a29952f3ecd19d0c291552d3e5b355305"><div class="ttname"><a href="classINTELLI_1_1CellJoinJP.html#a29952f3ecd19d0c291552d3e5b355305">INTELLI::CellJoinJP::feedWindowS</a></div><div class="ttdeci">void feedWindowS(WindowOfTuples ws)</div><div class="ttdoc">Directly feed a window of tuples.</div><div class="ttdef"><b>Definition:</b> CellJoinJP.h:68</div></div>
-<div class="ttc" id="aclassINTELLI_1_1CellJoinJP_html_a33fa35f2226b14a04777b863d24a55ed"><div class="ttname"><a href="classINTELLI_1_1CellJoinJP.html#a33fa35f2226b14a04777b863d24a55ed">INTELLI::CellJoinJP::init</a></div><div class="ttdeci">void init(size_t sLen, size_t rLen, size_t _sysId)</div><div class="ttdoc">init the join processor with buffer/queue length and id</div><div class="ttdef"><b>Definition:</b> CellJoinJP.h:51</div></div>
-<div class="ttc" id="aclassINTELLI_1_1CellJoinJP_html_af3aabe27cdccec9c33ab5851d4d1d8ea"><div class="ttname"><a href="classINTELLI_1_1CellJoinJP.html#af3aabe27cdccec9c33ab5851d4d1d8ea">INTELLI::CellJoinJP::waitInitBar</a></div><div class="ttdeci">void waitInitBar(void)</div><div class="ttdoc">Wait for the init barrier done and then contine.</div><div class="ttdef"><b>Definition:</b> CellJoinJP.h:89</div></div>
+<div class="ttc" id="aclassINTELLI_1_1CellJoinJP_html_a29952f3ecd19d0c291552d3e5b355305"><div class="ttname"><a href="classINTELLI_1_1CellJoinJP.html#a29952f3ecd19d0c291552d3e5b355305">INTELLI::CellJoinJP::feedWindowS</a></div><div class="ttdeci">void feedWindowS(WindowOfTuples ws)</div><div class="ttdoc">Directly feed a window of tuples.</div><div class="ttdef"><b>Definition:</b> CellJoinJP.h:74</div></div>
+<div class="ttc" id="aclassINTELLI_1_1CellJoinJP_html_a33fa35f2226b14a04777b863d24a55ed"><div class="ttname"><a href="classINTELLI_1_1CellJoinJP.html#a33fa35f2226b14a04777b863d24a55ed">INTELLI::CellJoinJP::init</a></div><div class="ttdeci">void init(size_t sLen, size_t rLen, size_t _sysId)</div><div class="ttdoc">init the join processor with buffer/queue length and id</div><div class="ttdef"><b>Definition:</b> CellJoinJP.h:57</div></div>
+<div class="ttc" id="aclassINTELLI_1_1CellJoinJP_html_af3aabe27cdccec9c33ab5851d4d1d8ea"><div class="ttname"><a href="classINTELLI_1_1CellJoinJP.html#af3aabe27cdccec9c33ab5851d4d1d8ea">INTELLI::CellJoinJP::waitInitBar</a></div><div class="ttdeci">void waitInitBar(void)</div><div class="ttdoc">Wait for the init barrier done and then contine.</div><div class="ttdef"><b>Definition:</b> CellJoinJP.h:95</div></div>
 <div class="ttc" id="anamespaceINTELLI_html"><div class="ttname"><a href="namespaceINTELLI.html">INTELLI</a></div><div class="ttdef"><b>Definition:</b> DatasetTool.h:10</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

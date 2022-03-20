@@ -16,5 +16,5 @@ var searchData=
   ['abstractlazyws_2eh_16',['AbstractLazyWS.h',['../AbstractLazyWS_8h.html',1,'']]],
   ['abstractws_17',['AbstractWS',['../classINTELLI_1_1AbstractWS.html#a16c6ca0db4d47af3a57721134a6e8f9d',1,'INTELLI::AbstractWS::AbstractWS()'],['../classINTELLI_1_1AbstractWS.html',1,'INTELLI::AbstractWS']]],
   ['abstractws_2eh_18',['AbstractWS.h',['../AbstractWS_8h.html',1,'']]],
-  ['append_19',['append',['../classINTELLI_1_1C20Buffer.html#aef7bc60086c2e7b4cbe65a2a37f38039',1,'INTELLI::C20Buffer']]]
+  ['append_19',['append',['../classINTELLI_1_1C20Buffer.html#aef7bc60086c2e7b4cbe65a2a37f38039',1,'INTELLI::C20Buffer::append(dataType da)'],['../classINTELLI_1_1C20Buffer.html#a29d6f38ed0163cbded23ed74ba9dc606',1,'INTELLI::C20Buffer::append(dataType *da, size_t len)']]]
 ];

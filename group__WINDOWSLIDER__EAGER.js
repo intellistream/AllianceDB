@@ -12,7 +12,6 @@ var group__WINDOWSLIDER__EAGER =
       [ "getJoinResult", "classINTELLI_1_1AbstractEagerWS.html#ab52b4d84a044eda2373c75de834ec33f", null ],
       [ "initJoinProcessors", "classINTELLI_1_1AbstractEagerWS.html#a6d738ae8710d91c3a308a03c33ca7f46", null ],
       [ "inlineMain", "classINTELLI_1_1AbstractEagerWS.html#af365f0a910be67fec2eafb7dfd5abbfd", null ],
-      [ "oldestWindowBelong", "classINTELLI_1_1AbstractEagerWS.html#ac4c4b693a4334c68d748eb1779016205", null ],
       [ "terminateJoinProcessors", "classINTELLI_1_1AbstractEagerWS.html#ac7b4649ea209b11bc7a63fa6c4adf5e3", null ],
       [ "waitAckFromJoinProcessors", "classINTELLI_1_1AbstractEagerWS.html#a5bb123ffbbe7c54290415dde2467ba2e", null ],
       [ "weightedPartitionSizeFinal", "classINTELLI_1_1AbstractEagerWS.html#a3140be365c4b114396da561a958f89ea", null ],
@@ -31,5 +30,14 @@ var group__WINDOWSLIDER__EAGER =
       [ "waitAckFromJoinProcessors", "classINTELLI_1_1HandShakeWS.html#a760365d54e8daf88652ff95c4e333815", null ],
       [ "initBar", "classINTELLI_1_1HandShakeWS.html#ad3ad2b91800b21b5357024d874d337d4", null ],
       [ "jpPtr", "classINTELLI_1_1HandShakeWS.html#ac518a1842715b51757844d732ea0b655", null ]
+    ] ],
+    [ "SplitJoinWS", "classINTELLI_1_1SplitJoinWS.html", [
+      [ "SplitJoinWS", "classINTELLI_1_1SplitJoinWS.html#ac2d791aabdd7235f0e8a3421c35b1f1f", null ],
+      [ "SplitJoinWS", "classINTELLI_1_1SplitJoinWS.html#a2de8d795797fd065f7240c8bc819a13b", null ],
+      [ "~SplitJoinWS", "classINTELLI_1_1SplitJoinWS.html#ab12de655f930cd1dd20253c57ed861f0", null ],
+      [ "getJoinResult", "classINTELLI_1_1SplitJoinWS.html#abf5ffd526f1428b03e43016877ddff60", null ],
+      [ "initJoinProcessors", "classINTELLI_1_1SplitJoinWS.html#a895ee579159ed35c46f095c00a739cbf", null ],
+      [ "terminateJoinProcessors", "classINTELLI_1_1SplitJoinWS.html#ace8c6224b5110702d692db61e08aee9f", null ],
+      [ "waitAckFromJoinProcessors", "classINTELLI_1_1SplitJoinWS.html#a599ba60fc4aa4aa93fbd377aa4a97f15", null ]
     ] ]
 ];

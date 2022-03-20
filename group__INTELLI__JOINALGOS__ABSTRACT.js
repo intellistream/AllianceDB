@@ -21,6 +21,7 @@ var group__INTELLI__JOINALGOS__ABSTRACT =
     ] ],
     [ "join_algo_index_t", "group__INTELLI__JOINALGOS__ABSTRACT.html#gaa470c6e5ae35f2d8e47dcf42b3fee89b", [
       [ "JOINALGO_NULL", "namespaceINTELLI.html#gaa470c6e5ae35f2d8e47dcf42b3fee89ba5bf3dd4d223da796aa92df562931e24b", null ],
+      [ "JOINALGO_NESTEDLOOP", "namespaceINTELLI.html#gaa470c6e5ae35f2d8e47dcf42b3fee89ba42c930260bed60c9659c39783b7bbe71", null ],
       [ "JOINALGO_NPJ", "namespaceINTELLI.html#gaa470c6e5ae35f2d8e47dcf42b3fee89ba7259d925f491baa014860e5de4d0122e", null ],
       [ "JOINALGO_NPJ_SINGLE", "namespaceINTELLI.html#gaa470c6e5ae35f2d8e47dcf42b3fee89badd9f81e05f9214db780c96450f642b58", null ]
     ] ]

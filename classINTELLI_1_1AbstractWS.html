@@ -95,6 +95,7 @@ $(document).ready(function(){initNavTree('classINTELLI_1_1AbstractWS.html',''); 
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classINTELLI_1_1AbstractWS-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -111,10 +112,12 @@ Inheritance diagram for INTELLI::AbstractWS:</div>
 <div class="dyncontent">
 <div class="center"><img src="classINTELLI_1_1AbstractWS__inherit__graph.png" border="0" usemap="#aINTELLI_1_1AbstractWS_inherit__map" alt="Inheritance graph"/></div>
 <map name="aINTELLI_1_1AbstractWS_inherit__map" id="aINTELLI_1_1AbstractWS_inherit__map">
-<area shape="rect" title="An abstraction of window slider, also inherited by both eager and lazy." alt="" coords="129,5,283,32"/>
-<area shape="rect" href="classINTELLI_1_1AbstractEagerWS.html" title="An abstraction of eager window slider (i.e., the CellJoin), also inherited by other eager window slid..." alt="" coords="5,80,196,107"/>
-<area shape="rect" href="classINTELLI_1_1AbstractLazyWS.html" title="An abstraction of lazy window slider, also inherited by other lazy window slider." alt="" coords="220,80,403,107"/>
-<area shape="rect" href="classINTELLI_1_1HandShakeWS.html" title="The window slider especially for handshake join." alt="" coords="15,155,187,181"/>
+<area shape="rect" title="An abstraction of window slider, also inherited by both eager and lazy." alt="" coords="5,81,159,108"/>
+<area shape="rect" href="classINTELLI_1_1AbstractEagerWS.html" title="An abstraction of eager window slider (i.e., the CellJoin), also inherited by other eager window slid..." alt="" coords="207,5,397,32"/>
+<area shape="rect" href="classINTELLI_1_1AbstractLazyWS.html" title="An abstraction of lazy window slider, also inherited by other lazy window slider." alt="" coords="211,56,393,83"/>
+<area shape="rect" href="classINTELLI_1_1SplitJoinWS.html" title="The eager window slider of split join." alt="" coords="226,107,378,133"/>
+<area shape="rect" href="classINTELLI_1_1VerifyWS.html" title="The single&#45;thread window slider used for verify results of other WS." alt="" coords="234,157,370,184"/>
+<area shape="rect" href="classINTELLI_1_1HandShakeWS.html" title="The window slider especially for handshake join." alt="" coords="445,5,617,32"/>
 </map>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <div class="dynheader">
@@ -192,9 +195,18 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <tr class="memitem:a9079b1a876f5aaa050e74826547ed556"><td class="memItemLeft" align="right" valign="top">struct timeval&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classINTELLI_1_1AbstractWS.html#a9079b1a876f5aaa050e74826547ed556">getSysTime</a> ()</td></tr>
 <tr class="memdesc:a9079b1a876f5aaa050e74826547ed556"><td class="mdescLeft">&#160;</td><td class="mdescRight">to get the inline timee structure, the timeSys member  <a href="classINTELLI_1_1AbstractWS.html#a9079b1a876f5aaa050e74826547ed556">More...</a><br /></td></tr>
 <tr class="separator:a9079b1a876f5aaa050e74826547ed556"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af3635344f706873edb4ffad461264c00"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classINTELLI_1_1AbstractWS.html#af3635344f706873edb4ffad461264c00">setSysTime</a> (struct timeval tv)</td></tr>
+<tr class="memdesc:af3635344f706873edb4ffad461264c00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the time structure value ,the timeSys member.  <a href="classINTELLI_1_1AbstractWS.html#af3635344f706873edb4ffad461264c00">More...</a><br /></td></tr>
+<tr class="separator:af3635344f706873edb4ffad461264c00"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa79a8204e394ed4c8461ab399dadebba"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classINTELLI_1_1AbstractWS.html#aa79a8204e394ed4c8461ab399dadebba">getName</a> ()</td></tr>
 <tr class="memdesc:aa79a8204e394ed4c8461ab399dadebba"><td class="mdescLeft">&#160;</td><td class="mdescRight">get the name of the slider  <a href="classINTELLI_1_1AbstractWS.html#aa79a8204e394ed4c8461ab399dadebba">More...</a><br /></td></tr>
 <tr class="separator:aa79a8204e394ed4c8461ab399dadebba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:ac82a9a9caf4799527a065e329198c071"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classINTELLI_1_1AbstractWS.html#ac82a9a9caf4799527a065e329198c071">oldestWindowBelong</a> (size_t ts)</td></tr>
+<tr class="memdesc:ac82a9a9caf4799527a065e329198c071"><td class="mdescLeft">&#160;</td><td class="mdescRight">To get the possible oldest a time stamp belongs to.  <a href="classINTELLI_1_1AbstractWS.html#ac82a9a9caf4799527a065e329198c071">More...</a><br /></td></tr>
+<tr class="separator:ac82a9a9caf4799527a065e329198c071"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
@@ -404,7 +416,7 @@ string&#160;</td><td class="memItemRight" valign="bottom"><b>nameTag</b></td></t
 <dl class="section return"><dt>Returns</dt><dd>how many tuples are joined </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>only called after all join processors are stopped ,use <a class="el" href="classINTELLI_1_1AbstractWS.html#aea6a0ca5c3f10ba53dc48e12b0d236a4">terminateJoinProcessors</a> to achieve this </dd></dl>
 
-<p>Reimplemented in <a class="el" href="classINTELLI_1_1HandShakeWS.html#aa946f8a8d38ac33855744693a24aebf6">INTELLI::HandShakeWS</a>, <a class="el" href="group__WINDOWSLIDER__LAZY.html#ga4e2f4784c4c4767545c1278a35a98172">INTELLI::AbstractLazyWS</a>, and <a class="el" href="classINTELLI_1_1AbstractEagerWS.html#ab52b4d84a044eda2373c75de834ec33f">INTELLI::AbstractEagerWS</a>.</p>
+<p>Reimplemented in <a class="el" href="classINTELLI_1_1VerifyWS.html#a0c6463e4b49ce26cd04a76dfc89a7d29">INTELLI::VerifyWS</a>, <a class="el" href="classINTELLI_1_1SplitJoinWS.html#abf5ffd526f1428b03e43016877ddff60">INTELLI::SplitJoinWS</a>, <a class="el" href="classINTELLI_1_1HandShakeWS.html#aa946f8a8d38ac33855744693a24aebf6">INTELLI::HandShakeWS</a>, <a class="el" href="group__WINDOWSLIDER__LAZY.html#ga4e2f4784c4c4767545c1278a35a98172">INTELLI::AbstractLazyWS</a>, and <a class="el" href="classINTELLI_1_1AbstractEagerWS.html#ab52b4d84a044eda2373c75de834ec33f">INTELLI::AbstractEagerWS</a>.</p>
 
 </div>
 </div>
@@ -546,7 +558,7 @@ string&#160;</td><td class="memItemRight" valign="bottom"><b>nameTag</b></td></t
 <p>to init the initJoinProcessors </p>
 <dl class="section note"><dt>Note</dt><dd>only after this is called can we start to feed tuples </dd></dl>
 
-<p>Reimplemented in <a class="el" href="classINTELLI_1_1HandShakeWS.html#a38323fd26cc8ee7b12abe311a09aaf78">INTELLI::HandShakeWS</a>, <a class="el" href="group__WINDOWSLIDER__LAZY.html#gad34829b0a4c7aba5437daec068428bf6">INTELLI::AbstractLazyWS</a>, and <a class="el" href="classINTELLI_1_1AbstractEagerWS.html#a6d738ae8710d91c3a308a03c33ca7f46">INTELLI::AbstractEagerWS</a>.</p>
+<p>Reimplemented in <a class="el" href="classINTELLI_1_1VerifyWS.html#aebdc3ad8bac6ea149d0ac2225a526680">INTELLI::VerifyWS</a>, <a class="el" href="classINTELLI_1_1SplitJoinWS.html#a895ee579159ed35c46f095c00a739cbf">INTELLI::SplitJoinWS</a>, <a class="el" href="classINTELLI_1_1HandShakeWS.html#a38323fd26cc8ee7b12abe311a09aaf78">INTELLI::HandShakeWS</a>, <a class="el" href="group__WINDOWSLIDER__LAZY.html#gad34829b0a4c7aba5437daec068428bf6">INTELLI::AbstractLazyWS</a>, and <a class="el" href="classINTELLI_1_1AbstractEagerWS.html#a6d738ae8710d91c3a308a03c33ca7f46">INTELLI::AbstractEagerWS</a>.</p>
 
 </div>
 </div>
@@ -603,6 +615,41 @@ string&#160;</td><td class="memItemRight" valign="bottom"><b>nameTag</b></td></t
 
 <p>to read the window type </p>
 <dl class="section return"><dt>Returns</dt><dd>wether the slider is time-baesd </dd></dl>
+
+</div>
+</div>
+<a id="ac82a9a9caf4799527a065e329198c071"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac82a9a9caf4799527a065e329198c071">&#9670;&nbsp;</a></span>oldestWindowBelong()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t INTELLI::AbstractWS::oldestWindowBelong </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>ts</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>To get the possible oldest a time stamp belongs to. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ts</td><td>The time stamp </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The window number, start from 0 </dd></dl>
 
 </div>
 </div>
@@ -702,6 +749,40 @@ string&#160;</td><td class="memItemRight" valign="bottom"><b>nameTag</b></td></t
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">sli</td><td>The assigned length </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="af3635344f706873edb4ffad461264c00"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3635344f706873edb4ffad461264c00">&#9670;&nbsp;</a></span>setSysTime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void INTELLI::AbstractWS::setSysTime </td>
+          <td>(</td>
+          <td class="paramtype">struct timeval&#160;</td>
+          <td class="paramname"><em>tv</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set the time structure value ,the timeSys member. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">tv</td><td>The value </td></tr>
   </table>
   </dd>
 </dl>

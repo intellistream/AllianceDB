@@ -112,14 +112,17 @@ Inheritance diagram for INTELLI::AbstractC20Thread:</div>
 <div class="dyncontent">
 <div class="center"><img src="classINTELLI_1_1AbstractC20Thread__inherit__graph.png" border="0" usemap="#aINTELLI_1_1AbstractC20Thread_inherit__map" alt="Inheritance graph"/></div>
 <map name="aINTELLI_1_1AbstractC20Thread_inherit__map" id="aINTELLI_1_1AbstractC20Thread_inherit__map">
-<area shape="rect" title="The base class and abstraction of C++20 thread, and it can be derived into other threads." alt="" coords="5,81,208,108"/>
-<area shape="rect" href="classINTELLI_1_1AbstractEagerWS.html" title="An abstraction of eager window slider (i.e., the CellJoin), also inherited by other eager window slid..." alt="" coords="256,5,447,32"/>
-<area shape="rect" href="classINTELLI_1_1AbstractJP.html" title="The basic class of join processor." alt="" coords="279,56,423,83"/>
-<area shape="rect" href="classINTELLI_1_1AbstractLazyWS.html" title="An abstraction of lazy window slider, also inherited by other lazy window slider." alt="" coords="260,107,443,133"/>
-<area shape="rect" href="classINTELLI_1_1NPJ__thread.html" title="The thread used by NPJ." alt="" coords="277,157,426,184"/>
+<area shape="rect" title="The base class and abstraction of C++20 thread, and it can be derived into other threads." alt="" coords="5,157,208,184"/>
+<area shape="rect" href="classINTELLI_1_1AbstractEagerWS.html" title="An abstraction of eager window slider (i.e., the CellJoin), also inherited by other eager window slid..." alt="" coords="256,19,447,45"/>
+<area shape="rect" href="classINTELLI_1_1AbstractJP.html" title="The basic class of join processor." alt="" coords="279,81,423,108"/>
+<area shape="rect" href="classINTELLI_1_1AbstractLazyWS.html" title="An abstraction of lazy window slider, also inherited by other lazy window slider." alt="" coords="260,132,443,159"/>
+<area shape="rect" href="classINTELLI_1_1NPJ__thread.html" title="The thread used by NPJ." alt="" coords="277,183,426,209"/>
+<area shape="rect" href="classINTELLI_1_1SplitJoinWS.html" title="The eager window slider of split join." alt="" coords="275,233,427,260"/>
+<area shape="rect" href="classINTELLI_1_1VerifyWS.html" title="The single&#45;thread window slider used for verify results of other WS." alt="" coords="283,284,419,311"/>
 <area shape="rect" href="classINTELLI_1_1HandShakeWS.html" title="The window slider especially for handshake join." alt="" coords="496,5,668,32"/>
 <area shape="rect" href="classINTELLI_1_1AbstractLazyJP.html" title="The basic class of lazy join processor." alt="" coords="495,56,669,83"/>
 <area shape="rect" href="classINTELLI_1_1CellJoinJP.html" title="The class of cell join join processor." alt="" coords="513,107,651,133"/>
+<area shape="rect" href="classINTELLI_1_1SplitJoinJP.html" title="The class of split join join processor." alt="" coords="511,157,653,184"/>
 <area shape="rect" href="classINTELLI_1_1HandShakeHashJP.html" title=" " alt="" coords="717,107,913,133"/>
 </map>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
@@ -185,7 +188,7 @@ std::shared_ptr&lt; std::thread &gt;&#160;</td><td class="memItemRight" valign="
 <p>The inline 'main" function of thread, as an interface. </p>
 <dl class="section note"><dt>Note</dt><dd>Normally re-write this in derived classes </dd></dl>
 
-<p>Reimplemented in <a class="el" href="group__WINDOWSLIDER__LAZY.html#ga4ba7199dbd75c94d9e44b109224dba9d">INTELLI::AbstractLazyWS</a>, <a class="el" href="classINTELLI_1_1AbstractEagerWS.html#af365f0a910be67fec2eafb7dfd5abbfd">INTELLI::AbstractEagerWS</a>, <a class="el" href="classINTELLI_1_1CellJoinJP.html#a24eaa17611556c5d0bf49a9bab21b36c">INTELLI::CellJoinJP</a>, <a class="el" href="classINTELLI_1_1AbstractLazyJP.html#a9266513bf15b591d02dd8df5e984433e">INTELLI::AbstractLazyJP</a>, <a class="el" href="classINTELLI_1_1AbstractJP.html#add2f3db4ef9b36c76bdf0f39dd02ebf4">INTELLI::AbstractJP</a>, and <a class="el" href="group__INTELLI__JOINALGOS__NPJ.html#ga196d6f5b13d5e64d034e8793bea1b5c8">INTELLI::NPJ_thread</a>.</p>
+<p>Reimplemented in <a class="el" href="classINTELLI_1_1VerifyWS.html#a9d7f2ccbfd20af8397de6e06ab5321b1">INTELLI::VerifyWS</a>, <a class="el" href="group__WINDOWSLIDER__LAZY.html#ga4ba7199dbd75c94d9e44b109224dba9d">INTELLI::AbstractLazyWS</a>, <a class="el" href="classINTELLI_1_1AbstractEagerWS.html#af365f0a910be67fec2eafb7dfd5abbfd">INTELLI::AbstractEagerWS</a>, <a class="el" href="classINTELLI_1_1SplitJoinJP.html#a0c820615b82047e62cee94afe227e514">INTELLI::SplitJoinJP</a>, <a class="el" href="classINTELLI_1_1CellJoinJP.html#a24eaa17611556c5d0bf49a9bab21b36c">INTELLI::CellJoinJP</a>, <a class="el" href="classINTELLI_1_1AbstractLazyJP.html#a9266513bf15b591d02dd8df5e984433e">INTELLI::AbstractLazyJP</a>, <a class="el" href="classINTELLI_1_1AbstractJP.html#add2f3db4ef9b36c76bdf0f39dd02ebf4">INTELLI::AbstractJP</a>, and <a class="el" href="group__INTELLI__JOINALGOS__NPJ.html#ga196d6f5b13d5e64d034e8793bea1b5c8">INTELLI::NPJ_thread</a>.</p>
 
 </div>
 </div>

@@ -113,10 +113,11 @@ Inheritance diagram for INTELLI::AbstractJP:</div>
 <div class="dyncontent">
 <div class="center"><img src="classINTELLI_1_1AbstractJP__inherit__graph.png" border="0" usemap="#aINTELLI_1_1AbstractJP_inherit__map" alt="Inheritance graph"/></div>
 <map name="aINTELLI_1_1AbstractJP_inherit__map" id="aINTELLI_1_1AbstractJP_inherit__map">
-<area shape="rect" title="The basic class of join processor." alt="" coords="111,80,255,107"/>
+<area shape="rect" title="The basic class of join processor." alt="" coords="202,80,346,107"/>
 <area shape="rect" href="classINTELLI_1_1AbstractLazyJP.html" title="The basic class of lazy join processor." alt="" coords="5,155,180,181"/>
 <area shape="rect" href="classINTELLI_1_1CellJoinJP.html" title="The class of cell join join processor." alt="" coords="205,155,343,181"/>
-<area shape="rect" href="classINTELLI_1_1AbstractC20Thread.html" title="The base class and abstraction of C++20 thread, and it can be derived into other threads." alt="" coords="82,5,285,32"/>
+<area shape="rect" href="classINTELLI_1_1SplitJoinJP.html" title="The class of split join join processor." alt="" coords="368,155,511,181"/>
+<area shape="rect" href="classINTELLI_1_1AbstractC20Thread.html" title="The base class and abstraction of C++20 thread, and it can be derived into other threads." alt="" coords="173,5,375,32"/>
 <area shape="rect" href="classINTELLI_1_1HandShakeHashJP.html" title=" " alt="" coords="176,229,372,256"/>
 </map>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
@@ -125,16 +126,16 @@ Collaboration diagram for INTELLI::AbstractJP:</div>
 <div class="dyncontent">
 <div class="center"><img src="classINTELLI_1_1AbstractJP__coll__graph.png" border="0" usemap="#aINTELLI_1_1AbstractJP_coll__map" alt="Collaboration graph"/></div>
 <map name="aINTELLI_1_1AbstractJP_coll__map" id="aINTELLI_1_1AbstractJP_coll__map">
-<area shape="rect" title="The basic class of join processor." alt="" coords="685,217,829,244"/>
+<area shape="rect" title="The basic class of join processor." alt="" coords="685,247,829,273"/>
 <area shape="rect" href="classINTELLI_1_1AbstractC20Thread.html" title="The base class and abstraction of C++20 thread, and it can be derived into other threads." alt="" coords="312,7,515,33"/>
 <area shape="rect" title=" " alt="" coords="5,7,196,33"/>
 <area shape="rect" title=" " alt="" coords="309,57,517,84"/>
 <area shape="rect" title=" " alt="" coords="329,108,497,164"/>
-<area shape="rect" title=" " alt="" coords="383,189,443,216"/>
-<area shape="rect" title=" " alt="" coords="394,240,433,267"/>
-<area shape="rect" title=" " alt="" coords="388,291,439,317"/>
-<area shape="rect" title=" " alt="" coords="357,341,470,368"/>
-<area shape="rect" title=" " alt="" coords="329,392,497,448"/>
+<area shape="rect" title=" " alt="" coords="383,219,443,245"/>
+<area shape="rect" title=" " alt="" coords="394,269,433,296"/>
+<area shape="rect" title=" " alt="" coords="388,320,439,347"/>
+<area shape="rect" title=" " alt="" coords="357,371,470,397"/>
+<area shape="rect" title=" " alt="" coords="329,421,497,477"/>
 </map>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
@@ -158,12 +159,15 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a65fa93de1310e3a6c9b08a8fb9962afd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classINTELLI_1_1AbstractJP.html#a65fa93de1310e3a6c9b08a8fb9962afd">setWindowLen</a> (size_t wl)</td></tr>
 <tr class="memdesc:a65fa93de1310e3a6c9b08a8fb9962afd"><td class="mdescLeft">&#160;</td><td class="mdescRight">to set the length of window  <a href="classINTELLI_1_1AbstractJP.html#a65fa93de1310e3a6c9b08a8fb9962afd">More...</a><br /></td></tr>
 <tr class="separator:a65fa93de1310e3a6c9b08a8fb9962afd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5582f32c64421b4202a4700ab8b11043"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classINTELLI_1_1AbstractJP.html#a5582f32c64421b4202a4700ab8b11043">feedTupleS</a> (<a class="el" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> ts)</td></tr>
-<tr class="memdesc:a5582f32c64421b4202a4700ab8b11043"><td class="mdescLeft">&#160;</td><td class="mdescRight">feed a tuple s into the s input queue  <a href="classINTELLI_1_1AbstractJP.html#a5582f32c64421b4202a4700ab8b11043">More...</a><br /></td></tr>
-<tr class="separator:a5582f32c64421b4202a4700ab8b11043"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a45c1214121cc1c4f39e8ab28468db3e1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classINTELLI_1_1AbstractJP.html#a45c1214121cc1c4f39e8ab28468db3e1">feedTupleR</a> (<a class="el" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> tr)</td></tr>
-<tr class="memdesc:a45c1214121cc1c4f39e8ab28468db3e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">feed a tuple r into the r input queue  <a href="classINTELLI_1_1AbstractJP.html#a45c1214121cc1c4f39e8ab28468db3e1">More...</a><br /></td></tr>
-<tr class="separator:a45c1214121cc1c4f39e8ab28468db3e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac61996d5bd251442e0601a0e24152863"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classINTELLI_1_1AbstractJP.html#ac61996d5bd251442e0601a0e24152863">setGlobalWindow</a> (size_t wlen, size_t sli)</td></tr>
+<tr class="memdesc:ac61996d5bd251442e0601a0e24152863"><td class="mdescLeft">&#160;</td><td class="mdescRight">set the window parameters of global window  <a href="classINTELLI_1_1AbstractJP.html#ac61996d5bd251442e0601a0e24152863">More...</a><br /></td></tr>
+<tr class="separator:ac61996d5bd251442e0601a0e24152863"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5463b31dc50ed78e97776777962c3f51"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classINTELLI_1_1AbstractJP.html#a5463b31dc50ed78e97776777962c3f51">feedTupleS</a> (<a class="el" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> ts)</td></tr>
+<tr class="memdesc:a5463b31dc50ed78e97776777962c3f51"><td class="mdescLeft">&#160;</td><td class="mdescRight">feed a tuple s into the s input queue  <a href="classINTELLI_1_1AbstractJP.html#a5463b31dc50ed78e97776777962c3f51">More...</a><br /></td></tr>
+<tr class="separator:a5463b31dc50ed78e97776777962c3f51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a226b064bc4a08c2d5f4a82354187a70c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classINTELLI_1_1AbstractJP.html#a226b064bc4a08c2d5f4a82354187a70c">feedTupleR</a> (<a class="el" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> tr)</td></tr>
+<tr class="memdesc:a226b064bc4a08c2d5f4a82354187a70c"><td class="mdescLeft">&#160;</td><td class="mdescRight">feed a tuple r into the r input queue  <a href="classINTELLI_1_1AbstractJP.html#a226b064bc4a08c2d5f4a82354187a70c">More...</a><br /></td></tr>
+<tr class="separator:a226b064bc4a08c2d5f4a82354187a70c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3484f23779b574d164698e010735cf19"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classINTELLI_1_1AbstractJP.html#a3484f23779b574d164698e010735cf19">setTimeVal</a> (struct timeval tv)</td></tr>
 <tr class="memdesc:a3484f23779b574d164698e010735cf19"><td class="mdescLeft">&#160;</td><td class="mdescRight">set the timeval struct  <a href="classINTELLI_1_1AbstractJP.html#a3484f23779b574d164698e010735cf19">More...</a><br /></td></tr>
 <tr class="separator:a3484f23779b574d164698e010735cf19"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -206,6 +210,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>sendAck</b> ()</td></
 <tr class="memitem:add2f3db4ef9b36c76bdf0f39dd02ebf4"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classINTELLI_1_1AbstractJP.html#add2f3db4ef9b36c76bdf0f39dd02ebf4">inlineMain</a> ()</td></tr>
 <tr class="memdesc:add2f3db4ef9b36c76bdf0f39dd02ebf4"><td class="mdescLeft">&#160;</td><td class="mdescRight">The 'main' function of AbstractP.  <a href="classINTELLI_1_1AbstractJP.html#add2f3db4ef9b36c76bdf0f39dd02ebf4">More...</a><br /></td></tr>
 <tr class="separator:add2f3db4ef9b36c76bdf0f39dd02ebf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad950132dc82bbb5d138ed6ad3155457f"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classINTELLI_1_1AbstractJP.html#ad950132dc82bbb5d138ed6ad3155457f">oldestWindowBelong</a> (size_t ts)</td></tr>
+<tr class="memdesc:ad950132dc82bbb5d138ed6ad3155457f"><td class="mdescLeft">&#160;</td><td class="mdescRight">To get the possible oldest a time stamp belongs to.  <a href="classINTELLI_1_1AbstractJP.html#ad950132dc82bbb5d138ed6ad3155457f">More...</a><br /></td></tr>
+<tr class="separator:ad950132dc82bbb5d138ed6ad3155457f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
@@ -232,6 +239,12 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>timeBased</b> = false
 <tr class="memitem:a45358b9c15286cf3ed1b86d0f04ba755"><td class="memItemLeft" align="right" valign="top"><a id="a45358b9c15286cf3ed1b86d0f04ba755"></a>
 size_t&#160;</td><td class="memItemRight" valign="bottom"><b>windowLen</b> = 0</td></tr>
 <tr class="separator:a45358b9c15286cf3ed1b86d0f04ba755"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2270de432f4673b2aef7421dd31b22b"><td class="memItemLeft" align="right" valign="top"><a id="ab2270de432f4673b2aef7421dd31b22b"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>windowLenGlobal</b> = 0</td></tr>
+<tr class="separator:ab2270de432f4673b2aef7421dd31b22b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2069a4200f52c3f18dc7742ae20dd3c0"><td class="memItemLeft" align="right" valign="top"><a id="a2069a4200f52c3f18dc7742ae20dd3c0"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>slideLenGlobal</b> = 0</td></tr>
+<tr class="separator:a2069a4200f52c3f18dc7742ae20dd3c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aae2aed166a39813bbbbe39b19d86b81a"><td class="memItemLeft" align="right" valign="top"><a id="aae2aed166a39813bbbbe39b19d86b81a"></a>
 size_t&#160;</td><td class="memItemRight" valign="bottom"><b>joinedResult</b> = 0</td></tr>
 <tr class="separator:aae2aed166a39813bbbbe39b19d86b81a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -247,8 +260,8 @@ std::shared_ptr&lt; std::thread &gt;&#160;</td><td class="memItemRight" valign="
 <div class="textblock"><p>The basic class of join processor. </p>
 <dl class="section note"><dt>Note</dt><dd>first <a class="el" href="classINTELLI_1_1AbstractJP.html#a659ef72dcf210bb0bc9b90da235266de">init</a> the JP before <a class="el" href="classINTELLI_1_1AbstractC20Thread.html#a37df714f21a13ce2f5b6879adf6e002a">startThread</a> </dd></dl>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a45c1214121cc1c4f39e8ab28468db3e1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a45c1214121cc1c4f39e8ab28468db3e1">&#9670;&nbsp;</a></span>feedTupleR()</h2>
+<a id="a226b064bc4a08c2d5f4a82354187a70c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a226b064bc4a08c2d5f4a82354187a70c">&#9670;&nbsp;</a></span>feedTupleR()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -257,7 +270,7 @@ std::shared_ptr&lt; std::thread &gt;&#160;</td><td class="memItemRight" valign="
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void INTELLI::AbstractJP::feedTupleR </td>
+          <td class="memname">virtual void INTELLI::AbstractJP::feedTupleR </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a>&#160;</td>
           <td class="paramname"><em>tr</em></td><td>)</td>
@@ -266,7 +279,7 @@ std::shared_ptr&lt; std::thread &gt;&#160;</td><td class="memItemRight" valign="
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -279,10 +292,12 @@ std::shared_ptr&lt; std::thread &gt;&#160;</td><td class="memItemRight" valign="
   </dd>
 </dl>
 
+<p>Reimplemented in <a class="el" href="classINTELLI_1_1HandShakeHashJP.html#a8d2c8c00e300e95210e6b8edda153ded">INTELLI::HandShakeHashJP</a>.</p>
+
 </div>
 </div>
-<a id="a5582f32c64421b4202a4700ab8b11043"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5582f32c64421b4202a4700ab8b11043">&#9670;&nbsp;</a></span>feedTupleS()</h2>
+<a id="a5463b31dc50ed78e97776777962c3f51"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5463b31dc50ed78e97776777962c3f51">&#9670;&nbsp;</a></span>feedTupleS()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -291,7 +306,7 @@ std::shared_ptr&lt; std::thread &gt;&#160;</td><td class="memItemRight" valign="
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void INTELLI::AbstractJP::feedTupleS </td>
+          <td class="memname">virtual void INTELLI::AbstractJP::feedTupleS </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a>&#160;</td>
           <td class="paramname"><em>ts</em></td><td>)</td>
@@ -300,7 +315,7 @@ std::shared_ptr&lt; std::thread &gt;&#160;</td><td class="memItemRight" valign="
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -312,6 +327,8 @@ std::shared_ptr&lt; std::thread &gt;&#160;</td><td class="memItemRight" valign="
   </table>
   </dd>
 </dl>
+
+<p>Reimplemented in <a class="el" href="classINTELLI_1_1SplitJoinJP.html#a795c1d80e9d738cd73c8ac6fd2dc1d8a">INTELLI::SplitJoinJP</a>, and <a class="el" href="classINTELLI_1_1HandShakeHashJP.html#a9cbf64d39c6e8f25f39d12d4692fbfef">INTELLI::HandShakeHashJP</a>.</p>
 
 </div>
 </div>
@@ -415,13 +432,13 @@ std::shared_ptr&lt; std::thread &gt;&#160;</td><td class="memItemRight" valign="
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">sLen</td><td>The length of S queue and buffer </td></tr>
-    <tr><td class="paramname">rLen</td><td>The length of S queue and buffer </td></tr>
+    <tr><td class="paramname">rLen</td><td>The length of R queue and buffer </td></tr>
     <tr><td class="paramname">_sysId</td><td>The system id </td></tr>
   </table>
   </dd>
 </dl>
 
-<p>Reimplemented in <a class="el" href="classINTELLI_1_1HandShakeHashJP.html#a2930a88a8a08923089b3a99dd32e970a">INTELLI::HandShakeHashJP</a>, <a class="el" href="classINTELLI_1_1CellJoinJP.html#a33fa35f2226b14a04777b863d24a55ed">INTELLI::CellJoinJP</a>, and <a class="el" href="classINTELLI_1_1AbstractLazyJP.html#a8119fb0893c72ce401746af97d94e772">INTELLI::AbstractLazyJP</a>.</p>
+<p>Reimplemented in <a class="el" href="classINTELLI_1_1SplitJoinJP.html#a014200114b368ca6913d52b2f964cd21">INTELLI::SplitJoinJP</a>, <a class="el" href="classINTELLI_1_1HandShakeHashJP.html#a2930a88a8a08923089b3a99dd32e970a">INTELLI::HandShakeHashJP</a>, <a class="el" href="classINTELLI_1_1CellJoinJP.html#a33fa35f2226b14a04777b863d24a55ed">INTELLI::CellJoinJP</a>, and <a class="el" href="classINTELLI_1_1AbstractLazyJP.html#a8119fb0893c72ce401746af97d94e772">INTELLI::AbstractLazyJP</a>.</p>
 
 </div>
 </div>
@@ -453,7 +470,7 @@ std::shared_ptr&lt; std::thread &gt;&#160;</td><td class="memItemRight" valign="
 
 <p>Reimplemented from <a class="el" href="classINTELLI_1_1AbstractC20Thread.html#a01a2c2b58a19777dc8814076efdb2552">INTELLI::AbstractC20Thread</a>.</p>
 
-<p>Reimplemented in <a class="el" href="classINTELLI_1_1CellJoinJP.html#a24eaa17611556c5d0bf49a9bab21b36c">INTELLI::CellJoinJP</a>, and <a class="el" href="classINTELLI_1_1AbstractLazyJP.html#a9266513bf15b591d02dd8df5e984433e">INTELLI::AbstractLazyJP</a>.</p>
+<p>Reimplemented in <a class="el" href="classINTELLI_1_1SplitJoinJP.html#a0c820615b82047e62cee94afe227e514">INTELLI::SplitJoinJP</a>, <a class="el" href="classINTELLI_1_1CellJoinJP.html#a24eaa17611556c5d0bf49a9bab21b36c">INTELLI::CellJoinJP</a>, and <a class="el" href="classINTELLI_1_1AbstractLazyJP.html#a9266513bf15b591d02dd8df5e984433e">INTELLI::AbstractLazyJP</a>.</p>
 
 </div>
 </div>
@@ -519,6 +536,41 @@ std::shared_ptr&lt; std::thread &gt;&#160;</td><td class="memItemRight" valign="
 
 </div>
 </div>
+<a id="ad950132dc82bbb5d138ed6ad3155457f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad950132dc82bbb5d138ed6ad3155457f">&#9670;&nbsp;</a></span>oldestWindowBelong()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t INTELLI::AbstractJP::oldestWindowBelong </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>ts</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>To get the possible oldest a time stamp belongs to. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ts</td><td>The time stamp </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The window number, start from 0 </dd></dl>
+
+</div>
+</div>
 <a id="a0a3819975e77f86f432b228b2b84b105"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0a3819975e77f86f432b228b2b84b105">&#9670;&nbsp;</a></span>setCore()</h2>
 
@@ -547,6 +599,51 @@ std::shared_ptr&lt; std::thread &gt;&#160;</td><td class="memItemRight" valign="
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">id</td><td>The core id </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ac61996d5bd251442e0601a0e24152863"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac61996d5bd251442e0601a0e24152863">&#9670;&nbsp;</a></span>setGlobalWindow()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void INTELLI::AbstractJP::setGlobalWindow </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>wlen</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>sli</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>set the window parameters of global window </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">wlen</td><td>window length </td></tr>
+    <tr><td class="paramname">sli</td><td>slide </td></tr>
   </table>
   </dd>
 </dl>
