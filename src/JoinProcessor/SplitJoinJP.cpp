@@ -9,35 +9,35 @@ void SplitJoinJP::joinS(TuplePtr ts) {
   expireR(timeNow);
   //single thread join window r and tuple s
   TuplePtrQueueLocalS->push(ts);
- /*size_t rSize = TuplePtrQueueLocalR->size();
-  for (size_t i = 0; i < rSize; i++) {
-    if (TuplePtrQueueLocalR->front()[i]->key == ts->key) {
-      joinedResult++;
-    }
-  }*/
-  size_t rSize = windowR.size();
-  for (size_t i = 0; i < rSize; i++) {
-    if (windowR.data()[i]->key == ts->key) {
-      joinedResult++;
-    }
-  }
- // usleep(60);
-  /*joinedResult +=
-      myAlgo->findAlgo(JOINALGO_NESTEDLOOP)->join(TuplePtrQueueLocalR->front(), ts, TuplePtrQueueLocalR->size(), 2);*/
+  /*size_t rSize = TuplePtrQueueLocalR->size();
+   for (size_t i = 0; i < rSize; i++) {
+     if (TuplePtrQueueLocalR->front()[i]->key == ts->key) {
+       joinedResult++;
+     }
+   }*/
+  /* size_t rSize = windowR.size();
+   for (size_t i = 0; i < rSize; i++) {
+     if (windowR.data()[i]->key == ts->key) {
+       joinedResult++;
+     }
+   }*/
+  // usleep(60);
+  joinedResult +=
+      myAlgo->findAlgo(JOINALGO_NESTEDLOOP)->join(TuplePtrQueueLocalR->front(), ts, TuplePtrQueueLocalR->size(), 2);
 }
 void SplitJoinJP::joinR(TuplePtr tr) {
   size_t timeNow = tr->subKey;
   expireS(timeNow);
   TuplePtrQueueLocalR->push(tr);
-  /*joinedResult +=
-      myAlgo->findAlgo(JOINALGO_NESTEDLOOP)->join(TuplePtrQueueLocalS->front(), tr, TuplePtrQueueLocalS->size(), 2);*/
+  joinedResult +=
+      myAlgo->findAlgo(JOINALGO_NESTEDLOOP)->join(TuplePtrQueueLocalS->front(), tr, TuplePtrQueueLocalS->size(), 2);
   //single thread join window s and tuple r
-  size_t sSize = windowS.size();
+  /*size_t sSize = windowS.size();
    for (size_t i = 0; i < sSize; i++) {
      if (windowS.data()[i]->key == tr->key) {
        joinedResult++;
      }
-   }
+   }*/
 // usleep(60);
 }
 void SplitJoinJP::expireS(size_t cond) {
@@ -57,7 +57,7 @@ void SplitJoinJP::expireS(size_t cond) {
       }
     }
   }
-  windowS.reset();
+ /* windowS.reset();
   if(TuplePtrQueueLocalS->size()>0)
   {
     size_t allLen=TuplePtrQueueLocalS->size();
@@ -65,14 +65,11 @@ void SplitJoinJP::expireS(size_t cond) {
     //size_t validLen=0;
     for(size_t i=0;i<allLen;i++)
     {  TuplePtr tp = TuplePtrQueueLocalS->front()[i];
-     /* if(tp->subKey<=cond)
-      {
 
-      }*/
       windowS.append(tp);
     }
     //windowS.append(TuplePtrQueueLocalS->front(),validLen);
-  }
+  }*/
 }
 void SplitJoinJP::expireR(size_t cond) {
   size_t pos = 0;
@@ -93,21 +90,18 @@ void SplitJoinJP::expireR(size_t cond) {
       }
     }
   }
-  windowR.reset();
+ /* windowR.reset();
   if(TuplePtrQueueLocalR->size()>0)
   {
     size_t allLen=TuplePtrQueueLocalR->size();
     //size_t validLen=0;
     for(size_t i=0;i<allLen;i++)
     {  TuplePtr tp = TuplePtrQueueLocalR->front()[i];
-      /*if(tp->subKey<=cond)
-      {
-        windowR.append(tp);
-      }*/
+
       windowR.append(tp);
     }
     //windowS.append(TuplePtrQueueLocalS->front(),validLen);
-  }
+  }*/
 }
 void SplitJoinJP::inlineMain() {
   UtilityFunctions::bind2Core(cpuBind);
