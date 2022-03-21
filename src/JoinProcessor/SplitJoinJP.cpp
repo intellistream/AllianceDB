@@ -122,15 +122,15 @@ void SplitJoinJP::inlineMain() {
     while (!TuplePtrQueueInS->empty()) {
       TuplePtr ts = *TuplePtrQueueInS->front();
       TuplePtrQueueInS->pop();
-     /* sCnt++;
+      sCnt++;
       if (sCnt == sysId + 1) //should process this S
       {
         joinS(ts);
       }
       if (sCnt == sMax) {
         sCnt = 0;
-      }*/
-      joinS(ts);
+      }
+     // joinS(ts);
     }
     while (!TuplePtrQueueInR->empty()) {
       TuplePtr tr = *TuplePtrQueueInR->front();
