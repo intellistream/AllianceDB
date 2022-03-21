@@ -80,7 +80,7 @@ class AbstractJP : public AbstractC20Thread {
 
   }
   /**
-    * @brief To get the possible oldest a time stamp belongs to
+    * @brief To get the possible oldest window a time stamp belongs to
     * @param ts The time stamp
     * @return The window number, start from 0
     */

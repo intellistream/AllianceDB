@@ -39,7 +39,7 @@ class CellJoinJP : public AbstractJP {
   // hashtable hashtableS,hashtableR;
  protected:
   virtual void inlineMain();
-  BarrierPtr initBar = nullptr;
+
   WindowQueue windowQueueS;
   WindowQueue windowQueueR;
 
@@ -81,22 +81,7 @@ class CellJoinJP : public AbstractJP {
   void feedWindowR(WindowOfTuples wr) {
     windowQueueR->push(wr);
   }
-  // co
-  /**
-   * @brief Set up the init barrier
-   * @param barPrev The SHARED init barrier
-   */
-  void setInitBar(BarrierPtr barPrev) {
-    initBar = barPrev;
-  }
-  /**
-   * @brief Wait for the init barrier done and then contine
-   */
-  void waitInitBar(void) {
-    if (initBar) {
-      initBar->arrive_and_wait();
-    }
-  }
+
 };
 typedef std::shared_ptr<CellJoinJP> CellJoinJPPtr;
 

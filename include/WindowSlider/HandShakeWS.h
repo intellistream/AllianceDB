@@ -10,7 +10,7 @@
 #include <Utils/SPSCQueue.hpp>
 #include <time.h>
 #include <numeric>
-#include <JoinProcessor/HandShakeHashJP.h>
+#include <JoinProcessor/HandShakeJP.h>
 #include <WindowSlider/AbstractEagerWS.h>
 
 using namespace INTELLI;
@@ -31,7 +31,7 @@ class HandShakeWS : public AbstractEagerWS {
   /* data *
    */
  protected:
-  std::vector<HandShakeHashJPPtr> jpPtr;
+  std::vector<HandShakeJPPtr> jpPtr;
   INTELLI::BarrierPtr initBar;
  public:
   HandShakeWS(/* args */) {

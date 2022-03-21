@@ -30,14 +30,14 @@ class SplitJoinJP : public AbstractJP {
  * @brief local queue storage of R, used for manage R window
  */
   TuplePtrQueue TuplePtrQueueLocalR;
-  /**
+  /*
    *  @brief A 'current window' copy of TuplePtrQueueLocalS when join a tuple
    */
-  C20Buffer<TuplePtr> windowS;
-  /**
+  //C20Buffer<TuplePtr> windowS;
+  /*
    *  @brief A 'current window' copy of TuplePtrQueueLocalR when join a tuple
    */
-  C20Buffer<TuplePtr> windowR;
+ // C20Buffer<TuplePtr> windowR;
   size_t sCnt = 0;
   size_t sMax = 0;
   void expireS(size_t cond);
@@ -61,8 +61,8 @@ class SplitJoinJP : public AbstractJP {
     AbstractJP::init(sLen, rLen, _sysId);
     TuplePtrQueueLocalS = newTuplePtrQueue(sLen);
     TuplePtrQueueLocalR = newTuplePtrQueue(rLen);
-    windowS = C20Buffer<TuplePtr>(sLen);
-    windowR = C20Buffer<TuplePtr>(rLen);
+    //windowS = C20Buffer<TuplePtr>(sLen);
+   // windowR = C20Buffer<TuplePtr>(rLen);
     sCnt = 0;
   }
   /**

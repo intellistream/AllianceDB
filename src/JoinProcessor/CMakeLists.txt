@@ -3,6 +3,6 @@ add_sources(
         AbstractLazyJP.cpp
         CellJoinJP.cpp
         SplitJoinJP.cpp
-        HandShakeHashJP.cpp
+        HandShakeJP.cpp
 
 )
