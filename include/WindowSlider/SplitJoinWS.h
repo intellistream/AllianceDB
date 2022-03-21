@@ -29,11 +29,11 @@ To init and run, follow the functions below to start a WS
   \li Terminate, by @ref terminateJoinProcessors
 *
 */
-class SplitJoinWS : public AbstractWS, public AbstractC20Thread {
+class SplitJoinWS : public AbstractWS{
  private:
   /* data */
   std::vector<SplitJoinJPPtr> jps;
-  virtual void inlineMain();
+ // virtual void inlineMain();
   /**
    * @brief deliver tuple s to join processors
    * @param ts The tuple s
@@ -75,6 +75,24 @@ class SplitJoinWS : public AbstractWS, public AbstractC20Thread {
    * ,use @ref terminateJoinProcessors to achieve this
 */
   size_t getJoinResult();
+
+  /**
+* @brief to feed a tuple s
+* @param ts the tuple s
+ * @note this function is thread-safe :)
+*/
+  virtual void feedTupleS(TuplePtr ts) {
+    deliverTupleS(ts);
+  }
+  //feed the tuple R
+  /**
+* @brief to feed a tuple R
+ * @param tr the tuple r
+  * @note this function is thread-safe :)
+*/
+  virtual void feedTupleR(TuplePtr tr) {
+    deliverTupleR(tr);
+  }
 };
 }
 #endif //ALIANCEDB_INCLUDE_WINDOWSLIDER_SPLITWS_H_

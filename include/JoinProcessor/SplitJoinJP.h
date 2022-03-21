@@ -22,9 +22,21 @@ namespace INTELLI {
 class SplitJoinJP : public AbstractJP {
  protected:
   virtual void inlineMain();
+  /**
+   * @brief local queue storage of S, used for manage S window
+   */
   TuplePtrQueue TuplePtrQueueLocalS;
+  /**
+ * @brief local queue storage of R, used for manage R window
+ */
   TuplePtrQueue TuplePtrQueueLocalR;
+  /**
+   *  @brief A 'current window' copy of TuplePtrQueueLocalS when join a tuple
+   */
   C20Buffer<TuplePtr> windowS;
+  /**
+   *  @brief A 'current window' copy of TuplePtrQueueLocalR when join a tuple
+   */
   C20Buffer<TuplePtr> windowR;
   size_t sCnt = 0;
   size_t sMax = 0;
