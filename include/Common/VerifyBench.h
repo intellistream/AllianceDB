@@ -72,8 +72,9 @@ class VerifyBench {
       size_t timeFeed = UtilityFunctions::timeLastUs(timeSys) / TIME_STEP;
       if (!relationCouple.relationR.empty()) {
         INTELLI::TuplePtr tr = relationCouple.relationR.front();
+        //
         if (timeFeed >= tr->subKey) {
-          // cout<<"feed r:"<<timeSys<<endl;
+         // cout<<to_string(timeFeed)+","+ to_string(tr->subKey)<<endl;
           relationCouple.relationR.pop();
           windowSlider.feedTupleR(tr);
           vfSlider.feedTupleR(tr);
@@ -84,7 +85,7 @@ class VerifyBench {
         if (timeFeed >= ts->subKey) {
           relationCouple.relationS.pop();
           windowSlider.feedTupleS(ts);
-          vfSlider.feedTupleS(ts);
+         vfSlider.feedTupleS(ts);
         }
 
       }
@@ -92,9 +93,16 @@ class VerifyBench {
       cnt++;
       usleep(TIME_STEP / 2);
     }
+
+
     cout << "end of tuple feeding" << endl;
     joinResult.joinNumber = 0;
     windowSlider.terminateJoinProcessors();
+
+
+
+
+
     vfSlider.terminateJoinProcessors();
     joinResult.joinNumber = windowSlider.getJoinResult();
     INTELLI::UtilityFunctions::timerEnd(joinResult);

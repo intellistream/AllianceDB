@@ -21,6 +21,7 @@
 #include <WindowSlider/AbstractLazyWS.h>
 #include <JoinProcessor/AbstractLazyJP.h>
 #include <WindowSlider/VerifyWS.h>
+#include <WindowSlider/SplitJoinWS.h>
 #include <Common/VerifyBench.h>
 using namespace std;
 using namespace INTELLI;
@@ -41,29 +42,38 @@ int main() {
   string fileRName = pwd + "/datasets/" + DATASET_NAME + "-R.txt";
   string fileSName = pwd + "/datasets/" + DATASET_NAME + "-S.txt";
   INTELLI::DatasetTool dataSet;
-  /*dataSet.load3VText(relationCouple.relationR, fileRName);
-  dataSet.load3VText(relationCouple.relationS, fileSName);
-  joinResult.streamSize = relationCouple.relationR.size();*/
-
-  /*AbstractJoinMethod<AbstractLazyWS> lwj;
-  // INTELLI::UtilityFunctions::timerStart(joinResult);
-  lwj.test(joinResult, relationCouple);
-  //Print result number
-  // INTELLI::UtilityFunctions::timerEnd(joinResult);
-  joinResult.statPrinter();
   dataSet.load3VText(relationCouple.relationR, fileRName);
   dataSet.load3VText(relationCouple.relationS, fileSName);
-  joinResult.streamSize = relationCouple.relationR.size();
-  AbstractJoinMethod<AbstractEagerWS> ewj;
+  VerifyBench<SplitJoinWS> vb_split;
+  vb_split.test(joinResult, relationCouple, 8, 500, 50);
+  /*joinResult.streamSize = relationCouple.relationR.size();
+  AbstractJoinMethod<VerifyWS> ewj;
   // INTELLI::UtilityFunctions::timerStart(joinResult);
   ewj.test(joinResult, relationCouple);
   //Print result number
   // INTELLI::UtilityFunctions::timerEnd(joinResult);
-  joinResult.statPrinter();*/
-  //AbstractJoinMethod<VerifyWS> vj;
+  joinResult.statPrinter();
+
   dataSet.load3VText(relationCouple.relationR, fileRName);
   dataSet.load3VText(relationCouple.relationS, fileSName);
   joinResult.streamSize = relationCouple.relationR.size();
+  AbstractJoinMethod<SplitJoinWS> ewj2;
+  // INTELLI::UtilityFunctions::timerStart(joinResult);
+  ewj2.test(joinResult, relationCouple);
+  //Print result number
+  // INTELLI::UtilityFunctions::timerEnd(joinResult);
+  joinResult.statPrinter();*/
+  //AbstractJoinMethod<VerifyWS> vj;
+  /*dataSet.load3VText(relationCouple.relationR, fileRName);
+  dataSet.load3VText(relationCouple.relationS, fileSName);
+  joinResult.streamSize = relationCouple.relationR.size();
+  VerifyBench<SplitJoinWS> vb_split;
+  vb_split.test(joinResult, relationCouple, 4, 500, 500);
+
+  dataSet.load3VText(relationCouple.relationR, fileRName);
+  dataSet.load3VText(relationCouple.relationS, fileSName);
+  joinResult.streamSize = relationCouple.relationR.size();
+
   VerifyBench<AbstractEagerWS> vb_cell;
   vb_cell.test(joinResult, relationCouple, 4, 500, 500);
   /*vj.test(joinResult, relationCouple);

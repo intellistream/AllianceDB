@@ -1,21 +1,23 @@
-/*! \file VerifyWS.h*/
-
+/*! \file SplitJoinWS.h*/
 //
 // Created by tony on 18/03/22.
 //
 
-#ifndef _WINDOWSLIDER_VERIFYWS_H_
-#define _WINDOWSLIDER_VERIFYWS_H_
+#ifndef _WINDOWSLIDER_SPLITWS_H_
+#define _WINDOWSLIDER_SPLITWS_H_
+
 #include <WindowSlider/AbstractWS.h>
-#include <JoinProcessor/CellJoinJP.h>
 #include <Utils/AbstractC20Thread.h>
+#include <JoinProcessor/SplitJoinJP.h>
+using namespace INTELLI;
+using namespace std;
 namespace INTELLI {
 /**
- * @ingroup WINDOWSLIDER_BASE
-* @class VerifyWS WindowSlider/VerifyWS.h
-* @brief The single-thread window slider used for verify results of other WS
-* @author Tony Zeng
+ * @ingroup WINDOWSLIDER_EAGER
+* @class SplitJoinWS WindowSlider/SplitJoinWS.h
+* @brief The eager window slider of split join
 * @note
+* detailed description:
 To init and run, follow the functions below to start a WS
   \li Configure the window type, time or count, @ref setTimeBased
   \li Configure window length: @ref setWindowLen
@@ -25,50 +27,39 @@ To init and run, follow the functions below to start a WS
   \li To make the parallel join processors started, @ref initJoinProcessors
   \li Feed tuples @ref feedTupleS or @ref feedTupleR
   \li Terminate, by @ref terminateJoinProcessors
+*
 */
-class VerifyWS : public AbstractWS, public AbstractC20Thread {
- protected:
-  TuplePtrQueue TuplePtrQueueLocalS;
-  TuplePtrQueue TuplePtrQueueLocalR;
-
-  size_t joinResults;
-  virtual void inlineMain();
+class SplitJoinWS : public AbstractWS{
+ private:
+  /* data */
+  std::vector<SplitJoinJPPtr> jps;
+ // virtual void inlineMain();
   /**
-  * @brief deliver tuple s to join processors
-  * @param ts The tuple s
-  */
+   * @brief deliver tuple s to join processors
+   * @param ts The tuple s
+   */
   void deliverTupleS(TuplePtr ts);
   /**
 * @brief deliver tuple r to join processors
 * @param ts The tuple r
 */
   void deliverTupleR(TuplePtr tr);
-  void expireS(size_t cond);
-  void expireR(size_t cond);
  public:
-/**
- * @brief reset everything needed
- */
-  void reset() {
-    AbstractWS::reset();
-    joinResults = 0;
-  }
-  VerifyWS() {
+  SplitJoinWS() {
     reset();
-    nameTag = "VerifyJoin";
-  }
-  ~VerifyWS() {
-
+    nameTag = "SplitJoin";
   }
   /**
- * @brief to init the slider with specific length of queue
-  * @param sLen the length of S queue
-   * @param rLen the length of R queue
- */
-  VerifyWS(size_t sLen, size_t rLen);
+* @brief to init the slider with specific length of queue
+ * @param sLen the length of S queue
+  * @param rLen the length of R queue
+*/
+  SplitJoinWS(size_t sLen, size_t rLen);
+
+  ~SplitJoinWS() {}
   /**
 * @brief to init the initJoinProcessors
- * @note Just a format function for this slider
+ * @note only after this is called can we start to feed tuples
 */
   void initJoinProcessors();
   /**
@@ -84,6 +75,24 @@ class VerifyWS : public AbstractWS, public AbstractC20Thread {
    * ,use @ref terminateJoinProcessors to achieve this
 */
   size_t getJoinResult();
+
+  /**
+* @brief to feed a tuple s
+* @param ts the tuple s
+ * @note this function is thread-safe :)
+*/
+  virtual void feedTupleS(TuplePtr ts) {
+    deliverTupleS(ts);
+  }
+  //feed the tuple R
+  /**
+* @brief to feed a tuple R
+ * @param tr the tuple r
+  * @note this function is thread-safe :)
+*/
+  virtual void feedTupleR(TuplePtr tr) {
+    deliverTupleR(tr);
+  }
 };
 }
-#endif //ALIANCEDB_INCLUDE_WINDOWSLIDER_VERIFYWS_H_
+#endif //ALIANCEDB_INCLUDE_WINDOWSLIDER_SPLITWS_H_

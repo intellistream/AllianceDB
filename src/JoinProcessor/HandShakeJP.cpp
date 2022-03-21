@@ -6,8 +6,8 @@ using namespace INTELLI;
 void HandShakeJP::setupQueue() {
   TuplePtrQueueInS = newTuplePtrQueue(sQueue);
   TuplePtrQueueInR = newTuplePtrQueue(rQueue);
-  selfWindowS = newTuplePtrQueue(sQueue);
-  selfWindowR = newTuplePtrQueue(rQueue);
+  TuplePtrQueueLocalS= newTuplePtrQueue(sQueue);
+  TuplePtrQueueLocalR = newTuplePtrQueue(rQueue);
   cmdQueueIn = newCmdQueue(1);
   cmdQueueOut = newCmdQueue(1);
 
@@ -17,7 +17,7 @@ void HandShakeJP::inlineMain() {
   UtilityFunctions::bind2Core(cpuBind);
   setupQueue();
   waitInitBar();
-  cout << "jp " << sysId << " is ready,S=" << timeOffsetS << ", R= " << timeOffsetR << endl;
+  cout << "jp "+ to_string(sysId)+" is ready,S="+ to_string( timeOffsetS)+ ", R= "+ to_string(timeOffsetR)+ "\r\n";
 
   while (1) {
 //cmd
@@ -54,10 +54,10 @@ void HandShakeJP::paraseTupleR() {
   }
 //join the trIn with S window
 //build S
-  size_t sSize = selfWindowS->size();
+  size_t sSize = TuplePtrQueueLocalS->size();
 /*hashtable hashtableS;
 for (size_t i = 0; i < sSize; i++) {
-  TuplePtr ts = selfWindowS->front()[i];
+  TuplePtr ts = TuplePtrQueueLocalS->front()[i];
   hashtableS.emplace(ts->key, 0, ts->subKey);
 }
 //probe R
@@ -68,24 +68,24 @@ if (findMatchS != hashtableS.end()) {
  // printf("JP%ld:R[%ld](%ld) find %ld S matches\r\n", sysId, trIn->subKey + 1, trIn->key, matches);
 }*/
   for (size_t i = 0; i < sSize; i++) {
-    TuplePtr ts = selfWindowS->front()[i];
+    TuplePtr ts = TuplePtrQueueLocalS->front()[i];
     if (ts->key == trIn->key) {
       joinedResult++;
     }
   }
 
-  selfWindowR->push(trIn);
+  TuplePtrQueueLocalR->push(trIn);
   expireR(tNow);
 // late expire of R
   if (!isTimeBased()) {
 
-/*if (selfWindowR->size()>windowLen)
-{   TuplePtr tr = *selfWindowR->front();
+/*if (TuplePtrQueueLocalR->size()>windowLen)
+{   TuplePtr tr = *TuplePtrQueueLocalR->front();
   if(leftJP!= nullptr)
   {
     leftJP->feedTupleR(tr);
   }
-  selfWindowR->pop();
+  TuplePtrQueueLocalR->pop();
 }*/
     expireR(countR);
   }
@@ -102,10 +102,10 @@ void HandShakeJP::paraseTupleS() {
   }
 //join the tsIn with R window
 //build R
-  size_t rSize = selfWindowR->size();
+  size_t rSize = TuplePtrQueueLocalR->size();
 /*hashtable hashtableR;
 for (size_t i = 0; i < rSize; i++) {
-  TuplePtr tr= selfWindowR->front()[i];
+  TuplePtr tr= TuplePtrQueueLocalR->front()[i];
   hashtableR.emplace(tr->key, 0, tr->subKey);
 }
 //probe S
@@ -116,95 +116,64 @@ if (findMatchR != hashtableR.end()) {
  // printf("JP%ld:R[%ld](%ld) find %ld S matches\r\n", sysId, tsIn->subKey + 1, tsIn->key, matches);
 }*/
   for (size_t i = 0; i < rSize; i++) {
-    TuplePtr tr = selfWindowR->front()[i];
+    TuplePtr tr = TuplePtrQueueLocalR->front()[i];
     if (tr->key == tsIn->key) {
       joinedResult++;
     }
   }
-  selfWindowS->push(tsIn);
+  TuplePtrQueueLocalS->push(tsIn);
   expireS(tNow);
 // late expire of S
   if (!isTimeBased()) {
 
-/* if (selfWindowS->size()>windowLen)
- {   TuplePtr ts = *selfWindowS->front();
+/* if (TuplePtrQueueLocalS->size()>windowLen)
+ {   TuplePtr ts = *TuplePtrQueueLocalS->front();
    if(rightJP!= nullptr)
    {
      rightJP->feedTupleS(ts);
    }
-   selfWindowS->pop();
+   TuplePtrQueueLocalS->pop();
  }*/
     expireS(countS);
   }
 
 }
 void HandShakeJP::expireS(size_t cond) {
-  size_t distance = 0;
-  if (!selfWindowS->empty()) {
-    TuplePtr ts = *selfWindowS->front();
-    distance = cond - ts->subKey;
-// cout<<ts->subKey<<cond<<endl;
-    while (distance > windowLen + timeOffsetS) {
-      selfWindowS->pop();
-      if (rightJP != nullptr) {
-// printf("jp%d, send to S to right\r\n",sysId);
-        rightJP->feedTupleS(ts);
+  size_t pos = 0;
+  size_t windowNo = oldestWindowBelong(cond);
+  size_t startTime = windowNo * slideLenGlobal;
+  if (!TuplePtrQueueLocalS->empty()) {
+    TuplePtr ts = *TuplePtrQueueLocalS->front();
+    pos = ts->subKey;
+    while (pos < startTime) {
+      TuplePtrQueueLocalS->pop();
+      if (!TuplePtrQueueLocalS->empty()) {
+        ts = *TuplePtrQueueLocalS->front();
+        pos = ts->subKey;
       } else {
-//printf("jp%d, no right\n",sysId);
-      }
-      if (!selfWindowS->empty()) {
-        ts = *selfWindowS->front();
-        distance = cond - ts->subKey;
-      } else {
-        distance = 0;
+        pos = startTime;
       }
     }
   }
 }
 
 void HandShakeJP::expireR(size_t cond) {
-  size_t distance = 0;
-  if (!selfWindowR->empty()) {
-    TuplePtr tr = *selfWindowR->front();
-    distance = cond - tr->subKey;
-// cout<<"expire R"<<cond<<":"<<distance<<endl;
-    while (distance > windowLen + timeOffsetR) {
-      selfWindowR->pop();
+  size_t pos = 0;
+  size_t windowNo = oldestWindowBelong(cond);
+  size_t startTime = windowNo * slideLenGlobal;
 
-      if (leftJP != nullptr) {//("jp%d, send to R to left\r\n",sysId);
-        leftJP->feedTupleR(tr);
+  if (!TuplePtrQueueLocalR->empty()) {
+    TuplePtr tr = *TuplePtrQueueLocalR->front();
+    pos = tr->subKey;
+    //  cout<<"pos="+ to_string(pos)+", startTime="+ to_string(slideLen)<<endl;
+    while (pos < startTime) {
+      TuplePtrQueueLocalR->pop();
+      if (!TuplePtrQueueLocalR->empty()) {
+        tr = *TuplePtrQueueLocalR->front();
+        pos = tr->subKey;
       } else {
-//printf("jp%d, no left\n",sysId);
-      }
-      if (!selfWindowR->empty()) {
-        tr = *selfWindowR->front();
-        distance = cond - tr->subKey;
-      } else {
-        distance = 0;
+        pos = startTime;
       }
     }
   }
-}
-void HandShakeJP::feedTupleS(TuplePtr ts) {
-  if (!isTimeBased()) {
-    ts->subKey = countS;
-    countS++;
-// printf("JP %d, s=%d\r\n",sysId,countS);
-  } else {
-//ts->subKey=getTimeStamp();
-  }
-  CellJoinJP::feedTupleS(ts);
-
-}
-
-void HandShakeJP::feedTupleR(TuplePtr tr) {
-  if (!isTimeBased()) {
-    tr->subKey = countR;
-    countR++;
-// printf("JP %d, R=%d\r\n",sysId,countR);
-  } else {
-//tr->subKey=getTimeStamp();
-  }
-  CellJoinJP::feedTupleR(tr);
-
 }

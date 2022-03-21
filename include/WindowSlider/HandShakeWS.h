@@ -2,8 +2,8 @@
 // Created by tony on 28/02/22.
 //
 
-#ifndef WINDOWSLIDER_HANDSHAKEWS_H_
-#define WINDOWSLIDER_HANDSHAKEWS_H_
+#ifndef _WINDOWSLIDER_HANDSHAKEWS_H_
+#define _WINDOWSLIDER_HANDSHAKEWS_H_
 #include <cstdint>
 #include <vector>
 #include <Common/Types.h>

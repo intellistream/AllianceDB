@@ -2,7 +2,7 @@
 // Created by tony on 2022/2/9.
 //
 #pragma once
-#ifndef JOINPROCESSOR_HANDSHAKEJP_H_
+#ifndef JOINPROCESSOR_HANDSHAKJP_H_
 #define JOINPROCESSOR_HANDSHAKEJP_H_
 #include <JoinProcessor/CellJoinJP.h>
 #include <memory>
@@ -17,12 +17,21 @@ description: join processor for handshake hash join
 note: S->, R<-
 date:20220228
 */
-class HandShakeJP : public CellJoinJP {
+class HandShakeJP : public AbstractJP {
  protected:
   /* data */
   HandShakeJPPtr leftJP = nullptr;
   HandShakeJPPtr rightJP = nullptr;
-  TuplePtrQueue selfWindowS, selfWindowR;
+  /**
+  * @brief local queue storage of S, used for manage S window
+  */
+  TuplePtrQueue TuplePtrQueueLocalS;
+  /**
+ * @brief local queue storage of R, used for manage R window
+ */
+  TuplePtrQueue TuplePtrQueueLocalR;
+  BarrierPtr initBar = nullptr;
+ // TuplePtrQueue selfWindowS, selfWindowR;
   size_t countR = 0, countS = 0;
   size_t timeOffsetS, timeOffsetR;
   size_t rQueue = 0, sQueue = 0;
@@ -60,10 +69,23 @@ class HandShakeJP : public CellJoinJP {
     joinedResult = 0;
     sysId = _sysId;
   }
-  void feedTupleS(TuplePtr ts);
 
-  void feedTupleR(TuplePtr tr);
-
+  // co
+  /**
+   * @brief Set up the init barrier
+   * @param barPrev The SHARED init barrier
+   */
+  void setInitBar(BarrierPtr barPrev) {
+    initBar = barPrev;
+  }
+  /**
+   * @brief Wait for the init barrier done and then contine
+   */
+  void waitInitBar(void) {
+    if (initBar) {
+      initBar->arrive_and_wait();
+    }
+  }
 };
 
 }

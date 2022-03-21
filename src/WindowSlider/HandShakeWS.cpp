@@ -22,17 +22,18 @@ void HandShakeWS::initJoinProcessors() {
     }
     jpPtr[tid]->setInitBar(initBar);
     jpPtr[tid]->setTimeBased(isTimeBased());
+    jpPtr[tid]->setGlobalWindow(windowLen,slideLen);
     //jpPtr[tid]->setTimeStart(timeSys);
   }
   for (size_t tid = 0; tid < threads; tid++) {
 
     if (tid > 0) {
       jpPtr[tid]->setLeft(jpPtr[tid - 1]);
-      printf("set left\r\n");
+   //   printf("set left\r\n");
     }
     if (tid < threads - 1) {
       jpPtr[tid]->setRight(jpPtr[tid + 1]);
-      printf("set right\r\n");
+    //  printf("set right\r\n");
     }
     size_t subWindowLen = parVec[tid];
     jpPtr[tid]->setWindowLen(subWindowLen);
@@ -42,10 +43,10 @@ void HandShakeWS::initJoinProcessors() {
     cout << "JP " << tid << "window len=" << parVec[tid] << endl;
     //jpPtr[tid]->start();
 
-    //jpPtr[tid]->start();
+    jpPtr[tid]->startThread();
 
   }
-  // initBar->arrive_and_wait();
+  initBar->arrive_and_wait();
   isRunning = true;
 }
 void HandShakeWS::terminateJoinProcessors() {
@@ -80,7 +81,6 @@ size_t HandShakeWS::getJoinResult() {
   return ru;
 }
 void HandShakeWS::feedTupleS(TuplePtr ts) {
-  assert(ts);
   /*if (timeBased) //use time stamp, S and R share the same time system
   {
     size_t timeNow = getTimeStamp();
@@ -88,19 +88,18 @@ void HandShakeWS::feedTupleS(TuplePtr ts) {
   } else { //use simple arrival count, the cnt of S and R are seperated
     ts->subKey = countS;
     countS++;
-  }
-  jpPtr[0]->feedTupleS(ts);*/
+  }*/
+  jpPtr[0]->feedTupleS(ts);
 }
 
 void HandShakeWS::feedTupleR(TuplePtr tr) {
-  assert(tr);
-  /* if (timeBased) //use time stamp
-   {
-     size_t timeNow = getTimeStamp();
-     tr->subKey = timeNow;
-   } else {
-     tr->subKey = countR;
-     countR++;
-   }
-   jpPtr[threads - 1]->feedTupleR(tr);*/
+  /*if (timeBased) //use time stamp
+  {
+    size_t timeNow = getTimeStamp();
+    tr->subKey = timeNow;
+  } else {
+    tr->subKey = countR;
+    countR++;
+  }*/
+  jpPtr[threads - 1]->feedTupleR(tr);
 }

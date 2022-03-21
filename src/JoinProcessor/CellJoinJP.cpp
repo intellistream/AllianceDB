@@ -18,7 +18,6 @@ void INTELLI::CellJoinJP::inlineMain() {
     //cmd
     if (TuplePtrQueueInS->empty() && TuplePtrQueueInR->empty()) {
       if (!cmdQueueIn->empty()) {
-
         join_cmd_t cmdIn = *cmdQueueIn->front();
         cmdQueueIn->pop();
         if (cmdIn == CMD_STOP) {
@@ -27,7 +26,6 @@ void INTELLI::CellJoinJP::inlineMain() {
           return;
         }
       }
-
     }
 
 
@@ -52,7 +50,7 @@ void INTELLI::CellJoinJP::inlineMain() {
          joinedResult += matches;
          //printf("JP%ld:S[%ld](%ld) find %ld R matches\r\n", sysId, ts->subKey + 1, ts->key, matches);
        }*/
-      joinedResult += myAlgo->findAlgo(JOINALGO_NPJ)->join(&wr[0], ts, rSize, 2);
+      joinedResult += myAlgo->findAlgo(JOINALGO_NPJ_SINGLE)->join(&wr[0], ts, rSize, 2);
       /*for (size_t i = 0; i < rSize; i++) {
         TuplePtr tr=wr[i];
         if(tr->key==ts->key)
@@ -83,7 +81,7 @@ void INTELLI::CellJoinJP::inlineMain() {
          joinedResult += matches;
          // printf("JP%ld:R[%ld](%ld) find %ld S matches\r\n", sysId, tr->subKey + 1, tr->key, matches);
        }*/
-      joinedResult += myAlgo->findAlgo(JOINALGO_NPJ)->join(&ws[0], tr, sSize, 2);
+      joinedResult += myAlgo->findAlgo(JOINALGO_NPJ_SINGLE)->join(&ws[0], tr, sSize, 2);
       /* for (size_t i = 0; i < sSize; i++) {
          TuplePtr ts=ws[i];
          if(tr->key==ts->key)

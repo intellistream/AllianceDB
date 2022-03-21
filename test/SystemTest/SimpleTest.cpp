@@ -10,6 +10,7 @@
 #include <Utils/MicroDataSet.hpp>
 #include  <Utils/ThreadPerf.h>
 #include <WindowSlider/AbstractEagerWS.h>
+#include <WindowSlider/SplitJoinWS.h>
 #include "AbstractJoinMethod.h"
 #include <Common/Types.h>
 #include <Common/DatasetTool.h>
@@ -17,6 +18,7 @@ using namespace std;
 using namespace std;
 using namespace INTELLI;
 #include <WindowSlider/AbstractLazyWS.h>
+
 #include <Common/VerifyBench.h>
 TEST(SystemTest, SimpleTest
 ) {
@@ -30,17 +32,17 @@ TEST(SystemTest, SimpleTest
   dataSet.load3VText(relationCouple.relationR, fileRName);
   dataSet.load3VText(relationCouple.relationS, fileSName);
   joinResult.streamSize = relationCouple.relationR.size();
-  VerifyBench<AbstractEagerWS> vb_ewj;
+  VerifyBench<SplitJoinWS> vb_ewj;
   ASSERT_TRUE(vb_ewj.test(joinResult, relationCouple, 1));
   dataSet.load3VText(relationCouple.relationR, fileRName);
   dataSet.load3VText(relationCouple.relationS, fileSName);
   ASSERT_TRUE(vb_ewj.test(joinResult, relationCouple, 2));
-  dataSet.load3VText(relationCouple.relationR, fileRName);
+  /*dataSet.load3VText(relationCouple.relationR, fileRName);
   dataSet.load3VText(relationCouple.relationS, fileSName);
   ASSERT_TRUE(vb_ewj.test(joinResult, relationCouple, 4));
   dataSet.load3VText(relationCouple.relationR, fileRName);
   dataSet.load3VText(relationCouple.relationS, fileSName);
-  ASSERT_TRUE(vb_ewj.test(joinResult, relationCouple, 4,500,50));
+  ASSERT_TRUE(vb_ewj.test(joinResult, relationCouple, 4,500,50));*/
   /* AbstractJoinMethod<AbstractEagerWS> ewj;
    // INTELLI::UtilityFunctions::timerStart(joinResult);
    ewj.test(joinResult, relationCouple);
