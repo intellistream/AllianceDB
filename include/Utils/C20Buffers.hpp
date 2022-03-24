@@ -114,10 +114,9 @@ class C20Buffer {
   * @note Exceed length will lead to a push_back in vector
   * @return The valid size after this append
   */
-  size_t append(dataType *da,size_t len)
-  {
-    ADB_memcpy(&area[pos],da,len*sizeof(dataType));
-    pos+=len;
+  size_t append(dataType *da, size_t len) {
+    ADB_memcpy(&area[pos], da, len * sizeof(dataType));
+    pos += len;
     return pos;
   }
 };

@@ -2,13 +2,23 @@
 // Created by tony on 18/03/22.
 //
 
-#include <JoinProcessor/SplitJoinJP.h>
+#include <JoinProcessor/SplitJoinIRJP.h>
 using namespace INTELLI;
-void SplitJoinJP::joinS(TuplePtr ts) {
+void SplitJoinIRJP::joinS(TuplePtr ts) {
   size_t timeNow = ts->subKey;
   expireR(timeNow);
+  //update the table
+  hashtableS->emplace(ts->key, 0, ts->subKey);
   //single thread join window r and tuple s
   TuplePtrQueueLocalS->push(ts);
+  //look up the hash table for join
+  auto findMatchR = hashtableR->find(ts->key);
+  if (findMatchR != hashtableR->end()) {
+    size_t matches = findMatchR->second.size();
+    joinedResult += matches;
+    //printf("JP%ld:S[%ld](%ld) find %ld R matches\r\n", sysId, ts->subKey + 1, ts->key, matches);
+    //joinedResult ++;
+  }
   /*size_t rSize = TuplePtrQueueLocalR->size();
    for (size_t i = 0; i < rSize; i++) {
      if (TuplePtrQueueLocalR->front()[i]->key == ts->key) {
@@ -21,26 +31,23 @@ void SplitJoinJP::joinS(TuplePtr ts) {
        joinedResult++;
      }
    }*/
-  // usleep(60);
-  joinedResult +=
-      myAlgo->findAlgo(JOINALGO_NESTEDLOOP)->join(TuplePtrQueueLocalR->front(), ts, TuplePtrQueueLocalR->size(), 2);
+
 }
-void SplitJoinJP::joinR(TuplePtr tr) {
+void SplitJoinIRJP::joinR(TuplePtr tr) {
   size_t timeNow = tr->subKey;
   expireS(timeNow);
   TuplePtrQueueLocalR->push(tr);
-  joinedResult +=
-      myAlgo->findAlgo(JOINALGO_NESTEDLOOP)->join(TuplePtrQueueLocalS->front(), tr, TuplePtrQueueLocalS->size(), 2);
-  //single thread join window s and tuple r
-  /*size_t sSize = windowS.size();
-   for (size_t i = 0; i < sSize; i++) {
-     if (windowS.data()[i]->key == tr->key) {
-       joinedResult++;
-     }
-   }*/
-// usleep(60);
+  //update the table
+  hashtableR->emplace(tr->key, 0, tr->subKey);
+  //look up the hash table for join
+  auto findMatchS = hashtableS->find(tr->key);
+  if (findMatchS != hashtableS->end()) {
+    size_t matches = findMatchS->second.size();
+    joinedResult += matches;
+    //joinedResult ++;
+  }
 }
-void SplitJoinJP::expireS(size_t cond) {
+void SplitJoinIRJP::expireS(size_t cond) {
   size_t pos = 0;
   size_t startTime;
 
@@ -54,7 +61,12 @@ void SplitJoinJP::expireS(size_t cond) {
     TuplePtr ts = *TuplePtrQueueLocalS->front();
     pos = ts->subKey;
     while (pos < startTime) {
+      // delete from window
       TuplePtrQueueLocalS->pop();
+      //delete from table S
+      //hashtableS->erase(ts->key);
+      hashtableS->eraseWithSubKey(ts->key, ts->subKey);
+      //move next
       if (!TuplePtrQueueLocalS->empty()) {
         ts = *TuplePtrQueueLocalS->front();
         pos = ts->subKey;
@@ -63,21 +75,8 @@ void SplitJoinJP::expireS(size_t cond) {
       }
     }
   }
-  /* windowS.reset();
-   if(TuplePtrQueueLocalS->size()>0)
-   {
-     size_t allLen=TuplePtrQueueLocalS->size();
-     //windowS.append(&TuplePtrQueueLocalS->front()[0],allLen);
-     //size_t validLen=0;
-     for(size_t i=0;i<allLen;i++)
-     {  TuplePtr tp = TuplePtrQueueLocalS->front()[i];
-
-       windowS.append(tp);
-     }
-     //windowS.append(TuplePtrQueueLocalS->front(),validLen);
-   }*/
 }
-void SplitJoinJP::expireR(size_t cond) {
+void SplitJoinIRJP::expireR(size_t cond) {
   size_t pos = 0;
   size_t startTime;
 
@@ -93,7 +92,12 @@ void SplitJoinJP::expireR(size_t cond) {
     pos = tr->subKey;
     //  cout<<"pos="+ to_string(pos)+", startTime="+ to_string(slideLen)<<endl;
     while (pos < startTime) {
+      // delete from window
       TuplePtrQueueLocalR->pop();
+      //delete from table R
+      //hashtableS->erase(tr->key);
+      hashtableR->eraseWithSubKey(tr->key, tr->subKey);
+      //move next
       if (!TuplePtrQueueLocalR->empty()) {
         tr = *TuplePtrQueueLocalR->front();
         pos = tr->subKey;
@@ -102,21 +106,13 @@ void SplitJoinJP::expireR(size_t cond) {
       }
     }
   }
-  /* windowR.reset();
-   if(TuplePtrQueueLocalR->size()>0)
-   {
-     size_t allLen=TuplePtrQueueLocalR->size();
-     //size_t validLen=0;
-     for(size_t i=0;i<allLen;i++)
-     {  TuplePtr tp = TuplePtrQueueLocalR->front()[i];
 
-       windowR.append(tp);
-     }
-     //windowS.append(TuplePtrQueueLocalS->front(),validLen);
-   }*/
 }
-void SplitJoinJP::inlineMain() {
+void SplitJoinIRJP::inlineMain() {
   UtilityFunctions::bind2Core(cpuBind);
+  hashtableS = make_shared<dpHashtable>();
+  hashtableR = make_shared<dpHashtable>();
+  // cout<< "this is split join IR, id "+ to_string(sysId)<<endl;
   while (1) {
     //stop cmd
     if (TuplePtrQueueInS->empty() && TuplePtrQueueInR->empty()) {

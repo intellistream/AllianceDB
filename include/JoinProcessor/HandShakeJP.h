@@ -27,11 +27,21 @@ class HandShakeJP : public AbstractJP {
   */
   TuplePtrQueue TuplePtrQueueLocalS;
   /**
+ * @brief forward queue of S
+ */
+  TuplePtrQueue TuplePtrQueueForwardS;
+
+  /**
+   * @brief The command queue for ack of S
+   */
+  CmdQueuePtr sRecvAck;
+  /**
  * @brief local queue storage of R, used for manage R window
  */
   TuplePtrQueue TuplePtrQueueLocalR;
+
   BarrierPtr initBar = nullptr;
- // TuplePtrQueue selfWindowS, selfWindowR;
+  // TuplePtrQueue selfWindowS, selfWindowR;
   size_t countR = 0, countS = 0;
   size_t timeOffsetS, timeOffsetR;
   size_t rQueue = 0, sQueue = 0;
@@ -85,6 +95,12 @@ class HandShakeJP : public AbstractJP {
     if (initBar) {
       initBar->arrive_and_wait();
     }
+  }
+  /**
+   * @brief To indicate that a tuple S has been received
+   */
+  void indicateSRecv(void) {
+    sRecvAck->push(CMD_ACK);
   }
 };
 

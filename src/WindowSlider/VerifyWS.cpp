@@ -68,8 +68,14 @@ void VerifyWS::deliverTupleR(TuplePtr tr) {
 
 void VerifyWS::expireR(size_t ts) {
   size_t pos = 0;
-  size_t windowNo = oldestWindowBelong(ts);
-  size_t startTime = windowNo * slideLen;
+  size_t startTime;
+
+  if (slideLen == 0) {
+    startTime = (ts < windowLen) ? 0 : (ts - windowLen);
+  } else {
+    size_t windowNo = oldestWindowBelong(ts);
+    startTime = windowNo * slideLen;
+  }
 
   if (!TuplePtrQueueLocalR->empty()) {
     TuplePtr tr = *TuplePtrQueueLocalR->front();
@@ -103,8 +109,14 @@ void VerifyWS::expireR(size_t ts) {
 
 void VerifyWS::expireS(size_t ts) {
   size_t pos = 0;
-  size_t windowNo = oldestWindowBelong(ts);
-  size_t startTime = windowNo * slideLen;
+  size_t startTime;
+
+  if (slideLen == 0) {
+    startTime = (ts < windowLen) ? 0 : (ts - windowLen);
+  } else {
+    size_t windowNo = oldestWindowBelong(ts);
+    startTime = windowNo * slideLen;
+  }
   if (!TuplePtrQueueLocalS->empty()) {
     TuplePtr ts = *TuplePtrQueueLocalS->front();
     pos = ts->subKey;
@@ -132,16 +144,16 @@ void VerifyWS::expireS(size_t ts) {
     }
     //windowS.append(TuplePtrQueueLocalS->front(),validLen);
   }*/
- /*
-  for(size_t i=allLen;i>0;i--)
-  {
-     if(TuplePtrQueueLocalS->front()[i]->subKey<=ts)
-     {
-       validLen=i+1;
-       break;
-     }
-  }*/
- // windowS.append(TuplePtrQueueLocalS->front(),validLen);
+  /*
+   for(size_t i=allLen;i>0;i--)
+   {
+      if(TuplePtrQueueLocalS->front()[i]->subKey<=ts)
+      {
+        validLen=i+1;
+        break;
+      }
+   }*/
+  // windowS.append(TuplePtrQueueLocalS->front(),validLen);
 
 }
 void VerifyWS::initJoinProcessors() {

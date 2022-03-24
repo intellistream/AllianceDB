@@ -5,7 +5,7 @@
 #include <WindowSlider/AbstractLazyWS.h>
 using namespace INTELLI;
 void AbstractLazyWS::initJoinProcessors() {
-  windowCnt = windowLen / slideLen + (windowLen % slideLen != 0) + 1;
+  windowCnt = windowLen / slideLen + 2;
   period = (windowCnt - 1) * (slideLen) + windowLen;
   // cout<<"period="+ to_string(period)<<endl;
   jps = std::vector<AbstractLazyJPPtr>(windowCnt);
@@ -89,23 +89,17 @@ void AbstractLazyWS::inlineMain() {
     while (!TuplePtrQueueInS->empty()) {
       TuplePtr ts = *TuplePtrQueueInS->front();
       TuplePtrQueueInS->pop();
-      size_t timeDivTuple = UtilityFunctions::to_periodical(ts->subKey, period);
+      // size_t timeDivTuple = UtilityFunctions::to_periodical(ts->subKey, period);
       for (size_t tid = 0; tid < windowCnt; tid++) {
-        size_t windowBase = slideLen * tid;
-        if (timeDivTuple >= windowBase && timeDivTuple <= windowBase + windowLen) {
-          jps[tid]->feedTupleS(ts);
-        }
+
+        jps[tid]->feedTupleS(ts);
       }
     }
     while (!TuplePtrQueueInR->empty()) {
       TuplePtr tr = *TuplePtrQueueInR->front();
       TuplePtrQueueInR->pop();
-      size_t timeDivTuple = UtilityFunctions::to_periodical(tr->subKey, period);
       for (size_t tid = 0; tid < windowCnt; tid++) {
-        size_t windowBase = slideLen * tid;
-        if (timeDivTuple >= windowBase && timeDivTuple < windowBase + windowLen) {
-          jps[tid]->feedTupleR(tr);
-        }
+        jps[tid]->feedTupleR(tr);
       }
     }
   }

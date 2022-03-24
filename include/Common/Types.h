@@ -35,7 +35,7 @@
 #endif
 
 #ifndef TIME_STEP
-#define TIME_STEP 100// US
+#define TIME_STEP 200// US
 #endif
 #ifndef DATASET_NAME
 #define DATASET_NAME "Test1" //dataset name should be DATASET_NAME + "-R.txt" and DATASET_NAME + "-S.txt"
@@ -108,7 +108,7 @@ typedef uint64_t keyType;    /*!< Type of the join key, default uint64_t */
 typedef uint64_t valueType;  /*!< Type of the payload, default uint64_t */
 typedef int numberType; //for counting the number of datagram (eg: tuples) in a struct
 typedef std::mutex mutex;
-typedef std::DupicatedHashTable<keyType, keyType> hashtable; /*!< allow key duplication */
+typedef INTELLI::DupicatedHashTable<keyType, keyType> hashtable; /*!< allow key duplication */
 
 typedef std::queue<numberType> tupleKeyQueue;
 

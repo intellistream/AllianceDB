@@ -22,18 +22,18 @@ void HandShakeWS::initJoinProcessors() {
     }
     jpPtr[tid]->setInitBar(initBar);
     jpPtr[tid]->setTimeBased(isTimeBased());
-    jpPtr[tid]->setGlobalWindow(windowLen,slideLen);
+    jpPtr[tid]->setGlobalWindow(windowLen, slideLen);
     //jpPtr[tid]->setTimeStart(timeSys);
   }
   for (size_t tid = 0; tid < threads; tid++) {
 
     if (tid > 0) {
       jpPtr[tid]->setLeft(jpPtr[tid - 1]);
-   //   printf("set left\r\n");
+      //   printf("set left\r\n");
     }
     if (tid < threads - 1) {
       jpPtr[tid]->setRight(jpPtr[tid + 1]);
-    //  printf("set right\r\n");
+      //  printf("set right\r\n");
     }
     size_t subWindowLen = parVec[tid];
     jpPtr[tid]->setWindowLen(subWindowLen);
@@ -76,7 +76,7 @@ size_t HandShakeWS::getJoinResult() {
   for (size_t tid = 0; tid < threads; tid++) {
 
     ru += jpPtr[tid]->getJoinedResult();
-    cout << "JP" << tid << " : " << jpPtr[tid]->getJoinedResult() << endl;
+    //cout << "JP" << tid << " : " << jpPtr[tid]->getJoinedResult() << endl;
   }
   return ru;
 }
