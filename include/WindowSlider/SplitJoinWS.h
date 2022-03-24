@@ -29,11 +29,11 @@ To init and run, follow the functions below to start a WS
   \li Terminate, by @ref terminateJoinProcessors
 *
 */
-class SplitJoinWS : public AbstractWS{
- private:
+class SplitJoinWS : public AbstractWS {
+ protected:
   /* data */
   std::vector<SplitJoinJPPtr> jps;
- // virtual void inlineMain();
+  // virtual void inlineMain();
   /**
    * @brief deliver tuple s to join processors
    * @param ts The tuple s

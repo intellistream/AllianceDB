@@ -17,8 +17,11 @@ namespace INTELLI {
  * @defgroup WINDOWSLIDER_LAZY lazy window slider
  * @{
  * The lazy sliders that follow window-wide update, i.e., they can process tuples after each window is collected
+ * @}
+ * @}
  */
 /**
+ * @ingroup WINDOWSLIDER_LAZY
 * @class AbstractLazyWS WindowSlider/AbstractLazyWS.h
 * @brief An abstraction of lazy window slider, also inherited by other lazy window slider
 * @author Tony Zeng
@@ -84,10 +87,5 @@ class AbstractLazyWS : public AbstractWS, public AbstractC20Thread {
 
 };
 }
-/**
- * @}
- */
-/**
- * @}
- */
+
 #endif //ALIANCEDB_SRC_WINDOWSLIDER_ABSTRACTLAZYWS_H_

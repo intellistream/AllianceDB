@@ -100,9 +100,14 @@ vector<size_t> AbstractEagerWS::avgPartitionSizeFinal(size_t inS) {
 }
 void AbstractEagerWS::expireR(size_t ts) {
   size_t pos = 0;
-  size_t windowNo = oldestWindowBelong(ts);
-  size_t startTime = windowNo * slideLen;
+  size_t startTime;
 
+  if (slideLen == 0) {
+    startTime = (ts < windowLen) ? 0 : (ts - windowLen);
+  } else {
+    size_t windowNo = oldestWindowBelong(ts);
+    startTime = windowNo * slideLen;
+  }
   if (!TuplePtrQueueLocalR->empty()) {
     TuplePtr tr = *TuplePtrQueueLocalR->front();
     pos = tr->subKey;
@@ -122,8 +127,14 @@ void AbstractEagerWS::expireR(size_t ts) {
 
 void AbstractEagerWS::expireS(size_t ts) {
   size_t pos = 0;
-  size_t windowNo = oldestWindowBelong(ts);
-  size_t startTime = windowNo * slideLen;
+  size_t startTime;
+
+  if (slideLen == 0) {
+    startTime = (ts < windowLen) ? 0 : (ts - windowLen);
+  } else {
+    size_t windowNo = oldestWindowBelong(ts);
+    startTime = windowNo * slideLen;
+  }
   if (!TuplePtrQueueLocalS->empty()) {
     TuplePtr ts = *TuplePtrQueueLocalS->front();
     pos = ts->subKey;

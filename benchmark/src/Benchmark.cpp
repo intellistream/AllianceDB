@@ -22,6 +22,7 @@
 #include <JoinProcessor/AbstractLazyJP.h>
 #include <WindowSlider/VerifyWS.h>
 #include <WindowSlider/SplitJoinWS.h>
+#include <WindowSlider/SplitJoinIRWS.h>
 #include <Common/VerifyBench.h>
 using namespace std;
 using namespace INTELLI;
@@ -44,8 +45,10 @@ int main() {
   INTELLI::DatasetTool dataSet;
   dataSet.load3VText(relationCouple.relationR, fileRName);
   dataSet.load3VText(relationCouple.relationS, fileSName);
-  VerifyBench<SplitJoinWS> vb_split;
-  vb_split.test(joinResult, relationCouple, 8, 500, 50);
+  VerifyBench<SplitJoinIRWS> vb_split;
+  vb_split.test(joinResult, relationCouple, 2, 500, 50);
+  //size_t a=-1;
+  //cout<<a<<endl;
   /*joinResult.streamSize = relationCouple.relationR.size();
   AbstractJoinMethod<VerifyWS> ewj;
   // INTELLI::UtilityFunctions::timerStart(joinResult);

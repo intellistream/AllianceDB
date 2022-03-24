@@ -37,7 +37,7 @@ class SplitJoinJP : public AbstractJP {
   /*
    *  @brief A 'current window' copy of TuplePtrQueueLocalR when join a tuple
    */
- // C20Buffer<TuplePtr> windowR;
+  // C20Buffer<TuplePtr> windowR;
   size_t sCnt = 0;
   size_t sMax = 0;
   void expireS(size_t cond);
@@ -62,7 +62,7 @@ class SplitJoinJP : public AbstractJP {
     TuplePtrQueueLocalS = newTuplePtrQueue(sLen);
     TuplePtrQueueLocalR = newTuplePtrQueue(rLen);
     //windowS = C20Buffer<TuplePtr>(sLen);
-   // windowR = C20Buffer<TuplePtr>(rLen);
+    // windowR = C20Buffer<TuplePtr>(rLen);
     sCnt = 0;
   }
   /**

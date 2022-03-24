@@ -5,6 +5,7 @@ add_sources(
         VerifyWS.cpp
         AbstractEagerWS.cpp
         SplitJoinWS.cpp
+        SplitJoinIRWS.cpp
         AbstractLazyWS.cpp
         HandShakeWS.cpp
 )

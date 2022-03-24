@@ -11,6 +11,7 @@
 #include  <Utils/ThreadPerf.h>
 #include <WindowSlider/AbstractEagerWS.h>
 #include <WindowSlider/SplitJoinWS.h>
+#include <WindowSlider/SplitJoinIRWS.h>
 #include "AbstractJoinMethod.h"
 #include <Common/Types.h>
 #include <Common/DatasetTool.h>
@@ -32,7 +33,7 @@ TEST(SystemTest, SimpleTest
   dataSet.load3VText(relationCouple.relationR, fileRName);
   dataSet.load3VText(relationCouple.relationS, fileSName);
   joinResult.streamSize = relationCouple.relationR.size();
-  VerifyBench<SplitJoinWS> vb_ewj;
+  VerifyBench<SplitJoinIRWS> vb_ewj;
   ASSERT_TRUE(vb_ewj.test(joinResult, relationCouple, 1));
   dataSet.load3VText(relationCouple.relationR, fileRName);
   dataSet.load3VText(relationCouple.relationS, fileSName);

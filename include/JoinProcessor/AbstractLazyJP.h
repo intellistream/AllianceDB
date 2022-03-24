@@ -55,17 +55,26 @@ class AbstractLazyJP : public AbstractJP {
 
   C20Buffer<TuplePtr> windowS;
   C20Buffer<TuplePtr> windowR;
-  lwj_status_t status = LWJ_IDLE;
-  size_t slide = 0;
-  size_t windowLen = 0;
+  C20Buffer<TuplePtr> windowSOverLap;
+  C20Buffer<TuplePtr> windowROverLap;
+  lwj_status_t statusS = LWJ_IDLE;
+  lwj_status_t statusR = LWJ_IDLE;
+  // size_t slide = 0;
+  //size_t windowLen = 0;
   size_t period = 0;
+  size_t tsOverlap = 0;
+  size_t tsEnd = 0;
+  size_t tsBegin = 0;
   bool sWindowReady = false;
   bool rWindowReady = false;
   bool isLastJp = false;
-
+  bool checkTupleS(TuplePtr ts);
+  bool checkTupleR(TuplePtr tr);
   virtual void inlineMain();
+  bool belongs2Me(size_t timeDivSys);
   /**
   * @brief move the S from the input queue to the window buffer
+   * @param
   */
   void moveStoBuffer();
   /**
@@ -83,9 +92,11 @@ class AbstractLazyJP : public AbstractJP {
     */
   virtual void init(size_t sLen, size_t rLen, size_t _sysId) {
     AbstractJP::init(sLen, rLen, _sysId);
+
     windowS = C20Buffer<TuplePtr>(sLen);
     windowR = C20Buffer<TuplePtr>(rLen);
-
+    windowSOverLap = C20Buffer<TuplePtr>(sLen);
+    windowROverLap = C20Buffer<TuplePtr>(rLen);
   }
   /**
    * @brief set the parameters of lazy window
@@ -94,9 +105,13 @@ class AbstractLazyJP : public AbstractJP {
    * @param per The period in system
    */
   void setLazyWindow(size_t sli, size_t wlen, size_t per) {
-    slide = sli;
+    // slide = sli;
     windowLen = wlen;
+    setGlobalWindow(wlen, sli);
     period = per;
+    tsBegin = sysId * slideLenGlobal;
+    tsEnd = tsBegin + windowLenGlobal;
+    tsOverlap = tsEnd - slideLenGlobal;
   }
   /**
    * @brief To indicate if this one is the last join processor
@@ -105,6 +120,7 @@ class AbstractLazyJP : public AbstractJP {
   void setLastJp(bool val) {
     isLastJp = val;
   }
+
 };
 
 }
