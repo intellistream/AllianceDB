@@ -24,7 +24,7 @@
  * \ingroup Joins
  */
 result_t *
-sortmergejoin_multiway(relation_t *relR, relation_t *relS, joinconfig_t *joincfg, int exp_id, int window_size, int gap);
+sortmergejoin_multiway(relation_t *relR, relation_t *relS, joinconfig_t *joincfg, int exp_id, char *grp_id, int window_size, int gap);
 
 
 

@@ -109,6 +109,16 @@ struct param_t {
     int gap;
     int progressive_step = 1;//percentile of tuples to sort at each iteration.
     int merge_step = 2;
+
+    double epsilon_r;
+    double epsilon_s;
+    double Universal_p;
+    double Bernoulli_q;
+    int reservior_size;
+    int rand_buffer_size;
+    int presample_size;
+
+    char *grp_id;
 };
 
 

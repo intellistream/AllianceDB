@@ -41,7 +41,7 @@ rc('font',**{'family':'sans-serif',
              }
    )
 rc('text', usetex=True)
-exp_dir = "/data1/xtra"
+exp_dir = "/home/tangxilin/S-AllianceDB/data1/xtra"
 
 FIGURE_FOLDER = exp_dir + '/results/figure'
 

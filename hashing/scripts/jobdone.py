@@ -62,7 +62,7 @@ def send_email():
         # add in the message body
         msg.attach(MIMEText(message, 'plain'))
         # send the message via the server set up earlier.
-        s.sendmail(MY_ADDRESS, email, msg.as_string())
+        #s.sendmail(MY_ADDRESS, email, msg.as_string())
         # print(datetime.datetime.now())
         del msg
 

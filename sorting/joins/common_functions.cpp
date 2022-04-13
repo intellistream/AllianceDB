@@ -69,7 +69,6 @@ sortmergejoin_initrun(relation_t *relR, relation_t *relS, joinconfig_t *joincfg,
     numa_localize(tmpRelpartR, relR->num_tuples, nthreads);
     numa_localize(tmpRelpartS, relS->num_tuples, nthreads);
 
-
     /**** allocate temporary space for sorting ****/
     tuple_t *tmpRelsortR = NULL, *tmpRelsortS = NULL;
     tmpRelsortR = (tuple_t *) malloc_aligned(relR->num_tuples * sizeof(tuple_t)

@@ -1,5 +1,13 @@
 #!/bin/bash
 
+## SAMPLE
+echo "Drawing Figure SAMPLE..."
+python3 latency_sample_app.py
+python3 throughput_sample_app.py
+python3 join_size_sample_app.py
+python3 variance_sample_app.py
+python3 motivation.py  
+exit
 ## APP
 echo "Drawing Figure 5..."
 python3 latency_figure_app.py

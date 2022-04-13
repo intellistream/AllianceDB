@@ -12,6 +12,9 @@
  * Put an odd number of cache lines between partitions in pass-2:
  * Here we put 3 cache lines.
  */
+
+#define NO_MARTERIAL_SAMPLE
+
 #define SMALL_PADDING_TUPLES (3 * CACHE_LINE_SIZE/sizeof(tuple_t))
 #define PADDING_TUPLES (SMALL_PADDING_TUPLES*(FANOUT_PASS2+1))
 #define RELATION_PADDING (PADDING_TUPLES*FANOUT_PASS1*sizeof(tuple_t))
@@ -134,6 +137,126 @@ void writefile(relation_payload_t *relPl, const param_t cmd_params) {
     outputFile.close();
 }
 
+
+uint32_t rand4sample(int &que_head, uint32_t *&rand_que)
+{
+#ifdef AVX_RAND
+    using rand_t = uint32_t;
+    static rand_t mod = int(1e9)+6, quelen = RANDOM_BUFFER_SIZE;
+    // static rand_t *rand_que = NULL;
+    static pxart::simd256::mt19937 rng{random_device{}};
+    static constexpr auto rand_stp = sizeof(rng()) / sizeof(rand_t);
+
+    if (rand_que == NULL)
+    {
+        rand_que = (rand_t *)malloc_aligned(sizeof(rand_t)*quelen+256);
+    }
+    if (que_head == quelen)
+        que_head = 0;
+    if (que_head == 0)
+    {
+        for (int i = 0; i < quelen; i += rand_stp)
+        {
+            // const auto vrnd = pxart::simd256::uniform<type>(rng, -9, 9);
+            const auto vrnd = pxart::uniform<rand_t>(rng, 0, mod);
+            // const auto srnd = pxart::pun_cast<array<rand_t, rand_stp>>(vrnd);
+            // for (int j = 0; j < rand_stp; ++j) {
+            //     rand_que[i+j] = srnd[j];
+            memcpy(rand_que+i, &vrnd, sizeof(vrnd));
+        }
+    }
+    return rand_que[que_head++];
+#else
+    static uint32_t mod = int(1e9)+7;
+    return rand()%mod;
+#endif
+}
+
+
+void setSampleParam(relation_t *relR, relation_t *relS, double epsilon_r, double epsilon_s, double &identical_Universal_p)
+{
+    std::map<intkey_t, int> hist[2];
+    long long gm[3][3];
+    memset(gm, 0, sizeof(gm));
+    for (int i = 0; i < relR->num_tuples; ++i)
+    {
+        tuple_t tuple = relR->tuples[i];
+        int tmp = ((hist[0]))[tuple.key];
+        int tt = ((hist[1]))[tuple.key];
+        ((hist[0]))[tuple.key] = tmp + 1;
+        gm[1][1] += tt;
+        gm[1][2] += 1ll*tt*tt;
+        gm[2][1] += 2ll*tmp*tt + tt;
+        gm[2][2] += 2ll*tmp*tt*tt + 1ll*tt*tt;
+    }
+    for (int i = 0; i < relS->num_tuples; ++i)
+    {
+        tuple_t tuple = relS->tuples[i];
+        int tmp = ((hist[1]))[tuple.key];
+        int tt = ((hist[0]))[tuple.key];
+        ((hist[1]))[tuple.key] = tmp + 1;
+        gm[1][1] += tt;
+        gm[1][2] += 2ll*tmp*tt + tt;
+        gm[2][1] += 1ll*tt*tt;
+        gm[2][2] += 2ll*tmp*tt*tt + 1ll*tt*tt;
+    }
+    double p = (gm[2][2]*epsilon_r*epsilon_s - gm[2][1] - gm[1][2])/gm[1][1] + 1;
+    p = sqrt(p);
+    p = max(p, epsilon_r);
+    p = max(p, epsilon_s);
+    p = min(1.0, p);
+    identical_Universal_p = p;
+    // cout << epsilon_r <<" " << epsilon_s << endl;
+    // cout << identical_Universal_p << endl;
+    // fflush(stdout);
+}
+
+void sampleRelation(relation_t *rel, relation_payload_t *relPl, const
+                    param_t &cmd_params, double epsilon, double identical_Universal_p,
+                    double Universal_p, double Bernoulli_q, int hash_a, int hash_b)
+{
+    static int mod = 1e9+7;
+    int que_head = 0;
+    uint32_t *rand_que = NULL;
+    uint32_t B, U;
+    int cnt = 0;
+
+#ifdef SET_PR
+    B = Bernoulli_q * mod;
+    U = Universal_p * mod;
+    for (int i = 0; i < rel->num_tuples; ++i)
+    {
+      tuple_t tuple = rel->tuples[i];
+      if( !(rand4sample(que_head, rand_que) >= B || (1ll*tuple.key*tuple.key%mod*hash_a%mod + hash_b)%mod >= U ) )
+      {
+        rel->tuples[cnt] = tuple;
+        rel->payload->ts[cnt] = rel->payload->ts[i];
+        cnt ++;
+      }
+    }
+#else
+    B = epsilon / identical_Universal_p * mod;
+    U = identical_Universal_p * mod;
+    for (int i = 0; i < rel->num_tuples; ++i)
+    {
+      tuple_t tuple = rel->tuples[i];
+      if( !(rand4sample(que_head, rand_que) >= B || (1ll*tuple.key*tuple.key%mod*hash_a%mod + hash_b)%mod >= U ) )
+      {
+        rel->tuples[cnt] = tuple;
+        rel->payload->ts[cnt] = rel->payload->ts[i];
+        cnt ++;
+      }
+
+    }
+#endif
+    // cerr << Bernoulli_q <<" "<< identical_Universal_p << endl;
+    // cerr << rel->num_tuples << " "<<cnt << endl;
+    rel->num_tuples = rel->payload->num_tuples = cnt;
+    // cerr << cnt << endl;
+    if (rand_que != NULL)
+        free(rand_que);
+}
+
 void *
 memory_calculator_thread(void *args) {
     uint64_t exp_id = (uint64_t) args;
@@ -163,6 +286,7 @@ memory_calculator_thread(void *args) {
 void
 benchmark(const param_t cmd_params) {
 
+    srand(time(NULL));
     relation_t relR;
     relation_t relS;
 
@@ -187,8 +311,6 @@ benchmark(const param_t cmd_params) {
 
     createRelation(&relR, relR.payload, cmd_params.rkey, cmd_params.rts, cmd_params, cmd_params.loadfileR,
                    cmd_params.r_seed, cmd_params.step_sizeR, partitions);
-    DEBUGMSG("relR [aligned:%d]: %s", is_aligned(relR.tuples, CACHE_LINE_SIZE),
-             print_relation(relR.tuples, min((uint64_t) 1000, relR.num_tuples)).c_str());
 
     /* create relation S */
     if (cmd_params.old_param) {
@@ -203,6 +325,37 @@ benchmark(const param_t cmd_params) {
 
     createRelation(&relS, relS.payload, cmd_params.skey, cmd_params.sts, cmd_params, cmd_params.loadfileS,
                    cmd_params.s_seed, cmd_params.step_sizeS, cmd_params.nthreads);
+
+#ifdef MARTERIAL_SAMPLE
+/*
+
+    double epsilon_r;
+    double epsilon_s;
+    double Universal_p;
+    double Bernoulli_q;
+    int reservior_size;
+    int rand_buffer_size;
+    int presample_size;
+*/
+  double identical_Universal_p;
+  int hash_a, hash_b;
+  srand(time(NULL));
+  hash_a = rand();
+  hash_b = rand();
+  setSampleParam(&relR, &relS, cmd_params.epsilon_r, cmd_params.epsilon_s, identical_Universal_p);
+  
+  // std::cout << "\n\n\n\n\n\n\n\n SET PARAM DONE \n\n\n\n\n\n\n\n\n";
+  // fflush(stdout);
+
+  sampleRelation(&relR, relR.payload, cmd_params, cmd_params.epsilon_r, identical_Universal_p, cmd_params.Universal_p,
+                 cmd_params.Bernoulli_q, hash_a, hash_b);
+  sampleRelation(&relS, relS.payload, cmd_params, cmd_params.epsilon_s, identical_Universal_p, cmd_params.Universal_p,
+                 cmd_params.Bernoulli_q, hash_a, hash_b);
+
+#endif
+
+    DEBUGMSG("relR [aligned:%d]: %s", is_aligned(relR.tuples, CACHE_LINE_SIZE),
+             print_relation(relR.tuples, min((uint64_t) 1000, relR.num_tuples)).c_str());
     DEBUGMSG("relS [aligned:%d]: %s", is_aligned(relS.tuples, CACHE_LINE_SIZE),
              print_relation(relS.tuples, min((uint64_t) 1000, relS.num_tuples)).c_str());
 

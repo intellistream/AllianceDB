@@ -33,7 +33,7 @@ matplotlib.rcParams['ytick.labelsize'] = TICK_FONT_SIZE
 matplotlib.rcParams['font.family'] = OPT_FONT_NAME
 matplotlib.rcParams['pdf.fonttype'] = 42
 
-exp_dir = "/data1/xtra"
+exp_dir = "/home/tangxilin/S-AllianceDB/data1/xtra"
 
 FIGURE_FOLDER = exp_dir + '/results/figure'
 

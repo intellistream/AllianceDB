@@ -12,7 +12,7 @@ from numpy import double
 
 matplotlib.rcParams['pdf.fonttype'] = 42
 
-exp_dir = "/data1/xtra"
+exp_dir = "/home/tangxilin/S-AllianceDB/data1/xtra"
 
 FIGURE_FOLDER = exp_dir + '/results/figure'
 # example for reading csv file

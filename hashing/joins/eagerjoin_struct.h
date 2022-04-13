@@ -65,6 +65,17 @@ struct t_param {
     int progressive_step = 1;//percentile of tuples to sort at each iteration. It must be multiple cacheline size (64).
     int merge_step = 2;//#runs to merge at each iteration.
 
+    // SAMPLE
+    double epsilon_r;
+    double epsilon_s;
+    double Universal_p;
+    double Bernoulli_q;
+    int reservior_size;
+    int rand_buffer_size;
+    int presample_size;
+
+    char *grp_id;
+
     t_param(int nthreads) {
         result = 0;
         joinresult = new result_t();//(result_t *) malloc(sizeof(result_t));

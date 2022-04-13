@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5.1)
 project(AllianceDB)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 
 find_path(LIBNUMA_INCLUDE numa.h PATHS ${SEARCH_DIRS})
 find_library(LIBNUMA_LIB NAMES libnuma.so PATHS ${SEARCH_DIRS})
@@ -32,7 +32,8 @@ SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${./bin})
 #    -Wno-header-guard -Wno-sign-compare")
 SET(CMAKE_CXX_FLAGS "") # TODO: solve all warnings
 SET(CMAKE_CXX_FLAGS_DEBUG "-g")
-SET(CMAKE_CXX_FLAGS_RELEASE "-O3")
+# SET(CMAKE_CXX_FLAGS_RELEASE "-O3")
+SET(CMAKE_CXX_FLAGS_RELEASE "-Og")
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -msse4.2 -mavx2")
 
 add_executable(sorting

@@ -1,7 +1,7 @@
 #!/bin/bash
-
+gp=0
 exp_dir="/data1/xtra"
-L3_cache_size=20971520
+L3_cache_size=20182588
 # read arguments
 helpFunction()
 {
@@ -107,73 +107,81 @@ function compile() {
     make -C .. clean -s
     make -C .. -j4 -s
   fi
+  echo tangxilin | sudo -S setcap CAP_SYS_RAWIO+eip ../hashing
 }
 
 function Run() {
   #####native execution
-  echo "==benchmark:$benchmark -a $algo -n $Threads=="
-  echo 3 >/proc/sys/vm/drop_caches
-  ../hashing -a $algo -r $RSIZE -s $SSIZE -n $Threads
+  echo "==benchmark:$benchmark -a $algo -E $epsl_r -F $epsl_s -U $univ -Q $bern -n $Threads=="
+  #echo 3 >/proc/sys/vm/drop_caches
+  echo tangxilin | sudo -S sysctl vm.drop_caches=3
+  ../hashing -a $algo -E $epsl_r -F $epsl_s -U $univ -Q $bern -r $RSIZE -s $SSIZE -n $Threads
 }
 
 function benchmarkRun() {
   #####native execution
-  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap -o $exp_dir/results/breakdown/profile_$id.txt =="
-  echo 3 >/proc/sys/vm/drop_caches
-  ../hashing -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap -o $exp_dir/results/breakdown/profile_$id.txt
+  echo "==benchmark:$benchmark -a $algo -E $epsl_r -F $epsl_s -U $univ -Q $bern -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -H $gp -[ $progress_step -] $merge_step -G $group -g $gap -o $exp_dir/results/breakdown/profile_${gp}_${id}.txt > ${exp_dir}/results/breakdown/${phase}_${benchmark}_${algo}_profile_${gp}_${id}.txt =="
+  #echo 3 >/proc/sys/vm/drop_caches
+  echo tangxilin | sudo -S sysctl vm.drop_caches=3
+  ../hashing -a $algo -E $epsl_r -F $epsl_s -U $univ -Q $bern -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -H $gp -[ $progress_step -] $merge_step -G $group -g $gap -o $exp_dir/results/breakdown/profile_${gp}_${id}.txt > ${exp_dir}/results/breakdown/${phase}_${benchmark}_${algo}_profile_${gp}_${id}.txt  
   if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit -1; fi
 }
 
 function benchmarkProfileRun() {
   #####native execution
-  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap -o $exp_dir/results/breakdown/profile_$id.txt =="
-  echo 3 >/proc/sys/vm/drop_caches
+  echo "==benchmark:$benchmark -a $algo -E $epsl_r -F $epsl_s -U $univ -Q $bern -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -H $gp -[ $progress_step -] $merge_step -G $group -g $gap -o $exp_dir/results/breakdown/profile_${gp}_${id}.txt > ${exp_dir}/results/breakdown/${phase}_${benchmark}_${algo}_profile_${gp}_${id}.txt =="
+  #echo 3 >/proc/sys/vm/drop_caches
+  echo tangxilin | sudo -S sysctl vm.drop_caches=3
   if [ ! -z "$PERF_CONF" -a "$PERF_CONF"!=" " ]; then
-    ../hashing -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap -o $exp_dir/results/breakdown/profile_$id.txt -p $PERF_CONF
+    ../hashing -a $algo -E $epsl_r -F $epsl_s -U $univ -Q $bern -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -H $gp -[ $progress_step -] $merge_step -G $group -g $gap -o $exp_dir/results/breakdown/profile_${gp}_${id}.txt -p $PERF_CONF > ${exp_dir}/results/breakdown/${phase}_${benchmark}_${algo}_profile_${gp}_${id}.txt 
   else
-    ../hashing -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap -o $exp_dir/results/breakdown/profile_$id.txt
+    ../hashing -a $algo -E $epsl_r -F $epsl_s -U $univ -Q $bern -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -H $gp -[ $progress_step -] $merge_step -G $group -g $gap -o $exp_dir/results/breakdown/profile_${gp}_${id}.txt
   fi
   if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit -1; fi
 }
 
 function perfUarchBenchmarkRun() {
   #####native execution
-  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap -o $exp_dir/results/breakdown/profile_$id.txt =="
-  echo 3 >/proc/sys/vm/drop_caches
+  echo "==benchmark:$benchmark -a $algo -E $epsl_r -F $epsl_s -U $univ -Q $bern -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -H $gp -[ $progress_step -] $merge_step -G $group -g $gap -o $exp_dir/results/breakdown/profile_${gp}_${id}.txt > ${exp_dir}/results/breakdown/${phase}_${benchmark}_${algo}_profile_${gp}_${id}.txt =="
+  #echo 3 >/proc/sys/vm/drop_caches
+  echo tangxilin | sudo -S sysctl vm.drop_caches=3
   if [ ! -z "$PERF_OUTPUT" -a "$PERF_OUTPUT"!=" " ]; then
     perf stat -x, -a -e CPU_CLK_UNHALTED.THREAD,IDQ_UOPS_NOT_DELIVERED.CORE,UOPS_ISSUED.ANY,UOPS_RETIRED.RETIRE_SLOTS,INT_MISC.RECOVERY_CYCLES,CYCLE_ACTIVITY.STALLS_MEM_ANY,RESOURCE_STALLS.SB -o $PERF_OUTPUT \
-    ../hashing -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap
+    ../hashing -a $algo -E $epsl_r -F $epsl_s -U $univ -Q $bern -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -H $gp -[ $progress_step -] $merge_step -G $group -g $gap
   else
     perf stat -e CPU_CLK_UNHALTED.THREAD,IDQ_UOPS_NOT_DELIVERED.CORE,UOPS_ISSUED.ANY,UOPS_RETIRED.RETIRE_SLOTS,INT_MISC.RECOVERY_CYCLES,CYCLE_ACTIVITY.STALLS_MEM_ANY,RESOURCE_STALLS.SB \
-    ../hashing -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap
+    ../hashing -a $algo -E $epsl_r -F $epsl_s -U $univ -Q $bern -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -H $gp -[ $progress_step -] $merge_step -G $group -g $gap
   fi
   if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit -1; fi
 }
 
 function perfUtilBenchmarkRun() {
   #####native execution
-  echo "==benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap -o $exp_dir/results/breakdown/perf_$id.txt =="
-  echo 3 >/proc/sys/vm/drop_caches
-  perf stat -I10 -x, -o $exp_dir/results/breakdown/perf_$id.csv -e cache-misses,cycles ../hashing -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap
+  echo "==benchmark:$benchmark -a $algo -E $epsl_r -F $epsl_s -U $univ -Q $bern -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -H $gp -[ $progress_step -] $merge_step -G $group -g $gap -o $exp_dir/results/breakdown/perf_${gp}_${id}.txt > ${exp_dir}/results/breakdown/${phase}_${benchmark}_${algo}_profile_${gp}_${id}.txt =="
+  #echo 3 >/proc/sys/vm/drop_caches
+  echo tangxilin | sudo -S sysctl vm.drop_caches=3
+  perf stat -I10 -x, -o $exp_dir/results/breakdown/perf_${gp}_${id}.csv -e cache-misses,cycles ../hashing -a $algo -E $epsl_r -F $epsl_s -U $univ -Q $bern -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -H $gp -[ $progress_step -] $merge_step -G $group -g $gap
   if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit -1; fi
 }
 
 function KimRun() {
   #####native execution
-  echo "==KIM benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS -[ $progress_step -] $merge_step -G $group -P $DD -g $gap =="
-  echo 3 >/proc/sys/vm/drop_caches
-  ../hashing -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS -[ $progress_step -] $merge_step -G $group -P $DD -g $gap
+  echo "==KIM benchmark:$benchmark -a $algo -E $epsl_r -F $epsl_s -U $univ -Q $bern -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -H $gp -W $FIXS -[ $progress_step -] $merge_step -G $group -P $DD -g $gap -o $exp_dir/results/breakdown/profile_${gp}_${id}.txt > ${exp_dir}/results/breakdown/${phase}_${benchmark}_${algo}_profile_${gp}_${id}.txt  =="
+  #echo 3 >/proc/sys/vm/drop_caches
+  echo tangxilin | sudo -S sysctl vm.drop_caches=3
+  ../hashing -a $algo -E $epsl_r -F $epsl_s -U $univ -Q $bern -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -H $gp -W $FIXS -[ $progress_step -] $merge_step -G $group -P $DD -g $gap -o $exp_dir/results/breakdown/profile_${gp}_${id}.txt > ${exp_dir}/results/breakdown/${phase}_${benchmark}_${algo}_profile_${gp}_${id}.txt  
   if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit -1; fi
 }
 
 function KimProfileRun() {
   #####native execution
-  echo "==KIM benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS -[ $progress_step -] $merge_step -G $group -P $DD -g $gap =="
-  echo 3 >/proc/sys/vm/drop_caches
+  echo "==KIM benchmark:$benchmark -a $algo -E $epsl_r -F $epsl_s -U $univ -Q $bern -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -H $gp -W $FIXS -[ $progress_step -] $merge_step -G $group -P $DD -g $gap =="
+  #echo 3 >/proc/sys/vm/drop_caches
+  echo tangxilin | sudo -S sysctl vm.drop_caches=3
   if [ ! -z "$PERF_CONF" -a "$PERF_CONF"!=" " ]; then
-    ../hashing -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS -[ $progress_step -] $merge_step -G $group -P $DD -g $gap -o $exp_dir/results/breakdown/profile_$id.txt -p $PERF_CONF
+    ../hashing -a $algo -E $epsl_r -F $epsl_s -U $univ -Q $bern -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -H $gp -W $FIXS -[ $progress_step -] $merge_step -G $group -P $DD -g $gap -o $exp_dir/results/breakdown/profile_${gp}_${id}.txt -p $PERF_CONF > ${exp_dir}/results/breakdown/${phase}_${benchmark}_${algo}_profile_${gp}_${id}.txt
   else
-    ../hashing -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS -[ $progress_step -] $merge_step -G $group -P $DD -g $gap -o $exp_dir/results/breakdown/profile_$id.txt
+    ../hashing -a $algo -E $epsl_r -F $epsl_s -U $univ -Q $bern -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -H $gp -W $FIXS -[ $progress_step -] $merge_step -G $group -P $DD -g $gap -o $exp_dir/results/breakdown/profile_${gp}_${id}.txt
   fi
   if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit -1; fi
 }
@@ -249,115 +257,145 @@ function NORMAL() {
 }
 
 function FULLBENCHRUN() {
-  PARTITION_ONLY
-  compile
-  echo "PARTITION_ONLY"
-  benchmarkRun
+  # PARTITION_ONLY
+  # compile
+  # echo "PARTITION_ONLY"
+  # phase='PARTITION_ONLY'
+  # benchmarkRun
 
-  PARTITION_BUILD_SORT
-  compile
-  echo "PARTITION_BUILD_SORT"
-  benchmarkRun
+  # PARTITION_BUILD_SORT
+  # compile
+  # echo "PARTITION_BUILD_SORT"
+  # phase='PARTITION_BUILD_SORT'
+  # benchmarkRun
 
-  PARTITION_BUILD_SORT_MERGE
-  compile
-  echo "PARTITION_BUILD_SORT_MERGE"
-  benchmarkRun
+  # PARTITION_BUILD_SORT_MERGE
+  # compile
+  # echo "PARTITION_BUILD_SORT_MERGE"
+  # phase='PARTITION_BUILD_SORT_MERGE'
+  # benchmarkRun
 
-  PARTITION_BUILD_SORT_MERGE_JOIN
-  compile
-  echo "PARTITION_BUILD_SORT_MERGE_JOIN"
-  benchmarkRun
+  # PARTITION_BUILD_SORT_MERGE_JOIN
+  # compile
+  # echo "PARTITION_BUILD_SORT_MERGE_JOIN"
+  # phase='PARTITION_BUILD_SORT_MERGE_JOIN'
+  # benchmarkRun
 
   ALL_ON
   compile
   echo "ALL_ON"
+  phase='ALL_ON'
   benchmarkRun
 }
 
 function SHJBENCHRUN() {
-  PARTITION_ONLY
-  compile
-  echo "PARTITION_ONLY"
-  benchmarkRun
+  # PARTITION_ONLY
+  # compile
+  # echo "PARTITION_ONLY"
+  # phase='PARTITION_ONLY'
+  # benchmarkRun
 
-  PARTITION_BUILD_SORT
-  compile
-  echo "PARTITION_BUILD_SORT"
-  benchmarkRun
+  # PARTITION_BUILD_SORT
+  # compile
+  # echo "PARTITION_BUILD_SORT"
+  # phase='PARTITION_BUILD_SORT'
+  # benchmarkRun
 
-  PARTITION_BUILD_SORT_MERGE_JOIN
-  compile
-  echo "PARTITION_BUILD_SORT_MERGE_JOIN"
-  benchmarkRun
+  # PARTITION_BUILD_SORT_MERGE_JOIN
+  # compile
+  # echo "PARTITION_BUILD_SORT_MERGE_JOIN"
+  # phase='PARTITION_BUILD_SORT_MERGE_JOIN'
+  # benchmarkRun
 
   ALL_ON
   compile
   echo "ALL_ON"
+  phase='ALL_ON'
   benchmarkRun
 }
 
 function FULLKIMRUN() {
-  PARTITION_ONLY
-  compile
-  echo "PARTITION_ONLY"
-  KimRun
+  # PARTITION_ONLY
+  # compile
+  # echo "PARTITION_ONLY"
+  # phase='PARTITION_ONLY'
+  # KimRun
 
-  PARTITION_BUILD_SORT
-  compile
-  echo "PARTITION_BUILD_SORT"
-  KimRun
+  # PARTITION_BUILD_SORT
+  # compile
+  # echo "PARTITION_BUILD_SORT"
+  # phase='PARTITION_BUILD_SORT'
+  # KimRun
 
-  PARTITION_BUILD_SORT_MERGE
-  compile
-  echo "PARTITION_BUILD_SORT_MERGE"
-  KimRun
+  # PARTITION_BUILD_SORT_MERGE
+  # compile
+  # echo "PARTITION_BUILD_SORT_MERGE"
+  # phase='PARTITION_BUILD_SORT_MERGE'
+  # KimRun
 
-  PARTITION_BUILD_SORT_MERGE_JOIN
-  compile
-  echo "PARTITION_BUILD_SORT_MERGE_JOIN"
-  KimRun
+  # PARTITION_BUILD_SORT_MERGE_JOIN
+  # compile
+  # echo "PARTITION_BUILD_SORT_MERGE_JOIN"
+  # phase='PARTITION_BUILD_SORT_MERGE_JOIN'
+  # KimRun
 
   ALL_ON
   compile
   echo "ALL_ON"
+  phase='ALL_ON'
   KimRun
 }
 
 function SHJKIMRUN() {
-  PARTITION_ONLY
-  compile
-  KimRun
+  # PARTITION_ONLY
+  # phase='PARTITION_ONLY'
+  # compile
+  # KimRun
 
-  PARTITION_BUILD_SORT
-  compile
-  KimRun
+  # PARTITION_BUILD_SORT
+  # phase='PARTITION_BUILD_SORT'
+  # compile
+  # KimRun
 
-  PARTITION_BUILD_SORT_MERGE_JOIN
-  compile
-  KimRun
+  # PARTITION_BUILD_SORT_MERGE_JOIN
+  # phase='PARTITION_BUILD_SORT_MERGE_JOIN'
+  # compile
+  # KimRun
 
   ALL_ON
   compile
   echo "ALL_ON"
+  phase='ALL_ON'
   KimRun
 }
 
 function RUNALL() {
   if [ $profile_breakdown == 1 ]; then
-    if [ $algo == SHJ_JM_P ] || [ $algo == SHJ_JM_NP ] || [ $algo == SHJ_JBCR_P ]|| [ $algo == SHJ_JBCR_NP ] ; then
+    if [ "$algo" == SHJ_JM_P ] || [ "$algo" == SHJ_JM_NP ] || [ "$algo" == SHJ_JBCR_P ]|| [ "$algo" == SHJ_JBCR_NP ] ; then
       SHJBENCHRUN
     else
-      if [ $algo == PMJ_JM_P ] || [ $algo == PMJ_JM_NP ] || [ $algo == PMJ_JBCR_P ] || [ $algo == PMJ_JBCR_NP ];  then
+      if [ "$algo" == PMJ_JM_P ] || [ "$algo" == PMJ_JM_NP ] || [ "$algo" == PMJ_JBCR_P ] || [ "$algo" == PMJ_JBCR_NP ];  then
         FULLBENCHRUN
       else
+        compile
         benchmarkRun
       fi
     fi
   else
-    ALL_ON
-    compile
-    benchmarkRun
+    if [ "$algo" == SHJ_JM_P ] || [ "$algo" == SHJ_JM_NP ] || [ "$algo" == SHJ_JBCR_P ]|| [ "$algo" == SHJ_JBCR_NP ] ; then
+      ALL_ON
+      compile
+      benchmarkRun
+    else
+      if [ "$algo" == PMJ_JM_P ] || [ "$algo" == PMJ_JM_NP ] || [ "$algo" == PMJ_JBCR_P ] || [ "$algo" == PMJ_JBCR_NP ];  then
+        ALL_ON
+        compile
+        benchmarkRun
+      else
+        compile
+        benchmarkRun
+      fi
+    fi
   fi
 }
 
@@ -369,6 +407,7 @@ function RUNALLMic() {
       if [ $algo == PMJ_JM_P ] || [ $algo == PMJ_JM_NP ] || [ $algo == PMJ_JBCR_P ] || [ $algo == PMJ_JBCR_NP ]; then
         FULLKIMRUN
       else
+        compile
         KimRun
       fi
     fi
@@ -376,16 +415,45 @@ function RUNALLMic() {
     ALL_ON
     compile
     KimRun
+    if [ $algo == SHJ_JM_P ] || [ $algo == SHJ_JM_NP ] || [ $algo == SHJ_JBCR_P ] || [ $algo == SHJ_JBCR_NP ] || [ $algo == SHJ_HS_P ]|| [ $algo == SHJ_HS_NP ]; then
+      ALL_ON
+      compile
+      KimRun
+    else
+      if [ $algo == PMJ_JM_P ] || [ $algo == PMJ_JM_NP ] || [ $algo == PMJ_JBCR_P ] || [ $algo == PMJ_JBCR_NP ]; then
+        ALL_ON
+        compile
+        KimRun
+      else
+        compile
+        KimRun
+      fi
+    fi
   fi
 }
 
-function SetStockParameters() { #matches: 15598112. #inputs= 60527 + 77227
+# function SetStockParameters() { #matches: 15598112. #inputs= 60527 + 77227
+#   ts=1 # stream case
+#   WINDOW_SIZE=1000
+#   RSIZE=60527
+#   SSIZE=77227
+#   RPATH=$exp_dir/datasets/stock/cj_1000ms_1t.txt
+#   SPATH=$exp_dir/datasets/stock/sb_1000ms_1t.txt
+#   RKEY=0
+#   SKEY=0
+#   RTS=1
+#   STS=1
+#   gap=15595
+# }
+
+function SetStockParameters() { #matches: 1635926294. #inputs= 1013800 + 1034443
   ts=1 # stream case
+  TOTAL_JOIN=1635926294
   WINDOW_SIZE=1000
-  RSIZE=60527
-  SSIZE=77227
-  RPATH=$exp_dir/datasets/stock/cj_1000ms_1t.txt
-  SPATH=$exp_dir/datasets/stock/sb_1000ms_1t.txt
+  RSIZE=1013800
+  SSIZE=1034443
+  RPATH=$exp_dir/datasets/NDP/Sep_85.txt
+  SPATH=$exp_dir/datasets/NDP/Sep_86.txt
   RKEY=0
   SKEY=0
   RTS=1
@@ -396,6 +464,7 @@ function SetStockParameters() { #matches: 15598112. #inputs= 60527 + 77227
 function SetRovioParameters() { #matches: 87856849382 #inputs= 2873604 + 2873604
   ts=1 # stream case
   WINDOW_SIZE=1000
+  TOTAL_JOIN=87856849382
   RSIZE=2873604
   SSIZE=2873604
   RPATH=$exp_dir/datasets/rovio/1000ms_1t.txt
@@ -410,10 +479,12 @@ function SetRovioParameters() { #matches: 87856849382 #inputs= 2873604 + 2873604
 function SetYSBParameters() { #matches: 10000000. #inputs= 1000 + 10000000
   ts=1 # stream case
   WINDOW_SIZE=1000
+  TOTAL_JOIN=10000000
   RSIZE=1000
   SSIZE=10000000
   RPATH=$exp_dir/datasets/YSB/campaigns_id.txt
   SPATH=$exp_dir/datasets/YSB/ad_events.txt
+  # epsl_r=1
   RKEY=0
   SKEY=0
   RTS=0
@@ -424,6 +495,7 @@ function SetYSBParameters() { #matches: 10000000. #inputs= 1000 + 10000000
 function SetDEBSParameters() { #matches: 251033140 #inputs= 1000000 + 1000000
   ts=1 # stream case
   WINDOW_SIZE=0
+  TOTAL_JOIN=251033140
   RSIZE=1000000 #1000000
   SSIZE=1000000 #1000000
   RPATH=$exp_dir/datasets/DEBS/posts_key32_partitioned.csv
@@ -448,7 +520,9 @@ function ResetParameters() {
   STEP_SIZE_S=128000               # let S has the same arrival rate of R.
   FIXS=1
   ts=1 # stream case
-  Threads=8
+  if [ $thread_test == 1 ]; then
+    Threads=8
+  fi
   progress_step=20
   merge_step=16 #not in use.
   group=2
@@ -465,54 +539,1446 @@ compile
 timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
 
-## APP benchmark.
-#APP_BENCH=0
-if [ $APP_BENCH == 1 ]; then
-  NORMAL
-  #compile depends on whether we want to profile.
+
+# sed -i -e "s/#define NO_SET_PR/#define SET_PR/g" ../helper/localjoiner.h
+# sed -i -e "s/#define NO_SAMPLE_ON/#define SAMPLE_ON/g" ../helper/localjoiner.h
+# sed -i -e "s/#define NO_ALWAYS_PROBE/#define ALWAYS_PROBE/g" ../helper/localjoiner.h
+# sed -i -e "s/#define NO_PRESAMPLE/#define PRESAMPLE/g" ../helper/localjoiner.h
+# sed -i -e "s/#define NO_AVX_RAND/#define AVX_RAND/g" ../helper/localjoiner.h
+# sed -i -e "s/#define NO_MEM_LIM/#define MEM_LIM/g" ../helper/localjoiner.h
+
+
+
+sed -i -e "s/#define SET_PR/#define NO_SET_PR/g" ../helper/localjoiner.h
+sed -i -e "s/#define SAMPLE_ON/#define NO_SAMPLE_ON/g" ../helper/localjoiner.h
+sed -i -e "s/#define ALWAYS_PROBE/#define NO_ALWAYS_PROBE/g" ../helper/localjoiner.h
+sed -i -e "s/#define PRESAMPLE/#define NO_PRESAMPLE/g" ../helper/localjoiner.h
+sed -i -e "s/#define AVX_RAND/#define NO_AVX_RAND/g" ../helper/localjoiner.h
+sed -i -e "s/#define MEM_LIM/#define NO_MEM_LIM/g" ../helper/localjoiner.h
+sed -i -e "s/#define MARTERIAL_SAMPLE/#define NO_MARTERIAL_SAMPLE/g" ../benchmark.cpp
+
+
+function IF_ALWAYS_PROBE()
+{
+  if [ $set_always_probe == 0 ]; then
+    sed -i -e "s/#define NO_ALWAYS_PROBE/#define ALWAYS_PROBE/g" ../helper/localjoiner.h
+  fi
+  if [ $set_always_probe == 1 ]; then
+    sed -i -e "s/#define ALWAYS_PROBE/#define NO_ALWAYS_PROBE/g" ../helper/localjoiner.h
+  fi
+}
+set_always_probe=1
+mem_lim=1
+set_pr=1
+set_avx_rand=1
+
+
+function IF_SET_PR()
+{
+  if [ $set_pr == 0 ]; then
+    sed -i -e "s/#define PRESAMPLE/#define NO_PRESAMPLE/g" ../helper/localjoiner.h
+  fi
+  if [ $set_pr == 1 ]; then
+    sed -i -e "s/#define NO_PRESAMPLE/#define PRESAMPLE/g" ../helper/localjoiner.h
+  fi
+}
+
+function IF_AVX_RAND() {
+  if [ $set_avx_rand == 0 ]; then
+    sed -i -e "s/#define NO_AVX_RAND/#define AVX_RAND/g" ../helper/localjoiner.h
+  fi
+  if [ $set_avx_rand == 1 ]; then
+    sed -i -e "s/#define AVX_RAND/#define NO_AVX_RAND/g" ../helper/localjoiner.h
+  fi
+}
+
+function APPROXIMATE_OFF() {
+  sed -i -e "s/#define SET_PR/#define NO_SET_PR/g" ../helper/localjoiner.h
+  sed -i -e "s/#define SAMPLE_ON/#define NO_SAMPLE_ON/g" ../helper/localjoiner.h
+  sed -i -e "s/#define ALWAYS_PROBE/#define NO_ALWAYS_PROBE/g" ../helper/localjoiner.h
+  sed -i -e "s/#define PRESAMPLE/#define NO_PRESAMPLE/g" ../helper/localjoiner.h
+  sed -i -e "s/#define AVX_RAND/#define NO_AVX_RAND/g" ../helper/localjoiner.h
+  sed -i -e "s/#define MEM_LIM/#define NO_MEM_LIM/g" ../helper/localjoiner.h
+  sed -i -e "s/#define MARTERIAL_SAMPLE/#define NO_MARTERIAL_SAMPLE/g" ../benchmark.cpp
+  sed -i -e "s/#define PROBEHASH/#define NO_PROBEHASH/g" ../helper/localjoiner.h
+
+}
+
+function SAMPLE_OFF() {
+  sed -i -e "s/#define SET_PR/#define NO_SET_PR/g" ../helper/localjoiner.h
+  sed -i -e "s/#define SAMPLE_ON/#define NO_SAMPLE_ON/g" ../helper/localjoiner.h
+  sed -i -e "s/#define ALWAYS_PROBE/#define NO_ALWAYS_PROBE/g" ../helper/localjoiner.h
+  sed -i -e "s/#define PRESAMPLE/#define NO_PRESAMPLE/g" ../helper/localjoiner.h
+  sed -i -e "s/#define AVX_RAND/#define NO_AVX_RAND/g" ../helper/localjoiner.h
+  sed -i -e "s/#define MEM_LIM/#define NO_MEM_LIM/g" ../helper/localjoiner.h
+  sed -i -e "s/#define MARTERIAL_SAMPLE/#define NO_MARTERIAL_SAMPLE/g" ../benchmark.cpp
+  sed -i -e "s/#define PROBEHASH/#define NO_PROBEHASH/g" ../helper/localjoiner.h
+}
+
+function EAGER_SAMPLE() {
+  if [ $eg_smp == 0 ]; then
+    sed -i -e "s/#define NO_SAMPLE_ON/#define SAMPLE_ON/g" ../helper/localjoiner.h
+    sed -i -e "s/#define NO_PRESAMPLE/#define PRESAMPLE/g" ../helper/localjoiner.h
+  fi
+  if [ $eg_smp == 1 ]; then
+    sed -i -e "s/#define SAMPLE_ON/#define NO_SAMPLE_ON/g" ../helper/localjoiner.h
+    sed -i -e "s/#define PRESAMPLE/#define NO_PRESAMPLE/g" ../helper/localjoiner.h
+  fi
+}
+
+function LAZY_SAMPLE() {
+  if [ $lz_smp == 0 ]; then
+    SAMPLE_OFF
+    sed -i -e "s/#define NO_MARTERIAL_SAMPLE/#define MARTERIAL_SAMPLE/g" ../benchmark.cpp
+  fi
+  if [ $lz_smp == 1 ]; then
+    sed -i -e "s/#define MARTERIAL_SAMPLE/#define NO_MARTERIAL_SAMPLE/g" ../benchmark.cpp
+  fi
+}
+
+function MEM_LIM()
+{
+  if [ $mem_lim == 0 ]; then
+    sed -i -e "s/#define NO_MEM_LIM/#define MEM_LIM/g" ../helper/localjoiner.h
+  fi
+  if [ $mem_lim == 1 ]; then
+    sed -i -e "s/#define MEM_LIM/#define NO_MEM_LIM/g" ../helper/localjoiner.h
+  fi
+}
+
+function PROBEHASH() {
+  if [ $prb_hsh == 0 ]; then
+    SAMPLE_OFF
+    sed -i -e "s/#define NO_PROBEHASH/#define PROBEHASH/g" ../helper/localjoiner.h
+  fi
+  if [ $prb_hsh == 1 ]; then
+    sed -i -e "s/#define PROBEHASH/#define NO_PROBEHASH/g" ../helper/localjoiner.h
+  fi
+}
+
+function RESERVOIR_STRATA() {
+  if [ $res_strata == 0 ]; then
+    SAMPLE_OFF
+    sed -i -e "s/#define NO_RESERVOIR_STRATA/#define RESERVOIR_STRATA/g" ../helper/localjoiner.h
+  fi
+  if [ $res_strata == 1 ]; then
+    sed -i -e "s/#define RESERVOIR_STRATA/#define NO_RESERVOIR_STRATA/g" ../helper/localjoiner.h
+  fi
+}
+
+# function SET_RESERVOIR_SIZE() {
+#   sed -i -e "s/#define RESERVOIR_SIZE [[:alnum:]]*/#define RESERVOIR_SIZE $reservoir_size/g" ../joins/npj_types.h
+# }
+
+function SET_GAP_RESERV() {
+  reservoir_size=`python3 reservoir_size.py -e $epsl_r -r $RSIZE -s $SSIZE -n $Threads`
+  gap=`python3 gap_size.py -e $epsl_r -m $TOTAL_JOIN`
+  echo "\n\n\n\n\n\n"
+  echo $reservoir_size
+  echo $gap
+  sed -i -e "s/#define RESERVOIR_SIZE [[:alnum:]]*/#define RESERVOIR_SIZE $reservoir_size/g" ../joins/npj_types.h
+}
+
+function SET_RAND_BUFFER_SIZE() {
+  sed -i -e "s/#define RANDOM_BUFFER_SIZE [[:alnum:]]*/#define RANDOM_BUFFER_SIZE $rand_buffer_size/g" ../joins/npj_types.h
+}
+
+function SAMPLE_WITH_PARA() {
+  EAGER_SAMPLE
+  LAZY_SAMPLE
+  MEM_LIM
+  PROBEHASH
+  RESERVOIR_STRATA
+
+  IF_SET_PR
+  IF_AVX_RAND
+  IF_ALWAYS_PROBE
+}
+
+function RUN_SHJ (){
   for profile_breakdown in 1; do
     compile=1
     for benchmark in "Stock" "Rovio" "YSB" "DEBS"; do # "Stock" "Rovio" "YSB" "DEBS"
-      for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do # NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
+      # for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do # NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
+      for algo in SHJ_JM_NP SHJ_JBCR_NP; do # NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
         case "$benchmark" in
         "Stock")
           id=38
           ResetParameters
           SetStockParameters
+          SET_GAP_RESERV
+          SET_RAND_BUFFER_SIZE
           RUNALL
           ;;
         "Rovio") #matches:
           id=39
           ResetParameters
           SetRovioParameters
-          RUNALL
-          ;;
-        "YSB")
-          id=40
-          ResetParameters
-          SetYSBParameters
+          SET_GAP_RESERV
+          SET_RAND_BUFFER_SIZE
           RUNALL
           ;;
         "DEBS")
           id=41
           ResetParameters
           SetDEBSParameters
+          SET_GAP_RESERV
+          SET_RAND_BUFFER_SIZE
           RUNALL
           ;;
         esac
       done
     done
   done
+}
+
+function RUN_PMJ (){
+  for profile_breakdown in 1; do
+    compile=1
+    for benchmark in "Stock" "Rovio" "YSB" "DEBS"; do # "Stock" "Rovio" "YSB" "DEBS"
+      # for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do # NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
+      for algo in PMJ_JM_NP PMJ_JBCR_NP; do # NPO PRO SHJ_JM_NP SHJ_JBCR_NP SHJ_JM_NP SHJ_JBCR_NP
+        case "$benchmark" in
+        "Stock")
+          id=38
+          ResetParameters
+          SetStockParameters
+          SET_GAP_RESERV
+          SET_RAND_BUFFER_SIZE
+          RUNALL
+          ;;
+        "Rovio") #matches:
+          id=39
+          ResetParameters
+          SetRovioParameters
+          SET_GAP_RESERV
+          SET_RAND_BUFFER_SIZE
+          RUNALL
+          ;;
+        "DEBS")
+          id=41
+          ResetParameters
+          SetDEBSParameters
+          SET_GAP_RESERV
+          SET_RAND_BUFFER_SIZE
+          RUNALL
+          ;;
+        esac
+      done
+    done
+  done
+}
+
+function RUN_LAZY_HASH() {
+  for profile_breakdown in 1; do
+    compile=1
+    for benchmark in "Stock" "Rovio" "YSB" "DEBS"; do # "Stock" "Rovio" "YSB" "DEBS"
+      # for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do # NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
+      for algo in NPO PRO; do # NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
+        case "$benchmark" in
+        "Stock")
+          id=38
+          ResetParameters
+          SetStockParameters
+          SET_GAP_RESERV
+          SET_RAND_BUFFER_SIZE
+          RUNALL
+          ;;
+        "Rovio") #matches:
+          id=39
+          ResetParameters
+          SetRovioParameters
+          SET_GAP_RESERV
+          SET_RAND_BUFFER_SIZE
+          RUNALL
+          ;;
+        "DEBS")
+          id=41
+          ResetParameters
+          SetDEBSParameters
+          SET_GAP_RESERV
+          SET_RAND_BUFFER_SIZE
+          RUNALL
+          ;;
+        esac
+      done
+    done
+  done
+}
+
+
+declare -a arr
+
+# arr=( '1 0.1 1 0.1' '0.1 1 0.1 1' '0.3 0.333 0.3 0.333' '0.333 0.3 0.333 0.3' '0.667 0.15 0.667 0.15' '0.15 0.667 0.15 0.667' )
+arr=( '0.1 0.1 1 0.1' '0.1 0.1 1 0.1' '0.1 0.1 1 0.1' '0.1 0.1 0.3 0.333' '0.1 0.1 0.3 0.333' '0.1 0.1 0.3 0.333' '0.1 0.1 0.667 0.15' '0.1 0.1 0.667 0.15' '0.1 0.1 0.667 0.15' )
+
+
+# for set_always_probe in 0 1; do
+# IF_ALWAYS_PROBE
+# for mem_lim in 0 1; do
+# MEM_LIM
+# for rand_pair in "${arr[@]}"; do
+# eval real_pair=(${rand_pair})
+# epsl_r=${real_pair[0]};
+# epsl_s=${real_pair[1]};
+# univ=${real_pair[2]};
+# bern=${real_pair[3]};
+# let "gp++"
+
+
+# prb_hsh=0
+# PROBEHASH
+
+
+phase='ALL_ON'
+
+
+###################  
+
+epsl_r=1
+epsl_s=1
+univ=1
+bern=1
+set_pr=1
+rand_buffer_size=1000
+
+APPROXIMATE_OFF
+
+thread_test=1
+
+if [ $APP_BENCH == 1 ]; then
+  NORMAL
+  benchmark=Rovio
+  algo=SHJ_JBCR_NP
+  # algo=SHJ_JM_NP
+  compile=1
+  id=39
+  SAMPLE_OFF
+  # NO HARDWARE NO SAMPLE
+  gp='0-0'
+  ResetParameters
+  Threads=1
+  SetRovioParameters
+  RUNALL
+
+  # MULTICORE NO SAMPLE
+  gp='0-1'
+  SAMPLE_OFF
+  ResetParameters
+  Threads=8
+  SetRovioParameters
+  RUNALL
+  # NO MULTICORE SAMPLE 0.9
+
+  gp='0-2'
+  epsl_r=0.9
+  epsl_s=0.9
+
+  eg_smp=0
+  lz_smp=1
+  mem_lim=1
+  prb_hsh=1
+  res_strata=1
+
+  set_avx_rand=0
+  set_always_probe=1
+
+  SAMPLE_WITH_PARA
+  ResetParameters
+  Threads=1
+  SetRovioParameters
+  RUNALL
+  # NO MULTICORE SAMPLE 0.5
+  gp='0-3'
+  
+  epsl_r=0.5
+  epsl_s=0.5
+
+  eg_smp=0
+  lz_smp=1
+  mem_lim=1
+  prb_hsh=1
+  res_strata=1
+
+  set_avx_rand=0
+  set_always_probe=1
+  SAMPLE_WITH_PARA
+  ResetParameters
+  Threads=1
+  SetRovioParameters
+  RUNALL
+  # NO MULTICORE SAMPLE 0.1
+  gp='0-4'
+  
+  epsl_r=0.1
+  epsl_s=0.1
+
+  eg_smp=0
+  lz_smp=1
+  mem_lim=1
+  prb_hsh=1
+  res_strata=1
+
+  set_avx_rand=0
+  set_always_probe=1
+  SAMPLE_WITH_PARA
+  ResetParameters
+  Threads=1
+  SetRovioParameters
+  RUNALL
+  # MULTICORE SAMPLE 0.9
+  gp='0-5'
+  
+  epsl_r=0.9
+  epsl_s=0.9
+
+  eg_smp=0
+  lz_smp=1
+  mem_lim=1
+  prb_hsh=1
+  res_strata=1
+
+  set_avx_rand=0
+  set_always_probe=1
+  SAMPLE_WITH_PARA
+  ResetParameters
+  Threads=8
+  SetRovioParameters
+  RUNALL
+  # MULTICORE SAMPLE 0.5
+  gp='0-6'
+  
+  epsl_r=0.5
+  epsl_s=0.5
+
+  eg_smp=0
+  lz_smp=1
+  mem_lim=1
+  prb_hsh=1
+  res_strata=1
+
+  set_avx_rand=0
+  set_always_probe=1
+  SAMPLE_WITH_PARA
+  Threads=8
+  SetRovioParameters
+  RUNALL
+  # MULTICORE SAMPLE 0.1
+  gp='0-7'
+  
+  epsl_r=0.1
+  epsl_s=0.1
+
+  eg_smp=0
+  lz_smp=1
+  mem_lim=1
+  prb_hsh=1
+  res_strata=1
+
+  set_avx_rand=0
+  set_always_probe=1
+  SAMPLE_WITH_PARA
+  ResetParameters
+  Threads=8
+  SetRovioParameters
+  RUNALL
 fi
 
-## MICRO benchmark.
-#MICRO_BENCH=0
-if [ $MICRO_BENCH == 1 ]; then
+exit
+
+
+<<COMMENT
+########### NON-SAMPLE BASELINE
+
+gp=0
+
+APPROXIMATE_OFF
+
+if [ $APP_BENCH == 1 ]; then
   NORMAL
-  profile_breakdown=0        # set to 1 if we want to measure time breakdown!
+  RUN_LAZY_HASH
+  RUN_SHJ
+  RUN_PMJ
+fi
+
+# COMMENT
+
+
+######### NON-MEM-LIMITED SAMPLE
+
+gp=1
+
+epsl_r=0.6
+epsl_s=0.6
+
+eg_smp=1
+lz_smp=0
+mem_lim=1
+prb_hsh=1
+res_strata=1
+
+set_avx_rand=0
+set_always_probe=1
+
+SAMPLE_WITH_PARA
+
+if [ $APP_BENCH == 1 ]; then
+  NORMAL
+  #compile depends on whether we want to profile.
+  RUN_LAZY_HASH
+fi
+
+# exit
+######### NON-MEM-LIMITED SAMPLE
+
+gp=1
+
+epsl_r=0.5
+epsl_s=0.5
+
+eg_smp=0
+lz_smp=1
+mem_lim=1
+prb_hsh=1
+res_strata=1
+
+set_avx_rand=0
+set_always_probe=1
+
+SAMPLE_WITH_PARA
+
+if [ $APP_BENCH == 1 ]; then
+  NORMAL
+  #compile depends on whether we want to profile.
+  RUN_SHJ
+  RUN_PMJ
+fi
+
+########## PROBHASH
+
+gp=2
+
+epsl_r=0.5
+epsl_s=0.5
+
+eg_smp=1
+lz_smp=1
+mem_lim=1
+prb_hsh=0
+res_strata=1
+
+set_avx_rand=0
+set_always_probe=1
+
+SAMPLE_WITH_PARA
+
+if [ $APP_BENCH == 1 ]; then
+  NORMAL
+  #compile depends on whether we want to profile.
+  RUN_SHJ
+fi
+
+######### SRAJ
+
+gp=3
+
+epsl_r=0.5
+epsl_s=0.5
+
+eg_smp=1
+lz_smp=1
+mem_lim=0
+prb_hsh=1
+res_strata=1
+
+set_avx_rand=0
+set_always_probe=1
+
+SAMPLE_WITH_PARA
+
+if [ $APP_BENCH == 1 ]; then
+  NORMAL
+  #compile depends on whether we want to profile.
+  RUN_SHJ
+fi
+
+# COMMENT
+######### PROBE_ALL
+
+gp=4
+
+epsl_r=0.5
+epsl_s=0.5
+
+eg_smp=0
+lz_smp=1
+mem_lim=1
+prb_hsh=1
+res_strata=1
+
+set_avx_rand=0
+set_always_probe=0
+
+SAMPLE_WITH_PARA
+
+if [ $APP_BENCH == 1 ]; then
+  NORMAL
+  #compile depends on whether we want to profile.
+  RUN_SHJ
+fi
+
+######### SRAJ PROBEALL
+
+gp=5
+
+epsl_r=0.5
+epsl_s=0.5
+
+eg_smp=1
+lz_smp=1
+mem_lim=0
+prb_hsh=1
+res_strata=1
+
+set_avx_rand=0
+set_always_probe=0
+
+SAMPLE_WITH_PARA
+
+if [ $APP_BENCH == 1 ]; then
+  NORMAL
+  #compile depends on whether we want to profile.
+  RUN_SHJ
+fi
+
+# exit
+
+#########################     impact of epsilon on throughput 
+
+# lazy epsilon
+
+gp=10
+
+eg_smp=1
+lz_smp=0
+mem_lim=1
+prb_hsh=1
+res_strata=1
+
+set_avx_rand=0
+set_always_probe=1
+
+SAMPLE_WITH_PARA
+
+for epsl in 0.9 0.8 0.7 0.6 0.5 0.4 0.3 0.2 0.1 0.05 0.01 0.005 0.001; do
+  epsl_r=$epsl
+  epsl_s=$epsl
+  NORMAL
+  #compile depends on whether we want to profile.
+  RUN_LAZY_HASH
+  let "gp++"
+done
+
+# eager epsilon
+
+gp=10
+
+eg_smp=0
+lz_smp=1
+mem_lim=1
+prb_hsh=1
+res_strata=1
+
+set_avx_rand=0
+set_always_probe=1
+
+SAMPLE_WITH_PARA
+
+for epsl in 0.9 0.8 0.7 0.6 0.5 0.4 0.3 0.2 0.1 0.05 0.01 0.005 0.001; do
+  epsl_r=$epsl
+  epsl_s=$epsl
+  NORMAL
+  #compile depends on whether we want to profile.
+  RUN_SHJ
+  RUN_PMJ
+  let "gp++"
+done
+
+# reservoir epsilon
+
+gp=30
+
+eg_smp=1
+lz_smp=1
+mem_lim=0
+prb_hsh=1
+res_strata=1
+
+set_avx_rand=0
+set_always_probe=1
+
+SAMPLE_WITH_PARA
+
+for epsl in 0.9 0.8 0.7 0.6 0.5 0.4 0.3 0.2 0.1 0.05 0.01 0.005 0.001; do
+  epsl_r=$epsl
+  epsl_s=$epsl
+  NORMAL
+  #compile depends on whether we want to profile.
+  RUN_SHJ
+  RUN_PMJ
+  let "gp++"
+done
+
+
+# probehash
+
+gp=1090
+
+eg_smp=1
+lz_smp=1
+mem_lim=1
+prb_hsh=0
+res_strata=1
+
+set_avx_rand=0
+set_always_probe=1
+
+SAMPLE_WITH_PARA
+
+for epsl in 0.9 0.8 0.7 0.6 0.5 0.4 0.3 0.2 0.1 0.05 0.01 0.005 0.001; do
+  epsl_r=$epsl
+  epsl_s=$epsl
+  NORMAL
+  #compile depends on whether we want to profile.
+  RUN_SHJ
+  RUN_PMJ
+  let "gp++"
+done
+
+# eager epsilon probeall
+
+gp=50
+
+eg_smp=0
+lz_smp=1
+mem_lim=1
+prb_hsh=1
+res_strata=1
+
+set_avx_rand=0
+set_always_probe=0
+
+SAMPLE_WITH_PARA
+
+for epsl in 0.9 0.8 0.7 0.6 0.5 0.4 0.3 0.2 0.1 0.05 0.01 0.005 0.001; do
+  epsl_r=$epsl
+  epsl_s=$epsl
+  NORMAL
+  #compile depends on whether we want to profile.
+  RUN_SHJ
+  RUN_PMJ
+  let "gp++"
+done
+
+
+# reservoir probeall
+
+gp=70
+
+eg_smp=1
+lz_smp=1
+mem_lim=0
+prb_hsh=1
+res_strata=1
+
+set_avx_rand=0
+set_always_probe=0
+
+SAMPLE_WITH_PARA
+
+for epsl in 0.9 0.8 0.7 0.6 0.5 0.4 0.3 0.2 0.1 0.05 0.01 0.005 0.001; do
+  epsl_r=$epsl
+  epsl_s=$epsl
+  NORMAL
+  #compile depends on whether we want to profile.
+  RUN_SHJ
+  RUN_PMJ
+  let "gp++"
+done
+
+# COMMENT
+##### variance
+
+
+gp=100
+
+epsl_r=0.5
+epsl_s=0.5
+
+eg_smp=1
+lz_smp=0
+mem_lim=1
+prb_hsh=1
+res_strata=1
+
+set_avx_rand=0
+set_always_probe=1
+
+SAMPLE_WITH_PARA
+
+for iii in {1..20}; do
+  NORMAL
+  #compile depends on whether we want to profile.
+  RUN_LAZY_HASH
+  let "gp++"
+done
+# COMMENT
+# exit
+
+######          eager
+
+gp=100
+
+epsl_r=0.5
+epsl_s=0.5
+
+eg_smp=0
+lz_smp=1
+mem_lim=1
+prb_hsh=1
+res_strata=1
+
+set_avx_rand=0
+set_always_probe=1
+
+SAMPLE_WITH_PARA
+
+for iii in {1..20}; do
+  NORMAL
+  #compile depends on whether we want to profile.
+  RUN_SHJ
+  RUN_PMJ
+  let "gp++"
+done
+
+########## PROBHASH
+
+gp=200
+
+epsl_r=0.5
+epsl_s=0.5
+
+eg_smp=1
+lz_smp=1
+mem_lim=1
+prb_hsh=0
+res_strata=1
+
+set_avx_rand=0
+set_always_probe=1
+
+SAMPLE_WITH_PARA
+
+for iii in {1..20}; do
+  NORMAL
+  #compile depends on whether we want to profile.
+  RUN_SHJ
+  let "gp++"
+done
+
+
+######### SRAJ
+
+gp=300
+
+epsl_r=0.5
+epsl_s=0.5
+
+eg_smp=1
+lz_smp=1
+mem_lim=0
+prb_hsh=1
+res_strata=1
+
+set_avx_rand=0
+set_always_probe=1
+
+SAMPLE_WITH_PARA
+
+for iii in {1..20}; do
+  NORMAL
+  #compile depends on whether we want to profile.
+  RUN_SHJ
+  let "gp++"
+done
+
+
+######### PROBE_ALL
+
+gp=400
+
+
+epsl_r=0.5
+epsl_s=0.5
+
+eg_smp=0
+lz_smp=1
+mem_lim=1
+prb_hsh=1
+res_strata=1
+
+set_avx_rand=0
+set_always_probe=0
+
+SAMPLE_WITH_PARA
+
+for iii in {1..20}; do
+  NORMAL
+  #compile depends on whether we want to profile.
+  RUN_SHJ
+  let "gp++"
+done
+
+######### SRAJ PROBEALL
+
+gp=500
+
+
+epsl_r=0.5
+epsl_s=0.5
+
+eg_smp=1
+lz_smp=1
+mem_lim=0
+prb_hsh=1
+res_strata=1
+
+set_avx_rand=0
+set_always_probe=0
+
+SAMPLE_WITH_PARA
+
+for iii in {1..20}; do
+  NORMAL
+  #compile depends on whether we want to profile.
+  RUN_SHJ
+  let "gp++"
+done
+
+# COMMENT
+
+
+# lazy trade off
+
+benchmark="Rovio"
+
+gp=21000
+
+eg_smp=1
+lz_smp=0
+mem_lim=1
+prb_hsh=1
+res_strata=1
+
+set_avx_rand=0
+set_always_probe=1
+
+SAMPLE_WITH_PARA
+
+for epsl in 0.9 0.8 0.7 0.6 0.5 0.4 0.3 0.2 0.1 0.05; do
+  epsl_r=$epsl
+  epsl_s=$epsl
+  for iii in {1..50}; do
+    NORMAL
+    RUN_LAZY_HASH
+    let "gp++"
+  done
+done
+
+# eager trade off
+
+gp=21000
+
+eg_smp=0
+lz_smp=1
+mem_lim=1
+prb_hsh=1
+res_strata=1
+
+set_avx_rand=0
+set_always_probe=1
+
+SAMPLE_WITH_PARA
+
+for epsl in 0.9 0.8 0.7 0.6 0.5 0.4 0.3 0.2 0.1 0.05; do
+  epsl_r=$epsl
+  epsl_s=$epsl
+  for iii in {1..50}; do
+    NORMAL
+    RUN_SHJ
+    RUN_PMJ
+    let "gp++"
+  done
+done
+
+# reservoir trade off
+
+# COMMENT
+
+gp=24000
+
+eg_smp=1
+lz_smp=1
+mem_lim=0
+prb_hsh=1
+res_strata=1
+
+set_avx_rand=0
+set_always_probe=1
+
+SAMPLE_WITH_PARA
+
+for epsl in 0.9 0.8 0.7 0.6 0.5 0.4 0.3 0.2 0.1 0.05; do
+  epsl_r=$epsl
+  epsl_s=$epsl
+  for iii in {1..50}; do
+    NORMAL
+    RUN_SHJ
+    let "gp++"
+  done
+done
+
+<<COMMENT
+# eager trade off probeall
+
+gp=26000
+
+eg_smp=0
+lz_smp=1
+mem_lim=1
+prb_hsh=1
+res_strata=1
+
+set_avx_rand=0
+set_always_probe=0
+
+SAMPLE_WITH_PARA
+
+for epsl in 0.9 0.8 0.7 0.6 0.5 0.4 0.3 0.2 0.1 0.05; do
+  epsl_r=$epsl
+  epsl_s=$epsl
+  for iii in {1..50}; do
+    NORMAL
+    RUN_SHJ
+    let "gp++"
+  done
+done
+
+# COMMENT
+# reservoir probeall
+
+gp=28000
+
+eg_smp=1
+lz_smp=1
+mem_lim=0
+prb_hsh=1
+res_strata=1
+
+set_avx_rand=0
+set_always_probe=0
+
+SAMPLE_WITH_PARA
+
+for epsl in 0.9 0.8 0.7 0.6 0.5 0.4 0.3 0.2 0.1 0.05; do
+  epsl_r=$epsl
+  epsl_s=$epsl
+  for iii in {1..50}; do
+    NORMAL
+    RUN_SHJ
+    let "gp++"
+  done
+done
+
+<<COMMENT
+# exit
+
+COMMENT
+
+
+thread_test=1
+
+
+# PRIORI PROBHASH
+# <<COMMENT
+gp=30000
+
+eg_smp=1
+lz_smp=1
+mem_lim=1
+prb_hsh=0
+res_strata=1
+
+set_avx_rand=0
+set_always_probe=1
+
+SAMPLE_WITH_PARA
+
+for epsl in 0.9 0.8 0.7 0.6 0.5 0.4 0.3 0.2 0.1 0.05; do
+  epsl_r=$epsl
+  epsl_s=$epsl
+  for iii in {1..50}; do
+    NORMAL
+    RUN_SHJ
+    let "gp++"
+  done
+done
+
+# COMMENT
+# StreamApprox
+
+gp=32000
+
+eg_smp=1
+lz_smp=1
+mem_lim=1
+prb_hsh=1
+res_strata=0
+
+set_avx_rand=0
+set_always_probe=1
+
+SAMPLE_WITH_PARA
+
+for epsl in 0.9 0.8 0.7 0.6 0.5 0.4 0.3 0.2 0.1 0.05; do
+  epsl_r=$epsl
+  epsl_s=$epsl
+  for iii in {1..50}; do
+    NORMAL
+    RUN_SHJ
+    let "gp++"
+  done
+done
+
+
+exit
+
+# lazy AVX
+
+thread_test=1
+
+
+epsl_r=0.5
+epsl_s=0.5
+
+gp=3100
+
+eg_smp=1
+lz_smp=0
+mem_lim=1
+prb_hsh=1
+res_strata=1
+
+set_avx_rand=0
+set_always_probe=1
+
+SAMPLE_WITH_PARA
+
+for rand_buffer_size in 10 33 66 100 333 666 1000 3333 6666 10000 33333 66666 100000; do
+  for iii in {1..2}; do
+    NORMAL
+    #compile depends on whether we want to profile.
+    RUN_LAZY_HASH
+    let "gp++"
+  done
+done
+
+# eager AVX
+
+gp=3100
+
+eg_smp=0
+lz_smp=1
+mem_lim=1
+prb_hsh=1
+res_strata=1
+
+set_avx_rand=0
+set_always_probe=1
+
+SAMPLE_WITH_PARA
+
+for rand_buffer_size in 10 33 66 100 333 666 1000 3333 6666 10000 33333 66666 100000; do
+  for iii in {1..2}; do
+    NORMAL
+    #compile depends on whether we want to profile.
+    RUN_SHJ
+    RUN_PMJ
+    let "gp++"
+  done
+done
+
+# reservoir AVX
+
+gp=3200
+
+eg_smp=1
+lz_smp=1
+mem_lim=0
+prb_hsh=1
+res_strata=1
+
+set_avx_rand=0
+set_always_probe=1
+
+SAMPLE_WITH_PARA
+
+for rand_buffer_size in 10 33 66 100 333 666 1000 3333 6666 10000 33333 66666 100000; do
+  for iii in {1..2}; do
+    NORMAL
+    #compile depends on whether we want to profile.
+    RUN_SHJ
+    let "gp++"
+  done
+done
+
+
+# probehash
+
+gp=3900
+
+eg_smp=1
+lz_smp=1
+mem_lim=1
+prb_hsh=0
+res_strata=1
+
+set_avx_rand=0
+set_always_probe=1
+
+SAMPLE_WITH_PARA
+
+for rand_buffer_size in 10 33 66 100 333 666 1000 3333 6666 10000 33333 66666 100000; do
+  for iii in {1..2}; do
+  NORMAL
+  #compile depends on whether we want to profile.
+  RUN_SHJ
+  let "gp++"
+  done
+done
+
+# COMMENT
+
+# eager probeall AVX
+
+gp=3300
+
+eg_smp=0
+lz_smp=1
+mem_lim=1
+prb_hsh=1
+res_strata=1
+
+set_avx_rand=0
+set_always_probe=0
+
+SAMPLE_WITH_PARA
+
+for rand_buffer_size in 10 33 66 100 333 666 1000 3333 6666 10000 33333 66666 100000; do
+  for iii in {1..2}; do
+    NORMAL
+    #compile depends on whether we want to profile.
+    RUN_SHJ
+    let "gp++"
+  done
+done
+
+
+# reservoir probeall AVX
+
+gp=3400
+
+eg_smp=1
+lz_smp=1
+mem_lim=0
+prb_hsh=1
+res_strata=1
+
+set_avx_rand=0
+set_always_probe=0
+
+SAMPLE_WITH_PARA
+
+for rand_buffer_size in 10 33 66 100 333 666 1000 3333 6666 10000 33333 66666 100000; do
+  for iii in {1..2}; do
+    NORMAL
+    #compile depends on whether we want to profile.
+    RUN_SHJ
+    let "gp++"
+  done
+done
+
+# COMMENT
+
+########################  MULTICORE
+
+thread_test=0
+
+
+
+
+epsl_r=0.5
+epsl_s=0.5
+
+gp=4100
+
+eg_smp=1
+lz_smp=0
+mem_lim=1
+prb_hsh=1
+res_strata=1
+
+set_avx_rand=0
+set_always_probe=1
+
+SAMPLE_WITH_PARA
+
+
+for Threads in 1 2 4 8; do
+  for iii in {1..2}; do
+    NORMAL
+    #compile depends on whether we want to profile.
+    RUN_LAZY_HASH
+    let "gp++"
+  done
+done
+
+# eager MULTICORE
+
+gp=4100
+
+eg_smp=0
+lz_smp=1
+mem_lim=1
+prb_hsh=1
+res_strata=1
+
+set_avx_rand=0
+set_always_probe=1
+
+SAMPLE_WITH_PARA
+
+
+for Threads in 1 2 4 8; do
+  for iii in {1..2}; do
+    NORMAL
+    #compile depends on whether we want to profile.
+    RUN_SHJ
+    RUN_PMJ
+    let "gp++"
+  done
+done
+
+# reservoir MULTICORE
+
+gp=4200
+
+eg_smp=1
+lz_smp=1
+mem_lim=0
+prb_hsh=1
+res_strata=1
+
+set_avx_rand=0
+set_always_probe=1
+
+SAMPLE_WITH_PARA
+
+
+for Threads in 1 2 4 8; do
+  for iii in {1..2}; do
+    NORMAL
+    #compile depends on whether we want to profile.
+    RUN_SHJ
+    let "gp++"
+  done
+done
+
+# COMMENT
+
+# eager probeall MULTICORE
+
+thread_test=0
+
+epsl_r=0.5
+epsl_r=0.5
+bern=1
+univ=1
+
+gp=4300
+
+eg_smp=0
+lz_smp=1
+mem_lim=1
+prb_hsh=1
+res_strata=1
+
+set_avx_rand=0
+set_always_probe=0
+
+SAMPLE_WITH_PARA
+
+
+for Threads in 1 2 4 8; do
+  for iii in {1..2}; do
+    NORMAL
+    #compile depends on whether we want to profile.
+    RUN_SHJ
+    let "gp++"
+  done
+done
+
+
+# reservoir probeall MULTICORE
+
+gp=4400
+
+eg_smp=1
+lz_smp=1
+mem_lim=0
+prb_hsh=1
+res_strata=1
+
+set_avx_rand=0
+set_always_probe=0
+
+SAMPLE_WITH_PARA
+
+
+for Threads in 1 2 4 8; do
+  for iii in {1..2}; do
+    NORMAL
+    #compile depends on whether we want to profile.
+    RUN_SHJ
+    let "gp++"
+  done
+done
+
+
+COMMENT
+
+thread_test=1
+
+######################################### STREAM FEATURE
+
+
+function STREAM_RUN_LAZY() {
+  NORMAL
+  profile_breakdown=1        # set to 1 if we want to measure time breakdown!
   compile=$profile_breakdown # compile depends on whether we want to profile.
-  for benchmark in "AR" "RAR" "AD" "KD" "WS" "DD"; do #
-    for algo in NPO NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do
+  compile
+  for benchmark in "AR" "AD"; do #
+    for algo in NPO PRO; do
       case "$benchmark" in
       # Batch -a SHJ_JM_P -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
       "AR") #test arrival rate and assume both inputs have same arrival rate.
@@ -524,24 +1990,6 @@ if [ $MICRO_BENCH == 1 ]; then
         # step size should be bigger than nthreads
         for STEP_SIZE in 1600 3200 6400 12800 25600; do #128000
           #WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
-          echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
-          gap=$(($STEP_SIZE / 500 * $WINDOW_SIZE))
-          RUNALLMic
-          let "id++"
-        done
-        ;;
-      "RAR") #test relative arrival rate when R is small
-        id=5
-        ## Figure 2
-        ResetParameters
-        FIXS=1
-        echo test relative arrival rate 5 - 9
-        ts=1 # stream case
-        # step size should be bigger than nthreads
-        # remember to fix the relation size of S.
-        STEP_SIZE=1600
-        for STEP_SIZE_S in 1600 3200 6400 12800 25600; do
-          #        WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
           echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
           gap=$(($STEP_SIZE / 500 * $WINDOW_SIZE))
           RUNALLMic
@@ -563,52 +2011,46 @@ if [ $MICRO_BENCH == 1 ]; then
           let "id++"
         done
         ;;
-      "KD") #test key distribution
-        id=15
-        ## Figure 4
+      esac
+    done
+  done
+}
+
+function STREAM_RUN_SHJ() {
+  NORMAL
+  profile_breakdown=1        # set to 1 if we want to measure time breakdown!
+  compile=$profile_breakdown # compile depends on whether we want to profile.
+  compile
+  for benchmark in "AR" "AD"; do #
+    for algo in SHJ_JM_NP SHJ_JBCR_NP; do
+      case "$benchmark" in
+      # Batch -a SHJ_JM_P -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
+      "AR") #test arrival rate and assume both inputs have same arrival rate.
+        id=0
+        ## Figure 1
         ResetParameters
-        FIXS=1
-        STEP_SIZE=12800
-        STEP_SIZE_S=12800
-        gap=$(($STEP_SIZE / 500 * $WINDOW_SIZE))
-        echo test varying key distribution 15 - 19
-        distrbution=2 #varying zipf factor
-        for skew in 0 0.4 0.8 1.2 1.6; do
-          if [ $skew == 1.2 ]; then
-            gap=100
-          fi
-          if [ $skew == 1.6 ]; then
-            gap=1
-          fi
-          RUNALLMic
-          let "id++"
-        done
-        ;;
-      "WS") #test window size
-        id=20
-        ## Figure 5
-        ResetParameters
-        FIXS=1
-        STEP_SIZE=6400
-        STEP_SIZE_S=6400
-        echo test varying window size 20 - 24
-        for WINDOW_SIZE in 500 1000 1500 2000 2500; do
+        FIXS=0 #varying both.
+        ts=1   # stream case
+        # step size should be bigger than nthreads
+        for STEP_SIZE in 1600 3200 6400 12800 25600; do #128000
+          #WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
+          echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
           gap=$(($STEP_SIZE / 500 * $WINDOW_SIZE))
           RUNALLMic
           let "id++"
         done
         ;;
-      "DD") #test data duplication
-        id=25
-        ## Figure 6
+      "AD") #test arrival distribution
+        id=10
+        ## Figure 3
         ResetParameters
-        ts=1
         FIXS=1
-        STEP_SIZE=6400
-        STEP_SIZE_S=6400
-        echo test DD 25 - 28
-        for DD in 1 100 1000 10000; do
-          gap=$(($STEP_SIZE * $WINDOW_SIZE * $DD / 500))
+        STEP_SIZE=1600
+        STEP_SIZE_S=1600
+        TS_DISTRIBUTION=2
+        echo test varying timestamp distribution 10 - 14
+        for ZIPF_FACTOR in 0 0.4 0.8 1.2 1.6; do #
+          gap=$(($STEP_SIZE / 500 * $WINDOW_SIZE))
           RUNALLMic
           let "id++"
         done
@@ -616,378 +2058,167 @@ if [ $MICRO_BENCH == 1 ]; then
       esac
     done
   done
-fi
 
-## SCLAE STUDY
-#SCALE_STUDY=0
-if [ $SCALE_STUDY == 1 ]; then
+}
+
+function STREAM_RUN_PMJ() {
   NORMAL
-  profile_breakdown=0                                                                     #compile depends on whether we want to profile.
-  compile=0
-  # general benchmark.
-  for algo in SHJ_JM_NP; do
-    for benchmark in "ScaleStock" "ScaleRovio" "ScaleYSB" "ScaleDEBS"; do #
+  profile_breakdown=1        # set to 1 if we want to measure time breakdown!
+  compile=$profile_breakdown # compile depends on whether we want to profile.
+  compile
+  for benchmark in "AR" "AD"; do #
+    for algo in PMJ_JM_NP PMJ_JBCR_NP; do
       case "$benchmark" in
-      "ScaleStock")
-        id=42
+      # Batch -a SHJ_JM_P -n 8 -t 1 -w 1000 -e 1000 -l 10 -d 0 -Z 1
+      "AR") #test arrival rate and assume both inputs have same arrival rate.
+        id=0
+        ## Figure 1
         ResetParameters
-        SetStockParameters
-        echo test scalability of Stock 42 - 45
-        for Threads in 1 2 4 8; do
-          RUNALL
-          let "id++"
-        done
-        ;;
-      "ScaleRovio")
-        id=46
-        ResetParameters
-        SetRovioParameters
-        echo test scalability 46 - 49
-        for Threads in 1 2 4 8; do
-          RUNALL
-          let "id++"
-        done
-        ;;
-      "ScaleYSB")
-        id=50
-        ResetParameters
-        SetYSBParameters
-        echo test scalability 50 - 53
-        for Threads in 1 2 4 8; do
-          RUNALL
-          let "id++"
-        done
-        ;;
-      "ScaleDEBS")
-        id=54
-        ResetParameters
-        SetDEBSParameters
-        echo test scalability 54 - 57
-        for Threads in 1 2 4 8; do
-          RUNALL
-          let "id++"
-        done
-        ;;
-      esac
-    done
-  done
-fi
-## back up.
-#  "PMJ_MERGE_STEP_STUDY")
-#    id=66
-#    algo="PMJ_JBCR_P"
-#    ResetParameters
-#    echo PMJ_MERGE_STEP_STUDY 66-70
-#    for merge_step in 8 10 12 14 16; do
-#      ts=0   # batch data.
-#      KimRun #
-#      let "id++"
-#    done
-#    python3 breakdown_merge.py
-#    python3 latency_merge.py
-#    python3 progressive_merge.py
-#    ;;
-
-## MICRO STUDY
-#PROFILE_MICRO=0
-if [ $PROFILE_MICRO == 1 ]; then
-  NORMAL
-  profile_breakdown=1                                                                     #compile depends on whether we want to profile.
-  compile=1                                                                               #enable compiling.
-  #benchmark experiment only apply for hashing directory.
-  for benchmark in  "NP_P_STUDY" "SIMD_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY" "BUCKET_SIZE_STUDY"  "PRJ_RADIX_BITS_STUDY"; do # "SIMD_STUDY" "PMJ_SORT_STEP_STUDY" "GROUP_SIZE_STUDY" "BUCKET_SIZE_STUDY"  "PRJ_RADIX_BITS_STUDY"
-    case "$benchmark" in
-    "SIMD_STUDY")
-      id=104
-      ResetParameters
-      ts=0 # batch data.
-      echo SIMD PMJ 104 - 107
-      PARTITION_ONLY
-      compile
-      for algo in "PMJ_JM_NP" "PMJ_JBCR_NP"; do
-        for scalar in 0 1; do
-          sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scalar/g" ../helper/sort_common.h
+        FIXS=0 #varying both.
+        ts=1   # stream case
+        # step size should be bigger than nthreads
+        for STEP_SIZE in 1600 3200 6400 12800 25600; do #128000
+          #WINDOW_SIZE=$(expr $DEFAULT_WINDOW_SIZE \* $DEFAULT_STEP_SIZE / $STEP_SIZE) #ensure relation size is the same.
+          echo relation size is $(expr $WINDOW_SIZE / $INTERVAL \* $STEP_SIZE)
+          gap=$(($STEP_SIZE / 500 * $WINDOW_SIZE))
           RUNALLMic
           let "id++"
         done
-      done
-      PARTITION_BUILD_SORT
-      compile
-      for algo in "PMJ_JM_NP" "PMJ_JBCR_NP"; do
-        for scalar in 0 1; do
-          sed -i -e "s/scalarflag [[:alnum:]]*/scalarflag $scalar/g" ../helper/sort_common.h
+        ;;
+      "AD") #test arrival distribution
+        id=10
+        ## Figure 3
+        ResetParameters
+        FIXS=1
+        STEP_SIZE=1600
+        STEP_SIZE_S=1600
+        TS_DISTRIBUTION=2
+        echo test varying timestamp distribution 10 - 14
+        for ZIPF_FACTOR in 0 0.4 0.8 1.2 1.6; do #
+          gap=$(($STEP_SIZE / 500 * $WINDOW_SIZE))
           RUNALLMic
           let "id++"
         done
-      done
-      python3 breakdown_simd.py
-      python3 profile_simd.py
-      ;;
-    "BUCKET_SIZE_STUDY")
-      id=108
-      ResetParameters
-      ts=0 # batch data.
-      for algo in "NPO"; do
-        for size in 1 2 4 8 16; do
-          echo BUCKET_SIZE_STUDY $id
-          sed -i -e "s/#define BUCKET_SIZE [[:alnum:]]*/#define BUCKET_SIZE $size/g" ../joins/npj_params.h
-          compile
-          RUNALLMic
-          let "id++"
-        done
-      done
-      python3 breakdown_bucket.py
-      ;;
-    "PRJ_RADIX_BITS_STUDY")
-      algo="PRO"
-      id=113
-      ResetParameters
-      ts=0 # batch data.
-      for b in 8 10 12 14 16 18; do
-        echo RADIX BITS STUDY $id
-        sed -i -e "s/NUM_RADIX_BITS [[:alnum:]]*/NUM_RADIX_BITS $b/g" ../joins/prj_params.h
-        compile
-        RUNALLMic
-        let "id++"
-      done
-      python3 breakdown_radix.py
-      python3 latency_radix.py
-      python3 progressive_radix.py
-      ;;
-    "PMJ_SORT_STEP_STUDY")
-      id=119
-      algo="PMJ_JBCR_NP"
-      ResetParameters
-      ts=0 # batch data.
-      for progress_step in 10 20 30 40 50; do #%
-        echo PMJ_SORT_STEP_STUDY $id
-        RUNALLMic
-        let "id++"
-      done
-      python3 breakdown_sort.py
-      python3 latency_sort.py
-      python3 progressive_sort.py
-      ;;
-    "GROUP_SIZE_STUDY")
-      id=124
-      ResetParameters
-      ts=0 # batch data.
-      algo="PMJ_JM_NP"
-      RUNALLMicz
-      algo="SHJ_JM_NP"
-      RUNALLMic
-
-      algo="PMJ_JBCR_NP"
-      echo GROUP_SIZE_STUDY PMJ 124 - 127
-      for group in 1 2 4 8; do
-        RUNALLMic
-        let "id++"
-      done
-
-      algo="SHJ_JBCR_NP"
-      echo GROUP_SIZE_STUDY SHJ 128 - 131
-      for group in 1 2 4 8; do
-        RUNALLMic
-        let "id++"
-      done
-      python3 breakdown_group_pmj.py
-      python3 breakdown_group_shj.py
-      ;;
-    "HS_STUDY")
-      id=132
-      ResetParameters
-      ts=0 # batch data.
-      algo="SHJ_HS_NP"
-      RUNALLMic
-      algo="SHJ_JM_NP"
-      RUNALLMic
-      python3 breakdown_hsstudy.py
-      ;;
-    "NP_P_STUDY")
-      id=133
-      ResetParameters
-      ts=0 # batch data.
-      algo="SHJ_JM_NP"
-      RUNALLMic
-      algo="SHJ_JM_P"
-      RUNALLMic
-      python3 breakdown_p_np_study.py
-      ;;
-    esac
-  done
-fi
-
-#PROFILE=0 ## Cache misses profiling, please run the program with sudo
-if [ $PROFILE == 1 ]; then
-  PCM
-  profile_breakdown=0 # disable measure time breakdown!
-  eager=1             #with eager
-  compile=1
-
-  PARTITION_ONLY
-  compile
-  for benchmark in "YSB"; do #"
-    id=205
-    for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do #PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P
-      case "$benchmark" in
-      "YSB")
-        ResetParameters
-        SetYSBParameters
-        rm $exp_dir/results/breakdown/profile_$id.txt
-        benchmarkRun
         ;;
       esac
-      let "id++"
     done
   done
 
-  PARTITION_BUILD_SORT_MERGE_JOIN
-  compile
-  for benchmark in "YSB"; do #"
-    id=211
-    for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do # ~215 NPO PRO SHJ_JM_P SHJ_JBCR_P PMJ_JM_P PMJ_JBCR_P
-      case "$benchmark" in
-      "YSB")
-        ResetParameters
-        SetYSBParameters
-        rm $exp_dir/results/breakdown/profile_$id.txt
-        benchmarkRun
-        ;;
-      esac
-      let "id++"
-    done
-  done
-  NORMAL
-fi
+}
 
-#PROFILE_MEMORY_CONSUMPTION=1 ## profile memory consumption
-if [ $PROFILE_MEMORY_CONSUMPTION == 1 ]; then
-  MEM_MEASURE
-  profile_breakdown=0
-  compile=1
-  compile
-  for benchmark in "Rovio"; do #"YSB
-    id=302
-    for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do # NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
-      case "$benchmark" in
-      "Kim")
-        ResetParameters
-        STEP_SIZE=1280
-        STEP_SIZE_S=12800
-        WINDOW_SIZE=10000
-        rm $exp_dir/results/breakdown/perf_$id.csv
-        KimRun
-        ;;
-      "YSB")
-        ResetParameters
-        SetYSBParameters
-        rm $exp_dir/results/breakdown/perf_$id.txt
-        benchmarkRun
-        ;;
-      "Rovio")
-        ResetParameters
-        SetRovioParameters
-        rm $exp_dir/results/breakdown/perf_$id.txt
-        benchmarkRun
-        ;;
-      esac
-      let "id++"
-    done
-  done
-  NORMAL
-fi
 
-#PROFILE_PMU_COUNTERS=1 # profile PMU counters using pcm
-if [ $PROFILE_PMU_COUNTERS == 1 ]; then
-  PCM
-  profile_breakdown=0 # disable measure time breakdown!
-  ALL_ON # eliminate wait phase
-  compile=1
-  compile
-  for benchmark in "Rovio"; do #"YSB
-    id=402
-    for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP; do # NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
-      case "$benchmark" in
-      "Rovio")
-        ResetParameters
-        SetRovioParameters
-        rm $exp_dir/results/breakdown/profile_$id.txt
-        PERF_CONF=$exp_dir/pcm.cfg
-        benchmarkProfileRun
-        PERF_CONF=$exp_dir/pcm2.cfg
-        benchmarkProfileRun
-        PERF_CONF=""
-        benchmarkProfileRun
-        ;;
-      "YSB")
-        ResetParameters
-        SetYSBParameters
-        rm $exp_dir/results/breakdown/profile_$id.txt
-        PERF_CONF=$exp_dir/pcm.cfg
-        benchmarkProfileRun
-        PERF_CONF=$exp_dir/pcm2.cfg
-        benchmarkProfileRun
-        PERF_CONF=""
-        benchmarkProfileRun
-        ;;
-      esac
-      let "id++"
-    done
-  done
-  NORMAL
-fi
 
-#PROFILE_TOPDOWN=1 ## profile intel topdown performance metrics using perf/pcm
-if [ $PROFILE_TOPDOWN == 1 ]; then
-  PERF
 
-  for benchmark in "Rovio"; do
-    id=402
-    for algo in NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP ; do # NPO PRO SHJ_JM_NP SHJ_JBCR_NP PMJ_JM_NP PMJ_JBCR_NP
-      case "$benchmark" in
-      "YSB")
-        ResetParameters
-        SetYSBParameters
-        # use perf
-        # with JOIN
-        sed -i -e "s/#define NO_JOIN_THREAD/#define JOIN_THREAD/g" ../joins/common_functions.h
-        profile_breakdown=0
-        compile=1
-        compile
-        PERF_OUTPUT=$exp_dir/results/breakdown/profile_w_join_$id.txt
-        perfUarchBenchmarkRun
-        # without JOIN
-        sed -i -e "s/#define JOIN_THREAD/#define NO_JOIN_THREAD/g" ../joins/common_functions.h
-        profile_breakdown=0
-        compile=1
-        compile
-        PERF_OUTPUT=$exp_dir/results/breakdown/profile_wo_join_$id.txt
-        perfUarchBenchmarkRun
-        ;;
-      "Rovio")
-        ResetParameters
-        SetRovioParameters
-        # use perf
-        # with JOIN
-        sed -i -e "s/#define NO_JOIN_THREAD/#define JOIN_THREAD/g" ../joins/common_functions.h
-        profile_breakdown=0
-        compile=1
-        compile
-        PERF_OUTPUT=$exp_dir/results/breakdown/profile_w_join_$id.txt
-        # without JOIN
-        perfUarchBenchmarkRun
-        sed -i -e "s/#define JOIN_THREAD/#define NO_JOIN_THREAD/g" ../joins/common_functions.h
-        compile=1
-        compile
-        PERF_OUTPUT=$exp_dir/results/breakdown/profile_wo_join_$id.txt
-        perfUarchBenchmarkRun
-        ;;
-      esac
-      let "id++"
-    done
-  done
-  NORMAL
-fi
+<<COMMENT
 
-#./draw.sh
-#python3 jobdone.py
+epsl_r=0.5
+epsl_s=0.5
+
+gp=5100
+
+eg_smp=1
+lz_smp=0
+mem_lim=1
+prb_hsh=1
+res_strata=1
+
+set_avx_rand=0
+set_always_probe=1
+
+SAMPLE_WITH_PARA
+
+STREAM_RUN_LAZY
+
+# eager STREAM
+
+gp=5100
+
+eg_smp=0
+lz_smp=1
+mem_lim=1
+prb_hsh=1
+res_strata=1
+
+set_avx_rand=0
+set_always_probe=1
+
+SAMPLE_WITH_PARA
+
+# STREAM_RUN_SHJ
+STREAM_RUN_PMJ
+
+# exit
+COMMENT
+# reservoir STREAM
+
+gp=5200
+
+epsl_r=0.5
+epsl_s=0.5
+eg_smp=1
+lz_smp=1
+mem_lim=0
+prb_hsh=1
+res_strata=1
+
+set_avx_rand=0
+set_always_probe=1
+
+SAMPLE_WITH_PARA
+
+STREAM_RUN_SHJ
+
+<<COMMENT
+# probehash STREAM
+
+gp=5900
+
+eg_smp=1
+lz_smp=1
+mem_lim=1
+prb_hsh=0
+res_strata=1
+
+set_avx_rand=0
+set_always_probe=1
+
+SAMPLE_WITH_PARA
+
+STREAM_RUN_SHJ
+
+# eager probeall STREAM
+
+gp=5300
+
+eg_smp=0
+lz_smp=1
+mem_lim=1
+prb_hsh=1
+res_strata=1
+
+set_avx_rand=0
+set_always_probe=0
+
+SAMPLE_WITH_PARA
+
+STREAM_RUN_SHJ
+
+
+# reservoir probeall STREAM
+
+gp=5400
+
+eg_smp=1
+lz_smp=1
+mem_lim=0
+prb_hsh=1
+res_strata=1
+
+set_avx_rand=0
+set_always_probe=0
+
+SAMPLE_WITH_PARA
+
+STREAM_RUN_SHJ
+
+COMMENT

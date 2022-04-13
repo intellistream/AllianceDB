@@ -1,7 +1,7 @@
 #!/bin/bash
 
-exp_dir="/data1/xtra"
-L3_cache_size=20971520
+exp_dir="/home/tangxilin/xxx/data1/xtra"
+L3_cache_size=20185088
 
 # read arguments
 helpFunction()
@@ -33,10 +33,11 @@ fi
 echo "$exp_dir"
 echo "$L3_cache_size"
 
+<<COMMENT
 # update in case some package can be missing.
 sudo apt update
 
-## auto install all packages
+## install all packages needed
 sudo apt install -y cmake
 sudo apt install -y texlive-fonts-recommended texlive-fonts-extra
 sudo apt install -y dvipng
@@ -51,15 +52,16 @@ sudo apt install -y zlib1g-dev
 sudo apt install -y python-tk
 sudo apt install -y linux-tools-common
 sudo apt install -y linux-tools-$(uname -r) # XXX is the kernel version of your linux, use uname -r to check it. e.g. 4.15.0-91-generic
+git clone https://github.com/lyrahgames/pxart.git
+mkdir pxart-cmake-build
+cd pxart-cmake-build
+cmake ../pxart
+sudo cmake --build . --target install
 sudo echo -1 > /proc/sys/kernel/perf_event_paranoid # if permission denied, try to run this at root user.
 sudo modprobe msr
 
-# download and mv datasets to exp_dir
-wget https://www.dropbox.com/s/64z4xtpyhhmhojp/datasets.tar.gz
-tar -zvxf datasets.tar.gz
-rm datasets.tar.gz
-mkdir -p $exp_dir
-mv datasets $exp_dir
+
+COMMENT
 
 
 ## Create directories on your machine.
@@ -80,9 +82,15 @@ cp pcm* $exp_dir
 # copy cpu mappings to exp_dir
 cp cpu-mapping.txt $exp_dir
 # set all scripts exp dir
+
 sed -i -e "s/exp_dir = .*/exp_dir = "\"${exp_dir//\//\\/}\""/g" ./hashing/scripts/*.py
 
 exp_secction="APP_BENCH,MICRO_BENCH,SCALE_STUDY,PROFILE_MICRO,PROFILE,PROFILE_MEMORY_CONSUMPTION,PROFILE_PMU_COUNTERS"
+
+echo tangxilin | sudo -S sysctl kernel.perf_event_paranoid=-1
+echo tangxilin | sudo -S modprobe msr
+echo tangxilin | sudo -S chown tangxilin /dev/cpu/*/msr
+echo tangxilin | sudo -S chown tangxilin /sys/firmware/acpi/tables/MCFG
 
 # execute experiment
 cd ./sorting/scripts || exit
@@ -90,16 +98,3 @@ bash benchmark.sh -e $exp_secction -d $exp_dir -c $L3_cache_size
 cd - || exit
 cd ./hashing/scripts || exit
 bash benchmark.sh -e $exp_secction -d $exp_dir -c $L3_cache_size
-
-exp_secction="PROFILE_TOPDOWN"
-
-cd - || exit
-cd ./sorting/scripts || exit
-bash benchmark.sh -e $exp_secction -d $exp_dir -c $L3_cache_size
-cd - || exit
-cd ./hashing/scripts || exit
-bash benchmark.sh -e $exp_secction -d $exp_dir -c $L3_cache_size
-
-# draw figures
-bash draw.sh
-python3 jobdone.py
