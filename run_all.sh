@@ -87,14 +87,12 @@ sed -i -e "s/exp_dir = .*/exp_dir = "\"${exp_dir//\//\\/}\""/g" ./hashing/script
 
 exp_secction="APP_BENCH,MICRO_BENCH,SCALE_STUDY,PROFILE_MICRO,PROFILE,PROFILE_MEMORY_CONSUMPTION,PROFILE_PMU_COUNTERS"
 
-echo tangxilin | sudo -S sysctl kernel.perf_event_paranoid=-1
-echo tangxilin | sudo -S modprobe msr
-echo tangxilin | sudo -S chown tangxilin /dev/cpu/*/msr
-echo tangxilin | sudo -S chown tangxilin /sys/firmware/acpi/tables/MCFG
+sudo sysctl kernel.perf_event_paranoid=-1
+sudo modprobe msr
 
 # execute experiment
-cd ./sorting/scripts || exit
-bash benchmark.sh -e $exp_secction -d $exp_dir -c $L3_cache_size
-cd - || exit
+# cd ./sorting/scripts || exit
+# bash benchmark.sh -e $exp_secction -d $exp_dir -c $L3_cache_size
+# cd - || exit
 cd ./hashing/scripts || exit
 bash benchmark.sh -e $exp_secction -d $exp_dir -c $L3_cache_size

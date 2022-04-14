@@ -105,7 +105,7 @@ function compile() {
     make -C .. clean -s
     make -C .. -j4 -s
   fi
-  echo tangxilin | sudo -S setcap CAP_SYS_RAWIO+eip ../sorting
+  sudo setcap CAP_SYS_RAWIO+eip ../sorting
 }
 
 function benchmarkRun() {

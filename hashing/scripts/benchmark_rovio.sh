@@ -107,14 +107,14 @@ function compile() {
     make -C .. clean -s
     make -C .. -j4 -s
   fi
-  echo tangxilin | sudo -S setcap CAP_SYS_RAWIO+eip ../hashing
+  sudo setcap CAP_SYS_RAWIO+eip ../hashing
 }
 
 function Run() {
   #####native execution
   echo "==benchmark:$benchmark -a $algo -E $epsl_r -F $epsl_s -U $univ -Q $bern -n $Threads=="
   #echo 3 >/proc/sys/vm/drop_caches
-  echo tangxilin | sudo -S sysctl vm.drop_caches=3
+  sudo sysctl vm.drop_caches=3
   ../hashing -a $algo -E $epsl_r -F $epsl_s -U $univ -Q $bern -r $RSIZE -s $SSIZE -n $Threads
 }
 
@@ -122,7 +122,7 @@ function benchmarkRun() {
   #####native execution
   echo "==benchmark:$benchmark -a $algo -E $epsl_r -F $epsl_s -U $univ -Q $bern -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -H $gp -[ $progress_step -] $merge_step -G $group -g $gap -o $exp_dir/results/breakdown/profile_${gp}_${id}.txt > ${exp_dir}/results/breakdown/${phase}_${benchmark}_${algo}_profile_${gp}_${id}.txt =="
   #echo 3 >/proc/sys/vm/drop_caches
-  echo tangxilin | sudo -S sysctl vm.drop_caches=3
+  sudo sysctl vm.drop_caches=3
   ../hashing -a $algo -E $epsl_r -F $epsl_s -U $univ -Q $bern -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -H $gp -[ $progress_step -] $merge_step -G $group -g $gap -o $exp_dir/results/breakdown/profile_${gp}_${id}.txt > ${exp_dir}/results/breakdown/${phase}_${benchmark}_${algo}_profile_${gp}_${id}.txt  
   if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit -1; fi
 }
@@ -131,7 +131,7 @@ function benchmarkProfileRun() {
   #####native execution
   echo "==benchmark:$benchmark -a $algo -E $epsl_r -F $epsl_s -U $univ -Q $bern -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -H $gp -[ $progress_step -] $merge_step -G $group -g $gap -o $exp_dir/results/breakdown/profile_${gp}_${id}.txt > ${exp_dir}/results/breakdown/${phase}_${benchmark}_${algo}_profile_${gp}_${id}.txt =="
   #echo 3 >/proc/sys/vm/drop_caches
-  echo tangxilin | sudo -S sysctl vm.drop_caches=3
+  sudo sysctl vm.drop_caches=3
   if [ ! -z "$PERF_CONF" -a "$PERF_CONF"!=" " ]; then
     ../hashing -a $algo -E $epsl_r -F $epsl_s -U $univ -Q $bern -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -H $gp -[ $progress_step -] $merge_step -G $group -g $gap -o $exp_dir/results/breakdown/profile_${gp}_${id}.txt -p $PERF_CONF > ${exp_dir}/results/breakdown/${phase}_${benchmark}_${algo}_profile_${gp}_${id}.txt 
   else
@@ -144,7 +144,7 @@ function perfUarchBenchmarkRun() {
   #####native execution
   echo "==benchmark:$benchmark -a $algo -E $epsl_r -F $epsl_s -U $univ -Q $bern -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -H $gp -[ $progress_step -] $merge_step -G $group -g $gap -o $exp_dir/results/breakdown/profile_${gp}_${id}.txt > ${exp_dir}/results/breakdown/${phase}_${benchmark}_${algo}_profile_${gp}_${id}.txt =="
   #echo 3 >/proc/sys/vm/drop_caches
-  echo tangxilin | sudo -S sysctl vm.drop_caches=3
+  sudo sysctl vm.drop_caches=3
   if [ ! -z "$PERF_OUTPUT" -a "$PERF_OUTPUT"!=" " ]; then
     perf stat -x, -a -e CPU_CLK_UNHALTED.THREAD,IDQ_UOPS_NOT_DELIVERED.CORE,UOPS_ISSUED.ANY,UOPS_RETIRED.RETIRE_SLOTS,INT_MISC.RECOVERY_CYCLES,CYCLE_ACTIVITY.STALLS_MEM_ANY,RESOURCE_STALLS.SB -o $PERF_OUTPUT \
     ../hashing -a $algo -E $epsl_r -F $epsl_s -U $univ -Q $bern -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -H $gp -[ $progress_step -] $merge_step -G $group -g $gap
@@ -159,7 +159,7 @@ function perfUtilBenchmarkRun() {
   #####native execution
   echo "==benchmark:$benchmark -a $algo -E $epsl_r -F $epsl_s -U $univ -Q $bern -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -H $gp -[ $progress_step -] $merge_step -G $group -g $gap -o $exp_dir/results/breakdown/perf_${gp}_${id}.txt > ${exp_dir}/results/breakdown/${phase}_${benchmark}_${algo}_profile_${gp}_${id}.txt =="
   #echo 3 >/proc/sys/vm/drop_caches
-  echo tangxilin | sudo -S sysctl vm.drop_caches=3
+  sudo sysctl vm.drop_caches=3
   perf stat -I10 -x, -o $exp_dir/results/breakdown/perf_${gp}_${id}.csv -e cache-misses,cycles ../hashing -a $algo -E $epsl_r -F $epsl_s -U $univ -Q $bern -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -H $gp -[ $progress_step -] $merge_step -G $group -g $gap
   if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit -1; fi
 }
@@ -168,7 +168,7 @@ function KimRun() {
   #####native execution
   echo "==KIM benchmark:$benchmark -a $algo -E $epsl_r -F $epsl_s -U $univ -Q $bern -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -H $gp -W $FIXS -[ $progress_step -] $merge_step -G $group -P $DD -g $gap =="
   #echo 3 >/proc/sys/vm/drop_caches
-  echo tangxilin | sudo -S sysctl vm.drop_caches=3
+  sudo sysctl vm.drop_caches=3
   ../hashing -a $algo -E $epsl_r -F $epsl_s -U $univ -Q $bern -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -H $gp -W $FIXS -[ $progress_step -] $merge_step -G $group -P $DD -g $gap
   if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit -1; fi
 }
@@ -177,7 +177,7 @@ function KimProfileRun() {
   #####native execution
   echo "==KIM benchmark:$benchmark -a $algo -E $epsl_r -F $epsl_s -U $univ -Q $bern -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -H $gp -W $FIXS -[ $progress_step -] $merge_step -G $group -P $DD -g $gap =="
   #echo 3 >/proc/sys/vm/drop_caches
-  echo tangxilin | sudo -S sysctl vm.drop_caches=3
+  sudo sysctl vm.drop_caches=3
   if [ ! -z "$PERF_CONF" -a "$PERF_CONF"!=" " ]; then
     ../hashing -a $algo -E $epsl_r -F $epsl_s -U $univ -Q $bern -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -H $gp -W $FIXS -[ $progress_step -] $merge_step -G $group -P $DD -g $gap -o $exp_dir/results/breakdown/profile_${gp}_${id}.txt -p $PERF_CONF > ${exp_dir}/results/breakdown/${phase}_${benchmark}_${algo}_profile_${gp}_${id}.txt
   else

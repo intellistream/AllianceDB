@@ -106,7 +106,7 @@ function compile() {
     make -C .. clean -s
     make -C .. -j4 -s
   fi
-  echo tangxilin | sudo -S setcap CAP_SYS_RAWIO+eip ../sorting
+  sudo setcap CAP_SYS_RAWIO+eip ../sorting
 }
 
 function benchmarkRun() {
@@ -233,20 +233,6 @@ function NORMAL() {
   sed -i -e "s/#define PROFILE_MEMORY_CONSUMPTION/#define NO_PROFILE_MEMORY_CONSUMPTION/g" ../joins/common_functions.h
 }
 
-# function SetStockParameters() { #matches: 15595000. #inputs= 60527 + 77227
-#   ts=1 # stream case
-#   WINDOW_SIZE=1000
-#   RSIZE=60527
-#   SSIZE=77227
-#   RPATH=$exp_dir/datasets/stock/cj_1000ms_1t.txt
-#   SPATH=$exp_dir/datasets/stock/sb_1000ms_1t.txt
-#   RKEY=0
-#   SKEY=0
-#   RTS=1
-#   STS=1
-#   gap=15595
-# }
-
 function SetStockParameters() { #matches: 15598112. #inputs= 60527 + 77227
   ts=1 # stream case
   WINDOW_SIZE=1000
@@ -272,22 +258,7 @@ function SetRovioParameters() { #matches: 87856849382 #inputs= 2873604 + 2873604
   SKEY=0
   RTS=3
   STS=3
-  # gap=87856849
   gap=20000
-}
-
-function SetYSBParameters() { #matches: 10000000. #inputs= 1000 + 10000000
-  ts=1 # stream case
-  WINDOW_SIZE=1000
-  RSIZE=1000
-  SSIZE=10000000
-  RPATH=$exp_dir/datasets/YSB/campaigns_id.txt
-  SPATH=$exp_dir/datasets/YSB/ad_events.txt
-  RKEY=0
-  SKEY=0
-  RTS=0
-  STS=1
-  gap=10000
 }
 
 function SetDEBSParameters() { #matches: 251033140 #inputs= 1000000 + 1000000
@@ -337,11 +308,6 @@ compile
 timestamp=$(date +%Y%m%d-%H%M)
 output=test$timestamp.txt
 
-# sed -i -e "s/#define NO_SORT_SET_PR/#define SORT_SET_PR/g" ../main.cpp
-# sed -i -e "s/#define SORT_SET_PR/#define NO_SORT_SET_PR/g" ../main.cpp
-# sed -i -e "s/#define NO_SORT_SAMPLE_ON/#define SORT_SAMPLE_ON/g" ../main.cpp
-# sed -i -e "s/#define NO_SORT_AVX_RAND/#define SORT_AVX_RAND/g" ../main.cpp
-
 
 function IF_SORT_SET_PR()
 {
@@ -360,37 +326,16 @@ function SAMPLE_OFF() {
 }
 
 
-
-declare -a arr
-
-# arr=( '1 0.1 1 0.1' '0.1 1 0.1 1' '0.3 0.333 0.3 0.333' '0.333 0.3 0.333 0.3' '0.667 0.15 0.667 0.15' '0.15 0.667 0.15 0.667' )
-arr=( '0.1 0.1 1 0.1' '0.1 0.1 1 0.1' '0.1 0.1 1 0.1' '0.1 0.1 0.3 0.333' '0.1 0.1 0.3 0.333' '0.1 0.1 0.3 0.333' '0.1 0.1 0.667 0.15' '0.1 0.1 0.667 0.15' '0.1 0.1 0.667 0.15' '0.1 0.1 0.1 1' '0.1 0.1 0.1 1' '0.1 0.1 0.1 1' )
-
-
-# for setpr in 0 1; do
-# IF_SORT_SET_PR
-# for rand_pair in "${arr[@]}"; do
-# eval real_pair=(${rand_pair})
-# epsl_r=${real_pair[0]};
-# epsl_s=${real_pair[1]};
-# univ=${real_pair[2]};
-# bern=${real_pair[3]};
-# let "gp++"
-# APP_Bench.
-# APP_BENCH=0
-
-
-########## NON-SAMPLE BASELINE
+########## NON-SAMPLING BASELINE
 
 thread_test=1
 rand_buffer_size=1000
 
-<<COMMENT
 gp=0
-epsl_s=0.5
-epsl_r=0.5
-univ=0.7
-bern=0.7
+epsl_s=0.6
+epsl_r=0.6
+univ=0.6
+bern=1
 
 SAMPLE_OFF
 if [ $APP_BENCH == 1 ]; then
@@ -399,7 +344,7 @@ if [ $APP_BENCH == 1 ]; then
   compile=1
   compile
   for algo in m-way m-pass; do
-    for benchmark in "Stock" "Rovio" "YSB" "DEBS"; do #
+    for benchmark in "Stock" "Rovio" "DEBS"; do #
       case "$benchmark" in
       "Stock")
         id=38
@@ -417,14 +362,6 @@ if [ $APP_BENCH == 1 ]; then
         compile
         benchmarkRun
         ;;
-      "YSB")
-        id=40
-        ResetParameters
-        SetYSBParameters
-        SET_RAND_BUFFER_SIZE
-        compile
-        benchmarkRun
-        ;;
       "DEBS")
         id=41
         ResetParameters
@@ -437,13 +374,13 @@ if [ $APP_BENCH == 1 ]; then
     done
   done
 fi
-# exit
-###### SAMPLE NON-MEM-LIMITED
+
+###### SAMPLING
 gp=1
-epsl_s=0.5
-epsl_r=0.5
-univ=0.7
-bern=0.7
+epsl_s=0.6
+epsl_r=0.6
+univ=0.6
+bern=1
 
 
 sed -i -e "s/#define NO_SORT_SAMPLE_ON/#define SORT_SAMPLE_ON/g" ../main.cpp
@@ -454,7 +391,7 @@ if [ $APP_BENCH == 1 ]; then
   compile=1
   compile
   for algo in m-way m-pass; do
-    for benchmark in "Stock" "Rovio" "YSB" "DEBS"; do #
+    for benchmark in "Stock" "Rovio" "DEBS"; do #
       case "$benchmark" in
       "Stock")
         id=38
@@ -468,14 +405,6 @@ if [ $APP_BENCH == 1 ]; then
         id=39
         ResetParameters
         SetRovioParameters
-        SET_RAND_BUFFER_SIZE
-        compile
-        benchmarkRun
-        ;;
-      "YSB")
-        id=40
-        ResetParameters
-        SetYSBParameters
         SET_RAND_BUFFER_SIZE
         compile
         benchmarkRun
@@ -493,20 +422,19 @@ if [ $APP_BENCH == 1 ]; then
   done
 fi
 
-# exit
 ############### impact of epsilon
 
 gp=10
 
-epsl_s=0.5
-epsl_r=0.5
-univ=0.7
-bern=0.7
+epsl_s=0.6
+epsl_r=0.6
+univ=0.6
+bern=1
 
 
 sed -i -e "s/#define NO_SORT_SAMPLE_ON/#define SORT_SAMPLE_ON/g" ../main.cpp
 sed -i -e "s/#define NO_SORT_AVX_RAND/#define SORT_AVX_RAND/g" ../main.cpp
-for epsl in 0.9 0.8 0.7 0.6 0.5 0.4 0.3 0.2 0.1 0.05 0.01 0.005 0.001; do
+for epsl in 0.9 0.8 0.7 0.6 0.5 0.4 0.3 0.2 0.1; do
   epsl_r=$epsl
   epsl_s=$epsl
   NORMAL
@@ -514,7 +442,7 @@ for epsl in 0.9 0.8 0.7 0.6 0.5 0.4 0.3 0.2 0.1 0.05 0.01 0.005 0.001; do
   compile=1
   compile
   for algo in m-way m-pass; do
-    for benchmark in "Stock" "Rovio" "YSB" "DEBS"; do #
+    for benchmark in "Stock" "Rovio" "DEBS"; do #
       case "$benchmark" in
       "Stock")
         id=38
@@ -528,14 +456,6 @@ for epsl in 0.9 0.8 0.7 0.6 0.5 0.4 0.3 0.2 0.1 0.05 0.01 0.005 0.001; do
         id=39
         ResetParameters
         SetRovioParameters
-        SET_RAND_BUFFER_SIZE
-        compile
-        benchmarkRun
-        ;;
-      "YSB")
-        id=40
-        ResetParameters
-        SetYSBParameters
         SET_RAND_BUFFER_SIZE
         compile
         benchmarkRun
@@ -554,65 +474,6 @@ for epsl in 0.9 0.8 0.7 0.6 0.5 0.4 0.3 0.2 0.1 0.05 0.01 0.005 0.001; do
   let gp++
 done
 
-
-#####                        variance
-gp=100
-
-epsl_s=0.5
-epsl_r=0.5
-univ=0.7
-bern=0.7
-
-
-sed -i -e "s/#define NO_SORT_SAMPLE_ON/#define SORT_SAMPLE_ON/g" ../main.cpp
-sed -i -e "s/#define NO_SORT_AVX_RAND/#define SORT_AVX_RAND/g" ../main.cpp
-for iii in {1..20}; do
-  NORMAL
-  profile_breakdown=1
-  compile=1
-  compile
-  for algo in m-way m-pass; do
-    for benchmark in "Stock" "Rovio" "YSB" "DEBS"; do #
-      case "$benchmark" in
-      "Stock")
-        id=38
-        ResetParameters
-        SetStockParameters
-        SET_RAND_BUFFER_SIZE
-        compile
-        benchmarkRun
-        ;;
-      "Rovio") #matches:
-        id=39
-        ResetParameters
-        SetRovioParameters
-        SET_RAND_BUFFER_SIZE
-        compile
-        benchmarkRun
-        ;;
-      "YSB")
-        id=40
-        ResetParameters
-        SetYSBParameters
-        SET_RAND_BUFFER_SIZE
-        compile
-        benchmarkRun
-        ;;
-      "DEBS")
-        id=41
-        ResetParameters
-        SetDEBSParameters
-        SET_RAND_BUFFER_SIZE
-        compile
-        benchmarkRun
-        ;;
-      esac
-    done
-  done
-  let gp++
-done
-
-COMMENT
 
 #####   trade off
 
@@ -621,7 +482,7 @@ sed -i -e "s/#define NO_SORT_AVX_RAND/#define SORT_AVX_RAND/g" ../main.cpp
 
 gp=21000
 
-for epsl in 0.9 0.8 0.7 0.6 0.5 0.4 0.3 0.2 0.1 0.05; do
+for epsl in 0.9 0.8 0.7 0.6 0.5 0.4 0.3 0.2 0.1; do
   epsl_r=$epsl
   epsl_s=$epsl
   for iii in {1..50}; do
@@ -631,7 +492,7 @@ for epsl in 0.9 0.8 0.7 0.6 0.5 0.4 0.3 0.2 0.1 0.05; do
     compile
     for algo in m-way m-pass; do
       # for benchmark in  "Rovio" ; do #
-      for benchmark in "Stock" "Rovio" "YSB" "DEBS"; do #
+      for benchmark in "Stock" "Rovio" "DEBS"; do #
         case "$benchmark" in
         "Stock")
           id=38
@@ -664,23 +525,18 @@ for epsl in 0.9 0.8 0.7 0.6 0.5 0.4 0.3 0.2 0.1 0.05; do
   done
 done
 
-<<COMMENT
 
-# COMMENT
+################################ AVX
 
 thread_test=1
-
-## AVX
-rand_buffer_size=1000
-
 
 sed -i -e "s/#define NO_SORT_SAMPLE_ON/#define SORT_SAMPLE_ON/g" ../main.cpp
 sed -i -e "s/#define NO_SORT_AVX_RAND/#define SORT_AVX_RAND/g" ../main.cpp
 
 gp=3100
-epsl_r=0.5
-epsl_s=0.5
-bern=1
+epsl_r=0.6
+epsl_s=0.6
+bern=0.6
 univ=1
 
 for rand_buffer_size in 10 33 66 100 333 666 1000 3333 6666 10000 33333 666666 100000; do
@@ -690,7 +546,7 @@ for rand_buffer_size in 10 33 66 100 333 666 1000 3333 6666 10000 33333 666666 1
     compile=1
     compile
     for algo in m-way m-pass; do
-      for benchmark in "Stock" "Rovio" "YSB" "DEBS"; do #
+      for benchmark in "Stock" "Rovio" "DEBS"; do #
         case "$benchmark" in
         "Stock")
           id=38
@@ -704,14 +560,6 @@ for rand_buffer_size in 10 33 66 100 333 666 1000 3333 6666 10000 33333 666666 1
           id=39
           ResetParameters
           SetRovioParameters
-          SET_RAND_BUFFER_SIZE
-          compile
-          benchmarkRun
-          ;;
-        "YSB")
-          id=40
-          ResetParameters
-          SetYSBParameters
           SET_RAND_BUFFER_SIZE
           compile
           benchmarkRun
@@ -731,8 +579,6 @@ for rand_buffer_size in 10 33 66 100 333 666 1000 3333 6666 10000 33333 666666 1
   done
 done
 
-# COMMENT
-
 ################################ MULTICORE
 
 rand_buffer_size=1000
@@ -741,9 +587,9 @@ sed -i -e "s/#define NO_SORT_SAMPLE_ON/#define SORT_SAMPLE_ON/g" ../main.cpp
 sed -i -e "s/#define NO_SORT_AVX_RAND/#define SORT_AVX_RAND/g" ../main.cpp
 
 gp=4100
-epsl_r=0.5
-epsl_s=0.5
-bern=1
+epsl_r=0.6
+epsl_s=0.6
+bern=0.6
 univ=1
 
 thread_test=0
@@ -755,7 +601,7 @@ for Threads in 1 2 4 8; do
     compile=1
     compile
     for algo in m-way m-pass; do
-      for benchmark in "Stock" "Rovio" "YSB" "DEBS"; do #
+      for benchmark in "Stock" "Rovio" "DEBS"; do #
         case "$benchmark" in
         "Stock")
           id=38
@@ -769,14 +615,6 @@ for Threads in 1 2 4 8; do
           id=39
           ResetParameters
           SetRovioParameters
-          SET_RAND_BUFFER_SIZE
-          compile
-          benchmarkRun
-          ;;
-        "YSB")
-          id=40
-          ResetParameters
-          SetYSBParameters
           SET_RAND_BUFFER_SIZE
           compile
           benchmarkRun
@@ -796,23 +634,21 @@ for Threads in 1 2 4 8; do
   done
 done
 
-# COMMENT
-
 
 ##################################  STREAM FEATURE
 
 
-thread_test=1
 
+thread_test=1
 rand_buffer_size=1000
 
 sed -i -e "s/#define NO_SORT_SAMPLE_ON/#define SORT_SAMPLE_ON/g" ../main.cpp
 sed -i -e "s/#define NO_SORT_AVX_RAND/#define SORT_AVX_RAND/g" ../main.cpp
 
 gp=5100
-epsl_r=0.5
-epsl_s=0.5
-bern=1
+epsl_r=0.6
+epsl_s=0.6
+bern=0.6
 univ=1
 
 
@@ -855,5 +691,3 @@ for algo in m-way m-pass; do
     esac
   done
 done
-
-COMMENT
