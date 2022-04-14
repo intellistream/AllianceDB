@@ -33,7 +33,6 @@ fi
 echo "$exp_dir"
 echo "$L3_cache_size"
 
-<<COMMENT
 # update in case some package can be missing.
 sudo apt update
 
@@ -60,8 +59,6 @@ sudo cmake --build . --target install
 sudo echo -1 > /proc/sys/kernel/perf_event_paranoid # if permission denied, try to run this at root user.
 sudo modprobe msr
 
-
-COMMENT
 
 
 ## Create directories on your machine.
