@@ -1,5 +1,4 @@
 /**
- * Modified 2019, Shuhao Zhang (Tony) and Yancan Mao, TU Berlin, NUS.
  * @file    main.c
  * @author  Cagri Balkesen <cagri.balkesen@inf.ethz.ch>
  * @date    Fri Dec 14 10:39:14 2012
@@ -362,12 +361,15 @@ execution
 #include <math.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <map>
+#include <unordered_map>
 #include <stdlib.h>
 #include <string.h>   /* strlen(), memcpy() */
 #include <sys/time.h> /* gettimeofday */
 //#include <bits/cpu-set.h>
 #include <sched.h>
 #include <unistd.h>
+#include <pxart/pxart.hpp>
 
 /* #include <assert.h> */
 
@@ -386,6 +388,12 @@ execution
 #include "joins/sortmergejoin_multipass.h"
 #include "joins/sortmergejoin_multiway.h"
 #include "joins/sortmergejoin_multiway_skewhandling.h"
+
+#define SORT_SAMPLE_ON
+#define SORT_AVX_RAND
+#define NO_SORT_SET_PR
+#define RANDOM_BUFFER_SIZE 1000
+
 
 #ifdef JOIN_MATERIALIZE
 #include "tuple_buffer.h" /* for materialization */
@@ -421,7 +429,7 @@ struct algo_t {
   char name[128];
 
   result_t *(*joinalgorithm)(relation_t *, relation_t *, joinconfig_t *,
-                             int exp_id, int window_size, int gap);
+                             int exp_id, char *grp_id,int window_size, int gap);
 };
 
 struct cmdparam_t {
@@ -472,6 +480,16 @@ struct cmdparam_t {
 
   int exp_id;
   int gap;
+
+    double epsilon_r;
+    double epsilon_s;
+    double Universal_p;
+    double Bernoulli_q;
+    int reservior_size;
+    int rand_buffer_size;
+    int presample_size;
+
+    char *grp_id;
 };
 
 extern char *optarg;
@@ -481,8 +499,8 @@ extern int optind, opterr, optopt;
 static struct algo_t algos[] = {
     {"m-way", sortmergejoin_multiway},
     {"m-pass", sortmergejoin_multipass},
-    {"mpsm", sortmergejoin_mpsm},
-    {"m-way+skew", sortmergejoin_multiway_skewhandling},
+    // {"mpsm", sortmergejoin_mpsm},
+    // {"m-way+skew", sortmergejoin_multiway_skewhandling},
     {{0}, 0}};
 
 /* command line handling functions */
@@ -504,6 +522,40 @@ int check_avx() {
     return 0; /* missing feature */
 
   return 1; /* has AVX support! */
+}
+
+uint32_t rand4sample(int &que_head, uint32_t *&rand_que)
+{
+#ifdef SORT_AVX_RAND
+    using rand_t = uint32_t;
+    static rand_t mod = int(1e9)+6, quelen = RANDOM_BUFFER_SIZE;
+    // static rand_t *rand_que = NULL;
+    static pxart::simd256::mt19937 rng{random_device{}};
+    static constexpr auto rand_stp = sizeof(rng()) / sizeof(rand_t);
+
+    if (rand_que == NULL)
+    {
+        rand_que = (rand_t *)malloc_aligned(sizeof(rand_t)*quelen+256);
+    }
+    if (que_head == quelen)
+        que_head = 0;
+    if (que_head == 0)
+    {
+        for (int i = 0; i < quelen; i += rand_stp)
+        {
+            // const auto vrnd = pxart::simd256::uniform<type>(rng, -9, 9);
+            const auto vrnd = pxart::uniform<rand_t>(rng, 0, mod);
+            // const auto srnd = pxart::pun_cast<array<rand_t, rand_stp>>(vrnd);
+            // for (int j = 0; j < rand_stp; ++j) {
+            //     rand_que[i+j] = srnd[j];
+            memcpy(rand_que+i, &vrnd, sizeof(vrnd));
+        }
+    }
+    return rand_que[que_head++];
+#else
+    static uint32_t mod = int(1e9)+7;
+    return rand()%mod;
+#endif
 }
 
 void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key,
@@ -577,6 +629,87 @@ void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key,
   //    1000, cmd_params.s_size)).c_str());
 
   printf("OK \n");
+}
+
+void setSampleParam(relation_t *relR, relation_t *relS, double epsilon_r, double epsilon_s, double &identical_Universal_p)
+{
+    std::map<intkey_t, int> hist[2];
+    long long gm[3][3];
+    memset(gm, 0, sizeof(gm));
+    for (int i = 0; i < relR->num_tuples; ++i)
+    {
+        tuple_t tuple = relR->tuples[i];
+        int tmp = ((hist[0]))[tuple.key];
+        int tt = ((hist[1]))[tuple.key];
+        ((hist[0]))[tuple.key] = tmp + 1;
+        gm[1][1] += tt;
+        gm[1][2] += 1ll*tt*tt;
+        gm[2][1] += 2ll*tmp*tt + tt;
+        gm[2][2] += 2ll*tmp*tt*tt + 1ll*tt*tt;
+    }
+    for (int i = 0; i < relS->num_tuples; ++i)
+    {
+        tuple_t tuple = relS->tuples[i];
+        int tmp = ((hist[1]))[tuple.key];
+        int tt = ((hist[0]))[tuple.key];
+        ((hist[1]))[tuple.key] = tmp + 1;
+        gm[1][1] += tt;
+        gm[1][2] += 2ll*tmp*tt + tt;
+        gm[2][1] += 1ll*tt*tt;
+        gm[2][2] += 2ll*tmp*tt*tt + 1ll*tt*tt;
+    }
+    double p = (gm[2][2]*epsilon_r*epsilon_s - gm[2][1] - gm[1][2])/gm[1][1] + 1;
+    p = sqrt(p);
+    p = max(p, epsilon_r);
+    p = max(p, epsilon_s);
+    p = min(1.0, p);
+    identical_Universal_p = p;
+    // cout << epsilon_r <<" " << epsilon_s << endl;
+    // cout << identical_Universal_p << endl;
+    // fflush(stdout);
+}
+
+void sampleRelation(relation_t *rel, relation_payload_t *relPl, const
+                    cmdparam_t &cmd_params, double epsilon, double identical_Universal_p,
+                    double Universal_p, double Bernoulli_q, int hash_a, int hash_b)
+{
+    static int mod = 1e9+7;
+    int que_head = 0;
+    uint32_t *rand_que = NULL;
+    uint32_t B, U;
+    int cnt = 0;
+
+#ifdef SORT_SET_PR
+    B = Bernoulli_q * mod;
+    U = Universal_p * mod;
+    for (int i = 0; i < rel->num_tuples; ++i)
+    {
+      tuple_t tuple = rel->tuples[i];
+      if(! (rand4sample(que_head, rand_que) >= B || (1ll*tuple.key*tuple.key%mod*hash_a%mod + hash_b)%mod >= U ) )
+      {
+        rel->tuples[cnt] = tuple;
+        rel->payload->ts[cnt] = rel->payload->ts[i];
+        cnt ++;
+      }
+    }
+#else
+    B = epsilon / identical_Universal_p * mod;
+    U = identical_Universal_p * mod;
+    for (int i = 0; i < rel->num_tuples; ++i)
+    {
+      tuple_t tuple = rel->tuples[i];
+      if(! (rand4sample(que_head, rand_que) >= B || (1ll*tuple.key*tuple.key%mod*hash_a%mod + hash_b)%mod >= U ) )
+      {
+        rel->tuples[cnt] = tuple;
+        rel->payload->ts[cnt] = rel->payload->ts[i];
+        cnt ++;
+      }
+
+    }
+#endif
+    rel->num_tuples = rel->payload->num_tuples = cnt;
+    if (rand_que != NULL)
+        free(rand_que);
 }
 
 void *
@@ -659,6 +792,16 @@ int main(int argc, char *argv[]) {
   cmd_params.exp_id = 0;
   cmd_params.fixS = 0;
 
+    cmd_params.epsilon_r = 0.1;
+    cmd_params.epsilon_s = 0.1;
+    cmd_params.Universal_p = 0.003;
+    cmd_params.Bernoulli_q = 0.003;
+    cmd_params.reservior_size = 1000;
+    cmd_params.rand_buffer_size = 1000;
+    cmd_params.presample_size = 1000;
+
+    cmd_params.grp_id = NULL;
+
   /* TODO: get L3 buffer size programmatically. */
   cmd_params.mwaymerge_bufsize = MWAY_MERGE_BUFFER_SIZE_DEFAULT;
 
@@ -700,9 +843,6 @@ int main(int argc, char *argv[]) {
   createRelation(&relR, relR.payload, cmd_params.rkey, cmd_params.rts,
                  cmd_params, cmd_params.loadfileR, cmd_params.r_seed,
                  cmd_params.step_sizeR, partitions);
-  DEBUGMSG(1, "relR: %s",
-           print_relation(relR.tuples, min((uint64_t)1000, relR.num_tuples))
-               .c_str());
 
   /* create relation S */
   if (cmd_params.old_param) {
@@ -718,6 +858,40 @@ int main(int argc, char *argv[]) {
   createRelation(&relS, relS.payload, cmd_params.skey, cmd_params.sts,
                  cmd_params, cmd_params.loadfileS, cmd_params.s_seed,
                  cmd_params.step_sizeS, cmd_params.nthreads);
+#ifdef SORT_SAMPLE_ON
+/*
+
+    double epsilon_r;
+    double epsilon_s;
+    double Universal_p;
+    double Bernoulli_q;
+    int reservior_size;
+    int rand_buffer_size;
+    int presample_size;
+*/
+  double identical_Universal_p;
+  int hash_a, hash_b;
+  hash_a = rand();
+  hash_b = rand();
+  setSampleParam(&relR, &relS, cmd_params.epsilon_r, cmd_params.epsilon_s, identical_Universal_p);
+  
+  // std::cout << "\n\n\n\n\n\n\n\n SET PARAM DONE \n\n\n\n\n\n\n\n\n";
+  // fflush(stdout);
+
+  sampleRelation(&relR, relR.payload, cmd_params, cmd_params.epsilon_r, identical_Universal_p, cmd_params.Universal_p,
+                 cmd_params.Bernoulli_q, hash_a, hash_b);
+  sampleRelation(&relS, relS.payload, cmd_params, cmd_params.epsilon_s, identical_Universal_p, cmd_params.Universal_p,
+                 cmd_params.Bernoulli_q, hash_a, hash_b);
+  // std::cout << print_relation(relR.tuples, min((uint64_t)1000, relR.num_tuples))
+  //              .c_str();
+  // std::cout << "\n\n\n\n\n\n\n\n SAMPLE DONE \n\n\n\n\n\n\n\n\n";
+  // fflush(stdout);
+  
+#endif
+
+  DEBUGMSG(1, "relR: %s",
+           print_relation(relR.tuples, min((uint64_t)1000, relR.num_tuples))
+               .c_str());
   DEBUGMSG(1, "relS: %s",
            print_relation(relS.tuples, min((uint64_t)1000, relS.num_tuples))
                .c_str());
@@ -751,10 +925,10 @@ int main(int argc, char *argv[]) {
   result_t *result;
   if (cmd_params.kim == 0)
     result = cmd_params.algo->joinalgorithm(
-        &relR, &relS, &joincfg, cmd_params.exp_id, 0, cmd_params.gap);
+        &relR, &relS, &joincfg, cmd_params.exp_id, cmd_params.grp_id, 0, cmd_params.gap);
   else
     result = cmd_params.algo->joinalgorithm(
-        &relR, &relS, &joincfg, cmd_params.exp_id, cmd_params.window_size,
+        &relR, &relS, &joincfg, cmd_params.exp_id, cmd_params.grp_id, cmd_params.window_size,
         cmd_params.gap);
   if (result != NULL) {
     fprintf(stdout, "\n[INFO ] Results = %ld. DONE.\n", result->totalresults);
@@ -907,6 +1081,14 @@ void parse_args(int argc, char **argv, cmdparam_t *cmd_params) {
         {"zipf_param", required_argument, 0, 'Z'},
         {"exp_id", required_argument, 0, 'I'},
         {"ts_distribution", required_argument, 0, 'D'},
+                        {"epsilon_r",        required_argument, 0,               'E'},
+                        {"epsilon_s",        required_argument, 0,               'F'},
+                        {"Universal_p",      required_argument, 0,               'U'},
+                        {"Bernoulli_q",      required_argument, 0,               'Q'},
+                        {"reservior_size",   required_argument, 0,               'O'},
+                        {"rand_buffer_size", required_argument, 0,               'b'},
+                        {"presample_size",   required_argument, 0,               'A'},
+                        {"group_id",         required_argument, 0,               'H'},
         {0, 0, 0, 0}};
     /* getopt_long stores the option index here. */
     int option_index = 0;
@@ -914,7 +1096,7 @@ void parse_args(int argc, char **argv, cmdparam_t *cmd_params) {
     //        c = getopt_long(argc, argv, "a:n:p:r:s:o:x:y:z:hvf:m:S:",
     c = getopt_long(
         argc, argv,
-        "P:g:R:S:J:K:L:M:t:w:e:q:l:I:d:Z:D:a:B:W:n:p:r:s:o:x:y:z:hvf:m:N:",
+        "P:g:R:S:H:J:K:L:M:t:w:e:q:l:I:d:Z:D:a:B:W:n:p:r:s:o:x:y:z:hvf:m:N:U:Q:E:F:O:b:A",
         long_options, &option_index);
 
     /* Detect the end of the options. */
@@ -1081,6 +1263,31 @@ void parse_args(int argc, char **argv, cmdparam_t *cmd_params) {
     case 'P':
       cmd_params->duplicate_num = atoi(mystrdup(optarg));
       break;
+            case 'E':
+                cmd_params->epsilon_r = atof(mystrdup(optarg));
+                break;
+            case 'F':
+                cmd_params->epsilon_s = atof(mystrdup(optarg));
+                break;
+            case 'U':
+                cmd_params->Universal_p = atof(mystrdup(optarg));
+                break;
+            case 'Q':
+                cmd_params->Bernoulli_q = atof(mystrdup(optarg));
+                break;
+            case 'O':
+                cmd_params->reservior_size = atoi(mystrdup(optarg));
+                break;
+            case 'b':
+                cmd_params->rand_buffer_size = atoi(mystrdup(optarg));
+                break;
+            case 'A':
+                cmd_params->presample_size = atoi(mystrdup(optarg));
+                break;
+            case 'H':
+                cmd_params->grp_id = mystrdup(optarg);
+                MSG("Testing Group ID:%s", cmd_params->grp_id)
+                break;
     default:
       break;
     }

@@ -68,7 +68,7 @@ void *
 sortmergejoin_multiway_skewhandling_thread(void * param);
 
 result_t *
-sortmergejoin_multiway_skewhandling(relation_t *relR, relation_t *relS, joinconfig_t *joincfg, int exp_id,
+sortmergejoin_multiway_skewhandling(relation_t *relR, relation_t *relS, joinconfig_t *joincfg, int exp_id, char *grp_id,
                                     int window_size, int gap)
 {
     /* check whether nr. of threads is a power of 2 */
@@ -79,7 +79,7 @@ sortmergejoin_multiway_skewhandling(relation_t *relR, relation_t *relS, joinconf
     }
 
     return sortmergejoin_initrun(relR, relS, joincfg,
-                                 sortmergejoin_multiway_skewhandling_thread, exp_id, window_size, 0, "MWAY_SKEW");
+                                 sortmergejoin_multiway_skewhandling_thread, exp_id, window_size, 0, std::string("MWAY_SKEW") + std::string(grp_id));
 }
 
 

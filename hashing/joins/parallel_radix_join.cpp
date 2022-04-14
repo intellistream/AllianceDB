@@ -1651,7 +1651,7 @@ result_t *join_init_run(relation_t *relR, relation_t *relS, JoinFunction jf,
                    args[0].timer,
                    cmd_params.ts == 0 ? 0 : cmd_params.window_size, fp);
   fclose(fp);
-  sortRecords("PRJ", cmd_params.exp_id,
+  sortRecords(string("PRJ") + string(cmd_params.grp_id), cmd_params.exp_id,
               cmd_params.ts == 0 ? 0 : cmd_params.window_size,
               (relR->num_tuples + relS->num_tuples), joinresult->totalresults);
 #endif

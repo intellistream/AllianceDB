@@ -165,6 +165,8 @@ nextTupleR(t_state* state, const uint64_t* fetchStartTime, relation_t* relR) {
         //check the timestamp whether the tuple is ``ready" to be fetched.
         arrivalTsR = relR->payload->ts[readR->payloadID];
         uint64_t tick = curtick();
+        // cout <<state->current_index_R<<" " << state->end_index_R<<" " << arrivalTsR<<" "<<(tick - *fetchStartTime)<<endl;
+        // fflush(stdout);
         if (arrivalTsR <= (tick - *fetchStartTime)) {//tuple has arrived at current fetch time.
             DEBUGMSG("TUPLE R [payload ID:%d] is arrived at %lu and "
                 "is fetched at %lu, fetch start time:%lu\n",

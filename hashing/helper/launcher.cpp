@@ -63,6 +63,33 @@ launch(int nthreads, relation_t *relR, relation_t *relS, t_param param, void *(*
         param.args[i].startTS = startTS;
         param.args[i].exp_id = param.exp_id;
 
+        // SAMPLE
+        static int mod = int(1e9)+7;
+        // param.grp_id = .grp_id;
+
+        param.args[i].joiner->epsilon_r = param.epsilon_r;
+        param.args[i].joiner->epsilon_s = param.epsilon_s;
+        param.args[i].joiner->Epsilon = param.epsilon_r*mod;
+        param.args[i].joiner->Bernoulli_q = param.Bernoulli_q*mod;
+        param.args[i].joiner->Universal_p = param.Universal_p*mod;
+        param.args[i].joiner->reservior_size = param.reservior_size;
+        param.args[i].joiner->rand_buffer_size = param.rand_buffer_size;
+        param.args[i].joiner->presample_size = param.presample_size;
+        // param.args[i].joiner->hash_a = rand();
+        // param.args[i].joiner->hash_b = rand();
+        param.args[i].joiner->rand_que = NULL;
+        param.args[i].joiner->que_head = 0;
+        param.args[i].joiner->gm[1][1] = param.args[i].joiner->gm[2][2] = param.args[i].joiner->gm[2][1] = param.args[i].joiner->gm[1][2] = 0;
+        // count_pre = pre_smp_thrshld = 1000;
+        param.args[i].joiner->count_pre = 0;
+        // div_prmtr = 100;
+        param.args[i].joiner->hash_a = rand()%mod;
+        while(param.args[i].joiner->hash_a < 1000) 
+            param.args[i].joiner->hash_a = rand()%mod;
+        param.args[i].joiner->hash_b = rand()%mod;
+        param.args[i].joiner->pre_smp[0] = new std::unordered_map<intkey_t, int>;
+        param.args[i].joiner->pre_smp[1] = new std::unordered_map<intkey_t, int>;
+        
         switch (param.fetcher) {
             case type_JM_P_Fetcher:
                 param.args[i].fetcher = new JM_P_Fetcher(nthreads, relR, relS, i,

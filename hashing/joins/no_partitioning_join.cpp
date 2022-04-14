@@ -454,7 +454,7 @@ result_t *NPO(relation_t *relR, relation_t *relS, param_t cmd_params) {
   breakdown_global((numR + numS), nthreads, args[0].timer,
                    cmd_params.ts == 0 ? 0 : cmd_params.window_size, fp);
   fclose(fp);
-  sortRecords("NPJ", cmd_params.exp_id,
+  sortRecords(string("NPJ") + string(cmd_params.grp_id), cmd_params.exp_id,
               cmd_params.ts == 0 ? 0 : cmd_params.window_size, (numR + numS),
               joinresult->totalresults);
 #endif

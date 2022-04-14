@@ -14,6 +14,7 @@
 #include <thread>
 #include "common_functions.h"
 #include "../utils/params.h"
+#include "../helper/localjoiner.h"
 
 
 /** An experimental feature to allocate input relations numa-local */
@@ -78,6 +79,31 @@ allocate_hashtable(hashtable_t **ppht, uint32_t nbuckets) {
     ht = (hashtable_t *) malloc(sizeof(hashtable_t));
     ht->num_buckets = nbuckets;
     NEXT_POW_2((ht->num_buckets));
+    uint32_t mod = int(1e9)+7;
+    ht->Universal_p = (mod*0.3);
+    ht->Bernoulli_q = int(mod*0.333);
+    ht->Epsilon_d = 0.1;
+    ht->Epsilon = int(mod*ht->Epsilon_d);
+    // ht->gm[1][1] = ht->gm[2][2] = ht->gm[2][1] = ht->gm[1][2] = 0;
+    // ht->count_pre = ht->pre_smp_thrshld = 1000;
+#ifdef MEM_LIM
+    ht->rsv = (tuple_t*)malloc(sizeof(tuple_t)*(RESERVOIR_SIZE + 100));
+#endif
+#ifdef RESERVOIR_STRATA
+    ht->rsv = (tuple_t*)malloc(sizeof(tuple_t)*(RESERVOIR_SIZE/RESERVOIR_STRATA_NUM + 100));
+#endif
+    ht->rsv_rand_que = NULL;
+    ht->rsv_que_head = 0;
+    ht->cnt = 0;
+    ht->count_pre = 0;
+    ht->div_prmtr = 100;
+    ht->hash_a = rand()%mod;
+    while(ht->hash_a < 1000) 
+        ht->hash_a = rand()%mod;
+    ht->hash_b = rand()%mod;
+    ht->pre_smp = new std::unordered_map<intkey_t, int>;
+//    ht->pre_set.clear();
+    // ht->pre_set = new std::set<intkey_t>;
 
     /* allocate hashtable buckets cache line aligned */
     auto rt = posix_memalign((void **) &ht->buckets, CACHE_LINE_SIZE,
@@ -154,6 +180,78 @@ debuild_hashtable_single(const hashtable_t *ht, const tuple_t *tuple, const uint
             }
         }
         b = b->next;/* follow overflow pointer */
+    } while (b);
+
+#ifdef DEBUG
+    b = ht->buckets + idx;
+    str += "after\n";
+    do {
+        for (index_ht = 0; index_ht < b->count; index_ht++) {
+            str += to_string(b->tuples[index_ht].key) + "\n";
+        }
+        b = b->next;/* follow overflow pointer */
+    } while (b);
+    MSG("%s", str.c_str());
+#endif
+}
+
+void
+delete_hashtable_single(const hashtable_t *ht, const tuple_t *tuple, const uint32_t hashmask,
+                         const uint32_t skipbits) {
+    uint32_t index_ht;
+    bucket_t *b, *head;
+    intkey_t idx = HASH(tuple->key, hashmask, skipbits);
+
+#ifdef DEBUG
+    string str;
+    str += "before\n";
+    b = ht->buckets + idx;
+    do {
+        for (index_ht = 0; index_ht < b->count; index_ht++) {
+            str += to_string(b->tuples[index_ht].key) + "\n";
+        }
+        b = b->next;/* follow overflow pointer */
+    } while (b);
+#endif
+
+    head = b = ht->buckets + idx;
+    do {
+        for (index_ht = 0; index_ht < b->count; index_ht++) {
+            if (tuple->key == b->tuples[index_ht].key && tuple->payloadID == b->tuples[index_ht].payloadID) {
+                // b->tuples[index_ht].key = -1;//set it to never match.
+                if (head == b)
+                {
+                    b->count--;
+                    b->tuples[index_ht] = b->tuples[b->count];
+                }
+                else if (head->next == b)
+                {
+                    b->count--;
+                    if (b->count == 0)
+                    {
+                        head->next = b->next;
+                        free(b);
+                    }
+                    else
+                        b->tuples[index_ht] = b->tuples[b->count];
+                }
+                else
+                {
+                    bucket_t *c = head->next;
+                    b->tuples[index_ht] = c->tuples[c->count - 1];
+                    c->count--;
+                    if (c->count == 0)
+                    {
+                        head->next = c->next;
+                        free(c);
+                    }
+                }
+                b = NULL;
+                break;
+            }
+        }
+        if (b)
+            b = b->next;/* follow overflow pointer */
     } while (b);
 
 #ifdef DEBUG

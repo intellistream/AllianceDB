@@ -1,6 +1,4 @@
 /**
- * Modified 2019, Shuhao Zhang (Tony) and Yancan Mao, TU Berlin, NUS.
- *
  * @file    main.c
  * @author  Cagri Balkesen <cagri.balkesen@inf.ethz.ch>
  * @date    Wed May 16 16:03:10 2012
@@ -381,6 +379,16 @@ param_t defaultParam() {/* Command line parameters */
     cmd_params.group_size = 2;
     cmd_params.fixS = 0;
 
+    // SAMPLE
+    cmd_params.epsilon_r = 0.1;
+    cmd_params.epsilon_s = 0.1;
+    cmd_params.Universal_p = 0.003;
+    cmd_params.Bernoulli_q = 0.003;
+    cmd_params.reservior_size = 1000;
+    cmd_params.rand_buffer_size = 1000;
+    cmd_params.presample_size = 1000;
+    cmd_params.grp_id = NULL;
+
     /* default dataset is Workload B (described in paper) */
     cmd_params.r_size = 500000;
     cmd_params.s_size = 500000;
@@ -496,13 +504,21 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
                         {"exp_id",           required_argument, 0,               'I'},
                         {"ts_distribution",  required_argument, 0,               'D'},
                         {"duplicate_num",    required_argument, 0,               'P'}, // represent num of Partitions
+                        {"epsilon_r",        required_argument, 0,               'E'},
+                        {"epsilon_s",        required_argument, 0,               'F'},
+                        {"Universal_p",      required_argument, 0,               'U'},
+                        {"Bernoulli_q",      required_argument, 0,               'Q'},
+                        {"reservior_size",   required_argument, 0,               'O'},
+                        {"rand_buffer_size", required_argument, 0,               'b'},
+                        {"presample_size",   required_argument, 0,               'A'},
+                        {"group_id",         required_argument, 0,               'H'},
                         {0, 0,                                  0,               0}
 
                 };
         /* getopt_long stores the option index here. */
         int option_index = 0;
 
-        c = getopt_long(argc, argv, "J:K:L:M:t:w:e:q:l:I:d:Z:D:g:G:B:W:a:n:p:r:s:o:x:y:z:R:S:hv[:]:P:",
+        c = getopt_long(argc, argv, "J:K:L:M:t:w:e:q:l:I:d:Z:D:g:G:B:W:a:n:p:r:s:o:x:y:z:R:S:H:hv[:]:P:U:Q:E:F:O:b:A",
                         long_options, &option_index);
 
         /* Detect the end of the options. */
@@ -674,6 +690,30 @@ parse_args(int argc, char **argv, param_t *cmd_params) {
                 break;
             case 'P':
                 cmd_params->duplicate_num = atoi(mystrdup(optarg));
+                break;
+            case 'E':
+                cmd_params->epsilon_r = atof(mystrdup(optarg));
+                break;
+            case 'F':
+                cmd_params->epsilon_s = atof(mystrdup(optarg));
+                break;
+            case 'U':
+                cmd_params->Universal_p = atof(mystrdup(optarg));
+                break;
+            case 'Q':
+                cmd_params->Bernoulli_q = atof(mystrdup(optarg));
+                break;
+            case 'O':
+                cmd_params->reservior_size = atoi(mystrdup(optarg));
+                break;
+            case 'b':
+                cmd_params->rand_buffer_size = atoi(mystrdup(optarg));
+                break;
+            case 'A':
+                cmd_params->presample_size = atoi(mystrdup(optarg));
+                break;
+            case 'H':
+                cmd_params->grp_id = mystrdup(optarg);
                 break;
             default:
                 break;
