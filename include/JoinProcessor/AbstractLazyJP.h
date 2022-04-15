@@ -9,6 +9,7 @@
 #include <JoinProcessor/AbstractJP.h>
 #include <JoinAlgo/JoinAlgoTable.h>
 #include <JoinAlgo/NPJ.h>
+
 namespace INTELLI {
 class AbstractLazyJP;
 /**
@@ -52,26 +53,40 @@ typedef std::shared_ptr<AbstractLazyJP> AbstractLazyJPPtr;
 #define  newAbstractLazyJP() make_shared<AbstractLazyJP>()
 class AbstractLazyJP : public AbstractJP {
  protected:
-
+  /**
+   * @brief non-overlapping area of window S
+   */
   C20Buffer<TuplePtr> windowS;
+  /**
+   * @brief non-overlapping area of window R
+   */
   C20Buffer<TuplePtr> windowR;
+  /**
+   * @brief Overlapping area of window S, with 'previous' window
+   */
   C20Buffer<TuplePtr> windowSOverLap;
+  /**
+  * @brief Overlapping area of window R, with 'previous' window
+  */
   C20Buffer<TuplePtr> windowROverLap;
   lwj_status_t statusS = LWJ_IDLE;
   lwj_status_t statusR = LWJ_IDLE;
   // size_t slide = 0;
   //size_t windowLen = 0;
+
   size_t period = 0;
   size_t tsOverlap = 0;
   size_t tsEnd = 0;
   size_t tsBegin = 0;
-  bool sWindowReady = false;
+  /*bool sWindowReady = false;
   bool rWindowReady = false;
-  bool isLastJp = false;
+  bool isLastJp = false;*/
   bool checkTupleS(TuplePtr ts);
   bool checkTupleR(TuplePtr tr);
   virtual void inlineMain();
-  bool belongs2Me(size_t timeDivSys);
+  // bool belongs2Me(size_t timeDivSys);
+  bool largerThanMe(size_t timeDivSys);
+  bool smallerThanMe(size_t timeDivSys);
   /**
   * @brief move the S from the input queue to the window buffer
    * @param
@@ -112,13 +127,6 @@ class AbstractLazyJP : public AbstractJP {
     tsBegin = sysId * slideLenGlobal;
     tsEnd = tsBegin + windowLenGlobal;
     tsOverlap = tsEnd - slideLenGlobal;
-  }
-  /**
-   * @brief To indicate if this one is the last join processor
-   * @param val
-   */
-  void setLastJp(bool val) {
-    isLastJp = val;
   }
 
 };

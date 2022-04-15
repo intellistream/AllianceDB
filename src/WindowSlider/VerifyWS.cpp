@@ -35,6 +35,8 @@ void VerifyWS::deliverTupleS(TuplePtr ts) {
   size_t rSize = TuplePtrQueueLocalR->size();
   for (size_t i = 0; i < rSize; i++) {
     if (TuplePtrQueueLocalR->front()[i]->key == ts->key) {
+      // cout<<to_string(ts->subKey)+","+to_string(TuplePtrQueueLocalR->front()[i]->subKey)<<endl;
+      //cout<<"S "+to_string(ts->subKey)+"join R "+ to_string(TuplePtrQueueLocalR->front()[i]->subKey)<<endl;
       joinResults++;
     }
   }
@@ -56,6 +58,8 @@ void VerifyWS::deliverTupleR(TuplePtr tr) {
   size_t sSize = TuplePtrQueueLocalS->size();
   for (size_t i = 0; i < sSize; i++) {
     if (TuplePtrQueueLocalS->front()[i]->key == tr->key) {
+      //cout<<to_string(TuplePtrQueueLocalS->front()[i]->subKey)+","+to_string(tr->subKey)<<endl;
+      // cout<<"S "+to_string(tr->subKey)+"join S "+ to_string(TuplePtrQueueLocalS->front()[i]->subKey)<<endl;
       joinResults++;
     }
   }

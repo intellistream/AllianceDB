@@ -9,6 +9,7 @@ size_t NestedLoopJoin::join(TuplePtr *ts, TuplePtr tr, size_t tsLen, int threads
   size_t result = 0;
   for (size_t i = 0; i < tsLen; i++) {
     if (ts[i]->key == tr->key) {
+      //cout<<to_string(ts[i]->subKey)+","+ to_string(tr->subKey)<<endl;
       result++;
     }
   }
@@ -23,7 +24,7 @@ size_t NestedLoopJoin::join(TuplePtr *ts, TuplePtr *tr, size_t tsLen, size_t trL
   return result;
 }
 size_t NestedLoopJoin::join(TuplePtrQueue ts, TuplePtr tr, int threads) {
-  // cout<<"NL JOIN"<<endl;
+  cout << "NL JOIN" << endl;
   return join(ts->front(), tr, ts->size(), threads);
 }
 

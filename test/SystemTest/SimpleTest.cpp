@@ -9,7 +9,7 @@
 #include <Utils/SPSCQueue.hpp>
 #include <Utils/MicroDataSet.hpp>
 #include  <Utils/ThreadPerf.h>
-#include <WindowSlider/AbstractEagerWS.h>
+#include <WindowSlider/AbstractLazyWS.h>
 #include <WindowSlider/SplitJoinWS.h>
 #include <WindowSlider/SplitJoinIRWS.h>
 #include "AbstractJoinMethod.h"
@@ -33,11 +33,11 @@ TEST(SystemTest, SimpleTest
   dataSet.load3VText(relationCouple.relationR, fileRName);
   dataSet.load3VText(relationCouple.relationS, fileSName);
   joinResult.streamSize = relationCouple.relationR.size();
-  VerifyBench<SplitJoinIRWS> vb_ewj;
-  ASSERT_TRUE(vb_ewj.test(joinResult, relationCouple, 1));
+  VerifyBench<AbstractLazyWS> vb_lwj;
+  ASSERT_TRUE(vb_lwj.test(joinResult, relationCouple, 1, 500, 500));
   dataSet.load3VText(relationCouple.relationR, fileRName);
   dataSet.load3VText(relationCouple.relationS, fileSName);
-  ASSERT_TRUE(vb_ewj.test(joinResult, relationCouple, 2));
+  ASSERT_TRUE(vb_lwj.test(joinResult, relationCouple, 2, 450, 200));
   /*dataSet.load3VText(relationCouple.relationR, fileRName);
   dataSet.load3VText(relationCouple.relationS, fileSName);
   ASSERT_TRUE(vb_ewj.test(joinResult, relationCouple, 4));

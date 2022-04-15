@@ -5,8 +5,9 @@
 #include <WindowSlider/AbstractLazyWS.h>
 using namespace INTELLI;
 void AbstractLazyWS::initJoinProcessors() {
-  windowCnt = windowLen / slideLen + 2;
-  period = (windowCnt - 1) * (slideLen) + windowLen;
+  windowCnt = windowLen / slideLen + 1;
+  //period = (windowCnt - 1) * (slideLen) + slideLen;
+  period = windowCnt * slideLen;
   // cout<<"period="+ to_string(period)<<endl;
   jps = std::vector<AbstractLazyJPPtr>(windowCnt);
   for (size_t tid = 0; tid < windowCnt; tid++) {
@@ -14,10 +15,6 @@ void AbstractLazyWS::initJoinProcessors() {
     jps[tid]->init(sLen, rLen, tid);
     jps[tid]->setTimeVal(timeSys);
     jps[tid]->setLazyWindow(slideLen, windowLen, period);
-    if (tid == windowCnt - 1) {
-      jps[tid]->setLastJp(true);
-      cout << to_string(tid) + " is the last jp" << endl;
-    }
     jps[tid]->startThread();
   }
   isRunning = true;
@@ -30,7 +27,7 @@ void AbstractLazyWS::terminateJoinProcessors() {
     jps[tid]->inputCmd(CMD_STOP);
     //jps[tid]->joinThread();
   }
-  //waitAckFromJoinProcessors();
+  waitAckFromJoinProcessors();
   for (size_t tid = 0; tid < windowCnt; tid++) {
     jps[tid]->joinThread();
   }
@@ -54,7 +51,7 @@ size_t AbstractLazyWS::getJoinResult() {
   for (size_t tid = 0; tid < windowCnt; tid++) {
 
     ru += jps[tid]->getJoinedResult();
-    cout << "JP" << tid << " : " << jps[tid]->getJoinedResult() << endl;
+    //cout << "JP" << tid << " : " << jps[tid]->getJoinedResult() << endl;
   }
   return ru;
 }
