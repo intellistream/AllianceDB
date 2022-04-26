@@ -6,7 +6,7 @@
 namespace INTELLI {
 typedef std::shared_ptr<class RelationCouple> RelationCouplePtr;
 
-class RelationCouple  {
+class RelationCouple {
  public:
   TuplePtrQueueIn relationS;
   TuplePtrQueueIn relationR;

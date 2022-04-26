@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 import csv
-import numpy as np
-import matplotlib.pyplot as plt
+
 import accuBar as accuBar
-import groupBar2 as groupBar2
 
 
 def getLatecnyFromCSV(a):

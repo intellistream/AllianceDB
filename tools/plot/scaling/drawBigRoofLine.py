@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-import groupLine as groupLine
 import csv
+
+import groupLine as groupLine
 
 
 def readRoofLineFromCSV(a):

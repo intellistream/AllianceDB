@@ -3,8 +3,6 @@ add_sources(
         Tuple.cpp
         RelationCouple.cpp
         Result.cpp
-        Execute.cpp
-        Verify.cpp
         DatasetTool.cpp
         MultiThreadHashTable.cpp
 )

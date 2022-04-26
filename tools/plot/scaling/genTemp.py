@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-import drawTotalLatency as drawTotalLatency
-import drawEnergy as drawEnergy
 import csv
+
+import drawEnergy as drawEnergy
+import drawTotalLatency as drawTotalLatency
 
 
 def writeTemplateCsv(lat, eng):

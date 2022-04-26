@@ -1,14 +1,9 @@
 #!/usr/bin/env python3
 import csv
 import numpy as np
-import matplotlib.pyplot as plt
-import accuBar as accuBar
-import groupBar as groupBar
-import groupBar2 as groupBar2
-from autoParase import *
-import drawTotalLatency as drawTotalLatency
-import drawBreakDown as drawBreakDown
+
 import groupLine as groupLine
+from autoParase import *
 
 
 def getLatencyFromCSV(a):

@@ -1,16 +1,10 @@
 import itertools as it
-import os
-
 import matplotlib
 import matplotlib.pyplot as plt
-import numpy as np
+import os
 import pylab
 from matplotlib.font_manager import FontProperties
-from matplotlib.ticker import MaxNLocator
-from matplotlib.font_manager import FontProperties
-from matplotlib.ticker import LinearLocator, LogLocator, MaxNLocator, ScalarFormatter
-
-from numpy import double
+from matplotlib.ticker import LogLocator
 
 OPT_FONT_NAME = 'Helvetica'
 TICK_FONT_SIZE = 20

@@ -1,13 +1,12 @@
 import getopt
-import os
-import sys
-
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
+import os
 import pylab
+import sys
 from matplotlib.font_manager import FontProperties
-from matplotlib.ticker import LinearLocator, LogLocator, MaxNLocator, ScalarFormatter
+from matplotlib.ticker import LinearLocator, ScalarFormatter
 from numpy import double
 
 OPT_FONT_NAME = 'Helvetica'
