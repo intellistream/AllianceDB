@@ -9,9 +9,9 @@
 using namespace std;
 using namespace std;
 using namespace INTELLI;
-#include <WindowSlider/AbstractLazyWS.h>
+#include <Common/Verify.hpp>
+#include <Common/Result.hpp>
 
-#include <Common/Verify.h>
 TEST(SystemTest, SimpleTest
 ) {
   setupLogging("benchmark.log", LOG_DEBUG);
@@ -26,5 +26,4 @@ TEST(SystemTest, SimpleTest
   joinResult.streamSize = relationCouple.relationR.size();
   Verify vb_lwj;
   vb_lwj.Run(joinResult, relationCouple, 500, 500);
-
 }

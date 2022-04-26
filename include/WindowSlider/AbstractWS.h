@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <vector>
 #include <Common/Types.hpp>
+#include <Common/Tuple.hpp>
 #include <Utils/SPSCQueue.hpp>
 #include <Utils/UtilityFunctions.hpp>
 #include <time.h>

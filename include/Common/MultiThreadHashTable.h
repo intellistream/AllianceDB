@@ -2,6 +2,7 @@
 #ifndef _JOINALGO_NPJ_MULTITHREADHASHTABLE_H_
 #define _JOINALGO_NPJ_MULTITHREADHASHTABLE_H_
 #include "Types.hpp"
+#include "Tuple.hpp"
 #include <stdint.h>
 #include <memory>
 #include <condition_variable>

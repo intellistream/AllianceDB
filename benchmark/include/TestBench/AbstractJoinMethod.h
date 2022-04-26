@@ -2,8 +2,11 @@
 #ifndef JOINMETHODS_ABSTRACTJOINMETHOD_H_
 #define JOINMETHODS_ABSTRACTJOINMETHOD_H_
 
-#include "Common/Types.hpp"
-#include "WindowSlider/AbstractEagerWS.h"
+#include <Common/Types.hpp>
+#include <Common/Result.hpp>
+#include <Common/Tuple.hpp>
+#include <Common/RelationCouple.hpp>
+#include <WindowSlider/AbstractEagerWS.h>
 using namespace INTELLI;
 namespace INTELLI {
 template<class wsType=AbstractEagerWS>

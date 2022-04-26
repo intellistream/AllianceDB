@@ -9,6 +9,7 @@
 #include <WindowSlider/AbstractWS.h>
 #include <Utils/AbstractC20Thread.h>
 #include <JoinProcessor/SplitJoinJP.h>
+#include "Tuple.hpp"
 using namespace INTELLI;
 using namespace std;
 namespace INTELLI {

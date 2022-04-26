@@ -10,8 +10,9 @@
 #include <Common/DatasetTool.hpp>
 #include <Utils/MicroDataSet.hpp>
 #include <WindowSlider/AbstractLazyWS.h>
-#include <Common/Verify.h>
-#include <Common/Execute.h>
+#include <Common/Verify.hpp>
+#include <Common/Execute.hpp>
+#include <Common/Result.hpp>
 
 using namespace std;
 using namespace INTELLI;
@@ -19,21 +20,21 @@ using namespace INTELLI;
 int main() {
   //Setup Logs
   setupLogging("benchmark.log", LOG_DEBUG);
-  INTELLI::RelationCouple relationCouple = INTELLI::RelationCouple();
+  RelationCouple relationCouple = RelationCouple();
   string pwd = getcwd(NULL, 0); //Get current directory
   string fileRName = pwd + "/datasets/" + DATASET_NAME + "-R.txt";
   string fileSName = pwd + "/datasets/" + DATASET_NAME + "-S.txt";
-  INTELLI::DatasetTool dataSet;
+  DatasetTool dataSet;
   dataSet.load3VText(relationCouple.relationR, fileRName);
   dataSet.load3VText(relationCouple.relationS, fileSName);
 
-  INTELLI::Result exeResult = INTELLI::Result();
+  Result exeResult = Result();
   Execute<AbstractLazyWS> execute;
   execute.Run(exeResult, relationCouple, 2, 500, 200);
 
-  INTELLI::Result verifyResult = INTELLI::Result();
+  Result verifyResult = Result();
   Verify verify;
-  verify.Run(verifyResult, relationCouple,  500, 200);
+  verify.Run(verifyResult, relationCouple, 500, 200);
 
   if (exeResult.joinNumber == verifyResult.joinNumber) {
     cout << "Congratulations, the result " + to_string(exeResult.joinNumber) + " is correct!" << endl;

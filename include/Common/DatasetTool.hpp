@@ -1,11 +1,8 @@
 /*! \file DatasetTool.h*/
-//
-// Created by tony on 02/03/22.
-//
-
 #ifndef _COMMON_DATASETTOOL_H_
 #define _COMMON_DATASETTOOL_H_
 #include <Common/Types.hpp>
+#include <Common/Tuple.hpp>
 
 namespace INTELLI {
 /**
@@ -68,9 +65,5 @@ class DatasetTool {
   void combine3VVector(TuplePtrQueue &relationPtr, vector<keyType> vk, vector<valueType> vv, vector<size_t> vs);
 
 };
-/**
- * @}
- * @}
- */
 }
 #endif //ALIANCEDB_INCLUDE_COMMON_DATASETTOOL_H_

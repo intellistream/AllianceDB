@@ -3,6 +3,7 @@
 //
 
 #include <JoinProcessor/CellJoinJP.h>
+#include "Tuple.hpp"
 
 using namespace INTELLI;
 using namespace std;

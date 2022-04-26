@@ -1,26 +1,15 @@
 #include <Common/Types.hpp>
-
-INTELLI::Tuple::Tuple(keyType k) : key(k), payload(0) {}
-
-INTELLI::Tuple::~Tuple() = default;
-
+#include <Common/Tuple.hpp>
+#include <Common/Result.hpp>
+#include <Common/RelationCouple.hpp>
 INTELLI::RelationCouple::~RelationCouple() = default;
-
-INTELLI::WindowCouple::WindowCouple(INTELLI::numberType windowSize) {
-  this->windowSize = windowSize;
-}
-
-INTELLI::WindowCouple::WindowCouple(INTELLI::numberType windowSizeR, INTELLI::numberType windowSizeS) {
-  this->windowSizeR = windowSizeR;
-  this->windowSizeS = windowSizeS;
-}
 
 INTELLI::RelationCouple::RelationCouple() = default;
 
 INTELLI::Result::Result() : joinNumber(0), streamSize(0), timeTaken(0) {}
 
 INTELLI::Result INTELLI::Result::operator++(int) {
-  INTELLI::Result tmp(*this);
+  Result tmp(*this);
   joinNumber++;
   return tmp;
 }

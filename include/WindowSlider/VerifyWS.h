@@ -5,6 +5,7 @@
 #include <WindowSlider/AbstractWS.h>
 #include <JoinProcessor/CellJoinJP.h>
 #include <Utils/AbstractC20Thread.h>
+#include <Common/Tuple.hpp>
 namespace INTELLI {
 /**
  * @ingroup WINDOWSLIDER_BASE

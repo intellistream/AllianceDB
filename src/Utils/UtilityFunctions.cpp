@@ -1,8 +1,8 @@
 // Copyright (C) 2021 by the IntelliStream team (https://github.com/intellistream)
 
 #include <Utils/UtilityFunctions.hpp>
-#include <iostream>
 #include <numeric>
+#include <Common/Result.hpp>
 static unsigned long mt[N]; /* the array for the state vector  */
 static int mti; /* mti==N+1 means mt[N] is not initialized */
 

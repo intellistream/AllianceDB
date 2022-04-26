@@ -9,7 +9,8 @@
 #include <barrier>
 #include <functional>
 #include <Common/Types.hpp>
-
+#include <sys/time.h>
+#include <Common/Result.hpp>
 
 /* Period parameters */
 #define N 624
@@ -19,7 +20,7 @@
 #define LOWER_MASK 0x7fffffffUL /* least significant r bits */
 #define TRUE 1
 #define FALSE 0
-#include <sys/time.h>
+
 namespace INTELLI {
 typedef std::shared_ptr<std::barrier<>> BarrierPtr;
 #define TIME_LAST_UNIT_MS 1000

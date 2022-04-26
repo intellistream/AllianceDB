@@ -6,6 +6,7 @@
 #include <JoinAlgo/NPJ.h>
 using namespace INTELLI;
 #include <string.h>
+#include "Tuple.hpp"
 
 bool AbstractLazyJP::largerThanMe(size_t timeDivSys) {
   if (timeDivSys >= tsEnd) {

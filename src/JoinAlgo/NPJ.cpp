@@ -4,6 +4,7 @@
 #include <JoinAlgo/NPJ.h>
 #include <Utils/UtilityFunctions.hpp>
 #include <Utils/ThreadPerf.h>
+
 using namespace INTELLI;
 void NPJ_thread::inlineMain() {
   //first bind to the core

@@ -1,6 +1,3 @@
-//
-// Created by tony on 2022/2/8.
-//
 #include <WindowSlider/AbstractEagerWS.h>
 using namespace INTELLI;
 AbstractEagerWS::AbstractEagerWS(size_t _sLen, size_t _rLen) : AbstractWS(_sLen, _rLen) {

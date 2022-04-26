@@ -1,7 +1,3 @@
-/*! \file Types.h*/
-//
-// Created by Wang Chenyu on 1/9/21.
-//
 #ifndef UNUSED
 #define UNUSED(x) (void)(x)
 #endif
@@ -106,8 +102,6 @@ namespace INTELLI {
 * @{
 * We define the classes of Tuple, window, queue, etc. here
 */
-//Pointers
-
 
 //Alias
 typedef uint64_t keyType;    /*!< Type of the join key, default uint64_t */
@@ -115,124 +109,9 @@ typedef uint64_t valueType;  /*!< Type of the payload, default uint64_t */
 typedef int numberType; //for counting the number of datagram (eg: tuples) in a struct
 typedef std::mutex mutex;
 typedef INTELLI::DupicatedHashTable<keyType, keyType> hashtable; /*!< allow key duplication */
-
 typedef std::queue<numberType> tupleKeyQueue;
-
-/**
- * @class Tuple Common/Types.h
- * @brief The class to describe a tuple
- */
-class Tuple {
- public:
-  keyType key; /*!< The key used for relational join*/
-  valueType payload; /*!< The payload, can also be pointer*/
-  // The subKey can be either time-stamp or arrival count, which is assigned by join system
-  // We use the subKey to do tuple expiration, which covers both count-based and time-based window
-  size_t subKey = 0;/*!< subkey is preserved for join system, e.g., it can be the time stamp or tuple count*/
-  /**
-   * @brief construct with key
-   * @param k the key
-   */
-  Tuple(keyType k);
-  /**
- * @brief construct with key and value
- * @param k the key
-   *@param v the value of payload
- */
-  Tuple(keyType k, valueType v);
-  /**
- * @brief construct with key, value and subkey
- * @param k the key
-   *@param v the value of payload
-   * @param sk the subkey
- */
-  Tuple(keyType k, valueType v, size_t sk);
-  ~Tuple();
-};
-/**
- * @cite TuplePtr
- * @brief The class to describe a shared pointer to @ref Tuple
- */
-typedef std::shared_ptr<class Tuple> TuplePtr;
-typedef std::shared_ptr<class RelationCouple> RelationCouplePtr;
 typedef std::shared_ptr<std::barrier<>> BarrierPtr;
-//Array Pointers
-typedef std::vector<TuplePtr> WindowOfTuples;
 
-/**
- * @typedef TuplePtrQueueIn
- * @brief To describe a local queue of TuplePtr
- * @warning This is not thread-safe, only used for local data
- */
-typedef std::queue<TuplePtr> TuplePtrQueueIn;
-typedef moodycamel::ConcurrentQueue<TuplePtr> concurrentTupleQueue;
-class RelationCouple {
- public:
-  TuplePtrQueueIn relationS;
-  TuplePtrQueueIn relationR;
-  RelationCouple();
-  ~RelationCouple();
-};
-
-class WindowCouple {
- public:
-  //We use queue to implement a window, it stores the sequence of tuples.
-  TuplePtrQueueIn windowS;
-  TuplePtrQueueIn windowR;
-  hashtable hashtableS;
-  hashtable hashtableR;
-
-  numberType windowSize;
-  numberType windowSizeR;
-  numberType windowSizeS;
-
-  mutex windowLock;
-
-  WindowCouple(numberType windowSize);
-  WindowCouple(numberType windowSizeR, numberType windowSizeS);
-};
-
-class ConcurrentQWindowCouple {
- public:
-  //We use queue to implement a window, it stores the sequence of tuples.
-  //Concurrent Q but not concurrent hashtable
-  //A sub-window that can be obtained from other threads
-  concurrentTupleQueue windowS;
-  concurrentTupleQueue windowR;
-  hashtable hashtableS;
-  hashtable hashtableR;
-
-  numberType windowSize;
-  numberType windowSizeR;
-  numberType windowSizeS;
-
-  mutex windowLock;
-
-  ConcurrentQWindowCouple(numberType windowSize);
-  ConcurrentQWindowCouple(numberType windowSizeR, numberType windowSizeS);
-};
-
-class Result {
- public:
-  numberType joinNumber;
-  numberType streamSize;
-  string algoName;
-  string dataSetName;
-  double timeTaken;
-  struct timeval timeBegin;
-  explicit Result();
-  Result operator++(int);
-  void statPrinter();
-};
-/**
- *  @typedef TuplePtrQueue
- * @brief To describe a queue of @ref TuplePtr under SPSCQueue
- * @note This one is thread-safe
- * @warning Must be inited by @ref newTuplePtrQueue before use
- */
-typedef std::shared_ptr<INTELLI::SPSCQueue<INTELLI::TuplePtr>> TuplePtrQueue;
-typedef std::shared_ptr<std::queue<INTELLI::TuplePtr>> TupleQueueSelfPtr;
-typedef std::shared_ptr<INTELLI::SPSCQueue<vector<INTELLI::TuplePtr>>> WindowQueue;
 /**
  * @cite newTuplePtrQueue
  * @brief To create a new TuplePtrQueue
@@ -257,7 +136,6 @@ typedef enum {
 } join_cmd_t;
 typedef std::shared_ptr<INTELLI::SPSCQueue<INTELLI::join_cmd_t>> CmdQueuePtr;
 #define  newCmdQueue(n) make_shared<INTELLI::SPSCQueue<INTELLI::join_cmd_t>>(n)
-
 }
 /**
  * @}

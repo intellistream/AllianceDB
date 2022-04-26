@@ -79,7 +79,6 @@ if (ENABLE_UNIT_TESTS)
             GIT_REPOSITORY https://github.com/google/googletest.git
             GIT_TAG release-1.11.0
     )
-
     set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
     FetchContent_MakeAvailable(googletest)
     include(GoogleTest)
@@ -106,6 +105,7 @@ target_include_directories(IntelliStream PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
 target_link_libraries(IntelliStream PUBLIC ${LIBRARIES})
 
 #Add benchmarks with command
+#Main Entry.
 add_subdirectory(benchmark)
 
 #Add tests (based on GTest suits)

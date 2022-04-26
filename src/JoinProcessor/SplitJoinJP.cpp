@@ -3,6 +3,7 @@
 //
 
 #include <JoinProcessor/SplitJoinJP.h>
+#include "Tuple.hpp"
 using namespace INTELLI;
 void SplitJoinJP::joinS(TuplePtr ts) {
   size_t timeNow = ts->subKey;

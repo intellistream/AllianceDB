@@ -1,11 +1,8 @@
 /*! \file NestedLoopJoin.h*/
-//
-// Created by tony on 19/03/22.
-//
-
 #ifndef _JOINALGO_NESTEDLOOPJOIN_H_
 #define _JOINALGO_NESTEDLOOPJOIN_H_
 #include <JoinAlgo/AbstractJoinAlgo.h>
+
 namespace INTELLI {
 /**
 * @ingroup INTELLI_JOINALGOS

@@ -1,7 +1,6 @@
 //
 // Created by tony on 18/03/22.
 //
-
 #include <JoinProcessor/SplitJoinIRJP.h>
 using namespace INTELLI;
 void SplitJoinIRJP::joinS(TuplePtr ts) {

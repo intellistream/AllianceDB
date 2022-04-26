@@ -1,8 +1,5 @@
-//
-// Created by tony on 19/03/22.
-//
-
 #include <JoinAlgo/NestedLoopJoin.h>
+
 using namespace INTELLI;
 size_t NestedLoopJoin::join(TuplePtr *ts, TuplePtr tr, size_t tsLen, int threads) {
   assert(threads > 0);

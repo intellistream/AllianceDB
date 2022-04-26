@@ -9,7 +9,6 @@
 #include <Common/Types.hpp>
 #include <Utils/UtilityFunctions.hpp>
 #include <barrier>
-
 #include <JoinProcessor/SplitJoinJP.h>
 #include <Utils/DupicatedHashTable.hpp>
 using namespace INTELLI;

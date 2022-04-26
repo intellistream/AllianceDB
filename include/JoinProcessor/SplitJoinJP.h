@@ -11,6 +11,7 @@
 #include <barrier>
 
 #include <JoinProcessor/AbstractJP.h>
+#include "Tuple.hpp"
 using namespace INTELLI;
 using namespace std;
 namespace INTELLI {

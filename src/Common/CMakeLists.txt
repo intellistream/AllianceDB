@@ -1,5 +1,10 @@
 add_sources(
         Types.cpp
+        Tuple.cpp
+        RelationCouple.cpp
+        Result.cpp
+        Execute.cpp
+        Verify.cpp
         DatasetTool.cpp
         MultiThreadHashTable.cpp
 )

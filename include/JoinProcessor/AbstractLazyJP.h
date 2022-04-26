@@ -9,6 +9,7 @@
 #include <JoinProcessor/AbstractJP.h>
 #include <JoinAlgo/JoinAlgoTable.h>
 #include <JoinAlgo/NPJ.h>
+#include "Tuple.hpp"
 
 namespace INTELLI {
 class AbstractLazyJP;

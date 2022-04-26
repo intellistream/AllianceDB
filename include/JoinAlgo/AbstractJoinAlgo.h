@@ -6,6 +6,7 @@
 #ifndef _JOINALGO_ABSTRACTJOINALGO_H_
 #define _JOINALGO_ABSTRACTJOINALGO_H_
 #include <Common/Types.hpp>
+#include <Common/Tuple.hpp>
 #include <string>
 #include <memory>
 namespace INTELLI {

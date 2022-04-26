@@ -2,6 +2,7 @@
 // Created by tony on 2022/2/9.
 //
 #include<JoinProcessor/HandShakeJP.h>
+#include <Common/Tuple.hpp>
 using namespace INTELLI;
 void HandShakeJP::setupQueue() {
   TuplePtrQueueInS = newTuplePtrQueue(sQueue);
