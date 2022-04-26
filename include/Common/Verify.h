@@ -1,7 +1,7 @@
 #ifndef _VERIFYBENCH_H_
 #define _VERIFYBENCH_H_
 
-#include <Common/Types.h>
+#include <Common/Types.hpp>
 #include <WindowSlider/AbstractEagerWS.h>
 #include <WindowSlider/VerifyWS.h>
 using namespace INTELLI;

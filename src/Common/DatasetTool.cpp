@@ -1,13 +1,13 @@
 //
 // Created by tony on 02/03/22.
 //
-#include <Common/DatasetTool.h>
+#include <Common/DatasetTool.hpp>
 #include <iostream>
 #include <fstream>
 #include <list>
 #include <mutex>
 #include <unordered_map>
-#include <Common/Types.h>
+#include <Common/Types.hpp>
 #include <Utils/Logger.hpp>
 using namespace INTELLI;
 void DatasetTool::store3VText(TuplePtrQueue &relation, const std::string &fileName) {

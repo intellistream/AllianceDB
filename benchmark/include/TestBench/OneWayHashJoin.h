@@ -5,7 +5,7 @@
 #ifndef INTELLISTREAM_ONEWAYHASHJOIN_H
 #define INTELLISTREAM_ONEWAYHASHJOIN_H
 
-#include <Common/Types.h>
+#include <Common/Types.hpp>
 namespace INTELLI {
 class OneWayHashJoin {
  public:

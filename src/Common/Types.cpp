@@ -1,14 +1,4 @@
-//
-// Created by Wang Chenyu on 1/9/21.
-//
-
-#include <Common/Types.h>
-#include <iostream>
-#include <iomanip>
-
-#ifndef BAR
-#define BAR "-------------------------------------------"
-#endif
+#include <Common/Types.hpp>
 
 INTELLI::Tuple::Tuple(keyType k) : key(k), payload(0) {}
 

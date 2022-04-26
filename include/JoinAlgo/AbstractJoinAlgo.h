@@ -5,7 +5,7 @@
 
 #ifndef _JOINALGO_ABSTRACTJOINALGO_H_
 #define _JOINALGO_ABSTRACTJOINALGO_H_
-#include <Common/Types.h>
+#include <Common/Types.hpp>
 #include <string>
 #include <memory>
 namespace INTELLI {

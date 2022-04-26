@@ -8,7 +8,7 @@
 #include <experimental/filesystem>
 #include <barrier>
 #include <functional>
-#include <Common/Types.h>
+#include <Common/Types.hpp>
 
 
 /* Period parameters */

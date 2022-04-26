@@ -2,7 +2,7 @@
 #ifndef JOINMETHODS_ABSTRACTJOINMETHOD_H_
 #define JOINMETHODS_ABSTRACTJOINMETHOD_H_
 
-#include "Common/Types.h"
+#include "Common/Types.hpp"
 #include "WindowSlider/AbstractEagerWS.h"
 using namespace INTELLI;
 namespace INTELLI {

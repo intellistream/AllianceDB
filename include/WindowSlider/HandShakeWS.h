@@ -7,7 +7,7 @@
 #define _WINDOWSLIDER_HANDSHAKEWS_H_
 #include <cstdint>
 #include <vector>
-#include <Common/Types.h>
+#include <Common/Types.hpp>
 #include <Utils/SPSCQueue.hpp>
 #include <time.h>
 #include <numeric>

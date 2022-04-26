@@ -6,8 +6,8 @@
  */
 #include <Utils/Logger.hpp>
 #include <Utils/UtilityFunctions.hpp>
-#include <Common/Types.h>
-#include <Common/DatasetTool.h>
+#include <Common/Types.hpp>
+#include <Common/DatasetTool.hpp>
 #include <Utils/MicroDataSet.hpp>
 #include <WindowSlider/AbstractLazyWS.h>
 #include <Common/Verify.h>

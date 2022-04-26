@@ -1,7 +1,7 @@
 #ifndef _EXECUTE_H_
 #define _EXECUTE_H_
 
-#include <Common/Types.h>
+#include <Common/Types.hpp>
 #include <WindowSlider/AbstractEagerWS.h>
 
 using namespace INTELLI;

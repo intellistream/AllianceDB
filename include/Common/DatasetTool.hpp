@@ -5,7 +5,7 @@
 
 #ifndef _COMMON_DATASETTOOL_H_
 #define _COMMON_DATASETTOOL_H_
-#include <Common/Types.h>
+#include <Common/Types.hpp>
 
 namespace INTELLI {
 /**

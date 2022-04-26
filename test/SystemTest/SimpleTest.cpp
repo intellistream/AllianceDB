@@ -3,18 +3,9 @@
 #include <filesystem>
 #include <gtest/gtest.h>
 #include <Utils/Logger.hpp>
-#include <Utils/UtilityFunctions.hpp>
-#include <Common/Types.h>
-
-#include <Utils/SPSCQueue.hpp>
+#include <Common/Types.hpp>
 #include <Utils/MicroDataSet.hpp>
-#include  <Utils/ThreadPerf.h>
-#include <WindowSlider/AbstractLazyWS.h>
-#include <WindowSlider/SplitJoinWS.h>
-#include <WindowSlider/SplitJoinIRWS.h>
-#include "AbstractJoinMethod.h"
-#include <Common/Types.h>
-#include <Common/DatasetTool.h>
+#include <Common/DatasetTool.hpp>
 using namespace std;
 using namespace std;
 using namespace INTELLI;
@@ -33,24 +24,7 @@ TEST(SystemTest, SimpleTest
   dataSet.load3VText(relationCouple.relationR, fileRName);
   dataSet.load3VText(relationCouple.relationS, fileSName);
   joinResult.streamSize = relationCouple.relationR.size();
-  Verify<AbstractLazyWS> vb_lwj;
-  ASSERT_TRUE(vb_lwj.test(joinResult, relationCouple, 1, 500, 500));
-  dataSet.load3VText(relationCouple.relationR, fileRName);
-  dataSet.load3VText(relationCouple.relationS, fileSName);
-  ASSERT_TRUE(vb_lwj.test(joinResult, relationCouple, 2, 450, 200));
-  /*dataSet.load3VText(relationCouple.relationR, fileRName);
-  dataSet.load3VText(relationCouple.relationS, fileSName);
-  ASSERT_TRUE(vb_ewj.test(joinResult, relationCouple, 4));
-  dataSet.load3VText(relationCouple.relationR, fileRName);
-  dataSet.load3VText(relationCouple.relationS, fileSName);
-  ASSERT_TRUE(vb_ewj.test(joinResult, relationCouple, 4,500,50));*/
-  /* AbstractJoinMethod<AbstractEagerWS> ewj;
-   // INTELLI::UtilityFunctions::timerStart(joinResult);
-   ewj.test(joinResult, relationCouple);
-
-   //Print result number
-   // INTELLI::UtilityFunctions::timerEnd(joinResult);
-   joinResult.statPrinter();
-   ASSERT_TRUE(joinResult.joinNumber>0);*/
+  Verify vb_lwj;
+  vb_lwj.Run(joinResult, relationCouple, 500, 500);
 
 }

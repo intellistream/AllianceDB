@@ -6,7 +6,7 @@
 #ifndef _JOINPROCESSOR_ABSTRACTJP_H_
 #define _JOINPROCESSOR_ABSTRACTJP_H_
 #include <Utils/UtilityFunctions.hpp>
-#include <Common/Types.h>
+#include <Common/Types.hpp>
 #include <barrier>
 #include <Utils/AbstractC20Thread.h>
 #include <Utils/C20Buffers.hpp>

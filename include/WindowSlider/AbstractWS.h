@@ -3,7 +3,7 @@
 #define _WINDOWSLIDER_ABSTRACTWS_H_
 #include <cstdint>
 #include <vector>
-#include <Common/Types.h>
+#include <Common/Types.hpp>
 #include <Utils/SPSCQueue.hpp>
 #include <Utils/UtilityFunctions.hpp>
 #include <time.h>

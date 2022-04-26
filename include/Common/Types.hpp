@@ -52,6 +52,13 @@
 #include <Utils/concurrentqueue.h>
 #include <Utils/DupicatedHashTable.hpp>
 #include <Utils/SPSCQueue.hpp>
+#include <iostream>
+#include <iomanip>
+
+#ifndef BAR
+#define BAR "-------------------------------------------"
+#endif
+
 /**
  * @mainpage Introduction
  * The AllianceDB offers a wide range of stream join algorithms, supporting both inter and

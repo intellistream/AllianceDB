@@ -5,7 +5,7 @@
 
 #ifndef _WINDOWSLIDER_ABSTRACTLAZYWS_H_
 #define _WINDOWSLIDER_ABSTRACTLAZYWS_H_
-#include <Common/Types.h>
+#include <Common/Types.hpp>
 #include <WindowSlider/AbstractWS.h>
 #include <JoinProcessor/AbstractLazyJP.h>
 namespace INTELLI {
