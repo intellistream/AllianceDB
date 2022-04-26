@@ -95,20 +95,6 @@ void VerifyWS::expireR(size_t ts) {
       }
     }
   }
-  /*windowR.reset();
-  if(TuplePtrQueueLocalR->size()>0)
-  {
-    size_t allLen=TuplePtrQueueLocalR->size();
-    //size_t validLen=0;
-    for(size_t i=0;i<allLen;i++)
-    {  TuplePtr tp = TuplePtrQueueLocalR->front()[i];
-      if(tp->subKey<=ts)
-      {
-        windowR.append(tp);
-      }
-    }
-    //windowS.append(TuplePtrQueueLocalS->front(),validLen);
-  }*/
 }
 
 void VerifyWS::expireS(size_t ts) {
@@ -134,31 +120,6 @@ void VerifyWS::expireS(size_t ts) {
       }
     }
   }
-  /*windowS.reset();
-  if(TuplePtrQueueLocalS->size()>0)
-  {
-    size_t allLen=TuplePtrQueueLocalS->size();
-    //size_t validLen=0;
-    for(size_t i=0;i<allLen;i++)
-    {  TuplePtr tp = TuplePtrQueueLocalS->front()[i];
-      if(tp->subKey<=ts)
-      {
-        windowS.append(tp);
-      }
-    }
-    //windowS.append(TuplePtrQueueLocalS->front(),validLen);
-  }*/
-  /*
-   for(size_t i=allLen;i>0;i--)
-   {
-      if(TuplePtrQueueLocalS->front()[i]->subKey<=ts)
-      {
-        validLen=i+1;
-        break;
-      }
-   }*/
-  // windowS.append(TuplePtrQueueLocalS->front(),validLen);
-
 }
 void VerifyWS::initJoinProcessors() {
   threads = partitionWeight.size();

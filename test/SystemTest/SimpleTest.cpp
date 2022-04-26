@@ -20,7 +20,7 @@ using namespace std;
 using namespace INTELLI;
 #include <WindowSlider/AbstractLazyWS.h>
 
-#include <Common/VerifyBench.h>
+#include <Common/Verify.h>
 TEST(SystemTest, SimpleTest
 ) {
   setupLogging("benchmark.log", LOG_DEBUG);
@@ -33,7 +33,7 @@ TEST(SystemTest, SimpleTest
   dataSet.load3VText(relationCouple.relationR, fileRName);
   dataSet.load3VText(relationCouple.relationS, fileSName);
   joinResult.streamSize = relationCouple.relationR.size();
-  VerifyBench<AbstractLazyWS> vb_lwj;
+  Verify<AbstractLazyWS> vb_lwj;
   ASSERT_TRUE(vb_lwj.test(joinResult, relationCouple, 1, 500, 500));
   dataSet.load3VText(relationCouple.relationR, fileRName);
   dataSet.load3VText(relationCouple.relationS, fileSName);

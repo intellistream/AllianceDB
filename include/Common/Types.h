@@ -48,11 +48,10 @@
 #include <mutex>
 #include <unordered_map>
 #include <queue>
-#include "Utils/concurrentqueue.h"
-#include "Utils/DupicatedHashTable.hpp"
-#include "Utils/SafeQueue.hpp"
-#include "Utils/SPSCQueue.hpp"
-
+#include <barrier>
+#include <Utils/concurrentqueue.h>
+#include <Utils/DupicatedHashTable.hpp>
+#include <Utils/SPSCQueue.hpp>
 /**
  * @mainpage Introduction
  * The AllianceDB offers a wide range of stream join algorithms, supporting both inter and
@@ -153,7 +152,6 @@ typedef std::shared_ptr<std::barrier<>> BarrierPtr;
 //Array Pointers
 typedef std::vector<TuplePtr> WindowOfTuples;
 
-//typedef std::SafeQueue<TuplePtr> TuplePtrQueueIn;
 /**
  * @typedef TuplePtrQueueIn
  * @brief To describe a local queue of TuplePtr

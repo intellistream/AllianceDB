@@ -1,9 +1,5 @@
 /*! \file VerifyWS.h*/
 
-//
-// Created by tony on 18/03/22.
-//
-
 #ifndef _WINDOWSLIDER_VERIFYWS_H_
 #define _WINDOWSLIDER_VERIFYWS_H_
 #include <WindowSlider/AbstractWS.h>
@@ -12,11 +8,11 @@
 namespace INTELLI {
 /**
  * @ingroup WINDOWSLIDER_BASE
-* @class VerifyWS WindowSlider/VerifyWS.h
-* @brief The single-thread window slider used for verify results of other WS
-* @author Tony Zeng
-* @note
-To init and run, follow the functions below to start a WS
+  * @class VerifyWS WindowSlider/VerifyWS.h
+  * @brief The single-thread window slider used for verify results of other WS
+  * @author Tony Zeng
+  * @note
+  To init and run, follow the functions below to start a WS
   \li Configure the window type, time or count, @ref setTimeBased
   \li Configure window length: @ref setWindowLen
   \li Configure slide length: @ref setSlideLen (default is 1 if not called)
