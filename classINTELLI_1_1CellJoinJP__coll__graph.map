@@ -1,6 +1,6 @@
 <map id="INTELLI::CellJoinJP" name="INTELLI::CellJoinJP">
-<area shape="rect" id="node1" title="The class of cell join join processor." alt="" coords="1053,297,1192,324"/>
-<area shape="rect" id="node2" href="$classINTELLI_1_1AbstractJP.html" title="The basic class of join processor." alt="" coords="721,247,865,273"/>
+<area shape="rect" id="node1" title="The class of cell join join processor." alt="" coords="1029,288,1168,315"/>
+<area shape="rect" id="node2" href="$classINTELLI_1_1AbstractJP.html" title="The basic class of join processor." alt="" coords="709,247,853,273"/>
 <area shape="rect" id="node3" href="$classINTELLI_1_1AbstractC20Thread.html" title="The base class and abstraction of C++20 thread, and it can be derived into other threads." alt="" coords="312,7,515,33"/>
 <area shape="rect" id="node4" title=" " alt="" coords="5,7,196,33"/>
 <area shape="rect" id="node5" title=" " alt="" coords="309,57,517,84"/>
@@ -10,6 +10,5 @@
 <area shape="rect" id="node9" title=" " alt="" coords="388,320,439,347"/>
 <area shape="rect" id="node10" title=" " alt="" coords="357,371,470,397"/>
 <area shape="rect" id="node11" title=" " alt="" coords="329,421,497,477"/>
-<area shape="rect" id="node12" title=" " alt="" coords="685,297,900,324"/>
-<area shape="rect" id="node13" title=" " alt="" coords="697,348,888,404"/>
+<area shape="rect" id="node12" title=" " alt="" coords="685,297,876,353"/>
 </map>

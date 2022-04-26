@@ -1,0 +1,13 @@
+<map id="INTELLI::SplitJoinIRWS" name="INTELLI::SplitJoinIRWS">
+<area shape="rect" id="node1" title="The eager window slider of split join, which also shares the intermediate results (IR)" alt="" coords="796,291,961,317"/>
+<area shape="rect" id="node2" href="$classINTELLI_1_1SplitJoinWS.html" title="The eager window slider of split join." alt="" coords="595,291,747,317"/>
+<area shape="rect" id="node3" href="$classINTELLI_1_1AbstractWS.html" title="An abstraction of window slider, also inherited by both eager and lazy." alt="" coords="358,257,511,284"/>
+<area shape="rect" id="node4" title=" " alt="" coords="60,13,119,40"/>
+<area shape="rect" id="node5" title=" " alt="" coords="42,64,137,91"/>
+<area shape="rect" id="node6" title=" " alt="" coords="24,124,155,151"/>
+<area shape="rect" id="node7" title=" " alt="" coords="59,257,119,284"/>
+<area shape="rect" id="node8" title=" " alt="" coords="64,329,115,356"/>
+<area shape="rect" id="node9" title=" " alt="" coords="33,380,146,407"/>
+<area shape="rect" id="node10" title=" " alt="" coords="5,431,173,487"/>
+<area shape="rect" id="node11" title=" " alt="" coords="347,308,523,335"/>
+</map>

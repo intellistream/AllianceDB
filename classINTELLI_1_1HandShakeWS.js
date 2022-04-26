@@ -10,5 +10,5 @@ var classINTELLI_1_1HandShakeWS =
     [ "terminateJoinProcessors", "classINTELLI_1_1HandShakeWS.html#a35d84e2f6b53f2568720bab21e4d4118", null ],
     [ "waitAckFromJoinProcessors", "classINTELLI_1_1HandShakeWS.html#a760365d54e8daf88652ff95c4e333815", null ],
     [ "initBar", "classINTELLI_1_1HandShakeWS.html#ad3ad2b91800b21b5357024d874d337d4", null ],
-    [ "jpPtr", "classINTELLI_1_1HandShakeWS.html#ac518a1842715b51757844d732ea0b655", null ]
+    [ "jpPtr", "classINTELLI_1_1HandShakeWS.html#ae5c1d21a71f3b49cdbec85e82a74f242", null ]
 ];

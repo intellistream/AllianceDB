@@ -6,19 +6,17 @@ var hierarchy =
       [ "moodycamel::details::hash_32_or_64< size >", "structmoodycamel_1_1details_1_1hash__32__or__64.html", null ]
     ] ],
     [ "INTELLI::AbstractC20Thread", "classINTELLI_1_1AbstractC20Thread.html", [
-      [ "INTELLI::AbstractEagerWS", "classINTELLI_1_1AbstractEagerWS.html", [
-        [ "INTELLI::HandShakeWS", "classINTELLI_1_1HandShakeWS.html", null ]
-      ] ],
+      [ "INTELLI::AbstractEagerWS", "classINTELLI_1_1AbstractEagerWS.html", null ],
       [ "INTELLI::AbstractJP", "classINTELLI_1_1AbstractJP.html", [
         [ "INTELLI::AbstractLazyJP", "classINTELLI_1_1AbstractLazyJP.html", null ],
-        [ "INTELLI::CellJoinJP", "classINTELLI_1_1CellJoinJP.html", [
-          [ "INTELLI::HandShakeHashJP", "classINTELLI_1_1HandShakeHashJP.html", null ]
-        ] ],
-        [ "INTELLI::SplitJoinJP", "classINTELLI_1_1SplitJoinJP.html", null ]
+        [ "INTELLI::CellJoinJP", "classINTELLI_1_1CellJoinJP.html", null ],
+        [ "INTELLI::HandShakeJP", "classINTELLI_1_1HandShakeJP.html", null ],
+        [ "INTELLI::SplitJoinJP", "classINTELLI_1_1SplitJoinJP.html", [
+          [ "INTELLI::SplitJoinIRJP", "classINTELLI_1_1SplitJoinIRJP.html", null ]
+        ] ]
       ] ],
       [ "INTELLI::AbstractLazyWS", "classINTELLI_1_1AbstractLazyWS.html", null ],
       [ "INTELLI::NPJ_thread", "classINTELLI_1_1NPJ__thread.html", null ],
-      [ "INTELLI::SplitJoinWS", "classINTELLI_1_1SplitJoinWS.html", null ],
       [ "INTELLI::VerifyWS", "classINTELLI_1_1VerifyWS.html", null ]
     ] ],
     [ "INTELLI::AbstractJoinAlgo", "classINTELLI_1_1AbstractJoinAlgo.html", [
@@ -36,7 +34,10 @@ var hierarchy =
     [ "INTELLI::AbstractWS", "classINTELLI_1_1AbstractWS.html", [
       [ "INTELLI::AbstractEagerWS", "classINTELLI_1_1AbstractEagerWS.html", null ],
       [ "INTELLI::AbstractLazyWS", "classINTELLI_1_1AbstractLazyWS.html", null ],
-      [ "INTELLI::SplitJoinWS", "classINTELLI_1_1SplitJoinWS.html", null ],
+      [ "INTELLI::HandShakeWS", "classINTELLI_1_1HandShakeWS.html", null ],
+      [ "INTELLI::SplitJoinWS", "classINTELLI_1_1SplitJoinWS.html", [
+        [ "INTELLI::SplitJoinIRWS", "classINTELLI_1_1SplitJoinIRWS.html", null ]
+      ] ],
       [ "INTELLI::VerifyWS", "classINTELLI_1_1VerifyWS.html", null ]
     ] ],
     [ "moodycamel::BlockingConcurrentQueue< T, Traits >", "classmoodycamel_1_1BlockingConcurrentQueue.html", null ],
@@ -50,8 +51,8 @@ var hierarchy =
     [ "moodycamel::details::const_numeric_max< T >", "structmoodycamel_1_1details_1_1const__numeric__max.html", null ],
     [ "moodycamel::ConsumerToken", "structmoodycamel_1_1ConsumerToken.html", null ],
     [ "INTELLI::DatasetTool", "classINTELLI_1_1DatasetTool.html", null ],
-    [ "std::DupicatedHashTable< Key, Tp, Hash, _SubKey >", "classstd_1_1DupicatedHashTable.html", null ],
-    [ "std::DupicatedHashTable< keyType, keyType >", "classstd_1_1DupicatedHashTable.html", null ],
+    [ "INTELLI::DupicatedHashTable< Key, Tp, Hash, _SubKey >", "classINTELLI_1_1DupicatedHashTable.html", null ],
+    [ "INTELLI::DupicatedHashTable< keyType, keyType >", "classINTELLI_1_1DupicatedHashTable.html", null ],
     [ "moodycamel::details::identity< T >", "structmoodycamel_1_1details_1_1identity.html", null ],
     [ "std::is_trivially_destructible", null, [
       [ "moodycamel::details::is_trivially_destructible< T >", "structmoodycamel_1_1details_1_1is__trivially__destructible.html", null ]

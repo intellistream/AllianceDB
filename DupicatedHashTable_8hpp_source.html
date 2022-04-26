@@ -110,7 +110,7 @@ $(document).ready(function(){initNavTree('DupicatedHashTable_8hpp_source.html','
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &lt;iostream&gt;</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">namespace </span>std {</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespaceINTELLI.html">INTELLI</a> {</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="comment">/*class:DupicatedHashTable</span></div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="comment">description: integrted an unsorted_map, and can deal with duplicated key</span></div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="comment">note: almost all part of this class is similar to the original unsorted_map,</span></div>
@@ -123,7 +123,7 @@ $(document).ready(function(){initNavTree('DupicatedHashTable_8hpp_source.html','
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    <span class="keyword">typename</span> _SubKey=<span class="keywordtype">size_t</span></div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    <span class="comment">/*typename _Pred = equal_to&lt;_Key&gt;,</span></div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="comment">    typename _Alloc = allocator&lt;std::pair&lt;const _Key, _Tp&gt;&gt;*/</span>&gt;</div>
-<div class="line"><a name="l00027"></a><span class="lineno"><a class="line" href="classstd_1_1DupicatedHashTable.html">   27</a></span>&#160;<span class="keyword">class </span><a class="code" href="classstd_1_1DupicatedHashTable.html">DupicatedHashTable</a> {</div>
+<div class="line"><a name="l00027"></a><span class="lineno"><a class="line" href="classINTELLI_1_1DupicatedHashTable.html">   27</a></span>&#160;<span class="keyword">class </span><a class="code" href="classINTELLI_1_1DupicatedHashTable.html">DupicatedHashTable</a> {</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160; <span class="keyword">private</span>:</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  <span class="keyword">class </span>innerStore {</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;   <span class="keyword">public</span>:</div>
@@ -143,10 +143,10 @@ $(document).ready(function(){initNavTree('DupicatedHashTable_8hpp_source.html','
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <span class="comment">/* data */</span></div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  unordered_map&lt;Key, std::vector&lt;innerStore&gt;, Hash<span class="comment">/*,_Pred,_Alloc*/</span> &gt; map;</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  <a class="code" href="classstd_1_1DupicatedHashTable.html">DupicatedHashTable</a>(<span class="comment">/* args */</span>) {</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  <a class="code" href="classINTELLI_1_1DupicatedHashTable.html">DupicatedHashTable</a>(<span class="comment">/* args */</span>) {</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    map = unordered_map&lt;Key, std::vector&lt;innerStore&gt; &gt;();</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  }</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  ~<a class="code" href="classstd_1_1DupicatedHashTable.html">DupicatedHashTable</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  ~<a class="code" href="classINTELLI_1_1DupicatedHashTable.html">DupicatedHashTable</a>() = <span class="keywordflow">default</span>;</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <span class="comment">//the empty()</span></div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  <span class="keywordtype">bool</span> empty() <span class="keyword">const</span> noexcept { <span class="keywordflow">return</span> map.empty(); }</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <span class="comment">//the emplace, return the key duplication index of emplaced item</span></div>
@@ -258,7 +258,8 @@ $(document).ready(function(){initNavTree('DupicatedHashTable_8hpp_source.html','
 <div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;}</div>
 <div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160; </div>
 <div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="ttc" id="aclassstd_1_1DupicatedHashTable_html"><div class="ttname"><a href="classstd_1_1DupicatedHashTable.html">std::DupicatedHashTable</a></div><div class="ttdef"><b>Definition:</b> DupicatedHashTable.hpp:27</div></div>
+<div class="ttc" id="aclassINTELLI_1_1DupicatedHashTable_html"><div class="ttname"><a href="classINTELLI_1_1DupicatedHashTable.html">INTELLI::DupicatedHashTable</a></div><div class="ttdef"><b>Definition:</b> DupicatedHashTable.hpp:27</div></div>
+<div class="ttc" id="anamespaceINTELLI_html"><div class="ttname"><a href="namespaceINTELLI.html">INTELLI</a></div><div class="ttdef"><b>Definition:</b> DatasetTool.h:10</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

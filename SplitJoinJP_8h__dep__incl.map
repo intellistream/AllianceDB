@@ -1,4 +1,6 @@
 <map id="include/JoinProcessor/SplitJoinJP.h" name="include/JoinProcessor/SplitJoinJP.h">
-<area shape="rect" id="node1" title=" " alt="" coords="7,5,167,47"/>
-<area shape="rect" id="node2" href="$SplitJoinWS_8h.html" title=" " alt="" coords="5,95,168,136"/>
+<area shape="rect" id="node1" title=" " alt="" coords="97,5,257,47"/>
+<area shape="rect" id="node2" href="$SplitJoinIRJP_8h.html" title=" " alt="" coords="5,95,165,136"/>
+<area shape="rect" id="node4" href="$SplitJoinWS_8h.html" title=" " alt="" coords="189,95,352,136"/>
+<area shape="rect" id="node3" href="$SplitJoinIRWS_8h_source.html" title=" " alt="" coords="96,184,259,225"/>
 </map>

@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['utilityfunctions_2ehpp_308',['UtilityFunctions.hpp',['../UtilityFunctions_8hpp.html',1,'']]]
+  ['threadperf_2eh_322',['ThreadPerf.h',['../ThreadPerf_8h.html',1,'']]],
+  ['types_2eh_323',['Types.h',['../Types_8h.html',1,'']]]
 ];

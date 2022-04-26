@@ -97,61 +97,61 @@ $(document).ready(function(){initNavTree('HandShakeWS_8h_source.html',''); initR
 <div class="title">HandShakeWS.h</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">//</span></div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment">// Created by tony on 28/02/22.</span></div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment">//</span></div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160; </div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#ifndef _WINDOWSLIDER_HANDSHAKEWS_H_</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#define _WINDOWSLIDER_HANDSHAKEWS_H_</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &lt;cstdint&gt;</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="Types_8h.html">Common/Types.h</a>&gt;</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;Utils/SPSCQueue.hpp&gt;</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &lt;time.h&gt;</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &lt;numeric&gt;</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &lt;JoinProcessor/HandShakeHashJP.h&gt;</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="AbstractEagerWS_8h.html">WindowSlider/AbstractEagerWS.h</a>&gt;</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160; </div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">using namespace </span><a class="code" href="namespaceINTELLI.html">INTELLI</a>;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">using namespace </span>std;</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespaceINTELLI.html">INTELLI</a> {</div>
-<div class="line"><a name="l00029"></a><span class="lineno"><a class="line" href="classINTELLI_1_1HandShakeWS.html">   29</a></span>&#160;<span class="keyword">class </span><a class="code" href="classINTELLI_1_1HandShakeWS.html">HandShakeWS</a> : <span class="keyword">public</span> <a class="code" href="classINTELLI_1_1AbstractEagerWS.html">AbstractEagerWS</a> {</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  <span class="comment">/* data *</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="comment">   */</span></div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160; <span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  std::vector&lt;HandShakeHashJPPtr&gt; jpPtr;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  INTELLI::BarrierPtr initBar;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  <a class="code" href="classINTELLI_1_1HandShakeWS.html">HandShakeWS</a>(<span class="comment">/* args */</span>) {</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    reset();</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  }</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  ~<a class="code" href="classINTELLI_1_1HandShakeWS.html">HandShakeWS</a>() {</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160; </div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  }</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  <span class="comment">//init with length of queue</span></div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <a class="code" href="classINTELLI_1_1HandShakeWS.html">HandShakeWS</a>(<span class="keywordtype">size_t</span> sLen, <span class="keywordtype">size_t</span> rLen) : <a class="code" href="classINTELLI_1_1AbstractEagerWS.html">AbstractEagerWS</a>(sLen, rLen) {</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160; </div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  }</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160; </div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  <span class="comment">//init the join processors</span></div>
-<div class="line"><a name="l00049"></a><span class="lineno"><a class="line" href="classINTELLI_1_1HandShakeWS.html#a38323fd26cc8ee7b12abe311a09aaf78">   49</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classINTELLI_1_1HandShakeWS.html#a38323fd26cc8ee7b12abe311a09aaf78">initJoinProcessors</a>();</div>
-<div class="line"><a name="l00050"></a><span class="lineno"><a class="line" href="classINTELLI_1_1HandShakeWS.html#a35d84e2f6b53f2568720bab21e4d4118">   50</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classINTELLI_1_1HandShakeWS.html#a35d84e2f6b53f2568720bab21e4d4118">terminateJoinProcessors</a>();</div>
-<div class="line"><a name="l00051"></a><span class="lineno"><a class="line" href="classINTELLI_1_1HandShakeWS.html#a760365d54e8daf88652ff95c4e333815">   51</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classINTELLI_1_1HandShakeWS.html#a760365d54e8daf88652ff95c4e333815">waitAckFromJoinProcessors</a>();</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  <span class="comment">//get the join result</span></div>
-<div class="line"><a name="l00053"></a><span class="lineno"><a class="line" href="classINTELLI_1_1HandShakeWS.html#aa946f8a8d38ac33855744693a24aebf6">   53</a></span>&#160;  <span class="keywordtype">size_t</span> <a class="code" href="classINTELLI_1_1HandShakeWS.html#aa946f8a8d38ac33855744693a24aebf6">getJoinResult</a>();</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <span class="comment">//input</span></div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  <span class="comment">//note: S-&gt;, R&lt;-</span></div>
-<div class="line"><a name="l00056"></a><span class="lineno"><a class="line" href="classINTELLI_1_1HandShakeWS.html#ad80be5aa159752f6ae66617bab8fb255">   56</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classINTELLI_1_1HandShakeWS.html#ad80be5aa159752f6ae66617bab8fb255">feedTupleS</a>(<a class="code" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> ts);</div>
-<div class="line"><a name="l00057"></a><span class="lineno"><a class="line" href="classINTELLI_1_1HandShakeWS.html#a56f1d0664871f753b8028e94c3e0bee3">   57</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classINTELLI_1_1HandShakeWS.html#a56f1d0664871f753b8028e94c3e0bee3">feedTupleR</a>(<a class="code" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> tr);</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;};</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160; </div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;}</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="preprocessor">#endif </span><span class="comment">//HYBRID_JOIN_INCLUDE_WINDOWSLIDER_HANDSHAKEWS_H_</span></div>
+<a href="HandShakeWS_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160; </div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment">//</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment">// Created by tony on 28/02/22.</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment">//</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160; </div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#ifndef _WINDOWSLIDER_HANDSHAKEWS_H_</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#define _WINDOWSLIDER_HANDSHAKEWS_H_</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="Types_8h.html">Common/Types.h</a>&gt;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &lt;Utils/SPSCQueue.hpp&gt;</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &lt;time.h&gt;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &lt;numeric&gt;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &lt;JoinProcessor/HandShakeJP.h&gt;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="AbstractEagerWS_8h.html">WindowSlider/AbstractEagerWS.h</a>&gt;</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160; </div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">using namespace </span><a class="code" href="namespaceINTELLI.html">INTELLI</a>;</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">using namespace </span>std;</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespaceINTELLI.html">INTELLI</a> {</div>
+<div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="classINTELLI_1_1HandShakeWS.html">   37</a></span>&#160;<span class="keyword">class </span><a class="code" href="classINTELLI_1_1HandShakeWS.html">HandShakeWS</a> : <span class="keyword">public</span> <a class="code" href="classINTELLI_1_1AbstractWS.html">AbstractWS</a> {</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160; <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  <span class="comment">/* data *</span></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="comment">   */</span></div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160; <span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  std::vector&lt;HandShakeJPPtr&gt; jpPtr;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  INTELLI::BarrierPtr initBar;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <a class="code" href="classINTELLI_1_1HandShakeWS.html">HandShakeWS</a>(<span class="comment">/* args */</span>) {</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    reset();</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  }</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  ~<a class="code" href="classINTELLI_1_1HandShakeWS.html">HandShakeWS</a>() {</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160; </div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  }</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <span class="comment">//init with length of queue</span></div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  <a class="code" href="classINTELLI_1_1HandShakeWS.html">HandShakeWS</a>(<span class="keywordtype">size_t</span> sLen, <span class="keywordtype">size_t</span> rLen) : <a class="code" href="classINTELLI_1_1AbstractWS.html">AbstractWS</a>(sLen, rLen) {</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160; </div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  }</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160; </div>
+<div class="line"><a name="l00060"></a><span class="lineno"><a class="line" href="classINTELLI_1_1HandShakeWS.html#a38323fd26cc8ee7b12abe311a09aaf78">   60</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classINTELLI_1_1HandShakeWS.html#a38323fd26cc8ee7b12abe311a09aaf78">initJoinProcessors</a>();</div>
+<div class="line"><a name="l00064"></a><span class="lineno"><a class="line" href="classINTELLI_1_1HandShakeWS.html#a35d84e2f6b53f2568720bab21e4d4118">   64</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classINTELLI_1_1HandShakeWS.html#a35d84e2f6b53f2568720bab21e4d4118">terminateJoinProcessors</a>();</div>
+<div class="line"><a name="l00065"></a><span class="lineno"><a class="line" href="classINTELLI_1_1HandShakeWS.html#a760365d54e8daf88652ff95c4e333815">   65</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classINTELLI_1_1HandShakeWS.html#a760365d54e8daf88652ff95c4e333815">waitAckFromJoinProcessors</a>();</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <span class="comment">//get the join result</span></div>
+<div class="line"><a name="l00073"></a><span class="lineno"><a class="line" href="classINTELLI_1_1HandShakeWS.html#aa946f8a8d38ac33855744693a24aebf6">   73</a></span>&#160;<span class="comment"></span>  <span class="keywordtype">size_t</span> <a class="code" href="classINTELLI_1_1HandShakeWS.html#aa946f8a8d38ac33855744693a24aebf6">getJoinResult</a>();</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  <span class="comment">//input</span></div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="comment">//note: S-&gt;, R&lt;-</span></div>
+<div class="line"><a name="l00081"></a><span class="lineno"><a class="line" href="classINTELLI_1_1HandShakeWS.html#ad80be5aa159752f6ae66617bab8fb255">   81</a></span>&#160;<span class="comment"></span>  <span class="keywordtype">void</span> <a class="code" href="classINTELLI_1_1HandShakeWS.html#ad80be5aa159752f6ae66617bab8fb255">feedTupleS</a>(<a class="code" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> ts);</div>
+<div class="line"><a name="l00087"></a><span class="lineno"><a class="line" href="classINTELLI_1_1HandShakeWS.html#a56f1d0664871f753b8028e94c3e0bee3">   87</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classINTELLI_1_1HandShakeWS.html#a56f1d0664871f753b8028e94c3e0bee3">feedTupleR</a>(<a class="code" href="group__INTELLI__COMMON__BASIC.html#gaae6cb4c36125ed9faed4c1d55c85eef3">TuplePtr</a> tr);</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;};</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160; </div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;}</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="preprocessor">#endif </span><span class="comment">//HYBRID_JOIN_INCLUDE_WINDOWSLIDER_HANDSHAKEWS_H_</span></div>
 <div class="ttc" id="aAbstractEagerWS_8h_html"><div class="ttname"><a href="AbstractEagerWS_8h.html">AbstractEagerWS.h</a></div></div>
 <div class="ttc" id="aTypes_8h_html"><div class="ttname"><a href="Types_8h.html">Types.h</a></div></div>
-<div class="ttc" id="aclassINTELLI_1_1AbstractEagerWS_html"><div class="ttname"><a href="classINTELLI_1_1AbstractEagerWS.html">INTELLI::AbstractEagerWS</a></div><div class="ttdoc">An abstraction of eager window slider (i.e., the CellJoin), also inherited by other eager window slid...</div><div class="ttdef"><b>Definition:</b> AbstractEagerWS.h:50</div></div>
-<div class="ttc" id="aclassINTELLI_1_1HandShakeWS_html"><div class="ttname"><a href="classINTELLI_1_1HandShakeWS.html">INTELLI::HandShakeWS</a></div><div class="ttdoc">The window slider especially for handshake join.</div><div class="ttdef"><b>Definition:</b> HandShakeWS.h:29</div></div>
+<div class="ttc" id="aclassINTELLI_1_1AbstractWS_html"><div class="ttname"><a href="classINTELLI_1_1AbstractWS.html">INTELLI::AbstractWS</a></div><div class="ttdoc">An abstraction of window slider, also inherited by both eager and lazy.</div><div class="ttdef"><b>Definition:</b> AbstractWS.h:41</div></div>
+<div class="ttc" id="aclassINTELLI_1_1HandShakeWS_html"><div class="ttname"><a href="classINTELLI_1_1HandShakeWS.html">INTELLI::HandShakeWS</a></div><div class="ttdoc">The eager window slider of handshake join.</div><div class="ttdef"><b>Definition:</b> HandShakeWS.h:37</div></div>
 <div class="ttc" id="aclassINTELLI_1_1HandShakeWS_html_a35d84e2f6b53f2568720bab21e4d4118"><div class="ttname"><a href="classINTELLI_1_1HandShakeWS.html#a35d84e2f6b53f2568720bab21e4d4118">INTELLI::HandShakeWS::terminateJoinProcessors</a></div><div class="ttdeci">void terminateJoinProcessors()</div><div class="ttdoc">to terminate the join processors</div></div>
 <div class="ttc" id="aclassINTELLI_1_1HandShakeWS_html_a38323fd26cc8ee7b12abe311a09aaf78"><div class="ttname"><a href="classINTELLI_1_1HandShakeWS.html#a38323fd26cc8ee7b12abe311a09aaf78">INTELLI::HandShakeWS::initJoinProcessors</a></div><div class="ttdeci">void initJoinProcessors()</div><div class="ttdoc">to init the initJoinProcessors</div></div>
 <div class="ttc" id="aclassINTELLI_1_1HandShakeWS_html_a56f1d0664871f753b8028e94c3e0bee3"><div class="ttname"><a href="classINTELLI_1_1HandShakeWS.html#a56f1d0664871f753b8028e94c3e0bee3">INTELLI::HandShakeWS::feedTupleR</a></div><div class="ttdeci">void feedTupleR(TuplePtr tr)</div><div class="ttdoc">to feed a tuple R</div></div>
@@ -165,7 +165,7 @@ $(document).ready(function(){initNavTree('HandShakeWS_8h_source.html',''); initR
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_34445532ae09f585cee27beb5e8a4d84.html">WindowSlider</a></li><li class="navelem"><b>HandShakeWS.h</b></li>
+    <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_34445532ae09f585cee27beb5e8a4d84.html">WindowSlider</a></li><li class="navelem"><a class="el" href="HandShakeWS_8h.html">HandShakeWS.h</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>

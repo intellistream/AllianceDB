@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['splitjoinjp_2eh_304',['SplitJoinJP.h',['../SplitJoinJP_8h.html',1,'']]],
-  ['splitjoinws_2eh_305',['SplitJoinWS.h',['../SplitJoinWS_8h.html',1,'']]]
+  ['nestedloopjoin_2eh_317',['NestedLoopJoin.h',['../NestedLoopJoin_8h.html',1,'']]],
+  ['npj_2eh_318',['NPJ.h',['../NPJ_8h.html',1,'']]]
 ];

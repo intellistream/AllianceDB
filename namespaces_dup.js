@@ -38,7 +38,6 @@ var namespaces_dup =
       [ "swap", "concurrentqueue_8h.html#a78277ebe26a395c75c17c9a5f495c5f1", null ]
     ] ],
     [ "std", null, [
-      [ "DupicatedHashTable", "classstd_1_1DupicatedHashTable.html", "classstd_1_1DupicatedHashTable" ],
       [ "SafeQueue", "classstd_1_1SafeQueue.html", "classstd_1_1SafeQueue" ],
       [ "BarrierPtr", "SafeQueue_8hpp.html#a643167e68cfcf8ea5433a36affadcbe6", null ],
       [ "SafeQueuePtr", "SafeQueue_8hpp.html#a9fea06630ac9198b775d2dee139dbf68", null ]

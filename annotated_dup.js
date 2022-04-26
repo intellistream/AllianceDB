@@ -19,10 +19,12 @@ var annotated_dup =
       [ "AbstractJP", "classINTELLI_1_1AbstractJP.html", "classINTELLI_1_1AbstractJP" ],
       [ "AbstractLazyJP", "classINTELLI_1_1AbstractLazyJP.html", "classINTELLI_1_1AbstractLazyJP" ],
       [ "CellJoinJP", "classINTELLI_1_1CellJoinJP.html", "classINTELLI_1_1CellJoinJP" ],
-      [ "HandShakeHashJP", "classINTELLI_1_1HandShakeHashJP.html", "classINTELLI_1_1HandShakeHashJP" ],
+      [ "HandShakeJP", "classINTELLI_1_1HandShakeJP.html", "classINTELLI_1_1HandShakeJP" ],
+      [ "SplitJoinIRJP", "classINTELLI_1_1SplitJoinIRJP.html", "classINTELLI_1_1SplitJoinIRJP" ],
       [ "SplitJoinJP", "classINTELLI_1_1SplitJoinJP.html", "classINTELLI_1_1SplitJoinJP" ],
       [ "AbstractC20Thread", "classINTELLI_1_1AbstractC20Thread.html", "classINTELLI_1_1AbstractC20Thread" ],
       [ "C20Buffer", "classINTELLI_1_1C20Buffer.html", "classINTELLI_1_1C20Buffer" ],
+      [ "DupicatedHashTable", "classINTELLI_1_1DupicatedHashTable.html", "classINTELLI_1_1DupicatedHashTable" ],
       [ "MicroDataSet", "classINTELLI_1_1MicroDataSet.html", "classINTELLI_1_1MicroDataSet" ],
       [ "SPSCQueue", "classINTELLI_1_1SPSCQueue.html", "classINTELLI_1_1SPSCQueue" ],
       [ "PerfEntry", "classINTELLI_1_1PerfEntry.html", "classINTELLI_1_1PerfEntry" ],
@@ -34,6 +36,7 @@ var annotated_dup =
       [ "AbstractLazyWS", "classINTELLI_1_1AbstractLazyWS.html", "classINTELLI_1_1AbstractLazyWS" ],
       [ "AbstractWS", "classINTELLI_1_1AbstractWS.html", "classINTELLI_1_1AbstractWS" ],
       [ "HandShakeWS", "classINTELLI_1_1HandShakeWS.html", "classINTELLI_1_1HandShakeWS" ],
+      [ "SplitJoinIRWS", "classINTELLI_1_1SplitJoinIRWS.html", "classINTELLI_1_1SplitJoinIRWS" ],
       [ "SplitJoinWS", "classINTELLI_1_1SplitJoinWS.html", "classINTELLI_1_1SplitJoinWS" ],
       [ "VerifyWS", "classINTELLI_1_1VerifyWS.html", "classINTELLI_1_1VerifyWS" ],
       [ "AbstractJoinMethod", "classINTELLI_1_1AbstractJoinMethod.html", null ],
@@ -71,7 +74,6 @@ var annotated_dup =
       [ "ConsumerToken", "structmoodycamel_1_1ConsumerToken.html", "structmoodycamel_1_1ConsumerToken" ]
     ] ],
     [ "std", null, [
-      [ "DupicatedHashTable", "classstd_1_1DupicatedHashTable.html", "classstd_1_1DupicatedHashTable" ],
       [ "SafeQueue", "classstd_1_1SafeQueue.html", "classstd_1_1SafeQueue" ]
     ] ],
     [ "_hash_32_or_64<(size > 4)>", "class__hash__32__or__64_3_07size_01_4_014_08_4.html", null ]

@@ -1,18 +1,20 @@
 <map id="include/Utils/AbstractC20Thread.h" name="include/Utils/AbstractC20Thread.h">
-<area shape="rect" id="node1" title=" " alt="" coords="319,5,505,47"/>
-<area shape="rect" id="node2" href="$NPJ_8h.html" title=" " alt="" coords="93,102,257,129"/>
-<area shape="rect" id="node5" href="$AbstractJP_8h_source.html" title=" " alt="" coords="332,95,492,136"/>
+<area shape="rect" id="node1" title=" " alt="" coords="545,5,732,47"/>
+<area shape="rect" id="node2" href="$NPJ_8h.html" title=" " alt="" coords="311,102,475,129"/>
+<area shape="rect" id="node5" href="$AbstractJP_8h_source.html" title=" " alt="" coords="500,95,660,136"/>
 <area shape="rect" id="node10" href="$AbstractEagerWS_8h.html" title=" " alt="" coords="192,273,355,315"/>
 <area shape="rect" id="node14" href="$VerifyWS_8h.html" title=" " alt="" coords="563,273,725,315"/>
-<area shape="rect" id="node16" href="$SplitJoinWS_8h.html" title=" " alt="" coords="749,273,912,315"/>
-<area shape="rect" id="node3" href="$AbstractLazyJP_8h.html" title=" " alt="" coords="95,184,255,225"/>
+<area shape="rect" id="node17" href="$SplitJoinIRWS_8h_source.html" title=" " alt="" coords="933,363,1096,404"/>
+<area shape="rect" id="node18" href="$SplitJoinWS_8h.html" title=" " alt="" coords="933,273,1096,315"/>
+<area shape="rect" id="node3" href="$AbstractLazyJP_8h.html" title=" " alt="" coords="313,184,473,225"/>
 <area shape="rect" id="node4" href="$AbstractLazyWS_8h.html" title=" " alt="" coords="5,273,168,315"/>
-<area shape="rect" id="node6" href="$CellJoinJP_8h.html" title=" " alt="" coords="332,184,492,225"/>
-<area shape="rect" id="node15" href="$SplitJoinJP_8h.html" title=" " alt="" coords="516,184,676,225"/>
-<area shape="rect" id="node7" href="$HandShakeHashJP_8h_source.html" title=" " alt="" coords="379,273,539,315"/>
-<area shape="rect" id="node8" href="$HandShakeWS_8h_source.html" title=" " alt="" coords="361,363,524,404"/>
-<area shape="rect" id="node9" href="$HandShakeJoin_8h_source.html" title=" " alt="" coords="304,452,520,493"/>
-<area shape="rect" id="node11" href="$VerifyBench_8h_source.html" title=" " alt="" coords="549,370,774,397"/>
-<area shape="rect" id="node12" href="$AbstractJoinMethod_8h_source.html" title=" " alt="" coords="121,363,337,404"/>
-<area shape="rect" id="node13" href="$CellJoin_8h_source.html" title=" " alt="" coords="35,452,251,493"/>
+<area shape="rect" id="node6" href="$CellJoinJP_8h.html" title=" " alt="" coords="499,184,659,225"/>
+<area shape="rect" id="node15" href="$SplitJoinJP_8h.html" title=" " alt="" coords="749,184,909,225"/>
+<area shape="rect" id="node7" href="$HandShakeJP_8h_source.html" title=" " alt="" coords="379,273,539,315"/>
+<area shape="rect" id="node8" href="$HandShakeWS_8h.html" title=" " alt="" coords="360,363,523,404"/>
+<area shape="rect" id="node9" href="$HandShakeJoin_8h_source.html" title=" " alt="" coords="303,452,519,493"/>
+<area shape="rect" id="node11" href="$VerifyBench_8h_source.html" title=" " alt="" coords="547,370,773,397"/>
+<area shape="rect" id="node12" href="$AbstractJoinMethod_8h_source.html" title=" " alt="" coords="120,363,336,404"/>
+<area shape="rect" id="node13" href="$CellJoin_8h_source.html" title=" " alt="" coords="33,452,249,493"/>
+<area shape="rect" id="node16" href="$SplitJoinIRJP_8h.html" title=" " alt="" coords="749,273,909,315"/>
 </map>

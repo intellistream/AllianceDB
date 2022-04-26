@@ -4,7 +4,6 @@ var classINTELLI_1_1SplitJoinJP =
     [ "~SplitJoinJP", "classINTELLI_1_1SplitJoinJP.html#a7fed00dbd34a886b947186a3b85cc4c4", null ],
     [ "expireR", "classINTELLI_1_1SplitJoinJP.html#a76e54fd6eff7484d4f109fb50af555c8", null ],
     [ "expireS", "classINTELLI_1_1SplitJoinJP.html#a4478b64aa2e3609437751118f9494afb", null ],
-    [ "feedTupleS", "classINTELLI_1_1SplitJoinJP.html#a795c1d80e9d738cd73c8ac6fd2dc1d8a", null ],
     [ "init", "classINTELLI_1_1SplitJoinJP.html#a014200114b368ca6913d52b2f964cd21", null ],
     [ "inlineMain", "classINTELLI_1_1SplitJoinJP.html#a0c820615b82047e62cee94afe227e514", null ],
     [ "joinR", "classINTELLI_1_1SplitJoinJP.html#a5db79c26513254e5b2f4fccfb9a47c72", null ],
@@ -13,7 +12,5 @@ var classINTELLI_1_1SplitJoinJP =
     [ "sCnt", "classINTELLI_1_1SplitJoinJP.html#abce39a387739c6e63e21c5ba3a37905f", null ],
     [ "sMax", "classINTELLI_1_1SplitJoinJP.html#a5c2f71d4aba437540dfcb6921ad388b5", null ],
     [ "TuplePtrQueueLocalR", "classINTELLI_1_1SplitJoinJP.html#a86fc4371d46198ed4e469428f757c43e", null ],
-    [ "TuplePtrQueueLocalS", "classINTELLI_1_1SplitJoinJP.html#a3deafdb4d456467cf4d07d2e713be873", null ],
-    [ "windowR", "classINTELLI_1_1SplitJoinJP.html#a88b375d06cd45d1a98aa5434ac7d4547", null ],
-    [ "windowS", "classINTELLI_1_1SplitJoinJP.html#ac04b1e8d44d9e0602570a3055652de85", null ]
+    [ "TuplePtrQueueLocalS", "classINTELLI_1_1SplitJoinJP.html#a3deafdb4d456467cf4d07d2e713be873", null ]
 ];

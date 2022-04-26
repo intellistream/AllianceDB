@@ -12,7 +12,7 @@ var searchData=
   ['abstractjp_12',['AbstractJP',['../classINTELLI_1_1AbstractJP.html',1,'INTELLI']]],
   ['abstractlazyjp_13',['AbstractLazyJP',['../classINTELLI_1_1AbstractLazyJP.html',1,'INTELLI']]],
   ['abstractlazyjp_2eh_14',['AbstractLazyJP.h',['../AbstractLazyJP_8h.html',1,'']]],
-  ['abstractlazyws_15',['AbstractLazyWS',['../group__WINDOWSLIDER__LAZY.html#ga2b9652863a8d58a307fe91e5dcc4978d',1,'INTELLI::AbstractLazyWS::AbstractLazyWS()'],['../classINTELLI_1_1AbstractLazyWS.html',1,'INTELLI::AbstractLazyWS']]],
+  ['abstractlazyws_15',['AbstractLazyWS',['../classINTELLI_1_1AbstractLazyWS.html#a2b9652863a8d58a307fe91e5dcc4978d',1,'INTELLI::AbstractLazyWS::AbstractLazyWS()'],['../classINTELLI_1_1AbstractLazyWS.html',1,'INTELLI::AbstractLazyWS']]],
   ['abstractlazyws_2eh_16',['AbstractLazyWS.h',['../AbstractLazyWS_8h.html',1,'']]],
   ['abstractws_17',['AbstractWS',['../classINTELLI_1_1AbstractWS.html#a16c6ca0db4d47af3a57721134a6e8f9d',1,'INTELLI::AbstractWS::AbstractWS()'],['../classINTELLI_1_1AbstractWS.html',1,'INTELLI::AbstractWS']]],
   ['abstractws_2eh_18',['AbstractWS.h',['../AbstractWS_8h.html',1,'']]],

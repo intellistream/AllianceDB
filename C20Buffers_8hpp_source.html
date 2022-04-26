@@ -156,15 +156,14 @@ $(document).ready(function(){initNavTree('C20Buffers_8hpp_source.html',''); init
 <div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    pos++;</div>
 <div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    <span class="keywordflow">return</span> pos;</div>
 <div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  }</div>
-<div class="line"><a name="l00117"></a><span class="lineno"><a class="line" href="classINTELLI_1_1C20Buffer.html#a29d6f38ed0163cbded23ed74ba9dc606">  117</a></span>&#160;  <span class="keywordtype">size_t</span> <a class="code" href="classINTELLI_1_1C20Buffer.html#a29d6f38ed0163cbded23ed74ba9dc606">append</a>(dataType *da,<span class="keywordtype">size_t</span> len)</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;  {</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;    ADB_memcpy(&amp;area[pos],da,len*<span class="keyword">sizeof</span>(dataType));</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;    pos+=len;</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;    <span class="keywordflow">return</span> pos;</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;  }</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;};</div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;}</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;<span class="preprocessor">#endif </span><span class="comment">//ALIANCEDB_INCLUDE_UTILS_C20BUFFERS_HPP_</span></div>
+<div class="line"><a name="l00117"></a><span class="lineno"><a class="line" href="classINTELLI_1_1C20Buffer.html#a29d6f38ed0163cbded23ed74ba9dc606">  117</a></span>&#160;  <span class="keywordtype">size_t</span> <a class="code" href="classINTELLI_1_1C20Buffer.html#a29d6f38ed0163cbded23ed74ba9dc606">append</a>(dataType *da, <span class="keywordtype">size_t</span> len) {</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;    ADB_memcpy(&amp;area[pos], da, len * <span class="keyword">sizeof</span>(dataType));</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;    pos += len;</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;    <span class="keywordflow">return</span> pos;</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;  }</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;};</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;}</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;<span class="preprocessor">#endif </span><span class="comment">//ALIANCEDB_INCLUDE_UTILS_C20BUFFERS_HPP_</span></div>
 <div class="ttc" id="aclassINTELLI_1_1C20Buffer_html"><div class="ttname"><a href="classINTELLI_1_1C20Buffer.html">INTELLI::C20Buffer</a></div><div class="ttdef"><b>Definition:</b> C20Buffers.hpp:33</div></div>
 <div class="ttc" id="aclassINTELLI_1_1C20Buffer_html_a15222895fb78fcbefc619dfac9eb5118"><div class="ttname"><a href="classINTELLI_1_1C20Buffer.html#a15222895fb78fcbefc619dfac9eb5118">INTELLI::C20Buffer::bufferSize</a></div><div class="ttdeci">size_t bufferSize()</div><div class="ttdoc">To get how many elements are allowed in the buffer.</div><div class="ttdef"><b>Definition:</b> C20Buffers.hpp:61</div></div>
 <div class="ttc" id="aclassINTELLI_1_1C20Buffer_html_a29d6f38ed0163cbded23ed74ba9dc606"><div class="ttname"><a href="classINTELLI_1_1C20Buffer.html#a29d6f38ed0163cbded23ed74ba9dc606">INTELLI::C20Buffer::append</a></div><div class="ttdeci">size_t append(dataType *da, size_t len)</div><div class="ttdoc">Append the data to the buffer.</div><div class="ttdef"><b>Definition:</b> C20Buffers.hpp:117</div></div>

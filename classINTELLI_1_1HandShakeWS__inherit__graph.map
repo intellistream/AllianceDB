@@ -1,6 +1,4 @@
 <map id="INTELLI::HandShakeWS" name="INTELLI::HandShakeWS">
-<area shape="rect" id="node1" title="The window slider especially for handshake join." alt="" coords="97,155,269,181"/>
-<area shape="rect" id="node2" href="$classINTELLI_1_1AbstractEagerWS.html" title="An abstraction of eager window slider (i.e., the CellJoin), also inherited by other eager window slid..." alt="" coords="88,80,279,107"/>
-<area shape="rect" id="node3" href="$classINTELLI_1_1AbstractWS.html" title="An abstraction of window slider, also inherited by both eager and lazy." alt="" coords="5,5,159,32"/>
-<area shape="rect" id="node4" href="$classINTELLI_1_1AbstractC20Thread.html" title="The base class and abstraction of C++20 thread, and it can be derived into other threads." alt="" coords="183,5,386,32"/>
+<area shape="rect" id="node1" title="The eager window slider of handshake join." alt="" coords="5,80,177,107"/>
+<area shape="rect" id="node2" href="$classINTELLI_1_1AbstractWS.html" title="An abstraction of window slider, also inherited by both eager and lazy." alt="" coords="15,5,168,32"/>
 </map>
