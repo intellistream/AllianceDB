@@ -4,14 +4,13 @@
 #include <Common/Tuple.hpp>
 
 namespace INTELLI {
-typedef std::shared_ptr<class RelationCouple> RelationCouplePtr;
+typedef std::shared_ptr<class Relations> RelationsPtr;
 
-class RelationCouple {
+class Relations {
  public:
-  TuplePtrQueueIn relationS;
-  TuplePtrQueueIn relationR;
-  RelationCouple();
-  ~RelationCouple();
+  Relation relationS;
+  Relation relationR;
+  static std::shared_ptr<Relations> create();
 };
 }
 

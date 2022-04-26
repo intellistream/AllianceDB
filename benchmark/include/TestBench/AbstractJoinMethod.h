@@ -5,14 +5,14 @@
 #include <Common/Types.hpp>
 #include <Common/Result.hpp>
 #include <Common/Tuple.hpp>
-#include <Common/RelationCouple.hpp>
+#include <Common/Relations.hpp>
 #include <WindowSlider/AbstractEagerWS.h>
 using namespace INTELLI;
 namespace INTELLI {
 template<class wsType=AbstractEagerWS>
 class AbstractJoinMethod {
  public:
-  static void test(Result &joinResult, RelationCouple &relationCouple) {
+  static void test(Result &joinResult, Relations &relationCouple) {
     //wsType windowSlider;
     size_t sLen = relationCouple.relationS.size();
     size_t rLen = relationCouple.relationR.size();

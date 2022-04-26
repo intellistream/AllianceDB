@@ -15,16 +15,13 @@
 
 namespace INTELLI {
 typedef std::shared_ptr<class Tuple> TuplePtr;
-//Array Pointers
 typedef std::vector<TuplePtr> WindowOfTuples;
-
 /**
- * @typedef TuplePtrQueueIn
- * @brief To describe a local queue of TuplePtr
+ * @typedef Relation
+ * @brief A vector of TuplePtr
  * @warning This is not thread-safe, only used for local data
  */
-typedef std::queue<TuplePtr> TuplePtrQueueIn;
-typedef moodycamel::ConcurrentQueue<TuplePtr> concurrentTupleQueue;
+typedef std::vector<TuplePtr> Relation;
 /**
  *  @typedef TuplePtrQueue
  * @brief To describe a queue of @ref TuplePtr under SPSCQueue
@@ -32,7 +29,6 @@ typedef moodycamel::ConcurrentQueue<TuplePtr> concurrentTupleQueue;
  * @warning Must be inited by @ref newTuplePtrQueue before use
  */
 typedef std::shared_ptr<INTELLI::SPSCQueue<INTELLI::TuplePtr>> TuplePtrQueue;
-typedef std::shared_ptr<std::queue<INTELLI::TuplePtr>> TupleQueueSelfPtr;
 typedef std::shared_ptr<INTELLI::SPSCQueue<vector<INTELLI::TuplePtr>>> WindowQueue;
 
 /**

@@ -24,7 +24,7 @@ void DatasetTool::store3VText(TuplePtrQueue &relation, const std::string &fileNa
   }
   file.close();
 }
-void DatasetTool::load3VText(TuplePtrQueueIn &relation, const std::string &fileName) {
+void DatasetTool::load3VText(Relation &relation, const std::string &fileName) {
   std::fstream file;
   std::string buffer;
   file.open(fileName, std::ios::in);
@@ -62,7 +62,7 @@ void DatasetTool::load3VText(TuplePtrQueue &relation, const std::string &fileNam
   }
   file.close();
 }
-void DatasetTool::combine3VVector(TuplePtrQueueIn &relation,
+void DatasetTool::combine3VVector(Relation &relation,
                                   vector<keyType> vk,
                                   vector<valueType> vv,
                                   vector<size_t> vs) {

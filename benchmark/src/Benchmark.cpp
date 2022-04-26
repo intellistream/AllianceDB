@@ -20,7 +20,8 @@ using namespace INTELLI;
 int main() {
   //Setup Logs
   setupLogging("benchmark.log", LOG_DEBUG);
-  RelationCouple relationCouple = RelationCouple();
+  //Load Inputs
+  auto relations = Relations::create();
   string pwd = getcwd(NULL, 0); //Get current directory
   string fileRName = pwd + "/datasets/" + DATASET_NAME + "-R.txt";
   string fileSName = pwd + "/datasets/" + DATASET_NAME + "-S.txt";
@@ -44,6 +45,4 @@ int main() {
         + to_string(exeResult.joinNumber) << endl;
     return false;
   }
-
-  return 0;
 }

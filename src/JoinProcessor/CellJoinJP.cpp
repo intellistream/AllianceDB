@@ -13,7 +13,7 @@ void INTELLI::CellJoinJP::inlineMain() {
   //wait for new cmd
   //cout<<"join processor "<<sysId<<" start"<<endl;
   while (1) {
-    /*while (cmdQueueIn->empty()&&TuplePtrQueueIn->empty()&&TuplePtrQueueInR->) {
+    /*while (cmdQueueIn->empty()&&Relation->empty()&&TuplePtrQueueInR->) {
 
     }*/
     //cmd
