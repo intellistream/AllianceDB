@@ -1,9 +1,5 @@
-//
-// Created by tony on 18/03/22.
-//
-
 #include <JoinProcessor/SplitJoinJP.h>
-#include "Tuple.hpp"
+#include <Common/Tuple.hpp>
 using namespace INTELLI;
 void SplitJoinJP::joinS(TuplePtr ts) {
   size_t timeNow = ts->subKey;

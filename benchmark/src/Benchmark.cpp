@@ -33,12 +33,12 @@ int main() {
 
   auto exeResult = Result::create();
   Executor<AbstractLazyWS> executor;
-  executor.Run(exeResult, relations, 2, 500, 200);
-
+//  executor.Run(exeResult, relations, 2, 500, 200);
+  executor.Run(exeResult, relations);
   auto verifyResult = Result::create();
   Verifier verifier;
-  verifier.Run(verifyResult, relations, 1, 500, 200);
-
+//  verifier.Run(verifyResult, relations, 1, 500, 200);
+  verifier.Run(verifyResult, relations);
   if (exeResult->joinNumber == verifyResult->joinNumber) {
     cout << "Congratulations, the result " + to_string(exeResult->joinNumber) + " is correct!" << endl;
     return true;

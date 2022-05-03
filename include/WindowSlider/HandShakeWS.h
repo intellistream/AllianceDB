@@ -13,7 +13,7 @@
 #include <numeric>
 #include <JoinProcessor/HandShakeJP.h>
 #include <WindowSlider/AbstractEagerWS.h>
-#include "Tuple.hpp"
+#include <Common/Tuple.hpp>
 
 using namespace INTELLI;
 using namespace std;

@@ -1,15 +1,11 @@
 /*! \file AbstractLazyJP.h*/
 
-//
-// Created by tony on 11/03/22.
-//
-
 #ifndef _JOINPROCESSOR_ABSTRACTLAZYJP_H_
 #define _JOINPROCESSOR_ABSTRACTLAZYJP_H_
 #include <JoinProcessor/AbstractJP.h>
 #include <JoinAlgo/JoinAlgoTable.h>
 #include <JoinAlgo/NPJ.h>
-#include "Tuple.hpp"
+#include <Common/Tuple.hpp>
 
 namespace INTELLI {
 class AbstractLazyJP;

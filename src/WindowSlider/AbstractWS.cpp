@@ -1,9 +1,5 @@
-//
-// Created by tony on 10/03/22.
-//
-
 #include <WindowSlider/AbstractWS.h>
-#include "Tuple.hpp"
+#include <Common/Tuple.hpp>
 using namespace INTELLI;
 AbstractWS::AbstractWS(size_t _sLen, size_t _rLen) {
   sLen = _sLen;

@@ -1,9 +1,5 @@
-//
-// Created by tony on 18/03/22.
-//
-
 #include <WindowSlider/VerifyWS.h>
-#include "Tuple.hpp"
+#include <Common/Tuple.hpp>
 using namespace INTELLI;
 VerifyWS::VerifyWS(size_t sLen, size_t rLen) : AbstractWS(sLen, rLen) {
   TuplePtrQueueLocalS = newTuplePtrQueue(sLen);

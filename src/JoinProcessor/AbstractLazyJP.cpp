@@ -1,12 +1,8 @@
-//
-// Created by tony on 11/03/22.
-//
-
 #include <JoinProcessor/AbstractLazyJP.h>
 #include <JoinAlgo/NPJ.h>
 using namespace INTELLI;
 #include <string.h>
-#include "Tuple.hpp"
+#include <Common/Tuple.hpp>
 
 bool AbstractLazyJP::largerThanMe(size_t timeDivSys) {
   if (timeDivSys >= tsEnd) {

@@ -2,7 +2,8 @@
 // Created by tony on 28/02/22.
 //
 #include <WindowSlider/HandShakeWS.h>
-#include "Tuple.hpp"
+#include <Common/Tuple.hpp>
+
 using namespace INTELLI;
 using namespace std;
 void HandShakeWS::initJoinProcessors() {

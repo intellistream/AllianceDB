@@ -3,7 +3,7 @@
 //
 
 #include <WindowSlider/AbstractLazyWS.h>
-#include "Tuple.hpp"
+#include <Common/Tuple.hpp>
 using namespace INTELLI;
 void AbstractLazyWS::initJoinProcessors() {
   windowCnt = windowLen / slideLen + 1;

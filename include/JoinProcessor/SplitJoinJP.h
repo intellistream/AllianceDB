@@ -1,8 +1,4 @@
 /*! \file SplitJoinJP.h*/
-//
-// Created by tony on 18/03/22.
-//
-
 #ifndef _JOINPROCESSOR_SPLITJOINJP_H_
 #define _JOINPROCESSOR_SPLITJOINJP_H_
 #include <thread>
@@ -11,7 +7,7 @@
 #include <barrier>
 
 #include <JoinProcessor/AbstractJP.h>
-#include "Tuple.hpp"
+#include <Common/Tuple.hpp>
 using namespace INTELLI;
 using namespace std;
 namespace INTELLI {

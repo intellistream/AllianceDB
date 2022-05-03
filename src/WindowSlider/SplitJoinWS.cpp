@@ -1,9 +1,5 @@
-//
-// Created by tony on 18/03/22.
-//
-
 #include <WindowSlider/SplitJoinWS.h>
-#include "Tuple.hpp"
+#include <Common/Tuple.hpp>
 SplitJoinWS::SplitJoinWS(size_t sLen, size_t rLen) : AbstractWS(sLen, rLen) {
   reset();
   nameTag = "SplitJoin";

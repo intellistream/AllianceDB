@@ -1,9 +1,5 @@
-//
-// Created by tony on 2022/2/8.
-//
-
 #include <JoinProcessor/CellJoinJP.h>
-#include "Tuple.hpp"
+#include <Common/Tuple.hpp>
 
 using namespace INTELLI;
 using namespace std;
