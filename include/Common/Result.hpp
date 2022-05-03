@@ -3,6 +3,7 @@
 
 #include <Common/Types.hpp>
 namespace INTELLI {
+typedef std::shared_ptr<class Result> ResultPtr;
 class Result {
  public:
   int joinNumber;
@@ -11,9 +12,10 @@ class Result {
   basic_string<char> dataSetName;
   double timeTaken;
   struct timeval timeBegin;
-  explicit Result();
+  Result();
   Result operator++(int);
   void statPrinter();
+  static std::shared_ptr<INTELLI::Result> create();
 };
 }
 #endif //ALIANCEDB_SRC_COMMON_TYPES_CPP_RESULT_HPP_

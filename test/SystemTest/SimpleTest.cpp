@@ -9,21 +9,24 @@
 using namespace std;
 using namespace std;
 using namespace INTELLI;
-#include <Engine/Verify.hpp>
+#include <Engine/Verifier.hpp>
 #include <Common/Result.hpp>
 
 TEST(SystemTest, SimpleTest
 ) {
-  setupLogging("benchmark.log", LOG_DEBUG);
-  INTELLI::Result joinResult = INTELLI::Result();
-  INTELLI::Relations relationCouple = INTELLI::Relations();
-  string pwd = getcwd(NULL, 0); //Get current directory
-  string fileRName = pwd + "/datasets/" + DATASET_NAME + "-R.txt";
-  string fileSName = pwd + "/datasets/" + DATASET_NAME + "-S.txt";
-  INTELLI::DatasetTool dataSet;
-  dataSet.load3VText(relationCouple.relationR, fileRName);
-  dataSet.load3VText(relationCouple.relationS, fileSName);
-  joinResult.streamSize = relationCouple.relationR.size();
-  Verify vb_lwj;
-  vb_lwj.Run(joinResult, relationCouple, 500, 500);
+//  setupLogging("benchmark.log", LOG_DEBUG);
+//  INTELLI::Result joinResult = INTELLI::Result();
+//  INTELLI::Relations relationCouple = INTELLI::Relations();
+//  string pwd = getcwd(NULL, 0); //Get current directory
+//  string fileRName = pwd + "/datasets/" + DATASET_NAME + "-R.txt";
+//  string fileSName = pwd + "/datasets/" + DATASET_NAME + "-S.txt";
+//  INTELLI::DatasetTool dataSet;
+//  dataSet.LoadData(relationCouple.relationR, fileRName);
+//  dataSet.LoadData(relationCouple.relationS, fileSName);
+////  joinResult.streamSize = relationCouple.relationR.size();
+//
+//  auto verifyResult = Result::create();
+//
+//  Verifier vb_lwj;
+//  vb_lwj.Run(verifyResult, relationCouple, 1, 500, 500);
 }

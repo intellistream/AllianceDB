@@ -16,12 +16,7 @@
 namespace INTELLI {
 typedef std::shared_ptr<class Tuple> TuplePtr;
 typedef std::vector<TuplePtr> WindowOfTuples;
-/**
- * @typedef Relation
- * @brief A vector of TuplePtr
- * @warning This is not thread-safe, only used for local data
- */
-typedef std::vector<TuplePtr> Relation;
+
 /**
  *  @typedef TuplePtrQueue
  * @brief To describe a queue of @ref TuplePtr under SPSCQueue

@@ -1,4 +1,4 @@
 add_sources(
-        Execute.cpp
-        Verify.cpp
+        Executor.cpp
+        Verifier.cpp
 )

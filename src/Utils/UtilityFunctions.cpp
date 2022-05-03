@@ -82,15 +82,15 @@ std::shared_ptr<std::barrier<>> INTELLI::UtilityFunctions::createBarrier(int cou
   return std::make_shared<std::barrier<>>(count);
 }
 
-void INTELLI::UtilityFunctions::timerStart(Result &result) {
+void INTELLI::UtilityFunctions::timerStart(shared_ptr<Result> result) {
   //result.timeTaken = clock();
-  gettimeofday(&result.timeBegin, NULL);
+  gettimeofday(&result->timeBegin, NULL);
 }
 
-void INTELLI::UtilityFunctions::timerEnd(Result &result) {
+void INTELLI::UtilityFunctions::timerEnd(shared_ptr<Result> result) {
   // double start = result.timeTaken;
-  result.timeTaken = timeLastUs(result.timeBegin);
-  result.timeTaken /= 1000.0;
+  result->timeTaken = timeLastUs(result->timeBegin);
+  result->timeTaken /= 1000.0;
 }
 
 void INTELLI::UtilityFunctions::printTest(char const *name, int context) {

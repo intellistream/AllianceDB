@@ -40,9 +40,9 @@ class UtilityFunctions {
 
   static std::shared_ptr<std::barrier<>> createBarrier(int count);
 
-  static void timerStart(Result &result);
+  static void timerStart(shared_ptr<Result> result);
 
-  static void timerEnd(Result &result);
+  static void timerEnd(shared_ptr<Result> result);
 
   static size_t timeLast(size_t past, size_t unitTime);
   static size_t timeLastUs(struct timeval past);

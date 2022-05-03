@@ -1,7 +1,3 @@
-//
-// Created by shuhao.zhang on 26/4/22.
-//
-
 #include <Common/Result.hpp>
 
 INTELLI::Result::Result() : joinNumber(0), streamSize(0), timeTaken(0) {}
@@ -29,4 +25,7 @@ void INTELLI::Result::statPrinter() {
     << setiosflags(std::ios::right) << std::setw(n2) << values[i] << std::endl;
   }
   std::cout << BAR << std::endl;
+}
+std::shared_ptr<INTELLI::Result> INTELLI::Result::create() {
+  return std::make_shared<INTELLI::Result>();
 }

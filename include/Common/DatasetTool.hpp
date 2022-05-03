@@ -3,6 +3,7 @@
 #define _COMMON_DATASETTOOL_H_
 #include <Common/Types.hpp>
 #include <Common/Tuple.hpp>
+#include <Common/Relations.hpp>
 
 namespace INTELLI {
 /**
@@ -25,45 +26,12 @@ class DatasetTool {
   ~DatasetTool() {}
 
   /**
- * @brief To store Relation to local text data
- * @param relationPtr The input TuplePtrQueue
- * @param fileName The name of txt file
- * @note The txt follows [key,value,subkey] format
- */
-  void store3VText(TuplePtrQueue &relationPtr, const std::string &fileName);
-  /**
    * @brief To load Relation from local text data
-   * @param relationPtr The output Relation to store loaded data
+   * @param relation The output Relation to store loaded data
    * @param fileName The name of txt file
    * @note make sure each line of the txt follows [key,value,subkey] format
    */
-  void load3VText(Relation &relationPtr, const std::string &fileName);
-  /**
-   * @brief To load Relation from local text data
-   * @param relationPtr The output TuplePtrQueue to store loaded data
-   * @param fileName The name of txt file
-   * @note make sure each line of the txt follows [key,value,subkey] format
-   */
-  void load3VText(TuplePtrQueue &relationPtr, const std::string &fileName);
-  /**
-   * @brief To load Relation by combining 3 stand-alone vectors of key, value,subkey
-   * @param relationPtr The output Relation to store loaded data
-   * @param vk Vector of key
-   * @param vv Vector of value
-   * @param vs vector of subkey
-   * @note make sure the vector have equal size
-   */
-  void combine3VVector(Relation &relationPtr, vector<keyType> vk, vector<valueType> vv, vector<size_t> vs);
-  /**
-   * @brief To load TuplePtrQueue by combining 3 stand-alone vectors of key, value,subkey
-   * @param relationPtr The output TuplePtrQueue to store loaded data
-   * @param vk Vector of key
-   * @param vv Vector of value
-   * @param vs vector of subkey
-   * @note make sure the vector have equal size
-   */
-  void combine3VVector(TuplePtrQueue &relationPtr, vector<keyType> vk, vector<valueType> vv, vector<size_t> vs);
-
+  void LoadData(Relation &relation, const std::string &fileName);
 };
 }
 #endif //ALIANCEDB_INCLUDE_COMMON_DATASETTOOL_H_

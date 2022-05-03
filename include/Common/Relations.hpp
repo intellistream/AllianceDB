@@ -5,12 +5,18 @@
 
 namespace INTELLI {
 typedef std::shared_ptr<class Relations> RelationsPtr;
+/**
+ * @typedef Relation
+ * @brief A vector of TuplePtr
+ * @warning This is not thread-safe, only used for local data
+ */
+typedef std::vector<TuplePtr> Relation;
 
 class Relations {
  public:
-  Relation relationS;
   Relation relationR;
-  static std::shared_ptr<Relations> create();
+  Relation relationS;
+  static RelationsPtr create();
 };
 }
 
