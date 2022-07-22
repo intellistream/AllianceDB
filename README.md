@@ -2,8 +2,6 @@
 
 The environment will be automatically configured and all of our experiments can be automatically reproduced by calling the following command with **root privileges**:
 
-Unfortuntly, we do not provide docker support, and the program may fail to run on WSL or virtual machines, preliminary due to the need of hardware counter profiling. 
-
 ```shell
 sudo bash run_all.sh -d /data1/xtra -c 19922944
 ```
@@ -26,6 +24,10 @@ sudo bash run_all.sh -d /data1/xtra -c 19922944
 4. You can run any subset of the experiment sections individually by modifying the `exp_section` in `run_all.sh`.
 
 5. To run with more than 8 threads, it needs to update the cpu-mapping in `cpu-mapping.txt`. 
+
+`Warning:`
+
+- Unfortuntly, we do not provide docker support, and the program may fail to run on WSL or virtual machines, preliminary due to the need of hardware counter profiling. 
 
 ## Third-party Lib
 
