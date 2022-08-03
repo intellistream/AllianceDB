@@ -3,7 +3,6 @@
 //
 
 #include <WindowSlider/AbstractWS.h>
-#include "Tuple.hpp"
 using namespace INTELLI;
 AbstractWS::AbstractWS(size_t _sLen, size_t _rLen) {
   sLen = _sLen;

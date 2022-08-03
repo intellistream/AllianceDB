@@ -8,11 +8,10 @@
 #include <Utils/UtilityFunctions.hpp>
 #include <Common/Types.hpp>
 #include <Common/DatasetTool.hpp>
-#include <Utils/MicroDataSet.hpp>
 #include <WindowSlider/AbstractLazyWS.h>
 #include <Engine/Verify.hpp>
 #include <Engine/Execute.hpp>
-#include <Common/Result.hpp>
+#include <filesystem>
 
 using namespace std;
 using namespace INTELLI;
@@ -21,7 +20,7 @@ int main() {
   //Setup Logs
   setupLogging("benchmark.log", LOG_DEBUG);
   RelationCouple relationCouple = RelationCouple();
-  string pwd = getcwd(NULL, 0); //Get current directory
+  string pwd = std::filesystem::current_path(); //Get current directory
   string fileRName = pwd + "/datasets/" + DATASET_NAME + "-R.txt";
   string fileSName = pwd + "/datasets/" + DATASET_NAME + "-S.txt";
   DatasetTool dataSet;

@@ -43,7 +43,7 @@ void Execute<wsType>::Run(Result &joinResult,
     }
     // cout<<"process tuple"<<cnt<<endl;
     cnt++;
-    usleep(TIME_STEP / 2);
+    std::this_thread::sleep_for(std::chrono::microseconds(TIME_STEP / 2));
   }
 
   cout << "end of tuple feeding" << endl;

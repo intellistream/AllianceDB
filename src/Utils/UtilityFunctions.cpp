@@ -101,12 +101,18 @@ int INTELLI::UtilityFunctions::bind2Core(int id) {
   {
     return -1;
   }
+#if __linux
   int maxCpu = std::thread::hardware_concurrency();
   int cpuId = id % maxCpu;
   cpu_set_t mask;
   CPU_ZERO(&mask);
   CPU_SET(cpuId, &mask);
   return cpuId;
+#elif defined(_WIN32) || defined(_WIN64)
+  return -1;
+//Do not support binding in windows yet.
+#endif
+  return -1;
 }
 
 vector<size_t> INTELLI::UtilityFunctions::avgPartitionSizeFinal(size_t inS, std::vector<size_t> partitionWeight) {

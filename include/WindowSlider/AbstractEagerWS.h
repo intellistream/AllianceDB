@@ -14,7 +14,7 @@
 #include <WindowSlider/AbstractWS.h>
 #include <JoinProcessor/CellJoinJP.h>
 #include <Utils/AbstractC20Thread.h>
-#include "Tuple.hpp"
+
 using namespace INTELLI;
 using namespace std;
 namespace INTELLI {

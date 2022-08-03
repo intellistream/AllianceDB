@@ -2,10 +2,8 @@
 //Copyright (C) 2022 by the IntelliStream team (https://github.com/intellistream)
 #ifndef UTILS_ThreadPerf_H
 #define UTILS_ThreadPerf_H
-//#include <Utils/Logger.hpp>
 #define PERF_ERROR(n) printf(n)
 
-//#include <Utils/UtilityFunctions.hpp
 #include <assert.h>
 #include <fcntl.h>
 #include <inttypes.h>
@@ -14,14 +12,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#if __linux
 #include <sys/syscall.h>
+#include <linux/perf_event.h>
+#elif defined(_WIN32) || defined(_WIN64)
+#include <windows.h>       // Or something like it.
+#endif
 #include <sys/types.h>
 #include <sys/ioctl.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
-#include <linux/perf_event.h>
 #include <signal.h>
 #include <string>
 #include <memory>

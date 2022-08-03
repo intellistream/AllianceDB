@@ -4,15 +4,6 @@
 #define INTELLI_INCLUDE_UTILS_LOGGER_HPP_
 // TRACE < DEBUG < INFO < WARN < ERROR < FATAL
 #include <iostream>
-#ifdef USELOG4CXX
-#include <log4cxx/consoleappender.h>
-#include <log4cxx/fileappender.h>
-#include <log4cxx/logger.h>
-#include <log4cxx/patternlayout.h>
-
-using namespace log4cxx;
-using namespace log4cxx::helpers;
-#endif
 
 enum DebugLevel { LOG_NONE, LOG_WARNING, LOG_DEBUG, LOG_INFO, LOG_TRACE };
 
@@ -47,9 +38,6 @@ static DebugLevel getStringAsDebugLevel(std::string level) {
     throw std::runtime_error("Logger: Debug level unknown: " + level);
   }
 }
-#ifdef USELOG4CXX
-static log4cxx::LoggerPtr INTELLILogger(log4cxx::Logger::getLogger("INTELLI"));
-#endif
 
 // TRACE < DEBUG < INFO < WARN < ERROR < FATAL
 #define LEVEL_TRACE 6
@@ -201,129 +189,9 @@ static log4cxx::LoggerPtr INTELLILogger(log4cxx::Logger::getLogger("INTELLI"));
 #define INTELLI_VERIFY(CONDITION, TEXT) ((void) 0)
 #endif
 
-#define INTELLI_ASSERT(CONDITION, TEXT)                                                                                              \
-    do {                                                                                                                         \
-        if (!(CONDITION)) {                                                                                                      \
-            INTELLI::collectAndPrintStacktrace();                                                                                    \
-            INTELLI_FATAL_ERROR(TEXT);                                                                                               \
-            throw std::runtime_error("INTELLI Runtime Error on condition " #CONDITION);                                              \
-        }                                                                                                                        \
-    } while (0)
-
-#define INTELLI_ASSERT2(CONDITION, ...)                                                                                              \
-    do {                                                                                                                         \
-        if (!(CONDITION)) {                                                                                                      \
-            INTELLI::collectAndPrintStacktrace();                                                                                    \
-            INTELLI_FATAL_ERROR(__VA_ARGS__);                                                                                        \
-            throw std::runtime_error("INTELLI Runtime Error on condition " #CONDITION);                                              \
-        }                                                                                                                        \
-    } while (0)
-
-#define INTELLI_THROW_RUNTIME_ERROR(TEXT)                                                                                            \
-    do {                                                                                                                         \
-        INTELLI::collectAndPrintStacktrace();                                                                                        \
-        INTELLI_FATAL_ERROR(TEXT);                                                                                                   \
-        throw std::runtime_error(TEXT);                                                                                          \
-    } while (0)
-
 static void setupLogging(std::string logFileName, DebugLevel level) {
   std::cout << "LogFileName: " << logFileName << ", and DebugLevel: " << level << std::endl;
-#ifdef USELOG4CXX
-  std::cout << "Logger: SETUP_LOGGING" << std::endl;
-  // create PatternLayout
-  log4cxx::LayoutPtr
-      layoutPtr(new log4cxx::PatternLayout("%d{MMM dd yyyy HH:mm:ss} %c: %l %X{threadName} [%-5t] [%p] : %m%n"));
-
-  // create FileAppender
-  LOG4CXX_DECODE_CHAR(fileName, logFileName);
-  log4cxx::FileAppenderPtr file(new log4cxx::FileAppender(layoutPtr, fileName));
-
-  // create ConsoleAppender
-  log4cxx::ConsoleAppenderPtr console(new log4cxx::ConsoleAppender(layoutPtr));
-
-  // set log level
-#ifdef INTELLI_LOGGING_LEVEL
-  ((void) level);
-#if INTELLI_LOGGING_LEVEL == LEVEL_FATAL
-    INTELLILogger->setLevel(log4cxx::Level::getFatal());
-#endif
-#if INTELLI_LOGGING_LEVEL == LEVEL_ERROR
-    INTELLILogger->setLevel(log4cxx::Level::getError());
-#endif
-#if INTELLI_LOGGING_LEVEL == LEVEL_WARN
-    INTELLILogger->setLevel(log4cxx::Level::getWarn());
-#endif
-#if INTELLI_LOGGING_LEVEL == LEVEL_INFO
-    INTELLILogger->setLevel(log4cxx::Level::getInfo());
-#endif
-#if INTELLI_LOGGING_LEVEL == LEVEL_DEBUG
-    INTELLILogger->setLevel(log4cxx::Level::getDebug());
-#endif
-#if INTELLI_LOGGING_LEVEL == LEVEL_TRACE
-    INTELLILogger->setLevel(log4cxx::Level::getTrace());
-#endif
-#else
-  if (level == LOG_NONE) {
-    INTELLILogger->setLevel(log4cxx::Level::getOff());
-  } else if (level == LOG_WARNING) {
-    INTELLILogger->setLevel(log4cxx::Level::getWarn());
-  } else if (level == LOG_DEBUG) {
-    INTELLILogger->setLevel(log4cxx::Level::getDebug());
-  } else if (level == LOG_INFO) {
-    INTELLILogger->setLevel(log4cxx::Level::getInfo());
-  } else if (level == LOG_TRACE) {
-    INTELLILogger->setLevel(log4cxx::Level::getTrace());
-  } else {
-    INTELLI_ERROR("setupLogging: log level not supported " << getDebugLevelAsString(level));
-    throw Exception("Error while setup logging");
   }
-#endif
-
-  INTELLILogger->addAppender(file);
-  INTELLILogger->addAppender(console);
-}
-
-static void setLogLevel(DebugLevel level) {
-  // set log level
-#ifdef INTELLI_LOGGING_LEVEL
-  ((void) level);
-#if INTELLI_LOGGING_LEVEL == LEVEL_FATAL
-    INTELLILogger->setLevel(log4cxx::Level::getFatal());
-#endif
-#if INTELLI_LOGGING_LEVEL == LEVEL_ERROR
-    INTELLILogger->setLevel(log4cxx::Level::getError());
-#endif
-#if INTELLI_LOGGING_LEVEL == LEVEL_WARN
-    INTELLILogger->setLevel(log4cxx::Level::getWarn());
-#endif
-#if INTELLI_LOGGING_LEVEL == LEVEL_INFO
-    INTELLILogger->setLevel(log4cxx::Level::getInfo());
-#endif
-#if INTELLI_LOGGING_LEVEL == LEVEL_DEBUG
-    INTELLILogger->setLevel(log4cxx::Level::getDebug());
-#endif
-#if INTELLI_LOGGING_LEVEL == LEVEL_TRACE
-    INTELLILogger->setLevel(log4cxx::Level::getTrace());
-#endif
-#else
-
-  if (level == LOG_NONE) {
-    INTELLILogger->setLevel(log4cxx::Level::getOff());
-  } else if (level == LOG_WARNING) {
-    INTELLILogger->setLevel(log4cxx::Level::getWarn());
-  } else if (level == LOG_DEBUG) {
-    INTELLILogger->setLevel(log4cxx::Level::getDebug());
-  } else if (level == LOG_INFO) {
-    INTELLILogger->setLevel(log4cxx::Level::getInfo());
-  } else if (level == LOG_TRACE) {
-    INTELLILogger->setLevel(log4cxx::Level::getTrace());
-  } else {
-    INTELLI_ERROR("setLogLevel: log level not supported " << getDebugLevelAsString(level));
-    throw Exception("Error while trying to change log level");
-  }
-#endif
-#endif
-}
 
 #define INTELLI_NOT_IMPLEMENTED()                                                                                                    \
     do {                                                                                                                         \

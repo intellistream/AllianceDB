@@ -40,7 +40,7 @@ void Verify::Run(Result &joinResult, RelationCouple &relationCouple, size_t wind
       }
     }
     cnt++;
-    usleep(TIME_STEP / 2);
+    std::this_thread::sleep_for(std::chrono::microseconds(TIME_STEP / 2));
   }
   cout << "end of tuple feeding" << endl;
   joinResult.joinNumber = 0;

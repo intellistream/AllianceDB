@@ -3,7 +3,6 @@
 //
 
 #include <WindowSlider/VerifyWS.h>
-#include "Tuple.hpp"
 using namespace INTELLI;
 VerifyWS::VerifyWS(size_t sLen, size_t rLen) : AbstractWS(sLen, rLen) {
   TuplePtrQueueLocalS = newTuplePtrQueue(sLen);

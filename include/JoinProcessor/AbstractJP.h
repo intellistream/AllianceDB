@@ -12,7 +12,7 @@
 #include <Utils/C20Buffers.hpp>
 #include <JoinAlgo/JoinAlgoTable.h>
 #include <memory>
-#include "Tuple.hpp"
+
 namespace INTELLI {
 class AbstractLazyJP;
 /**
