@@ -3,7 +3,8 @@
 #ifndef UTILS_ThreadPerf_H
 #define UTILS_ThreadPerf_H
 #define PERF_ERROR(n) printf(n)
-
+#include <sys/syscall.h>
+#include <linux/perf_event.h>
 #include <assert.h>
 #include <fcntl.h>
 #include <inttypes.h>

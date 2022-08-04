@@ -43,6 +43,4 @@ int main() {
         + to_string(exeResult.joinNumber) << endl;
     return false;
   }
-
-  return 0;
 }

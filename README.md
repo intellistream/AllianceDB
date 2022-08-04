@@ -1,32 +1,5 @@
 # Lazy Window Join
 
-# Quick start
-
-```shell
-cd tools
-sh rmote-debug-setup.sh
-```
-
-> then use CLion remote debug with port: `1234`, username: `root`, password: `pass1234`.
-
-> Change the `CONTAINER_NAME`, `PORT` and `ROOT_PASSWD` if needed.
-
-## Quick install G++11 on ubuntu older than hirsute
-
-```shell
-sudo add-apt-repository 'deb http://mirrors.kernel.org/ubuntu hirsute main universe'
-sudo apt-get update
-sudo apt install gcc-11 g++-11
-sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 11
-sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-11 11
-```
-
-## Requires Log4cxx native
-
-```shell
-sudo apt-get install -y liblog4cxx-dev
-```
-
 ## Code Structure
 
 - benchmark -- application code to use the generated shared library
@@ -38,6 +11,10 @@ sudo apt-get install -y liblog4cxx-dev
 - tools -- script to start a remote-debug environment that contains all required libs.
 
 ## How to build
+
+```shell
+docker build -t clion/ubuntu/cpp-env:1.0 -f Dockerfile.cpp-env-ubuntu --build-arg UID=$(id -u) .
+```
 
 ### Native Compile
 
@@ -57,8 +34,6 @@ export CXX= {Full path and name of your cross CPP compiler}
 cmake .. -DENABLE_UNIT_TESTS=OFF
 make
 ```
-
--please make sure your cross compiler also has the log4cxx
 
 ## The document, please
 
