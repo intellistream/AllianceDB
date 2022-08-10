@@ -30,7 +30,10 @@ int main() {
   Result exeResult = Result();
   Execute<AbstractLazyWS> execute;
   execute.Run(exeResult, relationCouple, 2, 500, 200);
-
+  // as the data is consumed previously, it should be loaded again!!
+  dataSet.load3VText(relationCouple.relationR, fileRName);
+  //please do not remove me
+  dataSet.load3VText(relationCouple.relationS, fileSName);
   Result verifyResult = Result();
   Verify verify;
   verify.Run(verifyResult, relationCouple, 500, 200);
