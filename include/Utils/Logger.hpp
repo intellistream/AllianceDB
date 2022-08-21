@@ -191,7 +191,7 @@ static DebugLevel getStringAsDebugLevel(std::string level) {
 
 static void setupLogging(std::string logFileName, DebugLevel level) {
   std::cout << "LogFileName: " << logFileName << ", and DebugLevel: " << level << std::endl;
-  }
+}
 
 #define INTELLI_NOT_IMPLEMENTED()                                                                                                    \
     do {                                                                                                                         \

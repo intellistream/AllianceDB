@@ -31,7 +31,7 @@
 #endif
 
 #ifndef TIME_STEP
-#define TIME_STEP 200// US
+#define TIME_STEP 40// US
 #endif
 #ifndef DATASET_NAME
 #define DATASET_NAME "Test1" //dataset name should be DATASET_NAME + "-R.txt" and DATASET_NAME + "-S.txt"
