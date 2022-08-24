@@ -1,5 +1,4 @@
 # Copyright (C) 2021 by the INTELLI team (https://github.com/intellistream)
-
 cmake_minimum_required(VERSION 3.14)
 project(AlianceDB CXX)
 # Judge the os system
@@ -84,7 +83,7 @@ get_headers(IntelliStream_HEADER_FILES)
 add_library(IntelliStream SHARED ${IntelliStream_SOURCE_FILES} ${IntelliStream_HEADER_FILES} ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 target_include_directories(IntelliStream PUBLIC "include")
 target_include_directories(IntelliStream PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
-target_link_libraries(IntelliStream PUBLIC ${LIBRARIES})
+target_link_libraries(IntelliStream PUBLIC ${LIBRARIES} -lpthread)
 
 #Add benchmarks with command
 #Main Entry.
