@@ -2,7 +2,7 @@
 // Created by tony on 28/02/22.
 //
 #include <WindowSlider/HandShakeWS.h>
-using namespace INTELLI;
+using namespace AllianceDB;
 using namespace std;
 void HandShakeWS::initJoinProcessors() {
   threads = partitionWeight.size();

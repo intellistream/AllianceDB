@@ -8,12 +8,12 @@
 #include <iostream>
 #include "WindowSlider/AbstractEagerWS.h"
 //Variables that are shared among threads
-INTELLI::tupleKeyQueue deliveryR[THREAD_NUMBER]; //Used to send R tuple to all worker threads
-INTELLI::tupleKeyQueue deliveryS[THREAD_NUMBER]; //Used to send S tuple to all worker threads
-INTELLI::numberType threadJoinResult[THREAD_NUMBER]; //Join result per thread
+AllianceDB::tupleKeyQueue deliveryR[THREAD_NUMBER]; //Used to send R tuple to all worker threads
+AllianceDB::tupleKeyQueue deliveryS[THREAD_NUMBER]; //Used to send S tuple to all worker threads
+AllianceDB::numberType threadJoinResult[THREAD_NUMBER]; //Join result per thread
 
 //Main thread will serve as a tuple distributor
-void INTELLI::CellJoin::execute(INTELLI::Result &joinResult, INTELLI::RelationCouple &relationCouple) {
+void AllianceDB::CellJoin::execute(AllianceDB::Result &joinResult, AllianceDB::RelationCouple &relationCouple) {
 
   //Tuple distributor
   int count = 0;
@@ -21,7 +21,7 @@ void INTELLI::CellJoin::execute(INTELLI::Result &joinResult, INTELLI::RelationCo
     //R
     //Get the current R we need to distribute
     if (!relationCouple.relationR.empty()) {
-      INTELLI::TuplePtr tupleR = relationCouple.relationR.front();
+      AllianceDB::TuplePtr tupleR = relationCouple.relationR.front();
       relationCouple.relationR.pop();
       //Push it to all threads
       for (int id = 0; id < THREAD_NUMBER; id++) {
@@ -34,7 +34,7 @@ void INTELLI::CellJoin::execute(INTELLI::Result &joinResult, INTELLI::RelationCo
     //S
     //Get the current S we need to distribute
     if (!relationCouple.relationS.empty()) {
-      INTELLI::TuplePtr tupleS = relationCouple.relationS.front();
+      AllianceDB::TuplePtr tupleS = relationCouple.relationS.front();
       relationCouple.relationS.pop();
       //Push it to a specific thread according to calculation
       int tupleDestinationS = (++count % WINDOW_SIZE) % THREAD_NUMBER; //TODO: OR count++? you try it. thanks
@@ -71,7 +71,7 @@ void INTELLI::CellJoin::execute(INTELLI::Result &joinResult, INTELLI::RelationCo
   }
 }
 
-void INTELLI::CellJoin::threadWork(int id, numberType windowSizeS) {
+void AllianceDB::CellJoin::threadWork(int id, numberType windowSizeS) {
   //if (id == 0) {
   //while (!deliveryR[id].empty()) {
   //std::cout << deliveryR[id].front() << " ";
@@ -79,7 +79,7 @@ void INTELLI::CellJoin::threadWork(int id, numberType windowSizeS) {
   //}
   //}
 
-  INTELLI::WindowCouple windowCouple = INTELLI::WindowCouple(WINDOW_SIZE, windowSizeS);
+  AllianceDB::WindowCouple windowCouple = AllianceDB::WindowCouple(WINDOW_SIZE, windowSizeS);
   bool windowFullR = false;
   bool windowFullS = false;
   int windowRat = 0;
@@ -97,7 +97,7 @@ void INTELLI::CellJoin::threadWork(int id, numberType windowSizeS) {
     }
     if (!deliveryR[id].empty() && flagR) {
       //Push relationR's tuple_key into windowR + hashtableR
-      INTELLI::numberType tuple_key = deliveryR[id].front();
+      AllianceDB::numberType tuple_key = deliveryR[id].front();
 
       //if (id == -1)
       //std::cout << tuple_key << "\n";
@@ -128,7 +128,7 @@ void INTELLI::CellJoin::threadWork(int id, numberType windowSizeS) {
     //S
     if (!deliveryS[id].empty() && flagS) {
       //Push relationS's tuple_key into windowS + hashtableS
-      INTELLI::numberType tuple_key = deliveryS[id].front();
+      AllianceDB::numberType tuple_key = deliveryS[id].front();
 //            if (id == 0)
 //                std::cout << tuple_key << "\n";
       deliveryS[id].pop();

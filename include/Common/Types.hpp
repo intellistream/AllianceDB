@@ -2,8 +2,8 @@
 #define UNUSED(x) (void)(x)
 #endif
 
-#ifndef _INTELLISTREAM_TYPES_H
-#define _INTELLISTREAM_TYPES_H
+#ifndef _AllianceDB_TYPES_H
+#define _AllianceDB_TYPES_H
 
 #ifndef ALGO_NAME
 
@@ -92,7 +92,7 @@
  * programs or third-party programs. Please refer to @ref INTELLI_UTIL module.
  */
 
-namespace INTELLI {
+namespace AllianceDB {
 /**
  * @defgroup Common Common Datastructure and Functions
  *  @{
@@ -108,7 +108,7 @@ typedef uint64_t keyType;    /*!< Type of the join key, default uint64_t */
 typedef uint64_t valueType;  /*!< Type of the payload, default uint64_t */
 typedef int numberType; //for counting the number of datagram (eg: tuples) in a struct
 typedef std::mutex mutex;
-typedef INTELLI::DupicatedHashTable<keyType, keyType> hashtable; /*!< allow key duplication */
+typedef AllianceDB::DupicatedHashTable<keyType, keyType> hashtable; /*!< allow key duplication */
 typedef std::queue<numberType> tupleKeyQueue;
 typedef std::shared_ptr<std::barrier<>> BarrierPtr;
 
@@ -117,8 +117,8 @@ typedef std::shared_ptr<std::barrier<>> BarrierPtr;
  * @brief To create a new TuplePtrQueue
  * @param n The length of queue
  */
-#define  newTuplePtrQueue(n) make_shared<INTELLI::SPSCQueue<INTELLI::TuplePtr>>(n)
-#define  newWindowQueue(n) make_shared<INTELLI::SPSCQueue<WindowOfTuples>>(n)
+#define  newTuplePtrQueue(n) make_shared<AllianceDB::SPSCQueue<AllianceDB::TuplePtr>>(n)
+#define  newWindowQueue(n) make_shared<AllianceDB::SPSCQueue<WindowOfTuples>>(n)
 typedef enum {
   CNT_BASED = 1,
   TIME_STAMP_BASED = 2,
@@ -134,8 +134,8 @@ typedef enum {
   CMD_NEXT_TS_ONLY,
   CMD_NEXT_TR_ONLY,
 } join_cmd_t;
-typedef std::shared_ptr<INTELLI::SPSCQueue<INTELLI::join_cmd_t>> CmdQueuePtr;
-#define  newCmdQueue(n) make_shared<INTELLI::SPSCQueue<INTELLI::join_cmd_t>>(n)
+typedef std::shared_ptr<AllianceDB::SPSCQueue<AllianceDB::join_cmd_t>> CmdQueuePtr;
+#define  newCmdQueue(n) make_shared<AllianceDB::SPSCQueue<AllianceDB::join_cmd_t>>(n)
 }
 /**
  * @}

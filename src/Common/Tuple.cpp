@@ -4,5 +4,5 @@
 
 #include <Common/Types.hpp>
 #include "Common/Tuple.hpp"
-INTELLI::Tuple::~Tuple() = default;
-INTELLI::Tuple::Tuple(INTELLI::keyType k) : key(k), payload(0) {}
+AllianceDB::Tuple::~Tuple() = default;
+AllianceDB::Tuple::Tuple(AllianceDB::keyType k) : key(k), payload(0) {}

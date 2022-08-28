@@ -2,7 +2,7 @@
 #define ALIANCEDB_SRC_COMMON_TYPES_CPP_RESULT_HPP_
 
 #include <Common/Types.hpp>
-namespace INTELLI {
+namespace AllianceDB {
 class Result {
  public:
   int joinNumber;

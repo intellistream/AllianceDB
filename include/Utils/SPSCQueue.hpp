@@ -18,7 +18,7 @@
 using namespace std::literals::chrono_literals;
 using namespace std;
 
-namespace INTELLI {
+namespace AllianceDB {
 template<typename T, typename Allocator = std::allocator<T>>
 class SPSCQueue {
 

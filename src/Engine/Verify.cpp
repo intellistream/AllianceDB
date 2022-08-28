@@ -20,11 +20,11 @@ void Verify::Run(Result &joinResult, RelationCouple &relationCouple, size_t wind
   cout << "verify algo:" + joinResult.algoName + ", threads=" + to_string(1) + " windowLen="
       + to_string(windowLen) + ", slideLen=" + to_string(slideLen) << endl;
   size_t cnt = 0;
-  INTELLI::UtilityFunctions::timerStart(joinResult);
+  AllianceDB::UtilityFunctions::timerStart(joinResult);
   while (!relationCouple.relationR.empty() || !relationCouple.relationS.empty()) {
     size_t timeFeed = UtilityFunctions::timeLastUs(timeSys) / TIME_STEP;
     if (!relationCouple.relationR.empty()) {
-      INTELLI::TuplePtr tr = relationCouple.relationR.front();
+      AllianceDB::TuplePtr tr = relationCouple.relationR.front();
       //
       if (timeFeed >= tr->subKey) {
         // cout<<to_string(timeFeed)+","+ to_string(tr->subKey)<<endl;
@@ -33,7 +33,7 @@ void Verify::Run(Result &joinResult, RelationCouple &relationCouple, size_t wind
       }
     }
     if (!relationCouple.relationS.empty()) {
-      INTELLI::TuplePtr ts = relationCouple.relationS.front();
+      AllianceDB::TuplePtr ts = relationCouple.relationS.front();
       if (timeFeed >= ts->subKey) {
         relationCouple.relationS.pop();
         verify_ws.feedTupleS(ts);
@@ -46,5 +46,5 @@ void Verify::Run(Result &joinResult, RelationCouple &relationCouple, size_t wind
   joinResult.joinNumber = 0;
   verify_ws.terminateJoinProcessors();
   joinResult.joinNumber = verify_ws.getJoinResult();
-  INTELLI::UtilityFunctions::timerEnd(joinResult);
+  AllianceDB::UtilityFunctions::timerEnd(joinResult);
 }

@@ -4,7 +4,7 @@
 #include <Common/Types.hpp>
 #include <Common/Tuple.hpp>
 
-namespace INTELLI {
+namespace AllianceDB {
 /**
  * @ingroup Common
  * @{

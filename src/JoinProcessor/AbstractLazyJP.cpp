@@ -4,7 +4,7 @@
 
 #include <JoinProcessor/AbstractLazyJP.h>
 #include <JoinAlgo/NPJ.h>
-using namespace INTELLI;
+using namespace AllianceDB;
 #include <string.h>
 
 bool AbstractLazyJP::largerThanMe(size_t timeDivSys) {

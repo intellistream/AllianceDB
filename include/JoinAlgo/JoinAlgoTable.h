@@ -9,7 +9,7 @@
 #ifndef _JOINALGO_JOINALGOTABLE_H_
 #define _JOINALGO_JOINALGOTABLE_H_
 #include <JoinAlgo/AbstractJoinAlgo.h>
-namespace INTELLI {
+namespace AllianceDB {
 /**
    * @ingroup INTELLI_JOINALGOS_ABSTRACT
    * @class JoinAlgoTable JoinAlgo/JoinAlgoTable.h

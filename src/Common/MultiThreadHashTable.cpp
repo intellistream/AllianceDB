@@ -23,7 +23,7 @@
         V++;                                    \
     } while(0)
 #endif
-using namespace INTELLI;
+using namespace AllianceDB;
 
 void MtBucket::duplicatedInsert(TuplePtr tp) {
   MtBucketPtr nxt;

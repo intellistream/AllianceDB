@@ -5,7 +5,7 @@
 #include <Utils/UtilityFunctions.hpp>
 #include <Utils/ThreadPerf.h>
 
-using namespace INTELLI;
+using namespace AllianceDB;
 void NPJ_thread::inlineMain() {
   //first bind to the core
   // UtilityFunctions::bind2Core(cpu);
@@ -53,7 +53,7 @@ size_t NPJ::join(TuplePtr *ts, TuplePtr *tr, size_t tsLen, size_t trLen, int thr
   tp.end();
   // create barrier
 
-  INTELLI::BarrierPtr buildBar = std::make_shared<std::barrier<>>(threads);
+  AllianceDB::BarrierPtr buildBar = std::make_shared<std::barrier<>>(threads);
   //cout << ("init time ") + to_string(tp.getResultById(-1)) << endl;
   for (size_t i = 0; i < threads; i++) {
     workers[i].init(&ts[sBegin], \
@@ -90,7 +90,7 @@ size_t NPJ::join(TuplePtr *ts, TuplePtr tr, size_t tsLen, int threads) {
   //creat table
   MultiThreadHashTablePtr table = make_shared<MultiThreadHashTable>(tsLen / 2 + 1);
   // create barrier
-  INTELLI::BarrierPtr buildBar = std::make_shared<std::barrier<>>(threads);
+  AllianceDB::BarrierPtr buildBar = std::make_shared<std::barrier<>>(threads);
   //cout << ("init time ") + to_string(tp.getResultById(-1)) << endl;
   for (size_t i = 0; i < threads; i++) {
     workers[i].init(&ts[sBegin], \

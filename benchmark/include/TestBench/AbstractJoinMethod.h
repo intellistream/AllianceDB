@@ -7,8 +7,8 @@
 #include <Common/Tuple.hpp>
 #include <Common/RelationCouple.hpp>
 #include <WindowSlider/AbstractEagerWS.h>
-using namespace INTELLI;
-namespace INTELLI {
+using namespace AllianceDB;
+namespace AllianceDB {
 template<class wsType=AbstractEagerWS>
 class AbstractJoinMethod {
  public:
@@ -29,11 +29,11 @@ class AbstractJoinMethod {
     //cout<<"system start at "<<timeBase<<endl;
     struct timeval timeSys = windowSlider.getSysTime();
     size_t cnt = 0;
-    INTELLI::UtilityFunctions::timerStart(joinResult);
+    AllianceDB::UtilityFunctions::timerStart(joinResult);
     while (!relationCouple.relationR.empty() || !relationCouple.relationS.empty()) {
       size_t timeFeed = UtilityFunctions::timeLastUs(timeSys) / TIME_STEP;
       if (!relationCouple.relationR.empty()) {
-        INTELLI::TuplePtr tr = relationCouple.relationR.front();
+        AllianceDB::TuplePtr tr = relationCouple.relationR.front();
         if (timeFeed >= tr->subKey) {
           // cout<<"feed r:"<<timeSys<<endl;
           relationCouple.relationR.pop();
@@ -41,7 +41,7 @@ class AbstractJoinMethod {
         }
       }
       if (!relationCouple.relationS.empty()) {
-        INTELLI::TuplePtr ts = relationCouple.relationS.front();
+        AllianceDB::TuplePtr ts = relationCouple.relationS.front();
         if (timeFeed >= ts->subKey) {
           relationCouple.relationS.pop();
           windowSlider.feedTupleS(ts);
@@ -56,7 +56,7 @@ class AbstractJoinMethod {
     joinResult.joinNumber = 0;
     windowSlider.terminateJoinProcessors();
     joinResult.joinNumber = windowSlider.getJoinResult();
-    INTELLI::UtilityFunctions::timerEnd(joinResult);
+    AllianceDB::UtilityFunctions::timerEnd(joinResult);
   }
 };
 }

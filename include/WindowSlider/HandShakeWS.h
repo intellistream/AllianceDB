@@ -14,9 +14,9 @@
 #include <JoinProcessor/HandShakeJP.h>
 #include <WindowSlider/AbstractEagerWS.h>
 
-using namespace INTELLI;
+using namespace AllianceDB;
 using namespace std;
-namespace INTELLI {
+namespace AllianceDB {
 /**
  * @ingroup WINDOWSLIDER_EAGER
 * @class  HandShakeWS WindowSlider/HandShakeWS.h
@@ -40,7 +40,7 @@ class HandShakeWS : public AbstractWS {
    */
  protected:
   std::vector<HandShakeJPPtr> jpPtr;
-  INTELLI::BarrierPtr initBar;
+  AllianceDB::BarrierPtr initBar;
  public:
   HandShakeWS(/* args */) {
     reset();

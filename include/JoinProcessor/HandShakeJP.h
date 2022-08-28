@@ -8,8 +8,8 @@
 #include <memory>
 
 using namespace std;
-using namespace INTELLI;
-namespace INTELLI {
+using namespace AllianceDB;
+namespace AllianceDB {
 class HandShakeJP;
 typedef std::shared_ptr<HandShakeJP> HandShakeJPPtr;
 /*class:HandShakeHashJP

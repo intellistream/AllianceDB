@@ -9,7 +9,7 @@
 #include <Common/Types.hpp>
 #include <TestBench/AbstractJoinMethod.h>
 #include <WindowSlider/AbstractEagerWS.h>
-namespace INTELLI {
+namespace AllianceDB {
 class CellJoin : public AbstractJoinMethod<AbstractEagerWS> {
  public:
   static void execute(Result &joinResult, RelationCouple &relationCouple);

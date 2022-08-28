@@ -6,7 +6,7 @@
 #include <JoinProcessor/CellJoinJP.h>
 #include <Utils/AbstractC20Thread.h>
 #include <Common/Tuple.hpp>
-namespace INTELLI {
+namespace AllianceDB {
 /**
  * @ingroup WINDOWSLIDER_BASE
   * @class VerifyWS WindowSlider/VerifyWS.h

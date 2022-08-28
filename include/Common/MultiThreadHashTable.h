@@ -7,7 +7,7 @@
 #include <memory>
 #include <condition_variable>
 #include <mutex>
-namespace INTELLI {
+namespace AllianceDB {
 
 /**
  * @ingroup Common

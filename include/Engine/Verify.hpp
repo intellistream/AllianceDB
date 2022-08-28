@@ -7,8 +7,8 @@
 #include  <Common/Result.hpp>
 #include <WindowSlider/AbstractEagerWS.h>
 #include <WindowSlider/VerifyWS.h>
-using namespace INTELLI;
-namespace INTELLI {
+using namespace AllianceDB;
+namespace AllianceDB {
 
 /**
  * @ingroup INTELLI_COMMON_VERIFY

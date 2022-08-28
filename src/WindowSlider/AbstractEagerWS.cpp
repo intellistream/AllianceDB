@@ -1,5 +1,5 @@
 #include <WindowSlider/AbstractEagerWS.h>
-using namespace INTELLI;
+using namespace AllianceDB;
 AbstractEagerWS::AbstractEagerWS(size_t _sLen, size_t _rLen) : AbstractWS(_sLen, _rLen) {
 
   TuplePtrQueueLocalS = newTuplePtrQueue(sLen);
@@ -77,7 +77,7 @@ void AbstractEagerWS::deliverTupleR(TuplePtr tr) {
 }
 vector<size_t> AbstractEagerWS::weightedPartitionSizeFinal(size_t inS) {
 
-  return INTELLI::UtilityFunctions::weightedPartitionSizeFinal(inS, partitionWeight);;
+  return AllianceDB::UtilityFunctions::weightedPartitionSizeFinal(inS, partitionWeight);;
 }
 
 vector<size_t> AbstractEagerWS::avgPartitionSizeFinal(size_t inS) {
@@ -93,7 +93,7 @@ vector<size_t> AbstractEagerWS::avgPartitionSizeFinal(size_t inS) {
   }
   partitionSizeFinals[partitions - 1] = inS - tEnd;
   return partitionSizeFinals;*/
-  return INTELLI::UtilityFunctions::avgPartitionSizeFinal(inS, partitionWeight);
+  return AllianceDB::UtilityFunctions::avgPartitionSizeFinal(inS, partitionWeight);
 }
 void AbstractEagerWS::expireR(size_t ts) {
   size_t pos = 0;

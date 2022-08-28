@@ -6,11 +6,11 @@
 static unsigned long mt[N]; /* the array for the state vector  */
 static int mti; /* mti==N+1 means mt[N] is not initialized */
 
-long INTELLI::UtilityFunctions::genrand_int31() {
+long AllianceDB::UtilityFunctions::genrand_int31() {
   return long(genrand_int32() >> 1);
 }
 
-unsigned long INTELLI::UtilityFunctions::genrand_int32() {
+unsigned long AllianceDB::UtilityFunctions::genrand_int32() {
   unsigned long y;
   static unsigned long mag01[2] = {0x0UL, MATRIX_A};
   /* mag01[x] = x * MATRIX_A  for x=0,1 */
@@ -46,7 +46,7 @@ unsigned long INTELLI::UtilityFunctions::genrand_int32() {
   return y;
 }
 
-INTELLI::UtilityFunctions::UtilityFunctions() {
+AllianceDB::UtilityFunctions::UtilityFunctions() {
   mti = N + 1; /* mti==N+1 means mt[N] is not initialized */
 }
 
@@ -54,7 +54,7 @@ INTELLI::UtilityFunctions::UtilityFunctions() {
  * initializes mt[N] with a seed
  * @param s
  */
-void INTELLI::UtilityFunctions::init_genrand(unsigned long s) {
+void AllianceDB::UtilityFunctions::init_genrand(unsigned long s) {
   /* initializes mt[N] with a seed */
   mt[0] = s & 0xffffffffUL;
   for (mti = 1; mti < N; mti++) {
@@ -73,30 +73,30 @@ void INTELLI::UtilityFunctions::init_genrand(unsigned long s) {
  *  generates a random number on (0,1)-real-interval
  * @return
  */
-double INTELLI::UtilityFunctions::genrand_real3() {
+double AllianceDB::UtilityFunctions::genrand_real3() {
   return (((double) genrand_int32()) + 0.5) * (1.0 / 4294967296.0);
   /* divided by 2^32 */
 }
 
-std::shared_ptr<std::barrier<>> INTELLI::UtilityFunctions::createBarrier(int count) {
+std::shared_ptr<std::barrier<>> AllianceDB::UtilityFunctions::createBarrier(int count) {
   return std::make_shared<std::barrier<>>(count);
 }
 
-void INTELLI::UtilityFunctions::timerStart(Result &result) {
+void AllianceDB::UtilityFunctions::timerStart(Result &result) {
   //result.timeTaken = clock();
   gettimeofday(&result.timeBegin, NULL);
 }
 
-void INTELLI::UtilityFunctions::timerEnd(Result &result) {
+void AllianceDB::UtilityFunctions::timerEnd(Result &result) {
   // double start = result.timeTaken;
   result.timeTaken = timeLastUs(result.timeBegin);
   result.timeTaken /= 1000.0;
 }
 
-void INTELLI::UtilityFunctions::printTest(char const *name, int context) {
+void AllianceDB::UtilityFunctions::printTest(char const *name, int context) {
   std::cout << name << ":" << context << "\n";
 }
-int INTELLI::UtilityFunctions::bind2Core(int id) {
+int AllianceDB::UtilityFunctions::bind2Core(int id) {
   if (id == -1) //OS scheduling
   {
     return -1;
@@ -115,7 +115,7 @@ int INTELLI::UtilityFunctions::bind2Core(int id) {
   return -1;
 }
 
-vector<size_t> INTELLI::UtilityFunctions::avgPartitionSizeFinal(size_t inS, std::vector<size_t> partitionWeight) {
+vector<size_t> AllianceDB::UtilityFunctions::avgPartitionSizeFinal(size_t inS, std::vector<size_t> partitionWeight) {
   size_t partitions = partitionWeight.size();
   vector<size_t> partitionSizeFinals = vector<size_t>(partitions);
   size_t divideLen = inS / partitions;
@@ -128,7 +128,7 @@ vector<size_t> INTELLI::UtilityFunctions::avgPartitionSizeFinal(size_t inS, std:
   partitionSizeFinals[partitions - 1] = inS - tEnd;
   return partitionSizeFinals;
 }
-vector<size_t> INTELLI::UtilityFunctions::weightedPartitionSizeFinal(size_t inS, std::vector<size_t> partitionWeight) {
+vector<size_t> AllianceDB::UtilityFunctions::weightedPartitionSizeFinal(size_t inS, std::vector<size_t> partitionWeight) {
   vector<size_t> partitionSizes;
   vector<size_t> partitionSizeFinals;
   size_t fraction = accumulate(partitionWeight.begin(), partitionWeight.end(), 0);
@@ -149,12 +149,12 @@ vector<size_t> INTELLI::UtilityFunctions::weightedPartitionSizeFinal(size_t inS,
   partitionSizeFinals[partitionSizes.size() - 1] = inS - tEnd;
   return partitionSizeFinals;
 }
-size_t INTELLI::UtilityFunctions::timeLast(size_t past, size_t unitTime) {
+size_t AllianceDB::UtilityFunctions::timeLast(size_t past, size_t unitTime) {
   size_t te = clock();
   return (te - past) * unitTime / CLOCKS_PER_SEC;
 }
 
-size_t INTELLI::UtilityFunctions::timeLastUs(struct timeval ts) {
+size_t AllianceDB::UtilityFunctions::timeLastUs(struct timeval ts) {
   struct timeval te;
   gettimeofday(&te, NULL);
   int64_t s0, e0, s1, e1;

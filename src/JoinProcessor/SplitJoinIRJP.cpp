@@ -2,7 +2,7 @@
 // Created by tony on 18/03/22.
 //
 #include <JoinProcessor/SplitJoinIRJP.h>
-using namespace INTELLI;
+using namespace AllianceDB;
 void SplitJoinIRJP::joinS(TuplePtr ts) {
   size_t timeNow = ts->subKey;
   expireR(timeNow);

@@ -3,7 +3,7 @@
 //
 
 #include <WindowSlider/AbstractWS.h>
-using namespace INTELLI;
+using namespace AllianceDB;
 AbstractWS::AbstractWS(size_t _sLen, size_t _rLen) {
   sLen = _sLen;
   rLen = _rLen;

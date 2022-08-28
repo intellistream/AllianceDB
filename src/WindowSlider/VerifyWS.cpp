@@ -3,7 +3,7 @@
 //
 
 #include <WindowSlider/VerifyWS.h>
-using namespace INTELLI;
+using namespace AllianceDB;
 VerifyWS::VerifyWS(size_t sLen, size_t rLen) : AbstractWS(sLen, rLen) {
   TuplePtrQueueLocalS = newTuplePtrQueue(sLen);
   TuplePtrQueueLocalR = newTuplePtrQueue(rLen);

@@ -3,7 +3,7 @@
 #include <Common/Types.hpp>
 #include <Common/Tuple.hpp>
 
-namespace INTELLI {
+namespace AllianceDB {
 typedef std::shared_ptr<class RelationCouple> RelationCouplePtr;
 
 class RelationCouple {

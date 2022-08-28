@@ -15,7 +15,7 @@
 #include <cmath>
 #include <iostream>
 using namespace std;
-namespace INTELLI {
+namespace AllianceDB {
 /**
  * @defgroup INTELLI_UTIL Shared Utils with other Intelli Stream programs
  * @{

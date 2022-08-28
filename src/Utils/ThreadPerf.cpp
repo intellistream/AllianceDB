@@ -1,5 +1,5 @@
 #include <Utils/ThreadPerf.h>
-using namespace INTELLI;
+using namespace AllianceDB;
 using namespace std;
 
 /* gettid syscall wrapper */

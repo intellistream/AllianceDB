@@ -23,7 +23,7 @@
 * @{
  * This package covers some common C++20 new features, such as std::thread to ease the programming
 */
-namespace INTELLI {
+namespace AllianceDB {
 /**
  * @ingroup INTELLI_UTIL_OTHERC20
  * @class C20Buffer Utils/C20Buffers.hpp

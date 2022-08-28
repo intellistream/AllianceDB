@@ -9,9 +9,9 @@
 #include <Utils/UtilityFunctions.hpp>
 #include <time.h>
 #include <numeric>
-using namespace INTELLI;
+using namespace AllianceDB;
 using namespace std;
-namespace INTELLI {
+namespace AllianceDB {
 /**
  *@defgroup WINDOWSLIDER WindowSliders
  * @{
@@ -43,7 +43,7 @@ class AbstractWS {
 
  protected:
 
-  INTELLI::join_type_t myType = INTELLI::CNT_BASED;
+  AllianceDB::join_type_t myType = AllianceDB::CNT_BASED;
   size_t countS, countR;
   size_t windowLen = 0;
   size_t slideLen = 1;

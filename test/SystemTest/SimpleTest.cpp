@@ -8,19 +8,19 @@
 #include <Common/DatasetTool.hpp>
 using namespace std;
 using namespace std;
-using namespace INTELLI;
+using namespace AllianceDB;
 #include <Engine/Verify.hpp>
 #include <Common/Result.hpp>
 
 TEST(SystemTest, SimpleTest
 ) {
   setupLogging("benchmark.log", LOG_DEBUG);
-  INTELLI::Result joinResult = INTELLI::Result();
-  INTELLI::RelationCouple relationCouple = INTELLI::RelationCouple();
+  AllianceDB::Result joinResult = AllianceDB::Result();
+  AllianceDB::RelationCouple relationCouple = AllianceDB::RelationCouple();
   string pwd = getcwd(NULL, 0); //Get current directory
   string fileRName = pwd + "/datasets/" + DATASET_NAME + "-R.txt";
   string fileSName = pwd + "/datasets/" + DATASET_NAME + "-S.txt";
-  INTELLI::DatasetTool dataSet;
+  AllianceDB::DatasetTool dataSet;
   dataSet.load3VText(relationCouple.relationR, fileRName);
   dataSet.load3VText(relationCouple.relationS, fileSName);
   joinResult.streamSize = relationCouple.relationR.size();

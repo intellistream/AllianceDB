@@ -11,9 +11,9 @@
 #include <barrier>
 #include <JoinProcessor/AbstractJP.h>
 
-using namespace INTELLI;
+using namespace AllianceDB;
 using namespace std;
-namespace INTELLI {
+namespace AllianceDB {
 /**
  * @ingroup JOINPROCESSOR_EAGER
   * @class SplitJoinJP JoinProcessor/SplitJoinJP.h

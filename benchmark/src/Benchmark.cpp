@@ -14,7 +14,7 @@
 #include <filesystem>
 
 using namespace std;
-using namespace INTELLI;
+using namespace AllianceDB;
 
 int main() {
   //Setup Logs

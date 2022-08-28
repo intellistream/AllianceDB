@@ -2,19 +2,19 @@
 #include <Common/Tuple.hpp>
 #include <Common/Result.hpp>
 #include <Common/RelationCouple.hpp>
-INTELLI::RelationCouple::~RelationCouple() = default;
+AllianceDB::RelationCouple::~RelationCouple() = default;
 
-INTELLI::RelationCouple::RelationCouple() = default;
+AllianceDB::RelationCouple::RelationCouple() = default;
 
-INTELLI::Result::Result() : joinNumber(0), streamSize(0), timeTaken(0) {}
+AllianceDB::Result::Result() : joinNumber(0), streamSize(0), timeTaken(0) {}
 
-INTELLI::Result INTELLI::Result::operator++(int) {
+AllianceDB::Result AllianceDB::Result::operator++(int) {
   Result tmp(*this);
   joinNumber++;
   return tmp;
 }
 
-void INTELLI::Result::statPrinter() {
+void AllianceDB::Result::statPrinter() {
   int n1 = 12;
   int n2 = 30;
   std::cout << BAR << std::endl;

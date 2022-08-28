@@ -9,7 +9,7 @@
 #include <unordered_map>
 #include <Common/Types.hpp>
 #include <Utils/Logger.hpp>
-using namespace INTELLI;
+using namespace AllianceDB;
 void DatasetTool::store3VText(TuplePtrQueue &relation, const std::string &fileName) {
   std::fstream file;
   std::string buffer;

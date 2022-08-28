@@ -3,7 +3,7 @@
 //
 
 #include <JoinProcessor/SplitJoinJP.h>
-using namespace INTELLI;
+using namespace AllianceDB;
 void SplitJoinJP::joinS(TuplePtr ts) {
   size_t timeNow = ts->subKey;
   expireR(timeNow);

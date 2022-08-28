@@ -180,9 +180,9 @@ static DebugLevel getStringAsDebugLevel(std::string level) {
 #define INTELLI_VERIFY(CONDITION, TEXT)                                                                                              \
     do {                                                                                                                         \
         if (!(CONDITION)) {                                                                                                      \
-            INTELLI::collectAndPrintStacktrace();                                                                                    \
+            AllianceDB::collectAndPrintStacktrace();                                                                                    \
             INTELLI_FATAL_ERROR(TEXT);                                                                                               \
-            throw std::runtime_error("INTELLI Runtime Error on condition " #CONDITION);                                              \
+            throw std::runtime_error("AllianceDB Runtime Error on condition " #CONDITION);                                              \
         }                                                                                                                        \
     } while (0)
 #else

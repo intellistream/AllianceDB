@@ -4,9 +4,9 @@
 
 #include <JoinProcessor/CellJoinJP.h>
 
-using namespace INTELLI;
+using namespace AllianceDB;
 using namespace std;
-void INTELLI::CellJoinJP::inlineMain() {
+void AllianceDB::CellJoinJP::inlineMain() {
   //first bind to the core
   UtilityFunctions::bind2Core(cpuBind);
   //wait for new cmd

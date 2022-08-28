@@ -11,10 +11,10 @@
 #include <barrier>
 #include <JoinProcessor/SplitJoinJP.h>
 #include <Utils/DupicatedHashTable.hpp>
-using namespace INTELLI;
+using namespace AllianceDB;
 using namespace std;
-namespace INTELLI {
-typedef INTELLI::DupicatedHashTable<keyType, keyType> dpHashtable;
+namespace AllianceDB {
+typedef AllianceDB::DupicatedHashTable<keyType, keyType> dpHashtable;
 //typedef <keyType, keyType> dpHashtable;
 typedef shared_ptr<dpHashtable> dpHashtablePtr;
 /**

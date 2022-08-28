@@ -30,7 +30,7 @@
 #include <memory>
 #include <vector>
 using namespace std;
-namespace INTELLI {
+namespace AllianceDB {
 #define __LIBPERF_MAX_COUNTERS 32
 #define __LIBPERF_ARRAY_SIZE(x) (sizeof(x)/sizeof(x[0]))
 

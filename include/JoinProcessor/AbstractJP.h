@@ -13,7 +13,7 @@
 #include <JoinAlgo/JoinAlgoTable.h>
 #include <memory>
 
-namespace INTELLI {
+namespace AllianceDB {
 class AbstractLazyJP;
 /**
  * @defgroup JOINPROCESSOR JoinProcessors

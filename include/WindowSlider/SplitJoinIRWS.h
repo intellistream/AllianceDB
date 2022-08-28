@@ -9,9 +9,9 @@
 #include <WindowSlider/SplitJoinWS.h>
 #include <Utils/AbstractC20Thread.h>
 #include <JoinProcessor/SplitJoinIRJP.h>
-using namespace INTELLI;
+using namespace AllianceDB;
 using namespace std;
-namespace INTELLI {
+namespace AllianceDB {
 /**
  * @ingroup WINDOWSLIDER_EAGER
 * @class SplitJoinIRWS WindowSlider/SplitJoinIRWS.h

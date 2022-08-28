@@ -3,7 +3,7 @@
 #define _JOINALGO_NESTEDLOOPJOIN_H_
 #include <JoinAlgo/AbstractJoinAlgo.h>
 
-namespace INTELLI {
+namespace AllianceDB {
 /**
 * @ingroup INTELLI_JOINALGOS
 * @{

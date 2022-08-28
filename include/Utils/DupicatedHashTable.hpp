@@ -11,7 +11,7 @@ using namespace std;
 #include <iostream>
 #include <memory>
 #include <unordered_map>
-namespace INTELLI {
+namespace AllianceDB {
 /*class:DupicatedHashTable
 description: integrted an unsorted_map, and can deal with duplicated key
 note: almost all part of this class is similar to the original unsorted_map,

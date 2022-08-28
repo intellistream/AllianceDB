@@ -13,7 +13,7 @@
 #include <iostream>
 #include <iomanip>
 
-namespace INTELLI {
+namespace AllianceDB {
 typedef std::shared_ptr<class Tuple> TuplePtr;
 //Array Pointers
 typedef std::vector<TuplePtr> WindowOfTuples;
@@ -31,9 +31,9 @@ typedef moodycamel::ConcurrentQueue<TuplePtr> concurrentTupleQueue;
  * @note This one is thread-safe
  * @warning Must be inited by @ref newTuplePtrQueue before use
  */
-typedef std::shared_ptr<INTELLI::SPSCQueue<INTELLI::TuplePtr>> TuplePtrQueue;
-typedef std::shared_ptr<std::queue<INTELLI::TuplePtr>> TupleQueueSelfPtr;
-typedef std::shared_ptr<INTELLI::SPSCQueue<vector<INTELLI::TuplePtr>>> WindowQueue;
+typedef std::shared_ptr<AllianceDB::SPSCQueue<AllianceDB::TuplePtr>> TuplePtrQueue;
+typedef std::shared_ptr<std::queue<AllianceDB::TuplePtr>> TupleQueueSelfPtr;
+typedef std::shared_ptr<AllianceDB::SPSCQueue<vector<AllianceDB::TuplePtr>>> WindowQueue;
 
 /**
  * @class Tuple Common/Types.h

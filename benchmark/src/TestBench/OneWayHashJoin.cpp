@@ -5,14 +5,14 @@
 #include <TestBench/OneWayHashJoin.h>
 #include <iostream>
 
-void INTELLI::OneWayHashJoin::execute(INTELLI::Result &joinResult, INTELLI::RelationCouple &relationCouple) {
+void AllianceDB::OneWayHashJoin::execute(AllianceDB::Result &joinResult, AllianceDB::RelationCouple &relationCouple) {
   bool windowFullR = false;
   bool windowFullS = false;
-  INTELLI::WindowCouple windowCouple = INTELLI::WindowCouple(WINDOW_SIZE);
+  AllianceDB::WindowCouple windowCouple = AllianceDB::WindowCouple(WINDOW_SIZE);
   while (!relationCouple.relationR.empty() && !relationCouple.relationS.empty()) {
     //R
     //Push relationR's tuple into windowR + hashtableR
-    INTELLI::TuplePtr tuple = relationCouple.relationR.front();
+    AllianceDB::TuplePtr tuple = relationCouple.relationR.front();
     relationCouple.relationR.pop();
     windowCouple.windowR.push(tuple);
     windowCouple.hashtableR.emplace(tuple->key, 0);

@@ -9,7 +9,7 @@
 #include <Common/Tuple.hpp>
 #include <string>
 #include <memory>
-namespace INTELLI {
+namespace AllianceDB {
 /**
 * @defgroup INTELLI_JOINALGOS The specific join algorithms
 * @{

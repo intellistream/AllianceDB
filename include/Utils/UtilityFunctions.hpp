@@ -1,8 +1,8 @@
 /*! \file UtilityFunctions.hpp*/
 // Copyright (C) 2021 by the INTELLI team (https://github.com/intellistream)
 
-#ifndef IntelliStream_SRC_UTILS_UTILITYFUNCTIONS_HPP_
-#define IntelliStream_SRC_UTILS_UTILITYFUNCTIONS_HPP_
+#ifndef AllianceDB_SRC_UTILS_UTILITYFUNCTIONS_HPP_
+#define AllianceDB_SRC_UTILS_UTILITYFUNCTIONS_HPP_
 
 #include <string>
 #include <experimental/filesystem>
@@ -21,7 +21,7 @@
 #define TRUE 1
 #define FALSE 0
 
-namespace INTELLI {
+namespace AllianceDB {
 typedef std::shared_ptr<std::barrier<>> BarrierPtr;
 #define TIME_LAST_UNIT_MS 1000
 #define TIME_LAST_UNIT_US 1000000

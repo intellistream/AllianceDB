@@ -3,7 +3,7 @@
 //
 
 #include <WindowSlider/AbstractLazyWS.h>
-using namespace INTELLI;
+using namespace AllianceDB;
 void AbstractLazyWS::initJoinProcessors() {
   windowCnt = windowLen / slideLen + 1;
   //period = (windowCnt - 1) * (slideLen) + slideLen;

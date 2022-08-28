@@ -3,7 +3,7 @@
 //
 #include<JoinProcessor/HandShakeJP.h>
 #include <Common/Tuple.hpp>
-using namespace INTELLI;
+using namespace AllianceDB;
 void HandShakeJP::setupQueue() {
   TuplePtrQueueInS = newTuplePtrQueue(sQueue);
   TuplePtrQueueInR = newTuplePtrQueue(rQueue);

@@ -9,16 +9,16 @@
 #include <thread>
 #include <iostream>
 #include <WindowSlider/HandShakeWS.h>
-INTELLI::TuplePtrQueueIn RecvQueueR[THREAD_NUMBER + 1];
-INTELLI::TuplePtrQueueIn RecvQueueS[THREAD_NUMBER + 1];
+AllianceDB::TuplePtrQueueIn RecvQueueR[THREAD_NUMBER + 1];
+AllianceDB::TuplePtrQueueIn RecvQueueS[THREAD_NUMBER + 1];
 
-INTELLI::numberType threadJoinResultSHJ[THREAD_NUMBER];
-INTELLI::RelationCouple relationCoupleShared;
+AllianceDB::numberType threadJoinResultSHJ[THREAD_NUMBER];
+AllianceDB::RelationCouple relationCoupleShared;
 
 int fetchRThreadId = 0;
 int fetchSThreadId = THREAD_NUMBER - 1;
 
-void INTELLI::HandShakeJoin::execute(INTELLI::Result &joinResult, INTELLI::RelationCouple &relationCouple) {
+void AllianceDB::HandShakeJoin::execute(AllianceDB::Result &joinResult, AllianceDB::RelationCouple &relationCouple) {
   relationCoupleShared = relationCouple;
   //determine the sub-window size for each thread. Yeah
 
@@ -43,14 +43,14 @@ void INTELLI::HandShakeJoin::execute(INTELLI::Result &joinResult, INTELLI::Relat
 }
 
 void
-INTELLI::HandShakeJoin::threadWork(int id, INTELLI::numberType windowSize) {
+AllianceDB::HandShakeJoin::threadWork(int id, AllianceDB::numberType windowSize) {
   TuplePtrQueueIn &threadLeftRecvQueueR = RecvQueueR[id];
   TuplePtrQueueIn &threadLeftSendQueueS = RecvQueueS[id];
   TuplePtrQueueIn &threadRightSendQueueR = RecvQueueR[id + 1];
   TuplePtrQueueIn &threadRightRecvQueueS = RecvQueueS[id + 1];
   TuplePtrQueueIn forwardedTuple;
 
-  INTELLI::WindowCouple windowCouple = INTELLI::WindowCouple(windowSize);
+  AllianceDB::WindowCouple windowCouple = AllianceDB::WindowCouple(windowSize);
 
 
 
@@ -62,7 +62,7 @@ INTELLI::HandShakeJoin::threadWork(int id, INTELLI::numberType windowSize) {
     //process_left()
     if (!threadLeftRecvQueueR.empty()) {
       //fetch that tuple
-      INTELLI::TuplePtr tuple = threadLeftRecvQueueR.front();
+      AllianceDB::TuplePtr tuple = threadLeftRecvQueueR.front();
       threadLeftRecvQueueR.pop();
       //nullptr is an ack for information
       if (tuple == nullptr) {
@@ -91,7 +91,7 @@ INTELLI::HandShakeJoin::threadWork(int id, INTELLI::numberType windowSize) {
     //process_right()
     if (!threadRightRecvQueueS.empty()) {
       //fetch that tuple
-      INTELLI::TuplePtr tuple = threadRightRecvQueueS.front();
+      AllianceDB::TuplePtr tuple = threadRightRecvQueueS.front();
       threadRightRecvQueueS.pop();
       //scan R-hashtable
       auto findMatchR = windowCouple.hashtableR.find(tuple->key);
@@ -110,7 +110,7 @@ INTELLI::HandShakeJoin::threadWork(int id, INTELLI::numberType windowSize) {
     //forward_tuples()
     if (windowCouple.windowS.size() > windowCouple.windowSize) {
       //place oldest non-forwarded si into leftSendQueue
-      INTELLI::TuplePtr tupleOnAir = windowCouple.windowS.front();
+      AllianceDB::TuplePtr tupleOnAir = windowCouple.windowS.front();
       threadLeftSendQueueS.push(tupleOnAir);
       //mark si as forwarded  (delete it from the queue but left it in the hashtable and put it into the forwardedTuple queue)
       windowCouple.windowS.pop();

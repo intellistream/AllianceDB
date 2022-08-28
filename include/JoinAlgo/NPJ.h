@@ -10,7 +10,7 @@
 #include <barrier>
 #include <JoinAlgo/AbstractJoinAlgo.h>
 
-namespace INTELLI {
+namespace AllianceDB {
 /**
 * @ingroup INTELLI_JOINALGOS
 * @{

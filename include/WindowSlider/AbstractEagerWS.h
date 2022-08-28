@@ -15,9 +15,9 @@
 #include <JoinProcessor/CellJoinJP.h>
 #include <Utils/AbstractC20Thread.h>
 
-using namespace INTELLI;
+using namespace AllianceDB;
 using namespace std;
-namespace INTELLI {
+namespace AllianceDB {
 //Note: "Upon every arrival of a tuple, the opposing window is re-partitioned to perform a parallel scan"
 /**
  *@defgroup WINDOWSLIDER WindowSliders

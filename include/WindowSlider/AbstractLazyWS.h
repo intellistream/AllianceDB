@@ -8,7 +8,7 @@
 #include <Common/Types.hpp>
 #include <WindowSlider/AbstractWS.h>
 #include <JoinProcessor/AbstractLazyJP.h>
-namespace INTELLI {
+namespace AllianceDB {
 /**
  * @defgroup WINDOWSLIDER WindowSliders
  * @{

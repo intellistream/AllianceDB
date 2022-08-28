@@ -2,11 +2,11 @@
 // Created by Wang Chenyu on 4/9/21.
 //
 
-#ifndef INTELLISTREAM_ONEWAYHASHJOIN_H
-#define INTELLISTREAM_ONEWAYHASHJOIN_H
+#ifndef AllianceDB_ONEWAYHASHJOIN_H
+#define AllianceDB_ONEWAYHASHJOIN_H
 
 #include <Common/Types.hpp>
-namespace INTELLI {
+namespace AllianceDB {
 class OneWayHashJoin {
  public:
   static void execute(Result &joinResult, RelationCouple &relationCouple);

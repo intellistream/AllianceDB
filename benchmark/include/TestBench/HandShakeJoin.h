@@ -8,7 +8,7 @@
 #include <Common/Types.hpp>
 #include <TestBench/AbstractJoinMethod.h>
 #include <WindowSlider/HandShakeWS.h>
-namespace INTELLI {
+namespace AllianceDB {
 class HandShakeJoin : public AbstractJoinMethod<HandShakeWS> {
  public:
   static void execute(Result &joinResult, RelationCouple &relationCouple);

@@ -4,7 +4,7 @@
 #include <JoinAlgo/JoinAlgoTable.h>
 #include <JoinAlgo/NestedLoopJoin.h>
 #include <JoinAlgo/NPJ.h>
-using namespace INTELLI;
+using namespace AllianceDB;
 JoinAlgoTable::JoinAlgoTable() {
 //  NPJ npj;
   algos = {newAbstractJoinAlgo(), \

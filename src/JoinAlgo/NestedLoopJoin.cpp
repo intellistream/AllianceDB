@@ -1,6 +1,6 @@
 #include <JoinAlgo/NestedLoopJoin.h>
 
-using namespace INTELLI;
+using namespace AllianceDB;
 size_t NestedLoopJoin::join(TuplePtr *ts, TuplePtr tr, size_t tsLen, int threads) {
   assert(threads > 0);
   size_t result = 0;
