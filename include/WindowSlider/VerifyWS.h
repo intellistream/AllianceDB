@@ -4,7 +4,7 @@
 #define _WINDOWSLIDER_VERIFYWS_H_
 #include <WindowSlider/AbstractWS.h>
 #include <JoinProcessor/CellJoinJP.h>
-#include <Utils/AbstractC20Thread.h>
+#include <Utils/Executor.h>
 #include <Common/Tuple.hpp>
 namespace AllianceDB {
 /**
@@ -23,13 +23,13 @@ namespace AllianceDB {
   \li Feed tuples @ref feedTupleS or @ref feedTupleR
   \li Terminate, by @ref terminateJoinProcessors
 */
-class VerifyWS : public AbstractWS, public AbstractC20Thread {
+class VerifyWS : public AbstractWS, public Executor {
  protected:
   TuplePtrQueue TuplePtrQueueLocalS;
   TuplePtrQueue TuplePtrQueueLocalR;
 
   size_t joinResults;
-  virtual void inlineMain();
+  virtual void Process();
   /**
   * @brief deliver tuple s to join processors
   * @param ts The tuple s

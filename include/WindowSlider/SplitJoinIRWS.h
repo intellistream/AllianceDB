@@ -7,7 +7,7 @@
 #define _WINDOWSLIDER_SPLITIRWS_H_
 
 #include <WindowSlider/SplitJoinWS.h>
-#include <Utils/AbstractC20Thread.h>
+#include <Utils/Executor.h>
 #include <JoinProcessor/SplitJoinIRJP.h>
 using namespace AllianceDB;
 using namespace std;

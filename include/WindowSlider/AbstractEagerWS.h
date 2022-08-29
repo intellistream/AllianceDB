@@ -13,7 +13,7 @@
 
 #include <WindowSlider/AbstractWS.h>
 #include <JoinProcessor/CellJoinJP.h>
-#include <Utils/AbstractC20Thread.h>
+#include <Utils/Executor.h>
 
 using namespace AllianceDB;
 using namespace std;
@@ -48,7 +48,7 @@ To init and run, follow the functions below to start a WS
   \li Terminate, by @ref terminateJoinProcessors
 *
 */
-class AbstractEagerWS : public AbstractWS, public AbstractC20Thread {
+class AbstractEagerWS : public AbstractWS, public Executor {
  private:
   /* data */
   std::vector<CellJoinJPPtr> jps;
@@ -57,7 +57,7 @@ class AbstractEagerWS : public AbstractWS, public AbstractC20Thread {
   void expireR(size_t cond);
   TuplePtrQueue TuplePtrQueueLocalS;
   TuplePtrQueue TuplePtrQueueLocalR;
-  virtual void inlineMain();
+  virtual void Process();
   /**
    * @brief deliver tuple s to join processors
    * @param ts The tuple s

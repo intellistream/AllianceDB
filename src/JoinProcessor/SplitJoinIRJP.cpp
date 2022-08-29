@@ -107,7 +107,7 @@ void SplitJoinIRJP::expireR(size_t cond) {
   }
 
 }
-void SplitJoinIRJP::inlineMain() {
+void SplitJoinIRJP::Process() {
   UtilityFunctions::bind2Core(cpuBind);
   hashtableS = make_shared<dpHashtable>();
   hashtableR = make_shared<dpHashtable>();

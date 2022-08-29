@@ -43,7 +43,7 @@ void HandShakeWS::initJoinProcessors() {
     cout << "JP " << tid << "window len=" << parVec[tid] << endl;
     //jpPtr[tid]->start();
 
-    jpPtr[tid]->startThread();
+    jpPtr[tid]->Start();
 
   }
   initBar->arrive_and_wait();
@@ -56,7 +56,7 @@ void HandShakeWS::terminateJoinProcessors() {
   }
   waitAckFromJoinProcessors();
   for (size_t tid = 0; tid < threads; tid++) {
-    jpPtr[tid]->joinThread();
+    jpPtr[tid]->Join();
   }
   isRunning = false;
 }

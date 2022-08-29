@@ -45,7 +45,6 @@
 #include <unordered_map>
 #include <queue>
 #include <barrier>
-#include <Utils/concurrentqueue.h>
 #include <Utils/DupicatedHashTable.hpp>
 #include <Utils/SPSCQueue.hpp>
 #include <iostream>

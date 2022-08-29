@@ -21,7 +21,7 @@ void HandShakeJP::setupQueue() {
   myAlgo = newJoinAlgoTable();
 
 }
-void HandShakeJP::inlineMain() {
+void HandShakeJP::Process() {
 //first bind to the core
   UtilityFunctions::bind2Core(cpuBind);
   setupQueue();

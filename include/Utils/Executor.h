@@ -1,8 +1,4 @@
-/*! \file AbstractC20Thread.h*/
-//
-// Created by tony on 07/03/22.
-//
-
+/*! \file Executor.h*/
 #ifndef _INCLUDE_UTILS_ABSTRACTC20THREAD_H_
 #define _INCLUDE_UTILS_ABSTRACTC20THREAD_H_
 #pragma once
@@ -21,47 +17,27 @@
 namespace AllianceDB {
 /**
  * @ingroup INTELLI_UTIL_OTHERC20
- * @class AbstractC20Thread  Utils/AbstractC20Thread.h
+ * @class Executor  Utils/Executor.h
  * @brief The base class and abstraction of C++20 thread,
  * and it can be derived into other threads
  */
-class AbstractC20Thread {
+class Executor {
  protected:
-  /**
-   * @brief The inline 'main" function of thread, as an interface
-   * @note Normally re-write this in derived classes
-   */
-  virtual void inlineMain() {
-
-  }
-
-  std::shared_ptr<std::thread> threadPtr;
+  virtual void Process() = 0;
+ private:
+  std::unique_ptr<std::thread> threadPtr;
  public:
-  AbstractC20Thread() {}
-  ~AbstractC20Thread() {}
-  /**
-   * @brief to start this thread
-   */
-  void startThread() {
-    auto fun = [this]() {
-      inlineMain();
-    };
-    threadPtr = std::make_shared<std::thread>(fun);
-    // table=make_shared<MultiThreadHashTable>(5000);
+  Executor() = default;
+  ~Executor() = default;
+
+  void Start() {
+    threadPtr = std::make_unique<std::thread>(&Executor::Process, this);
   }
-  /**
-   * @brief the thread join function
-   */
-  void joinThread() {
+  void Join() {
     threadPtr->join();
   }
-
 };
-
 }
-
-
-
 /**
  * @}
  */

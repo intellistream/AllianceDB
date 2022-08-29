@@ -94,7 +94,7 @@ void AbstractLazyJP::moveRtoBuffer() {
 
   }
 }
-void AbstractLazyJP::inlineMain() {
+void AbstractLazyJP::Process() {
   //cout << "join processor" + to_string(sysId) + " (lazyJP) start" << endl;
 
   cout << "jp " + to_string(sysId) + "start at" + to_string(tsBegin) + ", overlap until" + to_string(tsOverlap)

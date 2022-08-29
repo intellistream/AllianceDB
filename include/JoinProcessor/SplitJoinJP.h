@@ -21,7 +21,7 @@ namespace AllianceDB {
   */
 class SplitJoinJP : public AbstractJP {
  protected:
-  virtual void inlineMain();
+  virtual void Process();
   /**
    * @brief local queue storage of S, used for manage S window
    */

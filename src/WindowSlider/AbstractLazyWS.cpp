@@ -15,24 +15,24 @@ void AbstractLazyWS::initJoinProcessors() {
     jps[tid]->init(sLen, rLen, tid);
     jps[tid]->setTimeVal(timeSys);
     jps[tid]->setLazyWindow(slideLen, windowLen, period);
-    jps[tid]->startThread();
+    jps[tid]->Start();
   }
   isRunning = true;
-  this->startThread();
+  this->Start();
 }
 
 void AbstractLazyWS::terminateJoinProcessors() {
   for (size_t tid = 0; tid < windowCnt; tid++) {
     //join_cmd_t cmd=CMD_STOP;
     jps[tid]->inputCmd(CMD_STOP);
-    //jps[tid]->joinThread();
+    //jps[tid]->Join();
   }
   waitAckFromJoinProcessors();
   for (size_t tid = 0; tid < windowCnt; tid++) {
-    jps[tid]->joinThread();
+    jps[tid]->Join();
   }
   isRunning = false;
-  this->joinThread();
+  this->Join();
 }
 void AbstractLazyWS::waitAckFromJoinProcessors() {
   for (size_t tid = 0; tid < windowCnt; tid++) {
@@ -81,7 +81,7 @@ void AbstractLazyWS::feedTupleR(TuplePtr tr) {
  // cout<<to_string(tr->subKey)+","+ to_string(getTimeStamp())<<endl;
 }*/
 
-void AbstractLazyWS::inlineMain() {
+void AbstractLazyWS::Process() {
   while (isRunning) {
     while (!TuplePtrQueueInS->empty()) {
       TuplePtr ts = *TuplePtrQueueInS->front();

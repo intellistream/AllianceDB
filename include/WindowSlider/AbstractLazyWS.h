@@ -37,12 +37,12 @@ To init and run, follow the functions below to start a WS
  \li Feed tuples @ref feedTupleS or @ref feedTupleR
  \li Terminate, by @ref terminateJoinProcessors
 */
-class AbstractLazyWS : public AbstractWS, public AbstractC20Thread {
+class AbstractLazyWS : public AbstractWS, public Executor {
  protected:
   vector<AbstractLazyJPPtr> jps;
   size_t period = 0;
   size_t windowCnt = 0;
-  virtual void inlineMain();
+  virtual void Process();
 
  public:
   AbstractLazyWS() {

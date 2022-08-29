@@ -83,7 +83,7 @@ class AbstractLazyJP : public AbstractJP {
   bool isLastJp = false;*/
   bool checkTupleS(TuplePtr ts);
   bool checkTupleR(TuplePtr tr);
-  virtual void inlineMain();
+  virtual void Process();
   // bool belongs2Me(size_t timeDivSys);
   bool largerThanMe(size_t timeDivSys);
   bool smallerThanMe(size_t timeDivSys);

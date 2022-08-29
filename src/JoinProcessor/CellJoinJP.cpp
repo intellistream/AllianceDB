@@ -6,7 +6,7 @@
 
 using namespace AllianceDB;
 using namespace std;
-void AllianceDB::CellJoinJP::inlineMain() {
+void AllianceDB::CellJoinJP::Process() {
   //first bind to the core
   UtilityFunctions::bind2Core(cpuBind);
   //wait for new cmd

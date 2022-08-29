@@ -27,7 +27,7 @@ class SplitJoinIRJP : public SplitJoinJP {
 
  protected:
   dpHashtablePtr hashtableS, hashtableR;
-  virtual void inlineMain();
+  virtual void Process();
 
   void expireS(size_t cond);
   void expireR(size_t cond);

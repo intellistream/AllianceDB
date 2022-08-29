@@ -38,7 +38,7 @@ class CellJoinJP : public AbstractJP {
 
   // hashtable hashtableS,hashtableR;
  protected:
-  virtual void inlineMain();
+  virtual void Process();
 
   WindowQueue windowQueueS;
   WindowQueue windowQueueR;

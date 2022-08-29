@@ -7,7 +7,6 @@
 #include <unordered_map>
 #include <queue>
 #include <barrier>
-#include <Utils/concurrentqueue.h>
 #include <Utils/DupicatedHashTable.hpp>
 #include <Utils/SPSCQueue.hpp>
 #include <iostream>
@@ -24,7 +23,6 @@ typedef std::vector<TuplePtr> WindowOfTuples;
  * @warning This is not thread-safe, only used for local data
  */
 typedef std::queue<TuplePtr> TuplePtrQueueIn;
-typedef moodycamel::ConcurrentQueue<TuplePtr> concurrentTupleQueue;
 /**
  *  @typedef TuplePtrQueue
  * @brief To describe a queue of @ref TuplePtr under SPSCQueue

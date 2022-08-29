@@ -17,22 +17,16 @@ endif ()
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH}")
 include(cmake/macros.cmake)
 include(cmake/default.cmake)
+
 message(STATUS ${CMAKE_CXX_COMPILER})
 # C++ Standard
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-#gcc 10 g++10
-#message(STATUS "sudo add-apt-repository 'deb http://mirrors.kernel.org/ubuntu hirsute main universe'")
-#message(STATUS "sudo apt-get update")
-#message(STATUS "sudo apt install gcc-11 g++-11")
-#message(STATUS "sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 11")
-#message(STATUS "sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-11 11")
 
 # Set Optimization Flags
 set(CMAKE_CXX_FLAGS "-std=c++20 -lstdc++fs -Wall -Werror=return-type -Werror=unused-variable -Werror=unused-parameter")
 set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -DNO_RACE_CHECK -DAllianceDB_DEBUG_MODE=1")
 set(CMAKE_CXX_FLAGS_RELEASE "-Wno-ignored-qualifiers -Wno-sign-compare -O3")
-
 # Set LOGGING_LEVEL Flag
 if (AllianceDB_LOGGING_LEVEL)
     get_log_level_value(AllianceDB_LOGGING_VALUE)

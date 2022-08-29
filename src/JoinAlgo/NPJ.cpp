@@ -6,7 +6,7 @@
 #include <Utils/ThreadPerf.h>
 
 using namespace AllianceDB;
-void NPJ_thread::inlineMain() {
+void NPJ_thread::Process() {
   //first bind to the core
   // UtilityFunctions::bind2Core(cpu);
   //build S
@@ -68,12 +68,12 @@ size_t NPJ::join(TuplePtr *ts, TuplePtr *tr, size_t tsLen, size_t trLen, int thr
     rBegin += partitionR[i];
   }
   for (size_t i = 0; i < threads; i++) {
-    workers[i].startThread();
+    workers[i].Start();
   }
   tp.end();
 
   for (size_t i = 0; i < threads; i++) {
-    workers[i].joinThread();
+    workers[i].Join();
     ru += workers[i].getResult();
   }
   return ru;
@@ -104,11 +104,11 @@ size_t NPJ::join(TuplePtr *ts, TuplePtr tr, size_t tsLen, int threads) {
     sBegin += partitionS[i];
   }
   for (size_t i = 0; i < threads; i++) {
-    workers[i].startThread();
+    workers[i].Start();
   }
   //tp.end();
   for (size_t i = 0; i < threads; i++) {
-    workers[i].joinThread();
+    workers[i].Join();
   }
   ru = table->probeTuple(tr);
   return ru;

@@ -115,7 +115,7 @@ void SplitJoinJP::expireR(size_t cond) {
      //windowS.append(TuplePtrQueueLocalS->front(),validLen);
    }*/
 }
-void SplitJoinJP::inlineMain() {
+void SplitJoinJP::Process() {
   UtilityFunctions::bind2Core(cpuBind);
   while (1) {
     //stop cmd

@@ -7,7 +7,7 @@
 #define _WINDOWSLIDER_SPLITWS_H_
 
 #include <WindowSlider/AbstractWS.h>
-#include <Utils/AbstractC20Thread.h>
+#include <Utils/Executor.h>
 #include <JoinProcessor/SplitJoinJP.h>
 using namespace AllianceDB;
 using namespace std;
@@ -33,7 +33,7 @@ class SplitJoinWS : public AbstractWS {
  protected:
   /* data */
   std::vector<SplitJoinJPPtr> jps;
-  // virtual void inlineMain();
+  // virtual void Process();
   /**
    * @brief deliver tuple s to join processors
    * @param ts The tuple s

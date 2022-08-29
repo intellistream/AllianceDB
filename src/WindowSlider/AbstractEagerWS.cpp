@@ -158,10 +158,10 @@ void AbstractEagerWS::initJoinProcessors() {
       jps[tid]->setCore(tid);
     }
 
-    jps[tid]->startThread();
+    jps[tid]->Start();
   }
   isRunning = true;
-  this->startThread();
+  this->Start();
 }
 void AbstractEagerWS::terminateJoinProcessors() {
   for (size_t tid = 0; tid < threads; tid++) {
@@ -170,10 +170,10 @@ void AbstractEagerWS::terminateJoinProcessors() {
   }
   waitAckFromJoinProcessors();
   for (size_t tid = 0; tid < threads; tid++) {
-    jps[tid]->joinThread();
+    jps[tid]->Join();
   }
   isRunning = false;
-  this->joinThread();
+  this->Join();
 }
 void AbstractEagerWS::waitAckFromJoinProcessors() {
   for (size_t tid = 0; tid < threads; tid++) {
@@ -195,7 +195,7 @@ size_t AbstractEagerWS::getJoinResult() {
   }
   return ru;
 }
-void AbstractEagerWS::inlineMain() {
+void AbstractEagerWS::Process() {
   while (isRunning) {
     while (!TuplePtrQueueInS->empty()) {
       TuplePtr ts = *TuplePtrQueueInS->front();

@@ -19,10 +19,10 @@ void SplitJoinWS::initJoinProcessors() {
     if (isRunTimeScheduling()) {
       jps[tid]->setCore(tid);
     }
-    jps[tid]->startThread();
+    jps[tid]->Start();
   }
   isRunning = true;
-  // this->startThread();
+  // this->Start();
 }
 void SplitJoinWS::terminateJoinProcessors() {
   for (size_t tid = 0; tid < threads; tid++) {
@@ -31,10 +31,10 @@ void SplitJoinWS::terminateJoinProcessors() {
   }
   waitAckFromJoinProcessors();
   for (size_t tid = 0; tid < threads; tid++) {
-    jps[tid]->joinThread();
+    jps[tid]->Join();
   }
   isRunning = false;
-  // this->joinThread();
+  // this->Join();
 }
 void SplitJoinWS::waitAckFromJoinProcessors() {
   for (size_t tid = 0; tid < threads; tid++) {
@@ -48,7 +48,7 @@ void SplitJoinWS::waitAckFromJoinProcessors() {
   }
 }
 /*
-void SplitJoinWS::inlineMain() {
+void SplitJoinWS::Process() {
   while (isRunning) {
     while (!TuplePtrQueueInS->empty()) {
       TuplePtr ts = *TuplePtrQueueInS->front();

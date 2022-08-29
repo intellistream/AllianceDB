@@ -18,8 +18,8 @@ void SplitJoinIRWS::initJoinProcessors() {
     if (isRunTimeScheduling()) {
       jps[tid]->setCore(tid);
     }
-    jps[tid]->startThread();
+    jps[tid]->Start();
   }
   isRunning = true;
-  // this->startThread();
+  // this->Start();
 }

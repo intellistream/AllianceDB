@@ -6,7 +6,7 @@
 #ifndef _JOINALGO_NPJ_NPJ_H_
 #define _JOINALGO_NPJ_NPJ_H_
 #include <Common/MultiThreadHashTable.h>
-#include <Utils/AbstractC20Thread.h>
+#include <Utils/Executor.h>
 #include <barrier>
 #include <JoinAlgo/AbstractJoinAlgo.h>
 
@@ -34,7 +34,7 @@ build phase, all threads populate a shared hash table with all tuples
  * @brief The thread used by NPJ
  * @warning This is NOT an API class, please do not use it in user code, as the pointers are used for speeding
  */
-class NPJ_thread : public AbstractC20Thread {
+class NPJ_thread : public Executor {
  private:
   TuplePtr *ts, *tr;
   size_t sLen = 0, rLen = 0;
@@ -46,9 +46,9 @@ class NPJ_thread : public AbstractC20Thread {
  protected:
   /**
    * @brief The 'main' function of NPJ thread
-   * @note This is a re-implementation of AbstractC20Thread
+   * @note This is a re-implementation of Executor
    */
-  void inlineMain();
+  void Process();
  public:
   NPJ_thread() {};
   ~NPJ_thread() {};

@@ -126,12 +126,12 @@ void VerifyWS::initJoinProcessors() {
   cout << "enable " << threads << " threads" << endl;
   cout << "warning, this is just a single thread WS" << endl;
   isRunning = true;
-  this->startThread();
+  this->Start();
 }
 void VerifyWS::terminateJoinProcessors() {
 
   isRunning = false;
-  this->joinThread();
+  this->Join();
 }
 void VerifyWS::waitAckFromJoinProcessors() {
 }
@@ -139,7 +139,7 @@ void VerifyWS::waitAckFromJoinProcessors() {
 size_t VerifyWS::getJoinResult() {
   return joinResults;
 }
-void VerifyWS::inlineMain() {
+void VerifyWS::Process() {
   while (isRunning) {
     while (!TuplePtrQueueInS->empty()) {
       TuplePtr ts = *TuplePtrQueueInS->front();

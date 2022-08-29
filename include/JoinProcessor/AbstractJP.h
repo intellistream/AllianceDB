@@ -8,7 +8,7 @@
 #include <Utils/UtilityFunctions.hpp>
 #include <Common/Types.hpp>
 #include <barrier>
-#include <Utils/AbstractC20Thread.h>
+#include <Utils/Executor.h>
 #include <Utils/C20Buffers.hpp>
 #include <JoinAlgo/JoinAlgoTable.h>
 #include <memory>
@@ -34,9 +34,9 @@ class AbstractLazyJP;
  * @ingroup JOINPROCESSOR_BASE
   * @class AbstractJP JoinProcessor/AbstractJP.h
   * @brief The basic class of join processor
-  * @note first @ref init the JP before @ref startThread
+  * @note first @ref init the JP before @ref Start
   */
-class AbstractJP : public AbstractC20Thread {
+class AbstractJP : public Executor {
  protected:
   TuplePtrQueue TuplePtrQueueInS;
   TuplePtrQueue TuplePtrQueueInR;
@@ -75,9 +75,9 @@ class AbstractJP : public AbstractC20Thread {
   }
   /**
    * @brief The 'main' function of AbstractP
-   * @note This is a re-implementation of AbstractC20Thread
+   * @note This is a re-implementation of Executor
    */
-  virtual void inlineMain() {
+  virtual void Process() {
 
   }
   /**

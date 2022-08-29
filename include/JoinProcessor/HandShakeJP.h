@@ -48,7 +48,7 @@ class HandShakeJP : public AbstractJP {
   void setupQueue();
   void expireS(size_t cond);
   void expireR(size_t cond);
-  virtual void inlineMain();
+  virtual void Process();
  public:
   void setLeft(HandShakeJPPtr l) {
     leftJP = l;
