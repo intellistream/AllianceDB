@@ -37,15 +37,15 @@ class Execute {
       size_t timeFeed = UtilityFunctions::timeLastUs(timeSys) / TIME_STEP;
       if (!relationCouple.relationR.empty()) {
         AllianceDB::TuplePtr tr = relationCouple.relationR.front();
-        if (timeFeed >= tr->subKey) {
-          // cout<<to_string(timeFeed)+","+ to_string(tr->subKey)<<endl;
+        if (timeFeed >= tr->timestamp) {
+          // cout<<to_string(timeFeed)+","+ to_string(tr->timestamp)<<endl;
           relationCouple.relationR.pop();
           windowSlider.feedTupleR(tr);
         }
       }
       if (!relationCouple.relationS.empty()) {
         AllianceDB::TuplePtr ts = relationCouple.relationS.front();
-        if (timeFeed >= ts->subKey) {
+        if (timeFeed >= ts->timestamp) {
           relationCouple.relationS.pop();
           windowSlider.feedTupleS(ts);
         }

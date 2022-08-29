@@ -169,9 +169,9 @@ static DebugLevel getStringAsDebugLevel(std::string level) {
 #define INTELLI_WARNING(TEXT)                                                                                                        \
       std::cout << TEXT << std::endl;
 #define INTELLI_ERROR(TEXT)                                                                                                          \
-      std::cout << TEXT << std::endl;
+      std::cerr << TEXT << std::endl;
 #define INTELLI_FATAL_ERROR(TEXT)                                                                                                    \
-      std::cout << TEXT << std::endl;
+      std::cerr << TEXT << std::endl;
 
 #endif
 #endif

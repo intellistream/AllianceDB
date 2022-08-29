@@ -1,10 +1,6 @@
 #include <Common/Types.hpp>
 #include <Common/Tuple.hpp>
 #include <Common/Result.hpp>
-#include <Common/RelationCouple.hpp>
-AllianceDB::RelationCouple::~RelationCouple() = default;
-
-AllianceDB::RelationCouple::RelationCouple() = default;
 
 AllianceDB::Result::Result() : joinNumber(0), streamSize(0), timeTaken(0) {}
 
