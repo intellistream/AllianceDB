@@ -1,4 +1,3 @@
-/*! \file Executor.h*/
 #ifndef _INCLUDE_UTILS_ABSTRACTC20THREAD_H_
 #define _INCLUDE_UTILS_ABSTRACTC20THREAD_H_
 #pragma once

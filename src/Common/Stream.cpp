@@ -5,7 +5,7 @@ void AllianceDB::Stream::Load(const std::string &fileName) {
   std::fstream file;
   std::string buffer;
   file.open(fileName, std::ios::in);
-  if (!file.is_open()) INTELLI_ERROR("cannot open the file: " + fileName);
+  if (!file.is_open()) INTELLI_DEBUG("cannot open the file: " + fileName);
   while (getline(file, buffer)) {
     tsType ts;
     keyType key;
@@ -16,7 +16,7 @@ void AllianceDB::Stream::Load(const std::string &fileName) {
     tuple->timestamp = ts;
     tuple->payload = v;
     this->Tuples.push_back(tuple);
-    INTELLI_TRACE("Push tuple: " + tuple->toString())
+//    INTELLI_DEBUG("Push tuple: " + tuple->toString())
   }
   file.close();
 }

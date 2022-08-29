@@ -13,7 +13,7 @@ class Tuple {
   tsType timestamp = 0;/*!< timestamp is preserved for join system, e.g., it can be the time stamp or tuple count*/
   keyType key; /*!< The key used for relational join*/
   valueType payload; /*!< The payload, can also be pointer*/
-  string toString();
+  std::string toString();
   Tuple(keyType k);
   Tuple(keyType k, valueType v);
   Tuple(tsType t, keyType k, valueType v);

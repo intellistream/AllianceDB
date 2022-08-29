@@ -16,8 +16,6 @@ if (BUILD_BENCHMARKS)
     message("---Building benchmarks ${source_dir}")
     include_directories("${source_dir}/include/")
     include_directories("include/")
-    set(TEST_BENCH_SRC "src/TestBench/AbstractJoinMethod.cpp"
-            )
     add_executable(benchmark "src/Benchmark.cpp" ${TEST_BENCH_SRC})
     target_link_libraries(benchmark AllianceDB)
 

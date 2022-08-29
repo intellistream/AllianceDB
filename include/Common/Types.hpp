@@ -45,8 +45,6 @@
 #include <unordered_map>
 #include <queue>
 #include <barrier>
-#include <Utils/DupicatedHashTable.hpp>
-#include <Utils/SPSCQueue.hpp>
 #include <iostream>
 #include <iomanip>
 
@@ -58,7 +56,6 @@ namespace AllianceDB {
 typedef size_t tsType;  /*!< Type of the timestamp, default uint64_t */
 typedef uint64_t keyType;    /*!< Type of the join key, default uint64_t */
 typedef uint64_t valueType;  /*!< Type of the payload, default uint64_t */
-typedef std::shared_ptr<std::barrier<>> BarrierPtr;
 }
 /**
  * @}

@@ -5,10 +5,10 @@ AllianceDB::Tuple::Tuple(AllianceDB::keyType k, AllianceDB::valueType v) : key(k
 AllianceDB::Tuple::Tuple(AllianceDB::tsType t, AllianceDB::keyType k, AllianceDB::valueType v)
     : timestamp(t), key(k), payload(v) {}
 
-string AllianceDB::Tuple::toString() {
-  string tmp;
-  tmp.append("key:" + std::to_string(key));
-  tmp.append("value:" + std::to_string(payload));
-  tmp.append("timestamp:" + std::to_string(timestamp));
+std::string AllianceDB::Tuple::toString() {
+  std::string tmp;
+  tmp.append("\t\tkey:" + std::to_string(key));
+  tmp.append("\t\tvalue:" + std::to_string(payload));
+  tmp.append("\t\ttimestamp:" + std::to_string(timestamp));
   return tmp;
 }
