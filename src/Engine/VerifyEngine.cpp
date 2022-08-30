@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 IntelliStream
+ * Copyright 2022 IntelliStream team (https://github.com/intellistream)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,4 +14,20 @@
  * limitations under the License.
  */
 
-#include <Engine/LazyEngine.hpp>
+#include <Engine/EagerEngine.hpp>
+#include <Engine/VerifyEngine.hpp>
+#include <Utils/Executor.hpp>
+
+namespace AllianceDB {
+
+void AllianceDB::VerifyEngine::Start(StreamPtr streamR,
+                                     StreamPtr streamS,
+                                     int threads,
+                                     int window_length,
+                                     int slide_length) {
+
+}
+void VerifyEngine::VerifyThread::Process() {
+
+}
+} // AllianceDB

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 IntelliStream
+ * Copyright 2022 IntelliStream team (https://github.com/intellistream)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,4 +14,21 @@
  * limitations under the License.
  */
 
-#include <Engine/LazyEngine.hpp>
+#ifndef ALLIANCEDB_SRC_WINDOWSLIDER_SIMPLEWINDOWSLIDER_HPP_
+#define ALLIANCEDB_SRC_WINDOWSLIDER_SIMPLEWINDOWSLIDER_HPP_
+
+#include <Common/Window.h>
+
+namespace AllianceDB {
+
+class SimpleWindowSlider {
+
+ protected:
+  Window wR;
+  Window wS;
+
+};
+
+} // AllianceDB
+
+#endif //ALLIANCEDB_SRC_WINDOWSLIDER_SIMPLEWINDOWSLIDER_HPP_
