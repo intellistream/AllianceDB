@@ -11,6 +11,7 @@ typedef std::shared_ptr<class Tuple> TuplePtr;
 class Tuple {
  public:
   tsType timestamp = 0;/*!< timestamp is preserved for join system, e.g., it can be the time stamp or tuple count*/
+  bool type; /*!< whether it is from stream R =true  or S = false*/
   keyType key; /*!< The key used for relational join*/
   valueType payload; /*!< The payload, can also be pointer*/
   std::string toString();

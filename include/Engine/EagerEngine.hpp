@@ -5,9 +5,7 @@
 namespace AllianceDB {
 typedef std::shared_ptr<class EagerEngine> EagerEnginePtr;
 class EagerEngine {
-
- public:
-  virtual void Run(StreamPtr streamR, StreamPtr streamS, int threads, int window_length, int slide_length) = 0;
+  virtual void Start() = 0;
 };
 
 } // AllianceDB

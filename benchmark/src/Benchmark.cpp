@@ -46,7 +46,7 @@ int main(int argc, char **argv) {
   auto threads = options.arg_as_or<int>(T, 2);
   auto window_length = options.arg_as_or<int>(W, 500);
   auto slide_length = options.arg_as_or<int>(S, 200);
-  auto engine = options.arg_as_or<int>(Engine, 0);
+  auto engine_type = options.arg_as_or<int>(Engine, 0);
 
   StreamPtr streamR = make_shared<Stream>();
   StreamPtr streamS = make_shared<Stream>();
@@ -54,13 +54,14 @@ int main(int argc, char **argv) {
   string fileRName = pwd + "/datasets/" + DATASET_NAME + "-R.txt";
   string fileSName = pwd + "/datasets/" + DATASET_NAME + "-S.txt";
 
-  streamR->Load(fileSName);
-  streamS->Load(fileSName);
+  streamR->Load(fileRName, true);
+  streamS->Load(fileSName, false);
 
-  switch (engine) {
+  switch (engine_type) {
     case 0: {
-      VerifyEnginePtr engine = make_shared<VerifyEngine>();
-      engine->Start(streamR, streamS, threads, window_length, slide_length);
+      VerifyEnginePtr engine = make_unique<VerifyEngine>(
+          streamR, streamS, threads, window_length, slide_length);
+      engine->Start();
       break;
     }
   }

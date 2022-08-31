@@ -11,7 +11,7 @@ class Stream {
  private:
   std::vector<AllianceDB::TuplePtr> Tuples;
  public:
-  void Load(const std::string &fileName);
+  void Load(const std::string &fileName, bool StreamR);
 };
 
 }

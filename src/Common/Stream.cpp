@@ -1,11 +1,11 @@
 #include <Common/Stream.hpp>
 #include <fstream>
 #include <Utils/Logger.hpp>
-void AllianceDB::Stream::Load(const std::string &fileName) {
+void AllianceDB::Stream::Load(const std::string &fileName, bool StreamR) {
   std::fstream file;
   std::string buffer;
   file.open(fileName, std::ios::in);
-  if (!file.is_open()) INTELLI_DEBUG("cannot open the file: " + fileName);
+  if (!file.is_open()) ERROR("cannot open the file: " + fileName);
   while (getline(file, buffer)) {
     tsType ts;
     keyType key;
@@ -15,8 +15,9 @@ void AllianceDB::Stream::Load(const std::string &fileName) {
     TuplePtr tuple = std::make_shared<Tuple>(key);
     tuple->timestamp = ts;
     tuple->payload = v;
+    tuple->type = StreamR;
     this->Tuples.push_back(tuple);
-//    INTELLI_DEBUG("Push tuple: " + tuple->toString())
+    TRACE("Push tuple: " + tuple->toString());
   }
   file.close();
 }

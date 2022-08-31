@@ -16,18 +16,41 @@
 
 #include <Engine/EagerEngine.hpp>
 #include <Engine/VerifyEngine.hpp>
-#include <Utils/Executor.hpp>
+#include <Utils/Logger.hpp>
 
 namespace AllianceDB {
 
-void AllianceDB::VerifyEngine::Start(StreamPtr streamR,
-                                     StreamPtr streamS,
-                                     int threads,
-                                     int window_length,
-                                     int slide_length) {
+void AllianceDB::VerifyEngine::Start() {
+  VerifyThread thread(0);
+  thread.Start();
+}
+
+VerifyEngine::VerifyEngine(const StreamPtr streamR,
+                           const StreamPtr streamS,
+                           int threads,
+                           int window_length,
+                           int slide_length)
+    : streamR(streamR), streamS(streamS), threads(threads), window_length(window_length), slide_length(slide_length) {
 
 }
+
 void VerifyEngine::VerifyThread::Process() {
+  INFO("VerifyThread" << id() << " Starts Running");
 
+  TuplePtr curr = NextTuple();
+  if (curr != NULL) {
+
+  }
 }
+
+TuplePtr VerifyEngine::VerifyThread::NextTuple() {
+  return AllianceDB::TuplePtr();
+}
+
+std::string VerifyEngine::VerifyThread::id() {
+  return std::to_string(ID);
+}
+
+VerifyEngine::VerifyThread::VerifyThread(int id) : ID(id) {}
+
 } // AllianceDB
