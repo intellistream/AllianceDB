@@ -1,0 +1,50 @@
+FROM ubuntu:22.04
+ENV USER=sutd
+ENV PASSWD=intelistream
+ENV WORKDIR=projects
+
+
+# 安装开发环境必要的包
+RUN apt-get update &&\
+  apt-get install -y build-essential \
+      gcc \
+      g++ \
+      gdb \
+      clang \
+      make \
+      ninja-build \
+      cmake \
+      autoconf \
+      automake \
+      rsync \
+      tar \
+      git \
+      liblog4cxx-dev \
+      net-tools \
+      openssh-server \
+      nano \
+      liblog4cxx-dev \
+      libboost-dev \
+      libboost-all-dev \
+      gdbserver
+RUN apt-get clean
+RUN apt-get install -y sudo
+
+# 添加用户并配置密码
+RUN useradd -m ${USER} && yes ${PASSWD} | passwd ${USER}
+
+# 赋予sudo权限并允许无密码sudo
+RUN echo ${USER}' ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+RUN chmod 644 /etc/sudoers
+RUN echo 'Port 22' >> /etc/ssh/sshd_config
+RUN echo 'service ssh start' >> /etc/init.d/docker_ssh
+RUN chmod 775 /etc/init.d/docker_ssh
+RUN update-rc.d docker_ssh defaults 999
+#RUN passwd root ${PASSWD}
+
+#CMD ["/usr/sbin/sshd", "-D"]
+
+USER ${USER}
+RUN mkdir -p /home/${USER}/${WORKDIR}/
+RUN sudo echo 'sudo service ssh restart' >> ~/.bashrc
+#ENV LC_ALL C.UTF-8
