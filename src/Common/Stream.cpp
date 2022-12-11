@@ -34,12 +34,13 @@ Stream::Stream(const Param &param, const std::string &file, StreamType st)
 
 void Stream::Load() {
   std::string buffer;
+  int count = 0;
   while (getline(fs, buffer)) {
     TsType ts;
     KeyType key;
     ValType val;
     sscanf(buffer.data(), "%ld,%ld,%ld", &key, &val, &ts);
-    // KeyType key = stoi(buffer);
+    ts = count++; // count-based window
     TuplePtr tuple = std::make_shared<Tuple>(key, val, st, ts);
     this->Tuples.push_back(tuple);
     TRACE("push tuple " + tuple->toString());
