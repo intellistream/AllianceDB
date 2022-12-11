@@ -18,51 +18,51 @@
  * @brief This is the main entry point of the entire program.
  * We use this as the entry point for benchmarking.
  */
+#include "Common/Param.hpp"
+#include "Common/Stream.hpp"
+#include "Common/Types.hpp"
+#include "Engine/VerifyEngine.hpp"
+#include "Utils/Flags.hpp"
+#include "Utils/Logger.hpp"
+
+#include <gflags/gflags.h>
+
 #include <filesystem>
-#include <Utils/Logger.hpp>
-#include <Utils/Flags.hpp>
-#include <Common/Types.hpp>
-#include <Common/Stream.hpp>
-#include <Engine/VerifyEngine.hpp>
 
 using namespace std;
 using namespace AllianceDB;
 
-//Arguments.
-const std::string T = "-T";
-const std::string W = "-W";
-const std::string S = "-S";
-const std::string Engine = "-E";//0: Verify Engine.
-//Required Arguments.
-const std::vector<std::string> V{};
+// Arguments.
+DEFINE_uint32(engine, 0, "Engine to use for benchmarking.");
+DEFINE_uint32(window_size, 500, "Window size");
+DEFINE_uint32(sliding, 200, "Sliding length");
+DEFINE_uint32(arr_rate, 0, "Arrival rate");
+DEFINE_string(r, "Test1-R.txt", "File path of R stream");
+DEFINE_string(s, "Test1-S.txt", "File path of S stream");
+DEFINE_uint32(max_threads, 2, "Max threads number");
 
 int main(int argc, char **argv) {
-  auto options = Flags::Flags{argc, argv};
+  Param param;
+  param.bin_dir = filesystem::weakly_canonical(filesystem::path(argv[0])).parent_path();
+  gflags::ParseCommandLineFlags(&argc, &argv, true);
 
-  if (!options.required_arguments(V)) {
-    return -1;
+  param.window_size = FLAGS_window_size;
+  param.sliding = FLAGS_sliding;
+  param.arr_rate = FLAGS_arr_rate;
+  param.max_threads = FLAGS_max_threads;
+
+  StreamPtr R = make_shared<Stream>(param, FLAGS_r, StreamType::R);
+  StreamPtr S = make_shared<Stream>(param, FLAGS_s, StreamType::S);
+
+  R->Load();
+  S->Load();
+
+  switch (FLAGS_engine) {
+  case 0: {
+    VerifyEnginePtr engine = make_unique<VerifyEngine>(
+        R, S, param);
+    engine->Start();
+    break;
   }
-
-  auto threads = options.arg_as_or<int>(T, 2);
-  auto window_length = options.arg_as_or<int>(W, 500);
-  auto slide_length = options.arg_as_or<int>(S, 200);
-  auto engine_type = options.arg_as_or<int>(Engine, 0);
-
-  StreamPtr streamR = make_shared<Stream>();
-  StreamPtr streamS = make_shared<Stream>();
-  string pwd = std::filesystem::current_path(); //Get current directory
-  string fileRName = pwd + "/datasets/" + DATASET_NAME + "-R.txt";
-  string fileSName = pwd + "/datasets/" + DATASET_NAME + "-S.txt";
-
-  streamR->Load(fileRName, true);
-  streamS->Load(fileSName, false);
-
-  switch (engine_type) {
-    case 0: {
-      VerifyEnginePtr engine = make_unique<VerifyEngine>(
-          streamR, streamS, threads, window_length, slide_length);
-      engine->Start();
-      break;
-    }
   }
 }

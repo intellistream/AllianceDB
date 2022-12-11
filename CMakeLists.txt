@@ -71,6 +71,7 @@ message(STATUS " Libraries: ${LIBRARIES}")
 
 # Add Source Code
 add_subdirectory(src)
+add_subdirectory(third_party/gflags)
 
 # Add Library
 get_sources(AllianceDB_SOURCE_FILES)

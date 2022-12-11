@@ -1,23 +1,48 @@
 #include <Common/Stream.hpp>
-#include <fstream>
 #include <Utils/Logger.hpp>
-void AllianceDB::Stream::Load(const std::string &fileName, bool StreamR) {
-  std::fstream file;
+
+#include <filesystem>
+#include <fstream>
+
+using namespace std;
+using namespace AllianceDB;
+using namespace std::filesystem;
+
+Stream::Stream(const Param &param, const std::string &file, StreamType st)
+    : param(param), filename(file), st(st) {
+  static const path search_dirs[] = {path("./"), path("datasets/"), path("../datasets/")};
+  path path_to_file(filename);
+  if (path_to_file.filename() == filename) {
+    for (const auto &dir : search_dirs) {
+      if (exists(dir / filename)) {
+        filename = (dir / filename).string();
+        break;
+      }
+      if (exists(path(param.bin_dir) / dir / filename)) {
+        filename = (path(param.bin_dir) / dir / filename).string();
+        break;
+      }
+    }
+  }
+  fs.open(filename, ios::in);
+  if (!fs.is_open()) {
+    ERROR("Cannot open file: " + filename);
+  } else {
+    INFO("Find file: " + filename);
+  }
+}
+
+void Stream::Load() {
   std::string buffer;
-  file.open(fileName, std::ios::in);
-  if (!file.is_open()) ERROR("cannot open the file: " + fileName);
-  while (getline(file, buffer)) {
-    tsType ts;
-    keyType key;
-    valueType v;
-    sscanf(buffer.data(), "%ld,%ld,%ld", &key, &v, &ts);
-    //keyType key = stoi(buffer);
-    TuplePtr tuple = std::make_shared<Tuple>(key);
-    tuple->timestamp = ts;
-    tuple->payload = v;
-    tuple->type = StreamR;
+  while (getline(fs, buffer)) {
+    TsType ts;
+    KeyType key;
+    ValType val;
+    sscanf(buffer.data(), "%ld,%ld,%ld", &key, &val, &ts);
+    // KeyType key = stoi(buffer);
+    TuplePtr tuple = std::make_shared<Tuple>(key, val, st, ts);
     this->Tuples.push_back(tuple);
     TRACE("Push tuple: " + tuple->toString());
   }
-  file.close();
+  fs.close();
 }

@@ -17,7 +17,7 @@ if (BUILD_BENCHMARKS)
     include_directories("${source_dir}/include/")
     include_directories("include/")
     add_executable(benchmark "src/Benchmark.cpp" ${TEST_BENCH_SRC})
-    target_link_libraries(benchmark AllianceDB)
+    target_link_libraries(benchmark AllianceDB gflags)
 
     file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/datasets
             DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

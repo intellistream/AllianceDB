@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-#include <Engine/EagerEngine.hpp>
-#include <Engine/VerifyEngine.hpp>
-#include <Utils/Logger.hpp>
+#include "Engine/VerifyEngine.hpp"
+#include "Engine/EagerEngine.hpp"
+#include "Utils/Logger.hpp"
 
 namespace AllianceDB {
 
@@ -25,21 +25,15 @@ void AllianceDB::VerifyEngine::Start() {
   thread.Start();
 }
 
-VerifyEngine::VerifyEngine(const StreamPtr streamR,
-                           const StreamPtr streamS,
-                           int threads,
-                           int window_length,
-                           int slide_length)
-    : streamR(streamR), streamS(streamS), threads(threads), window_length(window_length), slide_length(slide_length) {
-
-}
+VerifyEngine::VerifyEngine(const StreamPtr R, const StreamPtr S,
+                           const Param &param)
+    : R(R), S(S), param(param) {}
 
 void VerifyEngine::VerifyThread::Process() {
   INFO("VerifyThread" << id() << " Starts Running");
 
   TuplePtr curr = NextTuple();
   if (curr != NULL) {
-
   }
 }
 
@@ -47,9 +41,7 @@ TuplePtr VerifyEngine::VerifyThread::NextTuple() {
   return AllianceDB::TuplePtr();
 }
 
-std::string VerifyEngine::VerifyThread::id() {
-  return std::to_string(ID);
-}
+std::string VerifyEngine::VerifyThread::id() { return std::to_string(ID); }
 
 VerifyEngine::VerifyThread::VerifyThread(int id) : ID(id) {}
 

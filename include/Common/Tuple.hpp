@@ -1,6 +1,8 @@
 #ifndef ALIANCEDB_SRC_COMMON_TYPES_CPP_TUPLE_HPP_
 #define ALIANCEDB_SRC_COMMON_TYPES_CPP_TUPLE_HPP_
-#include <Common/Types.hpp>
+
+#include "Common/Types.hpp"
+
 namespace AllianceDB {
 
 typedef std::shared_ptr<class Tuple> TuplePtr;
@@ -10,14 +12,14 @@ typedef std::shared_ptr<class Tuple> TuplePtr;
  */
 class Tuple {
  public:
-  tsType timestamp = 0;/*!< timestamp is preserved for join system, e.g., it can be the time stamp or tuple count*/
-  bool type; /*!< whether it is from stream R =true  or S = false*/
-  keyType key; /*!< The key used for relational join*/
-  valueType payload; /*!< The payload, can also be pointer*/
+  TsType ts = 0;/*!< timestamp is preserved for join system, e.g., it can be the time stamp or tuple count*/
+  StreamType st; /*!< whether it is from stream R =true  or S = false*/
+  KeyType key; /*!< The key used for relational join*/
+  ValType val; /*!< The val, can also be pointer*/
   std::string toString();
-  Tuple(keyType k);
-  Tuple(keyType k, valueType v);
-  Tuple(tsType t, keyType k, valueType v);
+  Tuple(KeyType k);
+  Tuple(KeyType k, ValType v);
+  Tuple(KeyType k, ValType v, StreamType st, TsType ts);
   ~Tuple();
 };
 }

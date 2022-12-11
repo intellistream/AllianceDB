@@ -1,39 +1,35 @@
 #ifndef ALLIANCEDB_SRC_ENGINE_VERIFYNGINE_HPP_
 #define ALLIANCEDB_SRC_ENGINE_VERIFYNGINE_HPP_
 
-#include <Common/Stream.hpp>
-#include <Engine/EagerEngine.hpp>
-#include <Utils/Executor.hpp>
+#include "Common/Param.hpp"
+#include "Common/Stream.hpp"
+#include "Engine/EagerEngine.hpp"
+#include "Utils/Executor.hpp"
 
 namespace AllianceDB {
 typedef std::shared_ptr<class VerifyEngine> VerifyEnginePtr;
 class VerifyEngine : public EagerEngine {
- private:
+private:
   class VerifyThread : public Executor {
-   public:
+  public:
     explicit VerifyThread(int id);
     void Process() override;
     TuplePtr NextTuple();
     std::string id();
-   private:
+
+  private:
     int ID;
   };
-  const StreamPtr streamR;
-  const StreamPtr streamS;
-  const int threads;
-  const int window_length;
-  const int slide_length;
+  const StreamPtr R;
+  const StreamPtr S;
+  Param param;
 
- public:
-  VerifyEngine(const StreamPtr streamR,
-               const StreamPtr streamS,
-               int threads,
-               int window_length,
-               int slide_length);
+public:
+  VerifyEngine(const StreamPtr R, const StreamPtr S, const Param &param);
 
   void Start() override;
 };
 
-} // AllianceDB
+} // namespace AllianceDB
 
-#endif //ALLIANCEDB_SRC_ENGINE_VERIFYNGINE_HPP_
+#endif // ALLIANCEDB_SRC_ENGINE_VERIFYNGINE_HPP_

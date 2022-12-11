@@ -1,9 +1,9 @@
+#ifndef ALIANCEDB_INCLUDE_COMMON_TYPES_HPP_
+#define ALIANCEDB_INCLUDE_COMMON_TYPES_HPP_
+
 #ifndef UNUSED
 #define UNUSED(x) (void)(x)
 #endif
-
-#ifndef _AllianceDB_TYPES_H
-#define _AllianceDB_TYPES_H
 
 #ifndef ALGO_NAME
 
@@ -21,7 +21,7 @@
 
 #endif
 
-//Constants
+// Constants
 #ifndef WINDOW_SIZE
 #define WINDOW_SIZE 500
 #endif
@@ -31,34 +31,27 @@
 #endif
 
 #ifndef TIME_STEP
-#define TIME_STEP 40// US
-#endif
-#ifndef DATASET_NAME
-#define DATASET_NAME "Test1" //dataset name should be DATASET_NAME + "-R.txt" and DATASET_NAME + "-S.txt"
-//in Test2, we manually assigned duplicated keys
+#define TIME_STEP 40 // US
 #endif
 
+#include <barrier>
 #include <cstdint>
-#include <vector>
+#include <iomanip>
+#include <iostream>
 #include <memory>
 #include <mutex>
-#include <unordered_map>
 #include <queue>
-#include <barrier>
-#include <iostream>
-#include <iomanip>
+#include <unordered_map>
+#include <vector>
 
 #ifndef BAR
 #define BAR "-------------------------------------------"
 #endif
 
-namespace AllianceDB {
-typedef size_t tsType;  /*!< Type of the timestamp, default uint64_t */
-typedef uint64_t keyType;    /*!< Type of the join key, default uint64_t */
-typedef uint64_t valueType;  /*!< Type of the payload, default uint64_t */
-}
-/**
- * @}
- */
-#endif //INTELLISTREAM_TYPES_H
-/**@}*/
+using TsType = size_t;      /*!< Type of the timestamp, default uint64_t */
+using KeyType = uint64_t;   /*!< Type of the join key, default uint64_t */
+using ValType = uint64_t; /*!< Type of the val, default uint64_t */
+using uint32 = uint32_t;    /*!< Type of the uint32, default uint32_t */
+enum StreamType { R, S };   /*!< Type of the stream, default R and S */
+
+#endif
