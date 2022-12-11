@@ -19,8 +19,12 @@ if (BUILD_BENCHMARKS)
     add_executable(benchmark "src/Benchmark.cpp" ${TEST_BENCH_SRC})
     target_link_libraries(benchmark AllianceDB gflags)
 
-    file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/datasets
-            DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+    if (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/datasets)
+    add_custom_target(bench_datasets ALL
+                COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_SOURCE_DIR}/datasets ${CMAKE_CURRENT_BINARY_DIR}/datasets)
+    add_dependencies(benchmark bench_datasets)
+    endif (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/datasets)
+
     message("---Done building benchmarks")
 else (BUILD_BENCHMARKS)
     message("---Not building benchmarks!")
