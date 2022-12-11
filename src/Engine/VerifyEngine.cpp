@@ -30,7 +30,7 @@ VerifyEngine::VerifyEngine(const StreamPtr R, const StreamPtr S,
     : R(R), S(S), param(param) {}
 
 void VerifyEngine::VerifyThread::Process() {
-  INFO("VerifyThread" << id() << " Starts Running");
+  INFO("VerifyThread %d Starts Running", id());
 
   TuplePtr curr = NextTuple();
   if (curr != NULL) {

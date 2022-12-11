@@ -26,9 +26,9 @@ Stream::Stream(const Param &param, const std::string &file, StreamType st)
   }
   fs.open(filename, ios::in);
   if (!fs.is_open()) {
-    ERROR("Cannot open file: " + filename);
+    ERROR("cannot open file %s", filename.c_str());
   } else {
-    INFO("Find file: " + filename);
+    INFO("find input %s", filename.c_str());
   }
 }
 
@@ -42,7 +42,8 @@ void Stream::Load() {
     // KeyType key = stoi(buffer);
     TuplePtr tuple = std::make_shared<Tuple>(key, val, st, ts);
     this->Tuples.push_back(tuple);
-    TRACE("Push tuple: " + tuple->toString());
+    TRACE("push tuple " + tuple->toString());
   }
   fs.close();
+  INFO("load %ld tuples from %s", Tuples.size(), filename.c_str());
 }
