@@ -10,7 +10,8 @@ using namespace std::filesystem;
 
 Stream::Stream(const Param &param, const std::string &file, StreamType st)
     : param(param), filename(file), st(st) {
-  static const path search_dirs[] = {path("./"), path("datasets/"), path("../datasets/")};
+  static const path search_dirs[] = {path("./"), path("datasets/"),
+                                     path("../datasets/")};
   path path_to_file(filename);
   if (path_to_file.filename() == filename) {
     for (const auto &dir : search_dirs) {
@@ -42,9 +43,22 @@ void Stream::Load() {
     sscanf(buffer.data(), "%ld,%ld,%ld", &key, &val, &ts);
     ts = count++; // count-based window
     TuplePtr tuple = std::make_shared<Tuple>(key, val, st, ts);
-    this->Tuples.push_back(tuple);
+    this->tuples.push_back(tuple);
     TRACE("push tuple " + tuple->toString());
   }
   fs.close();
-  INFO("load %ld tuples from %s", Tuples.size(), filename.c_str());
+  num_tuples = tuples.size();
+  INFO("load %ld tuples from %s", num_tuples, filename.c_str());
 }
+
+TuplePtr Stream::Next() {
+  if (cnt < num_tuples) {
+    return tuples[cnt++];
+  } else {
+    return nullptr;
+  }
+}
+
+bool Stream::End() { return cnt >= num_tuples; }
+
+const std::vector<TuplePtr> &Stream::Tuples() { return tuples; }

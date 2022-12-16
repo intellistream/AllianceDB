@@ -43,7 +43,8 @@ DEFINE_uint32(max_threads, 2, "Max threads number");
 
 int main(int argc, char **argv) {
   Param param;
-  param.bin_dir = filesystem::weakly_canonical(filesystem::path(argv[0])).parent_path();
+  param.bin_dir =
+      filesystem::weakly_canonical(filesystem::path(argv[0])).parent_path();
   gflags::ParseCommandLineFlags(&argc, &argv, true);
 
   param.window_size = FLAGS_window_size;
@@ -59,9 +60,10 @@ int main(int argc, char **argv) {
 
   switch (FLAGS_engine) {
   case 0: {
-    VerifyEnginePtr engine = make_unique<VerifyEngine>(
-        R, S, param);
+    VerifyEnginePtr engine = make_unique<VerifyEngine>(R, S, param);
     engine->Start();
+    engine->Join();
+    engine->Result()->Print();
     break;
   }
   }

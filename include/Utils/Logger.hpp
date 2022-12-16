@@ -7,14 +7,15 @@
 #include <iostream>
 
 // Define a macro for logging messages at the "info" level
-#define INFO(msg, ...) printf("[INFO] %s: " msg "\n", __func__, ##__VA_ARGS__)
+#define INFO(msg, ...)                                                         \
+  fprintf(stderr, "[INFO] %s: " msg "\n", __func__, ##__VA_ARGS__)
 
 // Define a macro for logging messages at the "error" level
-#define ERROR(msg, ...) fprintf(stderr, "[ERROR] %s: " msg "\n", __func__, ##__VA_ARGS__)
-
+#define ERROR(msg, ...)                                                        \
+  fprintf(stderr, "[ERROR] %s: " msg "\n", __func__, ##__VA_ARGS__)
 
 #ifdef DEBUG
-#define TRACE(TEXT) std::cout << TEXT << std::endl;
+#define TRACE(TEXT) std::cerr << TEXT << std::endl;
 #else
 #define TRACE(TEXT) ((void)0)
 #endif

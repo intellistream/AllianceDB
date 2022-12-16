@@ -15,34 +15,46 @@
  */
 
 #include "Engine/VerifyEngine.hpp"
+#include "Common/Result.hpp"
 #include "Engine/EagerEngine.hpp"
 #include "Utils/Logger.hpp"
 
-namespace AllianceDB {
-
-void AllianceDB::VerifyEngine::Start() {
-  VerifyThread thread(0);
-  thread.Start();
-}
+using namespace std;
+using namespace AllianceDB;
 
 VerifyEngine::VerifyEngine(const StreamPtr R, const StreamPtr S,
                            const Param &param)
-    : R(R), S(S), param(param) {}
+    : R(R), S(S), param(param), result(make_shared<JoinResult>()) {}
 
-void VerifyEngine::VerifyThread::Process() {
-  INFO("VerifyThread %d Starts Running", id());
-
-  TuplePtr curr = NextTuple();
-  if (curr != NULL) {
+void VerifyEngine::Run() {
+  INFO("VerifyEngine Starts Running");
+  const auto &r_tuples = R->Tuples();
+  const auto &s_tuples = S->Tuples();
+  auto n = std::max(r_tuples.size(), s_tuples.size());
+  for (size_t i = 0; i < n; i += param.sliding) {
+    INFO("VerifyEngine: %d/%d", i, n);
+    auto r_end = std::min(i + param.window_size, r_tuples.size());
+    auto s_end = std::min(i + param.window_size, s_tuples.size());
+    std::unordered_map<KeyType, std::vector<TuplePtr>> r_map;
+    for (auto j = i; j < r_end; j++) {
+      r_map[r_tuples[j]->key].push_back(r_tuples[j]);
+    }
+    for (auto j = i; j < s_end; j++) {
+      auto &s_tuple = s_tuples[j];
+      if (r_map.find(s_tuple->key) != r_map.end()) {
+        for (auto &r_tuple : r_map[s_tuple->key]) {
+          result->Add(i / param.sliding, r_tuple, s_tuple);
+        }
+      }
+    }
   }
 }
 
-TuplePtr VerifyEngine::VerifyThread::NextTuple() {
-  return AllianceDB::TuplePtr();
+void VerifyEngine::Start() {
+  // Start the Run() thread asynchronously.
+  t = std::thread(&VerifyEngine::Run, this);
 }
 
-std::string VerifyEngine::VerifyThread::id() { return std::to_string(ID); }
+bool VerifyEngine::Join() { t.join(); }
 
-VerifyEngine::VerifyThread::VerifyThread(int id) : ID(id) {}
-
-} // AllianceDB
+ResultPtr VerifyEngine::Result() { return result; }

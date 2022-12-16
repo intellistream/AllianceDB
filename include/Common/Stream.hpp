@@ -4,23 +4,29 @@
 #include "Common/Param.hpp"
 #include "Common/Tuple.hpp"
 
+#include <fstream>
 #include <memory>
 #include <vector>
-#include <fstream>
 
 namespace AllianceDB {
 typedef std::shared_ptr<class Stream> StreamPtr;
 class Stream {
- private:
+private:
   Param param;
-  std::vector<AllianceDB::TuplePtr> Tuples;
+  std::vector<TuplePtr> tuples;
   std::string filename;
   StreamType st;
   std::fstream fs;
- public:
-  Stream(const Param &param, const std::string& name, StreamType st);
+  int cnt = 0;
+  int num_tuples = 0;
+
+public:
+  Stream(const Param &param, const std::string &name, StreamType st);
   void Load();
+  TuplePtr Next();
+  bool End();
+  const std::vector<TuplePtr> &Tuples();
 };
 
-}
-#endif //ALLIANCEDB_INCLUDE_COMMON_STREAM_HPP_
+} // namespace AllianceDB
+#endif // ALLIANCEDB_INCLUDE_COMMON_STREAM_HPP_
