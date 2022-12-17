@@ -21,7 +21,7 @@ private:
   int num_tuples = 0;
 
 public:
-  Stream(const Param &param, const std::string &name, StreamType st);
+  Stream(const Param &param, StreamType st);
   void Load();
   TuplePtr Next();
   bool End();

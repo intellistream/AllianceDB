@@ -8,8 +8,8 @@ using namespace std;
 using namespace AllianceDB;
 using namespace std::filesystem;
 
-Stream::Stream(const Param &param, const std::string &file, StreamType st)
-    : param(param), filename(file), st(st) {
+Stream::Stream(const Param &param, StreamType st) : param(param), st(st) {
+  filename = (st == StreamType::R ? param.r : param.s);
   static const path search_dirs[] = {path("./"), path("datasets/"),
                                      path("../datasets/")};
   path path_to_file(filename);

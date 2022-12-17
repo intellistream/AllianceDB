@@ -5,22 +5,6 @@
 #define UNUSED(x) (void)(x)
 #endif
 
-#ifndef ALGO_NAME
-
-//#define ALGO_NAME "OneWayHashJoin"
-#define ALGO_NAME "CellJoin"
-//#define ALGO_NAME "HandShakeJoin"
-
-#endif
-
-#ifndef ALGO_CLASS
-
-//#define ALGO_CLASS OneWayHashJoin
-#define ALGO_CLASS CellJoin
-//#define ALGO_CLASS HandShakeJoin
-
-#endif
-
 // Constants
 #ifndef WINDOW_SIZE
 #define WINDOW_SIZE 500
@@ -48,10 +32,10 @@
 #define BAR "-------------------------------------------"
 #endif
 
-using TsType = size_t;      /*!< Type of the timestamp, default uint64_t */
-using KeyType = uint64_t;   /*!< Type of the join key, default uint64_t */
-using ValType = uint64_t; /*!< Type of the val, default uint64_t */
-using uint32 = uint32_t;    /*!< Type of the uint32, default uint32_t */
-enum StreamType { R, S };   /*!< Type of the stream, default R and S */
+using TsType = size_t;          /*!< Type of the timestamp, default uint64_t */
+using KeyType = uint64_t;       /*!< Type of the join key, default uint64_t */
+using ValType = uint64_t;       /*!< Type of the val, default uint64_t */
+using uint32 = uint32_t;        /*!< Type of the uint32, default uint32_t */
+enum class StreamType { R, S }; /*!< Type of the stream, default R and S */
 
 #endif

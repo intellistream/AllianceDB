@@ -33,7 +33,7 @@ using namespace std;
 using namespace AllianceDB;
 
 // Arguments.
-DEFINE_uint32(engine, 0, "Engine to use for benchmarking.");
+DEFINE_uint32(algo, 0, "Join algo");
 DEFINE_uint32(window_size, 500, "Window size");
 DEFINE_uint32(sliding, 200, "Sliding length");
 DEFINE_uint32(arr_rate, 0, "Arrival rate");
@@ -47,19 +47,22 @@ int main(int argc, char **argv) {
       filesystem::weakly_canonical(filesystem::path(argv[0])).parent_path();
   gflags::ParseCommandLineFlags(&argc, &argv, true);
 
+  param.algo = static_cast<AlgoType>(FLAGS_algo);
   param.window_size = FLAGS_window_size;
   param.sliding = FLAGS_sliding;
   param.arr_rate = FLAGS_arr_rate;
   param.max_threads = FLAGS_max_threads;
+  param.r = FLAGS_r;
+  param.s = FLAGS_s;
 
-  StreamPtr R = make_shared<Stream>(param, FLAGS_r, StreamType::R);
-  StreamPtr S = make_shared<Stream>(param, FLAGS_s, StreamType::S);
+  StreamPtr R = make_shared<Stream>(param, StreamType::R);
+  StreamPtr S = make_shared<Stream>(param, StreamType::S);
 
   R->Load();
   S->Load();
 
-  switch (FLAGS_engine) {
-  case 0: {
+  switch (param.algo) {
+  case AlgoType::Verify: {
     VerifyEnginePtr engine = make_unique<VerifyEngine>(R, S, param);
     engine->Start();
     engine->Join();
@@ -67,4 +70,5 @@ int main(int argc, char **argv) {
     break;
   }
   }
+  return 0;
 }
