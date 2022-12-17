@@ -15,7 +15,7 @@ void JoinResult::Add(int wid, TuplePtr t1, TuplePtr t2) {
   if (window_results.size() <= wid) {
     window_results.resize(wid + 1);
   }
-  window_results[wid].push_back({t1->key, t1->val, t2->val});
+  window_results[wid].push_back(Tuple{t1->key, t1->val, t2->val});
 }
 
 bool operator==(JoinResult &lhs, JoinResult &rhs) {
@@ -29,9 +29,7 @@ bool operator==(JoinResult &lhs, JoinResult &rhs) {
     sort(lhs.window_results[i].begin(), lhs.window_results[i].end());
     sort(rhs.window_results[i].begin(), rhs.window_results[i].end());
     for (size_t j = 0; j < lhs.window_results[i].size(); j++) {
-      if (lhs.window_results[i][j].key != rhs.window_results[i][j].key ||
-          lhs.window_results[i][j].val1 != rhs.window_results[i][j].val1 ||
-          lhs.window_results[i][j].val2 != rhs.window_results[i][j].val2) {
+      if (lhs.window_results[i][j] != rhs.window_results[i][j]) {
         return false;
       }
     }
@@ -43,16 +41,10 @@ void JoinResult::Print() {
   for (auto i = 0; i < window_results.size(); i++) {
     std::cout << "Window #" << i << std::endl;
     for (auto j = 0; j < window_results[i].size(); j++) {
-      std::cout << window_results[i][j].key << "," << window_results[i][j].val1
-                << "," << window_results[i][j].val2 << std::endl;
+      auto [k1, v1, v2] = window_results[i][j];
+      std::cout << k1 << "," << v1 << "," << v2 << std::endl;
     }
   }
-}
-
-JoinResult JoinResult::operator++(int) {
-  JoinResult tmp(*this);
-  joinNumber++;
-  return tmp;
 }
 
 void JoinResult::statPrinter() {

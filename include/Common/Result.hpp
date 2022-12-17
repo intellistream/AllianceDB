@@ -4,21 +4,13 @@
 #include "Common/Tuple.hpp"
 #include "Common/Types.hpp"
 
+#include <tuple>
+
 namespace AllianceDB {
 
 struct JoinResult {
-  struct ResultTuple {
-    KeyType key;
-    ValType val1, val2;
-    bool operator<(ResultTuple &other) {
-      if (key != other.key)
-        return key < other.key;
-      if (val1 != other.val1)
-        return val1 < other.val1;
-      return val2 < other.val2;
-    }
-  };
-  std::vector<std::vector<ResultTuple>> window_results;
+  using Tuple = std::tuple<KeyType, ValType, ValType>;
+  std::vector<std::vector<Tuple>> window_results;
   int joinNumber;
   int streamSize;
   std::string algoName;
@@ -26,7 +18,6 @@ struct JoinResult {
   double timeTaken;
   struct timeval timeBegin;
   JoinResult();
-  JoinResult operator++(int);
   void statPrinter();
   void Add(int wid, TuplePtr t1, TuplePtr t2);
   void Print();
