@@ -47,6 +47,21 @@ void JoinResult::Print() {
   }
 }
 
+size_t JoinResult::Hash() {
+  size_t hash = 0;
+  for (auto i = 0; i < window_results.size(); i++) {
+    sort(window_results[i].begin(), window_results[i].end());
+    std::size_t seed = window_results[i].size();
+    for (auto &[k, v1, v2] : window_results[i]) {
+      seed ^= k + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+      seed ^= v1 + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+      seed ^= v2 + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+    }
+    hash ^= seed;
+  }
+  return hash;
+}
+
 void JoinResult::statPrinter() {
   // int n1 = 12;
   // int n2 = 30;

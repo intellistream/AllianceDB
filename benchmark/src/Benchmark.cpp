@@ -36,7 +36,7 @@ using namespace AllianceDB;
 DEFINE_uint32(algo, 0, "Join algo");
 DEFINE_uint32(window_size, 500, "Window size");
 DEFINE_uint32(sliding, 200, "Sliding length");
-DEFINE_uint32(arr_rate, 0, "Arrival rate");
+DEFINE_uint32(arr_rate, 0, "Arrival rate (tuples/sec)");
 DEFINE_string(r, "Test1-R.txt", "File path of R stream");
 DEFINE_string(s, "Test1-S.txt", "File path of S stream");
 DEFINE_uint32(max_threads, 2, "Max threads number");
@@ -66,7 +66,7 @@ int main(int argc, char **argv) {
     VerifyEnginePtr engine = make_unique<VerifyEngine>(R, S, param);
     engine->Start();
     engine->Join();
-    engine->Result()->Print();
+    std::cout << std::hex << engine->Result()->Hash() << std::endl;
     break;
   }
   }

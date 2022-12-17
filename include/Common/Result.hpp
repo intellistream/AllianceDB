@@ -22,6 +22,7 @@ struct JoinResult {
   void Add(int wid, TuplePtr t1, TuplePtr t2);
   void Print();
   bool operator==(JoinResult &rhs) const;
+  size_t Hash();
 };
 
 using ResultPtr = std::shared_ptr<JoinResult>;

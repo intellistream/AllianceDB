@@ -27,12 +27,12 @@ VerifyEngine::VerifyEngine(const StreamPtr R, const StreamPtr S,
     : R(R), S(S), param(param), result(make_shared<JoinResult>()) {}
 
 void VerifyEngine::Run() {
-  INFO("VerifyEngine Starts Running");
+  INFO("VerifyEngine starts running");
   const auto &r_tuples = R->Tuples();
   const auto &s_tuples = S->Tuples();
   auto n = std::max(r_tuples.size(), s_tuples.size());
   for (size_t i = 0; i < n; i += param.sliding) {
-    INFO("VerifyEngine: %d/%d", i, n);
+    // INFO("VerifyEngine: %d/%d", i, n);
     auto r_end = std::min(i + param.window_size, r_tuples.size());
     auto s_end = std::min(i + param.window_size, s_tuples.size());
     std::unordered_map<KeyType, std::vector<TuplePtr>> r_map;
@@ -48,6 +48,7 @@ void VerifyEngine::Run() {
       }
     }
   }
+  INFO("VerifyEngine ends running");
 }
 
 void VerifyEngine::Start() {

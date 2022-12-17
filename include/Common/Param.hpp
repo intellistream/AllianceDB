@@ -7,7 +7,7 @@
 namespace AllianceDB {
 
 struct Param {
-  AlgoType algo;
+  AlgoType algo = AlgoType::Verify;
   std::string bin_dir;
   uint32 window_size;
   uint32 sliding;
