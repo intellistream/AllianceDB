@@ -8,9 +8,30 @@
 
 namespace AllianceDB {
 
+struct ResultTuple {
+  KeyType k;
+  ValType v1, v2;
+  ResultTuple(KeyType a, ValType b, ValType c) : k(a), v1(b), v2(c) {
+    if (v1 > v2) {
+      std::swap(v1, v2);
+    }
+  }
+  bool operator==(const ResultTuple &rhs) const {
+    return k == rhs.k && v1 == rhs.v1 && v2 == rhs.v2;
+  }
+  bool operator!=(const ResultTuple &rhs) const { return !(*this == rhs); }
+  bool operator<(const ResultTuple &rhs) const {
+    if (k != rhs.k)
+      return k < rhs.k;
+    if (v1 != rhs.v1)
+      return v1 < rhs.v1;
+    return v2 < rhs.v2;
+  }
+};
+using WindowJoinResult = std::vector<ResultTuple>;
+
 struct JoinResult {
-  using Tuple = std::tuple<KeyType, ValType, ValType>;
-  std::vector<std::vector<Tuple>> window_results;
+  std::vector<WindowJoinResult> window_results;
   int joinNumber;
   int streamSize;
   std::string algoName;

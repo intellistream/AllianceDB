@@ -14,21 +14,24 @@
  * limitations under the License.
  */
 
-#ifndef ALLIANCEDB_SRC_WINDOWSLIDER_SIMPLEWINDOWSLIDER_HPP_
-#define ALLIANCEDB_SRC_WINDOWSLIDER_SIMPLEWINDOWSLIDER_HPP_
+#ifndef ALLIANCEDB_SRC_WINDOWSLIDER_EAGERWINDOWSLIDER_HPP_
+#define ALLIANCEDB_SRC_WINDOWSLIDER_EAGERWINDOWSLIDER_HPP_
 
-#include <Common/Window.h>
+#include "Common/Param.hpp"
+#include "Common/Window.h"
 
 namespace AllianceDB {
 
-class SimpleWindowSlider {
+class EagerWindowSlider {
+public:
+  EagerWindowSlider(const Param &param);
 
- protected:
-  Window wR;
-  Window wS;
-
+private:
+  Param param;
+  Window wr, ws;
+  StreamPtr sr, ss;
 };
 
-} // AllianceDB
+} // namespace AllianceDB
 
-#endif //ALLIANCEDB_SRC_WINDOWSLIDER_SIMPLEWINDOWSLIDER_HPP_
+#endif // ALLIANCEDB_SRC_WINDOWSLIDER_EAGERWINDOWSLIDER_HPP_

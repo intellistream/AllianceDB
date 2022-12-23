@@ -15,7 +15,7 @@ void JoinResult::Add(int wid, TuplePtr t1, TuplePtr t2) {
   if (window_results.size() <= wid) {
     window_results.resize(wid + 1);
   }
-  window_results[wid].push_back(Tuple{t1->key, t1->val, t2->val});
+  window_results[wid].push_back(ResultTuple(t1->key, t1->val, t2->val));
 }
 
 bool operator==(JoinResult &lhs, JoinResult &rhs) {
@@ -39,10 +39,11 @@ bool operator==(JoinResult &lhs, JoinResult &rhs) {
 
 void JoinResult::Print() {
   for (auto i = 0; i < window_results.size(); i++) {
+    sort(window_results[i].begin(), window_results[i].end());
     std::cout << "Window #" << i << std::endl;
     for (auto j = 0; j < window_results[i].size(); j++) {
-      auto [k1, v1, v2] = window_results[i][j];
-      std::cout << k1 << "," << v1 << "," << v2 << std::endl;
+      auto &t = window_results[i][j];
+      std::cout << t.k << "," << t.v1 << "," << t.v2 << std::endl;
     }
   }
 }
@@ -52,12 +53,14 @@ size_t JoinResult::Hash() {
   for (auto i = 0; i < window_results.size(); i++) {
     sort(window_results[i].begin(), window_results[i].end());
     std::size_t seed = window_results[i].size();
-    for (auto &[k, v1, v2] : window_results[i]) {
-      seed ^= k + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-      seed ^= v1 + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-      seed ^= v2 + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+    if (seed) {
+      for (auto &t : window_results[i]) {
+        seed ^= t.k + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+        seed ^= t.v1 + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+        seed ^= t.v2 + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+      }
+      hash ^= seed;
     }
-    hash ^= seed;
   }
   return hash;
 }

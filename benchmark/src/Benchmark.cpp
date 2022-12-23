@@ -28,6 +28,7 @@
 #include <gflags/gflags.h>
 
 #include <filesystem>
+#include <memory>
 
 using namespace std;
 using namespace AllianceDB;
@@ -63,10 +64,17 @@ int main(int argc, char **argv) {
 
   switch (param.algo) {
   case AlgoType::Verify: {
-    VerifyEnginePtr engine = make_unique<VerifyEngine>(R, S, param);
-    engine->Start();
-    engine->Join();
-    std::cout << std::hex << engine->Result()->Hash() << std::endl;
+    auto engine = make_unique<VerifyEngine>(param, R, S);
+    engine->Run();
+    std::cout << std::hex << engine->Result()->Hash() << std::dec << std::endl;
+    engine->Result()->Print();
+    break;
+  }
+  case AlgoType::HashJoin: {
+    auto engine = make_unique<EagerEngine>(param, R, S);
+    engine->Run();
+    std::cout << std::hex << engine->Result()->Hash() << std::dec << std::endl;
+    engine->Result()->Print();
     break;
   }
   }

@@ -1,7 +1,6 @@
 #ifndef ALIANCEDB_INCLUDE_COMMON_PARAM_HPP_
 #define ALIANCEDB_INCLUDE_COMMON_PARAM_HPP_
 
-#include "Common/Algo.hpp"
 #include "Common/Types.hpp"
 
 namespace AllianceDB {

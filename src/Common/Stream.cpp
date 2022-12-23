@@ -1,5 +1,5 @@
-#include <Common/Stream.hpp>
-#include <Utils/Logger.hpp>
+#include "Common/Stream.hpp"
+#include "Utils/Logger.hpp"
 
 #include <filesystem>
 #include <fstream>
@@ -51,7 +51,10 @@ void Stream::Load() {
   INFO("load %ld tuples from %s", num_tuples, filename.c_str());
 }
 
+void Stream::Open() { cnt = 0; }
+
 TuplePtr Stream::Next() {
+  // TODO: thread-safe
   if (cnt < num_tuples) {
     return tuples[cnt++];
   } else {
@@ -59,6 +62,8 @@ TuplePtr Stream::Next() {
   }
 }
 
-bool Stream::End() { return cnt >= num_tuples; }
+bool Stream::HasNext() { return cnt < num_tuples; }
 
 const std::vector<TuplePtr> &Stream::Tuples() { return tuples; }
+
+size_t Stream::NumTuples() { return num_tuples; }

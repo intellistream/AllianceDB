@@ -1,15 +1,16 @@
 #ifndef ALLIANCEDB_INCLUDE_COMMON_WINDOW_H_
 #define ALLIANCEDB_INCLUDE_COMMON_WINDOW_H_
 
+#include "Common/Stream.hpp"
+#include "Common/Tuple.hpp"
+
 #include <memory>
 #include <vector>
-#include <Common/Tuple.hpp>
-#include <Common/Stream.hpp>
 
 namespace AllianceDB {
-typedef std::shared_ptr<class Window> WindowPtr;
-class Window : Stream {
 
-};
-}
-#endif //ALLIANCEDB_INCLUDE_COMMON_WINDOW_H_
+using Window = std::vector<TuplePtr>;
+using WindowPtr = std::shared_ptr<Window>;
+
+} // namespace AllianceDB
+#endif // ALLIANCEDB_INCLUDE_COMMON_WINDOW_H_

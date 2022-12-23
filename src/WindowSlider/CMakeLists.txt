@@ -1,3 +1,3 @@
 add_sources(
-        SimpleWindowSlider.cpp
+        EagerWindowSlider.cpp
 )

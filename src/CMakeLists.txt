@@ -1,5 +1,5 @@
 add_subdirectory(Engine)
 add_subdirectory(Utils)
 add_subdirectory(WindowSlider)
-add_subdirectory(JoinProcessor)
+add_subdirectory(Join)
 add_subdirectory(Common)

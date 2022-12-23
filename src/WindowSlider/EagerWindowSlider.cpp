@@ -14,11 +14,18 @@
  * limitations under the License.
  */
 
-#include <WindowSlider/SimpleWindowSlider.hpp>
+#include <WindowSlider/EagerWindowSlider.hpp>
 
 namespace AllianceDB {
 
+EagerWindowSlider::EagerWindowSlider(const Param &param) : param(param) {}
 
+// void EagerWindowSlider::Next(TuplePtr tuple) {
+//   if (tuple->st == StreamType::R) {
+//     wR.Add(tuple);
+//   } else {
+//     wS.Add(tuple);
+//   }
+// }
 
-
-} // AllianceDB
+} // namespace AllianceDB

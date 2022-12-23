@@ -11,19 +11,18 @@
 
 namespace AllianceDB {
 typedef std::shared_ptr<class VerifyEngine> VerifyEnginePtr;
-class VerifyEngine : public EagerEngine {
+class VerifyEngine {
 private:
-  const StreamPtr R;
-  const StreamPtr S;
+  const StreamPtr R, S;
   Param param;
   std::thread t;
   ResultPtr result;
 
 public:
-  VerifyEngine(const StreamPtr R, const StreamPtr S, const Param &param);
+  VerifyEngine(const Param &param, const StreamPtr R, const StreamPtr S);
   void Start();
   void Run();
-  bool Join();
+  bool Wait();
   ResultPtr Result();
 };
 

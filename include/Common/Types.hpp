@@ -32,10 +32,20 @@
 #define BAR "-------------------------------------------"
 #endif
 
-using TsType = size_t;          /*!< Type of the timestamp, default uint64_t */
-using KeyType = uint64_t;       /*!< Type of the join key, default uint64_t */
-using ValType = uint64_t;       /*!< Type of the val, default uint64_t */
-using uint32 = uint32_t;        /*!< Type of the uint32, default uint32_t */
+using TsType = size_t;    /*!< Type of the timestamp, default uint64_t */
+using KeyType = uint64_t; /*!< Type of the join key, default uint64_t */
+using ValType = uint64_t; /*!< Type of the val, default uint64_t */
+using uint32 = uint32_t;  /*!< Type of the uint32, default uint32_t */
+
 enum class StreamType { R, S }; /*!< Type of the stream, default R and S */
+enum class AlgoType {
+  Verify,
+  HashJoin,
+  HandshakeJoin,
+  SplitJoin,
+  BiStream,
+  IBWJ,
+  LWJ
+};
 
 #endif

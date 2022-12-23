@@ -17,15 +17,17 @@ private:
   std::string filename;
   StreamType st;
   std::fstream fs;
-  int cnt = 0;
-  int num_tuples = 0;
+  size_t cnt = 0;
+  size_t num_tuples = 0;
 
 public:
   Stream(const Param &param, StreamType st);
   void Load();
+  void Open();
   TuplePtr Next();
-  bool End();
+  bool HasNext();
   const std::vector<TuplePtr> &Tuples();
+  size_t NumTuples();
 };
 
 } // namespace AllianceDB

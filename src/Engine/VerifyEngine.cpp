@@ -22,8 +22,8 @@
 using namespace std;
 using namespace AllianceDB;
 
-VerifyEngine::VerifyEngine(const StreamPtr R, const StreamPtr S,
-                           const Param &param)
+VerifyEngine::VerifyEngine(const Param &param, const StreamPtr R,
+                           const StreamPtr S)
     : R(R), S(S), param(param), result(make_shared<JoinResult>()) {}
 
 void VerifyEngine::Run() {
@@ -31,7 +31,7 @@ void VerifyEngine::Run() {
   const auto &r_tuples = R->Tuples();
   const auto &s_tuples = S->Tuples();
   auto n = std::max(r_tuples.size(), s_tuples.size());
-  for (size_t i = 0; i < n; i += param.sliding) {
+  for (size_t i = 0; i + param.window_size < n; i += param.sliding) {
     // INFO("VerifyEngine: %d/%d", i, n);
     auto r_end = std::min(i + param.window_size, r_tuples.size());
     auto s_end = std::min(i + param.window_size, s_tuples.size());
@@ -56,6 +56,6 @@ void VerifyEngine::Start() {
   t = std::thread(&VerifyEngine::Run, this);
 }
 
-bool VerifyEngine::Join() { t.join(); }
+bool VerifyEngine::Wait() { t.join(); }
 
 ResultPtr VerifyEngine::Result() { return result; }
