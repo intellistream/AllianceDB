@@ -12,6 +12,7 @@ struct Param {
   uint32 sliding;
   uint32 arr_rate;
   uint32 max_threads;
+  uint32 lazy;
   std::string r = "Test1-R.txt", s = "Test1-S.txt";
 };
 

@@ -82,3 +82,11 @@ doxygen Doxyfile
 ```
 
 to get the documents in doc/html folder, and start at index.html
+
+### Auto format
+
+```bash
+wget https://raw.githubusercontent.com/andrewseidl/githook-clang-format/master/clang-format.hook
+cp clang-format.hook AllianceDB/.git/hooks/pre-commit
+git config hooks.clangformat.style google
+```

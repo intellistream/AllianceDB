@@ -37,46 +37,51 @@ using namespace AllianceDB;
 DEFINE_uint32(algo, 0, "Join algo");
 DEFINE_uint32(window_size, 500, "Window size");
 DEFINE_uint32(sliding, 200, "Sliding length");
+DEFINE_uint32(lazy, 0, "Lazy");
 DEFINE_uint32(arr_rate, 0, "Arrival rate (tuples/sec)");
 DEFINE_string(r, "Test1-R.txt", "File path of R stream");
 DEFINE_string(s, "Test1-S.txt", "File path of S stream");
 DEFINE_uint32(max_threads, 2, "Max threads number");
 
-int main(int argc, char **argv) {
-  Param param;
-  param.bin_dir =
-      filesystem::weakly_canonical(filesystem::path(argv[0])).parent_path();
-  gflags::ParseCommandLineFlags(&argc, &argv, true);
+int main(int argc, char **argv)
+{
+    Param param;
+    param.bin_dir = filesystem::weakly_canonical(filesystem::path(argv[0])).parent_path();
+    gflags::ParseCommandLineFlags(&argc, &argv, true);
 
-  param.algo = static_cast<AlgoType>(FLAGS_algo);
-  param.window_size = FLAGS_window_size;
-  param.sliding = FLAGS_sliding;
-  param.arr_rate = FLAGS_arr_rate;
-  param.max_threads = FLAGS_max_threads;
-  param.r = FLAGS_r;
-  param.s = FLAGS_s;
+    param.algo        = static_cast<AlgoType>(FLAGS_algo);
+    param.window_size = FLAGS_window_size;
+    param.sliding     = FLAGS_sliding;
+    param.lazy        = FLAGS_lazy;
+    param.arr_rate    = FLAGS_arr_rate;
+    param.max_threads = FLAGS_max_threads;
+    param.r           = FLAGS_r;
+    param.s           = FLAGS_s;
 
-  StreamPtr R = make_shared<Stream>(param, StreamType::R);
-  StreamPtr S = make_shared<Stream>(param, StreamType::S);
+    StreamPtr R = make_shared<Stream>(param, StreamType::R);
+    StreamPtr S = make_shared<Stream>(param, StreamType::S);
 
-  R->Load();
-  S->Load();
+    R->Load();
+    S->Load();
 
-  switch (param.algo) {
-  case AlgoType::Verify: {
-    auto engine = make_unique<VerifyEngine>(param, R, S);
-    engine->Run();
-    std::cout << std::hex << engine->Result()->Hash() << std::dec << std::endl;
-    engine->Result()->Print();
-    break;
-  }
-  case AlgoType::HashJoin: {
-    auto engine = make_unique<EagerEngine>(param, R, S);
-    engine->Run();
-    std::cout << std::hex << engine->Result()->Hash() << std::dec << std::endl;
-    engine->Result()->Print();
-    break;
-  }
-  }
-  return 0;
+    switch (param.algo)
+    {
+    case AlgoType::Verify:
+    {
+        auto engine = make_unique<VerifyEngine>(param, R, S);
+        engine->Run();
+        std::cout << std::hex << engine->Result()->Hash() << std::dec << std::endl;
+        // engine->Result()->Print();
+        break;
+    }
+    case AlgoType::HashJoin:
+    {
+        auto engine = make_unique<EagerEngine>(param, R, S);
+        engine->Run();
+        std::cout << std::hex << engine->Result()->Hash() << std::dec << std::endl;
+        // engine->Result()->Print();
+        break;
+    }
+    }
+    return 0;
 }
