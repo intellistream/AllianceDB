@@ -88,5 +88,6 @@ to get the documents in doc/html folder, and start at index.html
 ```bash
 wget https://raw.githubusercontent.com/andrewseidl/githook-clang-format/master/clang-format.hook
 cp clang-format.hook AllianceDB/.git/hooks/pre-commit
+chmod +x AllianceDB/.git/hooks/pre-commit
 git config hooks.clangformat.style google
 ```
