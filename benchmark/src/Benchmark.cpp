@@ -18,17 +18,19 @@
  * @brief This is the main entry point of the entire program.
  * We use this as the entry point for benchmarking.
  */
-#include "Common/Param.hpp"
-#include "Common/Stream.hpp"
-#include "Common/Types.hpp"
-#include "Engine/VerifyEngine.hpp"
-#include "Utils/Flags.hpp"
-#include "Utils/Logger.hpp"
-
 #include <gflags/gflags.h>
 
 #include <filesystem>
 #include <memory>
+
+#include "Common/Param.hpp"
+#include "Common/Stream.hpp"
+#include "Common/Types.hpp"
+#include "Engine/EagerEngine.hpp"
+#include "Engine/LazyEngine.hpp"
+#include "Engine/VerifyEngine.hpp"
+#include "Utils/Flags.hpp"
+#include "Utils/Logger.hpp"
 
 using namespace std;
 using namespace AllianceDB;
@@ -76,7 +78,7 @@ int main(int argc, char **argv)
     }
     case AlgoType::HashJoin:
     {
-        auto engine = make_unique<EagerEngine>(param, R, S);
+        auto engine = make_unique<LaziestEngine>(param, R, S);
         engine->Run();
         std::cout << std::hex << engine->Result()->Hash() << std::dec << std::endl;
         // engine->Result()->Print();
