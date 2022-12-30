@@ -5,18 +5,18 @@
 #include "Common/Window.h"
 #include "Join/Join.hpp"
 
-namespace AllianceDB {
+namespace AllianceDB
+{
+// class HashJoin : public JoinAlgo {
+// private:
+//   Param param;
+//   Window &ws, &wr;
 
-class HashJoin : public JoinAlgo {
-private:
-  Param param;
-  Window &ws, &wr;
+// public:
+//   HashJoin(const Param &param, WindowPtr ws, WindowPtr wr);
+//   void Feed(TuplePtr tuple) override;
+// };
 
-public:
-  HashJoin(const Param &param, WindowPtr ws, WindowPtr wr);
-  void Run(size_t rbegin, size_t rend, size_t sbegin, size_t send, WindowJoinResult &result) override;
-};
-
-} // namespace AllianceDB
+}  // namespace AllianceDB
 
 #endif

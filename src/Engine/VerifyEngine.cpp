@@ -22,38 +22,44 @@
 using namespace std;
 using namespace AllianceDB;
 
-VerifyEngine::VerifyEngine(const Param &param, const StreamPtr R,
-                           const StreamPtr S)
-    : R(R), S(S), param(param), result(make_shared<JoinResult>()) {}
+VerifyEngine::VerifyEngine(Context &ctx) : R(ctx.sr), S(ctx.ss), param(ctx.param), result(ctx.res)
+{}
 
-void VerifyEngine::Run() {
-  INFO("VerifyEngine starts running");
-  const auto &r_tuples = R->Tuples();
-  const auto &s_tuples = S->Tuples();
-  auto n = std::max(r_tuples.size(), s_tuples.size());
-  for (size_t i = 0; i + param.window_size < n; i += param.sliding) {
-    // INFO("VerifyEngine: %d/%d", i, n);
-    auto r_end = std::min(i + param.window_size, r_tuples.size());
-    auto s_end = std::min(i + param.window_size, s_tuples.size());
-    std::unordered_map<KeyType, std::vector<TuplePtr>> r_map;
-    for (auto j = i; j < r_end; j++) {
-      r_map[r_tuples[j]->key].push_back(r_tuples[j]);
-    }
-    for (auto j = i; j < s_end; j++) {
-      auto &s_tuple = s_tuples[j];
-      if (r_map.find(s_tuple->key) != r_map.end()) {
-        for (auto &r_tuple : r_map[s_tuple->key]) {
-          result->Add(i / param.sliding, r_tuple, s_tuple);
+void VerifyEngine::Run()
+{
+    INFO("VerifyEngine starts running");
+    const auto &r_tuples = R->Tuples();
+    const auto &s_tuples = S->Tuples();
+    auto n               = std::max(r_tuples.size(), s_tuples.size());
+    for (size_t i = 0; i + param.window < n; i += param.sliding)
+    {
+        // INFO("VerifyEngine: %d/%d", i, n);
+        auto r_end = std::min(i + param.window, r_tuples.size());
+        auto s_end = std::min(i + param.window, s_tuples.size());
+        std::unordered_map<KeyType, std::vector<TuplePtr>> r_map;
+        for (auto j = i; j < r_end; j++)
+        {
+            r_map[r_tuples[j]->key].push_back(r_tuples[j]);
         }
-      }
+        for (auto j = i; j < s_end; j++)
+        {
+            auto &s_tuple = s_tuples[j];
+            if (r_map.find(s_tuple->key) != r_map.end())
+            {
+                for (auto &r_tuple : r_map[s_tuple->key])
+                {
+                    result->Add(i / param.sliding, r_tuple, s_tuple);
+                }
+            }
+        }
     }
-  }
-  INFO("VerifyEngine ends running");
+    INFO("VerifyEngine ends running");
 }
 
-void VerifyEngine::Start() {
-  // Start the Run() thread asynchronously.
-  t = std::thread(&VerifyEngine::Run, this);
+void VerifyEngine::Start()
+{
+    // Start the Run() thread asynchronously.
+    t = std::thread(&VerifyEngine::Run, this);
 }
 
 bool VerifyEngine::Wait() { t.join(); }

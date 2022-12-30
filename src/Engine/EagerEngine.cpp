@@ -19,8 +19,38 @@
 #include <memory>
 #include <thread>
 
+#include "Join/HandshakeJoin.hpp"
 #include "Join/HashJoin.hpp"
 #include "Utils/Logger.hpp"
 
 using namespace std;
 using namespace AllianceDB;
+
+EagerEngine::EagerEngine(Context &ctx) : param(ctx.param), sr(ctx.sr), ss(ctx.ss), res(ctx.res)
+{
+    res->window_results.resize(max(sr->NumTuples(), ss->NumTuples()) / param.sliding + 1);
+    switch (param.algo)
+    {
+    case AlgoType::HandshakeJoin:
+    {
+        algo = make_shared<HandshakeJoin>(ctx);
+        break;
+    }
+    default: ERROR("Unsupported algorithm %d", param.algo);
+    }
+}
+
+void EagerEngine::Run()
+{
+    while (sr->HasNext() || ss->HasNext())
+    {
+        if (sr->HasNext())
+        {
+            algo->Feed(sr->Next());
+        }
+        if (ss->HasNext())
+        {
+            algo->Feed(ss->Next());
+        }
+    }
+}

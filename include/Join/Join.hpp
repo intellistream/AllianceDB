@@ -4,15 +4,16 @@
 #include "Common/Result.hpp"
 #include "Common/Window.h"
 
-namespace AllianceDB {
-
-class JoinAlgo {
+namespace AllianceDB
+{
+class JoinAlgo
+{
 public:
-  virtual void Run(size_t rbegin, size_t rend, size_t sbegin, size_t send, WindowJoinResult &result) = 0;
+    virtual void Feed(TuplePtr tuple) = 0;
 };
 
 using JoinPtr = std::shared_ptr<JoinAlgo>;
 
-} // namespace AllianceDB
+}  // namespace AllianceDB
 
 #endif

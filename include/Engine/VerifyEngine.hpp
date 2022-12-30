@@ -1,7 +1,7 @@
 #ifndef ALLIANCEDB_SRC_ENGINE_VERIFYNGINE_HPP_
 #define ALLIANCEDB_SRC_ENGINE_VERIFYNGINE_HPP_
 
-#include "Common/Param.hpp"
+#include "Common/Context.hpp"
 #include "Common/Result.hpp"
 #include "Common/Stream.hpp"
 #include "Engine/EagerEngine.hpp"
@@ -9,23 +9,25 @@
 
 #include <thread>
 
-namespace AllianceDB {
+namespace AllianceDB
+{
 typedef std::shared_ptr<class VerifyEngine> VerifyEnginePtr;
-class VerifyEngine {
+class VerifyEngine
+{
 private:
-  const StreamPtr R, S;
-  Param param;
-  std::thread t;
-  ResultPtr result;
+    const StreamPtr R, S;
+    Param param;
+    std::thread t;
+    ResultPtr result;
 
 public:
-  VerifyEngine(const Param &param, const StreamPtr R, const StreamPtr S);
-  void Start();
-  void Run();
-  bool Wait();
-  ResultPtr Result();
+    VerifyEngine(Context &ctx);
+    void Start();
+    void Run();
+    bool Wait();
+    ResultPtr Result();
 };
 
-} // namespace AllianceDB
+}  // namespace AllianceDB
 
-#endif // ALLIANCEDB_SRC_ENGINE_VERIFYNGINE_HPP_
+#endif  // ALLIANCEDB_SRC_ENGINE_VERIFYNGINE_HPP_

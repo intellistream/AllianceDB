@@ -1,12 +1,18 @@
 #ifndef ALLIANCEDB_INCLUDE_JOIN_HANDSHAKEJOIN_HPP_
 #define ALLIANCEDB_INCLUDE_JOIN_HANDSHAKEJOIN_HPP_
 
-namespace AllianceDB {
+#include "Common/Context.hpp"
+#include "Join/Join.hpp"
 
-class HandshakeJoin : public Join {
-    
-}
+namespace AllianceDB
+{
+class HandshakeJoin : public JoinAlgo
+{
+public:
+    HandshakeJoin(Context &ctx);
+    void Feed(TuplePtr tuple);
+};
 
-} // namespace AllianceDB
+}  // namespace AllianceDB
 
 #endif

@@ -3,19 +3,20 @@
 
 #include "Common/Types.hpp"
 
-namespace AllianceDB {
-
-struct Param {
-  AlgoType algo = AlgoType::Verify;
-  std::string bin_dir;
-  uint32 window_size;
-  uint32 sliding;
-  uint32 arr_rate;
-  uint32 max_threads;
-  uint32 lazy;
-  std::string r = "Test1-R.txt", s = "Test1-S.txt";
+namespace AllianceDB
+{
+struct Param
+{
+    AlgoType algo = AlgoType::Verify;
+    std::string bin_dir;
+    uint32 window;
+    uint32 sliding;
+    uint32 rate;
+    uint32 num_workers;
+    uint32 lazy;
+    std::string r = "Test1-R.txt", s = "Test1-S.txt";
 };
 
-} // namespace AllianceDB
+}  // namespace AllianceDB
 
 #endif

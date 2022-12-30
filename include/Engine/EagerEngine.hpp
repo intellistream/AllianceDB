@@ -4,13 +4,28 @@
 #include <memory>
 #include <thread>
 
-#include "Common/Param.hpp"
+#include "Common/Context.hpp"
 #include "Common/Result.hpp"
 #include "Common/Stream.hpp"
 #include "Common/Window.h"
 #include "Join/Join.hpp"
 
 namespace AllianceDB
-{}  // namespace AllianceDB
+{
+class EagerEngine
+{
+public:
+    EagerEngine(Context &ctx);
+    void Run();
+    ResultPtr Result();
+
+private:
+    Param param;
+    const StreamPtr ss, sr;
+    ResultPtr res;
+    JoinPtr algo;
+};
+
+}  // namespace AllianceDB
 
 #endif  // ALLIANCEDB_SRC_ENGINE_EAGERENGINE_HPP_
