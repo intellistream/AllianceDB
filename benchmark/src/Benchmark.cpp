@@ -25,6 +25,7 @@
 
 #include <gflags/gflags.h>
 
+#include <cassert>
 #include <filesystem>
 #include <memory>
 
@@ -69,6 +70,7 @@ int main(int argc, char **argv)
     param.num_tuples = std::min(R->Tuples().size(), S->Tuples().size());
     param.num_windows =
         (min(R->Tuples().size(), S->Tuples().size()) - param.window) / param.sliding + 1;
+    assert(param.log = fopen("adb.log", "w"));
 
     Context ctx(param);
 

@@ -42,6 +42,7 @@ EagerEngine::EagerEngine(Context &ctx) : param(ctx.param), sr(ctx.sr), ss(ctx.ss
 
 void EagerEngine::Run()
 {
+    // TODO: use rate limiter to control the speed of the input
     while (sr->HasNext() || ss->HasNext())
     {
         if (sr->HasNext())
