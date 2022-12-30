@@ -10,6 +10,7 @@ class JoinAlgo
 {
 public:
     virtual void Feed(TuplePtr tuple) = 0;
+    virtual void Wait()               = 0;
 };
 
 using JoinPtr = std::shared_ptr<JoinAlgo>;

@@ -53,4 +53,5 @@ void EagerEngine::Run()
             algo->Feed(ss->Next());
         }
     }
+    algo->Wait();
 }

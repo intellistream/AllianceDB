@@ -20,18 +20,19 @@
 #include "Common/Param.hpp"
 #include "Common/Window.h"
 
-namespace AllianceDB {
-
-class EagerWindowSlider {
+namespace AllianceDB
+{
+class EagerWindowSlider
+{
 public:
-  EagerWindowSlider(const Param &param);
+    EagerWindowSlider(const Param &param);
 
 private:
-  Param param;
-  Window wr, ws;
-  StreamPtr sr, ss;
+    const Param &param;
+    Window wr, ws;
+    StreamPtr sr, ss;
 };
 
-} // namespace AllianceDB
+}  // namespace AllianceDB
 
-#endif // ALLIANCEDB_SRC_WINDOWSLIDER_EAGERWINDOWSLIDER_HPP_
+#endif  // ALLIANCEDB_SRC_WINDOWSLIDER_EAGERWINDOWSLIDER_HPP_

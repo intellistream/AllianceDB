@@ -20,7 +20,7 @@ public:
     ResultPtr Result();
 
 private:
-    Param param;
+    const Param &param;
     const StreamPtr ss, sr;
     ResultPtr res;
     JoinPtr algo;

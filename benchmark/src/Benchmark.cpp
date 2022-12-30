@@ -63,13 +63,17 @@ int main(int argc, char **argv)
     StreamPtr R = make_shared<Stream>(param, StreamType::R);
     StreamPtr S = make_shared<Stream>(param, StreamType::S);
 
+    R->Load();
+    S->Load();
+
+    param.num_tuples = std::min(R->Tuples().size(), S->Tuples().size());
+    param.num_windows =
+        (min(R->Tuples().size(), S->Tuples().size()) - param.window) / param.sliding + 1;
+
     Context ctx(param);
 
     ctx.sr = R;
     ctx.ss = S;
-
-    R->Load();
-    S->Load();
 
     switch (param.algo)
     {

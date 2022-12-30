@@ -16,7 +16,7 @@ class VerifyEngine
 {
 private:
     const StreamPtr R, S;
-    Param param;
+    const Param &param;
     std::thread t;
     ResultPtr result;
 

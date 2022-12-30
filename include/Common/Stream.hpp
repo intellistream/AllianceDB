@@ -14,7 +14,7 @@ typedef std::shared_ptr<class Stream> StreamPtr;
 class Stream
 {
 private:
-    Param param;
+    const Param &param;
     std::vector<TuplePtr> tuples;
     std::string filename;
     StreamType st;

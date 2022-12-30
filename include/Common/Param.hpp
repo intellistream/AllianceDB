@@ -14,6 +14,8 @@ struct Param
     uint32 rate;
     uint32 num_workers;
     uint32 lazy;
+    uint32 num_tuples  = 0;
+    uint32 num_windows = 0;
     std::string r = "Test1-R.txt", s = "Test1-S.txt";
 };
 

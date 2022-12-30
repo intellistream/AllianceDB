@@ -12,7 +12,8 @@ struct Context
     const Param &param;
     ResultPtr res;
     StreamPtr sr, ss;
-    Context(const Param &param) : param(param), res(std::make_shared<JoinResult>()) {}
+    size_t num_windows;
+    Context(const Param &param) : param(param), res(std::make_shared<JoinResult>(param)) {}
 };
 
 }  // namespace AllianceDB

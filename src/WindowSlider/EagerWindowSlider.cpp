@@ -16,16 +16,16 @@
 
 #include <WindowSlider/EagerWindowSlider.hpp>
 
-namespace AllianceDB {
-
+namespace AllianceDB
+{
 EagerWindowSlider::EagerWindowSlider(const Param &param) : param(param) {}
 
 // void EagerWindowSlider::Next(TuplePtr tuple) {
 //   if (tuple->st == StreamType::R) {
-//     wR.Add(tuple);
+//     wR.Emit(tuple);
 //   } else {
-//     wS.Add(tuple);
+//     wS.Emit(tuple);
 //   }
 // }
 
-} // namespace AllianceDB
+}  // namespace AllianceDB

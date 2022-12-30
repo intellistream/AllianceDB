@@ -48,7 +48,7 @@ void VerifyEngine::Run()
             {
                 for (auto &r_tuple : r_map[s_tuple->key])
                 {
-                    result->Add(i / param.sliding, r_tuple, s_tuple);
+                    result->Emit(i / param.sliding, r_tuple, s_tuple);
                 }
             }
         }
