@@ -16,6 +16,29 @@
 docker build -t clion/ubuntu/cpp-env:1.0 -f Dockerfile.cpp-env-ubuntu --build-arg UID=$(id -u) .
 ```
 
+### Docker
+First, build the docker with provided configuration
+```shell
+cd docker
+./docker_est.sh
+```
+Then, you will have a docker image called adb_u2204_a, together with a container called aliancedb_u22_04_a
+
+### For macOS
+For macOS, we suggest to use docker with shared directory if you are not familiar with C++/Cmake/Boost/gflags
+<br>build docker images 
+<br>run docker with shared directory
+```shell
+docker run -it --rm -v local_shared_directory:docker_shared_directory/ adb_u2204_a
+```
+then build and make
+```shell
+cd docker_shared_direcotory/AllianceDB
+mkdir build && cd build
+cmake .. -DCMAKE_BUILD_TYPE=Release
+make -j8
+```
+
 ### Native Compile
 
 ```shell
@@ -35,16 +58,8 @@ cmake .. -DENABLE_UNIT_TESTS=OFF
 make
 ```
 
-### Docker
 
-First, build the docker with provided configuration
 
-```shell
-cd docker
-./docker_est.sh
-```
-
-Then, you will have a docker image called adb_u2204_a, together with a container called aliancedb_u22_04_a
 
 ### Use by hand
 
