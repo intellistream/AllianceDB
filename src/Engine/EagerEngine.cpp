@@ -21,6 +21,7 @@
 
 #include "Join/HandshakeJoin.hpp"
 #include "Join/HashJoin.hpp"
+#include "Join/SplitJoin.hpp"
 #include "Utils/Logger.hpp"
 
 using namespace std;
@@ -34,6 +35,11 @@ EagerEngine::EagerEngine(Context &ctx) : param(ctx.param), sr(ctx.sr), ss(ctx.ss
     case AlgoType::HandshakeJoin:
     {
         algo = make_shared<HandshakeJoin>(ctx);
+        break;
+    }
+    case AlgoType::SplitJoin:
+    {
+        algo = make_shared<SplitJoin>(ctx);
         break;
     }
     default: ERROR("Unsupported algorithm %d", param.algo);
@@ -56,3 +62,5 @@ void EagerEngine::Run()
     }
     algo->Wait();
 }
+
+ResultPtr EagerEngine::Result() { return res; }

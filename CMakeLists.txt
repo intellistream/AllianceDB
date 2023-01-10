@@ -80,7 +80,10 @@ add_library(AllianceDB SHARED ${AllianceDB_SOURCE_FILES} ${AllianceDB_HEADER_FIL
 target_include_directories(AllianceDB PUBLIC "include")
 target_include_directories(AllianceDB PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
 target_link_libraries(AllianceDB PUBLIC ${LIBRARIES} -lpthread)
-
+# on macOS, Use belows to specify Boost path
+#SET(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH}"/usr/local/boost_1_81_0")
+#SET(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH}"/usr/local/boost_1_81_0/lib")
+FIND_PACKAGE(Boost)
 #Add benchmarks with command
 #Main Entry.
 add_subdirectory(benchmark)

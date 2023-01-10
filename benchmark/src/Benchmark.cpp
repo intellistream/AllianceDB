@@ -95,6 +95,13 @@ int main(int argc, char **argv)
         // engine->Result()->Print();
         break;
     }
+    case AlgoType::SplitJoin:
+    {
+        auto engine = make_unique<EagerEngine>(ctx);
+        engine->Run();
+        std::cout << std::hex << ctx.res->Hash() << std::dec << std::endl;
+        engine->Result()->Print();
+    }
     default:
     {
         ERROR("algo not supported");
