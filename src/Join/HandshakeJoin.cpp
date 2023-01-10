@@ -121,8 +121,7 @@ void HandshakeJoin::Worker::Wait() { t->join(); }
 HandshakeJoin::Msg HandshakeJoin::Worker::RecvIn()
 {
     while (msgo.empty())
-    {
-    }
+    {}
     auto msg = msgo.front();
     msgo.pop();
     return msg;

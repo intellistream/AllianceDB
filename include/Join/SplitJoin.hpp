@@ -1,13 +1,13 @@
 #ifndef ALLIANCEDB_INCLUDE_JOIN_SPLITJOIN_HPP_
 #define ALLIANCEDB_INCLUDE_JOIN_SPLITJOIN_HPP_
 
+#include <queue>
+#include <unordered_map>
+#include <vector>
 #include "Common/Context.hpp"
+#include "Common/Tuple.hpp"
 #include "Join/Join.hpp"
 #include "Utils/Queue.hpp"
-#include "Common/Tuple.hpp"
-#include <queue>
-#include <vector>
-#include <unordered_map>
 
 namespace AllianceDB
 {
@@ -22,7 +22,7 @@ public:
     {
         const Param &param;
         std::vector<TuplePtr> right_region, left_region;
-        std::unordered_map<uint64_t , uint64_t> map_idx_right, map_idx_left;
+        std::unordered_map<uint64_t, uint64_t> map_idx_right, map_idx_left;
         bool status;
         size_t sub_window;
         ThreadPtr t;
@@ -65,6 +65,6 @@ private:
     Context &ctx;
     DistributorPtr distributor;
 };
-}
+}  // namespace AllianceDB
 
 #endif

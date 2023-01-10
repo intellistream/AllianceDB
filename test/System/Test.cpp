@@ -7,9 +7,9 @@
 #include "Common/Param.hpp"
 #include "Common/Stream.hpp"
 #include "Common/Types.hpp"
+#include "Engine/EagerEngine.hpp"
 #include "Engine/LazyEngine.hpp"
 #include "Engine/VerifyEngine.hpp"
-#include "Engine/EagerEngine.hpp"
 
 using namespace AllianceDB;
 using namespace std;
@@ -33,7 +33,7 @@ TEST(SystemTest, Verify)
     EXPECT_EQ(engine->Result()->Hash(), 0xbfed2395f36e8b78);
 }
 
-//TEST(SystemTest, SplitJoin)
+// TEST(SystemTest, SplitJoin)
 //{
 //    Param param;
 //    param.algo    = AlgoType::SplitJoin;
