@@ -27,7 +27,8 @@
 using namespace std;
 using namespace AllianceDB;
 
-EagerEngine::EagerEngine(Context &ctx) : param(ctx.param), sr(ctx.sr), ss(ctx.ss), res(ctx.res), ctx(ctx)
+EagerEngine::EagerEngine(Context &ctx)
+    : param(ctx.param), sr(ctx.sr), ss(ctx.ss), res(ctx.res), ctx(ctx)
 {
     res->window_results.resize(max(sr->NumTuples(), ss->NumTuples()) / param.sliding + 1);
     switch (param.algo)
@@ -53,10 +54,12 @@ void EagerEngine::Run()
     // TODO: use rate limiter to control the speed of the input
     while (sr->HasNext() && ss->HasNext())
     {
-        if (sr->Next()->ts != 0 && sr->Next()->ts % param.window == 0) {
+        if (sr->Next()->ts >= param.window && (sr->Next()->ts - param.window) % param.sliding == 0)
+        {
             algo.erase(algo.begin());
         }
-        if (sr->Next()->ts % param.sliding == 0) {
+        if (sr->Next()->ts % param.sliding == 0)
+        {
             switch (param.algo)
             {
             case AlgoType::HandshakeJoin:
