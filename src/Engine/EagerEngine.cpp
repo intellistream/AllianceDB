@@ -27,19 +27,20 @@
 using namespace std;
 using namespace AllianceDB;
 
-EagerEngine::EagerEngine(Context &ctx) : param(ctx.param), sr(ctx.sr), ss(ctx.ss), res(ctx.res)
+EagerEngine::EagerEngine(Context &ctx) : param(ctx.param), sr(ctx.sr), ss(ctx.ss), res(ctx.res), ctx(ctx)
 {
     res->window_results.resize(max(sr->NumTuples(), ss->NumTuples()) / param.sliding + 1);
     switch (param.algo)
     {
     case AlgoType::HandshakeJoin:
     {
-        algo = make_shared<HandshakeJoin>(ctx);
+        algo.push_back(make_shared<HandshakeJoin>(ctx));
         break;
     }
     case AlgoType::SplitJoin:
     {
-        algo = make_shared<SplitJoin>(ctx);
+        algo.push_back(make_shared<SplitJoin>(ctx));
+        INFO("make splitjoiner success");
         break;
     }
     default: ERROR("Unsupported algorithm %d", param.algo);
@@ -48,19 +49,42 @@ EagerEngine::EagerEngine(Context &ctx) : param(ctx.param), sr(ctx.sr), ss(ctx.ss
 
 void EagerEngine::Run()
 {
+    INFO("engine start run");
     // TODO: use rate limiter to control the speed of the input
-    while (sr->HasNext() || ss->HasNext())
+    while (sr->HasNext() && ss->HasNext())
     {
-        if (sr->HasNext())
-        {
-            algo->Feed(sr->Next());
+        if (sr->Next()->ts != 0 && sr->Next()->ts % param.window == 0) {
+            algo.erase(algo.begin());
         }
-        if (ss->HasNext())
+        if (sr->Next()->ts % param.sliding == 0) {
+            switch (param.algo)
+            {
+            case AlgoType::HandshakeJoin:
+            {
+                algo.push_back(make_shared<HandshakeJoin>(ctx));
+                break;
+            }
+            case AlgoType::SplitJoin:
+            {
+                algo.push_back(make_shared<SplitJoin>(ctx));
+                INFO("make splitjoiner success");
+                break;
+            }
+            default: ERROR("Unsupported algorithm %d", param.algo);
+            }
+        }
+        auto nextS = ss->Next();
+        auto nextR = sr->Next();
+        for (int i = 0; i < algo.size(); ++i)
         {
-            algo->Feed(ss->Next());
+            algo[i]->Feed(nextR);
+            algo[i]->Feed(nextS);
         }
     }
-    algo->Wait();
+    for (int i = 0; i < algo.size(); ++i)
+    {
+        algo[i]->Wait();
+    }
 }
 
 ResultPtr EagerEngine::Result() { return res; }
