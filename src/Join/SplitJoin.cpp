@@ -22,6 +22,7 @@ SplitJoin::SplitJoin(Context &ctx) : ctx(ctx)
         distributor->JCs[i]->Start();
         INFO("JoinCore %d start run", i);
     }
+    INFO("start running algo");
     distributor->Start();
     INFO("Distributor start run");
 }
