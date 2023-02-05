@@ -12,10 +12,10 @@ using namespace AllianceDB;
 SplitJoin::SplitJoin(Context &ctx) : ctx(ctx)
 {
     INFO("start make splitjoiner");
-    auto num_workers   = ctx.param.num_workers;
-    auto param         = ctx.param;
-    distributor        = std::make_shared<Distributor>(ctx.param);
-    uint32 sub_window  = param.window / num_workers;
+    auto num_workers  = ctx.param.num_workers;
+    auto param        = ctx.param;
+    distributor       = std::make_shared<Distributor>(ctx.param);
+    uint32 sub_window = param.window / num_workers;
     INFO("start make JoinCores");
     for (int i = 0; i < num_workers; ++i)
     {
@@ -47,6 +47,7 @@ void SplitJoin::Distributor::Start()
     t         = make_shared<thread>(func);
 }
 
+// distributor as a coordinator
 void SplitJoin::Distributor::Run()
 {
     while (true)
@@ -98,7 +99,9 @@ void SplitJoin::Distributor::BroadcastL(TuplePtr tuple)
 }
 
 SplitJoin::JoinCore::JoinCore(const Param &param)
-    : param(param), inputs_store(param.window / param.num_workers), inputs_find(param.window / param.num_workers)
+    : param(param),
+      inputs_store(param.window / param.num_workers),
+      inputs_find(param.window / param.num_workers)
 {}
 
 void SplitJoin::JoinCore::Run()

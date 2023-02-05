@@ -54,6 +54,7 @@ void EagerEngine::Run()
     // TODO: use rate limiter to control the speed of the input
     while (sr->HasNext() && ss->HasNext())
     {
+        // use engine to split window and maintain existing joiner
         if (sr->Next()->ts >= param.window && (sr->Next()->ts - param.window) % param.sliding == 0)
         {
             algo.erase(algo.begin());
