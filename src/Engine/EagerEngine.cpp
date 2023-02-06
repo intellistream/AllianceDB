@@ -41,7 +41,7 @@ EagerEngine::EagerEngine(Context &ctx)
     case AlgoType::SplitJoin:
     {
         algo.push_back(make_shared<SplitJoin>(ctx));
-        INFO("make splitjoiner success");
+        INFO("make SplitJoiner success");
         break;
     }
     default: ERROR("Unsupported algorithm %d", param.algo);
@@ -55,11 +55,13 @@ void EagerEngine::Run()
     while (sr->HasNext() && ss->HasNext())
     {
         // use engine to split window and maintain existing joiner
-        if (sr->Next()->ts >= param.window && (sr->Next()->ts - param.window) % param.sliding == 0)
+        auto nextS = ss->Next();
+        auto nextR = sr->Next();
+        if (nextR->ts >= param.window && (nextR->ts - param.window) % param.sliding == 0)
         {
             algo.erase(algo.begin());
         }
-        if (sr->Next()->ts % param.sliding == 0)
+        if (nextR->ts > 0 && nextR->ts % param.sliding == 0)
         {
             switch (param.algo)
             {
@@ -71,14 +73,14 @@ void EagerEngine::Run()
             case AlgoType::SplitJoin:
             {
                 algo.push_back(make_shared<SplitJoin>(ctx));
-                INFO("make splitjoiner success");
+                INFO("make new SplitJoiner success");
                 break;
             }
             default: ERROR("Unsupported algorithm %d", param.algo);
             }
         }
-        auto nextS = ss->Next();
-        auto nextR = sr->Next();
+        INFO("push tuple from R %d", nextR->ts);
+        INFO("push tuple from S %d", nextS->ts);
         for (int i = 0; i < algo.size(); ++i)
         {
             algo[i]->Feed(nextR);

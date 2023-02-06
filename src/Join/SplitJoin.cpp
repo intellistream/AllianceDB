@@ -11,24 +11,26 @@ using namespace AllianceDB;
 
 SplitJoin::SplitJoin(Context &ctx) : ctx(ctx)
 {
-    INFO("start make splitjoiner");
     auto num_workers  = ctx.param.num_workers;
     auto param        = ctx.param;
     distributor       = std::make_shared<Distributor>(ctx.param);
     uint32 sub_window = param.window / num_workers;
-    INFO("start make JoinCores");
     for (int i = 0; i < num_workers; ++i)
     {
         distributor->JCs.push_back(std::make_shared<JoinCore>(ctx.param));
         distributor->JCs[i]->sub_window = sub_window;
         distributor->JCs[i]->Start();
+        INFO("JoinCore %d start run", i);
     }
-    INFO("start running algo");
     distributor->Start();
-    INFO("Splitjoiner running");
+    INFO("Distributor start run");
 }
 
-void SplitJoin::Feed(TuplePtr tuple) { distributor->tuples.push(tuple); }
+void SplitJoin::Feed(TuplePtr tuple)
+{
+    distributor->tuples.push(tuple);
+    INFO("push 1 tuple to distributor");
+}
 
 void SplitJoin::Wait() { distributor->Wait(); }
 
@@ -58,6 +60,7 @@ void SplitJoin::Distributor::Run()
         }
         if (!tuples.empty())
         {
+            INFO("feed 1 tuple");
             TuplePtr tuple;
             tuples.pop(tuple);
             auto idx = tuple->ts % nums_of_JCs;
@@ -127,7 +130,9 @@ void SplitJoin::JoinCore::Run()
 void SplitJoin::JoinCore::Start()
 {
     auto func = [this]() { this->Run(); };
-    t         = make_shared<thread>(func);
+    INFO("start run joincore");
+    t = make_shared<thread>(func);
+    INFO("start success");
 }
 
 void SplitJoin::JoinCore::Store(TuplePtr tuple)

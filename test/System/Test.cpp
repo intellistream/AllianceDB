@@ -37,10 +37,10 @@ TEST(SystemTest, Verify)
 //{
 //    Param param;
 //    param.algo    = AlgoType::SplitJoin;
-//    param.window  = 500;
-//    param.sliding = 200;
+//    param.window  = 300;
+//    param.sliding = 100;
 //    param.rate    = 0;
-//    param.num_workers = 5;
+//    param.num_workers = 3;
 //    StreamPtr R   = make_shared<Stream>(param, StreamType::R);
 //    StreamPtr S   = make_shared<Stream>(param, StreamType::S);
 //    Context ctx(param);
@@ -49,10 +49,8 @@ TEST(SystemTest, Verify)
 //    R->Load();
 //    S->Load();
 //    auto engine = make_unique<EagerEngine>(ctx);
-////    INFO("make engine success");
 //    engine->Run();
 //    engine->Result()->Print();
-//    //EXPECT_EQ(ctx.res->Hash(), 0xbfed2395f36e8b78);
 //}
 
 // TEST(SystemTest, LazistHashJoin)
