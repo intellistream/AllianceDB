@@ -57,9 +57,15 @@ void EagerEngine::Run()
         // use engine to split window and maintain existing joiner
         auto nextS = ss->Next();
         auto nextR = sr->Next();
+        INFO("push tuple from R %d", nextR->ts);
+        INFO("push tuple from S %d", nextS->ts);
         if (nextR->ts >= param.window && (nextR->ts - param.window) % param.sliding == 0)
         {
+            // To Do: add a lock
+            INFO("algo number = %d", algo.size());
+            INFO("start erase joiner");
             algo.erase(algo.begin());
+            INFO("complete erase joiner");
         }
         if (nextR->ts > 0 && nextR->ts % param.sliding == 0)
         {
@@ -79,12 +85,11 @@ void EagerEngine::Run()
             default: ERROR("Unsupported algorithm %d", param.algo);
             }
         }
-        INFO("push tuple from R %d", nextR->ts);
-        INFO("push tuple from S %d", nextS->ts);
-        for (int i = 0; i < algo.size(); ++i)
+        int idx = (nextR->ts - param.window) % param.sliding + 1;
+        for (; idx < algo.size(); ++idx)
         {
-            algo[i]->Feed(nextR);
-            algo[i]->Feed(nextS);
+            algo[idx]->Feed(nextR);
+            algo[idx]->Feed(nextS);
         }
     }
     for (int i = 0; i < algo.size(); ++i)
