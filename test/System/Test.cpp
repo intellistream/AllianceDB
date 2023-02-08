@@ -52,7 +52,7 @@ TEST(SystemTest, SplitJoin)
     S->Load();
     auto engine = make_unique<EagerEngine>(ctx);
     engine->Run();
-    engine->Result()->Print();
+    EXPECT_EQ(engine->Result()->Hash(), 0xbfed2395f36e8b78);
 }
 
 // TEST(SystemTest, LazistHashJoin)

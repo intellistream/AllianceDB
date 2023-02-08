@@ -69,10 +69,12 @@ void EagerEngine::Run()
             case AlgoType::SplitJoin:
             {
                 auto joiner = make_shared<SplitJoin>(ctx);
+                joiner->distributor->Start();
                 INFO("new joiner id = %d", algo.size());
                 for (int i = 0; i < param.num_workers; ++i)
                 {
                     joiner->distributor->JCs[i]->window_id = algo.size();
+                    joiner->distributor->JCs[i]->res       = ctx.res;
                 }
                 algo.push_back(joiner);
                 INFO("make new SplitJoiner success");

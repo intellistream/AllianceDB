@@ -9,11 +9,10 @@
 using namespace std;
 using namespace AllianceDB;
 
-SplitJoin::SplitJoin(Context &ctx) : ctx(ctx)
+SplitJoin::SplitJoin(Context &ctx) : ctx(ctx), distributor(std::make_shared<Distributor>(ctx.param))
 {
     auto num_workers  = ctx.param.num_workers;
     auto param        = ctx.param;
-    distributor       = std::make_shared<Distributor>(ctx.param);
     uint32 sub_window = param.window / num_workers;
     for (int i = 0; i < num_workers; ++i)
     {
@@ -21,9 +20,7 @@ SplitJoin::SplitJoin(Context &ctx) : ctx(ctx)
         distributor->JCs[i]->sub_window = sub_window;
         distributor->JCs[i]->JC_id      = i;
         distributor->JCs[i]->window_id  = 0;
-        distributor->JCs[i]->Start();
     }
-    distributor->Start();
 }
 
 void SplitJoin::Feed(TuplePtr tuple) { distributor->tuples.push(tuple); }
@@ -40,8 +37,10 @@ SplitJoin::Distributor::Distributor(const Param &param)
 
 void SplitJoin::Distributor::Start()
 {
+    for (auto &jc : JCs) jc->Start();
     auto func = [this]() { this->Run(); };
     t         = make_shared<thread>(func);
+    assert(t);
 }
 
 // distributor as a coordinator
@@ -73,6 +72,8 @@ void SplitJoin::Distributor::Run()
 
 void SplitJoin::Distributor::Wait()
 {
+    status = false;
+    if (t) t->join();
     for (int i = 0; i < nums_of_JCs; ++i)
     {
         JCs[i]->Wait();
@@ -186,4 +187,8 @@ void SplitJoin::JoinCore::Find(TuplePtr tuple)
     }
 }
 
-void SplitJoin::JoinCore::Wait() { this->status = false; }
+void SplitJoin::JoinCore::Wait()
+{
+    this->status = false;
+    if (t) t->join();
+}
