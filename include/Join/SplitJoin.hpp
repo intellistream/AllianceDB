@@ -27,7 +27,7 @@ public:
         size_t sub_window;
         ThreadPtr t;
         ResultPtr res;
-        int64_t id;
+        int64_t JC_id, window_id;
         spsc_queue<TuplePtr> inputs_find, inputs_store;
         JoinCore(const Param &param);
         void Run();
@@ -47,7 +47,6 @@ public:
         ThreadPtr t;
         std::vector<JoinCorePtr> JCs;
         bool status;
-        bool type;
         Distributor(const Param &param);
         void Run();
         void Start();
@@ -57,10 +56,10 @@ public:
     };
 
     using DistributorPtr = std::shared_ptr<Distributor>;
+    DistributorPtr distributor;
 
 private:
     Context &ctx;
-    DistributorPtr distributor;
 };
 }  // namespace AllianceDB
 

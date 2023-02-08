@@ -13,15 +13,18 @@ JoinResult::JoinResult(const Param &param) : param(param), window_results(param.
 
 void JoinResult::Emit(int wid, TuplePtr t1, TuplePtr t2)
 {
+    mu.lock();
     if (window_results.size() <= wid)
     {
         window_results.resize(wid + 1);
     }
     window_results[wid].push_back(ResultTuple(t1->key, t1->val, t2->val));
+    mu.unlock();
 }
 
 void JoinResult::Emit(TuplePtr t1, TuplePtr t2)
 {
+    mu.lock();
     auto l = min(t1->ts, t2->ts), r = max(t1->ts, t2->ts);
     if (r - l >= param.window)
     {
@@ -34,6 +37,7 @@ void JoinResult::Emit(TuplePtr t1, TuplePtr t2)
         window_results[wid].push_back(ResultTuple(t1->key, t1->val, t2->val));
         ++wid;
     }
+    mu.unlock();
 }
 
 bool operator==(JoinResult &lhs, JoinResult &rhs)

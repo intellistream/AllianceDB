@@ -19,27 +19,22 @@ SplitJoin::SplitJoin(Context &ctx) : ctx(ctx)
     {
         distributor->JCs.push_back(std::make_shared<JoinCore>(ctx.param));
         distributor->JCs[i]->sub_window = sub_window;
+        distributor->JCs[i]->JC_id      = i;
+        distributor->JCs[i]->window_id  = 0;
         distributor->JCs[i]->Start();
-        INFO("JoinCore %d start run", i);
     }
     distributor->Start();
-    INFO("Distributor start run");
 }
 
-void SplitJoin::Feed(TuplePtr tuple)
-{
-    distributor->tuples.push(tuple);
-    INFO("push 1 tuple to distributor");
-}
+void SplitJoin::Feed(TuplePtr tuple) { distributor->tuples.push(tuple); }
 
 void SplitJoin::Wait() { distributor->Wait(); }
 
 SplitJoin::Distributor::Distributor(const Param &param)
     : param(param),
-      tuples(param.num_tuples),
+      tuples(param.window),
       nums_of_JCs(param.num_workers),
       window(param.window),
-      type(false),
       status(true)
 {}
 
@@ -60,10 +55,9 @@ void SplitJoin::Distributor::Run()
         }
         if (!tuples.empty())
         {
-            INFO("feed 1 tuple");
             TuplePtr tuple;
             tuples.pop(tuple);
-            auto idx = tuple->ts % nums_of_JCs;
+            int idx = int(tuple->ts) % int(nums_of_JCs);
             JCs[idx]->inputs_store.push(tuple);
             if (tuple->st == StreamType::R)
             {
@@ -109,7 +103,6 @@ SplitJoin::JoinCore::JoinCore(const Param &param)
 
 void SplitJoin::JoinCore::Run()
 {
-    LOG(param.log, "JoinCore %d started", id);
     while (this->status)
     {
         if (!inputs_store.empty())
@@ -130,13 +123,13 @@ void SplitJoin::JoinCore::Run()
 void SplitJoin::JoinCore::Start()
 {
     auto func = [this]() { this->Run(); };
-    INFO("start run joincore");
-    t = make_shared<thread>(func);
-    INFO("start success");
+    t         = make_shared<thread>(func);
 }
 
 void SplitJoin::JoinCore::Store(TuplePtr tuple)
 {
+    // we currently make every JoinCore will only receive same mount tuples as sub_window, so not
+    // necessary to check the size of store region, but we reserve this for future work;
     if (tuple->st == StreamType::R)
     {
         if (right_region.size() == sub_window)
@@ -145,7 +138,7 @@ void SplitJoin::JoinCore::Store(TuplePtr tuple)
             right_region.erase(right_region.begin());
         }
         right_region.push_back(tuple);
-        map_idx_right.emplace(tuple->key, right_region.size());
+        map_idx_right.emplace(tuple->key, right_region.size() - 1);
     }
     else
     {
@@ -155,7 +148,7 @@ void SplitJoin::JoinCore::Store(TuplePtr tuple)
             left_region.erase(left_region.begin());
         }
         left_region.push_back(tuple);
-        map_idx_left.emplace(tuple->key, right_region.size());
+        map_idx_left.emplace(tuple->key, right_region.size() - 1);
     }
 }
 
@@ -163,21 +156,33 @@ void SplitJoin::JoinCore::Find(TuplePtr tuple)
 {
     if (tuple->st == StreamType::R)
     {
-        auto result = map_idx_right.find(tuple->key);
-        if (result == map_idx_right.end())
-        {
-            return;
-        }
-        res->Emit(right_region[result->second], tuple);
-    }
-    else
-    {
         auto result = map_idx_left.find(tuple->key);
         if (result == map_idx_left.end())
         {
             return;
         }
-        res->Emit(tuple, left_region[result->second]);
+        INFO(
+            "find one matched tuples, it is in the %d window, tuple1 id %d, tuple2 id %d, tuple1 "
+            "ts = %d, tuple2 ts = %d",
+            window_id, tuple->key, left_region[result->second]->key, tuple->ts,
+            left_region[result->second]->ts);
+        res->Emit(window_id, left_region[result->second], tuple);
+        INFO("store matched tuples");
+    }
+    else
+    {
+        auto result = map_idx_right.find(tuple->key);
+        if (result == map_idx_right.end())
+        {
+            return;
+        }
+        INFO(
+            "find one matched tuples, it is in the %d window, tuple1 id %d, tuple2 id %d, tuple1 "
+            "ts = %d, tuple2 ts = %d",
+            window_id, right_region[result->second]->key, tuple->key,
+            right_region[result->second]->ts, tuple->ts);
+        res->Emit(window_id, tuple, right_region[result->second]);
+        INFO("store matched tuples");
     }
 }
 

@@ -33,25 +33,27 @@ TEST(SystemTest, Verify)
     EXPECT_EQ(engine->Result()->Hash(), 0xbfed2395f36e8b78);
 }
 
-// TEST(SystemTest, SplitJoin)
-//{
-//    Param param;
-//    param.algo    = AlgoType::SplitJoin;
-//    param.window  = 300;
-//    param.sliding = 100;
-//    param.rate    = 0;
-//    param.num_workers = 3;
-//    StreamPtr R   = make_shared<Stream>(param, StreamType::R);
-//    StreamPtr S   = make_shared<Stream>(param, StreamType::S);
-//    Context ctx(param);
-//    ctx.sr = R;
-//    ctx.ss = S;
-//    R->Load();
-//    S->Load();
-//    auto engine = make_unique<EagerEngine>(ctx);
-//    engine->Run();
-//    engine->Result()->Print();
-//}
+TEST(SystemTest, SplitJoin)
+{
+    Param param;
+    param.algo        = AlgoType::SplitJoin;
+    param.window      = 300;
+    param.sliding     = 100;
+    param.rate        = 0;
+    param.num_workers = 3;
+    param.num_windows = 98;
+    param.log         = fopen("adb.log", "w");
+    StreamPtr R       = make_shared<Stream>(param, StreamType::R);
+    StreamPtr S       = make_shared<Stream>(param, StreamType::S);
+    Context ctx(param);
+    ctx.sr = R;
+    ctx.ss = S;
+    R->Load();
+    S->Load();
+    auto engine = make_unique<EagerEngine>(ctx);
+    engine->Run();
+    engine->Result()->Print();
+}
 
 // TEST(SystemTest, LazistHashJoin)
 // {

@@ -36,6 +36,7 @@ using WindowJoinResult = std::vector<ResultTuple>;
 
 struct JoinResult
 {
+    std::mutex mu;
     std::vector<WindowJoinResult> window_results;
     const Param &param;
     JoinResult(const Param &param);
