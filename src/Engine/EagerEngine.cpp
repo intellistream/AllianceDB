@@ -27,19 +27,21 @@
 using namespace std;
 using namespace AllianceDB;
 
-EagerEngine::EagerEngine(Context &ctx) : param(ctx.param), sr(ctx.sr), ss(ctx.ss), res(ctx.res)
+EagerEngine::EagerEngine(Context &ctx)
+    : param(ctx.param), sr(ctx.sr), ss(ctx.ss), res(ctx.res), ctx(ctx)
 {
     res->window_results.resize(max(sr->NumTuples(), ss->NumTuples()) / param.sliding + 1);
     switch (param.algo)
     {
     case AlgoType::HandshakeJoin:
     {
-        algo = make_shared<HandshakeJoin>(ctx);
+        algo.push_back(make_shared<HandshakeJoin>(ctx));
         break;
     }
     case AlgoType::SplitJoin:
     {
-        algo = make_shared<SplitJoin>(ctx);
+        algo.push_back(make_shared<SplitJoin>(ctx));
+        INFO("make SplitJoiner success");
         break;
     }
     default: ERROR("Unsupported algorithm %d", param.algo);
@@ -48,19 +50,60 @@ EagerEngine::EagerEngine(Context &ctx) : param(ctx.param), sr(ctx.sr), ss(ctx.ss
 
 void EagerEngine::Run()
 {
+    INFO("engine start run");
     // TODO: use rate limiter to control the speed of the input
-    while (sr->HasNext() || ss->HasNext())
+    while (sr->HasNext() && ss->HasNext())
     {
-        if (sr->HasNext())
+        // use engine to split window and maintain existing joiner
+        auto nextS = ss->Next();
+        auto nextR = sr->Next();
+        INFO("push tuple from R %d", nextR->ts);
+        INFO("push tuple from S %d", nextS->ts);
+        if (nextR->ts >= param.window && (nextR->ts - param.window) % param.sliding == 0)
         {
-            algo->Feed(sr->Next());
+            // To Do: add a lock
+            INFO("algo number = %d", algo.size());
+            INFO("start erase joiner");
+            algo.erase(algo.begin());
+            INFO("complete erase joiner");
         }
-        if (ss->HasNext())
+        if (nextR->ts > 0 && nextR->ts % param.sliding == 0)
         {
-            algo->Feed(ss->Next());
+            switch (param.algo)
+            {
+            case AlgoType::HandshakeJoin:
+            {
+                algo.push_back(make_shared<HandshakeJoin>(ctx));
+                break;
+            }
+            case AlgoType::SplitJoin:
+            {
+                algo.push_back(make_shared<SplitJoin>(ctx));
+                INFO("make new SplitJoiner success");
+                break;
+            }
+            default: ERROR("Unsupported algorithm %d", param.algo);
+            }
+        }
+        int idx;
+        if (nextR->ts < param.window)
+        {
+            idx = 0;
+        }
+        else
+        {
+            idx = (nextR->ts - param.window) / param.sliding + 1;
+        }
+        for (; idx < algo.size(); ++idx)
+        {
+            algo[idx]->Feed(nextR);
+            algo[idx]->Feed(nextS);
         }
     }
-    algo->Wait();
+    for (int i = 0; i < algo.size(); ++i)
+    {
+        algo[i]->Wait();
+    }
 }
 
 ResultPtr EagerEngine::Result() { return res; }

@@ -23,7 +23,8 @@ private:
     const Param &param;
     const StreamPtr ss, sr;
     ResultPtr res;
-    JoinPtr algo;
+    std::vector<JoinPtr> algo;
+    Context &ctx;
 };
 
 }  // namespace AllianceDB

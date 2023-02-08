@@ -11,40 +11,26 @@ using namespace AllianceDB;
 
 SplitJoin::SplitJoin(Context &ctx) : ctx(ctx)
 {
-    auto num_workers   = ctx.param.num_workers;
-    auto param         = ctx.param;
-    distributor        = std::make_shared<Distributor>(ctx.param);
-    uint32 sub_window  = round((double)param.window / num_workers),
-           last_window = param.window - (num_workers - 1) * sub_window;
-    if (last_window == 0)
+    auto num_workers  = ctx.param.num_workers;
+    auto param        = ctx.param;
+    distributor       = std::make_shared<Distributor>(ctx.param);
+    uint32 sub_window = param.window / num_workers;
+    for (int i = 0; i < num_workers; ++i)
     {
-        num_workers--;
-        distributor->nums_of_JCs--;
-        distributor->type = true;
-        for (auto i = 0; i < num_workers; ++i)
-        {
-            distributor->JCs.push_back(std::make_shared<JoinCore>(ctx.param));
-            distributor->JCs[i]->sub_window = sub_window;
-            distributor->JCs[i]->Start();
-        }
-    }
-    else
-    {
-        for (auto i = 0; i < num_workers; ++i)
-        {
-            distributor->JCs.push_back(std::make_shared<JoinCore>(ctx.param));
-            distributor->JCs[i]->sub_window = sub_window;
-            if (i == num_workers - 1)
-            {
-                distributor->JCs[i]->sub_window = last_window;
-            }
-            distributor->JCs[i]->Start();
-        }
+        distributor->JCs.push_back(std::make_shared<JoinCore>(ctx.param));
+        distributor->JCs[i]->sub_window = sub_window;
+        distributor->JCs[i]->Start();
+        INFO("JoinCore %d start run", i);
     }
     distributor->Start();
+    INFO("Distributor start run");
 }
 
-void SplitJoin::Feed(TuplePtr tuple) { distributor->tuples.push(tuple); }
+void SplitJoin::Feed(TuplePtr tuple)
+{
+    distributor->tuples.push(tuple);
+    INFO("push 1 tuple to distributor");
+}
 
 void SplitJoin::Wait() { distributor->Wait(); }
 
@@ -63,6 +49,7 @@ void SplitJoin::Distributor::Start()
     t         = make_shared<thread>(func);
 }
 
+// distributor as a coordinator
 void SplitJoin::Distributor::Run()
 {
     while (true)
@@ -73,51 +60,18 @@ void SplitJoin::Distributor::Run()
         }
         if (!tuples.empty())
         {
+            INFO("feed 1 tuple");
             TuplePtr tuple;
             tuples.pop(tuple);
+            auto idx = tuple->ts % nums_of_JCs;
+            JCs[idx]->inputs_store.push(tuple);
             if (tuple->st == StreamType::R)
             {
                 BroadcastL(tuple);
-                if (this->type)
-                {
-                    auto JC_idx = tuple->ts % nums_of_JCs;
-                    JCs[JC_idx]->inputs_store.push(tuple);
-                }
-                else
-                {
-                    auto JC_idx = tuple->ts % window;
-                    if (JC_idx == window - 1)
-                    {
-                        JC_idx = nums_of_JCs - 1;
-                    }
-                    else
-                    {
-                        JC_idx %= (nums_of_JCs - 1);
-                    }
-                    JCs[JC_idx]->inputs_store.push(tuple);
-                }
             }
             else
             {
                 BroadcastR(tuple);
-                if (this->type)
-                {
-                    auto JC_idx = tuple->ts % nums_of_JCs;
-                    JCs[JC_idx]->inputs_store.push(tuple);
-                }
-                else
-                {
-                    auto JC_idx = tuple->ts % window;
-                    if (JC_idx == window - 1)
-                    {
-                        JC_idx = nums_of_JCs - 1;
-                    }
-                    else
-                    {
-                        JC_idx %= (nums_of_JCs - 1);
-                    }
-                    JCs[JC_idx]->inputs_store.push(tuple);
-                }
             }
         }
     }
@@ -148,7 +102,9 @@ void SplitJoin::Distributor::BroadcastL(TuplePtr tuple)
 }
 
 SplitJoin::JoinCore::JoinCore(const Param &param)
-    : param(param), inputs_store(param.window), inputs_find(param.window)
+    : param(param),
+      inputs_store(param.window / param.num_workers),
+      inputs_find(param.window / param.num_workers)
 {}
 
 void SplitJoin::JoinCore::Run()
@@ -174,7 +130,9 @@ void SplitJoin::JoinCore::Run()
 void SplitJoin::JoinCore::Start()
 {
     auto func = [this]() { this->Run(); };
-    t         = make_shared<thread>(func);
+    INFO("start run joincore");
+    t = make_shared<thread>(func);
+    INFO("start success");
 }
 
 void SplitJoin::JoinCore::Store(TuplePtr tuple)

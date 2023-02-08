@@ -35,7 +35,6 @@ public:
         void Store(TuplePtr tuple);
         void Find(TuplePtr tuple);
         void Wait();
-        void Send();
     };
     using JoinCorePtr = std::shared_ptr<JoinCore>;
     struct Distributor
@@ -52,8 +51,6 @@ public:
         Distributor(const Param &param);
         void Run();
         void Start();
-        void FetchR(TuplePtr tuple, auto idx);
-        void FetchL(TuplePtr tuple, auto idx);
         void BroadcastR(TuplePtr tuple);
         void BroadcastL(TuplePtr tuple);
         void Wait();
