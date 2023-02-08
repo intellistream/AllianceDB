@@ -85,7 +85,15 @@ void EagerEngine::Run()
             default: ERROR("Unsupported algorithm %d", param.algo);
             }
         }
-        int idx = (nextR->ts - param.window) % param.sliding + 1;
+        int idx;
+        if (nextR->ts < param.window)
+        {
+            idx = 0;
+        }
+        else
+        {
+            idx = (nextR->ts - param.window) / param.sliding + 1;
+        }
         for (; idx < algo.size(); ++idx)
         {
             algo[idx]->Feed(nextR);
