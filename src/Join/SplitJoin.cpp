@@ -141,23 +141,25 @@ void SplitJoin::JoinCore::Store(TuplePtr tuple)
     // necessary to check the size of store region, but we reserve this for future work;
     if (tuple->st == StreamType::R)
     {
-        if (right_region.size() == sub_window)
-        {
-            map_idx_right.erase(right_region[0]->key);
-            right_region.erase(right_region.begin());
-        }
+        //        if (right_region.size() == sub_window)
+        //        {
+        //            map_idx_right.erase(right_region[0]->key);
+        //            right_region.erase(right_region.begin());
+        //        }
         right_region.push_back(tuple);
-        map_idx_right.emplace(tuple->key, right_region.size() - 1);
+        // map_idx_right.emplace(tuple->key, right_region.size() - 1);
+        map_idx_right[tuple->key].push_back(right_region.size() - 1);
     }
     else
     {
-        if (left_region.size() == sub_window)
-        {
-            map_idx_left.erase(left_region[0]->key);
-            left_region.erase(left_region.begin());
-        }
+        //        if (left_region.size() == sub_window)
+        //        {
+        //            map_idx_left.erase(left_region[0]->key);
+        //            left_region.erase(left_region.begin());
+        //        }
         left_region.push_back(tuple);
-        map_idx_left.emplace(tuple->key, right_region.size() - 1);
+        // map_idx_left.emplace(tuple->key, left_region.size() - 1);
+        map_idx_left[tuple->key].push_back(left_region.size() - 1);
     }
 }
 
@@ -170,13 +172,27 @@ void SplitJoin::JoinCore::Find(TuplePtr tuple)
         {
             return;
         }
-        LOG(param.log,
-            "find one matched tuples, it is in the %d window, their key = %d, tuple1 value = %d, "
-            "tuple2 value = %d, tuple1 "
-            "ts = %d, tuple2 ts = %d",
-            window_id, tuple->key, tuple->val, left_region[result->second]->val, tuple->ts,
-            left_region[result->second]->ts);
-        res->Emit(window_id, left_region[result->second], tuple);
+        for (int i = 0; i < result->second.size(); ++i)
+        {
+            LOG(param.log,
+                "find one matched tuples, it is in the %lld window, their key = %llu, tuple1 value "
+                "= %llu, "
+                "tuple2 value = %llu, tuple1 "
+                "ts = %zu, tuple2 ts = %zu",
+                window_id, tuple->key, tuple->val, left_region[result->second[i]]->val, tuple->ts,
+                left_region[result->second[i]]->ts)
+            res->Emit(window_id, left_region[result->second[i]], tuple);
+        }
+        //        while (result != map_idx_left.end() && result->first == tuple->key) {
+        //            LOG(param.log,
+        //                "find one matched tuples, it is in the %lld window, their key = %llu,
+        //                tuple1 value = %llu, " "tuple2 value = %llu, tuple1 " "ts = %zu, tuple2 ts
+        //                = %zu", window_id, tuple->key, tuple->val,
+        //                left_region[result->second]->val, tuple->ts,
+        //                left_region[result->second]->ts)
+        //            res->Emit(window_id, left_region[result->second], tuple);
+        //            result++;
+        //        }
     }
     else
     {
@@ -185,13 +201,27 @@ void SplitJoin::JoinCore::Find(TuplePtr tuple)
         {
             return;
         }
-        LOG(param.log,
-            "find one matched tuples, it is in the %d window, their key = %d, tuple1 value =  %d, "
-            "tuple2 value =  %d, tuple1 "
-            "ts = %d, tuple2 ts = %d",
-            window_id, tuple->key, right_region[result->second]->val, tuple->val,
-            right_region[result->second]->ts, tuple->ts);
-        res->Emit(window_id, tuple, right_region[result->second]);
+        for (int i = 0; i < result->second.size(); ++i)
+        {
+            LOG(param.log,
+                "find one matched tuples, it is in the %lld window, their key = %llu, tuple1 value "
+                "=  %llu, "
+                "tuple2 value =  %llu, tuple1 "
+                "ts = %zu, tuple2 ts = %zu",
+                window_id, tuple->key, right_region[result->second[i]]->val, tuple->val,
+                right_region[result->second[i]]->ts, tuple->ts)
+            res->Emit(window_id, tuple, right_region[result->second[i]]);
+        }
+        //        while (result != map_idx_right.end() && result->first == tuple->key)
+        //        {
+        //            LOG(param.log,
+        //                "find one matched tuples, it is in the %lld window, their key = %llu,
+        //                tuple1 value =  %llu, " "tuple2 value =  %llu, tuple1 " "ts = %zu, tuple2
+        //                ts = %zu", window_id, tuple->key, right_region[result->second]->val,
+        //                tuple->val, right_region[result->second]->ts, tuple->ts)
+        //            res->Emit(window_id, tuple, right_region[result->second]);
+        //            result++;
+        //        }
     }
 }
 

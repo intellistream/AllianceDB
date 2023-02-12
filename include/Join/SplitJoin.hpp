@@ -22,7 +22,7 @@ public:
     {
         const Param &param;
         std::vector<TuplePtr> right_region, left_region;
-        std::unordered_map<uint64_t, uint64_t> map_idx_right, map_idx_left;
+        std::unordered_map<uint64_t, std::vector<uint64_t>> map_idx_right, map_idx_left;
         bool status;
         size_t sub_window;
         ThreadPtr t;
