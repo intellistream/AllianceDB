@@ -36,9 +36,9 @@ using WindowJoinResult = std::vector<ResultTuple>;
 
 struct JoinResult
 {
-    std::mutex mu;
     std::vector<WindowJoinResult> window_results;
     const Param &param;
+    std::vector<std::mutex> mu;
     JoinResult(const Param &param);
     void Emit(int wid, TuplePtr t1, TuplePtr t2);
     void Emit(TuplePtr t1, TuplePtr t2);

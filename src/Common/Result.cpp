@@ -9,22 +9,24 @@
 using namespace AllianceDB;
 using namespace std;
 
-JoinResult::JoinResult(const Param &param) : param(param), window_results(param.num_windows) {}
+JoinResult::JoinResult(const Param &param)
+    : param(param), window_results(param.num_windows), mu(param.num_windows)
+{}
 
 void JoinResult::Emit(int wid, TuplePtr t1, TuplePtr t2)
 {
-    mu.lock();
+    mu[wid].lock();
     if (window_results.size() <= wid)
     {
         window_results.resize(wid + 1);
     }
     window_results[wid].push_back(ResultTuple(t1->key, t1->val, t2->val));
-    mu.unlock();
+    mu[wid].unlock();
 }
 
 void JoinResult::Emit(TuplePtr t1, TuplePtr t2)
 {
-    mu.lock();
+    // mu.lock();
     auto l = min(t1->ts, t2->ts), r = max(t1->ts, t2->ts);
     if (r - l >= param.window)
     {
@@ -37,7 +39,7 @@ void JoinResult::Emit(TuplePtr t1, TuplePtr t2)
         window_results[wid].push_back(ResultTuple(t1->key, t1->val, t2->val));
         ++wid;
     }
-    mu.unlock();
+    // mu.unlock();
 }
 
 bool operator==(JoinResult &lhs, JoinResult &rhs)

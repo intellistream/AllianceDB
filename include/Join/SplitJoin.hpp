@@ -50,8 +50,6 @@ public:
         Distributor(const Param &param);
         void Run();
         void Start();
-        void BroadcastR(TuplePtr tuple);
-        void BroadcastL(TuplePtr tuple);
         void Wait();
     };
 

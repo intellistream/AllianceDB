@@ -41,8 +41,11 @@ EagerEngine::EagerEngine(Context &ctx)
     case AlgoType::SplitJoin:
     {
         res->window_results.resize(param.num_windows);
-        algo.push_back(make_shared<SplitJoin>(ctx));
-        INFO("make SplitJoiner success");
+        auto joiner = make_shared<SplitJoin>(ctx);
+        algo.push_back(joiner);
+        joiner->distributor->Start();
+        LOG(param.log, "make SplitJoiner success, now have %d joiners, the window_id = %d",
+            algo.size(), joiner->distributor->JCs[0]->window_id);
         break;
     }
     default: ERROR("Unsupported algorithm %d", param.algo);
@@ -54,7 +57,6 @@ void EagerEngine::Run()
     // TODO: use rate limiter to control the speed of the input
     while (sr->HasNext() && ss->HasNext())
     {
-        // use engine to split window and maintain existing joiner
         auto nextS = ss->Next();
         auto nextR = sr->Next();
         if (nextR->ts > 0 && nextR->ts % param.sliding == 0)
@@ -69,15 +71,13 @@ void EagerEngine::Run()
             case AlgoType::SplitJoin:
             {
                 auto joiner = make_shared<SplitJoin>(ctx);
-                joiner->distributor->Start();
-                INFO("new joiner id = %d", algo.size());
                 for (int i = 0; i < param.num_workers; ++i)
                 {
                     joiner->distributor->JCs[i]->window_id = algo.size();
                     joiner->distributor->JCs[i]->res       = ctx.res;
                 }
                 algo.push_back(joiner);
-                INFO("make new SplitJoiner success");
+                joiner->distributor->Start();
                 break;
             }
             default: ERROR("Unsupported algorithm %d", param.algo);
@@ -92,12 +92,13 @@ void EagerEngine::Run()
         {
             idx = (nextR->ts - param.window) / param.sliding + 1;
         }
-        for (; idx < algo.size(); ++idx)
+        for (; idx < algo.size(); idx++)
         {
             algo[idx]->Feed(nextR);
             algo[idx]->Feed(nextS);
         }
     }
+
     for (int i = 0; i < algo.size(); ++i)
     {
         algo[i]->Wait();
