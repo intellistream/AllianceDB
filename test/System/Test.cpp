@@ -17,13 +17,13 @@ using namespace std;
 TEST(SystemTest, Verify)
 {
     Param param;
-    param.algo    = AlgoType::Verify;
-    param.window  = 500;
-    param.sliding = 200;
-    param.rate    = 0;
+    param.algo        = AlgoType::Verify;
+    param.window      = 500;
+    param.sliding     = 200;
+    param.rate        = 0;
     param.num_windows = 50;
-    StreamPtr R   = make_shared<Stream>(param, StreamType::R);
-    StreamPtr S   = make_shared<Stream>(param, StreamType::S);
+    StreamPtr R       = make_shared<Stream>(param, StreamType::R);
+    StreamPtr S       = make_shared<Stream>(param, StreamType::S);
     Context ctx(param);
     ctx.sr = R;
     ctx.ss = S;
