@@ -84,7 +84,7 @@ void JoinResult::Print()
 size_t JoinResult::Hash()
 {
     size_t hash = 0;
-    for (auto i = 0; i < window_results.size(); i++)
+    for (auto i = 0; i < param.num_windows; i++)
     {
         sort(window_results[i].begin(), window_results[i].end());
         std::size_t seed = window_results[i].size();

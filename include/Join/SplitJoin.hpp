@@ -22,7 +22,7 @@ public:
     {
         const Param &param;
         std::vector<TuplePtr> right_region, left_region;
-        std::unordered_map<uint64_t, std::vector<uint64_t>> map_idx_right, map_idx_left;
+        std::unordered_map<KeyType, std::vector<uint32_t>> map_idx_right, map_idx_left;
         bool status;
         size_t sub_window;
         ThreadPtr t;
@@ -51,6 +51,7 @@ public:
         void Run();
         void Start();
         void Wait();
+        void Process();
     };
 
     using DistributorPtr = std::shared_ptr<Distributor>;
