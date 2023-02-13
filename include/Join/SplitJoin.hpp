@@ -22,12 +22,12 @@ public:
     {
         const Param &param;
         std::vector<TuplePtr> right_region, left_region;
-        std::unordered_map<uint64_t, uint64_t> map_idx_right, map_idx_left;
+        std::unordered_map<KeyType, std::vector<uint32_t>> map_idx_right, map_idx_left;
         bool status;
         size_t sub_window;
         ThreadPtr t;
         ResultPtr res;
-        int64_t id;
+        int64_t JC_id, window_id;
         spsc_queue<TuplePtr> inputs_find, inputs_store;
         JoinCore(const Param &param);
         void Run();
@@ -47,20 +47,18 @@ public:
         ThreadPtr t;
         std::vector<JoinCorePtr> JCs;
         bool status;
-        bool type;
         Distributor(const Param &param);
         void Run();
         void Start();
-        void BroadcastR(TuplePtr tuple);
-        void BroadcastL(TuplePtr tuple);
         void Wait();
+        void Process();
     };
 
     using DistributorPtr = std::shared_ptr<Distributor>;
+    DistributorPtr distributor;
 
 private:
     Context &ctx;
-    DistributorPtr distributor;
 };
 }  // namespace AllianceDB
 
