@@ -35,7 +35,7 @@ EagerEngine::EagerEngine(Context &ctx)
     case AlgoType::HandshakeJoin:
     {
         res->window_results.resize(max(sr->NumTuples(), ss->NumTuples()) / param.sliding + 1);
-        algo.push_back(make_shared<HandshakeJoin>(ctx));
+        algo.push_back(make_shared<HandshakeJoin>(ctx, 0));
         break;
     }
     case AlgoType::SplitJoin:
@@ -57,15 +57,14 @@ void EagerEngine::Run()
     // TODO: use rate limiter to control the speed of the input
     while (sr->HasNext() && ss->HasNext())
     {
-        auto nextS = ss->Next();
-        auto nextR = sr->Next();
-        if (nextR->ts > 0 && nextR->ts % param.sliding == 0)
+        auto nextS = ss->Next(), nextR = sr->Next();
+        if (nextR->ts > 0 && nextR->ts % param.sliding == 0 && algo.size() < param.num_windows)
         {
             switch (param.algo)
             {
             case AlgoType::HandshakeJoin:
             {
-                algo.push_back(make_shared<HandshakeJoin>(ctx));
+                algo.push_back(make_shared<HandshakeJoin>(ctx, algo.size()));
                 break;
             }
             case AlgoType::SplitJoin:
@@ -98,10 +97,10 @@ void EagerEngine::Run()
             algo[idx]->Feed(nextS);
         }
     }
-
     for (int i = 0; i < algo.size(); ++i)
     {
         algo[i]->Wait();
+        LOG(param.log, "algo[%d/%d] joined", i, algo.size());
     }
 }
 

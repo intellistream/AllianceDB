@@ -13,7 +13,7 @@ namespace AllianceDB
 class HandshakeJoin : public JoinAlgo
 {
 public:
-    HandshakeJoin(Context &ctx);
+    HandshakeJoin(Context &ctx, size_t);
     void Feed(TuplePtr tuple);
     void Wait();
 
@@ -45,7 +45,7 @@ public:
         size_t offs, offr;
         ThreadPtr t;
         ResultPtr res;
-        int id;
+        int id, window_id;
         size_t sentr = 0, sents = 0;
         size_t starts = 0, startr = 0;
         size_t ends = 0, endr = 0;
