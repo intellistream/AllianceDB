@@ -9,17 +9,17 @@
 #include <iomanip>
 #include <iostream>
 
-// Define a macro for logging messages at the "info" level
-#define LOG(file, msg, ...)                                                      \
-    {                                                                            \
-        std::time_t t = std::time(nullptr);                                      \
-        char buf[12];                                                            \
-        std::strftime(buf, sizeof(buf), "%H:%M:%S", std::localtime(&t));         \
-        fprintf(file, "[LOG] [%s] %s: " msg "\n", buf, __func__, ##__VA_ARGS__); \
-        fflush(file);                                                            \
+extern FILE* g_log;
+
+#define LOG(msg, ...)                                                             \
+    {                                                                             \
+        std::time_t t = std::time(nullptr);                                       \
+        char buf[12];                                                             \
+        std::strftime(buf, sizeof(buf), "%H:%M:%S", std::localtime(&t));          \
+        fprintf(g_log, "[LOG] [%s] %s: " msg "\n", buf, __func__, ##__VA_ARGS__); \
+        fflush(g_log);                                                            \
     }
 
-// Define a macro for logging messages at the "info" level
 #define INFO(msg, ...)                                                              \
     {                                                                               \
         std::time_t t = std::time(nullptr);                                         \
@@ -28,13 +28,21 @@
         fprintf(stderr, "[INFO] [%s] %s: " msg "\n", buf, __func__, ##__VA_ARGS__); \
     }
 
-// Define a macro for logging messages at the "error" level
 #define ERROR(msg, ...)                                                              \
     {                                                                                \
         std::time_t t = std::time(nullptr);                                          \
         char buf[12];                                                                \
         std::strftime(buf, sizeof(buf), "%H:%M:%S", std::localtime(&t));             \
         fprintf(stderr, "[ERROR] [%s] %s: " msg "\n", buf, __func__, ##__VA_ARGS__); \
+    }
+
+#define FATAL(msg, ...)                                                              \
+    {                                                                                \
+        std::time_t t = std::time(nullptr);                                          \
+        char buf[12];                                                                \
+        std::strftime(buf, sizeof(buf), "%H:%M:%S", std::localtime(&t));             \
+        fprintf(stderr, "[ERROR] [%s] %s: " msg "\n", buf, __func__, ##__VA_ARGS__); \
+        exit(1);                                                                     \
     }
 
 #ifdef DEBUG

@@ -7,7 +7,6 @@ namespace AllianceDB
 {
 struct Param
 {
-    FILE *log;
     AlgoType algo = AlgoType::Verify;
     std::string bin_dir;
     uint32 window;
