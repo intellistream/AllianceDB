@@ -9,14 +9,16 @@
 #include <iomanip>
 #include <iostream>
 
+extern FILE* g_log;
+
 // Define a macro for logging messages at the "info" level
-#define LOG(file, msg, ...)                                                      \
-    {                                                                            \
-        std::time_t t = std::time(nullptr);                                      \
-        char buf[12];                                                            \
-        std::strftime(buf, sizeof(buf), "%H:%M:%S", std::localtime(&t));         \
-        fprintf(file, "[LOG] [%s] %s: " msg "\n", buf, __func__, ##__VA_ARGS__); \
-        fflush(file);                                                            \
+#define LOG(msg, ...)                                                             \
+    {                                                                             \
+        std::time_t t = std::time(nullptr);                                       \
+        char buf[12];                                                             \
+        std::strftime(buf, sizeof(buf), "%H:%M:%S", std::localtime(&t));          \
+        fprintf(g_log, "[LOG] [%s] %s: " msg "\n", buf, __func__, ##__VA_ARGS__); \
+        fflush(g_log);                                                            \
     }
 
 // Define a macro for logging messages at the "info" level

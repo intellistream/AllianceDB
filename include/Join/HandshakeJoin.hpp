@@ -13,9 +13,10 @@ namespace AllianceDB
 class HandshakeJoin : public JoinAlgo
 {
 public:
-    HandshakeJoin(Context &ctx, size_t);
+    HandshakeJoin(const Param &, size_t);
     void Feed(TuplePtr tuple);
     void Wait();
+    void Start(Context &ctx);
 
     static const int MAX_OUTSTANDING_ACKS = 5;
     static const int MAX_LOAD_DIFF        = 5;
@@ -44,29 +45,28 @@ public:
         size_t window;
         size_t offs, offr;
         ThreadPtr t;
-        ResultPtr res;
         int id, window_id;
         size_t sentr = 0, sents = 0;
         size_t starts = 0, startr = 0;
         size_t ends = 0, endr = 0;
         bool stopr = false, stops = false;
         Worker(const Param &param);
-        void Run();
-        void Start();
+        void Run(Context &ctx);
+        void Start(Context &ctx);
         void Wait();
         Msg RecvIn();
         void Expire();
         bool Empty(const MsgQueue &q);
         bool Full(const MsgQueue &q);
         bool Peek(MsgQueue &q, Msg &msg);
-        void ProcessLeft();
-        void ProcessRight();
+        void ProcessLeft(Context &ctx);
+        void ProcessRight(Context &ctx);
         void Send(MsgQueue &q, Msg msg);
         void Recv(MsgQueue &q, Msg &msg);
     };
 
 private:
-    Context &ctx;
+    const Param &param;
     std::vector<WorkerPtr> workers;
     WorkerPtr dummy;
 };

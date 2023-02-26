@@ -15,16 +15,13 @@ namespace AllianceDB
 class EagerEngine
 {
 public:
-    EagerEngine(Context &ctx);
-    void Run();
-    ResultPtr Result();
+    EagerEngine(const Param &param);
+    void Run(Context &ctx);
 
 private:
     const Param &param;
-    const StreamPtr ss, sr;
-    ResultPtr res;
-    std::vector<JoinPtr> algo;
-    Context &ctx;
+    std::vector<JoinPtr> windows;
+    JoinPtr New();
 };
 
 }  // namespace AllianceDB

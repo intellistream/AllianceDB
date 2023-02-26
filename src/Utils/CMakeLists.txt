@@ -1,3 +1,3 @@
 add_sources(
-        Executor.cpp
+        Logger.cpp
 )

@@ -27,60 +27,40 @@
 using namespace std;
 using namespace AllianceDB;
 
-EagerEngine::EagerEngine(Context &ctx)
-    : param(ctx.param), sr(ctx.sr), ss(ctx.ss), res(ctx.res), ctx(ctx)
+EagerEngine::EagerEngine(const Param &param) : param(param) {}
+
+JoinPtr EagerEngine::New()
 {
     switch (param.algo)
     {
     case AlgoType::HandshakeJoin:
     {
-        res->window_results.resize(max(sr->NumTuples(), ss->NumTuples()) / param.sliding + 1);
-        algo.push_back(make_shared<HandshakeJoin>(ctx, 0));
-        break;
+        return make_shared<HandshakeJoin>(param, windows.size());
     }
     case AlgoType::SplitJoin:
     {
-        res->window_results.resize(param.num_windows);
-        auto joiner = make_shared<SplitJoin>(ctx);
-        algo.push_back(joiner);
-        joiner->distributor->Start();
-        LOG(param.log, "make SplitJoiner success, now have %d joiners, the window_id = %d",
-            algo.size(), joiner->distributor->JCs[0]->window_id);
-        break;
+        return make_shared<SplitJoin>(param, windows.size());
     }
-    default: ERROR("Unsupported algorithm %d", param.algo);
+    default:
+    {
+        ERROR("Unsupported algorithm %d", param.algo);
+        exit(-1);
+    }
     }
 }
 
-void EagerEngine::Run()
+void EagerEngine::Run(Context &ctx)
 {
+    auto sr = ctx.sr, ss = ctx.ss;
     // TODO: use rate limiter to control the speed of the input
     while (sr->HasNext() && ss->HasNext())
     {
         auto nextS = ss->Next(), nextR = sr->Next();
-        if (nextR->ts > 0 && nextR->ts % param.sliding == 0 && algo.size() < param.num_windows)
+        if (nextR->ts % param.sliding == 0 && windows.size() < param.num_windows)
         {
-            switch (param.algo)
-            {
-            case AlgoType::HandshakeJoin:
-            {
-                algo.push_back(make_shared<HandshakeJoin>(ctx, algo.size()));
-                break;
-            }
-            case AlgoType::SplitJoin:
-            {
-                auto joiner = make_shared<SplitJoin>(ctx);
-                for (int i = 0; i < param.num_workers; ++i)
-                {
-                    joiner->distributor->JCs[i]->window_id = algo.size();
-                    joiner->distributor->JCs[i]->res       = ctx.res;
-                }
-                algo.push_back(joiner);
-                joiner->distributor->Start();
-                break;
-            }
-            default: ERROR("Unsupported algorithm %d", param.algo);
-            }
+            windows.push_back(New());
+            windows.back()->Start(ctx);
+            LOG("algo[%d/%d] started", windows.size() - 1, windows.size());
         }
         int idx;
         if (nextR->ts < param.window)
@@ -91,17 +71,15 @@ void EagerEngine::Run()
         {
             idx = (nextR->ts - param.window) / param.sliding + 1;
         }
-        for (; idx < algo.size(); idx++)
+        for (; idx < windows.size(); idx++)
         {
-            algo[idx]->Feed(nextR);
-            algo[idx]->Feed(nextS);
+            windows[idx]->Feed(nextR);
+            windows[idx]->Feed(nextS);
         }
     }
-    for (int i = 0; i < algo.size(); ++i)
+    for (int i = 0; i < windows.size(); ++i)
     {
-        algo[i]->Wait();
-        LOG(param.log, "algo[%d/%d] joined", i, algo.size());
+        windows[i]->Wait();
+        LOG("algo[%d/%d] joined", i, windows.size());
     }
 }
-
-ResultPtr EagerEngine::Result() { return res; }

@@ -49,7 +49,6 @@ DEFINE_uint32(num_workers, 2, "Number of workers");
 int main(int argc, char **argv)
 {
     Param param;
-    param.bin_dir = filesystem::weakly_canonical(filesystem::path(argv[0])).parent_path();
     gflags::ParseCommandLineFlags(&argc, &argv, true);
 
     param.algo        = static_cast<AlgoType>(FLAGS_algo);
@@ -60,6 +59,7 @@ int main(int argc, char **argv)
     param.num_workers = FLAGS_num_workers;
     param.r           = FLAGS_r;
     param.s           = FLAGS_s;
+    param.bin_dir     = filesystem::weakly_canonical(filesystem::path(argv[0])).parent_path();
 
     StreamPtr R = make_shared<Stream>(param, StreamType::R);
     StreamPtr S = make_shared<Stream>(param, StreamType::S);
@@ -67,13 +67,10 @@ int main(int argc, char **argv)
     R->Load();
     S->Load();
 
-    param.num_tuples = std::min(R->Tuples().size(), S->Tuples().size());
-    param.num_windows =
-        (min(R->Tuples().size(), S->Tuples().size()) - param.window) / param.sliding + 1;
-    assert(param.log = fopen("adb.log", "w"));
+    param.num_tuples  = min(R->Tuples().size(), S->Tuples().size());
+    param.num_windows = (param.num_tuples - param.window) / param.sliding + 1;
 
     Context ctx(param);
-
     ctx.sr = R;
     ctx.ss = S;
 
@@ -81,26 +78,24 @@ int main(int argc, char **argv)
     {
     case AlgoType::Verify:
     {
-        auto engine = make_unique<VerifyEngine>(ctx);
-        engine->Run();
+        auto engine = make_unique<VerifyEngine>(param);
+        engine->Run(ctx);
         std::cout << std::hex << ctx.res->Hash() << std::dec << std::endl;
-        // engine->Result()->Print();
         break;
     }
     case AlgoType::HandshakeJoin:
     {
-        auto engine = make_unique<EagerEngine>(ctx);
-        engine->Run();
+        auto engine = make_unique<EagerEngine>(param);
+        engine->Run(ctx);
         std::cout << std::hex << ctx.res->Hash() << std::dec << std::endl;
-        // engine->Result()->Print();
         break;
     }
     case AlgoType::SplitJoin:
     {
-        auto engine = make_unique<EagerEngine>(ctx);
-        engine->Run();
+        auto engine = make_unique<EagerEngine>(param);
+        engine->Run(ctx);
         std::cout << std::hex << ctx.res->Hash() << std::dec << std::endl;
-        engine->Result()->Print();
+        break;
     }
     default:
     {

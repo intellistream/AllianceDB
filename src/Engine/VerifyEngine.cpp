@@ -22,14 +22,13 @@
 using namespace std;
 using namespace AllianceDB;
 
-VerifyEngine::VerifyEngine(Context &ctx) : R(ctx.sr), S(ctx.ss), param(ctx.param), result(ctx.res)
-{}
+VerifyEngine::VerifyEngine(const Param &param) : param(param) {}
 
-void VerifyEngine::Run()
+void VerifyEngine::Run(Context &ctx)
 {
     INFO("VerifyEngine starts running");
-    const auto &r_tuples = R->Tuples();
-    const auto &s_tuples = S->Tuples();
+    const auto &r_tuples = ctx.sr->Tuples();
+    const auto &s_tuples = ctx.ss->Tuples();
     auto n               = std::max(r_tuples.size(), s_tuples.size());
     for (size_t i = 0; i + param.window < n; i += param.sliding)
     {
@@ -48,7 +47,7 @@ void VerifyEngine::Run()
             {
                 for (auto &r_tuple : r_map[s_tuple->key])
                 {
-                    result->Emit(i / param.sliding, r_tuple, s_tuple);
+                    ctx.res->Emit(i / param.sliding, r_tuple, s_tuple);
                 }
             }
         }
@@ -56,12 +55,4 @@ void VerifyEngine::Run()
     INFO("VerifyEngine ends running");
 }
 
-void VerifyEngine::Start()
-{
-    // Start the Run() thread asynchronously.
-    t = std::thread(&VerifyEngine::Run, this);
-}
-
 bool VerifyEngine::Wait() { t.join(); }
-
-ResultPtr VerifyEngine::Result() { return result; }

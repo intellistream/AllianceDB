@@ -21,7 +21,7 @@ TEST(SystemTest, Verify)
     param.window      = 500;
     param.sliding     = 200;
     param.rate        = 0;
-    param.num_windows = 50;
+    param.num_windows = 48;
     StreamPtr R       = make_shared<Stream>(param, StreamType::R);
     StreamPtr S       = make_shared<Stream>(param, StreamType::S);
     Context ctx(param);
@@ -29,9 +29,9 @@ TEST(SystemTest, Verify)
     ctx.ss = S;
     R->Load();
     S->Load();
-    auto engine = make_unique<VerifyEngine>(ctx);
-    engine->Run();
-    EXPECT_EQ(engine->Result()->Hash(), 0xbfed2395f36e8b78);
+    auto engine = make_unique<VerifyEngine>(param);
+    engine->Run(ctx);
+    EXPECT_EQ(ctx.res->Hash(), 0xbfed2395f36e8b78);
 }
 
 TEST(SystemTest, HandshakeJoin)
@@ -43,7 +43,6 @@ TEST(SystemTest, HandshakeJoin)
     param.rate        = 0;
     param.num_workers = 5;
     param.num_windows = 48;
-    param.log         = fopen("adb.log", "w");
     StreamPtr R       = make_shared<Stream>(param, StreamType::R);
     StreamPtr S       = make_shared<Stream>(param, StreamType::S);
     Context ctx(param);
@@ -51,10 +50,10 @@ TEST(SystemTest, HandshakeJoin)
     ctx.ss = S;
     R->Load();
     S->Load();
-    auto engine = make_unique<EagerEngine>(ctx);
-    engine->Run();
+    auto engine = make_unique<EagerEngine>(param);
+    engine->Run(ctx);
     // engine->Result()->Print();
-    EXPECT_EQ(engine->Result()->Hash(), 0xbfed2395f36e8b78);
+    EXPECT_EQ(ctx.res->Hash(), 0xbfed2395f36e8b78);
 }
 
 TEST(SystemTest, SplitJoin)
@@ -65,8 +64,7 @@ TEST(SystemTest, SplitJoin)
     param.sliding     = 200;
     param.rate        = 0;
     param.num_workers = 5;
-    param.num_windows = 50;
-    param.log         = fopen("adb.log", "w");
+    param.num_windows = 48;
     StreamPtr R       = make_shared<Stream>(param, StreamType::R);
     StreamPtr S       = make_shared<Stream>(param, StreamType::S);
     Context ctx(param);
@@ -74,10 +72,9 @@ TEST(SystemTest, SplitJoin)
     ctx.ss = S;
     R->Load();
     S->Load();
-    auto engine = make_unique<EagerEngine>(ctx);
-    engine->Run();
-    param.num_windows = 48;
-    EXPECT_EQ(engine->Result()->Hash(), 0xbfed2395f36e8b78);
+    auto engine = make_unique<EagerEngine>(param);
+    engine->Run(ctx);
+    EXPECT_EQ(ctx.res->Hash(), 0xbfed2395f36e8b78);
 }
 
 // TEST(SystemTest, LazistHashJoin)

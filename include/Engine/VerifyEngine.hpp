@@ -15,17 +15,13 @@ typedef std::shared_ptr<class VerifyEngine> VerifyEnginePtr;
 class VerifyEngine
 {
 private:
-    const StreamPtr R, S;
     const Param &param;
     std::thread t;
-    ResultPtr result;
 
 public:
-    VerifyEngine(Context &ctx);
-    void Start();
-    void Run();
+    VerifyEngine(const Param &param);
+    void Run(Context &ctx);
     bool Wait();
-    ResultPtr Result();
 };
 
 }  // namespace AllianceDB
