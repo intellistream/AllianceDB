@@ -43,8 +43,7 @@ JoinPtr EagerEngine::New()
     }
     default:
     {
-        ERROR("Unsupported algorithm %d", param.algo);
-        exit(-1);
+        FATAL("Unsupported algorithm %d", param.algo);
     }
     }
 }

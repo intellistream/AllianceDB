@@ -32,7 +32,7 @@ Stream::Stream(const Param &param, StreamType st) : param(param), st(st)
     fs.open(filename, ios::in);
     if (!fs.is_open())
     {
-        ERROR("cannot open file %s", filename.c_str());
+        FATAL("cannot open file %s", filename.c_str());
     }
     else
     {

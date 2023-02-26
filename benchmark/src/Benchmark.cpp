@@ -99,7 +99,7 @@ int main(int argc, char **argv)
     }
     default:
     {
-        ERROR("algo not supported");
+        FATAL("algo not supported");
         return -1;
     }
     }
