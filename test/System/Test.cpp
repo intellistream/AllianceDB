@@ -74,7 +74,6 @@ TEST(SystemTest, SplitJoin)
     S->Load();
     auto engine = make_unique<EagerEngine>(param);
     engine->Run(ctx);
-    ctx.res->Print();
     EXPECT_EQ(ctx.res->Hash(), 0xbfed2395f36e8b78);
 }
 
