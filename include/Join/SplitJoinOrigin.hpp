@@ -7,9 +7,9 @@
 #include "Utils/Queue.hpp"
 
 #include <queue>
+#include <set>
 #include <unordered_map>
 #include <vector>
-#include <set>
 
 namespace AllianceDB
 {
@@ -25,6 +25,7 @@ public:
     struct JoinCore
     {
         const Param &param;
+        // diff from SplitJoin
         std::queue<TuplePtr> right_region, left_region;
         std::unordered_map<KeyType, std::set<TuplePtr>> map_idx_right, map_idx_left;
         bool status;

@@ -34,4 +34,4 @@ com_scripts
 commit
 .idea/
 .vscode/
-./DS_Store
+.DS_Store/
