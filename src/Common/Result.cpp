@@ -3,7 +3,6 @@
 //
 
 #include "Common/Result.hpp"
-
 #include <algorithm>
 
 using namespace AllianceDB;
@@ -24,21 +23,25 @@ void JoinResult::Emit(int wid, TuplePtr t1, TuplePtr t2)
     mu[wid].unlock();
 }
 
-void JoinResult::Emit(TuplePtr t1, TuplePtr t2)
+void JoinResult::EmitAllWindow(TuplePtr t1, TuplePtr t2)
 {
     auto l = min(t1->ts, t2->ts), r = max(t1->ts, t2->ts);
-    if (r - l >= param.window)
+    unsigned long start = 0;
+    unsigned long end = l / param.sliding;
+    if (l > param.window)
     {
-        return;
+        start = ((l - param.window) / param.sliding) + 1;
     }
-    auto wid = l / param.sliding;
-    auto wl = wid * param.sliding, wr = wl + param.window;
-    if (wid < param.num_windows)
+    for (int i = start; i < param.num_windows && i <= end; ++i)
     {
-        mu[wid].lock();
-        window_results[wid].push_back(ResultTuple(t1->key, t1->val, t2->val));
-        mu[wid].unlock();
-        // ++wid;
+        if ((param.sliding * i + param.window) <= r)
+        {
+            continue ;
+        }
+        else
+        {
+            Emit(i, t1, t2);
+        }
     }
 }
 

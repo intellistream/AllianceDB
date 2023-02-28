@@ -50,7 +50,8 @@ enum class AlgoType
     SplitJoin,
     BiStream,
     IBWJ,
-    LWJ
+    LWJ,
+    SplitJoinOrigin
 };
 
 using ThreadPtr = std::shared_ptr<std::thread>; /*!< Type of the thread pointer */

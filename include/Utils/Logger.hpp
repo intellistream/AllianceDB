@@ -16,7 +16,7 @@ extern FILE* g_log;
         std::time_t t = std::time(nullptr);                                       \
         char buf[12];                                                             \
         std::strftime(buf, sizeof(buf), "%H:%M:%S", std::localtime(&t));          \
-        fprintf(g_log, "[LOG] [%s] %s: " msg "\n", buf, __func__, ##__VA_ARGS__); \
+        fprintf(g_log, msg "\n", buf, __func__, ##__VA_ARGS__); \
         fflush(g_log);                                                            \
     }
 

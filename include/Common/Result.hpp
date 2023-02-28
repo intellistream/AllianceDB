@@ -41,7 +41,7 @@ struct JoinResult
     std::vector<std::mutex> mu;
     JoinResult(const Param &param);
     void Emit(int wid, TuplePtr t1, TuplePtr t2);
-    void Emit(TuplePtr t1, TuplePtr t2);
+    void EmitAllWindow(TuplePtr t1, TuplePtr t2);
     void Print();
     bool operator==(JoinResult &rhs) const;
     size_t Hash();
