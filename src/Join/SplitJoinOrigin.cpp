@@ -141,7 +141,6 @@ void SplitJoinOrigin::JoinCore::Store(TuplePtr tuple)
             {
                 map_idx_right.erase(t->key);
             }
-
         }
         right_region.push(tuple);
         map_idx_right[tuple->key].insert(tuple);
@@ -158,7 +157,6 @@ void SplitJoinOrigin::JoinCore::Store(TuplePtr tuple)
             {
                 map_idx_left.erase(t->key);
             }
-
         }
         left_region.push(tuple);
         map_idx_left[tuple->key].insert(tuple);
@@ -176,8 +174,8 @@ void SplitJoinOrigin::JoinCore::Find(Context &ctx, TuplePtr tuple)
         }
         for (auto i : result->second)
         {
-            ctx.res->EmitAllWindow( i, tuple);
-            //LOG("window %d has found one matched tuple", window_id);
+            ctx.res->EmitAllWindow(i, tuple);
+            // LOG("window %d has found one matched tuple", window_id);
         }
     }
     else
@@ -190,7 +188,6 @@ void SplitJoinOrigin::JoinCore::Find(Context &ctx, TuplePtr tuple)
         for (auto i : result->second)
         {
             ctx.res->EmitAllWindow(tuple, i);
-            //LOG("window %d has found one matched tuple", window_id);
         }
     }
 }

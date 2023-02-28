@@ -60,8 +60,11 @@ void EagerEngine::Run(Context &ctx)
     while (sr->HasNext() && ss->HasNext())
     {
         auto nextS = ss->Next(), nextR = sr->Next();
-        if (param.algo == AlgoType::SplitJoinOrigin) {
-            if (nextR->ts == 0) {
+        // no new joiner
+        if (param.algo == AlgoType::SplitJoinOrigin)
+        {
+            if (nextR->ts == 0)
+            {
                 windows.push_back(New());
                 windows[0]->Start(ctx);
             }
