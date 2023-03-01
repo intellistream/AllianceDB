@@ -22,6 +22,7 @@
 #include "Join/HandshakeJoin.hpp"
 #include "Join/HashJoin.hpp"
 #include "Join/SplitJoin.hpp"
+#include "Join/SplitJoinOrigin.hpp"
 #include "Utils/Logger.hpp"
 
 using namespace std;
@@ -41,6 +42,10 @@ JoinPtr EagerEngine::New()
     {
         return make_shared<SplitJoin>(param, windows.size());
     }
+    case AlgoType::SplitJoinOrigin:
+    {
+        return make_shared<SplitJoinOrigin>(param, windows.size());
+    }
     default:
     {
         FATAL("Unsupported algorithm %d", param.algo);
@@ -55,25 +60,39 @@ void EagerEngine::Run(Context &ctx)
     while (sr->HasNext() && ss->HasNext())
     {
         auto nextS = ss->Next(), nextR = sr->Next();
-        if (nextR->ts % param.sliding == 0 && windows.size() < param.num_windows)
+        // no new joiner
+        if (param.algo == AlgoType::SplitJoinOrigin)
         {
-            windows.push_back(New());
-            windows.back()->Start(ctx);
-            LOG("algo[%d/%d] started", windows.size() - 1, windows.size());
-        }
-        int idx;
-        if (nextR->ts < param.window)
-        {
-            idx = 0;
+            if (nextR->ts == 0)
+            {
+                windows.push_back(New());
+                windows[0]->Start(ctx);
+            }
+            windows[0]->Feed(nextR);
+            windows[0]->Feed(nextS);
         }
         else
         {
-            idx = (nextR->ts - param.window) / param.sliding + 1;
-        }
-        for (; idx < windows.size(); idx++)
-        {
-            windows[idx]->Feed(nextR);
-            windows[idx]->Feed(nextS);
+            if (nextR->ts % param.sliding == 0 && windows.size() < param.num_windows)
+            {
+                windows.push_back(New());
+                windows.back()->Start(ctx);
+                LOG("algo[%d/%d] started", windows.size() - 1, windows.size());
+            }
+            int idx;
+            if (nextR->ts < param.window)
+            {
+                idx = 0;
+            }
+            else
+            {
+                idx = (nextR->ts - param.window) / param.sliding + 1;
+            }
+            for (; idx < windows.size(); idx++)
+            {
+                windows[idx]->Feed(nextR);
+                windows[idx]->Feed(nextS);
+            }
         }
     }
     for (int i = 0; i < windows.size(); ++i)

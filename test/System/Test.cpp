@@ -77,6 +77,26 @@ TEST(SystemTest, SplitJoin)
     EXPECT_EQ(ctx.res->Hash(), 0xbfed2395f36e8b78);
 }
 
+TEST(SystemTest, SplitJoinOrigin)
+{
+    Param param;
+    param.algo        = AlgoType::SplitJoinOrigin;
+    param.window      = 500;
+    param.sliding     = 200;
+    param.num_workers = 5;
+    param.num_windows = 48;
+    StreamPtr R       = make_shared<Stream>(param, StreamType::R);
+    StreamPtr S       = make_shared<Stream>(param, StreamType::S);
+    Context ctx(param);
+    ctx.sr = R;
+    ctx.ss = S;
+    R->Load();
+    S->Load();
+    auto engine = make_unique<EagerEngine>(param);
+    engine->Run(ctx);
+    EXPECT_EQ(ctx.res->Hash(), 0xbfed2395f36e8b78);
+}
+
 // TEST(SystemTest, LazistHashJoin)
 // {
 //     Param param;
