@@ -26,6 +26,7 @@
 #include <gflags/gflags.h>
 
 #include <cassert>
+#include <chrono>
 #include <filesystem>
 #include <memory>
 
@@ -74,27 +75,34 @@ int main(int argc, char **argv)
     ctx.sr = R;
     ctx.ss = S;
 
+    param.Print();
+
+    auto start = chrono::high_resolution_clock::now();
+
     switch (param.algo)
     {
     case AlgoType::Verify:
     {
         auto engine = make_unique<VerifyEngine>(param);
         engine->Run(ctx);
-        std::cout << std::hex << ctx.res->Hash() << std::dec << std::endl;
         break;
     }
     case AlgoType::HandshakeJoin:
     {
         auto engine = make_unique<EagerEngine>(param);
         engine->Run(ctx);
-        std::cout << std::hex << ctx.res->Hash() << std::dec << std::endl;
         break;
     }
     case AlgoType::SplitJoin:
     {
         auto engine = make_unique<EagerEngine>(param);
         engine->Run(ctx);
-        std::cout << std::hex << ctx.res->Hash() << std::dec << std::endl;
+        break;
+    }
+    case AlgoType::SplitJoinOrigin:
+    {
+        auto engine = make_unique<EagerEngine>(param);
+        engine->Run(ctx);
         break;
     }
     default:
@@ -103,5 +111,12 @@ int main(int argc, char **argv)
         return -1;
     }
     }
+
+    auto end      = chrono::high_resolution_clock::now();
+    auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start);
+    std::cout << "hash: " << std::hex << ctx.res->Hash() << std::dec << std::endl;
+    std::cout << "time_ms: " << duration.count() / 1e6 << std::endl;
+    std::cout << "tps: " << param.num_tuples * 2 * 1e9 / duration.count() << std::endl;
+
     return 0;
 }
