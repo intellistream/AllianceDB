@@ -50,10 +50,10 @@ enum class AlgoType
     SplitJoin       = 3,
     IBWJ            = 4,
     HashJoin        = 5,
-    SplitJoinOrigin = 6,
+    SplitJoinOrigin = 6
 };
 
-constexpr std::string_view algo_names[32] = {
+constexpr std::string_view algo_names[] = {
     "Verify", "LWJ", "HandshakeJoin", "SplitJoin", "IBWJ", "HashJoin", "SplitJoinOrigin",
 };
 
