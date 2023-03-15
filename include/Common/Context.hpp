@@ -4,6 +4,7 @@
 #include "Common/Param.hpp"
 #include "Common/Result.hpp"
 #include "Common/Stream.hpp"
+#include "Utils/ThreadPool.hpp"
 
 namespace AllianceDB
 {
@@ -12,7 +13,10 @@ struct Context
     const Param &param;
     ResultPtr res;
     StreamPtr sr, ss;
-    Context(const Param &param) : param(param), res(std::make_shared<JoinResult>(param)) {}
+    ThreadPool pool;
+    Context(const Param &param)
+        : param(param), res(std::make_shared<JoinResult>(param)), pool(param.num_workers)
+    {}
 };
 
 }  // namespace AllianceDB

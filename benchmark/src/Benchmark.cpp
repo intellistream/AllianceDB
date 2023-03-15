@@ -97,17 +97,8 @@ int main(int argc, char **argv)
         break;
     }
     case AlgoType::HandshakeJoin:
-    {
-        auto engine = make_unique<EagerEngine>(param);
-        engine->Run(ctx);
-        break;
-    }
+    case AlgoType::HandshakeJoinOrigin:
     case AlgoType::SplitJoin:
-    {
-        auto engine = make_unique<EagerEngine>(param);
-        engine->Run(ctx);
-        break;
-    }
     case AlgoType::SplitJoinOrigin:
     {
         auto engine = make_unique<EagerEngine>(param);

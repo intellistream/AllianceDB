@@ -118,7 +118,8 @@ void SplitJoin::JoinCore::Run(Context &ctx)
 void SplitJoin::JoinCore::Start(Context &ctx)
 {
     auto func = [this, &ctx]() { this->Run(ctx); };
-    t         = make_shared<thread>(func);
+    // t         = make_shared<thread>(func);
+    ctx.pool.Post(func);
 }
 
 void SplitJoin::JoinCore::Store(TuplePtr tuple)
