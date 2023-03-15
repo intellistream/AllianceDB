@@ -52,7 +52,7 @@ JoinPtr EagerEngine::New()
     }
     default:
     {
-        FATAL("Unsupported algorithm %d", param.algo);
+        FATAL("Unsupported algorithm %d", static_cast<int>(param.algo));
     }
     }
 }
