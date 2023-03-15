@@ -64,7 +64,9 @@ void HandshakeJoin::Start(Context &ctx)
 {
     for (auto &w : workers)
     {
-        w->Start(ctx);
+        // w->Start(ctx);
+        auto func = [&w, &ctx]() { w->Run(ctx); };
+        ctx.pool.Post(func);
     }
 }
 
@@ -82,12 +84,12 @@ void HandshakeJoin::Wait()
 
 HandshakeJoin::Worker::Worker(const Param &param)
     : param(param),
-      inputr(param.window * 2),
-      inputs(param.window * 2),
+      inputr(param.num_tuples),
+      inputs(param.num_tuples),
       msgi(1),
       msgo(1),
-      left_recv_queue(std::make_shared<spsc_queue<Msg>>(param.window * 2)),
-      right_recv_queue(std::make_shared<spsc_queue<Msg>>(param.window * 2))
+      left_recv_queue(std::make_shared<spsc_queue<Msg>>(param.num_tuples)),
+      right_recv_queue(std::make_shared<spsc_queue<Msg>>(param.num_tuples))
 {}
 
 void HandshakeJoin::Worker::Run(Context &ctx)

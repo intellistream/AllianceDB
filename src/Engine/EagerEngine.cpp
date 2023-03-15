@@ -38,6 +38,10 @@ JoinPtr EagerEngine::New()
     {
         return make_shared<HandshakeJoin>(param, windows.size());
     }
+    case AlgoType::HandshakeJoinOrigin:
+    {
+        return make_shared<HandshakeJoin>(param, windows.size());
+    }
     case AlgoType::SplitJoin:
     {
         return make_shared<SplitJoin>(param, windows.size());
@@ -48,7 +52,7 @@ JoinPtr EagerEngine::New()
     }
     default:
     {
-        FATAL("Unsupported algorithm %d", param.algo);
+        FATAL("Unsupported algorithm %d", static_cast<int>(param.algo));
     }
     }
 }
@@ -61,7 +65,7 @@ void EagerEngine::Run(Context &ctx)
     {
         auto nextS = ss->Next(), nextR = sr->Next();
         // no new joiner
-        if (param.algo == AlgoType::SplitJoinOrigin)
+        if (param.algo == AlgoType::SplitJoinOrigin || param.algo == AlgoType::HandshakeJoinOrigin)
         {
             if (nextR->ts == 0)
             {
@@ -100,4 +104,5 @@ void EagerEngine::Run(Context &ctx)
         windows[i]->Wait();
         LOG("algo[%d/%d] joined", i, windows.size());
     }
+    ctx.pool.Wait();
 }

@@ -29,6 +29,7 @@
 #include <chrono>
 #include <filesystem>
 #include <memory>
+#include <type_traits>
 
 using namespace std;
 using namespace AllianceDB;
@@ -49,6 +50,14 @@ DEFINE_uint32(num_workers, 2, "Number of workers");
  */
 int main(int argc, char **argv)
 {
+    string usage = "\n";
+    for (auto i = 0; i < extent<decltype(algo_names)>::value; ++i)
+    {
+        usage += "\t" + to_string(i) + ": ";
+        usage += algo_names[i];
+        usage += "\n";
+    }
+    gflags::SetUsageMessage(usage);
     Param param;
     gflags::ParseCommandLineFlags(&argc, &argv, true);
 
@@ -88,17 +97,8 @@ int main(int argc, char **argv)
         break;
     }
     case AlgoType::HandshakeJoin:
-    {
-        auto engine = make_unique<EagerEngine>(param);
-        engine->Run(ctx);
-        break;
-    }
+    case AlgoType::HandshakeJoinOrigin:
     case AlgoType::SplitJoin:
-    {
-        auto engine = make_unique<EagerEngine>(param);
-        engine->Run(ctx);
-        break;
-    }
     case AlgoType::SplitJoinOrigin:
     {
         auto engine = make_unique<EagerEngine>(param);
