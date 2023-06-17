@@ -9,10 +9,10 @@
 using namespace std;
 using namespace AllianceDB;
 
-SplitJoin::SplitJoin(const Param &param, size_t wid) : param(param), tuples(2 * param.window)
+SplitJoin::SplitJoin(const Param &param, size_t wid) : param(param), tuples(2 * param.window_length)
 {
-    auto num_workers  = param.num_workers;
-    uint32 sub_window = param.window / num_workers;
+    auto num_workers  = param.num_threads;
+    uint32 sub_window = param.window_length / num_workers;
     for (int i = 0; i < num_workers; ++i)
     {
         JCs.push_back(std::make_shared<JoinCore>(param));
@@ -38,11 +38,11 @@ void SplitJoin::Process(Context &ctx)
     {
         TuplePtr tuple;
         tuples.pop(tuple);
-        int idx = int(tuple->ts) % int(param.num_workers);
+        int idx = int(tuple->ts) % int(param.num_threads);
         // TODO: use message queue to decouple
         // JCs[idx]->inputs_store.push(tuple);
         JCs[idx]->Store(tuple);
-        for (auto i = 0; i < param.num_workers; ++i)
+        for (auto i = 0; i < param.num_threads; ++i)
         {
             // JCs[i]->inputs_find.push(tuple);
             JCs[i]->Find(ctx, tuple);
@@ -67,7 +67,7 @@ void SplitJoin::Wait()
 {
     status = false;
     if (t) t->join();
-    for (int i = 0; i < param.num_workers; ++i)
+    for (int i = 0; i < param.num_threads; ++i)
     {
         JCs[i]->Wait();
     }
@@ -75,8 +75,8 @@ void SplitJoin::Wait()
 
 SplitJoin::JoinCore::JoinCore(const Param &param)
     : param(param),
-      inputs_store(param.window / param.num_workers),
-      inputs_find(param.window),
+      inputs_store(param.window_length / param.num_threads),
+      inputs_find(param.window_length),
       status(true)
 {}
 
@@ -158,8 +158,8 @@ void SplitJoin::JoinCore::Find(Context &ctx, TuplePtr tuple)
         }
         for (unsigned int i : result->second)
         {
-            ctx.res->Emit(window_id, left_region[i], tuple);
-            LOG("window %d has found one matched tuple", window_id);
+            ctx.joinResults->Emit(window_id, left_region[i], tuple);
+            DEBUG("window %d has found one matched tuple", window_id);
         }
     }
     else
@@ -171,8 +171,8 @@ void SplitJoin::JoinCore::Find(Context &ctx, TuplePtr tuple)
         }
         for (unsigned int i : result->second)
         {
-            ctx.res->Emit(window_id, tuple, right_region[i]);
-            LOG("window %d has found one matched tuple", window_id);
+            ctx.joinResults->Emit(window_id, tuple, right_region[i]);
+            DEBUG("window %d has found one matched tuple", window_id);
         }
     }
 }

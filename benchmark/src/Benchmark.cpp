@@ -25,7 +25,6 @@
 
 #include <gflags/gflags.h>
 
-#include <cassert>
 #include <chrono>
 #include <filesystem>
 #include <memory>
@@ -35,88 +34,69 @@ using namespace AllianceDB;
 
 // Arguments.
 DEFINE_uint32(algo, 0, "Join algo");
-DEFINE_uint32(window, 500, "Window size");
-DEFINE_uint32(sliding, 200, "Sliding length");
+DEFINE_uint32(window_length, 500, "Window size");
+DEFINE_uint32(sliding_size, 200, "Sliding length");
 DEFINE_uint32(lazy, 0, "Lazy size");
 DEFINE_uint32(rate, 0, "Arrival rate (tuples/sec) of R & S");
 DEFINE_string(r, "Test1-R.txt", "File path of R stream");
 DEFINE_string(s, "Test1-S.txt", "File path of S stream");
-DEFINE_uint32(num_workers, 2, "Number of workers");
+DEFINE_uint32(num_threads, 2, "Number of workers");
 
 /**
  * @brief This is the main entry point of the entire program.
  * We use this as the entry point for benchmarking.
  */
-int main(int argc, char **argv)
-{
-    Param param;
-    gflags::ParseCommandLineFlags(&argc, &argv, true);
+int main(int argc, char **argv) {
+  Param param;
+  gflags::ParseCommandLineFlags(&argc, &argv, true);
 
-    param.algo        = static_cast<AlgoType>(FLAGS_algo);
-    param.window      = FLAGS_window;
-    param.sliding     = FLAGS_sliding;
-    param.lazy        = FLAGS_lazy;
-    param.rate        = FLAGS_rate;
-    param.num_workers = FLAGS_num_workers;
-    param.r           = FLAGS_r;
-    param.s           = FLAGS_s;
-    param.bin_dir     = filesystem::weakly_canonical(filesystem::path(argv[0])).parent_path();
+  param.algo = static_cast<AlgoType>(FLAGS_algo);
+  param.window_length = FLAGS_window_length;
+  param.sliding_size = FLAGS_sliding_size;
+  param.lazy = FLAGS_lazy;
+  param.rate = FLAGS_rate;
+  param.num_threads = FLAGS_num_threads;
+  param.r = FLAGS_r;
+  param.s = FLAGS_s;
+  param.bin_dir = filesystem::weakly_canonical(filesystem::path(argv[0])).parent_path();
 
-    StreamPtr R = make_shared<Stream>(param, StreamType::R);
-    StreamPtr S = make_shared<Stream>(param, StreamType::S);
+  StreamPtr R = make_shared<Stream>(param, StreamType::R);
+  StreamPtr S = make_shared<Stream>(param, StreamType::S);
 
-    R->Load();
-    S->Load();
+  R->Load();
+  S->Load();
 
-    param.num_tuples  = min(R->Tuples().size(), S->Tuples().size());
-    param.num_windows = (param.num_tuples - param.window) / param.sliding + 1;
+  param.num_tuples = min(R->Tuples().size(), S->Tuples().size());
+  param.num_windows = (param.num_tuples - param.window_length) / param.sliding_size
+      + 1;//the total number of windows depends on the sliding_size.
 
-    Context ctx(param);
-    ctx.sr = R;
-    ctx.ss = S;
+  Context ctx(param, R, S);
 
-    param.Print();
+  param.Print();
 
-    auto start = chrono::high_resolution_clock::now();
-
-    switch (param.algo)
-    {
-    case AlgoType::Verify:
-    {
-        auto engine = make_unique<VerifyEngine>(param);
-        engine->Run(ctx);
-        break;
+  switch (param.algo) {
+    case AlgoType::Verify: {
+      auto engine = make_unique<VerifyEngine>(param);
+      engine->Run(ctx);
+      std::cout << std::hex << ctx.joinResults->Hash() << std::dec << std::endl;
+      break;
     }
     case AlgoType::HandshakeJoin:
-    {
-        auto engine = make_unique<EagerEngine>(param);
-        engine->Run(ctx);
-        break;
-    }
     case AlgoType::SplitJoin:
-    {
-        auto engine = make_unique<EagerEngine>(param);
-        engine->Run(ctx);
-        break;
+    case AlgoType::SplitJoinOrigin: {
+      auto engine = make_unique<EagerEngine>(param);
+      engine->Run(ctx);
+      break;
     }
-    case AlgoType::SplitJoinOrigin:
-    {
-        auto engine = make_unique<EagerEngine>(param);
-        engine->Run(ctx);
-        break;
+    default: {
+      FATAL("algo not supported")
     }
-    default:
-    {
-        FATAL("algo not supported");
-        return -1;
-    }
-    }
+  }
+  // ctx.endTime= std::chrono::high_resolution_clock::now()
+  auto duration = chrono::duration_cast<chrono::nanoseconds>(ctx.endTime - ctx.startTime);
+  std::cout << "hash: " << std::hex << ctx.joinResults->Hash() << std::dec << std::endl;
+  std::cout << "time_ms: " << duration.count() / 1e6 << std::endl;
+  std::cout << "tps: " << param.num_tuples * 2 * 1e9 / duration.count() << std::endl;
 
-    auto end      = chrono::high_resolution_clock::now();
-    auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start);
-    std::cout << "hash: " << std::hex << ctx.res->Hash() << std::dec << std::endl;
-    std::cout << "time_ms: " << duration.count() / 1e6 << std::endl;
-    std::cout << "tps: " << param.num_tuples * 2 * 1e9 / duration.count() << std::endl;
-
-    return 0;
+  return 0;
 }

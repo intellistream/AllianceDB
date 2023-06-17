@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 IntelliStream team (https://github.com/intellistream)
+ * Copyright 2023 IntelliStream team (https://github.com/intellistream)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,24 +14,14 @@
  * limitations under the License.
  */
 
-#ifndef ALLIANCEDB_INCLUDE_JOIN_JOIN_HPP_
-#define ALLIANCEDB_INCLUDE_JOIN_JOIN_HPP_
+#ifndef ALLIANCEDB_SRC_UTILS_TIMER_H_
+#define ALLIANCEDB_SRC_UTILS_TIMER_H_
 
-#include "Common/Context.hpp"
-#include "Common/Result.hpp"
-#include "Common/Window.h"
+#include <chrono>
 
-namespace AllianceDB {
-//Note: every joinAlgo maintains multiple JoinCores.
-class JoinAlgo {
- public:
-  virtual void Feed(TuplePtr tuple) = 0;
-  virtual void Wait() = 0;
-  virtual void Start(Context &ctx) = 0;
+template<typename T>
+class Timer {
+
 };
 
-using JoinerPtr = std::shared_ptr<JoinAlgo>;
-
-}  // namespace AllianceDB
-
-#endif
+#endif //ALLIANCEDB_SRC_UTILS_TIMER_H_

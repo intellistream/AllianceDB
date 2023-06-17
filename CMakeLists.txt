@@ -1,4 +1,13 @@
 # Copyright (C) 2021 by the INTELLI team (https://github.com/intellistream)
+
+#Please INSTALL...
+#On Debian/Ubuntu Linux, gflags can be installed using the following command:
+#
+#sudo apt-get install libgflags-dev
+#On macOS, Homebrew includes a formula for gflags:
+#
+#brew install gflags
+
 cmake_minimum_required(VERSION 3.14)
 project(AllianceDB CXX)
 # Judge the os system
@@ -17,6 +26,12 @@ endif ()
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH}")
 include(cmake/macros.cmake)
 include(cmake/default.cmake)
+#set(BOOST_REQUESTED_VERSION 1.61)
+## on macOS, Use belows to specify Boost path
+#SET(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH}"/usr/local/boost_1_81_0")
+#SET(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH}"/usr/local/boost_1_81_0/lib")
+#find_package(Boost COMPONENTS program_options system)
+#include(cmake/FindBoost.cmake)
 
 message(STATUS ${CMAKE_CXX_COMPILER})
 # C++ Standard
@@ -71,7 +86,6 @@ message(STATUS " Libraries: ${LIBRARIES}")
 
 # Add Source Code
 add_subdirectory(src)
-add_subdirectory(third_party/gflags)
 
 # Add Library
 get_sources(AllianceDB_SOURCE_FILES)
@@ -80,10 +94,7 @@ add_library(AllianceDB SHARED ${AllianceDB_SOURCE_FILES} ${AllianceDB_HEADER_FIL
 target_include_directories(AllianceDB PUBLIC "include")
 target_include_directories(AllianceDB PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
 target_link_libraries(AllianceDB PUBLIC ${LIBRARIES} -lpthread)
-# on macOS, Use belows to specify Boost path
-#SET(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH}"/usr/local/boost_1_81_0")
-#SET(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH}"/usr/local/boost_1_81_0/lib")
-FIND_PACKAGE(Boost)
+
 #Add benchmarks with command
 #Main Entry.
 add_subdirectory(benchmark)

@@ -27,15 +27,15 @@ void JoinResult::EmitAllWindow(TuplePtr t1, TuplePtr t2)
 {
     auto l = min(t1->ts, t2->ts), r = max(t1->ts, t2->ts);
     unsigned long start = 0;
-    unsigned long end   = l / param.sliding;
-    if (l > param.window)
+    unsigned long end   = l / param.sliding_size;
+    if (l > param.window_length)
     {
-        start = ((l - param.window) / param.sliding) + 1;
+        start = ((l - param.window_length) / param.sliding_size) + 1;
     }
     // find all windows these two tuples belongs to
     for (int i = start; i < param.num_windows && i <= end; ++i)
     {
-        if ((param.sliding * i + param.window) <= r)
+        if ((param.sliding_size * i + param.window_length) <= r)
         {
             continue;
         }

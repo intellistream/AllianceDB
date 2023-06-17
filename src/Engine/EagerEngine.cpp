@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 IntelliStream
+ * Copyright 2022 IntelliStream team (https://github.com/intellistream)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,74 +30,55 @@ using namespace AllianceDB;
 
 EagerEngine::EagerEngine(const Param &param) : param(param) {}
 
-JoinPtr EagerEngine::New()
-{
-    switch (param.algo)
-    {
-    case AlgoType::HandshakeJoin:
-    {
-        return make_shared<HandshakeJoin>(param, windows.size());
+JoinerPtr EagerEngine::NewJoiner() {
+  switch (param.algo) {
+    case AlgoType::HandshakeJoin: {
+      return make_shared<HandshakeJoin>(param, windows.size());
     }
-    case AlgoType::SplitJoin:
-    {
-        return make_shared<SplitJoin>(param, windows.size());
+    case AlgoType::SplitJoin: {
+      return make_shared<SplitJoin>(param, windows.size());
     }
-    case AlgoType::SplitJoinOrigin:
-    {
-        return make_shared<SplitJoinOrigin>(param, windows.size());
+    case AlgoType::SplitJoinOrigin: {
+      return make_shared<SplitJoinOrigin>(param, windows.size());
     }
-    default:
-    {
-        FATAL("Unsupported algorithm %d", param.algo);
+    default: {
+      FATAL("Unsupported algorithm %d", param.algo);
     }
-    }
+  }
 }
 
-void EagerEngine::Run(Context &ctx)
-{
-    auto sr = ctx.sr, ss = ctx.ss;
-    // TODO: use rate limiter to control the speed of the input
-    while (sr->HasNext() && ss->HasNext())
-    {
-        auto nextS = ss->Next(), nextR = sr->Next();
-        // no new joiner
-        if (param.algo == AlgoType::SplitJoinOrigin)
-        {
-            if (nextR->ts == 0)
-            {
-                windows.push_back(New());
-                windows[0]->Start(ctx);
-            }
-            windows[0]->Feed(nextR);
-            windows[0]->Feed(nextS);
-        }
-        else
-        {
-            if (nextR->ts % param.sliding == 0 && windows.size() < param.num_windows)
-            {
-                windows.push_back(New());
-                windows.back()->Start(ctx);
-                LOG("algo[%d/%d] started", windows.size() - 1, windows.size());
-            }
-            int idx;
-            if (nextR->ts < param.window)
-            {
-                idx = 0;
-            }
-            else
-            {
-                idx = (nextR->ts - param.window) / param.sliding + 1;
-            }
-            for (; idx < windows.size(); idx++)
-            {
-                windows[idx]->Feed(nextR);
-                windows[idx]->Feed(nextS);
-            }
-        }
+void EagerEngine::Run(Context &ctx) {
+  auto sr = ctx.streamR, ss = ctx.streamS;
+  while (sr->HasNext() && ss->HasNext()) {//read the next tuple from either stream R or stream S.
+    auto nextS = ss->Next(), nextR = sr->Next();
+    if (param.algo == AlgoType::SplitJoinOrigin) {//there is only one engine in the traditional approach.
+      if (nextR->ts == 0) {
+        windows.push_back(NewJoiner());
+        windows[0]->Start(ctx);
+      }
+      windows[0]->Feed(nextR);
+      windows[0]->Feed(nextS);
+    } else {
+      if (nextR->ts % param.sliding_size == 0
+          && windows.size() < param.num_windows) {//for each window, we can create a separate engine.
+        windows.push_back(NewJoiner());
+        windows.back()->Start(ctx);
+        DEBUG("algo[%d/%d] started", windows.size() - 1, windows.size());
+      }
+      int idx;
+      if (nextR->ts < param.window_length) {
+        idx = 0;
+      } else {
+        idx = (nextR->ts - param.window_length) / param.sliding_size + 1;
+      }
+      for (; idx < windows.size(); idx++) {
+        windows[idx]->Feed(nextR);
+        windows[idx]->Feed(nextS);
+      }
     }
-    for (int i = 0; i < windows.size(); ++i)
-    {
-        windows[i]->Wait();
-        LOG("algo[%d/%d] joined", i, windows.size());
-    }
+  }
+  for (int i = 0; i < windows.size(); ++i) {
+    windows[i]->Wait();
+    DEBUG("algo[%d/%d] joined", i, windows.size());
+  }
 }
