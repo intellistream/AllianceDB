@@ -33,9 +33,10 @@ using namespace std;
 using namespace AllianceDB;
 
 // Arguments.
-DEFINE_uint32(algo, 0, "Join algo");
+DEFINE_uint32(verify, 1, "Verify results");
+DEFINE_uint32(algo, 2, "Join algo");
 DEFINE_uint32(window_length, 500, "Window size");
-DEFINE_uint32(sliding_size, 200, "Sliding length");
+DEFINE_uint32(sliding_size, 100, "Sliding length");
 DEFINE_uint32(lazy, 0, "Lazy size");
 DEFINE_uint32(rate, 0, "Arrival rate (tuples/sec) of R & S");
 DEFINE_string(r, "Test1-R.txt", "File path of R stream");
@@ -50,6 +51,7 @@ int main(int argc, char **argv) {
   Param param;
   gflags::ParseCommandLineFlags(&argc, &argv, true);
 
+  param.verify = FLAGS_verify;
   param.algo = static_cast<AlgoType>(FLAGS_algo);
   param.window_length = FLAGS_window_length;
   param.sliding_size = FLAGS_sliding_size;
@@ -70,17 +72,19 @@ int main(int argc, char **argv) {
   param.num_windows = (param.num_tuples - param.window_length) / param.sliding_size
       + 1;//the total number of windows depends on the sliding_size.
 
+  // Check if there is no remainder
+  bool hasNoRemainder = (param.num_tuples - param.window_length) % param.sliding_size == 0;
+
+  // Print the result
+  INFO("No remainder: %s", hasNoRemainder ? "true" : "false");
+
   Context ctx(param, R, S);
+
+  Context ctx_v(param, R, S);
 
   param.Print();
 
   switch (param.algo) {
-    case AlgoType::Verify: {
-      auto engine = make_unique<VerifyEngine>(param);
-      engine->Run(ctx);
-      std::cout << std::hex << ctx.joinResults->Hash() << std::dec << std::endl;
-      break;
-    }
     case AlgoType::HandshakeJoin:
     case AlgoType::SplitJoin:
     case AlgoType::SplitJoinOrigin: {
@@ -94,9 +98,14 @@ int main(int argc, char **argv) {
   }
   // ctx.endTime= std::chrono::high_resolution_clock::now()
   auto duration = chrono::duration_cast<chrono::nanoseconds>(ctx.endTime - ctx.startTime);
-  std::cout << "hash: " << std::hex << ctx.joinResults->Hash() << std::dec << std::endl;
   std::cout << "time_ms: " << duration.count() / 1e6 << std::endl;
   std::cout << "tps: " << param.num_tuples * 2 * 1e9 / duration.count() << std::endl;
 
+  if (param.verify) {
+    auto engine = make_unique<VerifyEngine>(param);
+    engine->Run(ctx_v);
+    auto rt = ctx_v.joinResults->Compare(ctx.joinResults);
+    INFO("Results verified to be accurate: %s", (rt == 0) ? "true" : "false")
+  }
   return 0;
 }

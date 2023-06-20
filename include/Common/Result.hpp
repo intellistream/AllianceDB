@@ -44,7 +44,8 @@ struct JoinResult
     void EmitAllWindow(TuplePtr t1, TuplePtr t2);
     void Print();
     bool operator==(JoinResult &rhs) const;
-    size_t Hash();
+    size_t Compare(std::shared_ptr<JoinResult> join_result);
+  int CompareWindow(std::vector<ResultTuple> &window_results_verify, std::vector<ResultTuple> &window_results);
 };
 
 using ResultPtr = std::shared_ptr<JoinResult>;

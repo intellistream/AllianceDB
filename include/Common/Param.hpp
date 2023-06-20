@@ -23,7 +23,8 @@
 
 namespace AllianceDB {
 struct Param {
-  AlgoType algo = AlgoType::Verify;
+  uint32_t verify = 1;
+  AlgoType algo = AlgoType::SplitJoin;
   std::string bin_dir;
   uint32 window_length;
   uint32 sliding_size;

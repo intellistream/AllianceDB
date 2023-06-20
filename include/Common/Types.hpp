@@ -44,17 +44,16 @@ enum class StreamType
 }; /*!< Type of the stream, default R and S */
 enum class AlgoType
 {
-    Verify          = 0,
-    LWJ             = 1,
-    HandshakeJoin   = 2,
-    SplitJoin       = 3,
-    IBWJ            = 4,
-    HashJoin        = 5,
-    SplitJoinOrigin = 6,
+    LWJ             = 0,
+    HandshakeJoin   = 1,
+    SplitJoin       = 2,
+    IBWJ            = 3,
+    HashJoin        = 4,
+    SplitJoinOrigin = 5,
 };
 
 constexpr std::string_view algo_names[32] = {
-    "Verify", "LWJ", "HandshakeJoin", "SplitJoin", "IBWJ", "HashJoin", "SplitJoinOrigin",
+    "LWJ", "HandshakeJoin", "SplitJoin", "IBWJ", "HashJoin", "SplitJoinOrigin",
 };
 
 using ThreadPtr = std::shared_ptr<std::thread>; /*!< Type of the thread pointer */
