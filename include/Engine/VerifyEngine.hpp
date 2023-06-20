@@ -31,14 +31,12 @@ typedef std::shared_ptr<class VerifyEngine> VerifyEnginePtr;
 class VerifyEngine {
  private:
   const Param &param;
-  std::thread t;
 
  public:
   VerifyEngine(const Param &param);
 
   void Run(Context &ctx);
 
-  bool Wait();
 };
 
 }  // namespace AllianceDB

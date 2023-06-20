@@ -34,9 +34,9 @@ using namespace AllianceDB;
 
 // Arguments.
 DEFINE_uint32(verify, 1, "Verify results");
-DEFINE_uint32(algo, 2, "Join algo");
+DEFINE_uint32(algo, 1, "Join algo");//"LWJ", "HandshakeJoin", "SplitJoin", "IBWJ", "HashJoin", "SplitJoinOrigin"
 DEFINE_uint32(window_length, 500, "Window size");
-DEFINE_uint32(sliding_size, 100, "Sliding length");
+DEFINE_uint32(sliding_size, 50, "Sliding length");
 DEFINE_uint32(lazy, 0, "Lazy size");
 DEFINE_uint32(rate, 0, "Arrival rate (tuples/sec) of R & S");
 DEFINE_string(r, "Test1-R.txt", "File path of R stream");

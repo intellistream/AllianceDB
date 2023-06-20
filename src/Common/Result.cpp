@@ -76,13 +76,15 @@ size_t JoinResult::Compare(std::shared_ptr<JoinResult> join_result) {
 }
 int JoinResult::CompareWindow(vector<ResultTuple> &window_results_verify, vector<ResultTuple> &window_results) {
 
-  if (window_results.size() != window_results_verify.size()) return -1;
+  if (window_results.size() != window_results_verify.size())
+    return -1;
 
   std::sort(window_results_verify.begin(), window_results_verify.end());
   std::sort(window_results.begin(), window_results.end());
 
   for (auto i = 0; i < window_results.size(); i++) {
-    if (window_results[i] != window_results_verify[i])return -1;
+    if (window_results[i] != window_results_verify[i])
+      return -1;
   }
 
   return 0;
