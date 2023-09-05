@@ -15,31 +15,38 @@
  */
 
 #include "Engine/EagerEngine.hpp"
-
-#include <memory>
-#include <thread>
-
 #include "Join/HandshakeJoin.hpp"
 #include "Join/HashJoin.hpp"
 #include "Join/SplitJoin.hpp"
 #include "Join/SplitJoinOrigin.hpp"
 #include "Utils/Logger.hpp"
-
+#include <memory>
 using namespace std;
 using namespace AllianceDB;
 
-EagerEngine::EagerEngine(const Param &param) : param(param) {}
+EagerEngine::EagerEngine(const Param &param, Context &ctx) : param(param) {
+//  if (param.algo == AlgoType::SplitJoinOrigin) {
+//    Joiners.push_back(Joiner());
+//    Joiners[0]->Start(ctx);
+//  } else {
+//    for (int i = 0; i < param.num_windows; ++i) {
+//      auto joiner = Joiner();
+//      joiner->Start(ctx);
+//      Joiners.push_back(joiner);
+//    }
+//  }
+}
 
-JoinerPtr EagerEngine::NewJoiner() {
+JoinerPtr EagerEngine::Joiner() {
   switch (param.algo) {
     case AlgoType::HandshakeJoin: {
-      return make_shared<HandshakeJoin>(param, windows.size());
+      return make_shared<HandshakeJoin>(param, Joiners.size());
     }
     case AlgoType::SplitJoin: {
-      return make_shared<SplitJoin>(param, windows.size());
+      return make_shared<SplitJoin>(param, Joiners.size());
     }
     case AlgoType::SplitJoinOrigin: {
-      return make_shared<SplitJoinOrigin>(param, windows.size());
+      return make_shared<SplitJoinOrigin>(param, Joiners.size());
     }
     default: {
       FATAL("Unsupported algorithm %d", param.algo);
@@ -53,17 +60,17 @@ void EagerEngine::Run(Context &ctx) {
     auto nextS = ss->Next(), nextR = sr->Next();
     if (param.algo == AlgoType::SplitJoinOrigin) {//there is only one engine in the traditional approach.
       if (nextR->ts == 0) {
-        windows.push_back(NewJoiner());
-        windows[0]->Start(ctx);
+        Joiners.push_back(Joiner());
+        Joiners[0]->Start(ctx);
       }
-      windows[0]->Feed(nextR);
-      windows[0]->Feed(nextS);
+      Joiners[0]->Feed(nextR);
+      Joiners[0]->Feed(nextS);
     } else {
       if (nextR->ts % param.sliding_size == 0
-          && windows.size() < param.num_windows) {//for each window, we can create a separate engine.
-        windows.push_back(NewJoiner());
-        windows.back()->Start(ctx);
-        DEBUG("algo[%d/%d] started", windows.size() - 1, windows.size());
+          && Joiners.size() < param.num_windows) {//for each window, we create a separate engine.
+        Joiners.push_back(Joiner());
+        Joiners.back()->Start(ctx);
+        DEBUG("algo[%d/%d] started", Joiners.size() - 1, Joiners.size());
       }
       int idx;
       if (nextR->ts < param.window_length) {
@@ -71,14 +78,14 @@ void EagerEngine::Run(Context &ctx) {
       } else {
         idx = (nextR->ts - param.window_length) / param.sliding_size + 1;
       }
-      for (; idx < windows.size(); idx++) {
-        windows[idx]->Feed(nextR);
-        windows[idx]->Feed(nextS);
+      for (; idx < Joiners.size(); idx++) {
+        Joiners[idx]->Feed(nextR);
+        Joiners[idx]->Feed(nextS);
       }
     }
   }
-  for (int i = 0; i < windows.size(); ++i) {
-    windows[i]->Wait();
-    DEBUG("algo[%d/%d] joined", i, windows.size());
+  for (int i = 0; i < Joiners.size(); ++i) {
+    Joiners[i]->Wait();
+    DEBUG("algo[%d/%d] joined", i, Joiners.size());
   }
 }

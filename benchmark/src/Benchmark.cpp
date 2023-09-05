@@ -27,12 +27,16 @@
 
 #include <chrono>
 #include <filesystem>
-#include <memory>
 
 using namespace std;
 using namespace AllianceDB;
 
+Param &GetParam(char *const *argv, Param &param);
+
+void MetricsReport(const Param &param, const Context &ctx);
+
 // Arguments.
+void VerifyResults(const Param &param, Context &ctx, Context &ctx_v);
 DEFINE_uint32(verify, 1, "Verify results");
 DEFINE_uint32(algo, 1, "Join algo");//"LWJ", "HandshakeJoin", "SplitJoin", "IBWJ", "HashJoin", "SplitJoinOrigin"
 DEFINE_uint32(window_length, 500, "Window size");
@@ -50,17 +54,7 @@ DEFINE_uint32(num_threads, 2, "Number of workers");
 int main(int argc, char **argv) {
   Param param;
   gflags::ParseCommandLineFlags(&argc, &argv, true);
-
-  param.verify = FLAGS_verify;
-  param.algo = static_cast<AlgoType>(FLAGS_algo);
-  param.window_length = FLAGS_window_length;
-  param.sliding_size = FLAGS_sliding_size;
-  param.lazy = FLAGS_lazy;
-  param.rate = FLAGS_rate;
-  param.num_threads = FLAGS_num_threads;
-  param.r = FLAGS_r;
-  param.s = FLAGS_s;
-  param.bin_dir = filesystem::weakly_canonical(filesystem::path(argv[0])).parent_path();
+  param = GetParam(argv, param);
 
   StreamPtr R = make_shared<Stream>(param, StreamType::R);
   StreamPtr S = make_shared<Stream>(param, StreamType::S);
@@ -79,7 +73,6 @@ int main(int argc, char **argv) {
   INFO("No remainder: %s", hasNoRemainder ? "true" : "false");
 
   Context ctx(param, R, S);
-
   Context ctx_v(param, R, S);
 
   param.Print();
@@ -88,7 +81,7 @@ int main(int argc, char **argv) {
     case AlgoType::HandshakeJoin:
     case AlgoType::SplitJoin:
     case AlgoType::SplitJoinOrigin: {
-      auto engine = make_unique<EagerEngine>(param);
+      auto engine = make_unique<EagerEngine>(param, ctx);
       engine->Run(ctx);
       break;
     }
@@ -96,16 +89,37 @@ int main(int argc, char **argv) {
       FATAL("algo not supported")
     }
   }
-  // ctx.endTime= std::chrono::high_resolution_clock::now()
-  auto duration = chrono::duration_cast<chrono::nanoseconds>(ctx.endTime - ctx.startTime);
-  std::cout << "time_ms: " << duration.count() / 1e6 << std::endl;
-  std::cout << "tps: " << param.num_tuples * 2 * 1e9 / duration.count() << std::endl;
 
+  MetricsReport(param, ctx);
+  VerifyResults(param, ctx, ctx_v);
+
+  return 0;
+}
+void VerifyResults(const Param &param, Context &ctx, Context &ctx_v) {
   if (param.verify) {
     auto engine = make_unique<VerifyEngine>(param);
     engine->Run(ctx_v);
     auto rt = ctx_v.joinResults->Compare(ctx.joinResults);
     INFO("Results verified to be accurate: %s", (rt == 0) ? "true" : "false")
   }
-  return 0;
+}
+
+void MetricsReport(const Param &param, const Context &ctx) {
+  auto duration = chrono::duration_cast<chrono::nanoseconds>(ctx.endTime - ctx.startTime);
+  cout << "time_ms: " << duration.count() / 1e6 << endl;
+  cout << "tps: " << param.num_tuples * 2 * 1e9 / duration.count() << endl;
+}
+
+Param &GetParam(char *const *argv, Param &param) {
+  param.verify = FLAGS_verify;
+  param.algo = static_cast<AlgoType>(FLAGS_algo);
+  param.window_length = FLAGS_window_length;
+  param.sliding_size = FLAGS_sliding_size;
+  param.lazy = FLAGS_lazy;
+  param.rate = FLAGS_rate;
+  param.num_threads = FLAGS_num_threads;
+  param.r = FLAGS_r;
+  param.s = FLAGS_s;
+  param.bin_dir = filesystem::weakly_canonical(filesystem::path(argv[0])).parent_path();
+  return param;
 }
