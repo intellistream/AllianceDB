@@ -25,16 +25,16 @@ using namespace std;
 using namespace AllianceDB;
 
 EagerEngine::EagerEngine(const Param &param, Context &ctx) : param(param) {
-//  if (param.algo == AlgoType::SplitJoinOrigin) {
-//    Joiners.push_back(Joiner());
-//    Joiners[0]->Start(ctx);
-//  } else {
-//    for (int i = 0; i < param.num_windows; ++i) {
-//      auto joiner = Joiner();
-//      joiner->Start(ctx);
-//      Joiners.push_back(joiner);
-//    }
-//  }
+  if (param.algo == AlgoType::SplitJoinOrigin) {
+    Joiners.push_back(Joiner());
+    Joiners[0]->Start(ctx);
+  } else {
+    for (int i = 0; i < param.num_windows; ++i) {
+      auto joiner = Joiner();
+      joiner->Start(ctx);
+      Joiners.push_back(joiner);
+    }
+  }
 }
 
 JoinerPtr EagerEngine::Joiner() {
@@ -56,32 +56,17 @@ JoinerPtr EagerEngine::Joiner() {
 
 void EagerEngine::Run(Context &ctx) {
   auto sr = ctx.streamR, ss = ctx.streamS;
-  while (sr->HasNext() && ss->HasNext()) {//read the next tuple from either stream R or stream S.
+  while (sr->HasNext() && ss->HasNext()) {
     auto nextS = ss->Next(), nextR = sr->Next();
-    if (param.algo == AlgoType::SplitJoinOrigin) {//there is only one engine in the traditional approach.
-      if (nextR->ts == 0) {
-        Joiners.push_back(Joiner());
-        Joiners[0]->Start(ctx);
-      }
-      Joiners[0]->Feed(nextR);
-      Joiners[0]->Feed(nextS);
+    int idx;
+    if (nextR->ts < param.window_length) {
+      idx = 0;
     } else {
-      if (nextR->ts % param.sliding_size == 0
-          && Joiners.size() < param.num_windows) {//for each window, we create a separate engine.
-        Joiners.push_back(Joiner());
-        Joiners.back()->Start(ctx);
-        DEBUG("algo[%d/%d] started", Joiners.size() - 1, Joiners.size());
-      }
-      int idx;
-      if (nextR->ts < param.window_length) {
-        idx = 0;
-      } else {
-        idx = (nextR->ts - param.window_length) / param.sliding_size + 1;
-      }
-      for (; idx < Joiners.size(); idx++) {
-        Joiners[idx]->Feed(nextR);
-        Joiners[idx]->Feed(nextS);
-      }
+      idx = (nextR->ts - param.window_length) / param.sliding_size + 1;
+    }
+    for (; idx < Joiners.size(); idx++) {
+      Joiners[idx]->Feed(nextR);
+      Joiners[idx]->Feed(nextS);
     }
   }
   for (int i = 0; i < Joiners.size(); ++i) {
@@ -89,3 +74,38 @@ void EagerEngine::Run(Context &ctx) {
     DEBUG("algo[%d/%d] joined", i, Joiners.size());
   }
 }
+//void EagerEngine::Run(Context &ctx) {
+//  auto sr = ctx.streamR, ss = ctx.streamS;
+//  while (sr->HasNext() && ss->HasNext()) {//read the next tuple from either stream R or stream S.
+//    auto nextS = ss->Next(), nextR = sr->Next();
+//    if (param.algo == AlgoType::SplitJoinOrigin) {//there is only one engine in the traditional approach.
+//      if (nextR->ts == 0) {
+//        Joiners.push_back(Joiner());
+//        Joiners[0]->Start(ctx);
+//      }
+//      Joiners[0]->Feed(nextR);
+//      Joiners[0]->Feed(nextS);
+//    } else {
+//      if (nextR->ts % param.sliding_size == 0
+//          && Joiners.size() < param.num_windows) {//for each window, we create a separate engine.
+//        Joiners.push_back(Joiner());
+//        Joiners.back()->Start(ctx);
+//        DEBUG("algo[%d/%d] started", Joiners.size() - 1, Joiners.size());
+//      }
+//      int idx;
+//      if (nextR->ts < param.window_length) {
+//        idx = 0;
+//      } else {
+//        idx = (nextR->ts - param.window_length) / param.sliding_size + 1;
+//      }
+//      for (; idx < Joiners.size(); idx++) {
+//        Joiners[idx]->Feed(nextR);
+//        Joiners[idx]->Feed(nextS);
+//      }
+//    }
+//  }
+//  for (int i = 0; i < Joiners.size(); ++i) {
+//    Joiners[i]->Wait();
+//    DEBUG("algo[%d/%d] joined", i, Joiners.size());
+//  }
+//}
