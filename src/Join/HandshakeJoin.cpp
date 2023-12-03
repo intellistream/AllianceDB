@@ -113,14 +113,16 @@ void HandshakeJoin::Worker::Expire() {
   if (sents != ends) {
     if (!Full(left_send_queue) && sents - starts < MAX_OUTSTANDING_ACKS &&
         left->ends - left->starts < (ends - starts + MAX_LOAD_DIFF)) {
-      left->inputs.push(locals[sents++]);
+      while (!left->inputs.push(locals[sents]));
+        ++sents;
       Send(left_send_queue, Msg::NEW_S);
     }
   }
   if (sentr != endr) {
     if (!Full(right_send_queue) && sentr - startr < MAX_OUTSTANDING_ACKS &&
         right->endr - right->startr < (endr - startr + MAX_LOAD_DIFF)) {
-      right->inputr.push(localr[sentr++]);
+      while (!right->inputr.push(localr[sentr]));
+      ++sentr;
       Send(right_send_queue, Msg::NEW_R);
     }
   }
@@ -168,7 +170,8 @@ void HandshakeJoin::Worker::ProcessLeft(Context &ctx) {
     stopr = true;
     DEBUG("STOP left %d in %d", id, window_id);
     while (sentr != endr) {
-      right->inputr.push(localr[sentr++]);
+      while (!right->inputr.push(localr[sentr]));
+      ++sentr;
       Send(right_send_queue, Msg::NEW_R);
     }
     Send(right_send_queue, msg);
@@ -210,7 +213,8 @@ void HandshakeJoin::Worker::ProcessRight(Context &ctx) {
     // DEBUG("STOP right %d in %d", id, window_id);
     while (sents != ends) {
       {
-        left->inputs.push(locals[sents++]);
+        while (!left->inputs.push(locals[sents]));
+        ++sents;
         Send(left_send_queue, Msg::NEW_S);
       }
     }
