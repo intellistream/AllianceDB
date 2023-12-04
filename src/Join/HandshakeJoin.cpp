@@ -114,7 +114,7 @@ void HandshakeJoin::Worker::Expire() {
     if (!Full(left_send_queue) && sents - starts < MAX_OUTSTANDING_ACKS &&
         left->ends - left->starts < (ends - starts + MAX_LOAD_DIFF)) {
       while (!left->inputs.push(locals[sents]));
-        ++sents;
+      ++sents;
       Send(left_send_queue, Msg::NEW_S);
     }
   }
