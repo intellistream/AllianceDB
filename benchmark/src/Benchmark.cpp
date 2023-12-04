@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+#include <gflags/gflags.h>
+
+#include <chrono>
+#include <filesystem>
+
 #include "Common/Context.hpp"
 #include "Common/Stream.hpp"
 #include "Common/Types.hpp"
@@ -22,11 +27,6 @@
 #include "Engine/VerifyEngine.hpp"
 #include "Utils/Flags.hpp"
 #include "Utils/Logger.hpp"
-
-#include <gflags/gflags.h>
-
-#include <chrono>
-#include <filesystem>
 
 using namespace std;
 using namespace AllianceDB;
@@ -38,7 +38,8 @@ void MetricsReport(const Param &param, const Context &ctx);
 // Arguments.
 void VerifyResults(const Param &param, Context &ctx, Context &ctx_v);
 DEFINE_uint32(verify, 1, "Verify results");
-DEFINE_uint32(algo, 1, "Join algo");//"LWJ", "HandshakeJoin", "SplitJoin", "IBWJ", "HashJoin", "SplitJoinOrigin"
+DEFINE_uint32(algo, 1, "Join algo");  //"LWJ", "HandshakeJoin", "SplitJoin",
+                                      //"IBWJ", "HashJoin", "SplitJoinOrigin"
 DEFINE_uint32(window_length, 500, "Window size");
 DEFINE_uint32(sliding_size, 50, "Sliding length");
 DEFINE_uint32(lazy, 0, "Lazy size");
@@ -63,11 +64,13 @@ int main(int argc, char **argv) {
   S->Load();
 
   param.num_tuples = min(R->Tuples().size(), S->Tuples().size());
-  param.num_windows = (param.num_tuples - param.window_length) / param.sliding_size
-      + 1;//the total number of windows depends on the sliding_size.
+  param.num_windows =
+      (param.num_tuples - param.window_length) / param.sliding_size +
+      1;  // the total number of windows depends on the sliding_size.
 
   // Check if there is no remainder
-  bool hasNoRemainder = (param.num_tuples - param.window_length) % param.sliding_size == 0;
+  bool hasNoRemainder =
+      (param.num_tuples - param.window_length) % param.sliding_size == 0;
 
   // Print the result
   INFO("No remainder: %s", hasNoRemainder ? "true" : "false");
@@ -105,7 +108,8 @@ void VerifyResults(const Param &param, Context &ctx, Context &ctx_v) {
 }
 
 void MetricsReport(const Param &param, const Context &ctx) {
-  auto duration = chrono::duration_cast<chrono::nanoseconds>(ctx.endTime - ctx.startTime);
+  auto duration =
+      chrono::duration_cast<chrono::nanoseconds>(ctx.endTime - ctx.startTime);
   cout << "time_ms: " << duration.count() / 1e6 << endl;
   cout << "tps: " << param.num_tuples * 2 * 1e9 / duration.count() << endl;
 }
@@ -120,6 +124,7 @@ Param &GetParam(char *const *argv, Param &param) {
   param.num_threads = FLAGS_num_threads;
   param.r = FLAGS_r;
   param.s = FLAGS_s;
-  param.bin_dir = filesystem::weakly_canonical(filesystem::path(argv[0])).parent_path();
+  param.bin_dir =
+      filesystem::weakly_canonical(filesystem::path(argv[0])).parent_path();
   return param;
 }
