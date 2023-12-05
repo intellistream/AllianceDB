@@ -38,8 +38,8 @@ void MetricsReport(const Param &param, const Context &ctx);
 // Arguments.
 void VerifyResults(const Param &param, Context &ctx, Context &ctx_v);
 DEFINE_uint32(verify, 1, "Verify results");
-DEFINE_uint32(algo, 1, "Join algo");  //"LWJ", "HandshakeJoin", "SplitJoin",
-                                      //"IBWJ", "HashJoin", "SplitJoinOrigin"
+DEFINE_uint32(algo, 1, "Join algo"); //"LWJ", "HandshakeJoin", "SplitJoin",
+                                     //"IBWJ", "HashJoin", "SplitJoinOrigin"
 DEFINE_uint32(window_length, 500, "Window size");
 DEFINE_uint32(sliding_size, 50, "Sliding length");
 DEFINE_uint32(lazy, 0, "Lazy size");
@@ -66,7 +66,7 @@ int main(int argc, char **argv) {
   param.num_tuples = min(R->Tuples().size(), S->Tuples().size());
   param.num_windows =
       (param.num_tuples - param.window_length) / param.sliding_size +
-      1;  // the total number of windows depends on the sliding_size.
+      1; // the total number of windows depends on the sliding_size.
 
   // Check if there is no remainder
   bool hasNoRemainder =
@@ -81,16 +81,16 @@ int main(int argc, char **argv) {
   param.Print();
 
   switch (param.algo) {
-    case AlgoType::HandshakeJoin:
-    case AlgoType::SplitJoin:
-    case AlgoType::SplitJoinOrigin: {
-      auto engine = make_unique<EagerEngine>(param, ctx);
-      engine->Run(ctx);
-      break;
-    }
-    default: {
-      FATAL("algo not supported")
-    }
+  case AlgoType::HandshakeJoin:
+  case AlgoType::SplitJoin:
+  case AlgoType::SplitJoinOrigin: {
+    auto engine = make_unique<EagerEngine>(param, ctx);
+    engine->Run(ctx);
+    break;
+  }
+  default: {
+    FATAL("algo not supported")
+  }
   }
 
   MetricsReport(param, ctx);
