@@ -22,17 +22,20 @@
 #include "Common/Stream.hpp"
 #include "Utils/Timer.hpp"
 
-namespace AllianceDB {
-struct Context {
-  const Param &param;
-  ResultPtr joinResults;
-  StreamPtr streamR, streamS;
+namespace AllianceDB
+{
+struct Context
+{
+    const Param &param;
+    ResultPtr joinResults;
+    StreamPtr streamR, streamS;
 
-  std::chrono::high_resolution_clock::time_point startTime;
-  std::chrono::high_resolution_clock::time_point endTime;
+    std::chrono::high_resolution_clock::time_point startTime;
+    std::chrono::high_resolution_clock::time_point endTime;
 
-  Context(const Param &param, StreamPtr R, StreamPtr S)
-      : param(param), joinResults(std::make_shared<JoinResult>(param)), streamR(R), streamS(S) {}
+    Context(const Param &param, StreamPtr R, StreamPtr S)
+        : param(param), joinResults(std::make_shared<JoinResult>(param)), streamR(R), streamS(S)
+    {}
 };
 
 }  // namespace AllianceDB

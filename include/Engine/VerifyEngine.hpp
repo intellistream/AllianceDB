@@ -25,18 +25,19 @@
 
 #include <thread>
 
-namespace AllianceDB {
+namespace AllianceDB
+{
 typedef std::shared_ptr<class VerifyEngine> VerifyEnginePtr;
 
-class VerifyEngine {
- private:
-  const Param &param;
+class VerifyEngine
+{
+private:
+    const Param &param;
 
- public:
-  VerifyEngine(const Param &param);
+public:
+    VerifyEngine(const Param &param);
 
-  void Run(Context &ctx);
-
+    void Run(Context &ctx);
 };
 
 }  // namespace AllianceDB

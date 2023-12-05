@@ -53,7 +53,7 @@ void Stream::Load()
         ts             = count++;  // count-based window
         TuplePtr tuple = std::make_shared<Tuple>(key, val, st, ts);
         this->tuples.push_back(tuple);
-      DEBUG("push tuple %s", tuple->toString().c_str());
+        DEBUG("push tuple %s", tuple->toString().c_str());
     }
     fs.close();
     num_tuples = tuples.size();

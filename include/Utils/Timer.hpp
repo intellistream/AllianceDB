@@ -19,9 +19,8 @@
 
 #include <chrono>
 
-template<typename T>
-class Timer {
+template <typename T>
+class Timer
+{};
 
-};
-
-#endif //ALLIANCEDB_SRC_UTILS_TIMER_H_
+#endif  // ALLIANCEDB_SRC_UTILS_TIMER_H_

@@ -21,13 +21,15 @@
 #include "Common/Result.hpp"
 #include "Common/Window.h"
 
-namespace AllianceDB {
-//Note: every joinAlgo maintains multiple JoinCores.
-class JoinAlgo {
- public:
-  virtual void Feed(TuplePtr tuple) = 0;
-  virtual void Wait() = 0;
-  virtual void Start(Context &ctx) = 0;
+namespace AllianceDB
+{
+// Note: every joinAlgo maintains multiple JoinCores.
+class JoinAlgo
+{
+public:
+    virtual void Feed(TuplePtr tuple) = 0;
+    virtual void Wait()               = 0;
+    virtual void Start(Context &ctx)  = 0;
 };
 
 using JoinerPtr = std::shared_ptr<JoinAlgo>;
