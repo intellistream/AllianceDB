@@ -18,3 +18,4 @@ jobs:
       with:
         clang-format-version: '15'
         check-path: ${{ matrix.path }}
+        fallback-style: Google
