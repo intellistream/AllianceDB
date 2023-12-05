@@ -50,6 +50,7 @@ enum class AlgoType
     IBWJ            = 3,
     HashJoin        = 4,
     SplitJoinOrigin = 5,
+    Verify          = 999,
 };
 
 constexpr std::string_view algo_names[32] = {

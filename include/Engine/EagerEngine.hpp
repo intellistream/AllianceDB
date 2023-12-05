@@ -26,16 +26,18 @@
 #include "Common/Window.h"
 #include "Join/Join.hpp"
 
-namespace AllianceDB {
-class EagerEngine {
- public:
-  EagerEngine(const Param &param, Context &ctx);
-  void Run(Context &ctx);
+namespace AllianceDB
+{
+class EagerEngine
+{
+public:
+    EagerEngine(const Param &param, Context &ctx);
+    void Run(Context &ctx);
 
- private:
-  const Param &param;
-  std::vector<JoinerPtr> Joiners;
-  JoinerPtr Joiner();
+private:
+    const Param &param;
+    std::vector<JoinerPtr> Joiners;
+    JoinerPtr Joiner();
 };
 
 }  // namespace AllianceDB

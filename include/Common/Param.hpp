@@ -21,29 +21,32 @@
 
 #include <iostream>
 
-namespace AllianceDB {
-struct Param {
-  uint32_t verify = 1;
-  AlgoType algo = AlgoType::SplitJoin;
-  std::string bin_dir;
-  uint32 window_length;
-  uint32 sliding_size;
-  uint32 rate;
-  uint32 num_threads;
-  uint32 lazy;
-  uint32 num_tuples = 0;
-  uint32 num_windows = 0;
-  std::string r = "Test1-R.txt", s = "Test1-S.txt";
-  void Print() {
-    std::cout << "algo: " << algo_names[static_cast<uint32>(algo)] << std::endl;
-    std::cout << "num_tuples: " << num_tuples << std::endl;
-    std::cout << "window: " << window_length << std::endl;
-    std::cout << "sliding_size: " << sliding_size << std::endl;
-    std::cout << "rate: " << rate << std::endl;
-    std::cout << "num_threads: " << num_threads << std::endl;
-    std::cout << "r: " << r << std::endl;
-    std::cout << "s: " << s << std::endl;
-  }
+namespace AllianceDB
+{
+struct Param
+{
+    uint32_t verify = 1;
+    AlgoType algo   = AlgoType::SplitJoin;
+    std::string bin_dir;
+    uint32 window_length;
+    uint32 sliding_size;
+    uint32 rate;
+    uint32 num_threads;
+    uint32 lazy;
+    uint32 num_tuples  = 0;
+    uint32 num_windows = 0;
+    std::string r = "Test1-R.txt", s = "Test1-S.txt";
+    void Print()
+    {
+        std::cout << "algo: " << algo_names[static_cast<uint32>(algo)] << std::endl;
+        std::cout << "num_tuples: " << num_tuples << std::endl;
+        std::cout << "window: " << window_length << std::endl;
+        std::cout << "sliding_size: " << sliding_size << std::endl;
+        std::cout << "rate: " << rate << std::endl;
+        std::cout << "num_threads: " << num_threads << std::endl;
+        std::cout << "r: " << r << std::endl;
+        std::cout << "s: " << s << std::endl;
+    }
 };
 
 }  // namespace AllianceDB
