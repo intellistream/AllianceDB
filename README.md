@@ -7,6 +7,7 @@ If you use AllianceDB in your work, please cite our work.
 - Intra-Window Join *[Release at https://github.com/intellistream/AllianceDB/releases/tag/v1]*
 
   * **[SIGMOD]** Shuhao Zhang, Yancan Mao, Jiong He, Philipp M. Grulich, Steffen Zeuch, Bingsheng He, Richard T. B. Ma, and Volker Markl. Parallelizing Intra-Window Join on Multicores: An Experimental Study, SIGMOD, 2021
+  * **[SIGMOD]** Zeng X, Zhang S, Zhong H, Zhang H, Lu M, Zheng Z, Chen Y. PECJ: Stream Window Join on Disorder Data Streams with Proactive Error Compensation, SIGMOD, 2024
   ```
   @article{IntraWJoin21,
    author = {Zhang, Shuhao and Mao, Yancan and He, Jiong and Grulich, Philipp M and Zeuch, Steffen and He, Bingsheng and Ma, Richard TB and Markl, Volker},
