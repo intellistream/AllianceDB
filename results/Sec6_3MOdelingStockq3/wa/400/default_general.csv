@@ -1,0 +1,6 @@
+key,value,type
+95%Latency,378005.000000,Double
+AQPError,-0.829235,Double
+AvgLatency,203980.286822,Double
+Error,-0.829235,Double
+Throughput,256817.095373,Double

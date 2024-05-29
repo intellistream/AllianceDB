@@ -1,0 +1,4 @@
+key,value,type
+index,134,U64
+join,49,U64
+prediction,60,U64

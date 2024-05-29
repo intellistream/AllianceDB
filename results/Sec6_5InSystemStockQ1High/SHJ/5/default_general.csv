@@ -1,0 +1,8 @@
+key,value,type
+threads,5,U64
+95%Latency,24889.400000,Double
+AQPError,-0.416751,Double
+AvgLatency,24889.400000,Double
+Error,-0.416751,Double
+Throughput,897040.380655,Double
+parallelMode,keyPartition,String

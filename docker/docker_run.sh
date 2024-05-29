@@ -1,2 +1,2 @@
-docker start aliancedb_u22_04_a
-docker attach aliancedb_u22_04_a
+docker start ooojoin
+docker attach ooojoin

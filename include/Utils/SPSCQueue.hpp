@@ -1,3 +1,4 @@
+
 // Copyright (C) 2021 by the IntelliStream team (https://github.com/intellistream)
 
 #pragma once
@@ -15,6 +16,7 @@
 #include <condition_variable>
 #include <pthread.h>
 #include <sys/time.h>
+
 using namespace std::literals::chrono_literals;
 using namespace std;
 
@@ -36,8 +38,9 @@ class SPSCQueue {
 #endif
 
  public:
-  pthread_cond_t cond;
-  pthread_mutex_t mutex;
+  pthread_cond_t cond{};
+  pthread_mutex_t mutex{};
+
   explicit SPSCQueue(const size_t capacity,
                      const Allocator &allocator = Allocator())
       : capacity_(capacity), allocator_(allocator) {
@@ -85,10 +88,11 @@ class SPSCQueue {
   SPSCQueue(const SPSCQueue &) = delete;
 
   SPSCQueue &operator=(const SPSCQueue &) = delete;
+
   std::mutex g_mutex;
   condition_variable g_con;
 
-  void wakeUpSink(void) {
+  void wakeUpSink() {
     //std::unique_lock<std::mutex> lock(g_mutex);
 
     g_con.notify_one();
@@ -96,7 +100,8 @@ class SPSCQueue {
 
     //lock.unlock();
   }
-  void waitForSource(void) {  //  printf("enter sleep\r\n");
+
+  void waitForSource() {  //  printf("enter sleep\r\n");
     std::unique_lock<std::mutex> lock(g_mutex);
     g_con.wait(lock);
 
@@ -108,6 +113,7 @@ class SPSCQueue {
 
 
   }
+
   template<typename... Args>
   void emplace(Args &&...args)
   noexcept(
@@ -260,6 +266,6 @@ class SPSCQueue {
 
   // Padding to avoid adjacent allocations to share cache line with
   // writeIdxCache_
-  char padding_[kCacheLineSize - sizeof(writeIdxCache_)];
+  char padding_[kCacheLineSize - sizeof(writeIdxCache_)]{};
 };
 } // namespace rigtorp

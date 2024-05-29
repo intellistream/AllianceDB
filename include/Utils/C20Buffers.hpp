@@ -8,20 +8,19 @@
 
 #include <vector>
 #include <memory>
+
 #if defined(__GNUC__) && (__GNUC__ >= 4)
 #define ADB_memcpy(dst, src, size) __builtin_memcpy(dst, src, size)
 #else
 #define ADB_memcpy(dst, src, size) memcpy(dst, src, size)
 #endif
 /**
- * @ingroup INTELLI_UTIL Shared Utils with other Intelli Stream programs
+ * @ingroup INTELLI_UTIL
  * @{
- * This group provides common functions to support the Intelli Stream programs.
  */
 /**
-* @ingroup INTELLI_UTIL_OTHERC20 Other common class or package under C++20 standard
+* @ingroup INTELLI_UTIL_OTHERC20
 * @{
- * This package covers some common C++20 new features, such as std::thread to ease the programming
 */
 namespace INTELLI {
 /**
@@ -35,23 +34,27 @@ class C20Buffer {
   size_t pos = 0;
  public:
   std::vector<dataType> area;
+
   /**
   * @brief reset this buffer, set pos back to 0
   */
   void reset() {
     pos = 0;
   }
+
   C20Buffer() { reset(); }
-  ~C20Buffer() {}
+
+  ~C20Buffer() = default;
 
   /**
    * @brief Init with original length of buffer
    * @param len THe original length of buffer
    */
-  C20Buffer(size_t len) {
+  explicit C20Buffer(size_t len) {
     area = std::vector<dataType>(len);
     reset();
   }
+
   /**
    * @brief To get how many elements are allowed in the buffer
    * @return The size of buffer area, i.e., area.size()
@@ -61,6 +64,7 @@ class C20Buffer {
   size_t bufferSize() {
     return area.size();
   }
+
   /**
   * @brief To get how many VALID elements are existed in the buffer
   * @return The size of VALID elements
@@ -70,6 +74,7 @@ class C20Buffer {
   size_t size() {
     return pos;
   }
+
   /**
    * @brief To get the original memory area ponter of data
    * @return The memory area address (pointer) that stores the data
@@ -77,6 +82,7 @@ class C20Buffer {
   dataType *data() {
     return &area[0];
   }
+
   /**
    * @brief To get the original memory area ponter of data, with offset
    * @param offset Offset of data
@@ -86,6 +92,7 @@ class C20Buffer {
   dataType *data(size_t offset) {
     return &area[offset];
   }
+
   /**
    * @brief Append the data to the buffer
    * @param da Data to be appended
@@ -103,10 +110,16 @@ class C20Buffer {
       area.push_back(da);
       pos=area.size();
     }*/
-    area[pos] = da;
-    pos++;
+    if (pos < area.size()) {
+      area[pos] = da;
+      pos++;
+    } else {
+      area.push_back(da);
+      pos++;
+    }
     return pos;
   }
+
   /**
   * @brief Append the data to the buffer
   * @param da Data to be appended, a buffer

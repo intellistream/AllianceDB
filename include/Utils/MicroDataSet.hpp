@@ -6,6 +6,7 @@
 #ifndef _UTILS_MICRODATASET_H_
 #define _UTILS_MICRODATASET_H_
 #pragma once
+
 #include <stdint.h>
 #include <vector>
 #include <stddef.h>
@@ -14,12 +15,14 @@
 #include <random>
 #include <cmath>
 #include <iostream>
+
 using namespace std;
 namespace INTELLI {
 /**
- * @defgroup INTELLI_UTIL Shared Utils with other Intelli Stream programs
+ * @ingroup INTELLI_UTIL
  * @{
  * @note The STL and static headers will be named as *.hpp, while *.h means there are real, fixed classes
+ * @warning Please use this file ONLY as STL, it may not work if you turn it into *.cpp!!!!!
  * @defgroup INTELLI_UTIL_Micro The Micro dataset
  * @{
  * This is the synthetic dataset Micro, firstly introduced in our SIGMOD 2021 paper
@@ -47,22 +50,32 @@ class MicroDataSet {
   std::default_random_engine e1;
   bool hasSeed = false;
   uint64_t seed;
+  //uint64_t  runTime=0;
  public:
   /**
    * @brief default construction, with auto random generator
    */
-  MicroDataSet() {
+  MicroDataSet() = default;
 
-  }
   /**
   * @brief  construction with seed
   * @param seed The seed for random generator
   */
-  MicroDataSet(uint64_t _seed) {
+  explicit MicroDataSet(uint64_t _seed) {
     seed = _seed;
     hasSeed = true;
   }
-  ~MicroDataSet() {}
+
+  /**
+ * @brief  construction with seed
+ * @param seed The seed for random generator
+ */
+  void setSeed(uint64_t _seed) {
+    seed = _seed;
+    hasSeed = true;
+  }
+
+  ~MicroDataSet() = default;
   /** @defgroup MICRO_GENERIC generic
    * @{
    * The functions for general generation of Micro
@@ -82,6 +95,7 @@ class MicroDataSet {
     }
     return ru;
   }
+
   /**
    * @brief The function to generate a vector of integers which has zipf distribution
    * @param tsType The data type of int, default is size_t
@@ -99,6 +113,7 @@ class MicroDataSet {
       gen = std::mt19937_64(rd()); // 以 rd() 播种的标准 mersenne_twister_engine
     } else {
       gen = std::mt19937_64(seed);
+      seed++;
     }
 
     std::uniform_real_distribution<> dis(0, 1);
@@ -130,6 +145,7 @@ class MicroDataSet {
     }
     return ret;
   }
+
   /**
    * @brief generate the vector of random integer
    * @tparam tsType The data type, default uint32_t
@@ -150,6 +166,7 @@ class MicroDataSet {
     if (!hasSeed) {
       gen = genType(rd());
     } else {
+      seed++;
       gen = genType(seed);
     }
     std::uniform_int_distribution<> dis(minV, maxV);
@@ -159,6 +176,7 @@ class MicroDataSet {
     }
     return ret;
   }
+
   /**
    * @brief To generate the zipf Lut
    * @tparam dType The data type in the alphabet, default double
@@ -171,7 +189,7 @@ class MicroDataSet {
     dType scaling_factor;
     dType sum;
     vector<dType> lut(len);
-    /*
+    /**
      * Compute scaling factor such that
      *
      *   sum (lut[i], i=1..alphabet_size) = 1.0
@@ -179,7 +197,7 @@ class MicroDataSet {
      */
     scaling_factor = 0.0;
     for (size_t i = 1; i <= len; i++) { scaling_factor += 1.0 / pow(i, fac); }
-    /*
+    /**
      * Generate the lookup table
      */
     sum = 0.0;
@@ -210,12 +228,19 @@ class MicroDataSet {
   vector<tsType> genSmoothTimeStamp(size_t len, size_t step, size_t interval) {
     vector<tsType> ret(len);
     tsType ts = 0;
-    for (auto i = 0; i < len; i++) {
+    for (size_t i = 0; i < len; i++) {
+      ret[i] = ts;
       if (i % (step) == 0) {
         ts += interval;
       }
-      ret[i] = ts;
+
     }
+    return ret;
+  }
+  template<class tsType=size_t>
+  vector<tsType> genSmoothTimeStamp(size_t len, size_t maxTime) {
+    vector<tsType> ret = genRandInt<tsType>(len, maxTime);
+    std::sort(ret.begin(), ret.end()); //just incremental re-arrange
     return ret;
   }
   /**

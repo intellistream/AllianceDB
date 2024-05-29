@@ -1,0 +1,25 @@
+add_sources(
+        AbstractOperator.cpp
+        IAWJOperator.cpp
+        MeanAQPIAWJOperator.cpp
+        IMAIAWJOperator.cpp
+        OperatorTable.cpp
+        MSWJOperator.cpp
+        PECJOperator.cpp
+        PECJ/VariationalInference.cpp
+        PECJ/VariationalAutoEncoder.cpp
+        AIOperator.cpp
+        LinearSVIOperator.cpp
+        IAWJSelOperator.cpp
+        RawPRJOperator.cpp
+        RawSHJOperator.cpp
+        LazyIAWJSelOperator.cpp
+        MSWJ/KSlack/KSlack.cpp
+        MSWJ/Manager/BufferSizeManager.cpp
+        MSWJ/Manager/StatisticsManager.cpp
+        MSWJ/Operator/StreamOperator.cpp
+        MSWJ/Profiler/TupleProductivityProfiler.cpp
+        MSWJ/Synchronizer/StreamSynchronizer.cpp
+        MSWJ/Common/MSWJDefine.cpp
+)
+

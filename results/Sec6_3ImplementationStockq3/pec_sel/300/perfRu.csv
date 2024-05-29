@@ -1,0 +1,7 @@
+key,value,type
+cacheMiss,0,U64
+cacheRefs,0,U64
+cpuClock,0,U64
+cpuCycle,0,U64
+instructions,0,U64
+taskClock,0,U64

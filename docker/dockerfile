@@ -1,12 +1,12 @@
 FROM ubuntu:22.04
-ENV USER=sutd
-ENV PASSWD=intelistream
+ENV USER=OoOJoin
+ENV PASSWD=OoOJoin
 ENV WORKDIR=projects
 
 
-# 安装开发环境必要的包
+# 安装开发环境必要的包/Install the requied deb packs
 RUN apt-get update &&\
-  apt-get install -y build-essential \
+  apt-get install -y \
       gcc \
       g++ \
       gdb \
@@ -26,14 +26,16 @@ RUN apt-get update &&\
       liblog4cxx-dev \
       libboost-dev \
       libboost-all-dev \
-      gdbserver
+      gdbserver \
+      python3 \
+      python3-pip
 RUN apt-get clean
 RUN apt-get install -y sudo
-
-# 添加用户并配置密码
+RUN pip3 install torch==1.13.0 torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cpu
+# 添加用户并配置密码/Add user and config passwd
 RUN useradd -m ${USER} && yes ${PASSWD} | passwd ${USER}
 
-# 赋予sudo权限并允许无密码sudo
+# 赋予sudo权限并允许无密码sudo/ Enable a sudo and allow passwd-free use
 RUN echo ${USER}' ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 RUN chmod 644 /etc/sudoers
 RUN echo 'Port 22' >> /etc/ssh/sshd_config

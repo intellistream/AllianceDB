@@ -1,29 +1,46 @@
-// Copyright (C) 2021 by the INTELLI team (https://github.com/intellistream)
+#include <vector>
 
-#include <filesystem>
-#include <gtest/gtest.h>
-#include <Utils/Logger.hpp>
-#include <Common/Types.hpp>
-#include <Utils/MicroDataSet.hpp>
-#include <Common/DatasetTool.hpp>
-using namespace std;
-using namespace std;
-using namespace INTELLI;
-#include <Engine/Verify.hpp>
-#include <Common/Result.hpp>
+#define CATCH_CONFIG_MAIN
 
-TEST(SystemTest, SimpleTest
-) {
-  setupLogging("benchmark.log", LOG_DEBUG);
-  INTELLI::Result joinResult = INTELLI::Result();
-  INTELLI::RelationCouple relationCouple = INTELLI::RelationCouple();
-  string pwd = getcwd(NULL, 0); //Get current directory
-  string fileRName = pwd + "/datasets/" + DATASET_NAME + "-R.txt";
-  string fileSName = pwd + "/datasets/" + DATASET_NAME + "-S.txt";
-  INTELLI::DatasetTool dataSet;
-  dataSet.load3VText(relationCouple.relationR, fileRName);
-  dataSet.load3VText(relationCouple.relationS, fileSName);
-  joinResult.streamSize = relationCouple.relationR.size();
-  Verify vb_lwj;
-  vb_lwj.Run(joinResult, relationCouple, 500, 500);
+#include "catch.hpp"
+#include <OoOJoin.h>
+#include "TestFunction.cpp"
+
+using namespace std;
+using namespace OoOJoin;
+
+TEST_CASE("Test Normal punctuation+join", "[short]")
+{
+  int a = 0;
+  string configName = "", outPrefix = "";
+  configName = "config_Normal.csv";
+  ConfigMapPtr cfg = newConfigMap();
+  cfg->fromFile(configName);
+  a = runTestBenchAdj(cfg, configName, outPrefix);
+  REQUIRE(a == 1);
 }
+
+TEST_CASE("Test Holistic punctuation+join", "[short]")
+{
+  int a = 0;
+  string configName = "", outPrefix = "";
+  configName = "config_IMA.csv";
+  ConfigMapPtr cfg = newConfigMap();
+  cfg->fromFile(configName);
+  a = runTestBenchAdj(cfg, configName, outPrefix);
+  REQUIRE(a == 1);
+}
+
+TEST_CASE("Test running on external file", "[short]")
+{
+  int a = 0;
+  string configName = "", outPrefix = "";
+  configName = "config_fileDataLoader.csv";
+  ConfigMapPtr cfg = newConfigMap();
+  cfg->fromFile(configName);
+  a = runTestBenchAdj(cfg, configName, outPrefix);
+  REQUIRE(a == 1);
+}
+
+
+
