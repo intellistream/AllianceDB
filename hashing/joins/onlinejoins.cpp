@@ -52,6 +52,11 @@ t_param &finishing(int nthreads, t_param &param, uint64_t *startTS, param_t *cmd
     for (i = 0; i < nthreads; i++) {
         /* sum up results */
         param.result += *param.args[i].matches;
+        if(param.algo_name == "SHJ_JBCR_NP" || param.algo_name == "SHJ_JM_NP")
+        {
+            hash_p_list[i] = dynamic_cast<SHJJoiner*>(param.args[i].joiner)->hash_key_p;
+            thread_res_list[i] = *param.args[i].matches;
+        }
 #ifndef NO_TIMING
         merge(param.args[i].timer, param.args[i].fetcher->relR, param.args[i].fetcher->relS, startTS, 0);
 #endif
@@ -96,6 +101,7 @@ t_param &finishing(int nthreads, t_param &param, uint64_t *startTS, param_t *cmd
     }
 #else //everything is defined.
     std::string name = param.algo_name + "_" + std::to_string(param.exp_id).append(".txt");
+    // std::string name = param.algo_name + "_" + std::string(param.grp_id) + "_" + std::to_string(param.exp_id).append(".txt");
     /* now print the timing results: */
     string path = EXP_DIR "/results/breakdown/allIncludes/" + name;
     auto fp = fopen(path.c_str(), "w");
@@ -110,7 +116,29 @@ t_param &finishing(int nthreads, t_param &param, uint64_t *startTS, param_t *cmd
             average_partition_timer,
             name, cmd_params->window_size);
     fclose(fp);
-    sortRecords(param.algo_name, param.exp_id, 0,
+    
+#ifdef PRINT_SAMPLING_PARA
+    // print payload_id in different threads
+    for (i = 0; i < nthreads; ++i) {
+        string path = EXP_DIR "/results/breakdown/allIncludes/" + param.algo_name + "_" + std::string(param.grp_id) + "_" + std::to_string(param.exp_id) + "_" + std::to_string(i).append(".txt");
+        auto fp = fopen(path.c_str(), "w");
+
+        chainedtuplebuffer_t * cb = (chainedtuplebuffer_t *)
+                (param.args[i].threadresult->results);
+        int64_t nresults = param.args[i].threadresult->nresults;
+
+        cb_begin_backwards(cb);
+
+        for (int j = 0; j < nresults; j++) {
+            tuple_t * tup = cb_read_backwards(cb);
+            fprintf(fp, "%d %d\n", tup->key, tup->payloadID);
+        }
+
+        fclose(fp);
+    }
+#endif
+
+    sortRecords(param.algo_name + string(param.grp_id), param.exp_id, 0,
                 (param.args[0].fetcher->relR->num_tuples + param.args[0].fetcher->relS->num_tuples),
                 param.joinresult->totalresults);
 #endif // except wait.
@@ -133,6 +161,20 @@ result_t *
 SHJ_st(relation_t *relR, relation_t *relS, param_t cmd_params) {
 
     t_param param(1);
+
+// SAMPLE
+    param.epsilon_r = cmd_params.epsilon_r;
+    param.epsilon_s = cmd_params.epsilon_s;
+    param.data_utilization_r = cmd_params.data_utilization_r;
+    param.data_utilization_s = cmd_params.data_utilization_s;
+    
+    param.Universal_p = cmd_params.Universal_p;
+    param.Bernoulli_q = cmd_params.Bernoulli_q;
+    param.reservior_size = cmd_params.reservior_size;
+    param.rand_buffer_size = cmd_params.rand_buffer_size;
+    param.presample_size = cmd_params.presample_size;
+
+
 
 #ifdef JOIN_RESULT_MATERIALIZE
     auto resultlist = (threadresult_t *) malloc(sizeof(threadresult_t));
@@ -172,7 +214,21 @@ SHJ_JM_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
     param.joiner = type_SHJJoiner;//new SHJJoiner();
     param.algo_name = "SHJ_JM_NP";
     param.exp_id = cmd_params.exp_id;
+    param.grp_id = cmd_params.grp_id;
     param.record_gap = cmd_params.gap;
+
+// SAMPLE
+    param.epsilon_r = cmd_params.epsilon_r;
+    param.epsilon_s = cmd_params.epsilon_s;
+    param.data_utilization_r = cmd_params.data_utilization_r;
+    param.data_utilization_s = cmd_params.data_utilization_s;
+    
+    param.Universal_p = cmd_params.Universal_p;
+    param.Bernoulli_q = cmd_params.Bernoulli_q;
+    param.reservior_size = cmd_params.reservior_size;
+    param.rand_buffer_size = cmd_params.rand_buffer_size;
+    param.presample_size = cmd_params.presample_size;
+
     auto *startTS = new uint64_t();
     auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_NOSHUFFLE, startTS, &joinStart)
@@ -190,7 +246,22 @@ SHJ_JM_P(relation_t *relR, relation_t *relS, param_t cmd_params) {
     param.joiner = type_SHJJoiner;//new SHJJoiner();
     param.algo_name = "SHJ_JM_P";
     param.exp_id = cmd_params.exp_id;
+    param.grp_id = cmd_params.grp_id;
     param.record_gap = cmd_params.gap;
+
+// SAMPLE
+    param.epsilon_r = cmd_params.epsilon_r;
+    param.epsilon_s = cmd_params.epsilon_s;
+    param.data_utilization_r = cmd_params.data_utilization_r;
+    param.data_utilization_s = cmd_params.data_utilization_s;
+    
+    param.Universal_p = cmd_params.Universal_p;
+    param.Bernoulli_q = cmd_params.Bernoulli_q;
+    param.reservior_size = cmd_params.reservior_size;
+    param.rand_buffer_size = cmd_params.rand_buffer_size;
+    param.presample_size = cmd_params.presample_size;
+
+
     auto *startTS = new uint64_t();
     auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_NOSHUFFLE, startTS, &joinStart)
@@ -208,7 +279,22 @@ SHJ_JB_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
     param.joiner = type_SHJJoiner;//new SHJJoiner();
     param.algo_name = "SHJ_JB_NP";
     param.exp_id = cmd_params.exp_id;
+    param.grp_id = cmd_params.grp_id;
     param.record_gap = cmd_params.gap;
+
+// SAMPLE
+    param.epsilon_r = cmd_params.epsilon_r;
+    param.epsilon_s = cmd_params.epsilon_s;
+    param.data_utilization_r = cmd_params.data_utilization_r;
+    param.data_utilization_s = cmd_params.data_utilization_s;
+    
+    param.Universal_p = cmd_params.Universal_p;
+    param.Bernoulli_q = cmd_params.Bernoulli_q;
+    param.reservior_size = cmd_params.reservior_size;
+    param.rand_buffer_size = cmd_params.rand_buffer_size;
+    param.presample_size = cmd_params.presample_size;
+
+
     uint64_t *startTS = new uint64_t();
     auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE, startTS, &joinStart)
@@ -226,11 +312,28 @@ SHJ_JBCR_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
     param.joiner = type_SHJJoiner;//new SHJJoiner();
     param.algo_name = "SHJ_JBCR_NP";
     param.exp_id = cmd_params.exp_id;
+    param.grp_id = cmd_params.grp_id;
     param.record_gap = cmd_params.gap;
+
+// SAMPLE
+    param.epsilon_r = cmd_params.epsilon_r;
+    param.epsilon_s = cmd_params.epsilon_s;
+    param.data_utilization_r = cmd_params.data_utilization_r;
+    param.data_utilization_s = cmd_params.data_utilization_s;
+    
+    param.Universal_p = cmd_params.Universal_p;
+    param.Bernoulli_q = cmd_params.Bernoulli_q;
+    param.reservior_size = cmd_params.reservior_size;
+    param.rand_buffer_size = cmd_params.rand_buffer_size;
+    param.presample_size = cmd_params.presample_size;
+
+
     uint64_t *startTS = new uint64_t();
     auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE, startTS, &joinStart)
+printf("\n\nsuccessfully launched\n\n");
     param = finishing(nthreads, param, startTS, &cmd_params);
+printf("\n\nsuccessfully joined\n\n");
     return param.joinresult;
 }
 
@@ -244,7 +347,22 @@ SHJ_JBCR_P(relation_t *relR, relation_t *relS, param_t cmd_params) {
     param.joiner = type_SHJJoiner;//new SHJJoiner();
     param.algo_name = "SHJ_JBCR_P";
     param.exp_id = cmd_params.exp_id;
+    param.grp_id = cmd_params.grp_id;
     param.record_gap = cmd_params.gap;
+
+// SAMPLE
+    param.epsilon_r = cmd_params.epsilon_r;
+    param.epsilon_s = cmd_params.epsilon_s;
+    param.data_utilization_r = cmd_params.data_utilization_r;
+    param.data_utilization_s = cmd_params.data_utilization_s;
+    
+    param.Universal_p = cmd_params.Universal_p;
+    param.Bernoulli_q = cmd_params.Bernoulli_q;
+    param.reservior_size = cmd_params.reservior_size;
+    param.rand_buffer_size = cmd_params.rand_buffer_size;
+    param.presample_size = cmd_params.presample_size;
+
+
     uint64_t *startTS = new uint64_t();
     auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE, startTS, &joinStart)
@@ -262,8 +380,23 @@ SHJ_HS_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
     param.joiner = type_SHJJoiner;//new SHJJoiner();
     param.algo_name = "SHJ_HS_NP";
     param.exp_id = cmd_params.exp_id;
+    param.grp_id = cmd_params.grp_id;
     param.record_gap = cmd_params.gap;
     uint64_t *startTS = new uint64_t();
+
+// SAMPLE
+    param.epsilon_r = cmd_params.epsilon_r;
+    param.epsilon_s = cmd_params.epsilon_s;
+    param.data_utilization_r = cmd_params.data_utilization_r;
+    param.data_utilization_s = cmd_params.data_utilization_s;
+    
+    param.Universal_p = cmd_params.Universal_p;
+    param.Bernoulli_q = cmd_params.Bernoulli_q;
+    param.reservior_size = cmd_params.reservior_size;
+    param.rand_buffer_size = cmd_params.rand_buffer_size;
+    param.presample_size = cmd_params.presample_size;
+
+
     auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_SHUFFLE_HS, startTS, &joinStart)
     param = finishing(nthreads, param, startTS, &cmd_params);
@@ -274,6 +407,20 @@ result_t *
 PMJ_st(relation_t *relR, relation_t *relS, param_t cmd_params) {
 
     t_param param(1);
+
+// SAMPLE
+    param.epsilon_r = cmd_params.epsilon_r;
+    param.epsilon_s = cmd_params.epsilon_s;
+    param.data_utilization_r = cmd_params.data_utilization_r;
+    param.data_utilization_s = cmd_params.data_utilization_s;
+    
+    param.Universal_p = cmd_params.Universal_p;
+    param.Bernoulli_q = cmd_params.Bernoulli_q;
+    param.reservior_size = cmd_params.reservior_size;
+    param.rand_buffer_size = cmd_params.rand_buffer_size;
+    param.presample_size = cmd_params.presample_size;
+
+
 
 #ifdef JOIN_RESULT_MATERIALIZE
     auto resultlist = (threadresult_t *) malloc(sizeof(threadresult_t));
@@ -310,6 +457,20 @@ result_t *
 RPJ_st(relation_t *relR, relation_t *relS, param_t cmd_params) {
 
     t_param param(1);
+
+// SAMPLE
+    param.epsilon_r = cmd_params.epsilon_r;
+    param.epsilon_s = cmd_params.epsilon_s;
+    param.data_utilization_r = cmd_params.data_utilization_r;
+    param.data_utilization_s = cmd_params.data_utilization_s;
+    
+    param.Universal_p = cmd_params.Universal_p;
+    param.Bernoulli_q = cmd_params.Bernoulli_q;
+    param.reservior_size = cmd_params.reservior_size;
+    param.rand_buffer_size = cmd_params.rand_buffer_size;
+    param.presample_size = cmd_params.presample_size;
+
+
 #ifdef JOIN_RESULT_MATERIALIZE
     auto resultlist = (threadresult_t *) malloc(sizeof(threadresult_t));
 #endif
@@ -344,11 +505,26 @@ RPJ_st(relation_t *relR, relation_t *relS, param_t cmd_params) {
 result_t *PMJ_JM_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
     t_param param(nthreads);
     initialize(nthreads, param);
+
+// SAMPLE
+    param.epsilon_r = cmd_params.epsilon_r;
+    param.epsilon_s = cmd_params.epsilon_s;
+    param.data_utilization_r = cmd_params.data_utilization_r;
+    param.data_utilization_s = cmd_params.data_utilization_s;
+    
+    param.Universal_p = cmd_params.Universal_p;
+    param.Bernoulli_q = cmd_params.Bernoulli_q;
+    param.reservior_size = cmd_params.reservior_size;
+    param.rand_buffer_size = cmd_params.rand_buffer_size;
+    param.presample_size = cmd_params.presample_size;
+
+
     param.fetcher = type_JM_NP_Fetcher;//new JM_NP_Fetcher(nthreads, relR, relS);
     //no shuffler is required for JM mode.
     param.joiner = type_PMJJoiner;//new PMJJoiner(relR->num_tuples, relS->num_tuples / nthreads, nthreads);
     param.algo_name = "PMJ_JM_NP";
     param.exp_id = cmd_params.exp_id;
+    param.grp_id = cmd_params.grp_id;
     param.record_gap = cmd_params.gap;
 
     param.progressive_step = cmd_params.progressive_step;
@@ -364,11 +540,26 @@ result_t *PMJ_JM_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
 result_t *PMJ_JM_P(relation_t *relR, relation_t *relS, param_t cmd_params) {
     t_param param(nthreads);
     initialize(nthreads, param);
+
+// SAMPLE
+    param.epsilon_r = cmd_params.epsilon_r;
+    param.epsilon_s = cmd_params.epsilon_s;
+    param.data_utilization_r = cmd_params.data_utilization_r;
+    param.data_utilization_s = cmd_params.data_utilization_s;
+    
+    param.Universal_p = cmd_params.Universal_p;
+    param.Bernoulli_q = cmd_params.Bernoulli_q;
+    param.reservior_size = cmd_params.reservior_size;
+    param.rand_buffer_size = cmd_params.rand_buffer_size;
+    param.presample_size = cmd_params.presample_size;
+
+
     param.fetcher = type_JM_P_Fetcher;//new JM_NP_Fetcher(nthreads, relR, relS);
     //no shuffler is required for JM mode.
     param.joiner = type_PMJJoiner;//new PMJJoiner(relR->num_tuples, relS->num_tuples / nthreads, nthreads);
     param.algo_name = "PMJ_JM_P";
     param.exp_id = cmd_params.exp_id;
+    param.grp_id = cmd_params.grp_id;
     param.record_gap = cmd_params.gap;
 
     param.progressive_step = cmd_params.progressive_step;
@@ -384,11 +575,26 @@ result_t *PMJ_JM_P(relation_t *relR, relation_t *relS, param_t cmd_params) {
 result_t *PMJ_JB_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
     t_param param(nthreads);
     initialize(nthreads, param);
+
+// SAMPLE
+    param.epsilon_r = cmd_params.epsilon_r;
+    param.epsilon_s = cmd_params.epsilon_s;
+    param.data_utilization_r = cmd_params.data_utilization_r;
+    param.data_utilization_s = cmd_params.data_utilization_s;
+    
+    param.Universal_p = cmd_params.Universal_p;
+    param.Bernoulli_q = cmd_params.Bernoulli_q;
+    param.reservior_size = cmd_params.reservior_size;
+    param.rand_buffer_size = cmd_params.rand_buffer_size;
+    param.presample_size = cmd_params.presample_size;
+
+
     param.fetcher = type_JB_NP_Fetcher;//new JM_NP_Fetcher(nthreads, relR, relS);
     param.shuffler = new HashShuffler(nthreads, relR, relS);
     param.joiner = type_PMJJoiner;//new PMJJoiner(relR->num_tuples, relS->num_tuples / nthreads, nthreads);
     param.algo_name = "PMJ_JB_NP";
     param.exp_id = cmd_params.exp_id;
+    param.grp_id = cmd_params.grp_id;
     param.record_gap = cmd_params.gap;
 
     param.progressive_step = cmd_params.progressive_step;
@@ -405,11 +611,26 @@ result_t *PMJ_JB_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
 result_t *PMJ_JB_P(relation_t *relR, relation_t *relS, param_t cmd_params) {
     t_param param(nthreads);
     initialize(nthreads, param);
+
+// SAMPLE
+    param.epsilon_r = cmd_params.epsilon_r;
+    param.epsilon_s = cmd_params.epsilon_s;
+    param.data_utilization_r = cmd_params.data_utilization_r;
+    param.data_utilization_s = cmd_params.data_utilization_s;
+    
+    param.Universal_p = cmd_params.Universal_p;
+    param.Bernoulli_q = cmd_params.Bernoulli_q;
+    param.reservior_size = cmd_params.reservior_size;
+    param.rand_buffer_size = cmd_params.rand_buffer_size;
+    param.presample_size = cmd_params.presample_size;
+
+
     param.fetcher = type_JB_P_Fetcher;//new JM_NP_Fetcher(nthreads, relR, relS);
     param.shuffler = new HashShuffler(nthreads, relR, relS);
     param.joiner = type_PMJJoiner;//new PMJJoiner(relR->num_tuples, relS->num_tuples / nthreads, nthreads);
     param.algo_name = "PMJ_JB_P";
     param.exp_id = cmd_params.exp_id;
+    param.grp_id = cmd_params.grp_id;
     param.record_gap = cmd_params.gap;
 
     param.progressive_step = cmd_params.progressive_step;
@@ -426,11 +647,26 @@ result_t *PMJ_JB_P(relation_t *relR, relation_t *relS, param_t cmd_params) {
 result_t *PMJ_JBCR_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
     t_param param(nthreads);
     initialize(nthreads, param);
+
+// SAMPLE
+    param.epsilon_r = cmd_params.epsilon_r;
+    param.epsilon_s = cmd_params.epsilon_s;
+    param.data_utilization_r = cmd_params.data_utilization_r;
+    param.data_utilization_s = cmd_params.data_utilization_s;
+    
+    param.Universal_p = cmd_params.Universal_p;
+    param.Bernoulli_q = cmd_params.Bernoulli_q;
+    param.reservior_size = cmd_params.reservior_size;
+    param.rand_buffer_size = cmd_params.rand_buffer_size;
+    param.presample_size = cmd_params.presample_size;
+
+
     param.fetcher = type_JB_NP_Fetcher;//new JM_NP_Fetcher(nthreads, relR, relS);
     param.shuffler = new ContRandShuffler(nthreads, relR, relS, cmd_params.group_size);
     param.joiner = type_PMJJoiner;//new PMJJoiner(relR->num_tuples, relS->num_tuples / nthreads, nthreads);
     param.algo_name = "PMJ_JBCR_NP";
     param.exp_id = cmd_params.exp_id;
+    param.grp_id = cmd_params.grp_id;
     param.record_gap = cmd_params.gap;
     param.progressive_step = cmd_params.progressive_step;
     param.merge_step = cmd_params.merge_step;
@@ -445,11 +681,26 @@ result_t *PMJ_JBCR_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
 result_t *PMJ_JBCR_P(relation_t *relR, relation_t *relS, param_t cmd_params) {
     t_param param(nthreads);
     initialize(nthreads, param);
+
+// SAMPLE
+    param.epsilon_r = cmd_params.epsilon_r;
+    param.epsilon_s = cmd_params.epsilon_s;
+    param.data_utilization_r = cmd_params.data_utilization_r;
+    param.data_utilization_s = cmd_params.data_utilization_s;
+    
+    param.Universal_p = cmd_params.Universal_p;
+    param.Bernoulli_q = cmd_params.Bernoulli_q;
+    param.reservior_size = cmd_params.reservior_size;
+    param.rand_buffer_size = cmd_params.rand_buffer_size;
+    param.presample_size = cmd_params.presample_size;
+
+
     param.fetcher = type_JB_P_Fetcher;//new JM_NP_Fetcher(nthreads, relR, relS);
     param.shuffler = new ContRandShuffler(nthreads, relR, relS, cmd_params.group_size);
     param.joiner = type_PMJJoiner;//new PMJJoiner(relR->num_tuples, relS->num_tuples / nthreads, nthreads);
     param.algo_name = "PMJ_JBCR_P";
     param.exp_id = cmd_params.exp_id;
+    param.grp_id = cmd_params.grp_id;
     param.record_gap = cmd_params.gap;
     param.progressive_step = cmd_params.progressive_step;
     param.merge_step = cmd_params.merge_step;
@@ -465,11 +716,26 @@ result_t *PMJ_JBCR_P(relation_t *relR, relation_t *relS, param_t cmd_params) {
 result_t *PMJ_HS_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
     t_param param(nthreads);
     initialize(nthreads, param);
+
+// SAMPLE
+    param.epsilon_r = cmd_params.epsilon_r;
+    param.epsilon_s = cmd_params.epsilon_s;
+    param.data_utilization_r = cmd_params.data_utilization_r;
+    param.data_utilization_s = cmd_params.data_utilization_s;
+    
+    param.Universal_p = cmd_params.Universal_p;
+    param.Bernoulli_q = cmd_params.Bernoulli_q;
+    param.reservior_size = cmd_params.reservior_size;
+    param.rand_buffer_size = cmd_params.rand_buffer_size;
+    param.presample_size = cmd_params.presample_size;
+
+
     param.fetcher = type_PMJ_HS_NP_Fetcher;//new JM_NP_Fetcher(nthreads, relR, relS);
     param.shuffler = new HSShuffler(nthreads, relR, relS);
     param.joiner = type_PMJJoiner;//new PMJJoiner(relR->num_tuples, relS->num_tuples / nthreads, nthreads);
     param.algo_name = "PMJ_HS_NP";
     param.exp_id = cmd_params.exp_id;
+    param.grp_id = cmd_params.grp_id;
     param.record_gap = cmd_params.gap;
     uint64_t *startTS = new uint64_t();
     auto joinStart = (uint64_t) 0;
@@ -484,11 +750,26 @@ result_t *
 RPJ_JM_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
     t_param param(nthreads);
     initialize(nthreads, param);
+
+// SAMPLE
+    param.epsilon_r = cmd_params.epsilon_r;
+    param.epsilon_s = cmd_params.epsilon_s;
+    param.data_utilization_r = cmd_params.data_utilization_r;
+    param.data_utilization_s = cmd_params.data_utilization_s;
+    
+    param.Universal_p = cmd_params.Universal_p;
+    param.Bernoulli_q = cmd_params.Bernoulli_q;
+    param.reservior_size = cmd_params.reservior_size;
+    param.rand_buffer_size = cmd_params.rand_buffer_size;
+    param.presample_size = cmd_params.presample_size;
+
+
     param.fetcher = type_JM_NP_Fetcher;//new JM_NP_Fetcher(nthreads, relR, relS);
     //no shuffler is required for JM mode.
     param.joiner = type_RippleJoiner;//new RippleJoiner(relR, relS, nthreads);
     param.algo_name = "RPJ_JM_NP";
     param.exp_id = cmd_params.exp_id;
+    param.grp_id = cmd_params.grp_id;
     param.record_gap = cmd_params.gap;
     uint64_t *startTS = new uint64_t();
     auto joinStart = (uint64_t) 0;
@@ -502,11 +783,26 @@ result_t *
 RPJ_JB_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
     t_param param(nthreads);
     initialize(nthreads, param);
+
+// SAMPLE
+    param.epsilon_r = cmd_params.epsilon_r;
+    param.epsilon_s = cmd_params.epsilon_s;
+    param.data_utilization_r = cmd_params.data_utilization_r;
+    param.data_utilization_s = cmd_params.data_utilization_s;
+    
+    param.Universal_p = cmd_params.Universal_p;
+    param.Bernoulli_q = cmd_params.Bernoulli_q;
+    param.reservior_size = cmd_params.reservior_size;
+    param.rand_buffer_size = cmd_params.rand_buffer_size;
+    param.presample_size = cmd_params.presample_size;
+
+
     param.fetcher = type_JB_NP_Fetcher;//new JB_NP_Fetcher(nthreads, relR, relS);
     param.shuffler = new HashShuffler(nthreads, relR, relS);
     param.joiner = type_RippleJoiner;// new RippleJoiner(relR, relS, nthreads);
     param.algo_name = "RPJ_JB_NP";
     param.exp_id = cmd_params.exp_id;
+    param.grp_id = cmd_params.grp_id;
     param.record_gap = cmd_params.gap;
     uint64_t *startTS = new uint64_t();
     auto joinStart = (uint64_t) 0;
@@ -520,11 +816,26 @@ result_t *
 RPJ_JBCR_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
     t_param param(nthreads);
     initialize(nthreads, param);
+
+// SAMPLE
+    param.epsilon_r = cmd_params.epsilon_r;
+    param.epsilon_s = cmd_params.epsilon_s;
+    param.data_utilization_r = cmd_params.data_utilization_r;
+    param.data_utilization_s = cmd_params.data_utilization_s;
+    
+    param.Universal_p = cmd_params.Universal_p;
+    param.Bernoulli_q = cmd_params.Bernoulli_q;
+    param.reservior_size = cmd_params.reservior_size;
+    param.rand_buffer_size = cmd_params.rand_buffer_size;
+    param.presample_size = cmd_params.presample_size;
+
+
     param.fetcher = type_JB_NP_Fetcher;//new JB_NP_Fetcher(nthreads, relR, relS);
     param.shuffler = new ContRandShuffler(nthreads, relR, relS, 0);
     param.joiner = type_RippleJoiner;// new RippleJoiner(relR, relS, nthreads);
     param.algo_name = "RPJ_JBCR_NP";
     param.exp_id = cmd_params.exp_id;
+    param.grp_id = cmd_params.grp_id;
     param.record_gap = cmd_params.gap;
     uint64_t *startTS = new uint64_t();
     auto joinStart = (uint64_t) 0;
@@ -537,11 +848,26 @@ RPJ_JBCR_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
 result_t *RPJ_HS_NP(relation_t *relR, relation_t *relS, param_t cmd_params) {
     t_param param(nthreads);
     initialize(nthreads, param);
+
+// SAMPLE
+    param.epsilon_r = cmd_params.epsilon_r;
+    param.epsilon_s = cmd_params.epsilon_s;
+    param.data_utilization_r = cmd_params.data_utilization_r;
+    param.data_utilization_s = cmd_params.data_utilization_s;
+    
+    param.Universal_p = cmd_params.Universal_p;
+    param.Bernoulli_q = cmd_params.Bernoulli_q;
+    param.reservior_size = cmd_params.reservior_size;
+    param.rand_buffer_size = cmd_params.rand_buffer_size;
+    param.presample_size = cmd_params.presample_size;
+
+
     param.fetcher = type_HS_NP_Fetcher;//new HS_NP_Fetcher(nthreads, relR, relS);
     param.shuffler = new HSShuffler(nthreads, relR, relS);
     param.joiner = type_RippleJoiner;//new RippleJoiner(relR, relS, nthreads);
     param.algo_name = "RPJ_HS_NP";
     param.exp_id = cmd_params.exp_id;
+    param.grp_id = cmd_params.grp_id;
     param.record_gap = cmd_params.gap;
     uint64_t *startTS = new uint64_t();
     auto joinStart = (uint64_t) 0;

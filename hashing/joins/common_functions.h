@@ -12,13 +12,13 @@
 #include "../timer/t_timer.h"
 
 // path of experiment dir, all results will dump to here.
-#define EXP_DIR "/data1/xtra"
+#define EXP_DIR "/home/user/FreeSam/data1/xtra"
 
 //#define DEBUG
-//#define JOIN_RESULT_MATERIALIZE
+#define JOIN_RESULT_MATERIALIZE
 
 // used for enabling pcm profiling
-#define NO_TIMING
+#define TIMING
 #define JOIN
 #define MERGE
 #define MATCH
@@ -26,13 +26,13 @@
 #define OVERVIEW // enable overview profiling
 
 // used for perf events counters
-#define PROFILE_TOPDOWN
+#define NO_PROFILE_TOPDOWN
 #define JOIN_THREAD
 
 // used for memory consumption profiling
-#define PROFILE_MEMORY_CONSUMPTION
+#define NO_PROFILE_MEMORY_CONSUMPTION
 
-#define EAGER //disable when profiling.
+#define NO_EAGER //disable when profiling.
 
 #ifndef PTHREAD_BARRIER_SERIAL_THREAD
 #define PTHREAD_BARRIER_SERIAL_THREAD 1
@@ -150,7 +150,9 @@ probe_hashtable(hashtable_t *ht, relation_t *rel, void *output, T_TIMER *timer);
 void debuild_hashtable_single(const hashtable_t *ht, const tuple_t *tuple,
                               const uint32_t hashmask,
                               const uint32_t skipbits);
-
+void delete_hashtable_single(const hashtable_t *ht, const tuple_t *tuple,
+                              const uint32_t hashmask,
+                              const uint32_t skipbits);
 
 void
 build_hashtable_single(const hashtable_t *ht, const tuple_t *, const uint32_t hashmask,

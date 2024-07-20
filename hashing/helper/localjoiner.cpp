@@ -2,7 +2,7 @@
 // Created by Shuhao Zhang on 1/11/19.
 //
 
-
+#include <cmath>
 #include <vector>
 #include <assert.h>
 #include <zconf.h>
@@ -11,7 +11,11 @@
 #include "localjoiner.h"
 #include "pmj_helper.h"
 #include "../joins/eagerjoin_struct.h"
-
+#include <pxart/pxart.hpp>
+#include <random>
+#include <array>
+#include <pxart/simd256/mt19937.hpp>
+#include <pxart/utility/pun_cast.hpp>
 /**
  * As an example of join execution, consider a join with join predicate T1.attr1 = T2.attr2.
  * The join operator will incrementally load a hash table H1 for T1 by hashing attr1 using hash function f1,
@@ -58,6 +62,100 @@ shj(int32_t tid, relation_t* rel_R, relation_t* rel_S, void* pVoid) {
     return joiner;
 }
 
+
+// uint32_t rand4sample(int &que_head, uint32_t *&rand_que)
+uint32_t baseJoiner::rand4sample()
+{
+#ifdef AVX_RAND
+    using rand_t = uint32_t;
+    static rand_t mod = int(1e9)+6, quelen = RANDOM_BUFFER_SIZE;
+    // static rand_t *rand_que = NULL;
+    static pxart::simd256::mt19937 rng{random_device{}};
+    static constexpr auto rand_stp = sizeof(rng()) / sizeof(rand_t);
+
+
+    if (rand_que == NULL)
+    {
+        rand_que = (rand_t *)malloc_aligned(sizeof(rand_t)*quelen+256);
+    }
+    if (que_head == quelen)
+        que_head = 0;
+    if (que_head == 0)
+    {
+        for (int i = 0; i < quelen; i += rand_stp)
+        {
+            // const auto vrnd = pxart::simd256::uniform<type>(rng, -9, 9);
+            const auto vrnd = pxart::uniform<rand_t>(rng, 0, mod);
+            // const auto srnd = pxart::pun_cast<array<rand_t, rand_stp>>(vrnd);
+            // for (int j = 0; j < rand_stp; ++j) {
+            //     rand_que[i+j] = srnd[j];
+            memcpy(rand_que+i, &vrnd, sizeof(vrnd));
+        }
+    }
+    return rand_que[que_head++];
+#endif
+
+#ifdef NO_AVX_RAND
+    static uint32_t mod = int(1e9)+7;
+    return rand()%mod;
+#endif
+}
+
+uint32_t rand4reservoir(int &que_head, uint32_t *&rand_que)
+// uint32_t baseJoiner::rand4reservoir()
+{
+#ifdef AVX_RAND
+    using rand_t = uint32_t;
+    static int quelen = RANDOM_BUFFER_SIZE;
+    static int atc_res_size = RESERVOIR_SIZE/RESERVOIR_STRATA_NUM;
+    // static rand_t *rand_que = NULL;
+    static pxart::simd256::mt19937 rng{random_device{}};
+    static constexpr auto rand_stp = sizeof(rng()) / sizeof(rand_t);
+
+
+    if (rand_que == NULL)
+    {
+        rand_que = (rand_t *)malloc_aligned(sizeof(rand_t)*quelen+256);
+    }
+    if (que_head == quelen)
+        que_head = 0;
+    if (que_head == 0)
+    {
+        for (int i = 0; i < quelen; i += rand_stp)
+        {
+            // const auto vrnd = pxart::simd256::uniform<type>(rng, -9, 9);
+
+#ifdef RESERVOIR_STRATA
+            const auto vrnd = pxart::uniform<rand_t>(rng, 0, atc_res_size - 1);
+#else
+            const auto vrnd = pxart::uniform<rand_t>(rng, 0, RESERVOIR_SIZE - 1);
+#endif
+            // const auto srnd = pxart::pun_cast<array<rand_t, rand_stp>>(vrnd);
+            // for (int j = 0; j < rand_stp; ++j) {
+            //     rand_que[i+j] = srnd[j];
+            memcpy(rand_que+i, &vrnd, sizeof(vrnd));
+        }
+    }
+    return rand_que[que_head++];
+#endif
+
+#ifdef NO_AVX_RAND
+    return rand()%RESERVOIR_SIZE;
+#endif
+
+}
+
+/*
+
+uint32_t rand4sample(int &que_head, uint32_t *&rand_que)
+{
+    static uint32_t res = 19260817, a = int(1e7)+9, mod = int(1e9)+7, b = 233;
+    res = (1ll*res*a+b)%mod;
+    return res;
+}
+*/
+
+
 /**
  * SHJ algorithm to be used in each thread.
  * @param tid
@@ -78,22 +176,372 @@ void SHJJoiner::join(int32_t tid, tuple_t* tuple, bool ISTupleR, int64_t* matche
     const uint32_t hashmask_S = htS->hash_mask;
     const uint32_t skipbits_S = htS->skip_bits;
 
-    if (ISTupleR) {
-        build_hashtable_single(htR, tuple, hashmask_R, skipbits_R);//(1)
+#ifdef PROBEHASH
+#endif
+
+#ifdef SAMPLE_ON
+    static int mod = 1e9+7;
+#ifdef PRESAMPLE
+    
+    if(count_pre < PRESAMPLING_SIZE)
+    {
+        count_pre++;
+
+        if (ISTupleR)
+        {
+            int tmp = (*(pre_smp[0]))[tuple->key];
+            int tt = (*(pre_smp[1]))[tuple->key];
+            (*(pre_smp[0]))[tuple->key] = tmp + 1;
+            gm[1][1] += tt;
+            gm[1][2] += 1ll*tt*tt;
+            gm[2][1] += 2ll*tmp*tt + tt;
+            gm[2][2] += 2ll*tmp*tt*tt + 1ll*tt*tt;
+
+        }
+        else
+        {
+            int tmp = (*(pre_smp[1]))[tuple->key];
+            int tt = (*(pre_smp[0]))[tuple->key];
+            (*(pre_smp[1]))[tuple->key] = tmp + 1;
+            gm[1][1] += tt;
+            gm[1][2] += 2ll*tmp*tt + tt;
+            gm[2][1] += 1ll*tt*tt;
+            gm[2][2] += 2ll*tmp*tt*tt + 1ll*tt*tt;
+
+        }
+        
+        // htR->pre_set->insert(tuple->key);
+        if (count_pre == PRESAMPLING_SIZE)
+        {
+            // if(htR->pre_set->size() > htR->div_prmtr)
+            // {
+            //     htR->Universal_p = (mod*1);
+            //     htR->Bernoulli_q = int(mod*0.001);
+            // }
+            // else
+            // {
+            //     htR->Universal_p = (mod*1);
+            //     htR->Bernoulli_q = int(mod*0.001);
+            // }
+            
+#ifdef CORRECTION_P
+            double pre_r = count_pre*1.0 / (sizeR + sizeS); 
+            double p = ((gm[2][2]/(pre_r*pre_r) - gm[2][1]/pre_r - gm[1][2]/pre_r)/gm[1][1] + 1)*epsilon_r*epsilon_s;
+#else
+            double p = (1.0*(gm[2][2] - gm[2][1] - gm[1][2])/gm[1][1] + 1)*epsilon_r*epsilon_s;
+#endif
+
+            p = sqrt(p);
+            p = max(p, epsilon_r);
+            p = max(p, epsilon_s);
+            p = min(1.0, p);
+            htR->Universal_p = p*mod;
+            htR->Bernoulli_q = epsilon_r/p*mod;
+            htS->Universal_p = p*mod;
+            htS->Bernoulli_q = epsilon_s/p*mod;
+            htR->Data_utilization = data_utilization_r*mod;
+            htS->Data_utilization = data_utilization_s*mod;
+
+            hash_key_p = p;
+        }
+
+        if(rand4sample() >= Epsilon)
+        {
+#ifdef ALWAYS_PROBE
 #ifdef MATCH
-        probe_hashtable_single(htS, tuple, hashmask_S, skipbits_S, matches, /*thread_fun,*/ timer, ISTupleR,
-                               out);//(2)
+            if (ISTupleR)
+                probe_hashtable_single(htS, tuple, hashmask_S, skipbits_S, matches, /*thread_fun,*/ timer, ISTupleR,
+                                out);//(2)
+            else
+                probe_hashtable_single(htR, tuple, hashmask_R, skipbits_R, matches, /*thread_fun,*/ timer, ISTupleR,
+                               out);//(4)
+#endif
+#endif
+            return;
+        }
+    }
+    else
+    {
+        if (ISTupleR)
+        {
+            if((1ll*tuple->key*tuple->key%mod*hash_a%mod + hash_b)%mod >= htR->Universal_p )
+            {
+// #ifdef ALWAYS_PROBE
+// #ifdef MATCH
+//                     probe_hashtable_single(htS, tuple, hashmask_S, skipbits_S, matches, /*thread_fun,*/ timer, ISTupleR,
+//                                     out);//(2)
+// #endif
+// #endif
+                return;
+            }
+            if(rand4sample() >= htR->Bernoulli_q)
+            {
+#ifdef MATCH
+#ifdef ALWAYS_PROBE
+#else
+                if (rand4sample() < htR->Data_utilization)
+#endif
+                    probe_hashtable_single(htS, tuple, hashmask_S, skipbits_S, matches, /*thread_fun,*/ timer, ISTupleR,
+                                out);//(2)
+#endif
+                return;
+            }
+        }
+        else
+        {
+            if((1ll*tuple->key*tuple->key%mod*hash_a%mod + hash_b)%mod >= htS->Universal_p )
+            {
+// #ifdef ALWAYS_PROBE
+// #ifdef MATCH
+//                     probe_hashtable_single(htR, tuple, hashmask_R, skipbits_R, matches, /*thread_fun,*/ timer, ISTupleR,
+//                                 out);//(4)
+// #endif
+// #endif
+                return;
+            }
+            if(rand4sample() >= htS->Bernoulli_q)
+            {
+#ifdef MATCH
+#ifdef ALWAYS_PROBE
+#else
+                if (rand4sample() < htS->Data_utilization)
+#endif
+                    probe_hashtable_single(htR, tuple, hashmask_R, skipbits_R, matches, /*thread_fun,*/ timer, ISTupleR,
+                                out);//(4)
+#endif
+                return;
+            }
+        }
+    }
+// SET PR
+#else 
+    if (count_pre == 0)
+    {
+        count_pre++;
+        htR->Universal_p = Universal_p;
+        htR->Bernoulli_q = Bernoulli_q;
+        htS->Universal_p = Universal_p;
+        htS->Bernoulli_q = Bernoulli_q;
+        htR->Data_utilization = data_utilization_r*mod;
+        htS->Data_utilization = data_utilization_s*mod;
+    }
+
+    if (ISTupleR)
+    {
+        if((1ll*tuple->key*tuple->key%mod*hash_a%mod + hash_b)%mod >= htR->Universal_p )
+        {
+// #ifdef ALWAYS_PROBE
+// #ifdef MATCH
+//                     probe_hashtable_single(htS, tuple, hashmask_S, skipbits_S, matches, /*thread_fun,*/ timer, ISTupleR,
+//                                     out);//(2)
+// #endif
+// #endif
+            return;
+        }
+        if(rand4sample() >= htR->Bernoulli_q)
+        {
+#ifdef MATCH
+#ifdef ALWAYS_PROBE
+#else
+            if (rand4sample() < htR->Data_utilization)
+#endif
+                probe_hashtable_single(htS, tuple, hashmask_S, skipbits_S, matches, /*thread_fun,*/ timer, ISTupleR,
+                                out);//(2)
+#endif
+            return;
+        }
+    }
+    else
+    {
+        if((1ll*tuple->key*tuple->key%mod*hash_a%mod + hash_b)%mod >= htS->Universal_p )
+        {
+// #ifdef ALWAYS_PROBE
+// #ifdef MATCH
+//                     probe_hashtable_single(htR, tuple, hashmask_R, skipbits_R, matches, /*thread_fun,*/ timer, ISTupleR,
+//                                 out);//(4)
+// #endif
+// #endif
+            return;
+        }
+        if(rand4sample() >= htS->Bernoulli_q)
+        {
+#ifdef MATCH
+#ifdef ALWAYS_PROBE
+#else
+            if (rand4sample() < htS->Data_utilization)
+#endif
+                probe_hashtable_single(htR, tuple, hashmask_R, skipbits_R, matches, /*thread_fun,*/ timer, ISTupleR,
+                            out);//(4)
+#endif
+            return;
+        }
+    }
+#endif
+#endif
+
+#ifdef PROBEHASH
+    static int mod = 1e9 + 7;
+    int q_on = ISTupleR ^ 1, q_off = ISTupleR;
+    hashtable_t *ht[2] = {htR, htS};
+    const uint32_t hshmsk[2] = {hashmask_R, hashmask_S};
+    const uint32_t skpbits[2] = {skipbits_R, skipbits_S};
+    ht[q_on]->cnt++;
+    double w_exp = 1.0 / skch[q_off].estimate(tuple->key);
+    double u_base = rand4sample() / double(mod);
+    prio_q[q_on].push( PrioQueMember(-pow(u_base, w_exp), *tuple) );
+    if (ht[q_on]->cnt > RESERVOIR_SIZE)
+    {
+        ht[q_on]->cnt--;
+        tuple_t tmp4del = prio_q[q_on].top().tuple;
+        prio_q[q_on].pop();
+
+        delete_hashtable_single(ht[q_on], &tmp4del, hshmsk[q_on], skpbits[q_on]);
+    }
+#endif
+
+#ifdef RESERVOIR_STRATA
+    int stra = rand4sample()%RESERVOIR_STRATA_NUM;
+    static int atc_res_size = RESERVOIR_SIZE/RESERVOIR_STRATA_NUM;
+    
+    fflush(stderr);
+    if (ISTupleR) {
+        
+// #ifdef SAMPLE_ON
+        if (htR_strata[stra]->cnt < atc_res_size)
+            htR_strata[stra]->rsv[htR_strata[stra]->cnt] = *tuple;
+            
+        htR_strata[stra]->cnt++;
+        if (htR_strata[stra]->cnt > atc_res_size)
+        {
+            if (rand4sample()%htR_strata[stra]->cnt > atc_res_size)
+            {
+#ifdef MATCH
+#ifdef ALWAYS_PROBE
+#else
+                if (rand4sample() < htR->Data_utilization)
+#endif
+                    probe_hashtable_single(htS_strata[stra], tuple, hashmask_S, skipbits_S, matches, /*thread_fun,*/ timer, ISTupleR, out);//(2)
+#endif
+                return;
+            }
+            int del_ind = rand4reservoir(htR_strata[stra]->rsv_que_head, htR_strata[stra]->rsv_rand_que);
+            
+            tuple_t tmp4del = htR_strata[stra]->rsv[del_ind];
+            htR_strata[stra]->rsv[del_ind] = htR_strata[stra]->rsv[atc_res_size];
+            delete_hashtable_single(htR_strata[stra], &tmp4del, hashmask_R, skipbits_R);
+        }
+
+        build_hashtable_single(htR_strata[stra], tuple, hashmask_R, skipbits_R);//(1)
+#ifdef MATCH
+        probe_hashtable_single(htS_strata[stra], tuple, hashmask_S, skipbits_S, matches, /*thread_fun,*/ timer, ISTupleR, out);//(2)
 #endif
     } else {
+
+// #ifdef SAMPLE_ON
+        if (htS_strata[stra]->cnt < atc_res_size)
+           htS_strata[stra]->rsv[htS_strata[stra]->cnt] = *tuple;
+           
+        htS_strata[stra]->cnt++;
+        if (htS_strata[stra]->cnt > atc_res_size)
+        {
+            if (rand4sample()%htS_strata[stra]->cnt > atc_res_size)
+            {
+#ifdef MATCH
+#ifdef ALWAYS_PROBE
+#else
+                if (rand4sample() < htS->Data_utilization)
+#endif
+                    probe_hashtable_single(htR_strata[stra], tuple, hashmask_R, skipbits_R, matches, /*thread_fun,*/ timer, ISTupleR, out);//(4)
+#endif
+                return;
+            }
+            int del_ind = rand4reservoir(htS_strata[stra]->rsv_que_head, htS_strata[stra]->rsv_rand_que);
+            tuple_t tmp4del = htS_strata[stra]->rsv[del_ind];
+            htS_strata[stra]->rsv[del_ind] = htS_strata[stra]->rsv[atc_res_size];
+            delete_hashtable_single(htS_strata[stra], &tmp4del, hashmask_S, skipbits_S);
+        }
+// #endif
+
+        build_hashtable_single(htS_strata[stra], tuple, hashmask_S, skipbits_S);//(3)
+#ifdef MATCH
+        probe_hashtable_single(htR_strata[stra], tuple, hashmask_R, skipbits_R, matches, /*thread_fun,*/ timer, ISTupleR, out);//(4)
+#endif
+    }
+
+    return;
+#endif
+
+    if (ISTupleR) {
+        
+// #ifdef SAMPLE_ON
+#ifdef MEM_LIM
+        if (htR->cnt < RESERVOIR_SIZE)
+            htR->rsv[htR->cnt] = *tuple;
+            
+        htR->cnt++;
+        if (htR->cnt > RESERVOIR_SIZE)
+        {
+            if (rand4sample()%htR->cnt > RESERVOIR_SIZE)
+            {
+#ifdef MATCH
+#ifdef ALWAYS_PROBE
+#else
+                if (rand4sample() < htR->Data_utilization)
+#endif
+                    probe_hashtable_single(htS, tuple, hashmask_S, skipbits_S, matches, /*thread_fun,*/ timer, ISTupleR, out);//(2)
+#endif
+                return;
+            }
+            int del_ind = rand4reservoir(htR->rsv_que_head, htR->rsv_rand_que);
+            
+            tuple_t tmp4del = htR->rsv[del_ind];
+            htR->rsv[del_ind] = htR->rsv[RESERVOIR_SIZE];
+            delete_hashtable_single(htR, &tmp4del, hashmask_R, skipbits_R);
+        }
+#endif
+// #endif
+
+        build_hashtable_single(htR, tuple, hashmask_R, skipbits_R);//(1)
+#ifdef MATCH
+        probe_hashtable_single(htS, tuple, hashmask_S, skipbits_S, matches, /*thread_fun,*/ timer, ISTupleR, out);//(2)
+#endif
+    } else {
+
+// #ifdef SAMPLE_ON
+#ifdef MEM_LIM
+        if (htS->cnt < RESERVOIR_SIZE)
+           htS->rsv[htS->cnt] = *tuple;
+           
+        htS->cnt++;
+        if (htS->cnt > RESERVOIR_SIZE)
+        {
+            if (rand4sample()%htS->cnt > RESERVOIR_SIZE)
+            {
+#ifdef MATCH
+#ifdef ALWAYS_PROBE
+#else
+                if (rand4sample() < htS->Data_utilization)
+#endif
+                    probe_hashtable_single(htR, tuple, hashmask_R, skipbits_R, matches, /*thread_fun,*/ timer, ISTupleR, out);//(4)
+#endif
+                return;
+            }
+            int del_ind = rand4reservoir(htS->rsv_que_head, htS->rsv_rand_que);
+            tuple_t tmp4del = htS->rsv[del_ind];
+            htS->rsv[del_ind] = htS->rsv[RESERVOIR_SIZE];
+            delete_hashtable_single(htS, &tmp4del, hashmask_S, skipbits_S);
+        }
+#endif
+// #endif
+
         build_hashtable_single(htS, tuple, hashmask_S, skipbits_S);//(3)
 #ifdef MATCH
-        probe_hashtable_single(htR, tuple, hashmask_R, skipbits_R, matches, /*thread_fun,*/ timer, ISTupleR,
-                               out);//(4)
+        probe_hashtable_single(htR, tuple, hashmask_R, skipbits_R, matches, /*thread_fun,*/ timer, ISTupleR, out);//(4)
 #endif
     }
 }
 
-/**
+/**     
  * Clean state stored in local thread, basically used in HS mode
  * @param tid
  * @param tuple
@@ -112,11 +560,23 @@ void SHJJoiner::clean(int32_t tid, tuple_t* tuple, bool cleanR) {
 
 SHJJoiner::SHJJoiner(int sizeR, int sizeS) {
     //allocate two hashtables.
-
+    this->sizeR = sizeR;
+    this->sizeS = sizeS;
     int nbucketsR = sizeR/BUCKET_SIZE;
+#ifdef RESERVOIR_STRATA
+    for (int i = 0; i < RESERVOIR_STRATA_NUM; ++i)
+        allocate_hashtable(&(htR_strata[i]), nbucketsR);
+// #else
+#endif
     allocate_hashtable(&htR, nbucketsR);
+
     assert(nbucketsR > 0);
     int nbucketsS = sizeS/BUCKET_SIZE;
+#ifdef RESERVOIR_STRATA
+    for (int i = 0; i < RESERVOIR_STRATA_NUM; ++i)
+        allocate_hashtable(&(htS_strata[i]), nbucketsS);
+#endif
+// #else
     allocate_hashtable(&htS, nbucketsS);
     assert(nbucketsS > 0);
 }
@@ -289,8 +749,7 @@ PMJJoiner::join_tuple_single(int32_t tid, tuple_t* tmp_rel, int* outerPtr, tuple
  * @param timer
  * @return
  */
-void PMJJoiner::
-join(int32_t tid, tuple_t* tuple, int fat_tuple_size, bool IStuple_R, int64_t* matches,
+void PMJJoiner::join(int32_t tid, tuple_t* tuple, int fat_tuple_size, bool IStuple_R, int64_t* matches,
     /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ void* output) {
     auto* arg = (t_pmj*) t_arg;
 
@@ -507,6 +966,7 @@ PMJJoiner::PMJJoiner(int
                      sizeS, int
                      nthreads) {
     t_arg = new t_pmj(sizeR, sizeS);
+    uint32_t mod = int(1e9)+7;
 }
 
 void PMJJoiner::join(int32_t tid, tuple_t* tuple, bool IStuple_R, int64_t* matches,

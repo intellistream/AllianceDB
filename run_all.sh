@@ -1,7 +1,7 @@
 #!/bin/bash
 
-exp_dir="/data1/xtra"
-L3_cache_size=20971520
+exp_dir="/home/user/FreeSam/data1/xtra"
+L3_cache_size=20185088
 
 # read arguments
 helpFunction()
@@ -55,12 +55,11 @@ sudo echo -1 > /proc/sys/kernel/perf_event_paranoid # if permission denied, try 
 sudo modprobe msr
 
 # download and mv datasets to exp_dir
-wget https://www.dropbox.com/s/64z4xtpyhhmhojp/datasets.tar.gz
+#wget https://www.dropbox.com/s/64z4xtpyhhmhojp/datasets.tar.gz
 tar -zvxf datasets.tar.gz
 rm datasets.tar.gz
 mkdir -p $exp_dir
 mv datasets $exp_dir
-
 
 ## Create directories on your machine.
 mkdir -p $exp_dir/results/breakdown/partition_buildsort_probemerge_join
@@ -69,7 +68,6 @@ mkdir -p $exp_dir/results/breakdown/partition_buildsort_only
 mkdir -p $exp_dir/results/breakdown/partition_buildsort_probemerge_only
 mkdir -p $exp_dir/results/breakdown/allIncludes
 
-mkdir -p $exp_dir/results/figure
 mkdir -p $exp_dir/results/gaps
 mkdir -p $exp_dir/results/latency
 mkdir -p $exp_dir/results/records
@@ -80,26 +78,16 @@ cp pcm* $exp_dir
 # copy cpu mappings to exp_dir
 cp cpu-mapping.txt $exp_dir
 # set all scripts exp dir
+
 sed -i -e "s/exp_dir = .*/exp_dir = "\"${exp_dir//\//\\/}\""/g" ./hashing/scripts/*.py
 
 exp_secction="APP_BENCH,MICRO_BENCH,SCALE_STUDY,PROFILE_MICRO,PROFILE,PROFILE_MEMORY_CONSUMPTION,PROFILE_PMU_COUNTERS"
+# exp_secction="PROFILE_PMU_COUNTERS"
+# exp_secction="APP_BENCH,MICRO_BENCH,SCALE_STUDY,PROFILE_MICRO,PROFILE,PROFILE_MEMORY_CONSUMPTION"
 
-# execute experiment
-cd ./sorting/scripts || exit
-bash benchmark.sh -e $exp_secction -d $exp_dir -c $L3_cache_size
-cd - || exit
+sudo -S sysctl kernel.perf_event_paranoid=-1
+sudo -S modprobe msr
+
 cd ./hashing/scripts || exit
 bash benchmark.sh -e $exp_secction -d $exp_dir -c $L3_cache_size
 
-exp_secction="PROFILE_TOPDOWN"
-
-cd - || exit
-cd ./sorting/scripts || exit
-bash benchmark.sh -e $exp_secction -d $exp_dir -c $L3_cache_size
-cd - || exit
-cd ./hashing/scripts || exit
-bash benchmark.sh -e $exp_secction -d $exp_dir -c $L3_cache_size
-
-# draw figures
-bash draw.sh
-python3 jobdone.py

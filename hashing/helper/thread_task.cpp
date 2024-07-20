@@ -75,8 +75,13 @@ void *THREAD_TASK_NOSHUFFLE(void *param) {
     }
     BARRIER_ARRIVE(args->barrier, lock)
 #endif
+// std::thread::id tidd = std::this_thread::get_id();
+// int lalala = 0;
     do {
         fetch_t *fetch = fetcher->next_tuple(); /*time to fetch, waiting time*/
+        // lalala ++;
+        //     cout << tidd <<" "<<lalala <<"\n";
+        //     fflush(stdout);
         if (fetch != nullptr) {
 #ifdef JOIN
             args->joiner->join(/*time to join for one tuple*/

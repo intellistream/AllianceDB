@@ -973,6 +973,7 @@ read_relation(relation_t* rel, relation_payload_t* relPl, int32_t keyby, int32_t
 
     uint64_t* ret;
     ret = (uint64_t*) malloc(rel->num_tuples*sizeof(uint64_t));
+    memset(ret, 0, rel->num_tuples*sizeof(uint64_t));
     intkey_t* key;
     key = (intkey_t*) malloc(rel->num_tuples*sizeof(intkey_t));
 

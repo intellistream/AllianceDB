@@ -1,13 +1,25 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.11)
 project(AllianceDB)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 
+include(FetchContent)
+
+
+# Download and unpack googletest at configure time
+#configure_file(CMakeLists.txt.in googletest-download/CMakeLists.txt)
+#execute_process(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" .
+#        WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/googletest-download"
+#        )
+#execute_process(COMMAND "${CMAKE_COMMAND}" --build .
+#        WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/googletest-download"
+#        )
+
+# find_package(pxart REQUIRED)
 #####ADD NUMA########
 find_path(LIBNUMA_INCLUDE numa.h PATHS ${SEARCH_DIRS})
 find_library(LIBNUMA_LIB NAMES libnuma.so PATHS ${SEARCH_DIRS})
 if (LIBNUMA_INCLUDE-NOTFOUND)
     set(LIBNUMA_INCLUDE "" CACHE PATH "Directory where libnuma header files can be found (consider installing libnuma-dev)")
-    message("consider installing libnuma-dev")
 else ()
     include_directories(${LIBNUMA_INCLUDE})
 endif ()
@@ -16,7 +28,6 @@ if (LIBNUMA_LIB-NOTFOUND)
 else ()
     link_libraries(${LIBNUMA_LIB})
 endif ()
-
 #####OTHERS########
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
@@ -35,6 +46,7 @@ SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${./bin})
 SET(CMAKE_CXX_FLAGS "") # TODO: solve all warnings
 SET(CMAKE_CXX_FLAGS_DEBUG "-g")
 SET(CMAKE_CXX_FLAGS_RELEASE "-O3")
+# SET(CMAKE_CXX_FLAGS_RELEASE "-Og")
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -msse4.2 -mavx2")
 
 #####ADD GOOGLE TEST########
@@ -58,7 +70,7 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -msse4.2 -mavx2")
 
 ADD_LIBRARY(common OBJECT utils/xxhash64.h timer/t_timer.h timer/t_timer.cpp benchmark.cpp benchmark.h utils/types.h utils/generator.cpp utils/generator.h utils/perf_counters.cpp utils/perf_counters.h utils/cpu_mapping.cpp utils/cpu_mapping.h utils/genzipf.cpp utils/genzipf.h utils/lock.h timer/rdtsc.h utils/barrier.h utils/task_queue.h utils/config.h
         joins/npj_types.h joins/npj_params.h joins/no_partitioning_join.cpp joins/no_partitioning_join.h joins/onlinejoins.cpp joins/onlinejoins.h
-        joins/parallel_radix_join.cpp joins/parallel_radix_join.h joins/prj_params.h joins/common_functions.cpp joins/common_functions.h helper/launcher.cpp helper/launcher.h helper/thread_task.cpp helper/thread_task.h helper/localjoiner.cpp helper/localjoiner.h helper/shuffler.cpp helper/shuffler.h helper/fetcher.cpp helper/fetcher.h joins/eagerjoin_struct.h lib/types.h lib/pci.h lib/msr.h lib/msr.cpp lib/cpucounters.cpp lib/cpucounters.h lib/utils.cpp lib/utils.h lib/client_bw.cpp lib/client_bw.h lib/mmio.cpp lib/mmio.h lib/width_extender.h lib/mutex.h lib/exceptions/unsupported_processor_exception.hpp lib/pci.cpp lib/topology.cpp lib/topology.h lib/threadpool.h lib/threadpool.cpp lib/debug.h lib/debug.cpp helper/concurrentqueue.h helper/maps/robin_growth_policy.h helper/maps/robin_hash.h helper/maps/robin_map.h helper/maps/robin_set.h helper/readerwriterqueue.h helper/atomicops.h helper/avxsort.cpp helper/avxsort.h helper/avxsort_core.h helper/avxcommon.h utils/params.h helper/avxintrin_emu.h helper/sort_common.cpp helper/sort_common.h
+        joins/parallel_radix_join.cpp joins/parallel_radix_join.h joins/prj_params.h joins/count_min_sketch.h joins/count_min_sketch.cpp joins/common_functions.cpp joins/common_functions.h helper/launcher.cpp helper/launcher.h helper/thread_task.cpp helper/thread_task.h helper/localjoiner.cpp helper/localjoiner.h helper/shuffler.cpp helper/shuffler.h helper/fetcher.cpp helper/fetcher.h joins/eagerjoin_struct.h lib/types.h lib/pci.h lib/msr.h lib/msr.cpp lib/cpucounters.cpp lib/cpucounters.h lib/utils.cpp lib/utils.h lib/client_bw.cpp lib/client_bw.h lib/mmio.cpp lib/mmio.h lib/width_extender.h lib/mutex.h lib/exceptions/unsupported_processor_exception.hpp lib/pci.cpp lib/topology.cpp lib/topology.h lib/threadpool.h lib/threadpool.cpp lib/debug.h lib/debug.cpp helper/concurrentqueue.h helper/maps/robin_growth_policy.h helper/maps/robin_hash.h helper/maps/robin_map.h helper/maps/robin_set.h helper/readerwriterqueue.h helper/atomicops.h helper/avxsort.cpp helper/avxsort.h helper/avxsort_core.h helper/avxcommon.h utils/params.h helper/avxintrin_emu.h helper/sort_common.cpp helper/sort_common.h
         helper/pmj_helper.cpp helper/pmj_helper.h  utils/skewness.h utils/tuple_buffer.h utils/machine.h)
 
 # Now simply link your own targets against gtest, gmock,
@@ -71,8 +83,17 @@ ADD_LIBRARY(common OBJECT utils/xxhash64.h timer/t_timer.h timer/t_timer.cpp ben
 #target_link_libraries(runUnitTests numa)
 #target_link_libraries(runUnitTests boost_system)
 
-add_executable(hashing main.cpp $<TARGET_OBJECTS:common> )
+FetchContent_Declare(
+        pxart
+        URL https://github.com/lyrahgames/pxart/archive/refs/heads/master.zip
+)
+FetchContent_MakeAvailable(pxart)
 
+add_executable(hashing main.cpp)
+
+
+target_link_libraries(common pxart)
+target_link_libraries(hashing $<TARGET_OBJECTS:common> )
 target_link_libraries(hashing ${CMAKE_DL_LIBS}) ##used by boost
 target_link_libraries(hashing numa)
 #target_link_libraries(hashing boost_system)

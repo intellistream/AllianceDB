@@ -109,6 +109,18 @@ struct param_t {
     int gap;
     int progressive_step = 1;//percentile of tuples to sort at each iteration.
     int merge_step = 2;
+
+    double epsilon_r;
+    double epsilon_s;
+    double data_utilization_r;
+    double data_utilization_s;
+    double Universal_p;
+    double Bernoulli_q;
+    int reservior_size;
+    int rand_buffer_size;
+    int presample_size;
+
+    char *grp_id;
 };
 
 
@@ -118,6 +130,9 @@ extern int optind, opterr, optopt;
 /** An experimental feature to allocate input relations numa-local */
 extern int numalocalize;  /* defined in generator.c */
 extern int nthreads;      /* defined in generator.c */
+
+extern double *hash_p_list;
+extern long long *thread_res_list;
 
 //void benchmark(const param_t cmd_params, relation_t *relR, relation_t *relS,
 //        relation_payload_t *relPlR, relation_payload_t *relPlS, result_t *results);
