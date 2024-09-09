@@ -37,4 +37,4 @@ EERC:
 
 ## Appendix
 
-Please refer to ./FreeSam_Appendix.pdf
+Please refer to `./FreeSam_Appendix.pdf`
