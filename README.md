@@ -35,3 +35,6 @@ EERC:
 
 ​	SEP86L.txt: regionid|timestamp
 
+## Appendix
+
+Please refer to ./FreeSam_Appendix.pdf
