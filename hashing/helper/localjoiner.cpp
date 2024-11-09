@@ -93,6 +93,10 @@ void SHJJoiner::join(int32_t tid, tuple_t* tuple, bool ISTupleR, int64_t* matche
     }
 }
 
+
+void join_batched(int32_t tid, Batch* tuple, bool ISTupleR, int64_t *matches, void *pVoid){
+
+}
 /**
  * Clean state stored in local thread, basically used in HS mode
  * @param tid

@@ -254,6 +254,7 @@ benchmark(const param_t cmd_params) {
     delete_relation_payload(relR.payload);
     delete_relation_payload(relS.payload);
     free(results);
+    MSG("Benckmark %s done",cmd_params.algo->name);
 
     //    results = join_from_file(cmd_params, cmd_params.loadfileR, cmd_params.loadfileS,
     //            cmd_params.rkey, cmd_params.skey, cmd_params.r_size, cmd_params.s_size);

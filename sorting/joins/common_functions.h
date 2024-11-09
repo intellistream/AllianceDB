@@ -16,21 +16,21 @@
 #include "../utils/perf_counters.h"      /* PCM_x */
 
 // path of experiment dir, all results will dump to here.
-#define EXP_DIR "/data1/xtra"
+#define EXP_DIR "./data1/xtra"
 
 //#define DEBUG
-//#define JOIN_MATERIALIZE
+//#define NO_JOIN_MATERIALIZE
 #define TIMING
-#define JOIN
+#define NO_JOIN
 #define PARTITION
-#define SORT
-#define OVERVIEW
+#define NO_SORT
+#define NO_OVERVIEW
 
 // used for perf events counters
-#define PROFILE_TOPDOWN
-#define JOIN_THREAD
+#define NO_PROFILE_TOPDOWN
+#define NO_JOIN_THREAD
 
-#define PROFILE_MEMORY_CONSUMPTION
+#define NO_PROFILE_MEMORY_CONSUMPTION
 
 #define DEBUG_SORT_CHECK 0
 #define scalarflag 0

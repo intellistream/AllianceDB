@@ -6,11 +6,13 @@
 #define ALLIANCEDB_LOCALJOINER_H
 
 #include "../utils/xxhash64.h"
+
 #include "../timer/t_timer.h"  /* startTimer, stopTimer */
 #include "../utils/generator.h"          /* numa_localize() */
 #include "../joins/npj_types.h"          /* bucket_t, hashtable_t, bucket_buffer_t */
 #include "../joins/npj_params.h"         /* constant parameters */
 #include "../joins/common_functions.h"
+#include "../joins/batcher.h"
 #include "pmj_helper.h"
 #include <list>
 
@@ -49,6 +51,10 @@ public:
     virtual void join(int32_t tid, tuple_t *fat_tuple, int fat_tuple_size, bool IStuple_R, int64_t *matches,
             /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ void *pVoid) {
         //only supported by PMJ.
+    }
+
+    virtual void join_batched(int32_t tid, Batch* tuple, bool ISTupleR, int64_t *matches, void *pVoid){
+        MSG("Batched Join not Implemented")
     }
 
 //every joiner has its own timer --> this completely avoids interference.
@@ -171,6 +177,7 @@ public:
     join(int32_t tid, tuple_t *tuple, bool ISTupleR, int64_t *matches,
             /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ void *pVoid) override;
 
+    void join_batched(int32_t tid, Batch* tuple, bool ISTupleR, int64_t *matches, void *pVoid) override;
     void clean(int32_t tid, tuple_t *tuple, bool cleanR) override;
 };
 

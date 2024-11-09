@@ -4,6 +4,8 @@ sorting/Makefile
 
 hashing/cmake_install.cmake
 sorting/cmake_install.cmake
+hashing/scripts/*.py
+
 
 hashing/CMakeCache.txt
 sorting/CMakeCache.txt

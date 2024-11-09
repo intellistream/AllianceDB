@@ -48,7 +48,7 @@ t_param &finishing(int nthreads, t_param &param, uint64_t *startTS, param_t *cmd
 #ifndef NO_TIMING
     MSG("With timing, Total processing time is: %f\n", processingTime / (2.1 * 1E6));//cycle to ms
 #endif
-
+    MSG("Merging join Results")
     for (i = 0; i < nthreads; i++) {
         /* sum up results */
         param.result += *param.args[i].matches;
@@ -58,14 +58,17 @@ t_param &finishing(int nthreads, t_param &param, uint64_t *startTS, param_t *cmd
     }
     param.joinresult->totalresults = param.result;
     param.joinresult->nthreads = nthreads;
+    MSG("Merging join Result done")
 #ifndef NO_TIMING
 #ifndef JOIN //partition-only.
     std::string name = param.algo_name + "_" + std::to_string(param.exp_id);
     string path = EXP_DIR "/results/breakdown/partition_only/" + name.append(".txt");
-    auto fp = fopen(path.c_str(), "w");
+    MSG("Writing to %s\n",path.c_str());
+    //auto fp = fopen(path.c_str(), "w");
     /* now print the timing results: */
     for (i = 0; i < nthreads; i++) {
-        dump_partition_cost(param.args[i].timer, fp);//partition_only
+        MSG("Writing to %s for the result of thread %d",path.c_str(),i);
+        //dump_partition_cost(param.args[i].timer, fp);//partition_only
     }
 #else
 #ifndef MERGE //build/sort only
@@ -118,6 +121,7 @@ t_param &finishing(int nthreads, t_param &param, uint64_t *startTS, param_t *cmd
 #endif // partition with sort/build only
 #endif // partition-only
 #endif // no_timing flag
+    MSG("Write Result Done")
     return param;
 }
 

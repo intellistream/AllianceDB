@@ -8,7 +8,8 @@
 #include "localjoiner.h"
 #include "shuffler.h"
 #include <execinfo.h>
-
+#include "../joins/batcher.h"
+#define JOIN
 /**
  * a JOIN function that a joiner should apply
  * @param r_tuple
@@ -77,6 +78,9 @@ void *THREAD_TASK_NOSHUFFLE(void *param) {
 #endif
     do {
         fetch_t *fetch = fetcher->next_tuple(); /*time to fetch, waiting time*/
+
+        //batching
+
         if (fetch != nullptr) {
 #ifdef JOIN
             args->joiner->join(/*time to join for one tuple*/
@@ -127,6 +131,111 @@ void *THREAD_TASK_NOSHUFFLE(void *param) {
 
 #ifndef NO_TIMING
         END_MEASURE(args->timer)
+    // time calibration
+    //    args->timer->overall_timer -= args->timer->garbage_time;
+    args->timer->partition_timer =
+            args->timer->overall_timer - args->timer->wait_timer;
+#endif
+
+    DEBUGMSG("args->num_results (%d): %ld\n", args->tid, *args->matches);
+    fflush(stdout);
+    pthread_exit(NULL);
+}
+
+void *THREAD_TASK_NOSHUFFLE_BATCHED(void *param) {
+    arg_t *args = (arg_t *) param;
+    int lock;
+
+#ifdef PROFILE_TOPDOWN
+    #ifdef JOIN_THREAD
+    // do nothing
+#else
+    return nullptr;
+#endif
+#endif
+
+#ifdef JOIN_RESULT_MATERIALIZE
+    chainedtuplebuffer_t *chainedbuf = chainedtuplebuffer_init();
+#else
+    void *chainedbuf = NULL;
+#endif
+    // call different data BaseFetcher.
+    baseFetcher *fetcher = args->fetcher;
+    /* wait at a barrier until each thread started*/
+    BARRIER_ARRIVE(args->barrier, lock)
+    *args->startTS = curtick();
+#ifndef NO_TIMING
+    //        MSG(" *args->startTS :%lu\n", *args->startTS);
+    START_MEASURE((args->timer))
+#endif
+
+    fetcher->fetchStartTime = args->startTS; // set the fetch starting time.
+#ifdef PERF_COUNTERS
+    if (args->tid == 0) {
+        DEBUGMSG("Thread:%id initialize PCM", args->tid)
+        PCM_initPerformanceMonitor(NULL, NULL);
+        PCM_start();
+        auto curtime = std::chrono::steady_clock::now();
+        string path = EXP_DIR "/results/breakdown/time_start_" + std::to_string(args->exp_id) + ".txt";
+        auto fp = fopen(path.c_str(), "w");
+        fprintf(fp, "%ld\n", curtime);
+        DEBUGMSG("Thread:%id initialized PCM", args->tid)
+    }
+    BARRIER_ARRIVE(args->barrier, lock)
+#endif
+    Batch batch;
+    do {
+        fetch_t *fetch = fetcher->next_tuple(); /*time to fetch, waiting time*/
+        if (batch.add_tuple(fetch->tuple)) {
+#ifdef JOIN
+            args->joiner->join(/*time to join for one tuple*/
+                    args->tid, fetch->tuple, fetch->ISTuple_R,
+                    args->matches,
+                    //                    AGGFUNCTION,
+                    chainedbuf); // build and probe at the same time.
+#endif
+        }
+    } while (!fetcher->finish());
+
+    //    BEGIN_GARBAGE(args->timer)
+    /* wait at a barrier until each thread finishes*/
+    BARRIER_ARRIVE(args->barrier, lock)
+    //    END_GARBAGE(args->timer)
+
+#ifdef JOIN
+    // only PMJ needs this.
+    args->joiner->merge(args->tid, args->matches,
+            //            AGGFUNCTION,
+                        chainedbuf);
+#endif
+
+    DEBUGMSG("args->num_results (%d): %ld\n", args->tid, *args->matches);
+#ifdef JOIN_RESULT_MATERIALIZE
+    args->threadresult->nresults = *args->matches;
+    args->threadresult->threadid = args->tid;
+    args->threadresult->results = (void *)chainedbuf;
+#endif
+
+#ifdef PERF_COUNTERS
+    if (args->tid == 0) {
+        MSG("Thread:%id stops PCM", args->tid)
+        PCM_stop();
+        auto curtime = std::chrono::steady_clock::now();
+        string path = EXP_DIR "/results/breakdown/time_end_" + std::to_string(args->exp_id) + ".txt";
+        auto fp = fopen(path.c_str(), "w");
+        fprintf(fp, "%ld\n", curtime);
+        PCM_log("========== Entire phase profiling results ==========\n");
+        PCM_printResults();
+        PCM_log("===================================================\n");
+        PCM_cleanup();
+    }
+#endif
+
+    /* wait at a barrier until each thread finishes*/
+    BARRIER_ARRIVE(args->barrier, lock)
+
+#ifndef NO_TIMING
+    END_MEASURE(args->timer)
     // time calibration
     //    args->timer->overall_timer -= args->timer->garbage_time;
     args->timer->partition_timer =

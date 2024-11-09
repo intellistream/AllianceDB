@@ -1,6 +1,6 @@
 #!/bin/bash
 
-exp_dir="/data1/xtra"
+exp_dir="./data1/xtra"
 L3_cache_size=20971520
 
 # read arguments
