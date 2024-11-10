@@ -25,7 +25,7 @@
 #include "common_functions.h"
 
 /** @} */
-
+// TODO: fix timer segmentation fault problem
 void initialize(int nthreads, const t_param &param) {
     int rv;
     rv = pthread_barrier_init(param.barrier, NULL, nthreads);
@@ -77,7 +77,7 @@ t_param &finishing(int nthreads, t_param &param, uint64_t *startTS, param_t *cmd
     auto fp = fopen(path.c_str(), "w");
     /* now print the timing results: */
     for (i = 0; i < nthreads; i++) {
-        dump_partition_cost(param.args[i].timer, fp);//partition + sort/build
+        //dump_partition_cost(param.args[i].timer, fp);//partition + sort/build
     }
 #else
 #ifndef MATCH //build/sort + probe/merge only
@@ -86,7 +86,7 @@ t_param &finishing(int nthreads, t_param &param, uint64_t *startTS, param_t *cmd
     auto fp = fopen(path.c_str(), "w");
     /* now print the timing results: */
     for (i = 0; i < nthreads; i++) {
-        dump_partition_cost(param.args[i].timer, fp);//partition + sort/build + probe/merge
+        //dump_partition_cost(param.args[i].timer, fp);//partition + sort/build + probe/merge
     }
 #else
 #ifndef WAIT //everything except wait.
@@ -95,7 +95,7 @@ t_param &finishing(int nthreads, t_param &param, uint64_t *startTS, param_t *cmd
     auto fp = fopen(path.c_str(), "w");
     /* now print the timing results: */
     for (i = 0; i < nthreads; i++) {
-        dump_partition_cost(param.args[i].timer, fp);//partition + sort/build + probe/merge + match (no wait)
+        //dump_partition_cost(param.args[i].timer, fp);//partition + sort/build + probe/merge + match (no wait)
     }
 #else //everything is defined.
     std::string name = param.algo_name + "_" + std::to_string(param.exp_id).append(".txt");
@@ -104,7 +104,7 @@ t_param &finishing(int nthreads, t_param &param, uint64_t *startTS, param_t *cmd
     auto fp = fopen(path.c_str(), "w");
     double average_partition_timer = 0.0;
     for (i = 0; i < nthreads; i++) {
-        dump_partition_cost(param.args[i].timer, fp);//partition + sort/build
+        //dump_partition_cost(param.args[i].timer, fp);//partition + sort/build
         average_partition_timer += param.args[i].timer->partition_timer;
     }
     average_partition_timer /= nthreads;
@@ -198,6 +198,23 @@ SHJ_JM_P(relation_t *relR, relation_t *relS, param_t cmd_params) {
     auto *startTS = new uint64_t();
     auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_NOSHUFFLE, startTS, &joinStart)
+    param = finishing(nthreads, param, startTS, &cmd_params);
+    return param.joinresult;
+}
+
+result_t *
+SHJ_JM_P_BATCHED(relation_t *relR, relation_t *relS, param_t cmd_params) {
+    t_param param(nthreads);
+    initialize(nthreads, param);
+    param.fetcher = type_JM_P_Fetcher;//new JM_NP_Fetcher(nthreads, relR, relS);
+    //no shuffler is required for JM mode.
+    param.joiner = type_SHJJoiner;//new SHJJoiner();
+    param.algo_name = "SHJ_JM_P_BATCHED";
+    param.exp_id = cmd_params.exp_id;
+    param.record_gap = cmd_params.gap;
+    auto *startTS = new uint64_t();
+    auto joinStart = (uint64_t) 0;
+    LAUNCH(nthreads, relR, relS, param, THREAD_TASK_NOSHUFFLE_BATCHED, startTS, &joinStart)
     param = finishing(nthreads, param, startTS, &cmd_params);
     return param.joinresult;
 }

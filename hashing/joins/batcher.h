@@ -2,18 +2,20 @@
 
 #include "../utils/types.h"
 class Batch{
-    int size_;
+    int max_buffer_;
     int current_loc_;
-    constexpr static int default_size=1024;
+    int size_;
+    int batch_cnt_;
+    constexpr static int default_size=4096;
 
 
 public:
     intkey_t* keys_;
     value_t* values_;
 
-    Batch(int size=default_size):size_(size),current_loc_(0){
-        keys_= malloc(size*sizeof(intkey_t));
-        values_ =malloc(size*sizeof(current_loc_));
+    Batch(int size=default_size):size_(size),current_loc_(0),batch_cnt_(0){
+        keys_= (intkey_t*)malloc(size*sizeof(intkey_t));
+        values_ =(value_t*)malloc(size*sizeof(current_loc_));
     }
     Batch(const Batch& batch)= delete;
     Batch(Batch&& batch){
@@ -25,7 +27,7 @@ public:
         batch.values_= nullptr;
     }
     inline bool add_tuple(const tuple_t* t){
-        if(t== nullptr){
+        if(t==nullptr){
             return false;
         }
         keys_[current_loc_]=t->key;
@@ -34,8 +36,15 @@ public:
         return current_loc_==size_;
     }
 
-    inline int reset(){
+    inline void reset(){
+        batch_cnt_++;
         current_loc_=0;
+    }
+    inline int size() const{
+        return current_loc_;
+    }
+    inline int batch_cnt() const{
+        return batch_cnt_;
     }
     ~Batch(){
         free(keys_);
@@ -44,19 +53,5 @@ public:
 
 };
 
-
-class BatchCreator {
-    Batch current_batch;
-
-public:
-    BatchCreator(){
-
-    }
-
-    bool add_tuple(const tuple_t* tuple){
-
-    }
-
-};
 
 

@@ -128,7 +128,7 @@ function benchmarkRun() {
   # Clear cache, avoid cache interference of previous round. Need sudo
   echo 3 >/proc/sys/vm/drop_caches
   echo "../hashing -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap -o $exp_dir/results/breakdown/profile_$id.txt"
-  ../hashing -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1 -I $id -[ $progress_step -] $merge_step -G $group -g $gap -o $exp_dir/results/breakdown/profile_$id.txt
+  ../hashing -a $algo -t $ts -w $WINDOW_SIZE -r $RSIZE -s $SSIZE -R $RPATH -S $SPATH -J $RKEY -K $SKEY -L $RTS -M $STS -n $Threads -B 1 -t 1  -g $gap -o $exp_dir/results/breakdown/profile_$id.txt
   if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit -1; fi
 }
 
@@ -149,8 +149,9 @@ function compile() {
 
 # comment these out after compiled
 ALL_ON
+compile=1
 compile
 SetStockParameters
-algo=SHJ_JM_P
-Threads=1
+algo=SHJ_JM_P_BATCHED
+Threads=4
 benchmarkRun

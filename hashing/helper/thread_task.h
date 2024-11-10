@@ -17,6 +17,7 @@
 #include "../joins/npj_types.h"          /* bucket_t, hashtable_t, bucket_buffer_t */
 #include "../joins/npj_params.h"         /* constant parameters */
 #include "../joins/onlinejoins.h"
+#include "../joins/batcher.h"
 #include <sys/time.h>           /* gettimeofday */
 #include <stdlib.h>             /* memalign */
 #include <stdio.h>              /* printf */
@@ -34,6 +35,8 @@
  */
 void *
 THREAD_TASK_NOSHUFFLE(void *param);
+
+void *THREAD_TASK_NOSHUFFLE_BATCHED(void *param);
 
 
 /**

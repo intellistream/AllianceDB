@@ -101,6 +101,3 @@ launch(int nthreads, relation_t *relR, relation_t *relS, t_param param, void *(*
     // TODO: add a timer here, need to have global view?
     *joinStart = curtick();
 }
-
-void launch(int nthreads, relation_t *relR, relation_t *relS, t_param param, void *(*thread_fun)(void *),
-            uint64_t *startTS, uint64_t *joinStart)

@@ -143,6 +143,7 @@ void *THREAD_TASK_NOSHUFFLE(void *param) {
 }
 
 void *THREAD_TASK_NOSHUFFLE_BATCHED(void *param) {
+    MSG("Using Batched Task")
     arg_t *args = (arg_t *) param;
     int lock;
 
@@ -183,19 +184,47 @@ void *THREAD_TASK_NOSHUFFLE_BATCHED(void *param) {
     }
     BARRIER_ARRIVE(args->barrier, lock)
 #endif
-    Batch batch;
+    Batch batch_r;
+    Batch batch_s;
     do {
         fetch_t *fetch = fetcher->next_tuple(); /*time to fetch, waiting time*/
-        if (batch.add_tuple(fetch->tuple)) {
+        if(fetch->ISTuple_R){
+            // the arrival of new r tuple form a complete batch
+            if (batch_r.add_tuple(fetch->tuple)) {
 #ifdef JOIN
-            args->joiner->join(/*time to join for one tuple*/
-                    args->tid, fetch->tuple, fetch->ISTuple_R,
-                    args->matches,
-                    //                    AGGFUNCTION,
-                    chainedbuf); // build and probe at the same time.
+                args->joiner->join_batched(/*time to join for one tuple*/
+                        args->tid, &batch_r, fetch->ISTuple_R,
+                        args->matches,
+                        //                    AGGFUNCTION,
+                        chainedbuf);
+                batch_r.reset();
 #endif
+            }
+        }
+        else{
+            if(batch_s.add_tuple(fetch->tuple)){
+                args->joiner->join_batched(/*time to join for one tuple*/
+                        args->tid, &batch_s, fetch->ISTuple_R,
+                        args->matches,
+                        //                    AGGFUNCTION,
+                        chainedbuf);
+                batch_s.reset();
+            }
         }
     } while (!fetcher->finish());
+    // join the remaining none-complete batch
+    args->joiner->join_batched(
+            args->tid, &batch_r, true,
+            args->matches,
+            //                    AGGFUNCTION,
+            chainedbuf);
+    args->joiner->join_batched(
+            args->tid, &batch_s, false,
+            args->matches,
+            chainedbuf);
+    batch_s.reset();
+    batch_r.reset();
+    MSG("Thread %d: batch_s cnt: %d, batch_r cnt: %d",args->tid,batch_s.batch_cnt(),batch_r.batch_cnt())
 
     //    BEGIN_GARBAGE(args->timer)
     /* wait at a barrier until each thread finishes*/

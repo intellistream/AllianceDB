@@ -14,6 +14,7 @@
 #include <thread>
 #include "common_functions.h"
 #include "../utils/params.h"
+#include "batcher.h"
 
 
 /** An experimental feature to allocate input relations numa-local */
@@ -205,10 +206,51 @@ void build_hashtable_single(const hashtable_t *ht, const tuple_t *tuple,
     *dest = *tuple;//copy the content of rel-tuples[i] to bucket.
 }
 
+void build_hashtable_batched(const hashtable_t *ht, const Batch& batch,
+                            const uint32_t hashmask,
+                            const uint32_t skipbits) {
+    for(int i=0;i<batch.size();i++){
+        tuple_t *dest;
+        bucket_t *curr, *nxt;
+        int32_t idx = HASH(batch.keys_[i], hashmask, skipbits);
+
+        /* copy the tuple to appropriate hash bucket */
+        /* if full, follow nxt pointer to find correct place */
+        curr = ht->buckets + idx;
+        nxt = curr->next;
+
+        if (curr->count == BUCKET_SIZE) {
+            if (!nxt || nxt->count == BUCKET_SIZE) {
+                bucket_t *b;
+                b = (bucket_t *) calloc(1, sizeof(bucket_t));
+                curr->next = b;
+                b->next = nxt;
+                b->count = 1;
+                dest = b->tuples;
+            } else {
+                dest = nxt->tuples + nxt->count;
+                nxt->count++;
+            }
+        } else {
+            dest = curr->tuples + curr->count;//let dest point to correct place of bucket.
+            curr->count++;
+#ifdef DEBUG
+            if (curr->count > BUCKET_SIZE) {
+            MSG("this is wrong 2..\n");
+        }
+#endif
+        }
+        dest->key=batch.keys_[i];
+        dest->payloadID=batch.values_[i];
+    }
+}
+
 void build_hashtable_single(const hashtable_t *ht, const relation_t *rel, uint32_t i, const uint32_t hashmask,
                             const uint32_t skipbits) {
     build_hashtable_single(ht, &rel->tuples[i], hashmask, skipbits);
 }
+
+
 
 /**
  * Used by NPO
@@ -278,6 +320,54 @@ int64_t probe_hashtable_single(const hashtable_t *ht, const tuple_t *tuple, cons
 
     return *matches;
 }
+
+int64_t probe_hashtable_batched(const hashtable_t *ht, const Batch& batch, const uint32_t hashmask,
+                               const uint32_t skipbits, int64_t *matches,
+        /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/
+                               T_TIMER *timer, bool ISTupleR, void *output) {
+    for(int i=0;i<batch.size();i++){
+#ifdef JOIN_RESULT_MATERIALIZE
+        chainedtuplebuffer_t *chainedbuf = (chainedtuplebuffer_t *) output;
+#endif
+
+        intkey_t idx = HASH(batch.keys_[i], hashmask, skipbits);
+        bucket_t *b = ht->buckets + idx;
+        do {
+            for (uint32_t index_ht = 0; index_ht < b->count; index_ht++) {
+                if (batch.keys_[i] == b->tuples[index_ht].key) {
+#ifdef JOIN_RESULT_MATERIALIZE
+                    /* copy to the result buffer */
+                /** We materialize only <S-key, S-RID> */
+                tuple_t *joinres = cb_next_writepos(chainedbuf);
+                joinres->key = batch.keys[i];
+                joinres->payloadID = batch.values_[i];
+#endif
+                    (*matches)++;
+#ifdef DEBUG
+                    if (ISTupleR) {
+
+//                    DEBUGMSG("tid:%d, Join R:%d  with S:%d\n", this_thread::get_id(), tuple->key,
+//                             b->tuples[index_ht].key)
+                } else {
+//                    DEBUGMSG("tid:%d, Join S:%d  with R:%d\n", this_thread::get_id(), b->tuples[index_ht].key,
+//                             tuple->key);
+                }
+#endif
+
+#ifndef NO_TIMING
+                    END_PROGRESSIVE_MEASURE(batch.values_[i], timer, ISTupleR)
+#endif
+                }
+            }
+            b = b->next;/* follow overflow pointer */
+        } while (b);
+
+    }
+
+
+    return *matches;
+}
+
 
 int64_t probe_hashtable_single_measure(const hashtable_t *ht, const relation_t *rel, uint32_t index_rel,
                                        const uint32_t hashmask, const uint32_t skipbits, int64_t *matches,

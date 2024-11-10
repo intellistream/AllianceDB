@@ -94,7 +94,25 @@ void SHJJoiner::join(int32_t tid, tuple_t* tuple, bool ISTupleR, int64_t* matche
 }
 
 
-void join_batched(int32_t tid, Batch* tuple, bool ISTupleR, int64_t *matches, void *pVoid){
+void SHJJoiner::join_batched(int32_t tid, Batch* batch, bool ISTupleR, int64_t *matches, void *out){
+    const uint32_t hashmask_R = htR->hash_mask;
+    const uint32_t skipbits_R = htR->skip_bits;
+    const uint32_t hashmask_S = htS->hash_mask;
+    const uint32_t skipbits_S = htS->skip_bits;
+
+    if (ISTupleR) {
+        build_hashtable_batched(htR, *batch, hashmask_R, skipbits_R);
+#ifdef MATCH
+        probe_hashtable_batched(htS, *batch, hashmask_S, skipbits_S, matches, /*thread_fun,*/ timer, ISTupleR,
+                               out);
+#endif
+    } else {
+        build_hashtable_batched(htS, *batch, hashmask_S, skipbits_S);
+#ifdef MATCH
+        probe_hashtable_batched(htR, *batch, hashmask_R, skipbits_R, matches, /*thread_fun,*/ timer, ISTupleR,
+                               out);
+#endif
+    }
 
 }
 /**
