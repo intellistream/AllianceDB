@@ -82,7 +82,7 @@ is_sorted_helper(int64_t *items, uint64_t nitems) {
             }
         } else */
         if (tuples[i].key < curr) {
-            MSG("[ERROR] item[%d].key=%d is less or equal than item[%d].key=%d\n",
+            MSG("[ERROR] item[%ld].key=%d is less or equal than item[%ld].key=%d\n",
                    i, tuples[i].key, i - 1, curr);
         }
 

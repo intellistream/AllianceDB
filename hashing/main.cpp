@@ -254,7 +254,7 @@ param_t defaultParam();
 
 int
 main(int argc, char **argv) {
-
+    printf("Start hashing...\n");
     /* start initially on CPU-0 */
     cpu_set_t set;
     CPU_ZERO(&set);
@@ -265,7 +265,7 @@ main(int argc, char **argv) {
 
     param_t cmd_params = defaultParam();
     parse_args(argc, argv, &cmd_params);
-
+    printf("Parsing done\n");
 //#ifdef PROFILE_MEMORY_CONSUMPTION
 //    auto curtime = std::chrono::steady_clock::now();
 //    // dump the pid outside, and attach vtune for performance measurement
@@ -279,19 +279,22 @@ main(int argc, char **argv) {
     //reset relation size according to our settings.
 //    cmd_params.r_size = cmd_params.window_size / cmd_params.interval * cmd_params.step_sizeR;
 //    cmd_params.s_size = cmd_params.window_size / cmd_params.interval * cmd_params.step_sizeS;
-
-    if (check_avx() == 0) {
-        /* no AVX support, just use scalar variants. */
-        fprintf(stdout, "[WARN ] AVX is not supported, using scalar sort & merge.\n");
-        cmd_params.scalar_sort = 1;
-        cmd_params.scalar_merge = 1;
-    }
+    fprintf(stdout, "[WARN ] AVX is not supported, using scalar sort & merge.\n");
+    cmd_params.scalar_sort = 1;
+    cmd_params.scalar_merge = 1;
+    // if (check_avx() == 0) {
+    //     /* no AVX support, just use scalar variants. */
+    //     fprintf(stdout, "[WARN ] AVX is not supported, using scalar sort & merge.\n");
+    //     cmd_params.scalar_sort = 1;
+    //     cmd_params.scalar_merge = 1;
+    // }
 #ifdef PERF_COUNTERS
     PCM_CONFIG = cmd_params.perfconf;
     PCM_OUT = cmd_params.perfout;
 #endif
 
     benchmark(cmd_params);
+    printf("bechmakr done, completed.\n");
     return 0;
 }
 

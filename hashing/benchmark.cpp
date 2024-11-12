@@ -22,17 +22,17 @@
 #define MALLOC(SZ) alloc_aligned(SZ+RELATION_PADDING) /*malloc(SZ+RELATION_PADDING)*/
 #define FREE(X, SZ) free(X)
 
-int check_avx() {
-    unsigned int eax, ebx, ecx, edx;
-    if (!__get_cpuid(1, &eax, &ebx, &ecx, &edx))
-        return 1;
+// int check_avx() {
+//     unsigned int eax, ebx, ecx, edx;
+//     if (!__get_cpuid(1, &eax, &ebx, &ecx, &edx))
+//         return 1;
 
-    /* Run AVX test only if host has AVX runtime support.  */
-    if ((ecx & AVXFlag) != AVXFlag)
-        return 0; /* missing feature */
+//     /* Run AVX test only if host has AVX runtime support.  */
+//     if ((ecx & AVXFlag) != AVXFlag)
+//         return 0; /* missing feature */
 
-    return 1; /* has AVX support! */
-}
+//     return 1; /* has AVX support! */
+// }
 
 // TODO: why need so many parameters, only need cmd_params inside.
 void createRelation(relation_t *rel, relation_payload_t *relPl, int32_t key, int32_t tsKey, const param_t &cmd_params,

@@ -34,32 +34,32 @@ echo "$exp_dir"
 echo "$L3_cache_size"
 
 # update in case some package can be missing.
-sudo apt update
+# sudo apt update
 
 ## auto install all packages
-sudo apt install -y cmake
-sudo apt install -y texlive-fonts-recommended texlive-fonts-extra
-sudo apt install -y dvipng
-sudo apt install -y font-manager
-sudo apt install -y cm-super
-sudo apt install -y python3
-sudo apt install -y python3-pip
-pip3 install numpy
-pip3 install matplotlib
-sudo apt install -y libnuma-dev
-sudo apt install -y zlib1g-dev
-sudo apt install -y python-tk
-sudo apt install -y linux-tools-common
-sudo apt install -y linux-tools-$(uname -r) # XXX is the kernel version of your linux, use uname -r to check it. e.g. 4.15.0-91-generic
-sudo echo -1 > /proc/sys/kernel/perf_event_paranoid # if permission denied, try to run this at root user.
-sudo modprobe msr
+# sudo apt install -y cmake
+# sudo apt install -y texlive-fonts-recommended texlive-fonts-extra
+# sudo apt install -y dvipng
+# sudo apt install -y font-manager
+# sudo apt install -y cm-super
+# sudo apt install -y python3
+# sudo apt install -y python3-pip
+# pip3 install numpy
+# pip3 install matplotlib
+# sudo apt install -y libnuma-dev
+# sudo apt install -y zlib1g-dev
+# sudo apt install -y python-tk
+# sudo apt install -y linux-tools-common
+# sudo apt install -y linux-tools-$(uname -r) # XXX is the kernel version of your linux, use uname -r to check it. e.g. 4.15.0-91-generic
+# sudo echo -1 > /proc/sys/kernel/perf_event_paranoid # if permission denied, try to run this at root user.
+# sudo modprobe msr
 
 # download and mv datasets to exp_dir
-wget https://www.dropbox.com/s/64z4xtpyhhmhojp/datasets.tar.gz
-tar -zvxf datasets.tar.gz
-rm datasets.tar.gz
-mkdir -p $exp_dir
-mv datasets $exp_dir
+# wget https://www.dropbox.com/s/64z4xtpyhhmhojp/datasets.tar.gz
+# tar -zvxf datasets.tar.gz
+# rm datasets.tar.gz
+# mkdir -p $exp_dir
+# mv datasets $exp_dir
 
 
 ## Create directories on your machine.
@@ -83,19 +83,19 @@ cp cpu-mapping.txt $exp_dir
 sed -i -e "s/exp_dir = .*/exp_dir = "\"${exp_dir//\//\\/}\""/g" ./hashing/scripts/*.py
 
 exp_secction="APP_BENCH,MICRO_BENCH,SCALE_STUDY,PROFILE_MICRO,PROFILE,PROFILE_MEMORY_CONSUMPTION,PROFILE_PMU_COUNTERS"
-
+# exp_secction="APP_BENCH,MICRO_BENCH,SCALE_STUDY,PROFILE_MICRO,PROFILE,PROFILE_MEMORY_CONSUMPTION,PROFILE_PMU_COUNTERS"
 # execute experiment
-cd ./sorting/scripts || exit
-bash benchmark.sh -e $exp_secction -d $exp_dir -c $L3_cache_size
-cd - || exit
+# cd ./sorting/scripts || exit
+# bash benchmark.sh -e $exp_secction -d $exp_dir -c $L3_cache_size
+# cd - || exit
 cd ./hashing/scripts || exit
 bash benchmark.sh -e $exp_secction -d $exp_dir -c $L3_cache_size
 
 exp_secction="PROFILE_TOPDOWN"
 
-cd - || exit
-cd ./sorting/scripts || exit
-bash benchmark.sh -e $exp_secction -d $exp_dir -c $L3_cache_size
+# cd - || exit
+# cd ./sorting/scripts || exit
+# bash benchmark.sh -e $exp_secction -d $exp_dir -c $L3_cache_size
 cd - || exit
 cd ./hashing/scripts || exit
 bash benchmark.sh -e $exp_secction -d $exp_dir -c $L3_cache_size

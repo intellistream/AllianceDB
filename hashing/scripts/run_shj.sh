@@ -3,7 +3,7 @@
 # the script must be run in hashing/scripts !!!
 
 exp_dir="../../data1/xtra"
-exp_secction="APP_BENCH"
+exp_secction="APP_BENCH,MICRO_BENCH,SCALE_STUDY, PROFILE,PROFILE_MEMORY_CONSUMPTION,PROFILE_PMU_COUNTERS"
 # exp_secction="APP_BENCH,MICRO_BENCH,SCALE_STUDY,PROFILE_MICRO,PROFILE,PROFILE_MEMORY_CONSUMPTION,PROFILE_PMU_COUNTERS"
 helpFunction()
 {
@@ -48,11 +48,11 @@ echo "$exp_dir"
 # mkdir -p $exp_dir/results/records
 # mkdir -p $exp_dir/results/timestamps
 # copy custom pmu events to experiment dir.
-# cp pcm* $exp_dir
-# # copy cpu mappings to exp_dir
-# cp ../../cpu-mapping.txt $exp_dir
-# # set all scripts exp dir
-# sed -i -e "s/exp_dir = .*/exp_dir = "\"${exp_dir//\//\\/}\""/g" *.py
+cp pcm* $exp_dir
+# copy cpu mappings to exp_dir
+cp ../../cpu-mapping.txt $exp_dir
+# set all scripts exp dir
+sed -i -e "s/exp_dir = .*/exp_dir = "\"${exp_dir//\//\\/}\""/g" *.py
 
 #####################################################
 ####### Parse Experiment sections need to run #######
@@ -119,7 +119,7 @@ sed -i -e "s/#define NO_TIMING/#define TIMING/g" ../joins/common_functions.h
 
 compile=1 #enable compiling.
 eager=1 #todo: check if no more eager?
-profile_breakdown=1
+profile_breakdown=0
 
 function compile() {
   if [ $compile != 0 ]; then
@@ -287,10 +287,10 @@ function NORMAL() {
 }
 
 function SHJBENCHRUN() {
-  PARTITION_ONLY
-  compile
-  echo "PARTITION_ONLY"
-  benchmarkRun
+  # PARTITION_ONLY
+  # compile
+  # echo "PARTITION_ONLY"
+  # benchmarkRun
 
   # PARTITION_BUILD_SORT
   # compile
@@ -302,24 +302,24 @@ function SHJBENCHRUN() {
   # echo "PARTITION_BUILD_SORT_MERGE_JOIN"
   # benchmarkRun
 
-  # ALL_ON
-  # compile
-  # echo "ALL_ON"
-  # benchmarkRun
+  ALL_ON
+  compile
+  echo "ALL_ON"
+  benchmarkRun
 }
 
 function SHJKIMRUN() {
-  PARTITION_ONLY
-  compile
-  KimRun
+  # PARTITION_ONLY
+  # compile
+  # KimRun
 
-  PARTITION_BUILD_SORT
-  compile
-  KimRun
+  # PARTITION_BUILD_SORT
+  # compile
+  # KimRun
 
-  PARTITION_BUILD_SORT_MERGE_JOIN
-  compile
-  KimRun
+  # PARTITION_BUILD_SORT_MERGE_JOIN
+  # compile
+  # KimRun
 
   ALL_ON
   compile
