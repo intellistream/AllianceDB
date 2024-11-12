@@ -5,7 +5,7 @@
 #include "pmj_helper.h"
 #include "sort_common.h"
 #include "localjoiner.h"
-
+#include <algorithm>
 
 void
 earlyJoinInitialRuns(tuple_t *tupleR, tuple_t *tupleS, int lengthR, int lengthS, int64_t *matches, T_TIMER *timer,
@@ -195,16 +195,32 @@ merging_phase(int64_t *matches, std::vector<run> *Q, T_TIMER *timer, chainedtupl
 #endif
 }
 
+static inline int
+compare_tuples(const tuple_t a, const tuple_t b)
+{
+    return (a.key < b.key);
+}
+
+void scalarsort_tuples(tuple_t **inputptr, tuple_t **outputptr, uint64_t nitems) {
+    tuple_t * in  = *inputptr;
+    tuple_t * out = *outputptr;
+
+    std::sort(in, in + nitems, compare_tuples);
+
+    *inputptr = out;
+    *outputptr = in;
+}
+
 void sorting_phase(int32_t tid, tuple_t *inptrR, int sizeR, tuple_t *inptrS, int sizeS, int64_t *matches,
                    std::vector<run> *Q, tuple_t *outputR, tuple_t *outputS, T_TIMER *timer,
                    chainedtuplebuffer_t *chainedbuf) {
 
 //    DEBUGMSG("TID:%d, Initial R [aligned:%d]: %s", tid, is_aligned(inptrR, CACHE_LINE_SIZE),
 //             print_relation(inptrR, sizeR).c_str())
-    if (scalarflag)
-        scalarsort_tuples(&inptrR, &outputR, sizeR);
-    else
-        avxsort_tuples(&inptrR, &outputR, sizeR);// the method will swap input and output pointers.
+    // if (scalarflag)
+         scalarsort_tuples(&inptrR, &outputR, sizeR);
+    // else
+    //     avxsort_tuples(&inptrR, &outputR, sizeR);// the method will swap input and output pointers.
 //    DEBUGMSG("TID:%d, Sorted R: %s", tid, print_relation(outputR, sizeR).c_str())
 
 #ifdef DEBUG
@@ -215,10 +231,10 @@ void sorting_phase(int32_t tid, tuple_t *inptrR, int sizeR, tuple_t *inptrS, int
 //    DEBUGMSG("%d-thread Initial S [aligned:%d]: %s", tid, is_aligned(inptrS, CACHE_LINE_SIZE),
 //             print_relation(inptrS, sizeS).c_str())
 
-    if (scalarflag)
+    //if (scalarflag)
         scalarsort_tuples(&inptrS, &outputS, sizeS);
-    else
-        avxsort_tuples(&inptrS, &outputS, sizeS);// the method will swap input and output pointers.
+    //else
+    //    avxsort_tuples(&inptrS, &outputS, sizeS);// the method will swap input and output pointers.
 
 //    DEBUGMSG("Sorted S: %s", print_relation(outputS, sizeS).c_str())
 
@@ -272,10 +288,10 @@ void sorting_phase(int32_t tid, const relation_t *rel_R, const relation_t *rel_S
                  print_relation(rel_R->tuples + *i, progressive_stepR).c_str())
 
 
-        if (scalarflag)
+        //if (scalarflag)
             scalarsort_tuples(&inptrR, &outptrR, progressive_stepR);
-        else
-            avxsort_tuples(&inptrR, &outptrR, progressive_stepR);// the method will swap input and output pointers.
+        //else
+        //    avxsort_tuples(&inptrR, &outptrR, progressive_stepR);// the method will swap input and output pointers.
 
 
         DEBUGMSG("Sorted R: %s",
@@ -290,10 +306,10 @@ void sorting_phase(int32_t tid, const relation_t *rel_R, const relation_t *rel_S
     if (*j < sizeS) {
         inptrS = (rel_S->tuples) + *j;
 
-        if (scalarflag)
+        //if (scalarflag)
             scalarsort_tuples(&inptrS, &outptrS, progressive_stepS);
-        else
-            avxsort_tuples(&inptrS, &outptrS, progressive_stepS);
+        //else
+        //    avxsort_tuples(&inptrS, &outptrS, progressive_stepS);
 
         DEBUGMSG("Sorted S: %s",
                  print_relation(outptrS, progressive_stepS).c_str())

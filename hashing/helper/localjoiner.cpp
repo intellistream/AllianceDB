@@ -6,7 +6,7 @@
 #include <vector>
 #include <assert.h>
 #include <zconf.h>
-#include "avxsort.h"
+// #include "avxsort.h"
 #include "sort_common.h"
 #include "localjoiner.h"
 #include "pmj_helper.h"
