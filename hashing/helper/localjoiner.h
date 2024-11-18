@@ -15,6 +15,7 @@
 #include "../joins/batcher.h"
 #include "pmj_helper.h"
 #include <list>
+#include <unordered_map>
 
 ///** To keep track of the input relation pairs fitting into L2 cache */
 //typedef struct tuplepair_t tuplepair_t;
@@ -165,8 +166,15 @@ public:
 class SHJJoiner : public baseJoiner {
 
 private:
+#ifdef USE_CUSTOM_HASHTABLE
     hashtable_t *htR;
     hashtable_t *htS;
+#endif
+
+#ifndef USE_CUSTOM_HASHTABLE
+    unordered_multimap<key_t,tuple_t> htR;
+    unordered_multimap<key_t,tuple_t> htL;
+#endif
 
 public:
     virtual ~SHJJoiner();

@@ -57,13 +57,13 @@ function SetDEBSParameters() { #matches: 251033140 #inputs= 1000000 + 1000000
   gap=251033
 }
 
-DEFAULT_WINDOW_SIZE=100 #(ms) -- 0.1 seconds -- HS is too slow.
-DEFAULT_STEP_SIZE=12800 # |tuples| per ms. -- 128K per seconds. ## this controls the guranalrity of input stream.
+DEFAULT_WINDOW_SIZE=1000 #(ms) -- 0.1 seconds -- HS is too slow.
+DEFAULT_STEP_SIZE=128000 # |tuples| per ms. -- 128K per seconds. ## this controls the guranalrity of input stream.
 function ResetParameters() {
   TS_DISTRIBUTION=0                # uniform time distribution
   ZIPF_FACTOR=0                    # uniform time distribution
-  distrbution=0                    # unique
-  skew=0                           # uniform key distribution
+  distrbution=2                    # unique
+  skew=1                           # uniform key distribution
   INTERVAL=1                       # interval of 1. always..
   STEP_SIZE=$DEFAULT_STEP_SIZE     # arrival rate = 1000 / ms
   WINDOW_SIZE=$DEFAULT_WINDOW_SIZE # MS rel size = window_size / interval * step_size.
@@ -132,6 +132,14 @@ function benchmarkRun() {
   if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit -1; fi
 }
 
+function KimRun() {
+  #####native execution
+  echo "==KIM benchmark:$benchmark -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS -[ $progress_step -] $merge_step -G $group -P $DD -g $gap =="
+  #echo 3 >/proc/sys/vm/drop_caches
+  ../hashing -a $algo -t $ts -w $WINDOW_SIZE -e $STEP_SIZE -q $STEP_SIZE_S -l $INTERVAL -d $distrbution -z $skew -D $TS_DISTRIBUTION -Z $ZIPF_FACTOR -n $Threads -I $id -W $FIXS -[ $progress_step -] $merge_step -G $group -P $DD -g $gap
+  if [[ $? -eq 139 ]]; then echo "oops, sigsegv" exit -1; fi
+}
+
 function compile() {
   if [ $compile != 0 ]; then
     if [ $eager == 0 ] || [ $profile_breakdown == 1 ]; then #to reduce profile overhead, we postpone eager joins during profiling.
@@ -151,7 +159,9 @@ function compile() {
 ALL_ON
 compile=1
 compile
+algo=SHJ_JM_P
+Threads=8
+ResetParameters
 SetStockParameters
-algo=SHJ_JM_P_BATCHED
-Threads=4
 benchmarkRun
+

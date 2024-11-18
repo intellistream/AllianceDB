@@ -73,6 +73,47 @@ shj(int32_t tid, relation_t* rel_R, relation_t* rel_S, void* pVoid) {
 void SHJJoiner::join(int32_t tid, tuple_t* tuple, bool ISTupleR, int64_t* matches,
     /*void *(*thread_fun)(const tuple_t *, const tuple_t *, int64_t *),*/ void* out) {
 
+#ifndef USE_CUSTOME_HASHTABLE
+
+#ifdef JOIN_RESULT_MATERIALIZE
+    chainedtuplebuffer_t *chainedbuf = (chainedtuplebuffer_t *) output;
+#endif
+    if(ISTupleR){
+        // build
+        htR.insert({tuple->key,*tuple});
+        // probe
+        auto [equal_begin,equal_end]=htL.equal_range(tuple->key);
+        for(auto cur=equal_begin;cur!=equal_end;cur++){
+            (*matches)++;
+ #ifdef JOIN_RESULT_MATERIALIZE
+                /* copy to the result buffer */
+                /** We materialize only <S-key, S-RID> */
+                tuple_t *joinres = cb_next_writepos(chainedbuf);
+                joinres->key = tuple->key;
+                joinres->payloadID = tuple->payloadID;
+#endif
+        }
+
+    }
+    else{
+        // build
+        htL.insert({tuple->key,*tuple});
+        // probe
+        auto [equal_begin,equal_end]=htR.equal_range(tuple->key);
+        for(auto cur=equal_begin;cur!=equal_end;cur++){
+            (*matches)++;
+ #ifdef JOIN_RESULT_MATERIALIZE
+                /* copy to the result buffer */
+                /** We materialize only <S-key, S-RID> */
+                tuple_t *joinres = cb_next_writepos(chainedbuf);
+                joinres->key = tuple->key;
+                joinres->payloadID = tuple->payloadID;
+#endif
+        }
+    }
+#endif
+
+#ifdef USE_CUSTOME_HASHTABLE
     const uint32_t hashmask_R = htR->hash_mask;
     const uint32_t skipbits_R = htR->skip_bits;
     const uint32_t hashmask_S = htS->hash_mask;
@@ -91,10 +132,54 @@ void SHJJoiner::join(int32_t tid, tuple_t* tuple, bool ISTupleR, int64_t* matche
                                out);//(4)
 #endif
     }
+#endif
+
 }
 
 
 void SHJJoiner::join_batched(int32_t tid, Batch* batch, bool ISTupleR, int64_t *matches, void *out){
+#ifndef USE_CUSTOME_HASHTABLE
+    if(ISTupleR){
+        for(int i=0;i<batch->size();i++){
+            htR.insert({batch->keys_[i],tuple_t{batch->values_[i],batch->keys_[i]}});
+            // probe
+            auto [equal_begin,equal_end]=htL.equal_range(batch->keys_[i]);
+            for(auto cur=equal_begin;cur!=equal_end;cur++){
+                (*matches)++;
+#ifdef JOIN_RESULT_MATERIALIZE
+                /* copy to the result buffer */
+                /** We materialize only <S-key, S-RID> */
+                tuple_t *joinres = cb_next_writepos(chainedbuf);
+                joinres->key = batch->keys_[i];
+                joinres->payloadID = batch->values_[i];
+#endif
+            }
+        }
+    }
+    else{
+        for(int i=0;i<batch->size();i++){
+            for(int i=0;i<batch->size();i++){
+                htL.insert({batch->keys_[i],tuple_t{batch->values_[i],batch->keys_[i]}});
+                // probe
+                auto [equal_begin,equal_end]=htR.equal_range(batch->keys_[i]);
+                for(auto cur=equal_begin;cur!=equal_end;cur++){
+                    (*matches)++;
+#ifdef JOIN_RESULT_MATERIALIZE
+                    /* copy to the result buffer */
+                /** We materialize only <S-key, S-RID> */
+                tuple_t *joinres = cb_next_writepos(chainedbuf);
+                joinres->key = batch->keys_[i];
+                joinres->payloadID = batch->values_[i];
+#endif
+                }
+            }
+
+        }
+
+    }
+#endif
+
+#ifdef USE_CUSTOME_HASHTABLE
     const uint32_t hashmask_R = htR->hash_mask;
     const uint32_t skipbits_R = htR->skip_bits;
     const uint32_t hashmask_S = htS->hash_mask;
@@ -113,6 +198,7 @@ void SHJJoiner::join_batched(int32_t tid, Batch* batch, bool ISTupleR, int64_t *
                                out);
 #endif
     }
+#endif
 
 }
 /**
@@ -124,28 +210,69 @@ void SHJJoiner::join_batched(int32_t tid, Batch* batch, bool ISTupleR, int64_t *
  * @param cleanR
  */
 void SHJJoiner::clean(int32_t tid, tuple_t* tuple, bool cleanR) {
+#ifndef USE_CUSTOME_HASHTABLE
+    if(cleanR){
+        // must use equal range to support multi erase
+        auto [start,end]=htR.equal_range(tuple->key);
+        for (; start != end; ) {
+            if (start->second.payloadID == tuple->payloadID) {
+                start=htR.erase(start);
+            }
+            else{
+                ++start;
+            }
+        }
+    }
+    else{
+        auto [start,end]=htL.equal_range(tuple->key);
+        for (; start != end; ) {
+            if (start->second.payloadID == tuple->payloadID) {
+                start=htL.erase(start);
+            }
+            else{
+                ++start;
+            }
+        }
+
+    }
+#endif
+
+#ifdef USE_CUSTOME_HASHTABLE
     if (cleanR) {
         //if SHJ is used, we need to clean up hashtable of R.
         debuild_hashtable_single(htR, tuple, htR->hash_mask, htR->skip_bits);
     } else {
         debuild_hashtable_single(htS, tuple, htS->hash_mask, htS->skip_bits);
     }
+#endif
 }
 
 SHJJoiner::SHJJoiner(int sizeR, int sizeS) {
     //allocate two hashtables.
-
+#ifndef USE_CUSTOME_HASHTABLE
+    htR.reserve(sizeR);
+    htL.reserve(sizeS);
+#endif
+#ifdef USE_CUSTOME_HASHTABLE
     int nbucketsR = sizeR/BUCKET_SIZE;
     allocate_hashtable(&htR, nbucketsR);
     assert(nbucketsR > 0);
     int nbucketsS = sizeS/BUCKET_SIZE;
     allocate_hashtable(&htS, nbucketsS);
     assert(nbucketsS > 0);
+#endif
 }
 
 SHJJoiner::~SHJJoiner() {
+#ifndef USE_CUSTOME_HASHTABLE
+    htR.clear();
+    htL.clear();
+#endif
+
+#ifdef USE_CUSTOME_HASHTABLE
     destroy_hashtable(htR);
     destroy_hashtable(htS);
+#endif
 }
 
 /**
