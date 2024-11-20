@@ -464,50 +464,50 @@ void waitForChild(void * proc_id)
 #define UP_AND_LEFT    u8"\u2518"
 #endif
 
-    template <class T>
-    void drawBar(const int nempty, const T & first, const int width, const T & last)
-    {
-        for (int c = 0; c < nempty; ++c)
-        {
-            std::cout << ' ';
-        }
-        std::cout << first;
-        for (int c = 0; c < width; ++c)
-        {
-            std::cout << HORIZONTAL;
-        }
-        std::cout << last << '\n';
-    }
-
-    void drawStackedBar(const std::string & label, std::vector<StackedBarItem> & h, const int width)
-    {
-        int real_width = 0;
-        auto scale = [&width](double fraction)
-        {
-            return int(round(fraction * double(width)));
-        };
-        for (const auto & i : h)
-        {
-            real_width += scale(i.fraction);
-        }
-        if (real_width > 2*width)
-        {
-            std::cout << "ERROR: sum of fractions > 2 ("<< real_width << " > " << width << ")\n";
-            return;
-        }
-        drawBar((int)label.length(), DOWN_AND_RIGHT, real_width, DOWN_AND_LEFT);
-        std::cout << label << VERTICAL;
-        for (const auto & i : h)
-        {
-            const int c_width = scale(i.fraction);
-            for (int c = 0; c < c_width; ++c)
-            {
-                std::cout << i.fill;
-            }
-        }
-        std::cout << VERTICAL << "\n";
-        drawBar((int)label.length(), UP_AND_RIGHT, real_width, UP_AND_LEFT);
-    }
+//    template <class T>
+//    void drawBar(const int nempty, const T & first, const int width, const T & last)
+//    {
+//        for (int c = 0; c < nempty; ++c)
+//        {
+//            std::cout << ' ';
+//        }
+//        //std::cout << first;
+////        for (int c = 0; c < width; ++c)
+////        {
+////            std::cout << HORIZONTAL;
+////        }
+//        //std::cout << last << '\n';
+//    }
+//
+//    void drawStackedBar(const std::string & label, std::vector<StackedBarItem> & h, const int width)
+//    {
+//        int real_width = 0;
+//        auto scale = [&width](double fraction)
+//        {
+//            return int(round(fraction * double(width)));
+//        };
+//        for (const auto & i : h)
+//        {
+//            real_width += scale(i.fraction);
+//        }
+//        if (real_width > 2*width)
+//        {
+//            std::cout << "ERROR: sum of fractions > 2 ("<< real_width << " > " << width << ")\n";
+//            return;
+//        }
+//        drawBar((int)label.length(), DOWN_AND_RIGHT, real_width, DOWN_AND_LEFT);
+//        std::cout << label << VERTICAL;
+//        for (const auto & i : h)
+//        {
+//            const int c_width = scale(i.fraction);
+//            for (int c = 0; c < c_width; ++c)
+//            {
+//                std::cout << i.fill;
+//            }
+//        }
+//        std::cout << VERTICAL << "\n";
+//        drawBar((int)label.length(), UP_AND_RIGHT, real_width, UP_AND_LEFT);
+//    }
 
 
     bool CheckAndForceRTMAbortMode(const char * arg, PCM * m)

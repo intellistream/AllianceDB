@@ -158,12 +158,10 @@ void SHJJoiner::join_batched(int32_t tid, Batch* batch, bool ISTupleR, int64_t *
     }
     else{
         for(int i=0;i<batch->size();i++){
-            for(int i=0;i<batch->size();i++){
-                htL.insert({batch->keys_[i],tuple_t{batch->values_[i],batch->keys_[i]}});
-                // probe
-                auto [equal_begin,equal_end]=htR.equal_range(batch->keys_[i]);
-                for(auto cur=equal_begin;cur!=equal_end;cur++){
-                    (*matches)++;
+            htL.insert({batch->keys_[i],tuple_t{batch->values_[i],batch->keys_[i]}});
+            auto [equal_begin,equal_end]=htR.equal_range(batch->keys_[i]);
+            for(auto cur=equal_begin;cur!=equal_end;cur++){
+                (*matches)++;
 #ifdef JOIN_RESULT_MATERIALIZE
                     /* copy to the result buffer */
                 /** We materialize only <S-key, S-RID> */
@@ -171,9 +169,7 @@ void SHJJoiner::join_batched(int32_t tid, Batch* batch, bool ISTupleR, int64_t *
                 joinres->key = batch->keys_[i];
                 joinres->payloadID = batch->values_[i];
 #endif
-                }
             }
-
         }
 
     }

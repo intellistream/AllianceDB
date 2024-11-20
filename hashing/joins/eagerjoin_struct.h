@@ -25,9 +25,18 @@ struct arg_t {
     int64_t *matches;
     pthread_barrier_t *barrier;
 
+    // legacy fetcher, shuffler and joiner of the framework
     baseFetcher *fetcher;
     baseShuffler *shuffler;
     baseJoiner *joiner;
+
+    // special fields for fetching and shuffling
+    relation_t* relation_left;
+    relation_t* relation_right;
+    SHJShuffleQueueGroup* left_group_shared_ptr;
+    SHJShuffleQueueGroup* right_group_shared_ptr;
+
+
 
     /* results of the thread */
     threadresult_t *threadresult;

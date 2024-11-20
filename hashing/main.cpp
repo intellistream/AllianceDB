@@ -319,6 +319,7 @@ static struct algo_t algos[] =
                 {"SHJ_st",      SHJ_st}, /* Symmetric hash join single_thread*/
                 {"SHJ_JM_P",    SHJ_JM_P}, /* Symmetric hash join JM Model, Partition*/
                 {"SHJ_JM_P_BATCHED",SHJ_JM_P_BATCHED}, /* Symmetric hash join JM Model, Batched*/
+                {"SHJ_Shuffle_P_BATCHED",SHJ_Shuffle_P_BATCHED},/* Symetric hash join with hash shuffling, batched*/
                 {"SHJ_JM_NP",   SHJ_JM_NP}, /* Symmetric hash join JM Model, No-Partition*/
                 {"SHJ_JB_NP",   SHJ_JB_NP}, /* Symmetric hash join JB Model, No-Partition*/
                 {"SHJ_JBCR_NP", SHJ_JBCR_NP}, /* Symmetric hash join JB CountRound Model, No-Partition*/

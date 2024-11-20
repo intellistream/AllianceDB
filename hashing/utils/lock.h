@@ -44,7 +44,7 @@ inline void unlock(Lock_t *_l) {
 }
 
 inline int tas(volatile char *lock) {
-    register char res = 1;
+     char res = 1;
 #if defined(__i386__) || defined(__x86_64__)
     __asm__ __volatile__ (
     "lock xchgb %0, %1\n"

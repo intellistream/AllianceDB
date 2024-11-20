@@ -22,6 +22,9 @@ fetch_t* HS_NP_Fetcher::next_tuple() {
         if (state->current_index_R <= state->end_index_R) {
             state->current_fetch.tuple = &relR->tuples[state->current_index_R++];
             state->current_fetch.ISTuple_R = true;
+            if(state->current_index_R%4096==1){
+                MSG("Fetched %d r tuples: ",state->current_index_R)
+            }
             return &(state->current_fetch);
         } else {
             return nullptr;
@@ -30,6 +33,9 @@ fetch_t* HS_NP_Fetcher::next_tuple() {
         if (state->current_index_S <= state->end_index_S) {
             state->current_fetch.tuple = &relS->tuples[state->current_index_S++];
             state->current_fetch.ISTuple_R = false;
+            if(state->current_index_S%4096==1){
+                MSG("Fetched %d s tuples: ",state->current_index_S)
+            }
             return &(state->current_fetch);
         } else {
             return nullptr;
@@ -176,6 +182,9 @@ nextTupleR(t_state* state, const uint64_t* fetchStartTime, relation_t* relR) {
             state->current_fetch.tuple = readR;
             state->current_fetch.ISTuple_R = true;
             state->current_index_R++;
+            if(state->current_index_R % 4096 == 1){
+                MSG("R Tuples fetched: %d",state->current_index_R)
+            }
             return &(state->current_fetch);
         }
 #else//return without checking for timestamp.

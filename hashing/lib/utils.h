@@ -254,17 +254,17 @@ public:
 
     void print_help_force_rtm_abort_mode(const int alignment);
 
-    struct StackedBarItem {
-        double fraction;
-        std::string label; // not used currently
-        char fill;
-        StackedBarItem() {}
-        StackedBarItem(double fraction_,
-                       const std::string & label_,
-                       char fill_) : fraction(fraction_), label(label_), fill(fill_) {}
-    };
-
-    void drawStackedBar(const std::string & label, std::vector<StackedBarItem> & h, const int width = 80);
+//    struct StackedBarItem {
+//        double fraction;
+//        std::string label; // not used currently
+//        char fill;
+//        StackedBarItem() {}
+//        StackedBarItem(double fraction_,
+//                       const std::string & label_,
+//                       char fill_) : fraction(fraction_), label(label_), fill(fill_) {}
+//    };
+//
+//    void drawStackedBar(const std::string & label, std::vector<StackedBarItem> & h, const int width = 80);
 
     uint64 read_number(char* str);
 

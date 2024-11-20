@@ -39,9 +39,14 @@ void initialize(int nthreads, const t_param &param) {
 t_param &finishing(int nthreads, t_param &param, uint64_t *startTS, param_t *cmd_params) {
     int i;
     for (i = 0; i < nthreads; i++) {
-        if (param.tid[i] != -1)
+        if (param.tid[i] != -1){
+            MSG("Joining thread %lu: ",param.tid[i])
             pthread_join(param.tid[i], NULL);
+            MSG("Joined thread %lu: ",param.tid[i])
+        }
+
     }
+    MSG("All thread joined ")
 
     // TODO: add a timer here, how to minus startTimer? Can I use t_timer.h
     int64_t processingTime = curtick() - *startTS;
@@ -51,11 +56,13 @@ t_param &finishing(int nthreads, t_param &param, uint64_t *startTS, param_t *cmd
     MSG("Merging join Results")
     for (i = 0; i < nthreads; i++) {
         /* sum up results */
+        MSG("Thread %d match: %d",i,*param.args[i].matches)
         param.result += *param.args[i].matches;
 #ifndef NO_TIMING
-        merge(param.args[i].timer, param.args[i].fetcher->relR, param.args[i].fetcher->relS, startTS, 0);
+        //merge(param.args[i].timer, param.args[i].fetcher->relR, param.args[i].fetcher->relS, startTS, 0);
 #endif
     }
+    MSG("Total match: %ld",param.result)
     param.joinresult->totalresults = param.result;
     param.joinresult->nthreads = nthreads;
     MSG("Merging join Result done")
@@ -216,6 +223,150 @@ SHJ_JM_P_BATCHED(relation_t *relR, relation_t *relS, param_t cmd_params) {
     auto joinStart = (uint64_t) 0;
     LAUNCH(nthreads, relR, relS, param, THREAD_TASK_NOSHUFFLE_BATCHED, startTS, &joinStart)
     param = finishing(nthreads, param, startTS, &cmd_params);
+    return param.joinresult;
+}
+
+
+void* shj_shuffle_worker(void* args_void_ptr){
+    arg_t* args=(arg_t*) args_void_ptr;
+    *args->startTS = curtick();
+    int lock;
+    SHJRoundRobinFetcher left_fetcher(args->tid,args->nthreads,args->relation_left,*args->startTS);
+    SHJRoundRobinFetcher right_fetcher(args->tid,args->nthreads,args->relation_right,*args->startTS);
+    SHJShuffleQueueGroup* left_shuffle_group=args->left_group_shared_ptr;
+    SHJShuffleQueueGroup* right_shuffle_group=args->right_group_shared_ptr;
+    baseJoiner* joiner=args->joiner;
+
+
+
+#ifdef JOIN_RESULT_MATERIALIZE
+    chainedtuplebuffer_t *chainedbuf = chainedtuplebuffer_init();
+#else
+    void *chainedbuf = NULL;
+#endif
+
+    BARRIER_ARRIVE(args->barrier, lock)
+
+    optional<Batch> left_batch;
+    optional<Batch> right_batch;
+    bool left_done=false;
+    bool right_done=false;
+    while((!left_shuffle_group->done(args->tid))||(!right_shuffle_group->done(args->tid))){
+        // pull and shuffle
+
+        // read data from left and right relation and shuffle
+        if(!left_fetcher.done()){
+            left_batch=left_fetcher.fetch_batch();
+            if(left_batch!=nullopt){
+                left_shuffle_group->push_batch(std::move(left_batch.value()));
+            }
+        }
+        if((!left_done)&&left_fetcher.done()){
+            left_shuffle_group->fetcher_done();
+            left_done= true;
+        }
+
+        if(!right_fetcher.done()){
+            right_batch=right_fetcher.fetch_batch();
+            if(right_batch!=nullopt){
+                right_shuffle_group->push_batch(std::move(right_batch.value()));
+            }
+        }
+
+        if((!right_done)&&right_fetcher.done()){
+            right_shuffle_group->fetcher_done();
+            right_done= true;
+        }
+
+        // pull from shuffle group and join
+
+        if(!left_shuffle_group->done(args->tid)){
+            left_batch=left_shuffle_group->pull_batch(args->tid);
+            if(left_batch!=nullopt){
+                joiner->join_batched(args->tid,&left_batch.value(),false,args->matches,chainedbuf);
+            }
+
+        }
+
+        if(!right_shuffle_group->done(args->tid)){
+            right_batch=right_shuffle_group->pull_batch(args->tid);
+            if(right_batch!=nullopt){
+                joiner->join_batched(args->tid,&right_batch.value(),true,args->matches,chainedbuf);
+            }
+        }
+    }
+    pthread_exit(NULL);
+
+
+};
+
+result_t *
+SHJ_Shuffle_P_BATCHED(relation_t *relR, relation_t *relS, param_t cmd_params){
+    MSG("Running SHJ_Shuffle_P_BATCHED")
+
+    int i;
+    int rv;
+    cpu_set_t set;
+    uint64_t startTS;
+
+#ifdef JOIN_RESULT_MATERIALIZE
+    param.joinresult->resultlist = (threadresult_t *) malloc(sizeof(threadresult_t)
+                                                             * nthreads);
+#endif
+
+    // a queue group to be shared for all threads
+    SHJShuffleQueueGroup left_group{cmd_params.nthreads};
+    SHJShuffleQueueGroup right_group{cmd_params.nthreads};
+
+    t_param param(nthreads);
+    vector<SHJJoiner> joiners;
+    joiners.reserve(nthreads);
+    initialize(nthreads, param);
+
+    for (i = 0; i < cmd_params.nthreads; i++) {
+        int cpu_idx = get_cpu_id(i);
+        DEBUGMSG("Assigning thread-%d to CPU-%d\n", i, cpu_idx);
+        CPU_ZERO(&set);
+        CPU_SET(cpu_idx, &set);
+        pthread_attr_setaffinity_np(param.attr, sizeof(cpu_set_t), &set);
+        /**
+         * Three key components
+         */
+         // TODO: check relation order
+        joiners.emplace_back(relR->num_tuples/nthreads,relS->num_tuples / nthreads);
+        param.args[i].joiner = &joiners[i];
+
+
+#ifndef NO_TIMING
+        param.args[i].joiner->timer->record_gap = param.record_gap;
+        DEBUGMSG("record_gap:%d\n", param.args[i].joiner->timer->record_gap);
+#endif
+        param.args[i].relation_left=relR;
+        param.args[i].relation_right=relS;
+        param.args[i].nthreads = nthreads;
+        param.args[i].tid = i;
+        param.args[i].barrier = param.barrier;
+        param.args[i].timer = param.args[i].joiner->timer;
+        param.args[i].matches = &param.args[i].joiner->matches;
+        param.args[i].threadresult = &(param.joinresult->resultlist[i]);
+        param.args[i].startTS = &startTS;
+        param.args[i].exp_id = param.exp_id;
+
+        param.args[i].left_group_shared_ptr=&left_group;
+        param.args[i].right_group_shared_ptr=&right_group;
+
+        rv = pthread_create(&param.tid[i], param.attr, &shj_shuffle_worker, (void *) &param.args[i]);
+        if (rv) {
+            MSG("ERROR; return code from pthread_create() is %d\n", rv);
+            exit(-1);
+        }
+//        MSG("Launch thread[%d] :%lu\n", param.args[i].tid, param.tid[i]);
+        fflush(stdout);
+    }
+    // TODO: add a timer here, need to have global view?
+    startTS = curtick();
+    param = finishing(nthreads, param, &startTS, &cmd_params);
+
     return param.joinresult;
 }
 

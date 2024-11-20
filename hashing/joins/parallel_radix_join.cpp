@@ -833,24 +833,24 @@ typedef union {
  */
 static inline void store_nontemp_64B(void *dst, void *src) {
 #ifdef __AVX__
-  register __m256i *d1 = (__m256i *)dst;
-  register __m256i s1 = *((__m256i *)src);
-  register __m256i *d2 = d1 + 1;
-  register __m256i s2 = *(((__m256i *)src) + 1);
+   __m256i *d1 = (__m256i *)dst;
+   __m256i s1 = *((__m256i *)src);
+   __m256i *d2 = d1 + 1;
+   __m256i s2 = *(((__m256i *)src) + 1);
 
   _mm256_stream_si256(d1, s1);
   _mm256_stream_si256(d2, s2);
 
 #elif defined(__SSE2__)
 
-  register __m128i *d1 = (__m128i *)dst;
-  register __m128i *d2 = d1 + 1;
-  register __m128i *d3 = d1 + 2;
-  register __m128i *d4 = d1 + 3;
-  register __m128i s1 = *(__m128i *)src;
-  register __m128i s2 = *((__m128i *)src + 1);
-  register __m128i s3 = *((__m128i *)src + 2);
-  register __m128i s4 = *((__m128i *)src + 3);
+   __m128i *d1 = (__m128i *)dst;
+   __m128i *d2 = d1 + 1;
+   __m128i *d3 = d1 + 2;
+   __m128i *d4 = d1 + 3;
+   __m128i s1 = *(__m128i *)src;
+   __m128i s2 = *((__m128i *)src + 1);
+   __m128i s3 = *((__m128i *)src + 2);
+   __m128i s4 = *((__m128i *)src + 3);
 
   _mm_stream_si128(d1, s1);
   _mm_stream_si128(d2, s2);

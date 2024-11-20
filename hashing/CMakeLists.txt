@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 project(AllianceDB)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 20)
 
 #####ADD NUMA########
 find_path(LIBNUMA_INCLUDE numa.h PATHS ${SEARCH_DIRS})
