@@ -1,4 +1,21 @@
-AllianceDB is an open-source benchmark suite for evaluating and improving stream operation algorithms on modern hardwares.
+# AllianceDB
+
+AllianceDB is an open-source benchmark suite for evaluating stream join
+algorithms on multicore hardware. It collects reproducibility artifacts for
+several related join studies; it is a DataSys benchmark suite, not a single
+production database runtime.
+
+## Project status
+
+The root scripts coordinate multiple historical experiment branches and
+hardware-sensitive measurements. Start with the
+[artifact documentation](docs/README.md) and review its CPU, NUMA, and
+privilege requirements before running experiments.
+
+The repository is licensed under the MIT License. Bundled third-party source
+files retain their upstream notices.
+
+## Publications
 
 If you use AllianceDB in your work, please cite our work.
 
