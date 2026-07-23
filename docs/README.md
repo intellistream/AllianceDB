@@ -2,7 +2,7 @@
 
 This library introduces `AllianceDB` , an open-source benchmark suite for evaluating and improving stream operation algorithms on modern hardwares. It includes all codes and experimental traces to reproduce the experiments from our [SIGMOD 2021](https://dl-acm-org.libproxy1.nus.edu.sg/doi/10.1145/3448016.3452793) paper called [Parallelizing Intra-Window Join on Multicores: An Experimental Study](https://dl-acm-org.libproxy1.nus.edu.sg/doi/10.1145/3448016.3452793).
 
-This is a static dump of the code created in 2022 to be uploaded to the ACM website and permanently hosted. Please refer to our [Github Repository on AllianceDB](https://github.com/intellistream/AllianceDB).
+This is a static dump of the code created in 2022 to be uploaded to the ACM website and permanently hosted. Please refer to the canonical [DataSysResearch/AllianceDB repository](https://github.com/DataSysResearch/AllianceDB).
 
 ### Project Structure
 
